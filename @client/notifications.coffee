@@ -49,7 +49,10 @@ window.Notifications = ReactiveComponent
             color: logo_red
             padding: '4px 8px'
 
-          "You are unsubscribed from summary emails from #{subdomain.name}.consider.it"
+          TRANSLATE
+            id: "email_notifications.unsubscribed_ack"
+            subdomain_name: subdomain.name
+            "You are unsubscribed from summary emails from {subdomain_name}.consider.it"
 
       DIV
         style: 
@@ -63,7 +66,7 @@ window.Notifications = ReactiveComponent
             padding: '20px 0'
             fontWeight: 400
 
-          'Email notification settings'
+          TRANSLATE "email_notifications.heading", 'Email notification settings'
           
         INPUT 
           type: 'checkbox'
@@ -99,14 +102,17 @@ window.Notifications = ReactiveComponent
                 color: focus_color()
                 fontWeight: 600
 
-              t('send_email')
+              TRANSLATE "email_notifications.send_digests", 'Send me email summaries of activity'
 
             DIV
               style: 
                 fontSize: 14
                 color: '#888'
 
-              t('email_digest_purpose', {project: subdomain.app_title or subdomain.name})
+              TRANSLATE 
+                id: "email_notifications.digests_purpose", 
+                project_name: subdomain.app_title or subdomain.name
+                "The emails summarize relevant new activity for you regarding {project_name}"
 
 
       if prefs['send_emails']
@@ -131,13 +137,13 @@ window.Notifications = ReactiveComponent
           marginRight: 10
           display: 'inline-block'
 
-        t('digest_timing')
+        TRANSLATE "email_notifications.digest_timing", "Send email summaries at most"
 
 
       SELECT 
         id: 'send_digests_at_most'
         style: 
-          width: 80
+          width: 120
           fontSize: 18
         value: settings['send_emails']
         onChange: (e) => 
@@ -148,9 +154,9 @@ window.Notifications = ReactiveComponent
           OPTION
             value: "1_#{u}"
             if u == 'day'
-              t('daily')
+              translator "email_notifications.frequency.daily", 'daily'
             else
-              t("#{u}ly")
+              translator "email_notifications.frequency.#{u}ly", "#{u}ly"
 
       DIV 
         style: 
@@ -160,7 +166,7 @@ window.Notifications = ReactiveComponent
           style: 
             marginBottom: 10
 
-          t('notable_events')
+          TRANSLATE 'email_notifications.notable_events', "Emails are only sent if a notable event occurred. Which events are notable to you?"
 
         UL
           style: 
@@ -204,7 +210,7 @@ window.Notifications = ReactiveComponent
                   display: 'inline-block'
                   verticalAlign: 'top'
 
-                config.ui_label
+                TRANSLATE "email_notifications.event.#{event}", config.ui_label
 
   drawWatched: ->
     current_user = fetch('/current_user')
@@ -227,7 +233,8 @@ window.Notifications = ReactiveComponent
             position: 'relative'
             paddingBottom: 10
             fontWeight: 400
-          t('watched_proposals')
+
+          TRANSLATE "email_notifications.watched_proposals", 'The proposals you are watching for new activity'
 
 
         DIV
@@ -254,7 +261,7 @@ window.Notifications = ReactiveComponent
                     proposal: obj
                     #icon: 'fa-bell-slash'
                     watch_color: "#777"
-                    label: (watching) -> t('unwatch')
+                    label: (watching) -> translator "email_notifications.unfollow_proposal", "Unfollow this proposal"
                       
                     style: 
                       position: 'absolute'

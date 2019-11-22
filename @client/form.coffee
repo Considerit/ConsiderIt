@@ -85,7 +85,10 @@ window.CharacterCountTextInput = ReactiveComponent
 
       SPAN 
         className: 'hidden'
-        "#{@props.maxLength - @local.count} characters left"
+        translator 
+          id: "engage.character_counter"
+          characters_left: @props.maxLength - @local.count
+          "{characters_left, plural, one {# character} other {# characters}} left"
 
       @transferPropsTo TEXTAREA 
         className: class_name

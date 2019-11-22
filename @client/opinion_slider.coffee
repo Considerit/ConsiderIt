@@ -84,14 +84,19 @@ window.OpinionSlider = ReactiveComponent
         onMouseUpCallback: @handleMouseUp
         respond_to_click: false
 
-        label: "Express your opinion on a slider from #{@props.pole_labels[0]} to #{@props.pole_labels[1]} about #{@proposal.name}"
+        label: translator
+                 id: "engage.opinion_slider.directions"
+                 negative_pole: @props.pole_labels[0]
+                 positive_pole: @props.pole_labels[1]
+                 proposal_name: @proposal.name
+                 "Express your opinion on a slider from {negative_pole} to {positive_pole} about {proposal_name}"
         readable_text: (value) => 
           if value > .03
             "#{(value * 100).toFixed(0)}% #{@props.pole_labels[1]}"
           else if value < -.03 
             "#{-1 * (value * 100).toFixed(0)}% #{@props.pole_labels[0]}"
           else 
-            "Neutral"
+            translator "engage.slider_feedback.neutral", "Neutral"
 
       @saveYourOpinionNotice()
 
@@ -121,9 +126,9 @@ window.OpinionSlider = ReactiveComponent
       color: focus_color()
 
     notice = if current_user.logged_in
-               t('save_your_opinion')
+               translator "engage.save_your_opinion.button", "Save your opinion"
              else 
-               t('login_to_save_opinion')
+               translator "engage.login_to_save_opinion", 'Log in to save your opinion'
     
     s = sizeWhenRendered notice, style
 
@@ -146,10 +151,7 @@ window.OpinionSlider = ReactiveComponent
     slider = fetch @props.key
     default_feedback = (value, proposal) -> 
       if Math.abs(value) < 0.01
-        translator
-          id: "engage.slider_feedback.default.neutral"
-          "You are neutral"
-        
+        translator "engage.slider_feedback.default.neutral", "You are neutral"
       else 
         "#{Math.round(value * 100)}%"
 
@@ -157,11 +159,13 @@ window.OpinionSlider = ReactiveComponent
     labels = customization 'slider_pole_labels', @proposal
     slider_feedback = 
       if !slider.has_moved 
-        t('Slide Your Overall Opinion')
+        TRANSLATE "engage.slide_prompt", 'Slide Your Overall Opinion'
       else if func = labels.slider_feedback or default_feedback
         func slider.value, @proposal
-      else
-        if TWO_COL() then t("Your opinion") else ''       
+      else if TWO_COL() 
+        TRANSLATE "engage.slide_feedback_short", "Your opinion"
+      else 
+        ''
 
     return SPAN null if slider_feedback == '' 
 

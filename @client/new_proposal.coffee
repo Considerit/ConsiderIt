@@ -109,9 +109,10 @@ window.NewProposal = ReactiveComponent
         bullet 
 
         if permitted
-          T("lists/add new button", 'add new')
+          translator "engage.add_new_proposal_to_list", 'add new'
         else 
-          t("login_to_add_new")
+          translator "engage.login_to_add_new_proposal", 'Log in to share an idea'
+
     else 
 
       w = column_sizes().first
@@ -150,8 +151,8 @@ window.NewProposal = ReactiveComponent
             maxLength: 240
             name:'name'
             pattern: '^.{3,}'
-            'aria-label': t('proposal_summary_instr')
-            placeholder: t('proposal_summary_instr')
+            'aria-label': translator("engage.edit_proposal.summary.placeholder", 'Clear and concise summary')
+            placeholder: translator("engage.edit_proposal.summary.placeholder", 'Clear and concise summary')
             required: 'required'
 
             count_style: 
@@ -193,8 +194,8 @@ window.NewProposal = ReactiveComponent
             WysiwygEditor
               id: "#{cluster_slug}-details"
               key:"description-new-proposal-#{cluster_slug}"
-              #placeholder: t('optional') #"Add #{t('details')} here"
-              'aria-label': "Add #{t('details')} here"
+              #placeholder: translator("engage.edit_proposal.description.placeholder", 'Add details here')  
+              'aria-label': translator("engage.edit_proposal.description.placeholder", 'Add details here')  
               container_style: 
                 padding: '6px 8px'
                 border: '1px solid #ccc'
@@ -257,7 +258,7 @@ window.NewProposal = ReactiveComponent
 
                     htmlFor: "#{cluster_slug}-category"
 
-                    t('category')
+                    TRANSLATE "engage.edit_proposal.category_select_label", 'Category'
                   
                   SELECT
                     id: "#{cluster_slug}-category"
@@ -385,7 +386,7 @@ window.NewProposal = ReactiveComponent
                     @local.errors = proposal.errors
                     save @local
 
-              t('Done')
+              translator 'engage.done_button', 'Done'
 
             BUTTON 
               style: 
@@ -401,7 +402,7 @@ window.NewProposal = ReactiveComponent
                 delete loc.query_params.new_proposal
                 save loc
 
-              t('cancel')
+              translator 'engage.cancel_button', 'cancel'
 
   componentDidMount : ->    
     @ensureIsInViewPort()

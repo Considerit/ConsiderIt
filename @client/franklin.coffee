@@ -511,7 +511,7 @@ window.get_next_proposals = (args) ->
 
   for idx in [0..(args.count or all_proposals.proposals.length) - 1]
     break if prev_idx - idx < 0
-    continue if all_proposals_flat[ prev_idx - idx ].key == relative_to.key
+    continue if !all_proposals_flat[ prev_idx - idx ] || all_proposals_flat[ prev_idx - idx ].key == relative_to.key
     prev_proposals.push all_proposals_flat[ prev_idx - idx ]
 
 
@@ -810,9 +810,7 @@ ProposalDescription = ReactiveComponent
               backgroundColor: 'transparent'
               border: 'none'
               padding: 0
-            TRANSLATE 
-              id: 'engage.edit_button'
-              'edit'
+            TRANSLATE 'engage.edit_button', 'edit'
 
           if permit('delete proposal', @proposal) > 0
             BUTTON
@@ -827,9 +825,7 @@ ProposalDescription = ReactiveComponent
                 if confirm('Delete this proposal forever?')
                   destroy(@proposal.key)
                   loadPage('/')
-              TRANSLATE 
-                id: 'engage.delete_button'
-                t('delete')
+              TRANSLATE 'engage.delete_button', 'delete'
 
 
 
@@ -1144,19 +1140,14 @@ DecisionBoard = ReactiveComponent
               saveOpinion @proposal 
               e.preventDefault()
           'aria-label': if your_opinion.published 
-                          t('Return to results')
+                          translator 'engage.update_opinion_button', 'Return to results'
                         else 
-                          "#{t('log_in')} and #{t('Save your opinion')}"
+                          translator 'engage.save_opinion_button', 'Save your opinion'
 
           if your_opinion.published 
-            translator 
-              id: 'engage.update_opinion_button'
-              'Return to results'
-
+            translator 'engage.update_opinion_button', 'Return to results'
           else 
-            translator 
-              id: 'engage.save_opinion_button'
-              'Save your opinion'
+            translator 'engage.save_opinion_button', 'Save your opinion'
 
         if !your_opinion.published
 
@@ -1173,9 +1164,7 @@ DecisionBoard = ReactiveComponent
                   updateProposalMode('results', 'cancel_button')
                   e.preventDefault()
 
-              translator
-                id: 'engage.see_results_first_button'
-                'or just skip to the results'
+              translator 'engage.see_results_first_button', 'or just skip to the results'
 
         else 
 
@@ -1197,7 +1186,7 @@ DecisionBoard = ReactiveComponent
                   save your_opinion
                   e.preventDefault()
 
-              'Unpublish opinion'
+              translator "engage.remove_my_opinion", 'Remove my opinion'
 
 
 

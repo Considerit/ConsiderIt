@@ -34,12 +34,14 @@ window.EditComment = ReactiveComponent
       if permitted == Permission.DISABLED
         SPAN 
           style: {position: 'absolute', margin: '14px 0 0 70px'}
-          'Comments closed'
+
+          translator 'engage.comment_period_closed', 'Comments closed'
 
       else if permitted == Permission.INSUFFICIENT_PRIVILEGES
         SPAN 
           style: {position: 'absolute', margin: '14px 0 0 70px'}
-          'Sorry, you do not have permission to comment'
+          translator 'engage.permissions.no_comment', 'Sorry, you do not have permission to comment'
+          
 
       else if permitted < 0
         A
@@ -72,17 +74,15 @@ window.EditComment = ReactiveComponent
                   backgroundColor: 'transparent'
                   padding: 0
                   border: 'none'
-                t('login_to_comment')
+                translator 'engage.permissions.login_to_comment', 'Log in to write a comment'
+
               if '*' not in @proposal.roles.commenter
                 DIV style: {fontSize: 11},
                   'Only some email addresses are authorized to comment.'
 
           else if permitted == Permission.UNVERIFIED_EMAIL
             DIV null,
-              SPAN
-                style: { textDecoration: 'underline', color: focus_color() }
-               'Verify your account'
-              SPAN null, "to #{t('write a comment')}"
+              translator 'engage.permissions.verify_account_to_comment', "Verify your account to write a comment"
 
       DIV 
         style: 
@@ -91,8 +91,8 @@ window.EditComment = ReactiveComponent
         AutoGrowTextArea
           ref: 'comment_input'
           name: 'new comment'
-          'aria-label': if permitted > 0 then t('Write a comment') else ''
-          placeholder: if permitted > 0 then t('Write a comment') else ''
+          'aria-label': if permitted > 0 then translator('engage.comment_input_placeholder', 'Write a comment') else ''
+          placeholder: if permitted > 0 then translator('engage.comment_input_placeholder', 'Write a comment') else ''
           disabled: permitted < 0
           onChange: (e) => @local.new_comment = e.target.value; save(@local)
           defaultValue: if @props.fresh then null else @data().body
@@ -132,7 +132,7 @@ window.EditComment = ReactiveComponent
             fontSize: if browser.is_mobile then 24
           'data-action': 'save-comment'
 
-          t('Save comment')
+          translator "engage.save_comment_button", 'Save comment'
           
           (e) =>
             e.stopPropagation()

@@ -113,11 +113,10 @@ window.EditProposal = ReactiveComponent
               fontSize: 30
               fontWeight: 700
 
-
             if @props.fresh 
-              t('create_new_proposal') 
+              translator 'engage.add_new_proposal_button', "Create new proposal"
             else 
-              "#{capitalize(t('edit'))} '#{proposal.name}'"
+              "#{capitalize(translator('engage.edit_button', 'edit'))} '#{proposal.name}'"
 
           # DIV 
           #   style: 
@@ -135,40 +134,25 @@ window.EditProposal = ReactiveComponent
           #     t('error_free')
           #   '.'
 
-        # if fetch('/current_user').is_admin
-        #   DIV style: block_style,
-        #     LABEL htmlFor:'slug', style: label_style, 'URL:'
-
-        #     BR null
-        #     SPAN
-        #       style: 
-        #         fontSize: 20
-        #         color: '#aaa'
-        #       "#{location_origin()}/"
-        #     INPUT 
-        #       id:'slug'
-        #       name:'slug'
-        #       pattern:'^.{3,}'
-        #       placeholder: t('url_instr')
-        #       required:'required'
-        #       defaultValue: if @props.fresh then null else proposal.slug
-        #       style: _.extend {}, input_style,
-        #         width: 400
-        #         display: 'inline-block'
-
         DIV style: block_style,
-          LABEL htmlFor:'name', style: label_style, t('Summary') + ':'
+          LABEL 
+            htmlFor:'name'
+            style: label_style
+            translator("engage.edit_proposal.summary_label", "Summary") + ':'
           INPUT 
             id:'name'
             name:'name'
             pattern:'^.{3,}'
-            placeholder: t('proposal_summary_instr')
+            placeholder: translator 'engage.proposal_name_placeholder', 'Clear and concise summary'
             required:'required'
             defaultValue: if @props.fresh then null else proposal.name
             style: input_style
 
         DIV style: block_style,
-          LABEL htmlFor:"description-#{proposal.key}", style: label_style, t('details') + ':'
+          LABEL 
+            htmlFor:"description-#{proposal.key}"
+            style: label_style
+            translator("engage.edit_proposal.description_label", "Details") + ':'
           
           WysiwygEditor
             key:"description-#{proposal.key}"
@@ -177,124 +161,128 @@ window.EditProposal = ReactiveComponent
             html: if @props.fresh then null else proposal.description
 
           # Expandable description fields
+          if false 
+            DIV 
+              style: 
+                marginBottom: 20
+                marginLeft: 45
+                display: if not fetch('/current_user').is_admin then 'none'
 
-          DIV 
-            style: 
-              marginBottom: 20
-              marginLeft: 45
-              display: if not fetch('/current_user').is_admin then 'none'
+              for field in @local.description_fields
+                field_open = field.id in @local.open_fields
+                DIV 
+                  key: "field-#{field.id}"
+                  style: _.extend({}, block_style, {width: ''}),
 
-            for field in @local.description_fields
-              field_open = field.id in @local.open_fields
-              DIV 
-                key: "field-#{field.id}"
-                style: _.extend({}, block_style, {width: ''}),
+                  BUTTON 
+                    className: "fa fa-#{if field_open then 'minus' else 'plus'}-circle"
+                    style: 
+                      position: 'absolute'
+                      left: -20
+                      top: 18
+                      color: '#414141'
+                      cursor: 'pointer'
+                      padding: 0
+                      border: 'none'
+                      backgroundColor: 'transparent'
+                    onClick: do (field, field_open) => => 
+                      toggleDescriptionFieldOpen(field, field_open)
 
-                BUTTON 
-                  className: "fa fa-#{if field_open then 'minus' else 'plus'}-circle"
-                  style: 
-                    position: 'absolute'
-                    left: -20
-                    top: 18
-                    color: '#414141'
-                    cursor: 'pointer'
-                    padding: 0
-                    border: 'none'
-                    backgroundColor: 'transparent'
-                  onClick: do (field, field_open) => => 
-                    toggleDescriptionFieldOpen(field, field_open)
+                  if field_open
+                    [INPUT
+                      style: _.extend {}, description_field_style, \
+                                      {width: description_field_style.width - 45}
+                      type: 'text'
+                      id:"field-#{field.id}-label"
+                      name:"field-#{field.id}-label"
+                      pattern:'^.{3,}'
+                      placeholder: t('Label')
+                      required:'required'
+                      onChange: do(field) => (e) => 
+                        field.label = e.target.value; save(@local)
+                      value: field.label
 
-                if field_open
-                  [INPUT
-                    style: _.extend {}, description_field_style, \
-                                    {width: description_field_style.width - 45}
-                    type: 'text'
-                    id:"field-#{field.id}-label"
-                    name:"field-#{field.id}-label"
-                    pattern:'^.{3,}'
-                    placeholder:t('Label')
-                    required:'required'
-                    onChange: do(field) => (e) => 
-                      field.label = e.target.value; save(@local)
-                    value: field.label
+                    WysiwygEditor
+                      key:"field-#{field.id}-html-#{if @props.fresh then '/new/proposal' else proposal.key}"
+                      name:"field-#{field.id}-html"
+                      placeholder: t('expandable_body_instr')
+                      style: _.extend {}, description_field_style,
+                                width: description_field_style.width - 45
+                      html: field.html]
 
-                  WysiwygEditor
-                    key:"field-#{field.id}-html-#{if @props.fresh then '/new/proposal' else proposal.key}"
-                    name:"field-#{field.id}-html"
-                    placeholder: t('expandable_body_instr')
-                    style: _.extend {}, description_field_style,
-                              width: description_field_style.width - 45
-                    html: field.html]
+                  else
+                    DIV 
+                      style: 
+                        fontSize: 18
+                        fontWeight: 600
+                        cursor: 'pointer'
+                        marginTop: 12
+                        marginLeft: 5
+                        width: description_field_style.width - 45
+                      onClick: do (field, field_open) => => 
+                        toggleDescriptionFieldOpen(field, field_open)
+                      field.label
 
-                else
                   DIV 
                     style: 
-                      fontSize: 18
-                      fontWeight: 600
-                      cursor: 'pointer'
-                      marginTop: 12
-                      marginLeft: 5
-                      width: description_field_style.width - 45
-                    onClick: do (field, field_open) => => 
-                      toggleDescriptionFieldOpen(field, field_open)
-                    field.label
+                      position: 'absolute'
+                      right: 150
+                      top: 12
 
-                DIV 
-                  style: 
-                    position: 'absolute'
-                    right: 150
-                    top: 12
+                    BUTTON
+                      style: operation_style
+                      onClick: do (field, field_open) => => 
+                        toggleDescriptionFieldOpen(field, field_open)
+                      if field_open then t('close') else t('edit')
 
-                  BUTTON
-                    style: operation_style
-                    onClick: do (field, field_open) => => 
-                      toggleDescriptionFieldOpen(field, field_open)
-                    if field_open then t('close') else t('edit')
+                    BUTTON
+                      style: operation_style
+                      onClick: do (field) => =>
+                        @local.description_fields = \
+                          _.filter @local.description_fields, \
+                                   (fld) -> fld.id != field.id
+                        save @local
+                      t('delete')
 
-                  BUTTON
-                    style: operation_style
-                    onClick: do (field) => =>
-                      @local.description_fields = \
-                        _.filter @local.description_fields, \
-                                 (fld) -> fld.id != field.id
-                      save @local
-                    t('delete')
-
-            BUTTON
-              style: 
-                color: '#aaa'
-                cursor: 'pointer'
-                fontSize: 18
-                marginLeft: -18
-                backgroundColor: 'transparent'
-                border: 'none'
-
-              onClick: => 
-                new_id = 0
-                for field in @local.description_fields
-                  new_id += field.id  
-                new_id += 1
-                @local.description_fields.push {label: null, html: null, id: new_id}
-                @local.open_fields.push new_id
-                save @local
-
-              "+ "
-              SPAN 
+              BUTTON
                 style: 
-                  textDecoration: 'underline'
-                  marginLeft: 7
-                t('add_expandable')
+                  color: '#aaa'
+                  cursor: 'pointer'
+                  fontSize: 18
+                  marginLeft: -18
+                  backgroundColor: 'transparent'
+                  border: 'none'
+
+                onClick: => 
+                  new_id = 0
+                  for field in @local.description_fields
+                    new_id += field.id  
+                  new_id += 1
+                  @local.description_fields.push {label: null, html: null, id: new_id}
+                  @local.open_fields.push new_id
+                  save @local
+
+                "+ "
+                SPAN 
+                  style: 
+                    textDecoration: 'underline'
+                    marginLeft: 7
+                  t('add_expandable')
 
 
         DIV
           style: block_style
 
-          LABEL htmlFor:'cluster', style: label_style, t('category') + ' (' + t('optional') + '):'
+          LABEL 
+            htmlFor:'cluster'
+            style: label_style
+            translator('category') + ' (' + translator('optional') + '):'
+
           INPUT 
             id: 'cluster'
             name: 'cluster'
             pattern: '^.{3,}'
-            placeholder: 'The proposal will be shown on the homepage under this category. (Default="Proposals")'
+            placeholder: translator("engage.proposal_cluster_placeholder", 'The proposal will be shown on the homepage under this category. (Default="Proposals")')
             defaultValue: cluster 
             style: input_style
           
@@ -302,7 +290,10 @@ window.EditProposal = ReactiveComponent
           style: _.extend {}, block_style,
             display: if !user.is_admin then 'none'
 
-          LABEL htmlFor: 'listed_on_homepage', style: label_style, t('show_on_homepage')
+          LABEL 
+            htmlFor: 'listed_on_homepage'
+            style: label_style
+            translator "engage.edit_proposal.show_on_homepage", 'List on homepage?'
 
           INPUT 
             id: 'listed_on_homepage'
@@ -319,7 +310,7 @@ window.EditProposal = ReactiveComponent
           LABEL 
             htmlFor: 'open_for_discussion'
             style: label_style
-            t('open_for_discussion')
+            translator "engage.edit_proposal.open_for_discussion", 'Open for discussion?'
 
           INPUT 
             id: 'open_for_discussion'
@@ -349,7 +340,7 @@ window.EditProposal = ReactiveComponent
                 left: -25
                 top: 5
 
-            t('permissions_and_invites')
+            translator 'engage.edit_proposal.permissions', 'Permissions'
 
           DIV 
             style: 
@@ -392,7 +383,10 @@ window.EditProposal = ReactiveComponent
               backgroundColor: focus_color()              
             onClick: @saveProposal
 
-            if @props.fresh then t('Publish') else t('Update')
+            if @props.fresh 
+              translator 'Publish'
+            else 
+              translator 'Update'
 
           BUTTON
             style: 
@@ -409,7 +403,7 @@ window.EditProposal = ReactiveComponent
               else 
                 loadPage "/#{proposal.slug}"
 
-            t('cancel')
+            translator 'engage.cancel_button', 'cancel'
 
   saveProposal : -> 
 

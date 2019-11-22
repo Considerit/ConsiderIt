@@ -76,7 +76,7 @@ window.CollapsedProposal = ReactiveComponent
       else if value < -.03 
         "#{-1 * (value * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.oppose", proposal)}"
       else 
-        "Neutral"
+        translator "engage.slider_feedback.neutral", "Neutral"
     LI
       key: proposal.key
       id: 'p' + proposal.slug.replace('-', '_')  # Initial 'p' is because all ids must begin 
@@ -201,8 +201,10 @@ window.CollapsedProposal = ReactiveComponent
                   [ 
                     SPAN 
                       style: {}
-
-                      " by #{fetch(editor)?.name}"
+                      TRANSLATE
+                        id: 'engage.proposal_author'
+                        name: fetch(editor)?.name 
+                        " by {name}"
 
                     SPAN 
                       style: 
@@ -231,6 +233,14 @@ window.CollapsedProposal = ReactiveComponent
               if fetch('/subdomain').name == 'dao' && proposal.cluster == 'Proposals'
                 cluster = 'Ideas'
 
+              if cluster == "Proposals"
+                cluster = translator "engage.default_proposals_list", "Proposals"
+              else 
+                cluster = translator 
+                             id: "proposal_list.#{cluster}"
+                             key: "/translations/#{fetch('/subdomain').name}"
+                             cluster 
+
               SPAN 
                 style: 
                   #border: "1px solid #{@props.category_color}"
@@ -247,7 +257,7 @@ window.CollapsedProposal = ReactiveComponent
                 style: 
                   padding: '0 16px'
 
-                t('closed')
+                TRANSLATE "engage.proposal_closed.short", 'closed'
 
 
           if can_edit
@@ -265,7 +275,7 @@ window.CollapsedProposal = ReactiveComponent
                   backgroundColor: 'transparent'
                   padding: 0
                   fontSize: 12
-                t('edit')
+                TRANSLATE 'engage.edit_button', 'edit'
 
               if permit('delete proposal', proposal) > 0
                 BUTTON
@@ -281,7 +291,7 @@ window.CollapsedProposal = ReactiveComponent
                     if confirm('Delete this proposal forever?')
                       destroy(proposal.key)
                       loadPage('/')
-                  t('delete')
+                  TRANSLATE 'engage.delete_button', 'delete'
 
 
 
@@ -395,7 +405,7 @@ window.CollapsedProposal = ReactiveComponent
           if opinions.length > 0
             tooltip = fetch 'tooltip'
             tooltip.coords = $(@refs.score.getDOMNode()).offset()
-            tooltip.tip = "Average rating is #{Math.round(avg * 100)}%"
+            tooltip.tip = translator({id: "engage.proposal_score_summary.explanation", percentage: Math.round(avg * 100)}, "Average rating is {percentage}%")
             save tooltip
         hide_tooltip = => 
           tooltip = fetch 'tooltip'
@@ -423,16 +433,20 @@ window.CollapsedProposal = ReactiveComponent
               #fontWeight: 600
               cursor: 'default'
               lineHeight: 1
-            opinions.length
 
-            SPAN 
-              style: 
-                color: '#999'
-                fontSize: 12
-                cursor: 'default'
-                verticalAlign: 'baseline'
+            TRANSLATE
+              id: "engage.proposal_score_summary"
+              small: 
+                component: SPAN 
+                args: 
+                  style: 
+                    color: '#999'
+                    fontSize: 12
+                    cursor: 'default'
+                    verticalAlign: 'baseline'
+              num_opinions: opinions.length 
+              "{num_opinions, plural, =0 {<small>no opinions</small>} one {# <small>opinion</small>} other {# <small>opinions</small>} }"
 
-              ' opinion' + (if opinions.length != 1 then 's' else '')
 
   componentDidUpdate: -> 
     if @local.keep_in_view

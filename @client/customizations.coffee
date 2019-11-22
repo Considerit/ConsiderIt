@@ -197,8 +197,8 @@ customizations.default =
   SiteFooter : DefaultFooter
 
   new_proposal_fields: -> 
-   name: t('summary')
-   description: "#{t('details')} (#{t('optional')})" 
+   name:  translator("engage.edit_proposal.summary_label", "Summary")
+   description: translator("engage.edit_proposal.description_label", "Details") + " (#{translator('optional')})" 
    additional_fields: []
    create_description: (fields) -> fields.description
 

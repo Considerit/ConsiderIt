@@ -54,7 +54,8 @@ window.Header = ReactiveComponent
             color: '#f00'
             padding: '5px 20px'
             display: if @root.server_error then 'block' else 'none'
-          'Warning: there was a server error!'
+
+          translator "engage.server_error", 'Warning: there was a server error!'
 
 
 

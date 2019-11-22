@@ -79,7 +79,7 @@ window.DefaultFooter = ReactiveComponent
               style: _.extend {}, big_button(), 
                 backgroundColor: '#717171'
 
-              'Back to top'
+              translator 'footer.back_to_top_button', 'Back to top'
 
 
           DIV 
@@ -96,7 +96,11 @@ window.DefaultFooter = ReactiveComponent
                 textDecoration: 'underline'
                 fontSize: 14
                 marginTop: 10
-              'Create your own Consider.it forum'
+
+              translator 
+                id: "footer.created_your_own_forum"
+                considerit: "Consider.it"
+                'Create your own {considerit} forum'
 
 
 
@@ -115,31 +119,40 @@ window.DefaultFooter = ReactiveComponent
                 style: 
                   display: 'inline-block'
                 '© 2016 Consider.it. All rights reserved. '
-                A
-                  href: '/privacy_policy'
-                  style: 
-                    textDecoration: 'underline'
-                  'Privacy'
-                ' and '
-                A
-                  href: '/terms_of_service'
-                  style: 
-                    textDecoration: 'underline'
-                  'Terms'
-                '.'
+
+                TRANSLATE
+                  id: 'footer.policies'
+                  privacy_link: 
+                    component: A 
+                    args: 
+                      href: '/privacy_policy'
+                      style: 
+                        textDecoration: 'underline'
+
+                  terms_link:
+                    component: A 
+                    args: 
+                      href: '/terms_of_service'
+                      style: 
+                        textDecoration: 'underline'
+
+                  "<privacy_link>Privacy</privacy_link> and <terms_link>Terms</terms_link>."
 
               SPAN 
                 style: 
-                    marginLeft: 40
-                    display: 'inline-block'
+                  marginLeft: 40
+                  display: 'inline-block'
 
-                  'Report bugs to '
-  
-                A 
-                  style: 
-                    textDecoration: 'underline'                    
-                  href: 'mailto:hello@consider.it'
-                  'help@consider.it'
+                TRANSLATE
+                  id: "footer.bug_reports"
+                  link: 
+                    component: A
+                    args: 
+                      style: 
+                        textDecoration: 'underline'                    
+                      href: 'mailto:hello@consider.it'
+
+                  "Report bugs to <link>help@consider.it</link>"
 
               if !customization('google_translate_style') || fetch('location').url != '/'
                 DIV 

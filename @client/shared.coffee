@@ -378,9 +378,10 @@ window.prettyDate = (time) ->
   day_diff = Math.floor(diff / 86400)
 
   return if isNaN(day_diff) || day_diff < 0
-  return "#{date.getMonth() + 1}/#{date.getDay() + 1}/#{date.getFullYear()}" if subdomain.lang != 'en'
 
-  # TODO: pluralize properly (e.g. 1 days ago, 1 weeks ago...)
+  if subdomain.lang != 'en'
+    return "#{date.getMonth() + 1}/#{date.getDay() + 1}/#{date.getFullYear()}" 
+
   r = day_diff == 0 && (
     diff < 60 && "just now" || 
     diff < 120 && "1 minute ago" || 

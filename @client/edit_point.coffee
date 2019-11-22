@@ -65,8 +65,8 @@ window.EditPoint = ReactiveComponent
           maxLength: 180
           name: 'nutshell'
           pattern: '^.{3,}'
-          'aria-label': t('summary_placeholder')
-          placeholder: t('summary_placeholder')
+          'aria-label': translator('engage.point_summary_placeholder', 'A succinct summary of your point.')
+          placeholder:  translator('engage.point_summary_placeholder', 'A succinct summary of your point.')
           required: 'required'
           defaultValue: if @props.fresh then null else @data().nutshell
           style: _.extend {}, textarea_style,
@@ -88,8 +88,8 @@ window.EditPoint = ReactiveComponent
         AutoGrowTextArea 
           id:'text'
           name:'fulltext'
-          'aria-label': t('description_placeholder') 
-          placeholder: t('description_placeholder') 
+          'aria-label': translator('engage.point_description_placeholder', 'Add background or evidence.')  
+          placeholder: translator('engage.point_description_placeholder', 'Add background or evidence.')  
           min_height: if PORTRAIT_MOBILE() then 150 else 80
           defaultValue: if @props.fresh then null else @data().text
           style: textarea_style
@@ -124,7 +124,7 @@ window.EditPoint = ReactiveComponent
         if !@proposal.active
           DIV 
             style: {color: '#777', fontSize: 12}
-            'New points disabled for this proposal'
+            translator 'engage.no_new_points', 'New points disabled for this proposal'
         else
           BUTTON 
             className: 'primary_button'
@@ -136,8 +136,8 @@ window.EditPoint = ReactiveComponent
               fontSize: if PORTRAIT_MOBILE() then 50 else if LANDSCAPE_MOBILE() then 36 else 24
               padding: '4px 25px'
               float: 'left'
-              backgroundColor: focus_color()              
-            t('Done')
+              backgroundColor: focus_color() 
+            translator 'engage.done_button', 'Done'             
 
         BUTTON
           onTouchEnd: @done
@@ -155,7 +155,7 @@ window.EditPoint = ReactiveComponent
             padding: if mobile then 10 else 0
             backgroundColor: 'transparent'
             border: 'none'
-          t('cancel')
+          translator 'engage.cancel_button', 'cancel'
 
         DIV 
           style: 
@@ -175,13 +175,14 @@ window.EditPoint = ReactiveComponent
             onChange: =>
               @local.sign_name = !@local.sign_name
               save(@local)
+          
           LABEL 
             htmlFor: "sign_name-#{@props.valence}"
-            title:"""This won\'t make your point perfectly anonymous, but will make \
+            title: translator 'engage.point_anonymous_toggle_explanation', """This won\'t make your point perfectly anonymous, but will make \
                      it considerably harder for others to associate with you. \
                      Note that signing your name lends your point more weight \
                      with peers."""
-            t('sign_name')  
+            translator 'engage.point_anonymous_toggle', 'Sign your name'
 
   componentWillMount : ->
     # save scroll position and keep it there
@@ -280,7 +281,10 @@ window.EditPoint = ReactiveComponent
           style: 
             fontWeight: 600
             fontSize: if PORTRAIT_MOBILE() then 70 else if LANDSCAPE_MOBILE() then 36
-          t('write_a_new_point', {noun: capitalize(singular)})
+          translator 
+            id: 'engage.write_point_header'
+            pro_or_con: capitalize(singular)
+            "Write a new {pro_or_con}"
 
         UL 
           style: 
@@ -289,10 +293,10 @@ window.EditPoint = ReactiveComponent
             marginTop: 5
 
           do ->
-            tips = [t('tip_single', {noun: capitalize(plural)}),
-                    t('tip_direct'),
-                    t('tip_review'),
-                    t('tip_attacks')
+            tips = [translator({id: "engage.point_authoring.tip_single", pros_or_cons: capitalize(plural)}, "Make only one point. Add multiple {pros_or_cons} if you have more."),
+                    translator("engage.point_authoring.tip_direct", "Be direct. The summary is your main point.")
+                    translator("engage.point_authoring.tip_review", "Review your language. Don’t be careless.")
+                    translator("engage.point_authoring.tip_attacks", "No personal attacks.")
                    ]
 
             for tip in tips

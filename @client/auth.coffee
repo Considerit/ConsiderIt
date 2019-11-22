@@ -114,19 +114,26 @@ Auth = ReactiveComponent
     
     goal = null
     if auth.goal 
-      try 
-        goal = "To #{t(auth.goal).toLowerCase()}"
-      catch 
-        goal = "To #{auth.goal.toLowerCase()}" 
+      goal = translator "auth.login_goal.#{auth.goal.toLowerCase()}", auth.goal
+
+    name_label = translator('auth.create.name_label', 'Your name')
+    email_label = translator('auth.login.email_label', 'Your email')
+    password_label = translator('auth.login.password_label', 'Your password')
+    password_placeholder = translator('auth.login.password.placeholder', 'password')
+    pic_prompt = translator('auth.create.pic_prompt', 'Your picture')
+    full_name_placeholder = translator('auth.create.full_name.placeholder', 'first and last name or pseudonym')
+    verification_sent_message = translator('auth.verification_sent', 'We just emailed you a verification code. Copy / paste it below.')
+    code_label = translator('auth.code_entry', 'Code')
+    code_placeholder = translator('auth.code_entry.placeholder', 'verification code from email')
 
     switch auth.form
 
       # The LOGIN form, with easy switch to register
       when 'login'
-        [ @headerAndBorder goal, t('Introduce Yourself'),
+        [ @headerAndBorder goal, translator("auth.login.heading", 'Introduce Yourself'),
             @body [
-                    ["#{t('login_as')}", @inputBox('email', 'email@address', 'email')],
-                    ["#{t("password")}", [@inputBox('password', t("password"), 'password'), @resetPasswordLink()]]
+                    ["#{email_label}", @inputBox('email', 'email@address.com', 'email')],
+                    ["#{password_label}", [@inputBox('password', password_placeholder, 'password'), @resetPasswordLink()]]
                   ].concat @userQuestionInputs()
         ]
 
@@ -137,97 +144,105 @@ Auth = ReactiveComponent
       when 'create account', 'create account via invitation'
         
         if avatar_field = @avatarInput()
-          avatar_field = ["#{t('pic_prompt')}", avatar_field]
+          avatar_field = [pic_prompt, avatar_field]
 
         if pledges = @pledgeInput()
-          pledges_field = [DIV(style: paddingTop: 12, 'Community Pledge'), pledges]
+          pledges_field = [DIV(style: paddingTop: 12, translator('auth.create.pledge_label', 'Community Pledge')), pledges]
         else 
           pledges_field = []
 
         if auth.form == 'create account'
-          email_field = ["#{t('login_as')}", @inputBox('email', 'email@address', 'email')]
+          email_field = [email_label, @inputBox('email', 'email@address.com', 'email')]
         else
-          email_field = ["#{t('login_as')}", DIV style: {color: auth_text_gray, padding: '4px 8px'}, current_user.email]
+          email_field = [email_label, DIV style: {color: auth_text_gray, padding: '4px 8px'}, current_user.email]
 
-        [ @headerAndBorder goal, t('create an account'),
+        [ @headerAndBorder goal, translator('auth.create.heading', 'Create an account'),
             @body [
                     email_field,
-                    ["#{t("password")}", @inputBox('password', t("password"), 'password')],
-                    [t('name_prompt'), @inputBox('name', t('full_name'))], avatar_field
+                    [password_label, @inputBox('password', password_label, 'password')],
+                    [name_label, @inputBox('name', full_name_placeholder)], avatar_field
                     ].concat(@userQuestionInputs()).concat([pledges_field])
         ]
 
       # The EDIT PROFILE form
       when 'edit profile'
         if avatar_field = @avatarInput()
-          avatar_field = ["#{t('pic_prompt')}:", avatar_field]
+          avatar_field = [pic_prompt, avatar_field]
 
-        [ @headerAndBorder goal, t('Your Profile'),
+        [ @headerAndBorder goal, translator("auth.update_profile.heading", "Update Your Profile"),
             @body [
               # we don't want users on single sign on subdomains to change email/password
               if !fetch('/subdomain').SSO_domain       
-                ["#{t('login_as')}:", @inputBox('email', 'email@address', 'email')]
+                [email_label, @inputBox('email', 'email@address.com', 'email')]
               if !fetch('/subdomain').SSO_domain
-                ["My #{t("password")}:", @inputBox('password', t("password"), 'password')]
-              ["#{t('name_prompt')}:", @inputBox('name', t('full_name'))]
+                [password_label, @inputBox('password', password_label, 'password')]
+              [name_label, @inputBox('name', full_name_placeholder)]
               avatar_field
             ].concat @userQuestionInputs()
           
           if @local.saved_successfully
             if subdomain.SSO_domain
               loadPage '/'
-            SPAN style: {color: 'white'}, t("Updated successfully")
+            SPAN style: {color: 'white'}, translator("auth.successful_update", "Updated successfully")
         ]
 
       # The RESET PASSWORD form
       when 'reset password'
-        [ @headerAndBorder null, t('Reset Your Password'),
+        [ @headerAndBorder null, translator("auth.reset_password.heading", 'Reset Your Password'),
             @body [
                    ['', INPUT({name: 'user[verification_code]', disabled: true, style: {display: 'none'}} )] # prevent autofill of code with email address
                    ['', INPUT({type: 'password', name: 'user[password]', disabled: true, style: {display: 'none'}} )] # prevent autofill of code with password
-                   ["#{t('Code')}:", @inputBox('verification_code', t('code_from_email'))],
-                   ["#{t('New password')}:", @inputBox('password', t("choose_password"), 'password')], 
+                   ["#{code_label}:", @inputBox('verification_code', code_placeholder)],
+                   ["#{translator('auth.reset_password.new_pass', 'New password')}:", @inputBox('password', translator('auth.reset_password.new_pass.placeholder', "choose a new password"), 'password')], 
 
-                  ], t('verification_sent')
+                  ], verification_sent_message
 
           DIV 
             style: 
               marginTop: 20
               color: 'white'
               textAlign: 'center'
-            'Having trouble resetting your password? Watch this brief '
 
-            A 
-              target: '_blank'
-              href: 'https://vimeo.com/198802322'
-              style: 
-                textDecoration: 'underline'
-                fontWeight: 600
-              'video tutorial'
-            '.'
+            TRANSLATE 
+              id: "auth.reset_password.help"
+              link: 
+                component: A
+                args: 
+                  target: '_blank'
+                  href: 'https://vimeo.com/198802322'
+                  style: 
+                    textDecoration: 'underline'
+                    fontWeight: 600
 
+              'Having trouble resetting your password? Watch this brief <link>video tutorial</link>.'
         ]
 
       # The email VERIFICATION form
       when 'verify email'
-        [ @headerAndBorder goal, t('Verify Your Email'),
-            @body [["#{t('Code')}:", @inputBox('verification_code', t('code_from_email'))]],
-                  t('verification_sent')]
+        [ @headerAndBorder goal, translator('auth.verify_email.heading', 'Verify Your Email'),
+            @body [["#{code_label}:", @inputBox('verification_code', code_placeholder)]],
+                  verification_sent_message]
 
       when 'user questions'
-        [ @headerAndBorder goal, t('more_info'),
+        [ @headerAndBorder goal, translator('auth.more_info.heading', 'Please give some info'),
             @body @userQuestionInputs()]
 
       else
         throw "Unrecognized authentication form #{auth.form}"
 
   privacyAndTerms: -> 
+    default_terms = TRANSLATE
+      id: 'auth.create.agree_to_terms'
+      as_html: true
+      privacy_link: 
+        component: "a"
+        args: "href='/privacy_policy' style='text-decoration: underline'"
 
-    customization('terms') or """
-      I agree to Consider.it's 
-      <a href='/terms_of_service' target='_blank' style='text-decoration: underline'>Terms</a>
-       and 
-      <a href='/privacy_policy' target='_blank' style='text-decoration: underline'>Privacy Policy</a>."""
+      terms_link:
+        component: "a" 
+        args: "href='/terms_of_service' style='text-decoration: underline'"
+      "I agree to Consider.it's <privacy_link>Privacy Policy</privacy_link> and <terms_link>Terms</terms_link>."
+    customization('terms') or default_terms
 
   #####
   # headerAndBorder
@@ -246,9 +261,9 @@ Auth = ReactiveComponent
     #   return body
 
     if auth.form == 'login'      
-      button = t('Log in')
+      button = translator "auth.login.submit", 'Log in'
     else 
-      button = t 'Done'
+      button = translator "auth.submit", 'Submit'
 
 
     DIV null,
@@ -405,9 +420,9 @@ Auth = ReactiveComponent
   form_footer: ->
     auth = fetch 'auth'
     if auth.form == 'create account'
-      toggle_to = t('Log in')
+      toggle_to = translator "auth.create.toggle_to_login", 'Log in'
     else
-      toggle_to = t('Create an account')
+      toggle_to = translator "auth.login.toggle_to_create", 'Create an account'
 
     toggle = (e) =>
       current_user = fetch('/current_user')
@@ -438,9 +453,9 @@ Auth = ReactiveComponent
               fontSize: 24
 
             if auth.form == 'create account'
-              'Already have an account? '
+              TRANSLATE 'auth.create.should_you_be_here', 'Already have an account?'
             else 
-              'Not registered? '
+              TRANSLATE 'auth.login.should_you_be_here', 'Not registered? '
           
           BUTTON
             className: 'toggle_auth'
@@ -485,7 +500,7 @@ Auth = ReactiveComponent
             border: 'none'
             opacity: .7
 
-          title: t('cancel')
+          title: translator 'engage.cancel_button', 'cancel'
 
           onClick: cancel_auth
           onKeyDown: (e) => 
@@ -493,7 +508,7 @@ Auth = ReactiveComponent
               cancel_auth(e)
               e.preventDefault()
 
-          t('cancel')
+          translator 'engage.cancel_button', 'cancel'
 
 
   ####
@@ -692,8 +707,8 @@ Auth = ReactiveComponent
     else if customization('pledge')
       pledges = customization('pledge')
     else 
-      pledges = ['I will use only one account', 
-                 'I will not attack or mock others']
+      pledges = [translator('auth.create.pledge.one_account', 'I will use only one account'), 
+                 translator('auth.create.pledge.no_attacks', 'I will not attack or mock others')]
 
 
     UL style: {paddingTop: 6},
@@ -767,7 +782,7 @@ Auth = ReactiveComponent
             e.preventDefault()
 
 
-        t('forgot_password') 
+        translator('auth.forgot_password.link', 'Help! I forgot my password') 
 
   ####
   # userQuestionInputs
@@ -786,11 +801,11 @@ Auth = ReactiveComponent
 
     if auth.form in ['create account', 'create account via invitation']
       questions.push
-          tag: 'considerit_terms.editable'
-          question: @privacyAndTerms()
-          input: 'boolean'
-          required: true
-          require_checked: true
+        tag: 'considerit_terms.editable'
+        question: @privacyAndTerms()
+        input: 'boolean'
+        required: true
+        require_checked: true
 
 
     if @local.tags != current_user.tags
@@ -897,7 +912,7 @@ Auth = ReactiveComponent
                             color: '#888'
                             fontSize: 12
                             paddingLeft: 10
-                          'optional' ]
+                          translator('optional') ]
 
 
       inputs.push [label,input]
@@ -918,8 +933,6 @@ Auth = ReactiveComponent
 
     current_user = fetch('/current_user')
 
-
-
     # Client side validation of user questions
     # Note that we don't have server side validation because
     # the questions are all defined on the client. 
@@ -931,22 +944,26 @@ Auth = ReactiveComponent
           has_response = !!current_user.tags[question.tag]
 
           if !has_response || (question.require_checked && !current_user.tags[question.tag])
-            @local.errors.push "#{question.question} required!" 
+            @local.errors.push translator 
+                                 id: 'auth.validation.missing_answer'
+                                 question: question.question
+                                 "{question} required!" 
 
           is_valid_input = true
           if question.validation
             is_valid_input = question.validation(current_user.tags[question.tag])
           if !is_valid_input && has_response
-            @local.errors.push "#{current_user.tags[question.tag]} isn't a valid answer to #{question.question}!" 
+            @local.errors.push translator 
+                                 id: 'auth.validation.invalid_answer'
+                                 response: current_user.tags[question.tag]
+                                 question: question.question  
+                                 "{response} isn't a valid answer to #{question}!" 
 
       save @local
 
     if auth.form in ['create account', 'create account via invitation']
-      console.log current_user.tags
       if !current_user.tags['considerit_terms.editable']
-        @local.errors.push "To proceed, you must agree to the terms" 
-
-
+        @local.errors.push translator('auth.validation.agree_to_terms', "To proceed, you must agree to the terms") 
 
     if @local.errors.length == 0
       @local.submitting = true

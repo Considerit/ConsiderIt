@@ -11,8 +11,8 @@ window.ProfileMenu = ReactiveComponent
     is_moderator = current_user.is_moderator
     is_super = current_user.is_super_admin
     menu_options = [
-      {href: '/edit_profile', label: t('Edit Profile')},
-      {href: '/dashboard/email_notifications', label: t('Email Settings')},
+      {href: '/edit_profile', label: 'Edit Profile'},
+      {href: '/dashboard/email_notifications', label: 'Email Settings'},
       if is_admin then {href: '/dashboard/import_data', label: 'Import / Export Data'} else null,
       if is_admin then {href: '/dashboard/application', label: 'App Settings'} else null,
       if is_super then {href: '/dashboard/customizations', label: 'Customizations'} else null,      
@@ -189,8 +189,7 @@ window.ProfileMenu = ReactiveComponent
                       save @local
                       e.stopPropagation()
 
-
-                    option.label
+                    translator "user_menu.option.#{option.label}", option.label
 
               LI 
                 role: "presentation"
@@ -225,7 +224,7 @@ window.ProfileMenu = ReactiveComponent
                     @local.focus = null 
                     save @local
 
-                  t('Log out')
+                  translator "user_menu.option.log_out", "Log out"
 
 
       else
@@ -241,7 +240,8 @@ window.ProfileMenu = ReactiveComponent
             color: if !light_background then 'white'
             backgroundColor: 'transparent'
             border: 'none'
-          t('Log in')
+
+          translator "user_menu.option.log_in", "Log in"
     
   bitcoinVerification: -> 
     current_user = fetch('/current_user')

@@ -18,8 +18,11 @@ regexp_tmatch = /<(\w+)>([^<]+)<\/[\w|\s]+>/g
 window.TRANSLATE = (args, native_text) -> 
 
   if typeof args == "string"
-    native_text = args 
-    args = {}
+    if native_text
+      args = {id: args}
+    else 
+      native_text = args 
+      args = {}
 
   tr = fetch 'translations'
 
@@ -40,7 +43,11 @@ window.TRANSLATE = (args, native_text) ->
     for part in parts 
       if part of matches && part of args 
         def = args[part]
-        translation.push def.component(def.args, matches[part])
+        if args.as_html
+          translation.push "<#{def.component} #{def.args}>#{matches[part]}</#{def.component}>"
+        else 
+          translation.push def.component(def.args, matches[part])
+
       else 
         translation.push part 
 
@@ -136,10 +143,13 @@ window.T = window.t = window.translator = (args, native_text) ->
   # user = fetch '/current_user'
   subdomain = fetch '/subdomain'
 
-  if typeof args == "string"
-    native_text = args 
-    args = {}
 
+  if typeof args == "string"
+    if native_text
+      args = {id: args}
+    else 
+      native_text = args 
+      args = {}
 
   id = args.id or native_text
   translations_key_prefix = args.key or "/translations"
@@ -148,9 +158,11 @@ window.T = window.t = window.translator = (args, native_text) ->
 
   return '...' if waiting_for(translations_native)
 
+  native_text = native_text.replace(/\n/g, "")
 
   # ensure this string is in the translations database for the development language
   if translations_native[id]?.txt != native_text
+    console.log 'updating', {id, native_text}, translations_native[id]?.txt
     translations_native[id] ||= {}
     translations_native[id].txt = native_text
     save translations_native  

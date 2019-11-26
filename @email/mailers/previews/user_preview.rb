@@ -16,9 +16,7 @@ class UserPreview < ActionMailer::Preview
   def invitation_moderate
     UserMailer.invitation(User.where('registered').first, User.where('registered').last, Subdomain.first, 'moderator', Subdomain.first)
   end
-  def invitation_fact_check
-    UserMailer.invitation(User.where('registered').first, User.where('registered').last, Subdomain.first, 'evaluator', Subdomain.first, "Join us in fact checking")
-  end
+
   def invitation_visit
     UserMailer.invitation(User.where('registered').first, User.where('registered').last, Subdomain.first, 'visitor', Subdomain.first, "Come check it out")
   end

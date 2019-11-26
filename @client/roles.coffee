@@ -8,6 +8,12 @@ all_roles = ->
   pro_label = customization('point_labels.pro')
   con_label = customization('point_labels.con')
 
+  pro_label = translator
+                id: "point_labels.#{pro_label}"
+                pro_label 
+  con_label = translator
+                id: "point_labels.#{con_label}"
+                con_label 
 
   all = [ 
     {

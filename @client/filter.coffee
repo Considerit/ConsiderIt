@@ -359,7 +359,9 @@ SortProposalsMenu = ReactiveComponent
         color: 'black'
         fontSize: 14
 
-      "sort by "
+      TRANSLATE "engage.sort_by", "sort by"
+
+      " "
 
       DIV 
         ref: 'menu_wrap'
@@ -435,7 +437,7 @@ SortProposalsMenu = ReactiveComponent
               e.preventDefault()
               e.stopPropagation()
 
-          sort.name
+          translator "engage.sort_order.#{sort.name}", sort.name
 
           SPAN style: _.extend cssTriangle 'bottom', focus_color(), 8, 5,
             display: 'inline-block'
@@ -510,7 +512,7 @@ SortProposalsMenu = ReactiveComponent
                     fontWeight: 600
                     fontSize: 20
 
-                  sort_option.name
+                  translator "engage.sort_order.#{sort_option.name}", sort_option.name 
 
                 SPAN 
                   style: 
@@ -520,7 +522,7 @@ SortProposalsMenu = ReactiveComponent
                     verticalAlign: 'baseline'
                     #opacity: .8
 
-                  sort_option.description
+                  translator "engage.sort_order.#{sort_option.name}.description", sort_option.description 
 
 
 
@@ -623,7 +625,8 @@ OpinionFilter = ReactiveComponent
             fontSize: 14
             #fontWeight: 600
             color: '#777'
-          'Filter to' 
+
+          TRANSLATE "engage.opinion_filter.label", 'Filter to' 
           if bitcoin 
             ' verified'
           ':'
@@ -652,7 +655,7 @@ OpinionFilter = ReactiveComponent
 
             is_enabled = filter_out.opinion_filters?[filter.label]
             BUTTON 
-              'aria-label': "Filter opinions to #{filter.label}"
+              'aria-label': translator {id: "engage.opinion_filter.explanation", label: filter.label}, "Filter opinions to {label}"
               'aria-describedby': if filter.tooltip then 'tooltip'
               'aria-pressed': is_enabled
               tabIndex: 0
@@ -679,7 +682,10 @@ OpinionFilter = ReactiveComponent
                   e.preventDefault()
                   e.stopPropagation()
 
-              filter.label
+              translator 
+                id: "opinion_filter.name.#{filter.label}"
+                key: "/translations/#{fetch('/subdomain').name}"
+                filter.label
 
 
 VerificationProcessExplanation = ReactiveComponent

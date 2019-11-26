@@ -239,7 +239,9 @@ Proposal = ReactiveComponent
               marginBottom: 8
               marginTop: 48
 
-            'What do you think?'
+            TRANSLATE
+              id: "engage.opinion_header"
+              'What do you think?'
 
 
         if customization('opinion_filters')
@@ -267,7 +269,13 @@ Proposal = ReactiveComponent
 
             H2
               className: 'hidden'
-              "Evaluations on spectrum from #{customization("slider_pole_labels.oppose", @proposal)} to #{customization("slider_pole_labels.support", @proposal)} of the proposal '#{@proposal.name}'"
+
+              translator
+                id: "engage.opinion_spectrum_explanation"
+                negative_pole: get_slider_label("slider_pole_labels.oppose", @proposal)
+                positive_pole: get_slider_label("slider_pole_labels.support", @proposal)
+                proposal_name: @proposal.name
+                "Evaluations on spectrum from {negative_pole} to {positive_pole} of the proposal {proposal_name}"
 
 
             Histogram
@@ -311,10 +319,8 @@ Proposal = ReactiveComponent
                   backgrounded: false
                   permitted: draw_handle
                   pole_labels: [ \
-                    [customization("slider_pole_labels.oppose", @proposal),
-                     customization("slider_pole_labels.oppose_sub", @proposal) or ''], \
-                    [customization("slider_pole_labels.support", @proposal),
-                     customization("slider_pole_labels.support_sub", @proposal) or '']]
+                    get_slider_label("slider_pole_labels.oppose", @proposal),
+                    get_slider_label("slider_pole_labels.support", @proposal)]
         
         if !is_loading
 
@@ -341,7 +347,10 @@ Proposal = ReactiveComponent
 
               H2
                 className: 'hidden'
-                'Why people think what they do about the proposal'
+
+                translator
+                  id: "engage.reasons_section_explanation"
+                  'Why people think what they do about the proposal'
 
               # Border + bubblemouth that is shown when there is a histogram selection
               GroupSelectionRegion()
@@ -408,7 +417,7 @@ Proposal = ReactiveComponent
             if !show_all_points
               BUTTON 
                 style: 
-                  backgroundColor: 'white' #considerit_gray
+                  # backgroundColor: "#eee"
                   padding: '12px 0'
                   fontSize: 24
                   textAlign: 'center'
@@ -430,7 +439,9 @@ Proposal = ReactiveComponent
                     @local.show_all_points = true 
                     save @local
 
-                "Show all #{customization('point_labels.pros', @proposal)} and #{customization('point_labels.cons', @proposal)}"
+                TRANSLATE
+                  id: "engage.show_all_thoughts"
+                  "Show All Thoughts"
 
 
       if mode == 'results'
@@ -500,7 +511,7 @@ window.get_next_proposals = (args) ->
 
   for idx in [0..(args.count or all_proposals.proposals.length) - 1]
     break if prev_idx - idx < 0
-    continue if all_proposals_flat[ prev_idx - idx ].key == relative_to.key
+    continue if !all_proposals_flat[ prev_idx - idx ] || all_proposals_flat[ prev_idx - idx ].key == relative_to.key
     prev_proposals.push all_proposals_flat[ prev_idx - idx ]
 
 
@@ -538,7 +549,9 @@ NextProposals = ReactiveComponent
       H2
         style: heading_style
 
-        'Explore a related topic'
+        TRANSLATE
+          id: "engage.related_proposals" 
+          'Explore a related idea'
 
       if !to_show || to_show.length == 0
         LOADING_INDICATOR
@@ -560,13 +573,17 @@ NextProposals = ReactiveComponent
         style: 
           textAlign: 'right'
           fontSize: 22
-        "…or go "
-        A 
-          href: '/'
-          style: 
-            textDecoration: 'underline'
-            fontWeight: 600
-          'back to the homepage'
+
+        TRANSLATE
+          id: 'engage.back_to_homepage_option'
+          link: 
+            component: A 
+            args: 
+              href: '/'
+              style: 
+                textDecoration: 'underline'
+                fontWeight: 600
+          "…or go <link>back to the homepage</link>"
 
 
 
@@ -628,9 +645,6 @@ ProposalDescription = ReactiveComponent
         fontSize: 18
         marginBottom: 18      
 
-
-
-
       if !@proposal.active
         SPAN 
           style: 
@@ -639,7 +653,10 @@ ProposalDescription = ReactiveComponent
             padding: '4px 0px'
             marginTop: 10
           I className: 'fa fa-info-circle', style: {paddingRight: 7}
-          'Closed to new contributions at this time.'
+
+          TRANSLATE
+            id: 'engage.proposal_closed'
+            'Closed to new contributions at this time.'
 
       BUBBLE_WRAP 
         user: editor
@@ -686,19 +703,21 @@ ProposalDescription = ReactiveComponent
               fontSize: 14
               color: "black"
 
-            "##{@proposal.cluster or 'proposals'}"
+            if @proposal.cluster 
+              SPAN null, 
+                "##{@proposal.cluster or 'proposals'}"
 
+                if customization('show_proposal_meta_data')
+                  SPAN 
+                    style: 
+                      padding: '0 8px'
+                    '|'
             if customization('show_proposal_meta_data')
-              SPAN 
-                style: 
-                  padding: '0 8px'
-                '|'
-            if customization('show_proposal_meta_data')
-              [
-                'submitted '
-                prettyDate(@proposal.created_at)
-                " by #{fetch(editor)?.name}"
-              ]
+              TRANSLATE 
+                id: "engage.proposal_meta_data"
+                timestamp: prettyDate(@proposal.created_at)
+                author: fetch(editor)?.name
+                "submitted {timestamp} by {author}"
 
           if @proposal.under_review 
             SPAN 
@@ -707,7 +726,10 @@ ProposalDescription = ReactiveComponent
                 backgroundColor: 'orange'
                 fontSize: 14
                 padding: 2
-              'Under review (like all new proposals)'
+
+              TRANSLATE 
+                id: 'engage.proposal_in_moderation_notice'
+                'Under review (like all new proposals)'
 
 
           DIV 
@@ -768,7 +790,9 @@ ProposalDescription = ReactiveComponent
                   document.activeElement.blur()
                   save(@local)
 
-              'Expand full text'
+              TRANSLATE 
+                id: 'engage.show_full_proposal_description'
+                'Expand full text'
 
 
 
@@ -786,7 +810,7 @@ ProposalDescription = ReactiveComponent
               backgroundColor: 'transparent'
               border: 'none'
               padding: 0
-            t('edit')
+            TRANSLATE 'engage.edit_button', 'edit'
 
           if permit('delete proposal', @proposal) > 0
             BUTTON
@@ -801,7 +825,7 @@ ProposalDescription = ReactiveComponent
                 if confirm('Delete this proposal forever?')
                   destroy(@proposal.key)
                   loadPage('/')
-              t('delete')
+              TRANSLATE 'engage.delete_button', 'delete'
 
 
 
@@ -1032,7 +1056,11 @@ DecisionBoard = ReactiveComponent
         className: 'hidden'
         style: 
           display: if !TWO_COL() && get_proposal_mode() == 'results' then 'none'
-        "Craft your opinion using pros and cons about '#{@proposal.name}'"
+
+        translator 
+          id: "engage.opinion_crafting_explanation" 
+          proposal_name: @proposal.name
+          "Craft your opinion using pros and cons about {proposal_name}"
 
       SliderBubblemouth()
 
@@ -1085,9 +1113,13 @@ DecisionBoard = ReactiveComponent
             style: give_opinion_style
 
             if your_opinion.published 
-              t('Update your Opinion')
+              translator 
+                id: "engage.update_your_opinion_button"
+                'Update your Opinion'
             else 
-              t('Give your Opinion')
+              translator 
+                id: "engage.give_your_opinion_button"
+                'Give your Opinion'
 
 
       DIV 
@@ -1108,14 +1140,14 @@ DecisionBoard = ReactiveComponent
               saveOpinion @proposal 
               e.preventDefault()
           'aria-label': if your_opinion.published 
-                          t('Return to results')
+                          translator 'engage.update_opinion_button', 'Return to results'
                         else 
-                          "#{t('log_in')} and #{t('Save your opinion')}"
+                          translator 'engage.save_opinion_button', 'Save your opinion'
 
           if your_opinion.published 
-            t('Return to results')
+            translator 'engage.update_opinion_button', 'Return to results'
           else 
-            t('Save your opinion')
+            translator 'engage.save_opinion_button', 'Save your opinion'
 
         if !your_opinion.published
 
@@ -1132,7 +1164,7 @@ DecisionBoard = ReactiveComponent
                   updateProposalMode('results', 'cancel_button')
                   e.preventDefault()
 
-              t('skip_to_results') 
+              translator 'engage.see_results_first_button', 'or just skip to the results'
 
         else 
 
@@ -1154,7 +1186,7 @@ DecisionBoard = ReactiveComponent
                   save your_opinion
                   e.preventDefault()
 
-              'Unpublish opinion'
+              translator "engage.remove_my_opinion", 'Remove my opinion'
 
 
 
@@ -1545,12 +1577,20 @@ PointsList = ReactiveComponent
 
 
     get_heading = (valence) => 
-      heading = customization "point_labels.#{header_prefix}_#{valence}_header", @proposal
-      if !heading
-        heading = customization "point_labels.#{header_prefix}_header", @proposal
-          .replace('--valences--', capitalize(customization("point_labels.#{valence}", @proposal)))
-          .replace('--valence--', capitalize(customization("point_labels.#{valence.substring(0, 3)}", @proposal)))
-      heading
+      heading = customization("point_labels.#{header_prefix}_header", @proposal)
+      singular_point = customization("point_labels.#{valence}", @proposal)
+      plural_point = customization("point_labels.#{valence.substring(0, 3)}", @proposal)
+
+      plural_point_t = translator
+                        id: "point_labels.#{plural_point}"
+                        plural_point 
+
+      heading_t = translator
+                    id: "engage.header_#{header_prefix}.#{heading}"
+                    arguments: capitalize(plural_point_t)
+                    heading
+
+      heading_t
 
     heading = get_heading(@props.valence)
     other_heading = get_heading(if @props.valence == 'pros' then 'cons' else 'pros')
@@ -1679,12 +1719,6 @@ PointsList = ReactiveComponent
     hist = fetch namespaced_key('histogram', @proposal)
     hist_selection = hist.selected_opinions || hist.selected_opinion
 
-    noun = \
-        capitalize \
-          if @props.valence == 'pros' 
-            customization('point_labels.pro', @proposal)
-          else 
-            customization('point_labels.con', @proposal)    
 
     if can_add_new_point != Permission.INSUFFICIENT_PRIVILEGES && !hist_selection
       if !your_points.adding_new_point
@@ -1720,6 +1754,16 @@ PointsList = ReactiveComponent
               @drawAddNewPointInCommunityCol()
 
           if @props.rendered_as == 'decision_board_point'
+
+            if @props.valence == 'pros' 
+              noun = customization('point_labels.pro', @proposal)
+            else 
+              noun = customization('point_labels.con', @proposal) 
+            noun = translator
+                     id: "point_labels.#{noun}"
+                     noun 
+            noun = capitalize noun   
+
             A
               className: 'hidden'
               href: "##{@props.valence}_by_community"
@@ -1739,6 +1783,19 @@ PointsList = ReactiveComponent
           your_points_key: @props.key
 
   drawAddNewPointInCommunityCol: ->
+    if @props.valence == 'pros' 
+      point_label = customization('point_labels.pro', @proposal)
+    else 
+      point_label = customization('point_labels.con', @proposal) 
+    point_label = translator
+                   id: "point_labels.#{point_label}"
+                   point_label 
+
+    button_text = translator 
+                    id: "engage.add_a_point"
+                    pro_or_con: point_label 
+                    "Add a new {pro_or_con}"
+
     DIV 
       id: "add-point-#{@props.valence}"
       style: 
@@ -1748,12 +1805,7 @@ PointsList = ReactiveComponent
 
       @drawGhostedPoint
         width: POINT_WIDTH()
-        text: "Write a new #{capitalize \
-                    if @props.valence == 'pros' 
-                      customization('point_labels.pro', @proposal)
-                    else 
-                      customization('point_labels.con', @proposal)}"
-
+        text: button_text
         is_left: @props.valence == 'cons'
         style: {}
         text_style:
@@ -1765,12 +1817,15 @@ PointsList = ReactiveComponent
 
   drawAddNewPointInDecisionBoard: -> 
     your_points = @data()
-    noun = \
-        capitalize \
-          if @props.valence == 'pros' 
-            customization('point_labels.pro', @proposal)
-          else 
-            customization('point_labels.con', @proposal)    
+
+    if @props.valence == 'pros' 
+      point_label = customization('point_labels.pro', @proposal)
+    else 
+      point_label = customization('point_labels.con', @proposal) 
+    point_label = translator
+                   id: "point_labels.#{point_label}"
+                   point_label 
+
 
     DIV 
       style: 
@@ -1801,18 +1856,29 @@ PointsList = ReactiveComponent
           backgroundColor: 'transparent'
           border: 'none'
 
-        t('write_a_new_point', {noun}) 
+        TRANSLATE 
+          id: "engage.add_a_point"
+          pro_or_con: point_label 
+          "Add a new {pro_or_con}" 
 
   drawDropTarget: -> 
     left_or_right = if @props.valence == 'pros' then 'right' else 'left'
 
-    noun = capitalize \
-        if @props.valence == 'pros' 
-          customization('point_labels.pro', @proposal)
-        else 
-          customization('point_labels.con', @proposal)
+    if @props.valence == 'pros' 
+      point_label = customization('point_labels.pro', @proposal)
+    else 
+      point_label = customization('point_labels.con', @proposal) 
+    point_label = translator
+                   id: "point_labels.#{point_label}"
+                   point_label 
 
-    drop_target_text = t("drag_from_#{left_or_right}", {noun})
+    
+    drop_target_text = TRANSLATE 
+                         id: "engage.drag_point.#{left_or_right}"
+                         pro_or_con: point_label 
+                         left_or_right: left_or_right
+                         "Drag a {pro_or_con} from the #{left_or_right}"
+
 
     dt_w = POINT_WIDTH() - 24
     local_proposal = fetch shared_local_key(@proposal)
@@ -1963,22 +2029,30 @@ AccessibilitySupport = ReactiveComponent
           marginTop: 30
           marginBottom: 10
 
-        'Accessibility Support'
+
+        TRANSLATE
+          id: 'accessibility.heading'
+          'Accessibility Support'
 
       P 
         style: 
           paddingBottom: 18
           fontSize: 24
 
-        "If you are having difficulty using Considerit to give feedback, contact us at "
+        TRANSLATE 
+          id: "accessibility.feedback_or_help"
+          link: 
+            component: A 
+            args: 
+              href: "mailto:accessibility@consider.it?subject=Accessibility support"
+              style: 
+                textDecoration: 'underline'
 
-        A 
-          href: "mailto:accessibility@consider.it?subject=Accessibility support"
-          style: 
-            textDecoration: 'underline'
-          'accessibility@consider.it'
-        ". We will help you personally."
+          "If you are having difficulty using Considerit to give feedback, contact us at <link>accessibility@consider.it</link>. We will help you personally."
 
+
+
+# I don't think this component is used anymore
 About = ReactiveComponent
   displayName: 'About'
 
@@ -2193,6 +2267,9 @@ Page = ReactiveComponent
               SubdomainRoles key: "/page/dashboard/roles"
             when '/dashboard/tags'
               UserTags key: "/page/dashboard/tags"
+            when '/dashboard/translations'
+              TranslationsDash key: "/page/dashboard/translations"
+
             else
               if @page?.result == 'Not found'
                 DIV 

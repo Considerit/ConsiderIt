@@ -130,7 +130,8 @@ window.Point = ReactiveComponent
         style:
           fontSize: 10
           color: '#888'
-        " (#{t("read_more")})"
+        " (#{translator({id: "engage.read_more"}, "read more")})"
+
     else 
       append = null
 
@@ -210,7 +211,16 @@ window.Point = ReactiveComponent
           DIV 
             id: "point-aria-interaction-#{point.id}"
             className: 'hidden'
-            "By #{if point.hide_name then 'Anonymous' else fetch(point.user).name}, with #{@data().includers.length} importance #{if @data().includers.length != 1 then 'votes' else 'vote'} and #{point.comment_count} #{if point.comment_count != 1 then t('comments') else t('comment')}. Press ENTER or SPACE for details or discussion."
+
+            translator
+              id: "engage.point_explanation"
+              author: if point.hide_name then 'Anonymous' else fetch(point.user).name
+              num_inclusions: @data().includers.length
+              comment_count: point.comment_count
+              """By {author}. 
+                 { num_inclusions, plural, =0 {} one {Important to one person.} other {Important to # people.} } 
+                 {comment_count, plural, =0 {} one {Has received one comment.} other {Has received # comments.} }
+                 Press ENTER or SPACE for details or discussion."""
 
           DIV 
             'aria-hidden': true
@@ -239,9 +249,11 @@ window.Point = ReactiveComponent
 
                 A 
                   className: 'select_point'
-                  point.comment_count 
-                  " "
-                  if point.comment_count != 1 then t('comments') else t('comment')
+
+                  translator
+                    id: 'engage.link_to_comments'
+                    comment_count: point.comment_count 
+                    "{comment_count, plural, one {# comment} other {# comments}}"
 
 
 
@@ -263,7 +275,7 @@ window.Point = ReactiveComponent
                   points = fetch(@props.your_points_key)
                   points.editing_points.push(@props.key)
                   save(points))
-                t('edit')
+                translator 'engage.edit_button', 'edit'
 
             if permit('delete point', point) > 0 && 
                 (@props.rendered_as == 'decision_board_point' || TWO_COL())
@@ -280,8 +292,7 @@ window.Point = ReactiveComponent
                   e.stopPropagation()
                   if confirm('Delete this point forever?')
                     destroy @props.key
-                
-                t('delete')
+                translator 'engage.delete_button', 'delete'
 
       if @props.rendered_as != 'decision_board_point' 
         DIV 
@@ -324,7 +335,10 @@ window.Point = ReactiveComponent
               left: if !@local.focused_include then 20 else if included then -20 else -40
 
           BUTTON
-            'aria-label': if included then 'Mark this point as unimportant and move to next point' else 'Mark this point as important and move to next point'
+            'aria-label': if included 
+                            translator 'engage.uninclude_explanation', 'Mark this point as unimportant and move to next point' 
+                          else 
+                            translator 'engage.include_explanation', 'Mark this point as important and move to next point'
             style: _.extend sty, 
               position: 'absolute'
               top: 20
@@ -391,7 +405,7 @@ window.Point = ReactiveComponent
                 display: 'inline-block'
                 marginRight: 10
 
-            "Important point#{if included then '' else '?'}" 
+            translator("engage.include_button", "Important point") + "#{if included then '' else '?'}" 
 
 
       if is_selected
@@ -677,7 +691,8 @@ window.Comment = ReactiveComponent
                   e.stopPropagation()
                   if confirm('Delete this comment forever?')
                     destroy(key)
-                t('delete')
+
+                translator('engage.delete_button', 'delete')
 
               BUTTON
                 style: comment_action_style
@@ -685,7 +700,7 @@ window.Comment = ReactiveComponent
                   e.stopPropagation()
                   comment.editing = true
                   save comment
-                t('edit')
+                translator('engage.edit_button', 'edit')
 
 # edit comments, comments...
 styles += """
@@ -833,7 +848,7 @@ window.Discussion = ReactiveComponent
               fontWeight: 600
               marginBottom: 10
             #t('Author’s Explanation')
-            'Author’s Explanation'
+            translator 'engage.author_explanation', 'Author’s Explanation'
 
           DIV 
             className: 'point_details'
@@ -850,7 +865,8 @@ window.Discussion = ReactiveComponent
             marginBottom: 25
             marginTop: 10
             fontWeight: 600
-          t('Discuss this Point')
+
+          translator "engage.point_details_heading", 'Discuss this Point'
 
         DIV className: 'comments',
           for comment in comments

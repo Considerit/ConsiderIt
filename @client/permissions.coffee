@@ -266,26 +266,34 @@ AccessDenied = ->
           fontSize: 36
           color: 'white'
           paddingBottom: 40
-        "We're sorry, but #{user.email} doesn't have access to this private forum."
 
-      DIV null,        
-        """If you think you should have access, please contact the person who invited you. 
-           Sometimes they will have granted access to a different email address. You will 
-           either have to create an account using that other email address, or the forum 
-           administrator will have to grant this email address access."""
+        TRANSLATE 
+          id: "permissions.access_denied"
+          email: user.email 
+          "We're sorry, but {email} doesn't have access to this private forum."
+
+      DIV null,
+        TRANSLATE 
+          id: "permissions.access_denied.recourse"        
+          """If you think you should have access, please contact the person who invited you. 
+             Sometimes they will have granted access to a different email address. You will 
+             either have to create an account using that other email address, or the forum 
+             administrator will have to grant this email address access."""
 
       DIV 
         style: 
           marginTop: 40
 
-        "Contact us at "
+        TRANSLATE
+          id: "permissions.contact_for_help"
+          link: 
+            component: A 
+            args: 
+              href: 'mailto:support@consider.it?subject=I am having trouble accessing a private forum'
+              style:
+                textDecoration: 'underline'
 
-        A 
-          href: 'mailto:support@consider.it?subject=I am having trouble accessing a private forum'
-          style:
-            textDecoration: 'underline'
-          'support@consider.it'
-        " if you need help."
+          "Contact us at <link>support@consider.it</link> if you need help."
 
 
 

@@ -1,15 +1,15 @@
 require 'cgi'
 
 class HtmlController < ApplicationController
-  #respond_to :html
   before_action :verify_user
 
   def index
 
     # if someone has accessed a non-existent subdomain or the mime type isn't HTML (must be accessing a nonexistent file)
-    # Note: I removed the text/html constraint because of problems oneboxing from discourse
-    #if !current_subdomain || request.format.to_s != 'text/html' || request.fullpath.include?('data:image')
-    if !current_subdomain || request.fullpath.include?('data:image')    
+    # Note: The text/html constraint creates problems oneboxing from discourse. I'm adding it back in, but mess around 
+    # with that if we ever need the oneboxing and it is not working.
+    # if !current_subdomain || request.fullpath.include?('data:image')    
+    if !current_subdomain || request.format.to_s != 'text/html' || request.fullpath.include?('data:image')
       render :file => "#{Rails.root}/public/404.html", :layout => false, :status => :not_found
       return
     end

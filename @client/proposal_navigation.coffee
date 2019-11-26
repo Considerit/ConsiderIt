@@ -43,7 +43,7 @@ window.DefaultProposalNavigation = ReactiveComponent
                 float: 'right'
               href: proposal_url(next_proposal)
               'data-no-scroll': true
-              "#{t('next')} >"
+              "#{translator("engage.navigation.next_proposal", "next")} >"
 
           # Previous button
           if prev_proposal
@@ -55,7 +55,7 @@ window.DefaultProposalNavigation = ReactiveComponent
                 marginRight: if next_proposal then 10
               href: proposal_url(prev_proposal)
               'data-no-scroll': true
-              "< #{t('prev')}"
+              "< #{translator("engage.navigation.previous_proposal", "prev")}"
 
 
 

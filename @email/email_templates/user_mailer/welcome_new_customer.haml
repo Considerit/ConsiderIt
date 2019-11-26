@@ -1,14 +1,24 @@
-Hi #{@user.first_name}, 
+#{translator({id: "email.salutation", name: @user.first_name}, "Hi {name},")}  
 = linebreak
+Welcome to Consider.it! Your forum is 
+= succeed '.' do
+  - if @part == 'text'
+    ready for you: #{full_link('')}
+  - else
+    %a{:href => full_link(''), :style=>"font-weight: 700; color:#439fe0;"}
+      ready for you
+
 = linebreak
-Welcome to Consider.it! Your forum is #{styled_link('', 'ready for you')}. 
-= linebreak
-= linebreak
-We also added a #{styled_link('considerit_can_help', 'test question', text_preceding: 'test question ')} for you to try. You can delete or hide it when you're done. Or share your answer with us :-)
-= linebreak
+We also added a
+- if @part == 'text'
+  test question (#{full_link('considerit_can_help')})
+- else
+  %a{:href => full_link('considerit_can_help'), :style=>"font-weight: 700; color:#439fe0;"}
+    test question
+
+for you to try. You can delete or hide it when you're done. Or share your answer with us :-)
 = linebreak
 Please feel free to email hello@consider.it if you have any questions.
-= linebreak
 = linebreak
 Best, 
 = linebreak

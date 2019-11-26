@@ -70,6 +70,7 @@ class User < ActiveRecord::Base
       avatar_remote_url: avatar_remote_url,
       url: url,
       name: name,
+      lang: lang,
       reset_password_token: nil,
       b64_thumbnail: b64_thumbnail,
       tags: Oj.load(tags || '{}'),

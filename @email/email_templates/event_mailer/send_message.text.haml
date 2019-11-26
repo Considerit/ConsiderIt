@@ -1,7 +1,8 @@
-Hi #{@message['recipient'].first_name},
+#{translator({id: "email.salutation", name: @message['recipient'].first_name}, "Hi {name},")}
 
 = "\r\n"
-#{@message['sender_mask']} has sent you a direct message:
+
+#{translator({id: "email.message_from", sender: @message['sender_mask']}, "{sender} says:")}
 
 = "\r\n"
 "#{@message['body']}"
@@ -9,4 +10,4 @@ Hi #{@message['recipient'].first_name},
 = "\r\n"
 \----
 
-Reply to this email to respond to #{@message['sender_mask']}.
+#{translator({id: "email.send_message.reply", sender: @message['sender_mask']}, "Reply to this email to respond to {sender}.")}

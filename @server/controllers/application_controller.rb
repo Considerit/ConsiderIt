@@ -2,8 +2,10 @@
 require 'digest/md5'
 require 'exception_notifier'
 require Rails.root.join('@server', 'permissions')
+require Rails.root.join('@server', 'translations')
 
 class ApplicationController < ActionController::Base
+
   protect_from_forgery with: :exception
   skip_before_action :verify_authenticity_token, if: :csrf_skippable?
 
@@ -22,6 +24,10 @@ class ApplicationController < ActionController::Base
     dirty_key '/application'
     dirty_key '/subdomain' # just to eliminate a couple renders
     dirty_key '/current_user' # just to eliminate a couple renders
+    for lang in [ (current_user[:lang] || "en"), (current_subdomain[:lang] || "en"), "en"].uniq
+      dirty_key "/translations/#{lang}"
+      dirty_key "/translations/#{current_subdomain.name}/#{lang}"
+    end 
     render :json => []
   end
 
@@ -274,7 +280,12 @@ protected
         manifest.key = '/asset_manifest'
         response.append manifest
 
+      elsif key.match "/translations"
+        translations = get_translations(key)
+        response.append translations
       end
+
+
     end
 
     return response

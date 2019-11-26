@@ -1,12 +1,12 @@
 # wait at least 5 min before sending any notification
 BUFFER = 5 * 60 
+require Rails.root.join('@server', 'translations')
 
-def send_digest(subdomain, user, notifications, subscription_settings, deliver = true, since = nil)
-  
+def send_digest(subdomain, user, notifications, subscription_settings, deliver = true, since = nil, force = false)
   send_emails = subscription_settings['send_emails']
 
   return if !send_emails || \
-            !due_for_notification(user, subdomain) || \
+            (!force && !due_for_notification(user, subdomain)) || \
             !valid_triggering_event(notifications, subscription_settings) || \
             subdomain.name == 'galacticfederation'
 

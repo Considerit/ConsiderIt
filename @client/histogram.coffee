@@ -247,11 +247,11 @@ window.Histogram = ReactiveComponent
     score = pad score.toFixed(1),2
 
     if avg < -.03
-      exp = "#{(-1 * avg * 100).toFixed(0)}% #{customization("slider_pole_labels.oppose", @props.proposal)}"
+      exp = "#{(-1 * avg * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.oppose", @props.proposal)}"
     else if avg > .03
-      exp = "#{(avg * 100).toFixed(0)}% #{customization("slider_pole_labels.support", @props.proposal)}"
+      exp = "#{(avg * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.support", @props.proposal)}"
     else 
-      exp = "neutral"
+      exp = translator "engage.slider_feedback.neutral", "Neutral"
 
 
     if @props.enable_selection
@@ -294,14 +294,27 @@ window.Histogram = ReactiveComponent
       DIV 
         id: "##{proposal.id}-histo-label"
         className: 'hidden'
-        "Histogram showing #{opinions.length} opinions"
+        
+        TRANSLATE 
+          id: "engage.histogram.explanation"
+          num_opinions: opinions.length 
+          "Histogram showing {num_opinions, plural, one {# opinion} other {# opinions}}"
 
       DIV 
         id: "##{proposal.id}-histo-description"
         className: 'hidden'
-        """#{opinions.length} people's opinion, with an average of #{exp} on a spectrum from #{customization("slider_pole_labels.oppose", @props.proposal)} to #{customization("slider_pole_labels.support", @props.proposal)}. 
-           Press ENTER or SPACE to enable tab navigation of each person's opinion, and ESCAPE to exit the navigation.
-        """         
+
+        TRANSLATE 
+          id: "engage.histogram.explanation_extended"
+          num_opinions: opinions.length 
+          avg_score: exp
+          negative_pole: get_slider_label("slider_pole_labels.oppose", @props.proposal)
+          positive_pole: get_slider_label("slider_pole_labels.support", @props.proposal)
+
+          """{num_opinions, plural, one {one person's opinion of} other {# people's opinion, with an average of}} {avg_score} 
+             on a spectrum from {negative_pole} to {positive_pole}. 
+             Press ENTER or SPACE to enable tab navigation of each person's opinion, and ESCAPE to exit the navigation.
+          """         
 
       if @props.draw_base_labels
         @drawHistogramLabels()
@@ -351,13 +364,13 @@ window.Histogram = ReactiveComponent
         position: 'absolute'
         left: 0
 
-      customization("slider_pole_labels.oppose", @props.proposal)
+      get_slider_label("slider_pole_labels.oppose", @props.proposal)
     SPAN
       style: _.extend {}, label_style,
         position: 'absolute'
         right: 0
 
-      customization("slider_pole_labels.support", @props.proposal)
+      get_slider_label("slider_pole_labels.support", @props.proposal)
     ]
 
   drawSelectionArea: -> 
@@ -403,7 +416,7 @@ window.Histogram = ReactiveComponent
               userSelect: 'none'
               pointerEvents: 'none'
 
-            t('select_these_opinions')
+            TRANSLATE "engage.histogram.select_these_opinions", 'Select these opinions'
 
   onClick: (ev) -> 
 
@@ -736,7 +749,7 @@ HistoAvatars = ReactiveComponent
         if Math.abs(stance) > .01
           alt = "#{(stance * 100).toFixed(0)}%"
         else 
-          alt = "is neutral"
+          alt = translator "engage.histogram.user_is_neutral", "is neutral"
 
         if opinion.explanation
           paragraphs = safe_string(opinion.explanation).split(/(?:\r?\n)/g)

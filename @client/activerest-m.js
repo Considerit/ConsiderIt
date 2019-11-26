@@ -152,7 +152,7 @@
                            // (Note: This shim will fail in many situations...)
     function server_save(object, continuation) {
         if (pending_saves[object.key]) {
-            console.log('Yo foo, aborting')
+            console.log('Yo foo, aborting', object.key)
             pending_saves[object.key].abort()
             delete pending_saves[object.key]
         }
@@ -408,6 +408,10 @@
                 if (outstanding_fetches[dependent_keys[i]])
                     return dependent_keys[i]
             return false
+        }
+
+        window.waiting_for = function(obj_or_key) {
+            return !!outstanding_fetches[obj_or_key.key || obj_or_key]
         }
 
         // STEP 3: Configure the global function hooks for React

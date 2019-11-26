@@ -30,18 +30,18 @@ window.point_labels =
     pros: 'ideas' 
     con: 'question'
     cons: 'questions'
-    your_header: "Give your --valences--" 
-    other_header: "Others' --valences--" 
-    top_header: "Top --valences--" 
+    your_header: "Give your {arguments}" 
+    other_header: "Others' {arguments}" 
+    top_header: "Top {arguments}" 
 
   pro_con: 
     pro: 'pro'
     pros: 'pros' 
     con: 'con'
     cons: 'cons'
-    your_header: "Give your --valences--" 
-    other_header: "Others' --valences--" 
-    top_header: "Top --valences--" 
+    your_header: "Give your {arguments}" 
+    other_header: "Others' {arguments}" 
+    top_header: "Top {arguments}" 
     your_cons_header: null
     your_pros_header: null
 
@@ -50,18 +50,18 @@ window.point_labels =
     pros: 'strengths' 
     con: 'weakness'
     cons: 'weaknesses'
-    your_header: "--valences--" 
-    other_header: "--valences-- observed" 
-    top_header: "Top --valences--" 
+    your_header: "{arguments}" 
+    other_header: "{arguments} observed" 
+    top_header: "Top {arguments}" 
 
   strengths_limitations:
     pro: 'strength'
     pros: 'strengths' 
     con: 'limitation'
     cons: 'limitations'
-    your_header: "--valences-- you observed" 
-    other_header: "--valences-- observed" 
-    top_header: "Top --valences--" 
+    your_header: "{arguments} you observed" 
+    other_header: "{arguments} observed" 
+    top_header: "Top {arguments}" 
 
 
   challenge_justify:
@@ -69,9 +69,9 @@ window.point_labels =
     pros: 'justifications' 
     con: 'challenge'
     cons: 'challenges'
-    your_header: "Give your --valences--" 
-    other_header: "--valences-- identified" 
-    top_header: "Top --valences--" 
+    your_header: "Give your {arguments}" 
+    other_header: "{arguments} identified" 
+    top_header: "Top {arguments}" 
 
 
   strengths_improvements: 
@@ -79,11 +79,11 @@ window.point_labels =
     pros: 'strengths' 
     con: 'improvement'
     cons: 'improvements'
-    your_header: "--valences-- you observe" 
+    your_header: "{arguments} you observe" 
     your_cons_header: "Your suggested improvements"
     your_pros_header: "Strengths you observe"
-    other_header: "--valences-- identified" 
-    top_header: "Top --valences--" 
+    other_header: "{arguments} identified" 
+    top_header: "Top {arguments}" 
 
 
   support_challenge_claim: 
@@ -91,9 +91,9 @@ window.point_labels =
     pros: 'supporting claims' 
     con: 'challenging claim'
     cons: 'challenging claims'
-    your_header: "--valences-- you recognize" 
-    other_header: "--valences-- identified" 
-    top_header: "Top --valences--" 
+    your_header: "{arguments} you recognize" 
+    other_header: "{arguments} identified" 
+    top_header: "Top {arguments}" 
 
 
   delta_pluses:
@@ -101,13 +101,23 @@ window.point_labels =
     pros: 'pluses' 
     con: 'delta'
     cons: 'deltas'
-    your_header: "--valences-- you recognize" 
-    other_header: "--valences-- identified" 
-    top_header: "Top --valences--" 
+    your_header: "{arguments} you recognize" 
+    other_header: "{arguments} identified" 
+    top_header: "Top {arguments}" 
 
 
 #####################
 # SLIDER POLE LABELS
+
+window.get_slider_label = (id, proposal) -> 
+  if proposal
+    label = customization(id, proposal)
+  else 
+    label = customization(id)
+
+  translator "engage.slider_label.#{label}", label 
+
+
 
 window.slider_labels = 
 
@@ -117,21 +127,28 @@ window.slider_labels =
 
     slider_feedback: (value, proposal) -> 
       if Math.abs(value) < 0.05
-        "You are undecided"
+        translator
+          id: "engage.slider_feedback.agree_disagree.neutral"
+          "You are undecided"
       else 
         degree = Math.abs value
         strength_of_opinion = if degree > .999
-                                "Fully "
+                                "Fully"
                               else if degree > .5
-                                "Firmly "
+                                "Firmly"
                               else
-                                "Slightly " 
+                                "Slightly" 
 
-        valence = customization "slider_pole_labels." + \
+        valence = get_slider_label "slider_pole_labels." + \
                                 (if value > 0 then 'support' else 'oppose'), \
                                 proposal
 
-        "You #{strength_of_opinion} #{valence}"
+        
+        translator
+          id: "engage.slider_feedback.agree_disagree.#{strength_of_opinion}-#{(if value > 0 then 'support' else 'oppose')}"
+          strength_of_opinion: strength_of_opinion
+          valence: valence
+          "You #{strength_of_opinion} {valence}"
 
   support_oppose:
     support: 'Support'
@@ -139,21 +156,28 @@ window.slider_labels =
 
     slider_feedback: (value, proposal) -> 
       if Math.abs(value) < 0.05
-        "You are undecided"
+        translator
+          id: "engage.slider_feedback.support_oppose.neutral"
+          "You are undecided"
+
       else 
         degree = Math.abs value
         strength_of_opinion = if degree > .999
-                                "Fully "
+                                "Fully"
                               else if degree > .5
-                                "Firmly "
+                                "Firmly"
                               else
-                                "Slightly " 
+                                "Slightly" 
 
-        valence = customization "slider_pole_labels." + \
+        valence = get_slider_label "slider_pole_labels." + \
                                 (if value > 0 then 'support' else 'oppose'), \
                                 proposal
 
-        "You #{strength_of_opinion} #{valence}"
+        translator
+          id: "engage.slider_feedback.support_oppose.#{strength_of_opinion}-#{(if value > 0 then 'support' else 'oppose')}"
+          strength_of_opinion: strength_of_opinion
+          valence: valence
+          "You #{strength_of_opinion} {valence}"
 
 
   relevance:

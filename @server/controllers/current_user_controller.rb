@@ -69,11 +69,11 @@ class CurrentUserController < ApplicationController
             log('registered account')
 
           else
-            errors.append("Password needs to be at least #{@min_pass} letters") if !ok_password
-            errors.append('Name is blank') if !has_name
-            errors.append('Community pledge required') if !signed_pledge
+            errors.append(translator({id: "errors.user.password_length", length: @min_pass}, "Password needs to be at least {length} letters")) if !ok_password
+            errors.append(translator("errors.user.blank_name", 'Name cannot be blank')) if !has_name
+            errors.append(translator("errors.user.pledge_required", 'Community pledge required')) if !signed_pledge
             if (!params[:email] || params[:email].length == 0) && errors.length == 0
-              errors.append('Email address can\'t be blank') 
+              errors.append(translator("errors.user.blank_email", 'Email address cannot be blank'))
             end
           end
 
@@ -82,12 +82,12 @@ class CurrentUserController < ApplicationController
       when 'login'
         # puts("Signing in by email and password")
         if !params[:email] || params[:email].length == 0
-          errors.append 'Missing email'
+          errors.append translator("errors.user.blank_email", 'Email address cannot be blank')
         elsif !params[:password] || params[:password].length == 0
-          errors.append 'Missing password'
+          errors.append translator("errors.user.missing_password", 'Password cannot be missing')
         elsif current_user.registered
           #puts("Trying to log in a user who is already in!")
-          errors.append 'You are already logged in'
+          errors.append translator("errors.user.already_logged_in", 'You are already logged in')  
         else
 
           user = User.find_by_email(params[:email].downcase)
@@ -96,10 +96,10 @@ class CurrentUserController < ApplicationController
             # note: Returning this error message is a security risk as it
             #       reveals that a particular email address exists in the
             #       system or not.  But it's prolly the right tradeoff.
-            errors.append "No user exists at that email address. Maybe you should click 'Create New Account' below." 
+            errors.append translator("errors.user.no_user_at_email", "No user exists at that email address. Maybe you should click Create New Account below.") 
 
           elsif !user.authenticate(params[:password])
-            errors.append "Wrong password. Click \"I forgot my password\" if you\'re having problems."
+            errors.append translator("errors.user.bad_password", "Wrong password. Click \"I forgot my password\" if you are having problems.")
           else 
             replace_user(current_user, user)
             set_current_user(user)
@@ -125,10 +125,11 @@ class CurrentUserController < ApplicationController
         has_password = params[:password] && params[:password].length >= @min_pass
         if !has_password
           # puts("They need to provide a longer password. Bailing.")
-          errors.append "Please make a new password at least #{@min_pass} letters long"
+
+          errors.append translator({id: "errors.user.password_length", length: @min_pass}, "Password needs to be at least {length} letters")
 
         elsif current_user.registered
-          errors.append 'You are already logged in'
+          errors.append translator("errors.user.already_logged_in", 'You are already logged in') 
         else 
         
           # Now let's take that raw reset_password_token, and compute the
@@ -155,7 +156,7 @@ class CurrentUserController < ApplicationController
             log('sign in by password reset')
 
           else
-            errors.append "Sorry, that's the wrong verification code."
+            errors.append translator("errors.user.incorrect_verification_code", "Sorry, that is the wrong verification code.")   
           end  
                   
         end
@@ -169,7 +170,7 @@ class CurrentUserController < ApplicationController
           # note: returning this is a security risk as it reveals that a
           #       particular email address exists in the system or not.
           #       But it's prolly the right tradeoff.
-          errors.append "We have no account for that email address."
+          errors.append translator("errors.user.invalid_email", "We have no account for that email address.")
           # puts("Errors are #{errors}")
         else 
           # This algorithm is adapted from devise
@@ -354,14 +355,14 @@ class CurrentUserController < ApplicationController
     user = User.find_by_email(email)
     if !email || email.length == 0
       if trying_to == 'create account'
-        errors.append 'No email address specified'
+        errors.append translator("errors.user.blank_email", 'Email address cannot be blank')
       end
     # And if it's not taken
     elsif user && (user != current_user)
-      errors.append 'There is already an account with that email. Click "log in" below instead.'
+      errors.append translator("errors.user.user_at_email", 'There is already an account with that email. Click "log in" below instead.')  
     # And that it's valid
     elsif !/\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i.match(email)
-      errors.append 'Email address is not properly formatted'
+      errors.append translator("errors.user.bad_email", 'Email address is not properly formatted')  
     elsif current_user.email != email
       # puts("Updating email from #{current_user.email} to #{params[:email]}")
       # Okay, here comes a new email address!
@@ -378,10 +379,10 @@ class CurrentUserController < ApplicationController
     # Update their password
     if !params[:password] || params[:password].length == 0
       if trying_to == 'create account' || trying_to == 'reset password'
-        errors.append 'No password specified'
+        errors.append translator("errors.user.missing_password", 'Password cannot be missing')
       end
     elsif params[:password].length < @min_pass
-      errors.append 'Password is too short'
+      errors.append translator({id: "errors.user.password_length", length: @min_pass}, "Password needs to be at least {length} letters")
     else
       # puts("Changing user's password.")
       current_user.password = params[:password]

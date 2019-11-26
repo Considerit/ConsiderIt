@@ -1,7 +1,8 @@
-Hi #{@user.first_name}, 
+#{translator({id: "email.salutation", name: @user.first_name}, "Hi {name},")}  
+
 = "\r\n"
 
-#{@inviter.name} invites you to #{@action}
+#{translator({id: "email.invitation", action: @action, name: @inviter.name}, "{name} invites you to {action}")}
 - if @invitation_obj.class.to_s == "Proposal"
   = full_link(@invitation_obj.slug)
 - elsif @invitation_obj.class.to_s == "Subdomain"
@@ -10,11 +11,11 @@ Hi #{@user.first_name},
 = "\r\n"
 
 - if @message
-  #{@inviter.first_name} says: 
+  #{translator({id: "email.message_from", sender: @inviter.first_name}, "{sender} says:")}
 
   = @message
 
 = "\r\n"
 
 \---
-If you feel that you’re receiving this email in error, please contact admin@consider.it.
+#{translator("email.received_in_error", "If you feel that you’re receiving this email in error, please contact admin@consider.it.")}

@@ -10,16 +10,14 @@ require './questionaire'
 require './new_proposal'
 
 
-
 window.AuthCallout = ReactiveComponent
   displayName: 'AuthCallout'
 
   render: ->
     current_user = fetch '/current_user'
-
     return SPAN null if current_user.logged_in
 
-    DIV 
+    DIV  
       style: 
         width: '100%'
         #backgroundColor: '#545454'
@@ -36,25 +34,26 @@ window.AuthCallout = ReactiveComponent
             fontSize: 24
             fontWeight: 600
 
-          'Please '
+          TRANSLATE
+            id: 'create_account.call_out'
+            BUTTON1: 
+              component: BUTTON 
+              args: 
+                'data-action': 'create'
+                onClick: (e) =>
+                  reset_key 'auth',
+                    form: 'create account'
+                    ask_questions: true
+                style: 
+                  backgroundColor: 'transparent'
+                  border: 'none'
+                  fontWeight: 800
+                  textDecoration: 'underline'
+                  #color: 'white'
+                  textTransform: 'lowercase'
+                  padding: 0
 
-          BUTTON
-            'data-action': 'create'
-            onClick: (e) =>
-              reset_key 'auth',
-                form: 'create account'
-                ask_questions: true
-            style: 
-              backgroundColor: 'transparent'
-              border: 'none'
-              fontWeight: 800
-              textDecoration: 'underline'
-              #color: 'white'
-              textTransform: 'lowercase'
-              padding: 0
-            t('create an account')
-
-          ' before participating!'
+            "Please <BUTTON1>create an account</BUTTON1> before participating"
 
 
 window.Homepage = ReactiveComponent
@@ -217,7 +216,8 @@ window.TagHomepage = ReactiveComponent
           onMouseDown: => 
             show_all.show_all = true
             save(show_all)
-          'Show all proposals'
+
+          translator "engage.show_hidden_proposals", 'Show all proposals'
 
 
 window.SimpleHomepage = ReactiveComponent
@@ -275,9 +275,9 @@ window.SimpleHomepage = ReactiveComponent
             marginTop: 35
             display: 'inline-block'
             borderBottom: "1px solid #{logo_red}"
-
           href: '/proposal/new'
-          t('Create new proposal')
+
+          translator 'engage.add_new_proposal_button', "Create new proposal"
 
   typeset : -> 
     subdomain = fetch('/subdomain')
@@ -354,7 +354,7 @@ window.HomepageTabs = ReactiveComponent
           do (filter, clusters) =>
             current = homepage_tabs.filter == filter 
             hovering = @local.hovering == filter
-
+            tab_name = customization('homepage_tab_render')?[filter]?() or filter
 
             tab_style = _.defaults {}, (@props.tab_style or {}),
               cursor: 'pointer'
@@ -362,49 +362,13 @@ window.HomepageTabs = ReactiveComponent
               fontSize: 16
               fontWeight: 600        
               color: 'white'
-              opacity: if hovering || current then 1 else .8
+              padding: '10px 20px 4px 20px'
 
-            # TODO: move this to customizations
-            if subdomain.name in ['dao', 'BITNATION']
-              _.extend tab_style, 
-                padding: '10px 30px 4px 30px'
-                color: if current then 'black' else if hovering then '#F8E71C' else 'white'
-                backgroundColor: if current then 'white'
-                borderRadius: '16px 16px 0 0'
-                border: '2px solid'
-                borderBottom: 'none'
-                borderColor: if current then '#F8E71C' else 'transparent'
+            if current
+              _.extend tab_style, {backgroundColor: 'rgba(255,255,255,.2)', opacity: 1}, (@props.active_style or {})
 
-            else if subdomain.name == 'HALA'
-              _.extend tab_style, 
-                padding: '10px 30px 0px 30px'
-                color: seattle_vars.teal
-                backgroundColor: if current then 'white'
-                border: '1px solid'
-                borderBottom: 'none'
-                borderColor: if current then seattle_vars.teal else 'transparent'
-                fontSize: 18
-                fontWeight: 700
-                opacity: if !current && !hovering then 0.3
-
-            else if subdomain.name == 'bradywalkinshaw'
-              _.extend tab_style, 
-                padding: '10px 20px 4px 20px'
-                backgroundColor: if current then 'white'
-                color: if current then 'black' else if hovering then '#F8E71C' else 'white'
-                borderRadius: '16px 16px 0 0'
-            else 
-              _.defaults tab_style, 
-                padding: '10px 20px 4px 20px'
-                backgroundColor: if current then 'rgba(255,255,255,.2)'
-
-            if current && @props.active_style
-              _.extend tab_style,
-                @props.active_style
-
-            if hovering && (@props.hover_style or @props.active_style)
-              _.extend tab_style,
-                (@props.hover_style or @props.active_style)
+            if hovering
+              _.extend tab_style, {opacity: 1}, (@props.hover_style or @props.active_style or {})
 
             LI 
               tabIndex: 0
@@ -434,7 +398,10 @@ window.HomepageTabs = ReactiveComponent
               H4 
                 style: tab_style
 
-                customization('homepage_tab_render')?[filter]?() or filter
+                translator
+                  id: "homepage_tab.#{tab_name}"
+                  key: "/translations/#{subdomain.name}"
+                  tab_name
 
 
 
@@ -460,8 +427,6 @@ window.Cluster = ReactiveComponent
     return SPAN null if !proposals || (proposals.length == 0 && !(cluster.name in customization('homepage_lists_to_always_show')))
 
     cluster_key = "list/#{cluster.name}"
-
-    return SPAN null if customization('belongs_to', cluster_key)
 
     ARTICLE
       key: cluster.name
@@ -514,7 +479,7 @@ window.Cluster = ReactiveComponent
 
   storeSortOrder: -> 
     p = (p.key for p in sorted_proposals(@props.cluster.proposals))
-    c = fetch("cluster-#{slugify(@props.cluster.name)}/sort_order")
+    c = fetch("cluster-#{slugify(@props.cluster.name)}-sort_order")
     order = JSON.stringify(p)
     if order != c.sort_order
       c.sort_order = order 
@@ -545,7 +510,16 @@ ClusterHeading = ReactiveComponent
     heading_text = customization('list_label', cluster_key) or list_items_title
 
     if heading_text == 'Show all'
-      heading_text = "All Proposals"
+      heading_text = translator "engage.all_proposals_list", "All Proposals"
+    else 
+      if heading_text == "Proposals"
+        heading_text = translator "engage.default_proposals_list", "Proposals"
+      else 
+        heading_text = translator 
+                         id: "proposal_list.#{heading_text}"
+                         key: "/translations/#{subdomain.name}"
+                         heading_text 
+
     heading_style = _.defaults {}, customization('list_label_style', cluster_key),
       fontSize: 36
       fontWeight: 700
@@ -581,7 +555,7 @@ ClusterHeading = ReactiveComponent
 
           LABEL_ENCLOSE 
             tabIndex: if !list_uncollapseable then 0
-            'aria-label': "#{heading_text}. Expand or collapse list."
+            'aria-label': "#{heading_text}. #{translator('Expand or collapse list.')}"
             'aria-pressed': !collapsed[cluster_key]
             onMouseEnter: => @local.hover_label = true; save @local 
             onMouseLeave: => @local.hover_label = false; save @local
@@ -650,10 +624,8 @@ ClusterHeading = ReactiveComponent
 
           else if widthWhenRendered(heading_text, heading_style) <= column_sizes().first + column_sizes().gutter
 
-
-
             histo_title = customization('list_opinions_title', cluster_key)
-              
+
             DIV
               style: 
                 width: column_sizes().second
@@ -670,7 +642,9 @@ ClusterHeading = ReactiveComponent
                 fontSize: heading_style.fontSize
                 fontStyle: 'oblique'
 
-              histo_title
+              TRANSLATE
+                id: "engage.header.#{histo_title}"
+                histo_title
 
 
       if @props.proposals_count > 0 && !customization('questionaire', cluster_key) && !is_collapsed && !customization('list_no_filters', cluster_key)
@@ -727,7 +701,7 @@ window.list_actions = (props) ->
                   setTimeout =>
                     $("[name='add_new_#{props.cluster.name}']").ensureInView()
                   , 1
-                t('add_new')
+                translator "engage.add_new_proposal_to_list", 'add new'
 
     if customization('opinion_filters')
       OpinionFilter
@@ -778,7 +752,7 @@ ProposalsLoading = ReactiveComponent
           transition: false
 
 
-      "Loading...there is much to consider!"
+      translator "loading_indicator", "Loading...there is much to consider!"
 
   componentWillMount: -> 
     @int = setInterval => 

@@ -43,7 +43,8 @@ window.AutoGrowTextArea = ReactiveComponent
   checkAndSetHeight : ->
     scroll_height = @getDOMNode().scrollHeight
     max_height = @props.max_height or 600
-    if scroll_height > @getDOMNode().clientHeight
+    client_height = @getDOMNode().clientHeight
+    if scroll_height > client_height
 
       h = Math.min scroll_height + 5, max_height
       if h != @local.height
@@ -59,9 +60,8 @@ window.AutoGrowTextArea = ReactiveComponent
 
     @transferPropsTo TEXTAREA
       onChange: @onChange
-      style: _.extend (@props.style || {}),
-        height: @local.height
-        padding: '4px 8px'
+      rows: 1
+      style: _.extend( {padding: '4px 8px'}, (@props.style || {}), {height: @local.height} )
 
 
 window.CharacterCountTextInput = ReactiveComponent
@@ -85,7 +85,10 @@ window.CharacterCountTextInput = ReactiveComponent
 
       SPAN 
         className: 'hidden'
-        "#{@props.maxLength - @local.count} characters left"
+        translator 
+          id: "engage.character_counter"
+          characters_left: @props.maxLength - @local.count
+          "{characters_left, plural, one {# character} other {# characters}} left"
 
       @transferPropsTo TEXTAREA 
         className: class_name

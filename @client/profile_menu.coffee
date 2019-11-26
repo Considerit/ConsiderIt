@@ -224,7 +224,7 @@ window.ProfileMenu = ReactiveComponent
                     @local.focus = null 
                     save @local
 
-                  translator "user_menu.option.log_out", "Log out"
+                  translator "auth.log_out", "Log out"
 
 
       else
@@ -241,7 +241,7 @@ window.ProfileMenu = ReactiveComponent
             backgroundColor: 'transparent'
             border: 'none'
 
-          translator "user_menu.option.log_in", "Log in"
+          translator "auth.log_in", "Log in"
     
   bitcoinVerification: -> 
     current_user = fetch('/current_user')

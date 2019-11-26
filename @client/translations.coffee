@@ -93,6 +93,10 @@ IN_SITU_TRANSLATOR = ReactiveComponent
             backgroundColor: 'white'
             border: "1px solid #ccc"
 
+          onClick: (e) => 
+            e.stopPropagation()
+            e.preventDefault()
+
           DIV 
             style: {}
             "English message: "
@@ -283,7 +287,7 @@ TranslationsDash = ReactiveComponent
           DIV 
             style: 
               fontSize: 12
-            "In-situ mode lets you browse the rest of the site and add translations in context."
+            "In-situ mode lets you browse the rest of the site and add some translations in context."
 
 
         if current_user.is_super_admin
@@ -361,19 +365,21 @@ TranslationsForLang = ReactiveComponent
     updated_translations = get_temporary_translations(lang, @props.key)
 
 
-    sections = {"all": to_translate}
-    # sections = {}
-    # for name in to_translate
-    #   sp = name.split('.')
-    #   if sp.length > 1
-    #     sections[sp[0]] ||= []
-    #     sections[sp[0]].push name
-    #   else 
-    #     sections.misc ||= []
-    #     sections.misc.push name
+    # sections = {"all": to_translate}
+    sections = {}
+    for name in to_translate
+      sp = name.split('.')
+      if sp.length > 1
+        sections[sp[0]] ||= []
+        sections[sp[0]].push name
+      else 
+        sections.misc ||= []
+        sections.misc.push name
 
 
     current_user = fetch '/current_user'
+
+    cols = ['Message in English', "Translation to #{available_languages[lang]}"]
 
     DIV 
       style: 
@@ -382,8 +388,9 @@ TranslationsForLang = ReactiveComponent
       H2 
         style: 
           fontSize: 22
+          marginBottom: 12
 
-        T 
+        TRANSLATE 
           id: "translations.language_header"
           percent_complete: Math.round(translation_progress(lang, @props.key) * 100)
           language: available_languages[lang]
@@ -394,94 +401,150 @@ TranslationsForLang = ReactiveComponent
         style: 
           width: HOMEPAGE_WIDTH()
 
-        TR 
-          style: 
-            backgroundColor: '#dfdfdf'
+        TBODY null,
 
 
-          for col in ['Message ID', 'Message in English', "Translation to #{available_languages[lang]}"]
-            TH
+
+          for section, names of sections
+            names.sort()
+
+            rows = []
+
+            rows.push TR null,              
+              TD 
+                colSpan: cols.length 
+                style: 
+                  fontSize: 24
+                  paddingTop: 12
+                
+                section.toUpperCase().replace /\_/g, ' '
+
+                DIV 
+                  style: 
+                    fontSize: 12
+                    marginBottom: 8
+                  
+                  "Messages support ICU format for e.g. pluralization. For complicated translations, you may wish to "
+                  A 
+                    href: "http://format-message.github.io/icu-message-format-for-translators/editor.html"
+                    target: '_blank'
+                    style: 
+                      textDecoration: 'underline'
+                    "use this helper"
+                  "."
+
+
+            rows.push TR 
               style: 
-                textAlign: 'left'
-                padding: "4px 6px"
-              col
+                backgroundColor: '#dfdfdf'
 
 
-        for section, names of sections
-          names.sort()
-          for name in names
-            do (name) => 
-              no_id = name == native_messages[name].txt
-              TR 
-                style: {}
+              for col in cols
+                TH
+                  style: 
+                    textAlign: 'left'
+                    padding: "4px 6px"
+                  col
 
-                TD 
-                  style:
-                    width: "24%"
-                    padding: "2px 4px"
+            for name, idx in names
+              do (name, idx) => 
+                no_id = name == native_messages[name].txt
+                rows.push TR 
+                  key: "row-id-#{name}"
+                  style: 
+                    backgroundColor: if idx % 2 == 1 then '#f8f8f8'
+
+                  TD 
+                    style: 
+                      padding: "2px 4px"
+                      width: "40%"
+                      # display: 'inline-block'
+                      # verticalAlign: 'top'
+
+                    do => 
+                      show_tooltip = => 
+                        tooltip = fetch 'tooltip'
+                        tooltip.coords = $(@refs["message-#{name}-#{idx}"].getDOMNode()).offset()
+                        tooltip.tip = if no_id then 'no ID' else name 
+                        save tooltip
+                      hide_tooltip = => 
+                        tooltip = fetch 'tooltip'
+                        tooltip.coords = null
+                        save tooltip
+
+                      DIV 
+                        ref: "message-#{name}-#{idx}"
+                        onFocus: show_tooltip
+                        onMouseEnter: show_tooltip
+                        onBlur: hide_tooltip
+                        onMouseLeave: hide_tooltip
+
+                        "#{native_messages[name].txt}"
+
+                  TD  
+                    style: 
+                      width: '58%'
+                      padding: "2px 4px"
+                      position: 'relative'
+
+                    # width: "42%"
                     # display: 'inline-block'
                     # verticalAlign: 'top'
-                    # fontStyle: 'italic' if no_id
-                    # color: "#888" if no_id
-
-                  if !no_id 
-                    name 
-                  else 
-                    'no id'
-
-                TD 
-                  style: 
-                    padding: "2px 4px"
-                    width: "37%"
-                    # display: 'inline-block'
-                    # verticalAlign: 'top'
-
-                  "#{native_messages[name].txt}"
-
-                TD  
-                  style: 
-                    width: '39%'
-                    padding: "2px 4px"
-
-                  # width: "42%"
-                  # display: 'inline-block'
-                  # verticalAlign: 'top'
 
 
-                  editable_translation name, updated_translations
+                    editable_translation name, updated_translations
+                    if current_user.is_super_admin
+                      do (name) =>
+                        BUTTON 
+                          style: 
+                            fontSize: 14
+                            backgroundColor: 'transparent'
+                            border: 'none'
+                            color: '#ccc'
+                            position: 'absolute'
+                            right: -25
+                            padding: '4px'
+                          onClick: => 
+                            delete native_messages[name]
+                            delete updated_translations[name]
+                            save updated_translations
+                            save native_messages
+                          "x"
 
-                  if current_user.is_super_admin && updated_translations[name]?.proposals
-                    UL  
-                      style: {}
 
-                      for proposal, idx in updated_translations[name].proposals
-                        do (proposal, name, idx) =>
-                          LI 
-                            style: 
-                              padding: "2px 0px 8px 0px"
-                              listStyle: 'none'
+                    if current_user.is_super_admin && updated_translations[name]?.proposals
+                      UL  
+                        style: {}
 
-                            DIV 
-                              style: {}
-                              proposal.txt 
-
-                            SPAN 
+                        for proposal, idx in updated_translations[name].proposals
+                          do (proposal, name, idx) =>
+                            LI 
                               style: 
-                                fontSize: 14
-                                color: "#aaa"
-                                paddingRight: 4
-                              "by #{current_user.name or current_user.user}"
+                                padding: "2px 0px 8px 0px"
+                                listStyle: 'none'
 
-                            BUTTON
-                              style: 
-                                borderRadius: 8
-                              onClick: => 
-                                updated_translations[name].txt = proposal.txt 
-                                updated_translations[name].u = proposal.u
-                                updated_translations[name].proposals.splice(idx, 1)
-                                save updated_translations
-                              "Ok"
+                              DIV 
+                                style: {}
+                                proposal.txt 
 
+                              SPAN 
+                                style: 
+                                  fontSize: 14
+                                  color: "#aaa"
+                                  paddingRight: 4
+                                "by #{current_user.name or current_user.user}"
+
+                              BUTTON
+                                style: 
+                                  borderRadius: 8
+                                onClick: => 
+                                  updated_translations[name].txt = proposal.txt 
+                                  updated_translations[name].u = proposal.u
+                                  updated_translations[name].proposals.splice(idx, 1)
+                                  save updated_translations
+                                "Ok"
+
+            rows
 
 
       DIV
@@ -506,9 +569,10 @@ TranslationsForLang = ReactiveComponent
           "Save Changes"
 
 
-get_temporary_translations = (lang, key) ->
+window.get_temporary_translations = (lang, key) ->
   key ||= '/translations'
   translations = fetch "#{key}/#{lang}"
+  console.log lang,key
   _.defaults fetch("local#{translations.key}"), JSON.parse(JSON.stringify(translations))
 
 
@@ -528,6 +592,7 @@ editable_translation = (id, updated_translations, style) ->
       verticalAlign: 'top'
       fontSize: 'inherit'
       width: '100%'
+      borderColor: '#ddd'
     onChange: (e) -> 
       trans = e.target.value
       updated_translations[id] ||= {}

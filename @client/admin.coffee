@@ -261,7 +261,7 @@ AppSettingsDash = ReactiveComponent
                   fontSize: 12
 
                 TRANSLATE
-                  id: "i18n.translations_link"
+                  id: "translations.link"
                   percent_complete: Math.round(translation_progress(subdomain.lang) * 100)
                   language: (fetch('/translations').available_languages or {})[subdomain.lang]
                   link: 

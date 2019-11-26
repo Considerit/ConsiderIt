@@ -1793,8 +1793,8 @@ PointsList = ReactiveComponent
 
     button_text = translator 
                     id: "engage.add_a_point"
-                    point_label: point_label 
-                    "Add a new {point_label}"
+                    pro_or_con: point_label 
+                    "Add a new {pro_or_con}"
 
     DIV 
       id: "add-point-#{@props.valence}"
@@ -1858,8 +1858,8 @@ PointsList = ReactiveComponent
 
         TRANSLATE 
           id: "engage.add_a_point"
-          point_label: point_label 
-          "Add a new {point_label}" 
+          pro_or_con: point_label 
+          "Add a new {pro_or_con}" 
 
   drawDropTarget: -> 
     left_or_right = if @props.valence == 'pros' then 'right' else 'left'

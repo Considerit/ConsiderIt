@@ -101,7 +101,7 @@ setInterval ->
   proposals = false 
   for key of arest.components_4_key.hash
     if key[0] == '/' && arest.components_4_key.get(key).length > 0 && \
-       !key.match(/\/(user|opinion|point|subdomain|application)/)
+       !key.match(/\/(user|opinion|point|subdomain|application|translations)/)
 
       if key.match(/\/proposal\/|\/proposals\//)
         proposals = true 

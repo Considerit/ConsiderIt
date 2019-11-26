@@ -261,7 +261,7 @@ Auth = ReactiveComponent
     #   return body
 
     if auth.form == 'login'      
-      button = translator "auth.login.submit", 'Log in'
+      button = translator "auth.log_in", 'Log in'
     else 
       button = translator "auth.submit", 'Submit'
 
@@ -420,7 +420,7 @@ Auth = ReactiveComponent
   form_footer: ->
     auth = fetch 'auth'
     if auth.form == 'create account'
-      toggle_to = translator "auth.create.toggle_to_login", 'Log in'
+      toggle_to = translator "auth.log_in", 'Log in'
     else
       toggle_to = translator "auth.login.toggle_to_create", 'Create an account'
 

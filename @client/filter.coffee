@@ -682,7 +682,10 @@ OpinionFilter = ReactiveComponent
                   e.preventDefault()
                   e.stopPropagation()
 
-              translator "opinion_filter.name.#{filter.label}", filter.label
+              translator 
+                id: "opinion_filter.name.#{filter.label}"
+                key: "/translations/#{fetch('/subdomain').name}"
+                filter.label
 
 
 VerificationProcessExplanation = ReactiveComponent

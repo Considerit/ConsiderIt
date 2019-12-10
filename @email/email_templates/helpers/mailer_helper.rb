@@ -72,7 +72,7 @@ module MailerHelper
   def time_ago(timestamp)
     timestamp_translation = translator({id: "email.digest.proposal_timestamp", T: timestamp.to_datetime}, "at {T, time, short} on {T, date, full}")
     if @translation_lang == 'en'
-      "#{time_ago_in_words(proposal.created_at)} ago"
+      "#{time_ago_in_words(timestamp)} ago"
     else
       timestamp_translation
     end 

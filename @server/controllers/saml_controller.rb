@@ -165,17 +165,17 @@ def get_saml_settings(url_base, sso_idp)
   settings.name_identifier_format = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
   settings.soft = true
 
-  # mozilla configuration not working with sp_entity_id = /saml/metadata, expecting /saml/acs instead. 
-  # not sure if that a configuration problem on their end, or a problem with the code 
-  # here from the start. sp_entity_id used to be issuer, so I would have expected metadata
+  # mozilla configuration not working with sp_entity_id = /saml/metadata, expecting audience /saml/acs instead. 
+  # not sure if that is a configuration problem on their end, or a problem with the code 
+  # here from the start. sp_entity_id used to be issuer, so I would have expected /saml/metadata
   # to be correct. 
   # settings.sp_entity_id ||= url_base + "/saml/metadata"
   settings.sp_entity_id ||= url_base + "/saml/acs"
   settings.assertion_consumer_service_url   ||= url_base + "/saml/acs"
   settings.assertion_consumer_logout_service_url ||= url_base + "/saml/logout"
   
-  settings.security[:digest_method] ||= XMLSecurity::Document::SHA1
-  settings.security[:signature_method] ||= XMLSecurity::Document::RSA_SHA1
+  # settings.security[:digest_method] ||= XMLSecurity::Document::SHA1
+  # settings.security[:signature_method] ||= XMLSecurity::Document::RSA_SHA1
 
   # settings.request_attributes ||= [
   #   { :name => 'email', :name_format => 'urn:oasis:names:tc:SAML:2.0:attrname-format:basic', :friendly_name => 'Email address' },

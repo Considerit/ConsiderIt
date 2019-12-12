@@ -115,6 +115,12 @@ class SamlController < ApplicationController
       end
 
 
+      log("attributes:")
+      response.attributes.each do |k,v|
+        log("\t#{k}: #{v}")
+      end
+
+
       token = user.auth_token Subdomain.find_by_name(session[:redirect_subdomain])
       uri = URI(session[:redirect_back_to])
       uri.query = {:u => user.email, :t => token}.to_query + '&' + uri.query.to_s

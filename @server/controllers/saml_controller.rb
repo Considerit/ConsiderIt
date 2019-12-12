@@ -115,9 +115,9 @@ class SamlController < ApplicationController
       end
 
 
-      log("attributes:")
+      Rails.logger.info("attributes:")
       response.attributes.each do |k,v|
-        log("\t#{k}: #{v}")
+        Rails.logger.info("\t#{k}: #{v}")
       end
 
 

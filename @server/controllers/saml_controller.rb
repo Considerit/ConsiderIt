@@ -121,7 +121,7 @@ class SamlController < ApplicationController
       redirect_to uri.to_s
     else
       log("Response Invalid from IdP. Errors: #{response.errors}")
-      raise "Response Invalid from IdP. Errors: #{response.errors}"
+      raise "Response Invalid from IdP. Errors: #{response.errors}. "
     end
 
   end
@@ -164,8 +164,14 @@ def get_saml_settings(url_base, sso_idp)
 
   settings.name_identifier_format = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
   settings.soft = true
-  settings.issuer                         ||= url_base + "/saml/metadata"
-  settings.assertion_consumer_service_url ||= url_base + "/saml/acs"
+
+  # mozilla configuration not working with sp_entity_id = /saml/metadata, expecting /saml/acs instead. 
+  # not sure if that a configuration problem on their end, or a problem with the code 
+  # here from the start. sp_entity_id used to be issuer, so I would have expected metadata
+  # to be correct. 
+  # settings.sp_entity_id = ||= url_base + "/saml/metadata"
+  settings.sp_entity_id = ||= url_base + "/saml/metadata"
+  settings.assertion_consumer_service_url   ||= url_base + "/saml/acs"
   settings.assertion_consumer_logout_service_url ||= url_base + "/saml/logout"
   
   settings.security[:digest_method] ||= XMLSecurity::Document::SHA1

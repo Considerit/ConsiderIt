@@ -169,8 +169,8 @@ def get_saml_settings(url_base, sso_idp)
   # not sure if that a configuration problem on their end, or a problem with the code 
   # here from the start. sp_entity_id used to be issuer, so I would have expected metadata
   # to be correct. 
-  # settings.sp_entity_id = ||= url_base + "/saml/metadata"
-  settings.sp_entity_id = ||= url_base + "/saml/metadata"
+  # settings.sp_entity_id ||= url_base + "/saml/metadata"
+  settings.sp_entity_id ||= url_base + "/saml/metadata"
   settings.assertion_consumer_service_url   ||= url_base + "/saml/acs"
   settings.assertion_consumer_logout_service_url ||= url_base + "/saml/logout"
   

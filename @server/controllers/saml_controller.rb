@@ -76,10 +76,10 @@ class SamlController < ApplicationController
         # TODO when IdP Delft gives us assertion statement spec, add name field below if not already present
         name = nil
 
-        if response.attributes.include?('nickname')
-          name = response.attributes['nickname']
-        elsif response.attributes.include?('Name')
+        if response.attributes.include?('Name')
           name = response.attributes['name']
+        elsif response.attributes.include?('nickname')
+          name = response.attributes['nickname']
         elsif response.attributes.include?('First Name')
           name = response.attributes['First Name']
           if response.attributes.include?('Last Name')
@@ -113,13 +113,10 @@ class SamlController < ApplicationController
       end
 
 
-      Rails.logger.info("attributes:")
-      response.attributes.each do |k,v|
-        Rails.logger.info("\t#{k}: #{v}")
-      end
-
-      Rails.logger.info(response.attributes['name'])
-      Rails.logger.info(response.attributes['picture'])
+      # Rails.logger.info("attributes:")
+      # response.attributes.each do |k,v|
+      #   Rails.logger.info("\t#{k}: #{v}")
+      # end
 
       token = user.auth_token Subdomain.find_by_name(session[:redirect_subdomain])
       uri = URI(session[:redirect_back_to])

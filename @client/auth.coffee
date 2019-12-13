@@ -944,7 +944,7 @@ Auth = ReactiveComponent
     # Note that we don't have server side validation because
     # the questions are all defined on the client. 
     @local.errors = []    
-    if auth.ask_questions # && auth.form in ['create account', 'create account via invitation']
+    if auth.ask_questions
       questions = customization('auth_questions')
       for question in questions
         if question.required
@@ -968,9 +968,8 @@ Auth = ReactiveComponent
 
       save @local
 
-    if auth.form in ['create account', 'create account via invitation']
-      if !current_user.tags['considerit_terms.editable']
-        @local.errors.push translator('auth.validation.agree_to_terms', "To proceed, you must agree to the terms") 
+    if auth.ask_questions && !current_user.tags['considerit_terms.editable']
+      @local.errors.push translator('auth.validation.agree_to_terms', "To proceed, you must agree to the terms") 
 
     if @local.errors.length == 0
       @local.submitting = true
@@ -984,7 +983,7 @@ Auth = ReactiveComponent
           ensureCurrentUserAvatar()
 
         if auth.form in ['edit profile']
-          @local.saved_successfully = current_user.errors.length == 0 && (@local.errors or []).length == 0
+          @local.saved_successfully = current_user.errors.length + @local.errors.length == 0
 
         # Once the user logs in, we will stop showing the log-in screen
         else if current_user.logged_in
@@ -1005,6 +1004,8 @@ Auth = ReactiveComponent
           data: 
             authenticity_token: current_user.csrf
             trying_to: 'update_avatar_hack'
+    else 
+      save @local
 
   componentDidMount : -> 
     writeToLog {what: 'accessed authentication'}

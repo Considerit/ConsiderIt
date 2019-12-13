@@ -793,13 +793,19 @@ Auth = ReactiveComponent
     current_user = fetch('/current_user')
     auth = fetch('auth')
 
+    return DIV() if !current_user.tags
+
+    if !@local.agreed_to_terms?
+      @local.agreed_to_terms = current_user.tags['considerit_terms.editable']
+      save @local 
+
     if auth.ask_questions && auth.form in \
           ['edit profile', 'create account', 'create account via invitation', 'user questions']
       questions = customization('auth_questions').slice()
     else 
       questions = []
 
-    if auth.form in ['create account', 'create account via invitation'] || (auth.form in ['user questions', 'edit profile'] && !current_user.tags['considerit_terms.editable'])
+    if auth.form in ['create account', 'create account via invitation'] || (auth.form in ['user questions', 'edit profile'] && !@local.agreed_to_terms)
       questions.push
         tag: 'considerit_terms.editable'
         question: @privacyAndTerms()

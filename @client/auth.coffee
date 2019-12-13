@@ -795,8 +795,9 @@ Auth = ReactiveComponent
 
     return DIV() if !current_user.tags
 
+
     if !@local.agreed_to_terms?
-      @local.agreed_to_terms = current_user.tags['considerit_terms.editable']
+      @local.agreed_to_terms = !!current_user.tags['considerit_terms.editable']
       save @local 
 
     if auth.ask_questions && auth.form in \

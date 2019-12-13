@@ -799,7 +799,8 @@ Auth = ReactiveComponent
     else 
       questions = []
 
-    if auth.form in ['create account', 'create account via invitation']
+    if auth.form in ['create account', 'create account via invitation'] || \
+      (auth.form in ['user questions', 'edit profile'] && !current_user.tags['considerit_terms.editable'])
       questions.push
         tag: 'considerit_terms.editable'
         question: @privacyAndTerms()

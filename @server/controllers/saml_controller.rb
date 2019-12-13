@@ -65,8 +65,6 @@ class SamlController < ApplicationController
 
       email = email.downcase
 
-      
-
       user = User.find_by_email(email)
 
       if !user || !user.registered
@@ -120,6 +118,8 @@ class SamlController < ApplicationController
         Rails.logger.info("\t#{k}: #{v}")
       end
 
+      Rails.logger.info(response.attributes['name'])
+      Rails.logger.info(response.attributes['picture'])
 
       token = user.auth_token Subdomain.find_by_name(session[:redirect_subdomain])
       uri = URI(session[:redirect_back_to])

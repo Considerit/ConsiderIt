@@ -76,7 +76,7 @@ class SamlController < ApplicationController
         # TODO when IdP Delft gives us assertion statement spec, add name field below if not already present
         name = nil
 
-        if response.attributes.include?('Name')
+        if response.attributes.include?('name')
           name = response.attributes['name']
         elsif response.attributes.include?('nickname')
           name = response.attributes['nickname']

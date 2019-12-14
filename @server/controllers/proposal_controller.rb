@@ -45,8 +45,8 @@ class ProposalController < ApplicationController
 
     if !!attrs['slug'] && attrs['slug'].length > 0
       attrs['slug'] = attrs['slug'].strip
-      if attrs['slug'].length > 100
-        attrs['slug'] = attrs['slug'][0..100]
+      if attrs['slug'].length > 120
+        attrs['slug'] = attrs['slug'][0..120]
       end
     end
 

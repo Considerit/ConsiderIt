@@ -412,10 +412,11 @@ window.EditProposal = ReactiveComponent
     name = $el.find('#name').val()
     description = fetch("description-#{@data().key}").html
 
-    slug = slugify(name)
 
     cluster = $el.find('#cluster').val()
     cluster = null if cluster == ""
+
+    slug = slugify("#{name}-#{cluster}")
 
     active = $el.find('#open_for_discussion:checked').length > 0
     hide_on_homepage = $el.find('#listed_on_homepage:checked').length == 0

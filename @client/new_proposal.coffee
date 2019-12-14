@@ -354,10 +354,11 @@ window.NewProposal = ReactiveComponent
                   fields[field] = fetch("#{field}-new-proposal-#{cluster_slug}").html
 
                 description = proposal_fields.create_description(fields)
-                slug = slugify(name)
                 active = true 
                 hide_on_homepage = false
                 category = @refs.category.getDOMNode().value
+                slug = slugify("#{name}-#{category}")
+
                 if current_user.is_admin && @local.category == 'new category'
                   category = @refs.new_category.getDOMNode().value or cluster_name
 

@@ -976,7 +976,7 @@ Auth = ReactiveComponent
 
       save @local
 
-    if auth.ask_questions && !current_user.tags['considerit_terms.editable']
+    if auth.ask_questions && auth.form not in ['login', 'reset password', 'verify email'] && !current_user.tags['considerit_terms.editable']
       @local.errors.push translator('auth.validation.agree_to_terms', "To proceed, you must agree to the terms") 
 
     if @local.errors.length == 0

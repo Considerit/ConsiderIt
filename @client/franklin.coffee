@@ -1578,8 +1578,7 @@ PointsList = ReactiveComponent
 
     get_heading = (valence) => 
       heading = customization("point_labels.#{header_prefix}_header", @proposal)
-      singular_point = customization("point_labels.#{valence}", @proposal)
-      plural_point = customization("point_labels.#{valence.substring(0, 3)}", @proposal)
+      plural_point = customization("point_labels.#{valence}", @proposal)
 
       plural_point_t = translator
                         id: "point_labels.#{plural_point}"

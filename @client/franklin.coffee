@@ -205,7 +205,7 @@ Proposal = ReactiveComponent
     has_community_points = community_points.length > 0 
 
 
-    if get_selected_point()
+    if get_selected_point() && !@local.show_all_points
       @local.show_all_points = true 
       save @local
     

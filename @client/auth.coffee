@@ -147,7 +147,11 @@ Auth = ReactiveComponent
           avatar_field = [pic_prompt, avatar_field]
 
         if pledges = @pledgeInput()
-          pledges_field = [DIV(style: paddingTop: 12, translator('auth.create.pledge_label', 'Community Pledge')), pledges]
+
+          if @getPledges().length > 1
+            pledges_field = [DIV(style: paddingTop: 12, translator('auth.create.pledge_label', 'Community Pledge')), pledges]
+          else 
+            pledges_field = ['', pledges]
         else 
           pledges_field = []
 
@@ -699,17 +703,21 @@ Auth = ReactiveComponent
   #
   # Generates a list of checkbox pledges. 
   # 
+
+  getPledges: ->
+    if !customization('auth_require_pledge')
+      return []
+    else if customization('pledge')
+      return customization('pledge')
+    else 
+      return [translator('auth.create.pledge.one_account', 'I will use only one account'), 
+                 translator('auth.create.pledge.no_attacks', 'I will not attack or mock others')]
+
   pledgeInput : -> 
     subdomain = fetch('/subdomain')
 
-    if !customization('auth_require_pledge')
-      return null
-    else if customization('pledge')
-      pledges = customization('pledge')
-    else 
-      pledges = [translator('auth.create.pledge.one_account', 'I will use only one account'), 
-                 translator('auth.create.pledge.no_attacks', 'I will not attack or mock others')]
-
+    pledges = @getPledges()
+    return null if pledges.length == 0 
 
     UL style: {paddingTop: 6},
 

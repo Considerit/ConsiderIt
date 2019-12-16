@@ -957,7 +957,7 @@ Auth = ReactiveComponent
       questions = customization('auth_questions')
       for question in questions
         if question.required
-          has_response = !!current_user.tags[question.tag]
+          has_response = question.input == 'boolean' || !!current_user.tags[question.tag]
 
           if !has_response || (question.require_checked && !current_user.tags[question.tag])
             @local.errors.push translator 

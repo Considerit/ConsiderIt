@@ -2147,7 +2147,7 @@ AuthTransition = ReactiveComponent
     questions = customization('auth_questions')
     for question in (questions or [])
       if question.required
-        questions_all_answered &&= !!current_user.tags[question.tag]
+        questions_all_answered &&= question.input == 'boolean' || !!current_user.tags[question.tag]
 
 
     if current_user.csrf

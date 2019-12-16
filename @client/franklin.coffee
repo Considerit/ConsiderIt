@@ -529,11 +529,15 @@ NextProposals = ReactiveComponent
 
     count = @props.count or 5
 
-    to_show = []
-    for proposal in next when !proposal.your_opinion.published
-      to_show.push proposal 
-      break if to_show.length >= count 
+    to_show_first = []
+    to_show_later = []
+    for proposal in next 
+      if !proposal.your_opinion.published
+        to_show_first.push proposal 
+      else 
+        to_show_later.push proposal 
 
+    to_show = to_show_first.concat(to_show_later)
     return SPAN null if to_show.length < 2 && arest.cache['/proposals']?.proposals?
 
     heading_style = _.defaults {}, customization('list_label_style'),
@@ -559,7 +563,9 @@ NextProposals = ReactiveComponent
       else 
         UL null, 
 
-          for proposal in to_show
+          for proposal, idx in to_show
+            break if idx > count 
+
             cluster = proposal.cluster or 'Proposals'
 
             CollapsedProposal 

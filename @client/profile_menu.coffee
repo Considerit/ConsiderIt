@@ -232,7 +232,7 @@ window.ProfileMenu = ReactiveComponent
 
         if fetch('/subdomain').SSO_domain
           A
-            href: '/login_via_sso'
+            href: '/login_via_saml'
             treat_as_external_link: true
             style: 
               color: if !light_background then 'white'

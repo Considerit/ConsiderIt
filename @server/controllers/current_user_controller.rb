@@ -8,7 +8,7 @@ class CurrentUserController < ApplicationController
   # minimum password length
   MIN_PASS = 4
 
-  def login_via_sso
+  def login_via_saml
     if current_subdomain.SSO_domain && !current_user.registered
       initiate_saml_auth
     else 

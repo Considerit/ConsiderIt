@@ -43,7 +43,7 @@ window.AuthCallout = ReactiveComponent
               BUTTON1: 
                 component: A 
                 args: 
-                  href: '/login_via_sso'
+                  href: '/login_via_saml'
                   treat_as_external_link: true
                   style: 
                     backgroundColor: 'transparent'

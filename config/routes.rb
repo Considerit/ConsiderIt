@@ -35,7 +35,7 @@ ConsiderIt::Application.routes.draw do
   get "/create_subdomain" => 'subdomain#create'
   post '/subdomain' => 'subdomain#create'
 
-  get "/login_via_sso" => 'current_user#login_via_sso'
+  get "/login_via_saml" => 'current_user#login_via_saml'
 
   # SAML for Development
   get 'saml/sso/:sso_idp/:subdomain' => 'saml#sso', :constraints => IsSAMLRoute.new 

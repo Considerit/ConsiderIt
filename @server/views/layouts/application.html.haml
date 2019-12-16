@@ -51,12 +51,15 @@
         %script{:type => "text/javascript"}
           window.location = "http://windows.microsoft.com/en-us/internet-explorer/download-ie";
 
+
       - if current_subdomain.name == 'RANDOM2015'
         %script{type: "text/javascript", src:"https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"}
 
 
       %script{:type => 'text/javascript'}
         window.asset_host = '#{Rails.application.config.action_controller.asset_host}'
+
+      %script{:src => "#{@vendor}/vendor/formatjs-intl-pluralrules.polyfill.min.js", :type => 'text/javascript'}
 
       %script{:src => "https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en", :type => 'text/javascript'}
 

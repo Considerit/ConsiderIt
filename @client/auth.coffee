@@ -246,8 +246,10 @@ Auth = ReactiveComponent
       terms_link:
         component: "a" 
         args: "href='/terms_of_service' style='text-decoration: underline'"
+
       "I agree to the Consider.it <privacy_link>Privacy Policy</privacy_link> and <terms_link>Terms</terms_link>."
-    customization('terms') or default_terms
+
+    customization('terms') or default_terms.join('')
 
   #####
   # headerAndBorder

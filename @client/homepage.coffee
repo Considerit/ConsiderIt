@@ -267,6 +267,8 @@ window.SimpleHomepage = ReactiveComponent
         collapsed[cluster.key] = customization('list_is_archived', cluster.key)
         save collapsed
 
+    console.log 'first', homepage_tabs.filter not in ['About', 'FAQ'] && ( !subdomain.SSO_domain || current_user.logged_in)
+    console.log 'second', current_user.logged_in, ( !subdomain.SSO_domain || current_user.logged_in)
 
     DIV
       id: 'homepagetab'
@@ -283,7 +285,7 @@ window.SimpleHomepage = ReactiveComponent
         AuthCallout()
 
 
-      if homepage_tabs.filter not in ['About', 'FAQ'] && (!fetch('/subdomain').SSO_domain || current_user.logged_in)
+      if homepage_tabs.filter not in ['About', 'FAQ'] && ( !subdomain.SSO_domain || current_user.logged_in)
 
         # List all clusters
         for cluster, index in clusters or []

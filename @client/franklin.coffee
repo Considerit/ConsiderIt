@@ -2193,7 +2193,7 @@ AuthTransition = ReactiveComponent
         loadPage '/edit_profile'
         
     # there's a required question this user has yet to answer
-    else if current_user.registered && !questions_all_answered && fetch('auth').form != 'user questions'
+    else if current_user.logged_in && !questions_all_answered && fetch('auth').form != 'user questions'
       reset_key 'auth',
         form: 'user questions'
         goal: 'To start participating'

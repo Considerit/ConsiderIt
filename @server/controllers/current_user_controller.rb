@@ -11,7 +11,8 @@ class CurrentUserController < ApplicationController
   def login_via_sso
     if current_subdomain.SSO_domain && !current_user.registered
       initiate_saml_auth
-      return
+    else 
+      redirect_to '/'
     end
   end 
 

@@ -168,12 +168,5 @@ class Subdomain < ActiveRecord::Base
   end
 
 
-  # SSO info
-  def SSO_info
-    settings = Oj.load(self.SSO_settings || "{}")
-    settings
-  end
-
-
 
 end

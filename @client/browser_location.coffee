@@ -89,7 +89,7 @@ window.A = React.createClass
               # use getAttribute rather than .href so we 
               # can easily check relative vs absolute url
     
-    is_external_link = href.indexOf('//') > -1
+    is_external_link = href.indexOf('//') > -1 || @props.treat_as_external_link
     is_mailto = href.toLowerCase().indexOf('mailto') > -1
 
     opened_in_new_tab = event.altKey || 

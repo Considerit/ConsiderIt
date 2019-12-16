@@ -14,7 +14,7 @@ class HtmlController < ApplicationController
       return
     end
 
-    if current_subdomain.SSO_domain && !current_user.registered
+    if current_subdomain.SSO_domain && !current_user.registered && request.path != '/'
       initiate_saml_auth
       return
     end

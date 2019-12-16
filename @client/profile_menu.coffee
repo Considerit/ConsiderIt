@@ -228,20 +228,34 @@ window.ProfileMenu = ReactiveComponent
 
 
       else
-        BUTTON
-          className: 'profile_anchor login'
-          'data-action': 'login'
-          onClick: (e) =>
-            reset_key 'auth',
-              form: 'login'
-              ask_questions: true
 
-          style: 
-            color: if !light_background then 'white'
-            backgroundColor: 'transparent'
-            border: 'none'
 
-          translator "auth.log_in", "Log in"
+        if fetch('/subdomain').SSO_domain
+          A
+            href: '/login_via_sso'
+            treat_as_external_link: true
+            style: 
+              color: if !light_background then 'white'
+              backgroundColor: 'transparent'
+              border: 'none'
+              textDecoration: 'none'
+
+            translator "auth.log_in", "Log in"
+        else 
+          BUTTON
+            className: 'profile_anchor login'
+            'data-action': 'login'
+            onClick: (e) =>
+              reset_key 'auth',
+                form: 'login'
+                ask_questions: true
+
+            style: 
+              color: if !light_background then 'white'
+              backgroundColor: 'transparent'
+              border: 'none'
+
+            translator "auth.log_in", "Log in"
     
   bitcoinVerification: -> 
     current_user = fetch('/current_user')

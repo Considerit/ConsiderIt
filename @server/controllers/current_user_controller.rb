@@ -8,6 +8,13 @@ class CurrentUserController < ApplicationController
   # minimum password length
   MIN_PASS = 4
 
+  def login_via_sso
+    if current_subdomain.SSO_domain && !current_user.registered
+      initiate_saml_auth
+      return
+    end
+  end 
+
   # Gets the current user data
   def show
     #puts("Current_user is #{current_user.id}")

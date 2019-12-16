@@ -15,6 +15,8 @@ window.AuthCallout = ReactiveComponent
 
   render: ->
     current_user = fetch '/current_user'
+    subdomain = fetch '/subdomain'
+
     return SPAN null if current_user.logged_in
 
     DIV  
@@ -34,26 +36,46 @@ window.AuthCallout = ReactiveComponent
             fontSize: 24
             fontWeight: 600
 
-          TRANSLATE
-            id: 'create_account.call_out'
-            BUTTON1: 
-              component: BUTTON 
-              args: 
-                'data-action': 'create'
-                onClick: (e) =>
-                  reset_key 'auth',
-                    form: 'create account'
-                    ask_questions: true
-                style: 
-                  backgroundColor: 'transparent'
-                  border: 'none'
-                  fontWeight: 800
-                  textDecoration: 'underline'
-                  #color: 'white'
-                  textTransform: 'lowercase'
-                  padding: 0
 
-            "Please <BUTTON1>create an account</BUTTON1> before participating"
+          if subdomain.SSO_domain
+            TRANSLATE
+              id: 'create_account.call_out'
+              BUTTON1: 
+                component: A 
+                args: 
+                  href: '/login_via_sso'
+                  treat_as_external_link: true
+                  style: 
+                    backgroundColor: 'transparent'
+                    border: 'none'
+                    fontWeight: 800
+                    textDecoration: 'underline'
+                    #color: 'white'
+                    textTransform: 'lowercase'
+                    padding: 0
+
+              "Please <BUTTON1>create an account</BUTTON1> to participate"
+          else 
+            TRANSLATE
+              id: 'create_account.call_out'
+              BUTTON1: 
+                component: BUTTON 
+                args: 
+                  'data-action': 'create'
+                  onClick: (e) =>
+                    reset_key 'auth',
+                      form: 'create account'
+                      ask_questions: true
+                  style: 
+                    backgroundColor: 'transparent'
+                    border: 'none'
+                    fontWeight: 800
+                    textDecoration: 'underline'
+                    #color: 'white'
+                    textTransform: 'lowercase'
+                    padding: 0
+
+              "Please <BUTTON1>create an account</BUTTON1> to participate"
 
 
 window.Homepage = ReactiveComponent
@@ -260,24 +282,27 @@ window.SimpleHomepage = ReactiveComponent
       if customization('auth_callout') && homepage_tabs.filter not in ['About', 'FAQ']
         AuthCallout()
 
-      # List all clusters
-      for cluster, index in clusters or []
-        Cluster
-          key: "list/#{cluster.name}"
-          cluster: cluster 
-          index: index
+
+      if homepage_tabs.filter not in ['About', 'FAQ'] && !fetch('/subdomain').SSO_domain
+
+        # List all clusters
+        for cluster, index in clusters or []
+          Cluster
+            key: "list/#{cluster.name}"
+            cluster: cluster 
+            index: index
 
 
-      if permit('create proposal') > 0 && customization('homepage_show_new_proposal_button')
-        A 
-          style: 
-            color: logo_red
-            marginTop: 35
-            display: 'inline-block'
-            borderBottom: "1px solid #{logo_red}"
-          href: '/proposal/new'
+        if permit('create proposal') > 0 && customization('homepage_show_new_proposal_button')
+          A 
+            style: 
+              color: logo_red
+              marginTop: 35
+              display: 'inline-block'
+              borderBottom: "1px solid #{logo_red}"
+            href: '/proposal/new'
 
-          translator 'engage.add_new_proposal_button', "Create new proposal"
+            translator 'engage.add_new_proposal_button', "Create new proposal"
 
   typeset : -> 
     subdomain = fetch('/subdomain')

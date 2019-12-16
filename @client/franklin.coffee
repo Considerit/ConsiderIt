@@ -2143,6 +2143,13 @@ AuthTransition = ReactiveComponent
   render : ->
     current_user = fetch('/current_user')
 
+    questions_all_answered = true
+    questions = customization('auth_questions')
+    for question in (questions or [])
+      if question.required
+        questions_all_answered &&= !!current_user.tags[question.tag]
+
+
     if current_user.csrf
       arest.csrf(current_user.csrf)
 
@@ -2185,6 +2192,14 @@ AuthTransition = ReactiveComponent
       if subdomain.SSO_domain
         loadPage '/edit_profile'
         
+    # there's a required question this user has yet to answer
+    else if !questions_all_answered
+      reset_key 'auth',
+        form: 'user questions'
+        goal: 'To start participating'
+        ask_questions: true
+
+
     else if current_user.needs_to_verify && !window.send_verification_token
       current_user.trying_to = 'send_verification_token'
       save current_user

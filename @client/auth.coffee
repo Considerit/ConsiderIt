@@ -8,6 +8,7 @@
 # - reset password
 # - verify email
 # - edit profile
+# - user questions
 #
 # Each of these screens has some differences. We try to keep these differences
 # clearly documented in the render method so that the method doesn't get
@@ -952,7 +953,7 @@ Auth = ReactiveComponent
     # Note that we don't have server side validation because
     # the questions are all defined on the client. 
     @local.errors = []    
-    if auth.ask_questions
+    if auth.ask_questions && auth.form not in ['login', 'reset password', 'verify email']
       questions = customization('auth_questions')
       for question in questions
         if question.required

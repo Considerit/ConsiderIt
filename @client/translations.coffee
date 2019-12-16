@@ -29,7 +29,6 @@ window.TRANSLATE = (args, native_text) ->
   args.return_lang_used = true
   {message, lang_used, target_lang} = T args, native_text 
 
-
   # allow composing of components into translatable messages
   if message.indexOf('<') > -1
     parts = message.split(regexp_tsplit)
@@ -195,8 +194,14 @@ window.T = window.t = window.translator = (args, native_text) ->
         lang_used = lang 
         break 
 
-  translator = new IntlMessageFormat.IntlMessageFormat message, lang_used
-  message = translator.format(args)
+  try 
+    translator = new IntlMessageFormat.IntlMessageFormat message, lang_used
+    message = translator.format(args)
+
+  catch e
+     # this is a bad fallback, as plural rules won't work
+    message = translations_native[id]?.txt
+
 
   if args.return_lang_used # useful for a T wrapper that enables in situ translations
     {message, lang_used, target_lang: langs[0]}
@@ -340,6 +345,30 @@ TranslationsDash = ReactiveComponent
             TranslationsForLang
               key: "/translations/#{subdomain.name}"
               lang: local.translating_lang
+
+
+            DIV
+              style: 
+                position: 'fixed'
+                bottom: 0
+                left: 0
+                width: WINDOW_WIDTH()
+                zIndex: 999
+                backgroundColor: 'rgba(220,220,220,.8)'
+                textAlign: 'center'
+                padding: '8px'
+
+              BUTTON 
+                className: 'primary_button'
+                style: 
+                  backgroundColor: focus_color()
+                  marginTop: 0
+                  fontSize: 22
+                onClick: => 
+                  promote_temporary_translations(local.translating_lang, "/translations")                  
+                  promote_temporary_translations(local.translating_lang, "/translations/#{subdomain.name}")
+                
+                "Save Changes"
 
 
 
@@ -547,26 +576,6 @@ TranslationsForLang = ReactiveComponent
             rows
 
 
-      DIV
-        style: 
-          position: 'fixed'
-          bottom: 0
-          left: 0
-          width: WINDOW_WIDTH()
-          zIndex: 999
-          backgroundColor: 'rgba(220,220,220,.8)'
-          textAlign: 'center'
-          padding: '8px'
-
-        BUTTON 
-          className: 'primary_button'
-          style: 
-            backgroundColor: focus_color()
-            marginTop: 0
-            fontSize: 22
-          onClick: => promote_temporary_translations(lang, @props.key)
-          
-          "Save Changes"
 
 
 window.get_temporary_translations = (lang, key) ->

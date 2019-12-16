@@ -283,7 +283,7 @@ window.SimpleHomepage = ReactiveComponent
         AuthCallout()
 
 
-      if homepage_tabs.filter not in ['About', 'FAQ'] && !fetch('/subdomain').SSO_domain
+      if homepage_tabs.filter not in ['About', 'FAQ'] && (!fetch('/subdomain').SSO_domain || current_user.logged_in)
 
         # List all clusters
         for cluster, index in clusters or []

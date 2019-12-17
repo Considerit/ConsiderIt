@@ -225,7 +225,7 @@ window.CollapsedProposal = ReactiveComponent
                       id: "engage.point_count"
                       cnt: proposal.point_count
 
-                      "{cnt, plural, =0 {} one {# thought} other {# thoughts}}"
+                      "{cnt, plural, one {# consideration} other {# considerations}}"
 
 
             if @props.show_category && proposal.cluster

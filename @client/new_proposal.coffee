@@ -238,7 +238,7 @@ window.NewProposal = ReactiveComponent
           do =>
             available_clusters = (clust for clust in get_all_clusters() when current_user.is_admin || customization('list_show_new_button', "list/#{clust}"))
 
-            if !current_user.is_admin && available_clusters.length <= 1
+            if (!current_user.is_admin && available_clusters.length <= 1) || customization('hide_category_for_new', cluster_key)
               INPUT
                 type: 'hidden'
                 value: cluster_name

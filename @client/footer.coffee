@@ -89,18 +89,41 @@ window.DefaultFooter = ReactiveComponent
             TechnologyByConsiderit
               size: 26
             BR null
-            A 
-              href: 'https://consider.it'
-              style: 
-                display: 'inline-block'
-                textDecoration: 'underline'
-                fontSize: 14
-                marginTop: 10
 
-              translator 
-                id: "footer.created_your_own_forum"
-                considerit: "Consider.it"
-                'Create your own {considerit} forum'
+            DIV 
+              style:
+                marginBottom: 18
+
+              A 
+                href: 'https://github.com/Considerit/ConsiderIt'
+                style: 
+                  textDecoration: 'underline'
+                  fontWeight: 600
+                  fontSize: 14
+
+                target: '_blank'
+
+                "Consider.it is Open Source"
+                IMG 
+                  src: asset('product_page/github_logo.png')
+                  style: 
+                    height: 18
+                    paddingLeft: 6
+                    verticalAlign: 'middle'
+              ' | '
+
+              A 
+                href: 'https://consider.it'
+                style: 
+                  display: 'inline-block'
+                  textDecoration: 'underline'
+                  fontSize: 14
+                  marginTop: 10
+                  fontWeight: 600
+
+                translator 
+                  id: "footer.created_your_own_forum"
+                  'Create your own forum'
 
 
 
@@ -118,7 +141,7 @@ window.DefaultFooter = ReactiveComponent
               DIV 
                 style: 
                   display: 'inline-block'
-                '© 2016 Consider.it. All rights reserved. '
+                '© 2019 Consider.it. All rights reserved. '
 
                 TRANSLATE
                   id: 'footer.policies'

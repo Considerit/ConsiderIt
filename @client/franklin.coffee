@@ -1679,7 +1679,7 @@ PointsList = ReactiveComponent
         display: 'inline-block'
         verticalAlign: 'top'
         width: POINT_WIDTH()
-        minHeight: (if @page.points.length > 4 then jQuery(window).height() else 100)
+        minHeight: (if @page.points.length > 4 && get_proposal_mode() == 'crafting' then jQuery(window).height() else 100)
         zIndex: if @columnStandsOut() then 6 else 1
         margin: '38px 18px 0 18px'
         position: 'relative'

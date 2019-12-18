@@ -45,7 +45,7 @@ window.CollapsedProposal = ReactiveComponent
 
     draw_slider = can_opine > 0 || your_opinion?.published
 
-    icons = customization('show_proposer_icon', proposal)
+    icons = customization('show_proposer_icon', proposal) && !@props.hide_icons
     slider_regions = customization('slider_regions', proposal)
     show_proposal_scores = !@props.hide_scores && customization('show_proposal_scores', proposal)
 
@@ -82,7 +82,7 @@ window.CollapsedProposal = ReactiveComponent
       id: 'p' + proposal.slug.replace('-', '_')  # Initial 'p' is because all ids must begin 
                                            # with letter. seeking to hash was failing 
                                            # on proposals whose name began with number.
-      style:
+      style: _.defaults {}, (@props.wrapper_style or {}),
         minHeight: 64
         position: 'relative'
         margin: "0 0 #{if can_edit then '0' else '15px'} 0"
@@ -141,8 +141,8 @@ window.CollapsedProposal = ReactiveComponent
                   display: 'inline-block'
                   verticalAlign: 'top'
                   border: "2px dashed #ddd"
-          else 
-            SVG 
+          else
+            @props.icon or SVG 
               style: 
                 position: 'relative'
                 left: -22
@@ -163,7 +163,7 @@ window.CollapsedProposal = ReactiveComponent
 
           A
             className: 'proposal proposal_homepage_name'
-            style: 
+            style: _.defaults {}, (@props.name_style or {}),
               fontWeight: 600
               textDecoration: 'underline'
               #borderBottom: "1px solid #444"  
@@ -184,7 +184,7 @@ window.CollapsedProposal = ReactiveComponent
             if customization('proposal_meta_data')
               customization('proposal_meta_data')(proposal)
 
-            else if customization('show_proposal_meta_data')
+            else if !@props.hide_metadata && customization('show_proposal_meta_data')
               SPAN 
                 style: 
                   paddingRight: 16

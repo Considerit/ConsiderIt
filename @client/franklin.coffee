@@ -451,8 +451,10 @@ Proposal = ReactiveComponent
             margin: '70px auto 48px auto'
             width: w
 
-          NextProposals
+
+          (customization('ProposalNavigation') or NextProposals)
             width: w
+            proposal: @proposal
 
 
       if edit_mode && browser.is_mobile
@@ -525,7 +527,7 @@ NextProposals = ReactiveComponent
   render: -> 
 
     [dummy, next] = get_next_proposals
-                      relative_to: @proposal 
+                      relative_to: @props.proposal 
 
     count = @props.count or 5
 

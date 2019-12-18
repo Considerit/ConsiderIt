@@ -142,7 +142,7 @@ window.CollapsedProposal = ReactiveComponent
                   verticalAlign: 'top'
                   border: "2px dashed #ddd"
           else
-            @props.icon or SVG 
+            @props.icon?() or SVG 
               style: 
                 position: 'relative'
                 left: -22

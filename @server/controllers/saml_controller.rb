@@ -86,7 +86,11 @@ class SamlController < ApplicationController
             name += " #{response.attributes['Last Name']}"
           end 
         elsif email
-          name = email.split('@')[0]
+          name = email
+        end
+
+        if name.match('@')
+          name = name.split('@')[0]
         end
 
         user ||= User.new 

@@ -453,7 +453,7 @@ TranslationsForLang = ReactiveComponent
                     fontSize: 12
                     marginBottom: 8
                   
-                  "Messages support ICU format for e.g. pluralization. For complicated translations, you may wish to "
+                  "Translation strings support ICU format for e.g. pluralization. For complicated translations, you may wish to "
                   A 
                     href: "http://format-message.github.io/icu-message-format-for-translators/editor.html"
                     target: '_blank'

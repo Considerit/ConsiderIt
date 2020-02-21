@@ -576,7 +576,7 @@ ClusterHeading = ReactiveComponent
     DIV 
       style: 
         width: HOMEPAGE_WIDTH()
-        marginBottom: 8 #24
+        marginBottom: 16 #24
 
       DIVIDER?()
 

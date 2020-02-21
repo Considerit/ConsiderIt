@@ -40,6 +40,8 @@ window.customization = (field, object_or_key) ->
   
   if !!object_or_key && !object_or_key.key?
     obj = fetch object_or_key
+  else 
+    obj = object_or_key
 
 
   if obj && obj.subdomain_id && "#{obj.subdomain_id}" != document.querySelector("meta[name='forum']")?.getAttribute("content")
@@ -57,7 +59,6 @@ window.customization = (field, object_or_key) ->
           if obj.key then obj.key else obj
         else 
           null
-
 
   ########
   # The chain of customizations: 
@@ -235,9 +236,4 @@ for sub in text_and_masthead
 for sub in masthead_only
   customizations[sub.toLowerCase()] = 
     HomepageHeader: LegacyImageHeader()
-
-
-
-
-
 

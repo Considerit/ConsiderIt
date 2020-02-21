@@ -378,6 +378,8 @@ window.HomepageTabs = ReactiveComponent
           do (filter, clusters) =>
             current = homepage_tabs.filter == filter 
             hovering = @local.hovering == filter
+            featured = @props.featured == filter
+
             tab_name = customization('homepage_tab_render')?[filter]?() or filter
 
             tab_style = _.defaults {}, (@props.tab_style or {}),
@@ -388,17 +390,23 @@ window.HomepageTabs = ReactiveComponent
               color: 'white'
               padding: '10px 20px 4px 20px'
 
+            tab_wrapper_style = _.defaults {}, (@props.tab_wrapper_style or {}),
+              display: 'inline-block'
+              position: 'relative'
+
             if current
               _.extend tab_style, {backgroundColor: 'rgba(255,255,255,.2)', opacity: 1}, (@props.active_style or {})
-
+              _.extend tab_wrapper_style, @props.active_tab_wrapper_style or {}
+            
             if hovering
               _.extend tab_style, {opacity: 1}, (@props.hover_style or @props.active_style or {})
+              _.extend tab_wrapper_style, @props.hovering_tab_wrapper_style or {}
+
 
             LI 
               tabIndex: 0
               role: 'tab'
-              style: 
-                display: 'inline-block'
+              style: tab_wrapper_style
               'aria-controls': 'homepagetab'
               'aria-selected': current
 
@@ -426,6 +434,9 @@ window.HomepageTabs = ReactiveComponent
                   id: "homepage_tab.#{tab_name}"
                   key: "/translations/#{subdomain.name}"
                   tab_name
+
+              if featured 
+                @props.featured_insertion?()
 
 
 

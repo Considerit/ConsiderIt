@@ -29,7 +29,7 @@ class ImportDataController < ApplicationController
         directly_extractable: ['name', 'email', 'tags']
       },
       'proposals' => {
-        required_fields: ['url', 'topic', 'user'],
+        required_fields: ['topic', 'user'],
         directly_extractable: ['description', 'cluster', 'seo_title', 'seo_description', 'seo_keywords', 'description_fields', 'json']
       },
       'opinions' => {
@@ -169,9 +169,25 @@ class ImportDataController < ApplicationController
             user.add_to_active_in
 
           when 'proposals'
+            next if !row.has_key?('topic') || !row['topic']
+
+            slug = nil 
+            if row.has_key? 'url'
+              slug = row['url'].gsub(' ', '_').gsub(',','_').gsub('.','').downcase
+            else
+              if row.has_key?('cluster')
+                cluster = "-" + row['cluster']
+              else 
+                cluster = ""
+              end
+              slug = slugify("#{row['topic']}#{cluster}")
+              if !slug 
+                raise "Could not convert #{row['topic']} to a url"
+              end
+            end
 
             attrs.update({
-              'slug' => row['url'].gsub(' ', '_').gsub(',','_').gsub('.','').downcase,
+              'slug' => slug,
               'user_id' => user.id,
               'name' => row['topic'],
               'published' => true
@@ -404,6 +420,21 @@ class ImportDataController < ApplicationController
 
 end 
 
+def slugify(str)
+  slug = str.downcase
+    .gsub(/\s+/, '-')           # Replace spaces with -
+    .gsub(/[^\w\-]+/, '')       # Remove all non-word chars
+    .gsub(/\-\-+/, '-')         # Replace multiple - with single -
+    .gsub(/^-+/, '')             # Trim - from start of text
+    .gsub(/-+$/, '')             # Trim - from end of text
+
+  if str.length > 0 && (!slug || slug.length == 0)
+    return nil 
+  end 
+
+  slug
+
+end 
 
 def write_csv(fname, rows)
 

@@ -180,7 +180,11 @@ class ImportDataController < ApplicationController
               else 
                 cluster = ""
               end
-              slug = slugify("#{row['topic']}#{cluster}")
+              topic = row['topic']
+              if (topic + cluster).length > 255
+                topic = topic[0..(255 - cluster.length)]
+              end
+              slug = slugify("#{topic}#{cluster}")
               if !slug 
                 raise "Could not convert #{row['topic']} to a url"
               end
@@ -433,8 +437,7 @@ def slugify(str)
   end 
 
   slug
-
-end 
+end
 
 def write_csv(fname, rows)
 

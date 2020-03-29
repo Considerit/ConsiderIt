@@ -133,6 +133,7 @@ customization_value = (field, config) ->
   val
 
 
+
 require './color'
 require './logo'
 require './browser_location' # for loadPage
@@ -188,7 +189,6 @@ customizations.default =
   has_homepage: true
 
   homepage_list_order: []
-  homepage_lists_to_always_show: []
 
   font: "'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
 
@@ -236,4 +236,6 @@ for sub in text_and_masthead
 for sub in masthead_only
   customizations[sub.toLowerCase()] = 
     HomepageHeader: LegacyImageHeader()
+
+
 

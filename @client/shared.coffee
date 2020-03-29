@@ -215,9 +215,18 @@ window.opinionsForProposal = (proposal) ->
 
 window.get_all_clusters = ->
   proposals = fetch '/proposals'
-  always_show = customization 'homepage_lists_to_always_show'
   all_clusters = ((p.cluster or 'Proposals').trim() for p in proposals.proposals)
-  all_clusters = all_clusters.concat always_show
+
+  # clusters might also just be defined as a customization, without any proposals in them yet
+  subdomain = fetch('/subdomain')
+  subdomain_name = subdomain.name?.toLowerCase()
+  config = customizations[subdomain_name]
+  for k,v of config 
+    if k.match( /list\// )
+      all_clusters.push k.substring(5)
+
+
+
   all_clusters = _.uniq all_clusters
   all_clusters
 

@@ -282,26 +282,27 @@ window.SimpleHomepage = ReactiveComponent
         AuthCallout()
 
 
-      if homepage_tabs.filter not in ['About', 'FAQ'] && ( !subdomain.SSO_domain || current_user.logged_in)
-        DIV null, 
-          # List all clusters
-          for cluster, index in clusters or []
-            Cluster
-              key: "list/#{cluster.name}"
-              cluster: cluster 
-              index: index
+      
+      DIV null, 
+        # List all clusters
+        for cluster, index in clusters or []
+          Cluster
+            key: "list/#{cluster.name}"
+            cluster: cluster 
+            index: index
 
 
-          if permit('create proposal') > 0 && customization('homepage_show_new_proposal_button')
-            A 
-              style: 
-                color: logo_red
-                marginTop: 35
-                display: 'inline-block'
-                borderBottom: "1px solid #{logo_red}"
-              href: '/proposal/new'
+        if permit('create proposal') > 0 && customization('homepage_show_new_proposal_button') \
+            && homepage_tabs.filter not in ['About', 'FAQ'] && ( !subdomain.SSO_domain || current_user.logged_in)
+          A 
+            style: 
+              color: logo_red
+              marginTop: 35
+              display: 'inline-block'
+              borderBottom: "1px solid #{logo_red}"
+            href: '/proposal/new'
 
-              translator 'engage.add_new_proposal_button', "Create new proposal"
+            translator 'engage.add_new_proposal_button', "Create new proposal"
 
   typeset : -> 
     subdomain = fetch('/subdomain')
@@ -459,7 +460,8 @@ window.Cluster = ReactiveComponent
     is_collapsed = !!collapsed[@props.key]
 
     proposals = sorted_proposals(cluster.proposals)
-    return SPAN null if !proposals || (proposals.length == 0 && !(cluster.name in customization('homepage_lists_to_always_show')))
+
+    return SPAN null if !proposals
 
     cluster_key = "list/#{cluster.name}"
 

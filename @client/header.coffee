@@ -24,7 +24,8 @@ window.Header = ReactiveComponent
       #     textAlign: 'center'
 
       #   "Consider.it server upgrade scheduled for 5:30pm - 6:00pm UTC"
-    
+      
+      customization('header_bonus')?()
       DIV 
         style: 
           position: 'relative'

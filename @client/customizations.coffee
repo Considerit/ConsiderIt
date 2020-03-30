@@ -164,7 +164,9 @@ customizations.default =
   homepage_show_search_and_sort: true
 
   list_show_new_button: true
+
   homepage_show_new_proposal_button: true
+  homepage_default_sort_order: 'trending'
 
   show_crafting_page_first: false
 
@@ -182,6 +184,7 @@ customizations.default =
 
   # default cluster options
   list_is_archived: false
+  list_uncollapseable: false
 
   # Other options
   auth_footer: false
@@ -236,6 +239,9 @@ for sub in text_and_masthead
 for sub in masthead_only
   customizations[sub.toLowerCase()] = 
     HomepageHeader: LegacyImageHeader()
+
+
+
 
 
 

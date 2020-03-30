@@ -175,8 +175,8 @@ class ImportDataController < ApplicationController
             if row.has_key? 'url'
               slug = row['url'].gsub(' ', '_').gsub(',','_').gsub('.','').downcase
             else
-              if row.has_key?('cluster')
-                cluster = "-" + row['cluster']
+              if row.has_key?('cluster') || row.has_key?('list')
+                cluster = "-" + (row['cluster'] || row['list'])
               else 
                 cluster = ""
               end
@@ -194,7 +194,8 @@ class ImportDataController < ApplicationController
               'slug' => slug,
               'user_id' => user.id,
               'name' => row['topic'],
-              'published' => true
+              'published' => true,
+              'cluster' => row['cluster'] || row['list']
             })
 
             proposal = Proposal.find_by_slug attrs['slug']

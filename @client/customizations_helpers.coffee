@@ -293,6 +293,8 @@ window.ShortHeader = (opts) -> ->
     logo_src: subdomain.branding.logo
     logo_height: 50
     min_height: 70
+    padding: '8px 0'
+    padding_left_icon: 20
 
   hsl = parseCssHsl(opts.background)
   is_light = hsl.l > .75
@@ -305,7 +307,7 @@ window.ShortHeader = (opts) -> ->
     DIV
       style: 
         position: 'relative'
-        padding: '8px 0'
+        padding: opts.padding
         minHeight: opts.min_height
         display: 'flex'
         flexDirection: 'row'
@@ -316,7 +318,7 @@ window.ShortHeader = (opts) -> ->
 
       DIV 
         style: 
-          paddingLeft: if !homepage then 20 else 0
+          paddingLeft: if !homepage then opts.padding_left_icon else 0
           paddingRight: 20
           height: if opts.logo_height then opts.logo_height
           display: 'flex'
@@ -358,7 +360,7 @@ window.ShortHeader = (opts) -> ->
 
 
       if opts.text
-        DIV 
+        H2 
           style: 
             color: if !is_light then 'white'
             marginLeft: if opts.logo_src then 35

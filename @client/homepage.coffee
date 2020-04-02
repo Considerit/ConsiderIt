@@ -562,6 +562,10 @@ ClusterHeading = ReactiveComponent
       fontWeight: 700
       fontStyle: 'oblique'
 
+
+    if heading_text.replace(/^\s+|\s+$/g, '').length == 0 # trim whitespace
+      heading_style.fontSize = 0 
+
     description = customization('list_description', cluster_key) or customization('list_one_line_desc', cluster_key)
     description_style = customization 'list_description_style', cluster_key
 

@@ -16,6 +16,7 @@ namespace :customizations do
       # list_items_title: '',
       # list_no_filters: false,
       # list_uncollapseable,
+      # list_label_style
     }
 
     file_path = args[:fpath] || 'lib/tasks/client_data/lists.csv'
@@ -25,6 +26,8 @@ namespace :customizations do
     sections = {}
 
     lists = []
+
+
 
 
     out = File.open('lib/tasks/client_data/customizations.txt', 'w')
@@ -58,6 +61,11 @@ namespace :customizations do
 
       if starts_closed
         list[:list_is_archived] = true 
+      end
+
+
+      if name.starts_with?('background-d') || name.starts_with?('background-l')
+        list[:list_label_style] = {marginLeft: 36}
       end
 
       out.puts "  \"list/#{name}\":\n"

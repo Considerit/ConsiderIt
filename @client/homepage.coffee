@@ -201,7 +201,7 @@ window.TagHomepage = ReactiveComponent
             show_category: true
             category_color: hsv2rgb(colors[cluster], .7, .8)
 
-        if (show_all.show_all || proposals.length <= 20) && (customization('list_show_new_button', "list/#{dummy_cluster}")  || current_user.is_admin)
+        if (show_all.show_all || proposals.length <= 20) && customization('list_show_new_button', "list/#{dummy_cluster}")
           LI 
             key: "newlist/#{dummy_cluster}"
             style: 
@@ -491,7 +491,7 @@ window.Cluster = ReactiveComponent
               key: "collapsed#{proposal.key}"
               proposal: proposal
 
-          if customization('list_show_new_button', cluster_key) || current_user.is_admin
+          if customization('list_show_new_button', cluster_key)
             LI 
               key: "new#{cluster_key}"
               style: 

@@ -35,6 +35,7 @@ namespace :customizations do
       desc = row['description']
 
       show_new = row['community can add to list']
+      starts_closed = row['starts closed']
 
       list = {}
       list_defaults.each do |k,v|
@@ -44,7 +45,7 @@ namespace :customizations do
       list[:list_label] = header
 
       if desc 
-        list[:description] = desc 
+        list[:list_description] = desc 
       end
 
       if show_new
@@ -54,6 +55,10 @@ namespace :customizations do
           list[:list_show_new_button] = true 
         end 
       end 
+
+      if starts_closed
+        list[:list_is_archived] = true 
+      end
 
       out.puts "  \"list/#{name}\":\n"
       list.each do |k,v|

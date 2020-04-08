@@ -612,6 +612,7 @@ ClusterHeading = ReactiveComponent
               position: 'relative'
               fontFamily: heading_style.fontFamily
               fontStyle: heading_style.fontStyle
+              textDecoration: heading_style.textDecoration
                 
             onKeyDown: if !list_uncollapseable then (e) -> 
               if e.which == 13 || e.which == 32 # ENTER or SPACE
@@ -700,7 +701,6 @@ ClusterHeading = ReactiveComponent
 
 
 window.list_actions = (props) -> 
-
   SPAN null,
 
     if props.can_sort || props.add_new

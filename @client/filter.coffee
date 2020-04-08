@@ -223,7 +223,7 @@ ProposalSort = ReactiveComponent
 
     proposals = fetch '/proposals' # registering dependency so that we get re-rendered...ApplyFilters is actually dependent
     filter_out = fetch 'filtered'
-    filters = fetch 'filters'
+    # filters = fetch 'filters'
 
     subdomain = fetch '/subdomain'
 
@@ -233,7 +233,7 @@ ProposalSort = ReactiveComponent
     SPAN 
       style: _.defaults (@props.style or {})
 
-      ApplyFilters()
+      # ApplyFilters()
 
 
       DIV

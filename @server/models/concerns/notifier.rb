@@ -159,9 +159,7 @@ module Notifier
         event_objs[event_key] = n.event_object
       end
       event_object = event_objs[event_key]
-      !event_object.respond_to?(:okay_to_email_notification) ||
-      n.event_type == 'content_to_moderate' ||
-      event_object.okay_to_email_notification
+      !event_object.respond_to?(:okay_to_email_notification) || n.event_type == 'content_to_moderate' || event_object.okay_to_email_notification
     }
   end
 

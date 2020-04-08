@@ -65,7 +65,7 @@ namespace :customizations do
 
 
       if name.starts_with?('background-d') || name.starts_with?('background-l')
-        list[:list_label_style] = {marginLeft: 36}
+        list[:list_label_style] = {marginLeft: 36, fontWeight: 400, color: "#666"}
       end
 
       out.puts "  \"list/#{name}\":\n"

@@ -97,6 +97,8 @@ window.Homepage = ReactiveComponent
 
       SimpleHomepage()
 
+
+
       # if customization('tawkspace')
       #   IFRAME 
       #     src: customization('tawkspace')
@@ -154,7 +156,7 @@ window.TagHomepage = ReactiveComponent
     for cluster, idx in clusters
       colors[cluster] = hues[idx]
 
-    proposals = sorted_proposals(proposals)
+    proposals = sorted_proposals(proposals, @local.key, true)
 
     homepage_tabs = fetch 'homepage_tabs'
 
@@ -177,6 +179,8 @@ window.TagHomepage = ReactiveComponent
 
       if customization('auth_callout')
         AuthCallout()
+
+      ManualProposalResort sort_key: @local.key
 
       ClusterHeading 
         cluster: 
@@ -441,6 +445,49 @@ window.HomepageTabs = ReactiveComponent
 
 
 
+window.ManualProposalResort = ReactiveComponent
+  displayName: 'ManualProposalResort'
+
+  render: -> 
+    sort = fetch 'sort_proposals'
+
+    if !sort.sorts?[@props.sort_key].stale 
+      return SPAN null 
+
+    DIV 
+      style: 
+        position: 'fixed'
+        width: '100%'
+        bottom: 0
+        left: 0
+        zIndex: 100
+        backgroundColor: '#ddd'
+        textAlign: 'center'
+        fontSize: 26
+        padding: '8px 0'
+
+
+      TRANSLATE
+        id: "engage.re-sort_list"
+        button: 
+          component: BUTTON
+          args: 
+            style: 
+              color: focus_color()
+              fontSize: 26
+              textDecoration: 'underline'
+              fontWeight: 'bold'
+              border: 'none'
+              backgroundColor: 'transparent'
+              padding: 0
+            onClick: invalidate_proposal_sorts
+            onKeyDown: (e) => 
+              if e.which == 13 || e.which == 32 # ENTER or SPACE
+                invalidate_proposal_sorts()
+                e.preventDefault()
+        "<button>Re-sort this list</button>  when you're ready. It is out of order."
+
+
 window.Cluster = ReactiveComponent
   displayName: 'Cluster'
 
@@ -459,12 +506,13 @@ window.Cluster = ReactiveComponent
     collapsed = fetch 'collapsed_clusters'
     is_collapsed = !!collapsed[@props.key]
 
-    proposals = sorted_proposals(cluster.proposals)
+    proposals = sorted_proposals(cluster.proposals, @local.key, true)
 
     return SPAN null if !proposals
 
     cluster_key = "list/#{cluster.name}"
 
+    console.log 'render Cluster'
     ARTICLE
       key: cluster.name
       id: if cluster.name && cluster.name then cluster.name.toLowerCase()
@@ -474,6 +522,8 @@ window.Cluster = ReactiveComponent
 
       A name: if cluster.name && cluster.name then cluster.name.toLowerCase().replace(/ /g, '_')
 
+
+      ManualProposalResort sort_key: @local.key
 
       ClusterHeading 
         cluster: cluster 
@@ -514,16 +564,16 @@ window.Cluster = ReactiveComponent
 
 
 
-  storeSortOrder: -> 
-    p = (p.key for p in sorted_proposals(@props.cluster.proposals))
-    c = fetch("cluster-#{slugify(@props.cluster.name)}-sort_order")
-    order = JSON.stringify(p)
-    if order != c.sort_order
-      c.sort_order = order 
-      save c
+  # storeSortOrder: -> 
+  #   p = (p.key for p in sorted_proposals(@props.cluster.proposals))
+  #   c = fetch("cluster-#{slugify(@props.cluster.name)}-sort_order")
+  #   order = JSON.stringify(p)
+  #   if order != c.sort_order
+  #     c.sort_order = order 
+  #     save c
 
-  componentDidMount: -> @storeSortOrder()
-  componentDidUpdate: -> @storeSortOrder()
+  # componentDidMount: -> @storeSortOrder()
+  # componentDidUpdate: -> @storeSortOrder()
 
 ClusterHeading = ReactiveComponent
   displayName: 'ClusterHeading'
@@ -744,15 +794,14 @@ window.list_actions = (props) ->
                   , 1
                 translator "engage.add_new_proposal_to_list", 'add new'
 
-    if customization('opinion_filters')
-      OpinionFilter
-        style: 
-          width: if props.can_sort || true then column_sizes().second
-          marginBottom: 12
-          marginLeft: column_sizes().gutter + (if props.can_sort then 0 else column_sizes().first)
-          display: if props.can_sort then 'inline-block'
-          verticalAlign: 'top'
-          textAlign: 'center' 
+    OpinionFilter
+      style: 
+        width: if props.can_sort || true then column_sizes().second
+        marginBottom: 12
+        marginLeft: column_sizes().gutter + (if props.can_sort then 0 else column_sizes().first)
+        display: if props.can_sort then 'inline-block'
+        verticalAlign: 'top'
+        textAlign: 'center' 
 
 
 

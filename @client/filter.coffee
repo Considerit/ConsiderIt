@@ -62,14 +62,21 @@ ApplyFilters = ReactiveComponent
 
 
 
-window.sorted_proposals = (proposals) ->
+window.invalidate_proposal_sorts = -> 
+  sort = fetch 'sort_proposals'
+  for k,v of sort.sorts 
+    v.force_resort = true 
+  save sort 
+
+window.sorted_proposals = (proposals, sort_key, require_force) ->
 
   sort = fetch 'sort_proposals'
-
   set_sort() if !sort.name? 
 
-  comp = sort.comp
-  proposals = proposals.slice().sort comp
+  filters = fetch 'filtered'
+
+  proposals = proposals.slice()
+
 
   # filter out filtered proposals
   filter_out = fetch 'filtered'
@@ -80,6 +87,52 @@ window.sorted_proposals = (proposals) ->
         filtered.push proposal
     for proposal in filtered
       proposals.splice proposals.indexOf(proposal), 1
+
+  comp = sort.comp
+  proposals = proposals.sort comp
+
+  if require_force
+    # when dragging a slider on a list of proposals, we may want to 
+    # return the old sort order even if it isn't technically correct.
+    # This is because it is too annoying to have the proposals list
+    # jumping around all the time.  
+
+    sort.sorts ||= {}
+
+    keys = (p.key for p in (proposals or []))
+    order = md5 keys
+
+    cached_order = null
+    if sort_key of sort.sorts
+      cached_order = md5 sort.sorts[sort_key].cache
+    else 
+      cached_order = null 
+      sort.sorts[sort_key] = {cache: [], stale: true, force_resort: true}
+
+    # alright, same order
+    if cached_order == order 
+      if sort.sorts[sort_key].force_resort
+        sort.sorts[sort_key].force_resort = false 
+        sort.sorts[sort_key].stale = false 
+        save sort
+
+    # force an update to the sort order, either because its stale, bc we're initializing, or 
+    # because a new proposal has been added or removed
+    else if sort.sorts[sort_key].force_resort || proposals.length != sort.sorts[sort_key].cache.length
+      sort.sorts[sort_key].force_resort = false
+      sort.sorts[sort_key].stale = false
+      sort.sorts[sort_key].cache = (p.key for p in proposals)
+      save sort
+
+    # return the stale sort order
+    else 
+      if !sort.sorts[sort_key].stale
+        sort.sorts[sort_key].stale = true 
+        save sort 
+      dict_proposals = {}
+      for p in proposals 
+        dict_proposals[p.key] = p 
+      proposals = (dict_proposals[k] for k in sort.sorts[sort_key].cache)
 
   proposals
 
@@ -93,9 +146,9 @@ basic_proposal_scoring = (proposal, opinion_value) ->
   if !opinions || opinions.length == 0
     return {sum: 0, avg: 0, std_dev: 0, opinions: []}
 
-  filtered_out = fetch('filtered')
+  filtered_out = fetch 'filtered'
   if filtered_out.users
-    opinions = (o for o in opinions when !(filtered_out.users?[o.user]))
+    opinions = (o for o in opinions when filtered_out.enable_comparison || !(filtered_out.users?[o.user]))
 
   sum = 0
   for opinion in opinions
@@ -338,6 +391,7 @@ SortProposalsMenu = ReactiveComponent
       save sort 
       @local.sort_menu = false
       save @local
+      invalidate_proposal_sorts()
       e.stopPropagation()
       e.preventDefault()
 
@@ -569,56 +623,90 @@ window.opinion_trickle = ->
 
   tick 1000
 
+
+
+toggle_filter = (filter) -> 
+  users = fetch '/users'
+  filter_out = fetch 'filtered'
+
+  return if !users.users
+  
+  filter_out.users = {}
+
+  if filter_out.current_filter == filter
+    filter_out.current_filter = null 
+  else 
+    filter_out.current_filter = filter 
+
+  filter_func = filter_out.current_filter?.pass
+
+  if filter_func
+    for user in users.users      
+      if !filter_func(user)
+        filter_out.users[user.key] = 1
+
+  invalidate_proposal_sorts()
+  save filter_out
+
+set_comparison_mode = (enabled) ->
+  filter_out = fetch 'filtered'
+
+  if enabled == null # toggle if argument not passed 
+    filter_out.enable_comparison = !filter_out.enable_comparison
+  else 
+    filter_out.enable_comparison = enabled
+  save filter_out 
+
+
 OpinionFilter = ReactiveComponent
   displayName: 'OpinionFilter'
 
   render : -> 
 
-    filters = customization 'opinion_filters'
-    users = fetch '/users'
     filter_out = fetch 'filtered'
-    bitcoin = fetch('/subdomain').name in ['bitcoin', 'bitcoinclassic']
-    
+    users = fetch '/users' # fetched here so its ready for toggle_filter func
+
     filters_for_admin = customization('opinion_filters_admin_only') 
+    custom_filters = customization 'opinion_filters'
+    
+    filters = [{
+                label: 'everyone'
+                tooltip: null 
+                pass: (u) -> true 
+              }, {
+                label: 'just you'
+                tooltip: null 
+                pass: (u) -> 
+                  user = fetch(u)
+                  user.key == fetch('/current_user').user
+              }]
 
-    return SPAN null if filters_for_admin && !fetch('/current_user').is_admin
+    if custom_filters && (!filters_for_admin || fetch('/current_user').is_admin)
+      filters = filters.concat custom_filters
 
-    toggle_filter = (filter) -> 
-      filter_out.users = {}
-      filter_out.opinion_filters ||= {}
-
-      if filter_out.opinion_filters[filter.label]
-        delete filter_out.opinion_filters[filter.label]
-      else 
-        filter_out.opinion_filters = {} # act like radio button
-        filter_out.opinion_filters[filter.label] = filter
-
-
-      filter_funcs = (f.pass for k,f of filter_out.opinion_filters)
-      if filter_funcs.length > 0
-        for user in users.users
-          passes = true 
-          for func in filter_funcs
-            passes &&= func(user)
-
-          if !passes
-            filter_out.users[user.key] = 1
-
-      save filter_out
-
-    if fetch('/subdomain').name == 'bitcoinclassic' && !filter_out.opinion_filters?
-      toggle_filter filters[0]
-
+    if !filter_out.current_filter
+      filter_out.current_filter = filters[0]
 
     DIV 
       style: (@props.style or {})
       className: 'filter_opinions_to'
 
-
       DIV 
         style: 
           marginTop: 0
           lineHeight: 1
+
+        INPUT 
+          type: 'checkbox'
+          id: 'enable_comparison'
+          checked: filter_out.enable_comparison
+          ref: 'enable_comparison'
+          onChange: => 
+            set_comparison_mode @refs.enable_comparison.getDOMNode().checked
+
+        LABEL 
+          htmlFor: 'enable_comparison'
+          TRANSLATE 'engage.compare_all', "Compare to all"
 
         SPAN
           style: 
@@ -626,12 +714,9 @@ OpinionFilter = ReactiveComponent
             #fontWeight: 600
             color: '#777'
 
-          TRANSLATE "engage.opinion_filter.label", 'Filter to' 
-          if bitcoin 
-            ' verified'
-          ':'
+          TRANSLATE "engage.opinion_filter.label", 'Filter to:' 
 
-        if bitcoin
+        if fetch('/subdomain').name in ['bitcoin', 'bitcoinclassic']
           VerificationProcessExplanation()
 
         for filter,idx in filters 
@@ -653,7 +738,7 @@ OpinionFilter = ReactiveComponent
                 tooltip.coords = tooltip.tip = null 
                 save tooltip
 
-            is_enabled = filter_out.opinion_filters?[filter.label]
+            is_enabled = filter_out.current_filter?.label == filter.label
             BUTTON 
               'aria-label': translator {id: "engage.opinion_filter.explanation", label: filter.label}, "Filter opinions to {label}"
               'aria-describedby': if filter.tooltip then 'tooltip'

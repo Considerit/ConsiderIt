@@ -389,7 +389,7 @@ SortProposalsMenu = ReactiveComponent
     SPAN
       style: 
         color: 'black'
-        fontSize: 14
+        fontSize: 20
 
       TRANSLATE "engage.sort_by", "sort by"
 
@@ -412,6 +412,7 @@ SortProposalsMenu = ReactiveComponent
             SPAN style: _.extend cssTriangle 'bottom', focus_color(), 8, 5,
               display: 'inline-block'
               marginLeft: 4   
+              marginBottom: 2
 
         render_option: (option, is_active) -> 
           [        
@@ -576,6 +577,8 @@ OpinionFilter = ReactiveComponent
     if !filter_out.current_filter
       filter_out.current_filter = filters[0]
 
+    current_filter = filter_out.current_filter
+
     DIV 
       style: (@props.style or {})
       className: 'filter_opinions_to'
@@ -585,81 +588,114 @@ OpinionFilter = ReactiveComponent
           marginTop: 0
           lineHeight: 1
 
-        INPUT 
-          type: 'checkbox'
-          id: 'enable_comparison'
-          checked: filter_out.enable_comparison
-          ref: 'enable_comparison'
-          onChange: => 
-            set_comparison_mode @refs.enable_comparison.getDOMNode().checked
-
-        LABEL 
-          htmlFor: 'enable_comparison'
-          TRANSLATE 'engage.compare_all', "Compare to all"
-
-        SPAN
-          style: 
-            fontSize: 14
-            #fontWeight: 600
-            color: '#777'
-
-          TRANSLATE "engage.opinion_filter.label", 'Filter to:' 
-
         if fetch('/subdomain').name in ['bitcoin', 'bitcoinclassic']
           VerificationProcessExplanation()
 
-        for filter,idx in filters 
-          do (filter, idx) => 
-            show_tooltip = => 
-              @local.focus = idx
-              save @local
-              if filter.tooltip 
-                tooltip = fetch 'tooltip'
-                tooltip.coords = $(@refs["filter-#{idx}"].getDOMNode()).offset()
-                tooltip.tip = filter.tooltip
-                save tooltip
+        DIV
+          style: 
+            fontSize: 20
+            #fontWeight: 600
+            position: 'relative'
 
-            hide_tooltip = => 
-              @local.focus = null
-              save @local            
-              if filter.tooltip 
-                tooltip = fetch 'tooltip'
-                tooltip.coords = tooltip.tip = null 
-                save tooltip
+          TRANSLATE "engage.opinion_filter.label", 'show opinion of:' 
+          
+          " "
 
-            is_enabled = filter_out.current_filter?.label == filter.label
-            BUTTON 
-              'aria-label': translator {id: "engage.opinion_filter.explanation", label: filter.label}, "Filter opinions to {label}"
-              'aria-describedby': if filter.tooltip then 'tooltip'
-              'aria-pressed': is_enabled
-              tabIndex: 0
-              ref: "filter-#{idx}"
+          DropMenu
+            options: filters
+
+            open_menu_on: 'activation'
+
+            selection_made_callback: toggle_filter
+
+            render_anchor: ->
+              
+              key = if current_filter.label not in ['everyone' or 'just you'] then "/translations/#{fetch('/subdomain').name}" else null
+              SPAN null,
+
+                translator 
+                  id: "opinion_filter.name.#{current_filter.label}"
+                  key: key
+                  current_filter.label
+
+                SPAN style: _.extend cssTriangle 'bottom', focus_color(), 8, 5,
+                  display: 'inline-block'
+                  marginLeft: 4  
+                  marginBottom: 2 
+
+            render_option: (filter, is_active) -> 
+              [        
+                translator 
+                  id: "opinion_filter.name.#{filter.label}"
+                  key: "/translations/#{fetch('/subdomain').name}"
+                  filter.label
+
+                if filter.tooltip
+                  SPAN 
+                    style: 
+                      fontSize: 12
+                      color: if is_active then 'white' else 'black'
+                      marginLeft: 16
+                      verticalAlign: 'baseline'
+
+                    filter.tooltip
+              ]
+
+            wrapper_style: 
+              display: 'inline-block'
+
+            anchor_style: 
+              fontWeight: 600
+              padding: 0
+              display: 'inline-block'
+              color: focus_color() #'inherit'
+              textTransform: 'lowercase'
+              borderRadius: 16
+
+            menu_style: 
+              minWidth: 250
+              backgroundColor: '#eee'
+              border: "1px solid #{focus_color()}"
+              left: 'auto'
+              right: -9999
+              top: 18
+              borderRadius: 8
+              fontWeight: 400
+              overflow: 'hidden'
+              boxShadow: '0 1px 2px rgba(0,0,0,.3)'
+              textAlign: 'right'
+
+            menu_when_open_style: 
+              right: 0
+
+            option_style: 
+              padding: '6px 12px'
+              borderBottom: "1px solid #ddd"
+              display: 'block'
+
+            active_option_style: 
+              color: 'white'
+              backgroundColor: focus_color()
+
+          if current_filter.label != 'everyone'
+            DIV 
               style: 
-                display: 'inline-block'
-                marginLeft: 7
-                padding: '0 3px 0 3px'  
-                color: if is_enabled then 'white' else if @local.focus == idx then 'black' else '#777'
-                cursor: 'pointer'
+                position: 'absolute'
+                right: 0 
+                bottom: -20
                 fontSize: 14
-                backgroundColor: if is_enabled then focus_color() else if @local.focus == idx then '#eee' else 'transparent'
-                border: 'none'
-                outline: 'none'
+                zIndex: 99
+              INPUT 
+                type: 'checkbox'
+                id: 'enable_comparison'
+                checked: filter_out.enable_comparison
+                ref: 'enable_comparison'
+                onChange: => 
+                  set_comparison_mode @refs.enable_comparison.getDOMNode().checked
 
-              onMouseEnter: show_tooltip
-              onMouseLeave: hide_tooltip
-              onFocus: show_tooltip
-              onBlur: hide_tooltip 
-              onClick: -> toggle_filter(filter)   
-              onKeyDown: (e) -> 
-                if e.which == 13 || e.which == 32 # ENTER or SPACE
-                  toggle_filter(filter) 
-                  e.preventDefault()
-                  e.stopPropagation()
-
-              translator 
-                id: "opinion_filter.name.#{filter.label}"
-                key: "/translations/#{fetch('/subdomain').name}"
-                filter.label
+              LABEL 
+                htmlFor: 'enable_comparison'
+                TRANSLATE 'engage.compare_all', "compare to everyone"
 
 
 VerificationProcessExplanation = ReactiveComponent

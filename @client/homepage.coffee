@@ -751,57 +751,60 @@ ClusterHeading = ReactiveComponent
 
 
 window.list_actions = (props) -> 
-  SPAN null,
 
-    if props.can_sort || props.add_new
-      DIV 
+  add_new = props.add_new
+  if add_new 
+    permitted = permit('create proposal')
+    add_new &&= permitted > 0 || permitted == Permission.NOT_LOGGED_IN
+
+  DIV 
+    style: 
+      marginTop: 12
+      marginBottom: 36
+
+    if add_new
+
+      SPAN null, 
+        A
+          style: 
+            textDecoration: 'underline'
+            fontSize: 20
+            color: focus_color()
+            fontFamily: customization('font')
+            fontStyle: 'normal'
+            fontWeight: 600
+          onClick: (e) => 
+            show_all = fetch('show_all_proposals')
+            show_all.show_all = true 
+            save show_all
+            e.stopPropagation()
+
+            setTimeout =>
+              $("[name='add_new_#{props.cluster.name}']").ensureInView()
+            , 1
+          translator "engage.add_new_proposal_to_list", 'add new'
+
+    if props.can_sort && add_new
+      SPAN 
         style: 
-          width: column_sizes().first
-          marginBottom: 12
-          display: 'inline-block'
-          verticalAlign: 'top'
+          padding: '0 24px'
+          fontSize: 20
+        '|'
 
-        if props.can_sort
-          SortProposalsMenu()
+    if props.can_sort
+      SortProposalsMenu()
 
-        if props.add_new
-          permitted = permit('create proposal')
-          if permitted > 0 || permitted == Permission.NOT_LOGGED_IN
-
-            SPAN null, 
-              if props.can_sort
-                SPAN 
-                  style: 
-                    padding: '0 12px'
-                    fontSize: 14
-                  '|'
-              A
-                style: 
-                  textDecoration: 'underline'
-                  fontSize: 14
-                  color: focus_color()
-                  fontFamily: customization('font')
-                  fontStyle: 'normal'
-                  fontWeight: 600
-                onClick: (e) => 
-                  show_all = fetch('show_all_proposals')
-                  show_all.show_all = true 
-                  save show_all
-                  e.stopPropagation()
-
-                  setTimeout =>
-                    $("[name='add_new_#{props.cluster.name}']").ensureInView()
-                  , 1
-                translator "engage.add_new_proposal_to_list", 'add new'
 
     OpinionFilter
       style: 
-        width: if props.can_sort || true then column_sizes().second
-        marginBottom: 12
-        marginLeft: column_sizes().gutter + (if props.can_sort then 0 else column_sizes().first)
-        display: if props.can_sort then 'inline-block'
-        verticalAlign: 'top'
-        textAlign: 'center' 
+        display: 'inline-block'
+        float: 'right'
+        maxWidth: column_sizes().second
+        textAlign: 'right'
+
+    DIV 
+      style: 
+        clear: 'both'
 
 
 

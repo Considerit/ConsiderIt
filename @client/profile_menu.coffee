@@ -247,13 +247,5 @@ window.ProfileMenu = ReactiveComponent
               width: 570    
 
 
-styles += """
-.menu_link {
-  position: relative;
-  bottom: 8px;
-  padding-left: 27px;
-  display: block;
-  white-space: nowrap; }
-
-.profile_menu_wrap:hover .profile_anchor{ color: inherit; }
+styles += """.profile_menu_wrap:hover .profile_anchor{ color: inherit; }
 """

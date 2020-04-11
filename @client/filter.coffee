@@ -169,14 +169,14 @@ sort_options = [
   { 
     comp: (a, b) -> basic_proposal_scoring(b, ((o) -> o.stance)).avg - basic_proposal_scoring(a, ((o) -> o.stance)).avg
     name: 'Average Score'
-    description: "Each proposal is scored by the average opinion score, where opinions are on [-1, 1]."
+    description: "Each response is scored by the average opinion score, where opinions are on [-1, 1]."
   }, { 
     comp: (a, b) -> basic_proposal_scoring(b, ((o) -> o.stance)).sum - basic_proposal_scoring(a, ((o) -> o.stance)).sum
     name: 'Total Score'
-    description: "Each proposal is scored by the sum of opinions, where opinions are on [-1, 1]."
+    description: "Each response is scored by the sum of opinions, where opinions are on [-1, 1]."
   }, {
     name: 'Trending'
-    description: "'Total Score', except that newer opinions and topics are weighed more heavily."
+    description: "'Total Score', except that newer opinions and responses are weighed more heavily."
 
     comp: (a, b) ->
       ov = (o) -> 
@@ -195,14 +195,14 @@ sort_options = [
   { 
     name: 'Alphabetically'
     comp: (a, b) -> a.name.localeCompare b.name
-    description: "Sort alphabetically by the proposal's title"
+    description: "Sort alphabetically by the response's title"
   }, {
     comp: (a,b) -> new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     name: 'Newest'
-    description: "The proposals submitted most recently are shown first."
+    description: "The responses submitted most recently are shown first."
   }, { 
     name: 'Unity'
-    description: "Proposals where the community is most united for or against is shown highest."
+    description: "Responses where the community is most united for or against are shown highest."
     comp: (a,b) -> 
       ov = (o) -> o.stance
       val = (proposal) ->
@@ -215,7 +215,7 @@ sort_options = [
 
   }, { 
     name: 'Difference'
-    description: "Proposals where the community is most split is shown highest."
+    description: "Responses where the community is most split are shown highest."
     comp: (a,b) -> 
       ov = (o) -> o.stance
       val = (proposal) ->
@@ -406,7 +406,10 @@ SortProposalsMenu = ReactiveComponent
           save sort 
 
         render_anchor: ->
-          SPAN null, 
+          SPAN 
+            style: 
+              fontWeight: 700
+
             translator "engage.sort_order.#{sort.name}", sort.name
 
             SPAN style: _.extend cssTriangle 'bottom', focus_color(), 8, 5,
@@ -416,19 +419,17 @@ SortProposalsMenu = ReactiveComponent
 
         render_option: (option, is_active) -> 
           [        
-            SPAN 
+            DIV 
               style: 
                 fontWeight: 600
                 fontSize: 20
 
               translator "engage.sort_order.#{option.name}", option.name 
 
-            SPAN 
+            DIV 
               style: 
                 fontSize: 12
                 color: if is_active then 'white' else 'black'
-                marginLeft: 16
-                verticalAlign: 'baseline'
 
               translator "engage.sort_order.#{option.name}.description", option.description 
           ]
@@ -445,7 +446,7 @@ SortProposalsMenu = ReactiveComponent
           borderRadius: 16
 
         menu_style: 
-          width: HOMEPAGE_WIDTH()
+          minWidth: 500
           backgroundColor: '#eee'
           border: "1px solid #{focus_color()}"
           left: -9999
@@ -594,12 +595,14 @@ OpinionFilter = ReactiveComponent
         DIV
           style: 
             fontSize: 20
-            #fontWeight: 600
             position: 'relative'
 
-          TRANSLATE "engage.opinion_filter.label", 'show opinion of:' 
+          if current_filter.label in ['everyone', 'just you']
+            TRANSLATE "engage.opinion_filter.label", 'show opinion of' 
+          else 
+            TRANSLATE "engage.opinion_filter.label_short", 'showing'
           
-          " "
+          ": "
 
           DropMenu
             options: filters
@@ -610,18 +613,22 @@ OpinionFilter = ReactiveComponent
 
             render_anchor: ->
               
-              key = if current_filter.label not in ['everyone' or 'just you'] then "/translations/#{fetch('/subdomain').name}" else null
-              SPAN null,
+              key = if current_filter.label not in ['everyone', 'just you'] then "/translations/#{fetch('/subdomain').name}" else null
+              SPAN 
+                style: 
+                  fontWeight: 'bold'      
+                  position: 'relative'        
 
                 translator 
                   id: "opinion_filter.name.#{current_filter.label}"
                   key: key
+
                   current_filter.label
 
                 SPAN style: _.extend cssTriangle 'bottom', focus_color(), 8, 5,
-                  display: 'inline-block'
-                  marginLeft: 4  
-                  marginBottom: 2 
+                  right: -12
+                  bottom: 8
+                  position: 'absolute'
 
             render_option: (filter, is_active) -> 
               [        
@@ -631,12 +638,10 @@ OpinionFilter = ReactiveComponent
                   filter.label
 
                 if filter.tooltip
-                  SPAN 
+                  DIV 
                     style: 
                       fontSize: 12
                       color: if is_active then 'white' else 'black'
-                      marginLeft: 16
-                      verticalAlign: 'baseline'
 
                     filter.tooltip
               ]
@@ -679,12 +684,9 @@ OpinionFilter = ReactiveComponent
 
           if current_filter.label != 'everyone'
             DIV 
-              style: 
-                position: 'absolute'
-                right: 0 
-                bottom: -20
-                fontSize: 14
-                zIndex: 99
+              style: @props.enable_comparison_wrapper_style or {}
+
+
               INPUT 
                 type: 'checkbox'
                 id: 'enable_comparison'
@@ -707,7 +709,7 @@ VerificationProcessExplanation = ReactiveComponent
       style: 
         position: 'absolute'
         right: -sizeWhenRendered(callout, {fontSize: 12}).width
-        top: -3
+        top: -14
 
       SPAN 
         style: 

@@ -236,7 +236,6 @@ Proposal = ReactiveComponent
               fontWeight: 700
               fontStyle: 'oblique'
               textAlign: 'center'
-              marginBottom: 8
               marginTop: 48
 
             if mode == 'crafting'
@@ -253,10 +252,19 @@ Proposal = ReactiveComponent
           style: 
             position: 'relative'
             width: BODY_WIDTH()
-            margin: '8px auto 20px auto'
+            margin: '0px auto 20px auto'
+
           OpinionFilter
             style: 
               textAlign: 'center'
+            enable_comparison_wrapper_style: 
+              # position: 'absolute'
+              # right: 0 
+              # bottom: -20
+              fontSize: 14
+              marginTop: 4
+              # zIndex: 99
+
 
         if is_loading
           LOADING_INDICATOR

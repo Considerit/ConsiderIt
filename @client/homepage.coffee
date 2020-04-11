@@ -485,7 +485,7 @@ window.ManualProposalResort = ReactiveComponent
               if e.which == 13 || e.which == 32 # ENTER or SPACE
                 invalidate_proposal_sorts()
                 e.preventDefault()
-        "<button>Re-sort this list</button>  when you're ready. It is out of order."
+        "<button>Re-sort this list</button> if you want. It is out of order."
 
 
 window.Cluster = ReactiveComponent
@@ -512,7 +512,6 @@ window.Cluster = ReactiveComponent
 
     cluster_key = "list/#{cluster.name}"
 
-    console.log 'render Cluster'
     ARTICLE
       key: cluster.name
       id: if cluster.name && cluster.name then cluster.name.toLowerCase()
@@ -728,7 +727,7 @@ ClusterHeading = ReactiveComponent
                 position: 'absolute'
                 top: 0
                 right: 0
-                textAlign: 'center'
+                textAlign: 'right'
                 fontWeight: heading_style.fontWeight
                 color: heading_style.color
                 fontSize: heading_style.fontSize
@@ -760,7 +759,7 @@ window.list_actions = (props) ->
   DIV 
     style: 
       marginTop: 12
-      marginBottom: 36
+      marginBottom: 50
 
     if add_new
 
@@ -772,7 +771,7 @@ window.list_actions = (props) ->
             color: focus_color()
             fontFamily: customization('font')
             fontStyle: 'normal'
-            fontWeight: 600
+            fontWeight: 700
           onClick: (e) => 
             show_all = fetch('show_all_proposals')
             show_all.show_all = true 
@@ -795,12 +794,20 @@ window.list_actions = (props) ->
       SortProposalsMenu()
 
 
+
     OpinionFilter
       style: 
         display: 'inline-block'
         float: 'right'
         maxWidth: column_sizes().second
         textAlign: 'right'
+      enable_comparison_wrapper_style: 
+        position: 'absolute'
+        right: 0 
+        bottom: -20
+        fontSize: 14
+        zIndex: 99
+      
 
     DIV 
       style: 

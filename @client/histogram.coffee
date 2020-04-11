@@ -708,8 +708,10 @@ HistoAvatars = ReactiveComponent
         #     # opacity: opacity
 
         stance = opinion.stance 
-        if Math.abs(stance) > .01
+        if stance > .01
           alt = "#{(stance * 100).toFixed(0)}%"
+        else if stance < -.01
+          alt = "– #{(stance * -100).toFixed(0)}%"
         else 
           alt = translator "engage.histogram.user_is_neutral", "is neutral"
 

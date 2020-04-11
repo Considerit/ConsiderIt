@@ -1,6 +1,6 @@
 require './shared'
 require './customizations'
-
+require './drop_menu'
 
 
 
@@ -386,28 +386,6 @@ SortProposalsMenu = ReactiveComponent
     sort = fetch 'sort_proposals'
     set_sort() if !sort.name? 
 
-    trigger = (e) =>
-      _.extend sort, sort_options[@local.focus]   
-      save sort 
-      @local.sort_menu = false
-      save @local
-      invalidate_proposal_sorts()
-      e.stopPropagation()
-      e.preventDefault()
-
-    set_focus = (idx) => 
-      idx = 0 if !idx?
-      @local.focus = idx 
-      save @local 
-      setTimeout => 
-        @refs["menuitem-#{idx}"].getDOMNode().focus()
-      , 0
-
-    close_menu = => 
-      document.activeElement.blur()
-      @local.sort_menu = false
-      save @local
-
     SPAN
       style: 
         color: 'black'
@@ -417,166 +395,77 @@ SortProposalsMenu = ReactiveComponent
 
       " "
 
-      DIV 
-        ref: 'menu_wrap'
-        key: 'proposal_sort_order_menu'
-        style: 
+      DropMenu
+        options: sort_options
+
+        open_menu_on: 'activation'
+
+        selection_made_callback: (option) -> 
+          invalidate_proposal_sorts()
+          _.extend sort, option   
+          save sort 
+
+        render_anchor: ->
+          SPAN null, 
+            translator "engage.sort_order.#{sort.name}", sort.name
+
+            SPAN style: _.extend cssTriangle 'bottom', focus_color(), 8, 5,
+              display: 'inline-block'
+              marginLeft: 4   
+
+        render_option: (option, is_active) -> 
+          [        
+            SPAN 
+              style: 
+                fontWeight: 600
+                fontSize: 20
+
+              translator "engage.sort_order.#{option.name}", option.name 
+
+            SPAN 
+              style: 
+                fontSize: 12
+                color: if is_active then 'white' else 'black'
+                marginLeft: 16
+                verticalAlign: 'baseline'
+
+              translator "engage.sort_order.#{option.name}.description", option.description 
+          ]
+
+        wrapper_style: 
           display: 'inline-block'
-          position: 'relative'
 
-        onTouchEnd: => 
-          @local.sort_menu = !@local.sort_menu
-          save(@local)
+        anchor_style: 
+          fontWeight: 600
+          padding: 0
+          display: 'inline-block'
+          color: focus_color() #'inherit'
+          textTransform: 'lowercase'
+          borderRadius: 16
 
-        onMouseLeave: close_menu
+        menu_style: 
+          width: HOMEPAGE_WIDTH()
+          backgroundColor: '#eee'
+          border: "1px solid #{focus_color()}"
+          left: -9999
+          top: 18
+          borderRadius: 8
+          fontWeight: 400
+          overflow: 'hidden'
+          boxShadow: '0 1px 2px rgba(0,0,0,.3)'
 
-        onBlur: (e) => 
-          setTimeout => 
-            # if the focus isn't still on an element inside of this menu, 
-            # then we should close the menu
-            if $(document.activeElement).closest(@refs.menu_wrap.getDOMNode()).length == 0
-              @local.sort_menu = false; save @local
-          , 0
+        menu_when_open_style: 
+          left: 0
 
-        onKeyDown: (e) => 
-          if e.which == 13 || e.which == 32 || e.which == 27 # ENTER or ESC
-            close_menu()
-          else if e.which == 38 || e.which == 40 # UP / DOWN ARROW
-            @local.focs = -1 if !@local.focus?
-            if e.which == 38
-              @local.focus--
-              if @local.focus < 0 
-                @local.focus = sort_options.length - 1
-            else 
-              @local.focus++
-              if @local.focus > sort_options.length - 1
-                @local.focus = 0 
-            set_focus(@local.focus)
-            e.preventDefault() # prevent window from scrolling too
+        option_style: 
+          padding: '6px 12px'
+          borderBottom: "1px solid #ddd"
+          display: 'block'
 
+        active_option_style: 
+          color: 'white'
+          backgroundColor: focus_color()
 
-          
-        BUTTON 
-          tabIndex: 0
-          'aria-haspopup': "true"
-          'aria-owns': "proposal_sort_order_menu_popup"
-
-          style: 
-            fontWeight: 600
-            position: 'relative'
-            cursor: 'pointer'
-            #textDecoration: 'underline'
-            backgroundColor: 'transparent'
-            border: 'none'
-            padding: 0
-            display: 'inline-block'
-            fontSize: 'inherit'
-            color: focus_color() #'inherit'
-            #border: "1px solid #ccc"
-            #padding: "4px 8px"
-            textTransform: 'lowercase'
-            
-            borderRadius: 16
-
-          onClick: => 
-            @local.sort_menu = !@local.sort_menu
-            set_focus(0) if @local.sort_menu
-            save(@local)
-          
-          onKeyDown: (e) =>
-            if e.which == 13 || e.which == 32  
-              @local.sort_menu = !@local.sort_menu
-              set_focus(0) if @local.sort_menu
-              save(@local)
-              e.preventDefault()
-              e.stopPropagation()
-
-          translator "engage.sort_order.#{sort.name}", sort.name
-
-          SPAN style: _.extend cssTriangle 'bottom', focus_color(), 8, 5,
-            display: 'inline-block'
-            marginLeft: 4
-
-        
-        UL 
-          id: 'proposal_sort_order_menu_popup'
-          role: "menu"
-          'aria-hidden': !@local.sort_menu
-          hidden: !@local.sort_menu
-          style: 
-            position: 'absolute'
-            left: if @local.sort_menu then 0 else -9999
-            listStyle: 'none'
-            zIndex: 999
-            width: HOMEPAGE_WIDTH()
-            backgroundColor: '#eee'
-            border: "1px solid #{focus_color()}"
-            top: 18
-            borderRadius: 8
-            fontWeight: 400
-            overflow: 'hidden'
-            boxShadow: '0 1px 2px rgba(0,0,0,.3)'
-
-          for sort_option, idx in sort_options
-            do (sort_option) => 
-              LI 
-                ref: "menuitem-#{idx}"
-                key: sort_option.name
-                role: "menuitem"
-                tabIndex: if @local.focus == idx then 0 else -1
-                style:
-                  padding: '6px 12px'
-                  borderBottom: "1px solid #ddd"
-                  color: if @local.focus == idx then 'white'                  
-                  backgroundColor: if @local.focus == idx then focus_color()
-                  cursor: 'pointer'
-                  display: 'block'
-                  outline: 'none'
-
-                onClick: do(idx) => (e) => 
-                  if @local.focus != idx 
-                    set_focus idx 
-                  trigger(e)
-                onTouchEnd: do(idx) => (e) =>
-                  if @local.focus != idx 
-                    set_focus idx 
-                  trigger(e)
-
-                onKeyDown: (e) => 
-                  if e.which == 13 || e.which == 32 # ENTER or SPACE
-                    trigger(e) 
-                    e.preventDefault()
-                    
-                onFocus: do(idx) => (e) => 
-                  if @local.focus != idx 
-                    set_focus idx
-                  e.stopPropagation()
-                onMouseEnter: do(idx) => => 
-                  if @local.focus != idx 
-                    set_focus idx
-                onBlur: do(idx) => (e) =>
-                  @local.focus = null 
-                  save @local  
-                onMouseExit: do(idx) => => 
-                  @local.focus = null 
-                  save @local
-
-                SPAN 
-                  style: 
-                    fontWeight: 600
-                    fontSize: 20
-
-                  translator "engage.sort_order.#{sort_option.name}", sort_option.name 
-
-                SPAN 
-                  style: 
-                    fontSize: 12
-                    color: if @local.focus == idx then 'white' else 'black'
-                    marginLeft: 16
-                    verticalAlign: 'baseline'
-                    #opacity: .8
-
-                  translator "engage.sort_order.#{sort_option.name}.description", sort_option.description 
 
 
 

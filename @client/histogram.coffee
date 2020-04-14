@@ -871,8 +871,8 @@ positionAvatars = (opts) ->
   # Initialize positions of each node
   targets = {}
   opinions = opts.o.slice()
-  width = opts.w || 400
-  height = opts.h || 70
+  width = opts.w or 400
+  height = opts.h or 70
   r = calculateAvatarRadius width, height, opinions
 
   nodes = opinions.map (o, i) ->

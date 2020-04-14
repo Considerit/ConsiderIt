@@ -115,7 +115,10 @@ window.get_slider_label = (id, proposal) ->
   else 
     label = customization(id)
 
-  translator "engage.slider_label.#{label}", label 
+  if !label 
+    ""
+  else
+    translator "engage.slider_label.#{label}", label 
 
 
 

@@ -189,6 +189,7 @@ window.Histogram = ReactiveComponent
 
     @props.enable_individual_selection &&= opinions.length > 0
     @props.enable_range_selection &&= opinions.length > 1
+    @props.enable_range_selection &&= (!filter_out.current_filter || filter_out.current_filter.label != 'just you')
 
     # whether to show the shaded opinion selection region in the histogram
     draw_selection_area = @props.enable_range_selection &&

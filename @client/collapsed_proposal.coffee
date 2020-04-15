@@ -309,8 +309,8 @@ window.CollapsedProposal = ReactiveComponent
           opinions: opinions
           width: col_sizes.second
           height: 40
-          enable_individual_selection: true
-          enable_range_selection: true
+          enable_individual_selection: !browser.is_mobile
+          enable_range_selection: !browser.is_mobile
           draw_base: true
           draw_base_labels: !slider_regions
           selection_state: 'filtered'

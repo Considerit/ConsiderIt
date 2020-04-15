@@ -216,6 +216,8 @@ Proposal = ReactiveComponent
 
     is_loading = !page.proposal || !@proposal.name?
 
+    just_you = fetch('filtered').current_filter?.label == 'just you'
+
     ARTICLE 
       id: "proposal-#{@proposal.id}"
       key: @props.slug
@@ -238,7 +240,7 @@ Proposal = ReactiveComponent
               textAlign: 'center'
               marginTop: 48
 
-            if mode == 'crafting'
+            if mode == 'crafting' || just_you
               TRANSLATE
                 id: "engage.opinion_header"
                 'What do you think?'
@@ -408,9 +410,11 @@ Proposal = ReactiveComponent
                   points: buildPointsList \
                     @proposal, 'cons', \
                     (if mode == 'results' then 'score' else 'last_inclusion'), \ 
-                    mode == 'crafting' && !TWO_COL()
+                    mode == 'crafting' && !TWO_COL(), \
+                    mode == 'crafting' || TWO_COL() || !just_you
                   style: 
                     visibility: if !TWO_COL() && !has_community_points then 'hidden'
+
 
                 #community pros
                 PointsList 
@@ -423,7 +427,8 @@ Proposal = ReactiveComponent
                   points: buildPointsList \
                     @proposal, 'pros', \
                     (if mode == 'results' then 'score' else 'last_inclusion'), \ 
-                    mode == 'crafting' && !TWO_COL()
+                    mode == 'crafting' && !TWO_COL(), \
+                    mode == 'crafting' || TWO_COL() || !just_you
                   style: 
                     visibility: if !TWO_COL() && !has_community_points then 'hidden'
 
@@ -1496,7 +1501,7 @@ GroupSelectionRegion = ReactiveComponent
 
 
 
-buildPointsList = (proposal, valence, sort_field, filter_included) ->
+buildPointsList = (proposal, valence, sort_field, filter_included, show_all_points) ->
   sort_field = sort_field or 'score'
   points = fetch("/page/#{proposal.slug}").points or []
   opinions = fetch(proposal).opinions
@@ -1504,7 +1509,7 @@ buildPointsList = (proposal, valence, sort_field, filter_included) ->
 
   # filter out filter users...
   filtered_out = fetch 'filtered'
-  if filtered_out.users
+  if filtered_out.users && !show_all_points
     filtered = true
     opinions = (o for o in opinions when !(filtered_out.users?[o.user]))
 

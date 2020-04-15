@@ -557,6 +557,7 @@ OpinionFilter = ReactiveComponent
     filter_out = fetch 'filtered'
     users = fetch '/users' # fetched here so its ready for toggle_filter func
 
+    return DIV null if !users.users
     filters_for_admin = customization('opinion_filters_admin_only') 
     custom_filters = customization 'opinion_filters'
     
@@ -576,7 +577,16 @@ OpinionFilter = ReactiveComponent
       filters = filters.concat custom_filters
 
     if !filter_out.current_filter
-      filter_out.current_filter = filters[0]
+      dfault = customization('opinion_filters_default') or 'everyone'
+      initial_filter = null 
+      for filter in filters 
+        if filter.label == dfault 
+          initial_filter = filter 
+          break 
+
+      initial_filter ||= filters[0]
+
+      toggle_filter initial_filter
 
     current_filter = filter_out.current_filter
 
@@ -597,7 +607,7 @@ OpinionFilter = ReactiveComponent
             fontSize: 20
             position: 'relative'
 
-          if current_filter.label in ['everyone', 'just you']
+          if current_filter?.label in ['everyone', 'just you']
             TRANSLATE "engage.opinion_filter.label", 'show opinion of' 
           else 
             TRANSLATE "engage.opinion_filter.label_short", 'showing'
@@ -613,7 +623,7 @@ OpinionFilter = ReactiveComponent
 
             render_anchor: ->
               
-              key = if current_filter.label not in ['everyone', 'just you'] then "/translations/#{fetch('/subdomain').name}" else null
+              key = if current_filter?.label not in ['everyone', 'just you'] then "/translations/#{fetch('/subdomain').name}" else null
               SPAN 
                 style: 
                   fontWeight: 'bold'      

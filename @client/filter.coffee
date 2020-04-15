@@ -1,6 +1,6 @@
 require './shared'
 require './customizations'
-
+require './drop_menu'
 
 
 
@@ -62,14 +62,21 @@ ApplyFilters = ReactiveComponent
 
 
 
-window.sorted_proposals = (proposals) ->
+window.invalidate_proposal_sorts = -> 
+  sort = fetch 'sort_proposals'
+  for k,v of sort.sorts 
+    v.force_resort = true 
+  save sort 
+
+window.sorted_proposals = (proposals, sort_key, require_force) ->
 
   sort = fetch 'sort_proposals'
-
   set_sort() if !sort.name? 
 
-  comp = sort.comp
-  proposals = proposals.slice().sort comp
+  filters = fetch 'filtered'
+
+  proposals = proposals.slice()
+
 
   # filter out filtered proposals
   filter_out = fetch 'filtered'
@@ -80,6 +87,52 @@ window.sorted_proposals = (proposals) ->
         filtered.push proposal
     for proposal in filtered
       proposals.splice proposals.indexOf(proposal), 1
+
+  comp = sort.comp
+  proposals = proposals.sort comp
+
+  if require_force
+    # when dragging a slider on a list of proposals, we may want to 
+    # return the old sort order even if it isn't technically correct.
+    # This is because it is too annoying to have the proposals list
+    # jumping around all the time.  
+
+    sort.sorts ||= {}
+
+    keys = (p.key for p in (proposals or []))
+    order = md5 keys
+
+    cached_order = null
+    if sort_key of sort.sorts
+      cached_order = md5 sort.sorts[sort_key].cache
+    else 
+      cached_order = null 
+      sort.sorts[sort_key] = {cache: [], stale: true, force_resort: true}
+
+    # alright, same order
+    if cached_order == order 
+      if sort.sorts[sort_key].force_resort
+        sort.sorts[sort_key].force_resort = false 
+        sort.sorts[sort_key].stale = false 
+        save sort
+
+    # force an update to the sort order, either because its stale, bc we're initializing, or 
+    # because a new proposal has been added or removed
+    else if sort.sorts[sort_key].force_resort || proposals.length != sort.sorts[sort_key].cache.length
+      sort.sorts[sort_key].force_resort = false
+      sort.sorts[sort_key].stale = false
+      sort.sorts[sort_key].cache = (p.key for p in proposals)
+      save sort
+
+    # return the stale sort order
+    else 
+      if !sort.sorts[sort_key].stale
+        sort.sorts[sort_key].stale = true 
+        save sort 
+      dict_proposals = {}
+      for p in proposals 
+        dict_proposals[p.key] = p 
+      proposals = (dict_proposals[k] for k in sort.sorts[sort_key].cache)
 
   proposals
 
@@ -93,9 +146,9 @@ basic_proposal_scoring = (proposal, opinion_value) ->
   if !opinions || opinions.length == 0
     return {sum: 0, avg: 0, std_dev: 0, opinions: []}
 
-  filtered_out = fetch('filtered')
+  filtered_out = fetch 'filtered'
   if filtered_out.users
-    opinions = (o for o in opinions when !(filtered_out.users?[o.user]))
+    opinions = (o for o in opinions when filtered_out.enable_comparison || !(filtered_out.users?[o.user]))
 
   sum = 0
   for opinion in opinions
@@ -116,14 +169,14 @@ sort_options = [
   { 
     comp: (a, b) -> basic_proposal_scoring(b, ((o) -> o.stance)).avg - basic_proposal_scoring(a, ((o) -> o.stance)).avg
     name: 'Average Score'
-    description: "Each proposal is scored by the average opinion score, where opinions are on [-1, 1]."
+    description: "Each response is scored by the average opinion score, where opinions are on [-1, 1]."
   }, { 
     comp: (a, b) -> basic_proposal_scoring(b, ((o) -> o.stance)).sum - basic_proposal_scoring(a, ((o) -> o.stance)).sum
     name: 'Total Score'
-    description: "Each proposal is scored by the sum of opinions, where opinions are on [-1, 1]."
+    description: "Each response is scored by the sum of opinions, where opinions are on [-1, 1]."
   }, {
     name: 'Trending'
-    description: "'Total Score', except that newer opinions and topics are weighed more heavily."
+    description: "'Total Score', except that newer opinions and responses are weighed more heavily."
 
     comp: (a, b) ->
       ov = (o) -> 
@@ -142,14 +195,14 @@ sort_options = [
   { 
     name: 'Alphabetically'
     comp: (a, b) -> a.name.localeCompare b.name
-    description: "Sort alphabetically by the proposal's title"
+    description: "Sort alphabetically by the response's title"
   }, {
     comp: (a,b) -> new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     name: 'Newest'
-    description: "The proposals submitted most recently are shown first."
+    description: "The responses submitted most recently are shown first."
   }, { 
     name: 'Unity'
-    description: "Proposals where the community is most united for or against is shown highest."
+    description: "Responses where the community is most united for or against are shown highest."
     comp: (a,b) -> 
       ov = (o) -> o.stance
       val = (proposal) ->
@@ -162,7 +215,7 @@ sort_options = [
 
   }, { 
     name: 'Difference'
-    description: "Proposals where the community is most split is shown highest."
+    description: "Responses where the community is most split are shown highest."
     comp: (a,b) -> 
       ov = (o) -> o.stance
       val = (proposal) ->
@@ -333,196 +386,88 @@ SortProposalsMenu = ReactiveComponent
     sort = fetch 'sort_proposals'
     set_sort() if !sort.name? 
 
-    trigger = (e) =>
-      _.extend sort, sort_options[@local.focus]   
-      save sort 
-      @local.sort_menu = false
-      save @local
-      e.stopPropagation()
-      e.preventDefault()
-
-    set_focus = (idx) => 
-      idx = 0 if !idx?
-      @local.focus = idx 
-      save @local 
-      setTimeout => 
-        @refs["menuitem-#{idx}"].getDOMNode().focus()
-      , 0
-
-    close_menu = => 
-      document.activeElement.blur()
-      @local.sort_menu = false
-      save @local
-
     SPAN
       style: 
         color: 'black'
-        fontSize: 14
+        fontSize: 20
 
       TRANSLATE "engage.sort_by", "sort by"
 
       " "
 
-      DIV 
-        ref: 'menu_wrap'
-        key: 'proposal_sort_order_menu'
-        style: 
+      DropMenu
+        options: sort_options
+
+        open_menu_on: 'activation'
+
+        selection_made_callback: (option) -> 
+          invalidate_proposal_sorts()
+          _.extend sort, option   
+          save sort 
+
+        render_anchor: ->
+          SPAN 
+            style: 
+              fontWeight: 700
+
+            translator "engage.sort_order.#{sort.name}", sort.name
+
+            SPAN style: _.extend cssTriangle 'bottom', focus_color(), 8, 5,
+              display: 'inline-block'
+              marginLeft: 4   
+              marginBottom: 2
+
+        render_option: (option, is_active) -> 
+          [        
+            DIV 
+              style: 
+                fontWeight: 600
+                fontSize: 20
+
+              translator "engage.sort_order.#{option.name}", option.name 
+
+            DIV 
+              style: 
+                fontSize: 12
+                color: if is_active then 'white' else 'black'
+
+              translator "engage.sort_order.#{option.name}.description", option.description 
+          ]
+
+        wrapper_style: 
           display: 'inline-block'
-          position: 'relative'
 
-        onTouchEnd: => 
-          @local.sort_menu = !@local.sort_menu
-          save(@local)
+        anchor_style: 
+          fontWeight: 600
+          padding: 0
+          display: 'inline-block'
+          color: focus_color() #'inherit'
+          textTransform: 'lowercase'
+          borderRadius: 16
 
-        onMouseLeave: close_menu
+        menu_style: 
+          minWidth: 500
+          backgroundColor: '#eee'
+          border: "1px solid #{focus_color()}"
+          left: -9999
+          top: 18
+          borderRadius: 8
+          fontWeight: 400
+          overflow: 'hidden'
+          boxShadow: '0 1px 2px rgba(0,0,0,.3)'
 
-        onBlur: (e) => 
-          setTimeout => 
-            # if the focus isn't still on an element inside of this menu, 
-            # then we should close the menu
-            if $(document.activeElement).closest(@refs.menu_wrap.getDOMNode()).length == 0
-              @local.sort_menu = false; save @local
-          , 0
+        menu_when_open_style: 
+          left: 0
 
-        onKeyDown: (e) => 
-          if e.which == 13 || e.which == 32 || e.which == 27 # ENTER or ESC
-            close_menu()
-          else if e.which == 38 || e.which == 40 # UP / DOWN ARROW
-            @local.focs = -1 if !@local.focus?
-            if e.which == 38
-              @local.focus--
-              if @local.focus < 0 
-                @local.focus = sort_options.length - 1
-            else 
-              @local.focus++
-              if @local.focus > sort_options.length - 1
-                @local.focus = 0 
-            set_focus(@local.focus)
-            e.preventDefault() # prevent window from scrolling too
+        option_style: 
+          padding: '6px 12px'
+          borderBottom: "1px solid #ddd"
+          display: 'block'
 
+        active_option_style: 
+          color: 'white'
+          backgroundColor: focus_color()
 
-          
-        BUTTON 
-          tabIndex: 0
-          'aria-haspopup': "true"
-          'aria-owns': "proposal_sort_order_menu_popup"
-
-          style: 
-            fontWeight: 600
-            position: 'relative'
-            cursor: 'pointer'
-            #textDecoration: 'underline'
-            backgroundColor: 'transparent'
-            border: 'none'
-            padding: 0
-            display: 'inline-block'
-            fontSize: 'inherit'
-            color: focus_color() #'inherit'
-            #border: "1px solid #ccc"
-            #padding: "4px 8px"
-            textTransform: 'lowercase'
-            
-            borderRadius: 16
-
-          onClick: => 
-            @local.sort_menu = !@local.sort_menu
-            set_focus(0) if @local.sort_menu
-            save(@local)
-          
-          onKeyDown: (e) =>
-            if e.which == 13 || e.which == 32  
-              @local.sort_menu = !@local.sort_menu
-              set_focus(0) if @local.sort_menu
-              save(@local)
-              e.preventDefault()
-              e.stopPropagation()
-
-          translator "engage.sort_order.#{sort.name}", sort.name
-
-          SPAN style: _.extend cssTriangle 'bottom', focus_color(), 8, 5,
-            display: 'inline-block'
-            marginLeft: 4
-
-        
-        UL 
-          id: 'proposal_sort_order_menu_popup'
-          role: "menu"
-          'aria-hidden': !@local.sort_menu
-          hidden: !@local.sort_menu
-          style: 
-            position: 'absolute'
-            left: if @local.sort_menu then 0 else -9999
-            listStyle: 'none'
-            zIndex: 999
-            width: HOMEPAGE_WIDTH()
-            backgroundColor: '#eee'
-            border: "1px solid #{focus_color()}"
-            top: 18
-            borderRadius: 8
-            fontWeight: 400
-            overflow: 'hidden'
-            boxShadow: '0 1px 2px rgba(0,0,0,.3)'
-
-          for sort_option, idx in sort_options
-            do (sort_option) => 
-              LI 
-                ref: "menuitem-#{idx}"
-                key: sort_option.name
-                role: "menuitem"
-                tabIndex: if @local.focus == idx then 0 else -1
-                style:
-                  padding: '6px 12px'
-                  borderBottom: "1px solid #ddd"
-                  color: if @local.focus == idx then 'white'                  
-                  backgroundColor: if @local.focus == idx then focus_color()
-                  cursor: 'pointer'
-                  display: 'block'
-                  outline: 'none'
-
-                onClick: do(idx) => (e) => 
-                  if @local.focus != idx 
-                    set_focus idx 
-                  trigger(e)
-                onTouchEnd: do(idx) => (e) =>
-                  if @local.focus != idx 
-                    set_focus idx 
-                  trigger(e)
-
-                onKeyDown: (e) => 
-                  if e.which == 13 || e.which == 32 # ENTER or SPACE
-                    trigger(e) 
-                    e.preventDefault()
-                    
-                onFocus: do(idx) => (e) => 
-                  if @local.focus != idx 
-                    set_focus idx
-                  e.stopPropagation()
-                onMouseEnter: do(idx) => => 
-                  if @local.focus != idx 
-                    set_focus idx
-                onBlur: do(idx) => (e) =>
-                  @local.focus = null 
-                  save @local  
-                onMouseExit: do(idx) => => 
-                  @local.focus = null 
-                  save @local
-
-                SPAN 
-                  style: 
-                    fontWeight: 600
-                    fontSize: 20
-
-                  translator "engage.sort_order.#{sort_option.name}", sort_option.name 
-
-                SPAN 
-                  style: 
-                    fontSize: 12
-                    color: if @local.focus == idx then 'white' else 'black'
-                    marginLeft: 16
-                    verticalAlign: 'baseline'
-                    #opacity: .8
-
-                  translator "engage.sort_order.#{sort_option.name}.description", sort_option.description 
 
 
 
@@ -569,123 +514,200 @@ window.opinion_trickle = ->
 
   tick 1000
 
+
+
+toggle_filter = (filter) -> 
+  users = fetch '/users'
+  filter_out = fetch 'filtered'
+
+  return if !users.users
+  
+  filter_out.users = {}
+
+  if filter_out.current_filter == filter
+    filter_out.current_filter = null 
+  else 
+    filter_out.current_filter = filter 
+
+  filter_func = filter_out.current_filter?.pass
+
+  if filter_func
+    for user in users.users      
+      if !filter_func(user)
+        filter_out.users[user.key] = 1
+
+  invalidate_proposal_sorts()
+  save filter_out
+
+set_comparison_mode = (enabled) ->
+  filter_out = fetch 'filtered'
+
+  if enabled == null # toggle if argument not passed 
+    filter_out.enable_comparison = !filter_out.enable_comparison
+  else 
+    filter_out.enable_comparison = enabled
+  save filter_out 
+
+
 OpinionFilter = ReactiveComponent
   displayName: 'OpinionFilter'
 
   render : -> 
 
-    filters = customization 'opinion_filters'
-    users = fetch '/users'
     filter_out = fetch 'filtered'
-    bitcoin = fetch('/subdomain').name in ['bitcoin', 'bitcoinclassic']
-    
+    users = fetch '/users' # fetched here so its ready for toggle_filter func
+
+    return DIV null if !users.users
     filters_for_admin = customization('opinion_filters_admin_only') 
+    custom_filters = customization 'opinion_filters'
+    
+    filters = [{
+                label: 'everyone'
+                tooltip: null 
+                pass: (u) -> true 
+              }, {
+                label: 'just you'
+                tooltip: null 
+                pass: (u) -> 
+                  user = fetch(u)
+                  user.key == fetch('/current_user').user
+              }]
 
-    return SPAN null if filters_for_admin && !fetch('/current_user').is_admin
+    if custom_filters && (!filters_for_admin || fetch('/current_user').is_admin)
+      filters = filters.concat custom_filters
 
-    toggle_filter = (filter) -> 
-      filter_out.users = {}
-      filter_out.opinion_filters ||= {}
+    if !filter_out.current_filter
+      dfault = customization('opinion_filters_default') or 'everyone'
+      initial_filter = null 
+      for filter in filters 
+        if filter.label == dfault 
+          initial_filter = filter 
+          break 
 
-      if filter_out.opinion_filters[filter.label]
-        delete filter_out.opinion_filters[filter.label]
-      else 
-        filter_out.opinion_filters = {} # act like radio button
-        filter_out.opinion_filters[filter.label] = filter
+      initial_filter ||= filters[0]
 
+      toggle_filter initial_filter
 
-      filter_funcs = (f.pass for k,f of filter_out.opinion_filters)
-      if filter_funcs.length > 0
-        for user in users.users
-          passes = true 
-          for func in filter_funcs
-            passes &&= func(user)
-
-          if !passes
-            filter_out.users[user.key] = 1
-
-      save filter_out
-
-    if fetch('/subdomain').name == 'bitcoinclassic' && !filter_out.opinion_filters?
-      toggle_filter filters[0]
-
+    current_filter = filter_out.current_filter
 
     DIV 
       style: (@props.style or {})
       className: 'filter_opinions_to'
-
 
       DIV 
         style: 
           marginTop: 0
           lineHeight: 1
 
-        SPAN
-          style: 
-            fontSize: 14
-            #fontWeight: 600
-            color: '#777'
-
-          TRANSLATE "engage.opinion_filter.label", 'Filter to' 
-          if bitcoin 
-            ' verified'
-          ':'
-
-        if bitcoin
+        if fetch('/subdomain').name in ['bitcoin', 'bitcoinclassic']
           VerificationProcessExplanation()
 
-        for filter,idx in filters 
-          do (filter, idx) => 
-            show_tooltip = => 
-              @local.focus = idx
-              save @local
-              if filter.tooltip 
-                tooltip = fetch 'tooltip'
-                tooltip.coords = $(@refs["filter-#{idx}"].getDOMNode()).offset()
-                tooltip.tip = filter.tooltip
-                save tooltip
+        DIV
+          style: 
+            fontSize: 20
+            position: 'relative'
 
-            hide_tooltip = => 
-              @local.focus = null
-              save @local            
-              if filter.tooltip 
-                tooltip = fetch 'tooltip'
-                tooltip.coords = tooltip.tip = null 
-                save tooltip
+          if current_filter?.label in ['everyone', 'just you']
+            TRANSLATE "engage.opinion_filter.label", 'show opinion of' 
+          else 
+            TRANSLATE "engage.opinion_filter.label_short", 'showing'
+          
+          ": "
 
-            is_enabled = filter_out.opinion_filters?[filter.label]
-            BUTTON 
-              'aria-label': translator {id: "engage.opinion_filter.explanation", label: filter.label}, "Filter opinions to {label}"
-              'aria-describedby': if filter.tooltip then 'tooltip'
-              'aria-pressed': is_enabled
-              tabIndex: 0
-              ref: "filter-#{idx}"
-              style: 
-                display: 'inline-block'
-                marginLeft: 7
-                padding: '0 3px 0 3px'  
-                color: if is_enabled then 'white' else if @local.focus == idx then 'black' else '#777'
-                cursor: 'pointer'
-                fontSize: 14
-                backgroundColor: if is_enabled then focus_color() else if @local.focus == idx then '#eee' else 'transparent'
-                border: 'none'
-                outline: 'none'
+          DropMenu
+            options: filters
 
-              onMouseEnter: show_tooltip
-              onMouseLeave: hide_tooltip
-              onFocus: show_tooltip
-              onBlur: hide_tooltip 
-              onClick: -> toggle_filter(filter)   
-              onKeyDown: (e) -> 
-                if e.which == 13 || e.which == 32 # ENTER or SPACE
-                  toggle_filter(filter) 
-                  e.preventDefault()
-                  e.stopPropagation()
+            open_menu_on: 'activation'
 
-              translator 
-                id: "opinion_filter.name.#{filter.label}"
-                key: "/translations/#{fetch('/subdomain').name}"
-                filter.label
+            selection_made_callback: toggle_filter
+
+            render_anchor: ->
+              
+              key = if current_filter?.label not in ['everyone', 'just you'] then "/translations/#{fetch('/subdomain').name}" else null
+              SPAN 
+                style: 
+                  fontWeight: 'bold'      
+                  position: 'relative'        
+
+                translator 
+                  id: "opinion_filter.name.#{current_filter.label}"
+                  key: key
+
+                  current_filter.label
+
+                SPAN style: _.extend cssTriangle 'bottom', focus_color(), 8, 5,
+                  right: -12
+                  bottom: 8
+                  position: 'absolute'
+
+            render_option: (filter, is_active) -> 
+              [        
+                translator 
+                  id: "opinion_filter.name.#{filter.label}"
+                  key: "/translations/#{fetch('/subdomain').name}"
+                  filter.label
+
+                if filter.tooltip
+                  DIV 
+                    style: 
+                      fontSize: 12
+                      color: if is_active then 'white' else 'black'
+
+                    filter.tooltip
+              ]
+
+            wrapper_style: 
+              display: 'inline-block'
+
+            anchor_style: 
+              fontWeight: 600
+              padding: 0
+              display: 'inline-block'
+              color: focus_color() #'inherit'
+              textTransform: 'lowercase'
+              borderRadius: 16
+
+            menu_style: 
+              minWidth: 250
+              backgroundColor: '#eee'
+              border: "1px solid #{focus_color()}"
+              left: 'auto'
+              right: -9999
+              top: 18
+              borderRadius: 8
+              fontWeight: 400
+              overflow: 'hidden'
+              boxShadow: '0 1px 2px rgba(0,0,0,.3)'
+              textAlign: 'right'
+
+            menu_when_open_style: 
+              right: 0
+
+            option_style: 
+              padding: '6px 12px'
+              borderBottom: "1px solid #ddd"
+              display: 'block'
+
+            active_option_style: 
+              color: 'white'
+              backgroundColor: focus_color()
+
+          if current_filter.label != 'everyone'
+            DIV 
+              style: @props.enable_comparison_wrapper_style or {}
+
+
+              INPUT 
+                type: 'checkbox'
+                id: 'enable_comparison'
+                checked: filter_out.enable_comparison
+                ref: 'enable_comparison'
+                onChange: => 
+                  set_comparison_mode @refs.enable_comparison.getDOMNode().checked
+
+              LABEL 
+                htmlFor: 'enable_comparison'
+                TRANSLATE 'engage.compare_all', "compare to everyone"
 
 
 VerificationProcessExplanation = ReactiveComponent
@@ -697,7 +719,7 @@ VerificationProcessExplanation = ReactiveComponent
       style: 
         position: 'absolute'
         right: -sizeWhenRendered(callout, {fontSize: 12}).width
-        top: -3
+        top: -14
 
       SPAN 
         style: 

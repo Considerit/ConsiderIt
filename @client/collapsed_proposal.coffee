@@ -27,10 +27,6 @@ window.CollapsedProposal = ReactiveComponent
     col_sizes = column_sizes
                   width: @props.width
 
-    # we want to update if the sort order changes so that we can 
-    # resolve @local.keep_in_view
-    fetch("cluster-#{slugify(proposal.cluster or 'Proposals')}-sort_order")
-
     current_user = fetch '/current_user'
 
     watching = current_user.subscriptions[proposal.key] == 'watched'
@@ -83,7 +79,7 @@ window.CollapsedProposal = ReactiveComponent
                                            # with letter. seeking to hash was failing 
                                            # on proposals whose name began with number.
       style: _.defaults {}, (@props.wrapper_style or {}),
-        minHeight: 64
+        minHeight: 84
         position: 'relative'
         margin: "0 0 #{if can_edit then '0' else '15px'} 0"
         padding: 0
@@ -301,7 +297,7 @@ window.CollapsedProposal = ReactiveComponent
         style: 
           display: 'inline-block' 
           position: 'relative'
-          top: 4
+          top: -26
           verticalAlign: 'top'
           width: col_sizes.second
           marginLeft: col_sizes.gutter
@@ -313,9 +309,11 @@ window.CollapsedProposal = ReactiveComponent
           opinions: opinions
           width: col_sizes.second
           height: 40
-          enable_selection: false
+          enable_individual_selection: !browser.is_mobile
+          enable_range_selection: !browser.is_mobile
           draw_base: true
           draw_base_labels: !slider_regions
+          selection_state: 'filtered'
 
         Slider 
           base_height: 0
@@ -330,7 +328,7 @@ window.CollapsedProposal = ReactiveComponent
           handle_height: 18
           handle_width: 21
           handle_style: 
-            opacity: if !browser.is_mobile && @local.hover_proposal != proposal.key && !@local.slider_has_focus then 0 else 1             
+            opacity: if fetch('filtered').current_filter?.label != "just you" && !browser.is_mobile && @local.hover_proposal != proposal.key && !@local.slider_has_focus then 0 else 1             
           offset: true
           handle_props:
             use_face: false
@@ -366,17 +364,6 @@ window.CollapsedProposal = ReactiveComponent
               update.dummy = !update.dummy
               save update
 
-              @local.keep_in_view = 
-                offset: prev_offset
-                scroll: prev_scroll
-
-              scroll_handle = => 
-                @local.keep_in_view = null 
-                window.removeEventListener 'scroll', scroll_handle
-
-              window.addEventListener 'scroll', scroll_handle
-
-
             mouse_over_element = closest e.target, (node) => 
               node == @getDOMNode()
 
@@ -388,7 +375,7 @@ window.CollapsedProposal = ReactiveComponent
       if show_proposal_scores
         score = 0
         filter_out = fetch 'filtered'
-        opinions = (o for o in opinions when !filter_out.users?[o.user])
+        opinions = (o for o in opinions when filter_out.enable_comparison || !filter_out.users?[o.user])
 
         for o in opinions 
           score += o.stance
@@ -448,30 +435,3 @@ window.CollapsedProposal = ReactiveComponent
               "{num_opinions, plural, =0 {<small>no opinions</small>} one {# <small>opinion</small>} other {# <small>opinions</small>} }"
 
 
-  componentDidUpdate: -> 
-    if @local.keep_in_view
-      prev_scroll = @local.keep_in_view.scroll
-      prev_offset = @local.keep_in_view.offset
-
-      target = prev_scroll + @getDOMNode().offsetTop - prev_offset
-      if window.scrollTo && window.scrollY != target
-        window.scrollTo(0, target)
-        @local.keep_in_view = null
-
-    if @local.slid && !@fading 
-      @fading = true
-
-      update_bg = => 
-        if @local.slid <= 0
-          @getDOMNode().style.backgroundColor = ''
-          clearInterval int
-          @fading = false
-        else 
-          @getDOMNode().style.backgroundColor = "rgba(253, 254, 216, #{@local.slid / 1000})"
-
-      int = setInterval =>
-        @local.slid -= 50
-        update_bg() 
-      , 50
-
-      update_bg()

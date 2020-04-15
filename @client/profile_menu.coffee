@@ -1,4 +1,5 @@
 require './customizations'
+require './drop_menu'
 
 window.ProfileMenu = ReactiveComponent
   displayName: 'ProfileMenu'
@@ -17,14 +18,17 @@ window.ProfileMenu = ReactiveComponent
       if is_admin then {href: '/dashboard/application', label: 'App Settings'} else null,
       if is_super then {href: '/dashboard/customizations', label: 'Customizations'} else null,      
       if is_admin then {href: '/dashboard/roles', label: 'User Roles'} else null,
-      if is_admin then {href: '/dashboard/tags', label: 'User Tags'} else null,      
+      if is_super then {href: '/dashboard/tags', label: 'User Tags'} else null,      
       if is_moderator then {href: '/dashboard/moderate', label: 'Moderate'} else null,
+      {label: 'Log out', 'data-action': 'logout'}
+
     ]
 
     menu_options = _.compact menu_options
 
     hsl = parseCssHsl(subdomain.branding.primary_color)
     light_background = hsl.l > .75
+
 
     set_focus = (idx) => 
       idx = 0 if !idx?
@@ -50,78 +54,15 @@ window.ProfileMenu = ReactiveComponent
         top: 17
 
       if current_user.logged_in
-
-        DIV null,
-
-          if subdomain.name in ['bitcoin', 'bitcoinclassic'] && \
-             current_user.logged_in && \
-             (!current_user.tags['verified']? || current_user.tags['verified'] in ['no', 'false'])
-            
-            @bitcoinVerification()
-
-          DIV
-            key: 'profile_menu'
-            ref: 'menu_wrap'
-            className: 'profile_menu_wrap'
-            style:
-              position: 'relative'
-
-            onTouchEnd: => 
-              @local.menu = !@local.menu
-              save(@local)
-
-            onMouseEnter: (e) => @local.menu = true; save(@local)
-            onMouseLeave: close_menu
-
-            onBlur: (e) => 
-              setTimeout => 
-                # if the focus isn't still on an element inside of this menu, 
-                # then we should close the menu
-                if $(document.activeElement).closest(@refs.menu_wrap.getDOMNode()).length == 0
-                  @local.menu = false; save @local
-              , 0
-
-            onKeyDown: (e) => 
-              if e.which == 13 || e.which == 32 || e.which == 27 # ENTER or ESC
-                close_menu()
-                e.preventDefault()
-              else if e.which == 38 || e.which == 40 # UP / DOWN ARROW
-                @local.focus = -1 if !@local.focus?
-                if e.which == 38
-                  @local.focus--
-                  if @local.focus < 0 
-                    @local.focus = menu_options.length 
-                else
-                  @local.focus++
-                  if @local.focus > menu_options.length 
-                    @local.focus = 0 
-                set_focus(@local.focus)
-                e.preventDefault() # prevent window from scrolling too
-
-            BUTTON 
-              tabIndex: 0
-              'aria-haspopup': "true"
-              'aria-owns': "profile_menu_popup"
-
-              style: 
-                color: if !light_background then 'white'
-                position: 'relative'
-                zIndex: 9999999999
-                backgroundColor: if !@local.menu then 'rgba(255,255,255, .1)' else 'transparent'
-                boxShadow: if !@local.menu then '0px 1px 1px rgba(0,0,0,.1)'
-                borderRadius: 8
-                padding: '3px 4px'
-                border: 'none'
-
-              onKeyDown: (e) => 
-                if e.which == 13 || e.which == 32
-                  @local.menu = true
-                  save(@local)
-                  if !@local.focus? 
-                    set_focus(0)
-                  e.preventDefault()
-                  e.stopPropagation()
-
+        DropMenu
+          options: menu_options
+          
+          selection_made_callback: (option) ->
+            if option.label == 'Log out'
+              logout()
+          
+          render_anchor: (menu_showing) -> 
+            [
               Avatar 
                 key: current_user.user
                 hide_tooltip: true
@@ -134,97 +75,47 @@ window.ProfileMenu = ReactiveComponent
               I 
                 className: 'fa fa-caret-down'
                 style: 
-                  visibility: if @local.menu then 'hidden'
+                  visibility: if menu_showing then 'hidden'
+            ]            
+          render_option: (option) -> 
+            if option.label == 'Log out'
+              translator "auth.log_out", "Log out"
+            else 
+              translator "user_menu.option.#{option.label}", option.label
+          
+          anchor_style: 
+            color: if !light_background then 'white'
+            zIndex: 9999999999
+            backgroundColor: 'rgba(255,255,255, .1)'
+            boxShadow: '0px 1px 1px rgba(0,0,0,.1)'
+            borderRadius: 8
+            padding: '3px 4px'
+          
+          anchor_when_open_style: 
+            backgroundColor: 'transparent'
+            boxShadow: 'none'
+          
+          menu_style: 
+            left: 'auto'
+            right: -9999
+            margin: '-42px 0 0 -8px'
+            padding: "56px 14px 8px 8px"
+            backgroundColor: '#eee'
+            textAlign: 'right'
+          
+          menu_when_open_style: 
+            right: 0
+          
+          option_style: 
+            color: focus_color()
+            position: 'relative'
+            bottom: 8
+            paddingLeft: 27
+            display: 'block'
+            whiteSpace: 'nowrap'  
 
-            UL 
-              id: 'profile_menu_popup'
-              role: "menu"
-              'aria-hidden': !@local.menu
-              hidden: !@local.menu
-              style: 
-                listStyle: 'none'
-                position: 'absolute'
-                left: 'auto'
-                right: if !@local.menu then -9999 else 0
-                margin: '-42px 0 0 -8px'
-                padding: "56px 14px 8px 8px"
-                backgroundColor: '#eee'
-                textAlign: 'right'
-                zIndex: 999999
-
-
-              for option, idx in menu_options
-                LI 
-                  key: option.label
-                  role: "presentation"
-                  A
-                    ref: "menuitem-#{idx}"
-                    role: "menuitem"
-                    tabIndex: if @local.focus == idx then 0 else -1
-                    className: 'menu_link'
-                    href: option.href
-                    key: option.href
-                    style: 
-                      color: if @local.focus == idx then 'black' else focus_color()
-                      outline: 'none'
-
-                    onKeyDown: (e) => 
-                      if e.which == 13 || e.which == 32 # ENTER or SPACE
-                        e.currentTarget.click()
-                        e.preventDefault()
-                    onFocus: do(idx) => (e) => 
-                      if @local.focus != idx 
-                        set_focus idx
-                      e.stopPropagation()
-                    onMouseEnter: do(idx) => => 
-                      if @local.focus != idx                         
-                        set_focus idx
-
-                    onBlur: (e) => 
-                      @local.focus = null 
-                      save @local  
-
-                    onMouseExit: (e) => 
-                      @local.focus = null 
-                      save @local
-                      e.stopPropagation()
-
-                    translator "user_menu.option.#{option.label}", option.label
-
-              LI 
-                role: "presentation"
-                key: 'logout'
-                A 
-                  ref: "menuitem-#{menu_options.length}"
-                  role: "menuitem"
-                  tabIndex: -1
-                  'data-action': 'logout'
-                  className: 'menu_link'
-                  style: 
-                    color: if @local.focus == idx then 'black' else focus_color()
-                    outline: 'none'
-                    
-                  onClick: logout
-                  onTouchEnd: logout
-                  onKeyDown: (e) => 
-                    if e.which == 13 || e.which == 32 # ENTER or SPACE
-                      logout() 
-                      e.preventDefault()
-                  onFocus: (e) => 
-                    if @local.focus != menu_options.length 
-                      set_focus menu_options.length
-                    e.stopPropagation()
-                  onMouseEnter: => 
-                    if @local.focus != menu_options.length                         
-                      set_focus menu_options.length
-                  onBlur: => 
-                    @local.focus = null 
-                    save @local                      
-                  onMouseExit: => 
-                    @local.focus = null 
-                    save @local
-
-                  translator "auth.log_out", "Log out"
+          active_option_style: 
+            color: 'black'
 
 
       else
@@ -356,13 +247,5 @@ window.ProfileMenu = ReactiveComponent
               width: 570    
 
 
-styles += """
-.menu_link {
-  position: relative;
-  bottom: 8px;
-  padding-left: 27px;
-  display: block;
-  white-space: nowrap; }
-
-.profile_menu_wrap:hover .profile_anchor{ color: inherit; }
+styles += """.profile_menu_wrap:hover .profile_anchor{ color: inherit; }
 """

@@ -97,6 +97,8 @@ window.Homepage = ReactiveComponent
 
       SimpleHomepage()
 
+
+
       # if customization('tawkspace')
       #   IFRAME 
       #     src: customization('tawkspace')
@@ -154,7 +156,7 @@ window.TagHomepage = ReactiveComponent
     for cluster, idx in clusters
       colors[cluster] = hues[idx]
 
-    proposals = sorted_proposals(proposals)
+    proposals = sorted_proposals(proposals, @local.key, true)
 
     homepage_tabs = fetch 'homepage_tabs'
 
@@ -177,6 +179,8 @@ window.TagHomepage = ReactiveComponent
 
       if customization('auth_callout')
         AuthCallout()
+
+      ManualProposalResort sort_key: @local.key
 
       ClusterHeading 
         cluster: 
@@ -441,6 +445,49 @@ window.HomepageTabs = ReactiveComponent
 
 
 
+window.ManualProposalResort = ReactiveComponent
+  displayName: 'ManualProposalResort'
+
+  render: -> 
+    sort = fetch 'sort_proposals'
+
+    if !sort.sorts?[@props.sort_key].stale 
+      return SPAN null 
+
+    DIV 
+      style: 
+        position: 'fixed'
+        width: '100%'
+        bottom: 0
+        left: 0
+        zIndex: 100
+        backgroundColor: '#ddd'
+        textAlign: 'center'
+        fontSize: 26
+        padding: '8px 0'
+
+
+      TRANSLATE
+        id: "engage.re-sort_list"
+        button: 
+          component: BUTTON
+          args: 
+            style: 
+              color: focus_color()
+              fontSize: 26
+              textDecoration: 'underline'
+              fontWeight: 'bold'
+              border: 'none'
+              backgroundColor: 'transparent'
+              padding: 0
+            onClick: invalidate_proposal_sorts
+            onKeyDown: (e) => 
+              if e.which == 13 || e.which == 32 # ENTER or SPACE
+                invalidate_proposal_sorts()
+                e.preventDefault()
+        "<button>Re-sort this list</button> if you want. It is out of order."
+
+
 window.Cluster = ReactiveComponent
   displayName: 'Cluster'
 
@@ -459,7 +506,7 @@ window.Cluster = ReactiveComponent
     collapsed = fetch 'collapsed_clusters'
     is_collapsed = !!collapsed[@props.key]
 
-    proposals = sorted_proposals(cluster.proposals)
+    proposals = sorted_proposals(cluster.proposals, @local.key, true)
 
     return SPAN null if !proposals
 
@@ -474,6 +521,8 @@ window.Cluster = ReactiveComponent
 
       A name: if cluster.name && cluster.name then cluster.name.toLowerCase().replace(/ /g, '_')
 
+
+      ManualProposalResort sort_key: @local.key
 
       ClusterHeading 
         cluster: cluster 
@@ -514,16 +563,16 @@ window.Cluster = ReactiveComponent
 
 
 
-  storeSortOrder: -> 
-    p = (p.key for p in sorted_proposals(@props.cluster.proposals))
-    c = fetch("cluster-#{slugify(@props.cluster.name)}-sort_order")
-    order = JSON.stringify(p)
-    if order != c.sort_order
-      c.sort_order = order 
-      save c
+  # storeSortOrder: -> 
+  #   p = (p.key for p in sorted_proposals(@props.cluster.proposals))
+  #   c = fetch("cluster-#{slugify(@props.cluster.name)}-sort_order")
+  #   order = JSON.stringify(p)
+  #   if order != c.sort_order
+  #     c.sort_order = order 
+  #     save c
 
-  componentDidMount: -> @storeSortOrder()
-  componentDidUpdate: -> @storeSortOrder()
+  # componentDidMount: -> @storeSortOrder()
+  # componentDidUpdate: -> @storeSortOrder()
 
 ClusterHeading = ReactiveComponent
   displayName: 'ClusterHeading'
@@ -678,7 +727,7 @@ ClusterHeading = ReactiveComponent
                 position: 'absolute'
                 top: 0
                 right: 0
-                textAlign: 'center'
+                textAlign: 'right'
                 fontWeight: heading_style.fontWeight
                 color: heading_style.color
                 fontSize: heading_style.fontSize
@@ -701,58 +750,68 @@ ClusterHeading = ReactiveComponent
 
 
 window.list_actions = (props) -> 
-  SPAN null,
 
-    if props.can_sort || props.add_new
-      DIV 
+  add_new = props.add_new
+  if add_new 
+    permitted = permit('create proposal')
+    add_new &&= permitted > 0 || permitted == Permission.NOT_LOGGED_IN
+
+  DIV 
+    style: 
+      marginTop: 12
+      marginBottom: 50
+
+    if add_new
+
+      SPAN null, 
+        A
+          style: 
+            textDecoration: 'underline'
+            fontSize: 20
+            color: focus_color()
+            fontFamily: customization('font')
+            fontStyle: 'normal'
+            fontWeight: 700
+          onClick: (e) => 
+            show_all = fetch('show_all_proposals')
+            show_all.show_all = true 
+            save show_all
+            e.stopPropagation()
+
+            setTimeout =>
+              $("[name='add_new_#{props.cluster.name}']").ensureInView()
+            , 1
+          translator "engage.add_new_proposal_to_list", 'add new'
+
+    if props.can_sort && add_new
+      SPAN 
         style: 
-          width: column_sizes().first
-          marginBottom: 12
-          display: 'inline-block'
-          verticalAlign: 'top'
+          padding: '0 24px'
+          fontSize: 20
+        '|'
 
-        if props.can_sort
-          SortProposalsMenu()
+    if props.can_sort
+      SortProposalsMenu()
 
-        if props.add_new
-          permitted = permit('create proposal')
-          if permitted > 0 || permitted == Permission.NOT_LOGGED_IN
 
-            SPAN null, 
-              if props.can_sort
-                SPAN 
-                  style: 
-                    padding: '0 12px'
-                    fontSize: 14
-                  '|'
-              A
-                style: 
-                  textDecoration: 'underline'
-                  fontSize: 14
-                  color: focus_color()
-                  fontFamily: customization('font')
-                  fontStyle: 'normal'
-                  fontWeight: 600
-                onClick: (e) => 
-                  show_all = fetch('show_all_proposals')
-                  show_all.show_all = true 
-                  save show_all
-                  e.stopPropagation()
 
-                  setTimeout =>
-                    $("[name='add_new_#{props.cluster.name}']").ensureInView()
-                  , 1
-                translator "engage.add_new_proposal_to_list", 'add new'
+    OpinionFilter
+      style: 
+        display: 'inline-block'
+        float: 'right'
+        maxWidth: column_sizes().second
+        textAlign: 'right'
+      enable_comparison_wrapper_style: 
+        position: 'absolute'
+        right: 0 
+        bottom: -20
+        fontSize: 14
+        zIndex: 99
+      
 
-    if customization('opinion_filters')
-      OpinionFilter
-        style: 
-          width: if props.can_sort || true then column_sizes().second
-          marginBottom: 12
-          marginLeft: column_sizes().gutter + (if props.can_sort then 0 else column_sizes().first)
-          display: if props.can_sort then 'inline-block'
-          verticalAlign: 'top'
-          textAlign: 'center' 
+    DIV 
+      style: 
+        clear: 'both'
 
 
 

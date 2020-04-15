@@ -199,7 +199,8 @@ Proposal = ReactiveComponent
             opinions: opinionsForProposal(@proposal)
             width: histo_width
             height: 80
-            enable_selection: false
+            enable_individual_selection: false
+            enable_range_selection: false
             backgrounded: false
             draw_base_labels: true 
             draw_base: true

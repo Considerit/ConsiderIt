@@ -216,6 +216,8 @@ Proposal = ReactiveComponent
 
     is_loading = !page.proposal || !@proposal.name?
 
+    just_you = fetch('filtered').current_filter?.label == 'just you'
+
     ARTICLE 
       id: "proposal-#{@proposal.id}"
       key: @props.slug
@@ -236,23 +238,35 @@ Proposal = ReactiveComponent
               fontWeight: 700
               fontStyle: 'oblique'
               textAlign: 'center'
-              marginBottom: 8
               marginTop: 48
 
-            TRANSLATE
-              id: "engage.opinion_header"
-              'What do you think?'
+            if mode == 'crafting' || just_you
+              TRANSLATE
+                id: "engage.opinion_header"
+                'What do you think?'
+            else 
+              TRANSLATE
+                  id: "engage.opinion_header_results"
+                  'What do we think?'
 
 
-        if customization('opinion_filters')
-          DIV 
+        DIV 
+          style: 
+            position: 'relative'
+            width: BODY_WIDTH()
+            margin: '0px auto 20px auto'
+
+          OpinionFilter
             style: 
-              position: 'relative'
-              width: BODY_WIDTH()
-              margin: '8px auto 20px auto'
-            OpinionFilter
-              style: 
-                textAlign: 'center'
+              textAlign: 'center'
+            enable_comparison_wrapper_style: 
+              # position: 'absolute'
+              # right: 0 
+              # bottom: -20
+              fontSize: 14
+              marginTop: 4
+              # zIndex: 99
+
 
         if is_loading
           LOADING_INDICATOR
@@ -284,7 +298,8 @@ Proposal = ReactiveComponent
               opinions: opinionsForProposal(@proposal)
               width: PROPOSAL_HISTO_WIDTH()
               height: if fetch('histogram-dock').docked then 50 else 170
-              enable_selection: true
+              enable_individual_selection: true
+              enable_range_selection: true
               draw_base: if fetch('histogram-dock').docked then true else false
               backgrounded: mode == 'crafting'
               draw_base: true
@@ -395,9 +410,11 @@ Proposal = ReactiveComponent
                   points: buildPointsList \
                     @proposal, 'cons', \
                     (if mode == 'results' then 'score' else 'last_inclusion'), \ 
-                    mode == 'crafting' && !TWO_COL()
+                    mode == 'crafting' && !TWO_COL(), \
+                    mode == 'crafting' || TWO_COL() || !just_you
                   style: 
                     visibility: if !TWO_COL() && !has_community_points then 'hidden'
+
 
                 #community pros
                 PointsList 
@@ -410,7 +427,8 @@ Proposal = ReactiveComponent
                   points: buildPointsList \
                     @proposal, 'pros', \
                     (if mode == 'results' then 'score' else 'last_inclusion'), \ 
-                    mode == 'crafting' && !TWO_COL()
+                    mode == 'crafting' && !TWO_COL(), \
+                    mode == 'crafting' || TWO_COL() || !just_you
                   style: 
                     visibility: if !TWO_COL() && !has_community_points then 'hidden'
 
@@ -1483,15 +1501,15 @@ GroupSelectionRegion = ReactiveComponent
 
 
 
-buildPointsList = (proposal, valence, sort_field, filter_included) ->
+buildPointsList = (proposal, valence, sort_field, filter_included, show_all_points) ->
   sort_field = sort_field or 'score'
   points = fetch("/page/#{proposal.slug}").points or []
   opinions = fetch(proposal).opinions
 
 
   # filter out filter users...
-  filtered_out = fetch('filtered')
-  if filtered_out.users
+  filtered_out = fetch 'filtered'
+  if filtered_out.users && !show_all_points
     filtered = true
     opinions = (o for o in opinions when !(filtered_out.users?[o.user]))
 
@@ -2134,11 +2152,11 @@ LocationTransition = ReactiveComponent
       else if auth.form
         reset_key auth
 
-      # hist = fetch(namespaced_key('histogram', @proposal))
-      # if hist.selected_opinion || hist.selected_opinions || hist.selected_opinion_value
-      #   hist.selected_opinion = hist.selected_opinions = hist.selected_opinion_value = null
-      #   save hist
       #######
+
+      if loc.url == '/'
+        reset_selection_state('filtered')
+
 
       @last_location = loc.url
     SPAN null
@@ -2421,14 +2439,13 @@ Root = ReactiveComponent
         delete loc.query_params.selected
         save loc
 
-      else if hist.selected_opinions || hist.selected_opinion
-        if hist.dragging
-          hist.dragging = false
-        else
-          hist.selected_opinion = null
-          hist.selected_opinions = null
-          hist.selected_opinion_value = null
-        save hist
+      else if hist.selected_opinions || hist.selected_opinion || hist.originating_histogram
+        reset_selection_state hist 
+
+    if !fetch('auth').form && loc.url == '/'
+      hist = fetch 'filtered'
+      if hist.selected_opinions || hist.selected_opinion || hist.originating_histogram
+        reset_selection_state hist
 
 
     wysiwyg_editor = fetch 'wysiwyg_editor'

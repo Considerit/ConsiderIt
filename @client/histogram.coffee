@@ -27,8 +27,12 @@ require './browser_hacks'
 #   opinions
 #     The opinions to show in the histogram. 
 #   width, height
-#   enable_selection (default = false)
-#     Whether users can select opinions segments on the histogram
+#   enable_individual_selection (default = false)
+#     Whether individual users can be selected on the histogram
+#   enable_range_selection (default = false)
+#     Whether ranges can be selected on the histogram
+#   selection_state (default = @props.key)
+#     The statebus key at which selection state will be updated
 #   draw_base (default = false)
 #     Whether to draw a base with +/- labels. If a slider is attached,
 #     don't need the labels.
@@ -90,15 +94,10 @@ require './browser_hacks'
 #      Array of opinion keys defining the current set of selected opinions. 
 #   selected_opinion_value
 #      The opinion value around which the current selection is defined  
-#   region_selection_width
-#      The width of the opinion selection region. 
 #   highlighted_users
 #      Users that other components want to have highlighted in the 
 #      histogram. In the render, this is intersected with the users whose 
 #      opinions are selected to determine which avatars are highlighted. 
-#   dragging
-#      Whether the user is currently dragging the mouse through the
-#      histogram. 
 #
 # Local state: 
 #   simulation_opinion_hash
@@ -107,17 +106,11 @@ require './browser_hacks'
 #   mouse_opinion_value
 #      Stores the mapped opinion value of the current mouse position
 #      within the histogram. 
-#   last_selection_via_drag
-#      Whether the last time the selection region moved was done by dragging
-#      in the histogram. This is used to resolve a technicality with 
-#      the order in which mouseUp and mouseClick events are fired. 
 #   avatar_size
 #      The base size of the avatars, as determined by the physics 
 #      simulation. This piece of state would be local, but it needs
 #      to be settable from the physics simulation.
-#   mouse_x_of_last_resize
-#      Stores last mouse position when in selection area resize mode.
-#
+
 # Accessibility notes: 
 #   - histogram itself should be tabbable. Should summarize results. 
 #   - pressing enter should make avatars navigable via tabbing keys. state is @local.navigating_inside
@@ -129,28 +122,43 @@ require './browser_hacks'
 # require './vendor/d3.v3.min'
 require './shared'
 
+# REGION_SELECTION_WIDTH controls the size of the selection region when 
+# hovering over the histogram. It defines the opinion bounds within which 
+# opinions are selected. Opinions = [-1, 1]. REGION_SELECTION_WIDTH is 
+# on this scale. 
+REGION_SELECTION_WIDTH = .25
+
+# Controls the size of the vertical space at the top of 
+# the histogram that gives some space for users to hover over 
+# the most populous areas
+REGION_SELECTION_VERTICAL_PADDING = 30
+
+window.reset_selection_state = (state) ->
+  hist = fetch state
+  _.extend hist,
+    initialized: true
+    highlighted_users : null
+    
+    selected_opinion : null
+    selected_opinions : null 
+      # use null instead of [] because an empty selection of []
+      # is treated differently than no selection whatsoever
+    selected_opinion_value : null
+    originating_histogram : null
+  save hist
+
+
 window.Histogram = ReactiveComponent
   displayName : 'Histogram'
 
+  get_hist_state: -> fetch (@props.selection_state or @props.key)
+
   render: -> 
-    hist = fetch @props.key
-    filter_out = fetch 'filtered'
+    hist = @get_hist_state()
 
     dirtied = false 
     if !hist.initialized
-      _.defaults hist,
-        initialized: true
-        highlighted_users : null
-        # region_selection_width controls the size of the selection region when 
-        # hovering over the histogram. It defines the opinion bounds within which 
-        # opinions are selected. Opinions = [-1, 1]. region_selection_width is 
-        # on this scale. 
-        region_selection_width : .25
-        selected_opinion : null
-        selected_opinions : null 
-          # use null instead of [] because an empty selection of []
-          # is treated differently than no selection whatsoever
-      save hist
+      reset_selection_state(hist)
       dirtied = true 
 
     avatar_radius = calculateAvatarRadius(@props.width, @props.height, @props.opinions)
@@ -173,29 +181,25 @@ window.Histogram = ReactiveComponent
 
     @local.dirty == dirtied
 
-    #return SPAN null if dirtied
-
     if !@props.draw_base_labels?
       @props.draw_base_labels = true
 
-    @props.enable_selection &&= @props.opinions.length > 0
+    filter_out = fetch 'filtered'
+    opinions = (o for o in @props.opinions when filter_out.enable_comparison || !filter_out.users?[o.user])
 
-    # Controls the size of the vertical space at the top of 
-    # the histogram that gives some space for users to hover over 
-    # the most populous areas
-    region_selection_vertical_padding = if @props.enable_selection then 30 else 0
-    if @local.region_selection_vertical_padding != region_selection_vertical_padding
-       @local.region_selection_vertical_padding = region_selection_vertical_padding
+    @props.enable_individual_selection &&= opinions.length > 0
+    @props.enable_range_selection &&= opinions.length > 1
+    @props.enable_range_selection &&= (!filter_out.current_filter || filter_out.current_filter.label != 'just you')
 
     # whether to show the shaded opinion selection region in the histogram
-    draw_selection_area = @props.enable_selection &&
+    draw_selection_area = @props.enable_range_selection &&
                             !hist.selected_opinion && 
                             !@props.backgrounded &&
                             (hist.selected_opinions || 
                               (!@local.touched && 
                                 @local.mouse_opinion_value && 
                                 !@local.hoving_over_avatar))
-
+    histo_height = @props.height + (if true || @props.enable_range_selection then REGION_SELECTION_VERTICAL_PADDING else 0)
     histogram_props = 
       tabIndex: if !@props.backgrounded then 0
 
@@ -206,7 +210,7 @@ window.Histogram = ReactiveComponent
 
       style: css.crossbrowserify
         width: @props.width
-        height: @props.height + @local.region_selection_vertical_padding
+        height: histo_height
         position: 'relative'
         borderBottom: if @props.draw_base then @props.base_style or "1px solid #999"
         #visibility: if @props.opinions.length == 0 then 'hidden'
@@ -237,8 +241,6 @@ window.Histogram = ReactiveComponent
         , 0
 
     score = 0
-    filter_out = fetch 'filtered'
-    opinions = (o for o in @props.opinions when !filter_out.users?[o.user])
     for o in opinions 
       score += o.stance
     avg = score / opinions.length
@@ -254,14 +256,14 @@ window.Histogram = ReactiveComponent
       exp = translator "engage.slider_feedback.neutral", "Neutral"
 
 
-    if @props.enable_selection
+    if @props.enable_range_selection || @props.enable_individual_selection
       if !browser.is_mobile
         _.extend histogram_props,
           onClick: @onClick
           onMouseMove: @onMouseMove
           onMouseLeave: @onMouseLeave
-          onMouseUp: @onMouseUp
           onMouseDown: @onMouseDown
+
       else 
         _.extend histogram_props,
 
@@ -281,14 +283,8 @@ window.Histogram = ReactiveComponent
           onTouchEnd: (ev) => 
             curr_time = new Date().getTime()
             # activation by double tap
-            if @local.last_tapped_at && curr_time - @local.last_tapped_at < 300          
-              ev.preventDefault()
-              @onMouseUp(ev)
-            else 
-              @local.last_tapped_at = curr_time
-              save @local
-
-          onTouchCancel: (ev) => ev.preventDefault(); @onMouseUp(ev)
+            @local.last_tapped_at = curr_time
+            save @local
 
     DIV histogram_props, 
       DIV 
@@ -319,7 +315,7 @@ window.Histogram = ReactiveComponent
       if @props.draw_base_labels
         @drawHistogramLabels()
 
-      if @props.enable_selection
+      if true || @props.enable_range_selection
         # A little padding at the top to give some space for selecting
         # opinion regions with lots of people stacked high      
         DIV style: {height: @local.region_selection_vertical_padding}
@@ -332,7 +328,7 @@ window.Histogram = ReactiveComponent
 
       DIV 
         style: 
-          height: @props.height
+          paddingTop: histo_height - @props.height 
 
         HistoAvatars
           dirtied: dirtied
@@ -340,7 +336,7 @@ window.Histogram = ReactiveComponent
           selected_opinion: hist.selected_opinion 
           selected_opinions: hist.selected_opinions
           avatar_size: @local.avatar_size 
-          enable_selection: @props.enable_selection
+          enable_selection: @props.enable_individual_selection
           proposal: @props.proposal
           height: @props.height 
           backgrounded: @props.backgrounded
@@ -374,54 +370,46 @@ window.Histogram = ReactiveComponent
     ]
 
   drawSelectionArea: -> 
-    hist = fetch @props.key
+    hist = @get_hist_state()
     anchor = hist.selected_opinion_value or @local.mouse_opinion_value
-    left = ((anchor + 1)/2 - hist.region_selection_width/2) * @props.width
-    base_width = hist.region_selection_width * @props.width
+    left = ((anchor + 1)/2 - REGION_SELECTION_WIDTH/2) * @props.width
+    base_width = REGION_SELECTION_WIDTH * @props.width
     selection_width = Math.min( \
                         Math.min(base_width, base_width + left), \
                         @props.width - left)
     selection_left = Math.max 0, left
 
-    DIV null,
-      if hist.selected_opinions
-        DIV 
-          className: 'selection_region_resizer'
-          style: 
-            borderBottom: "3px solid #{focus_color()}"
-            height: 15
-            width: selection_width
-            position: 'absolute'
-            left: selection_left
-            top: -15
-            cursor: 'col-resize'
+    return DIV null if hist.originating_histogram && hist.originating_histogram != @props.key
 
-      DIV 
-        style:
-          height: @props.height + @local.region_selection_vertical_padding
-          position: 'absolute'
-          width: selection_width
-          backgroundColor: "rgb(246, 247, 249)"
-          cursor: 'pointer'
-          left: selection_left
-          top: -2
+    DIV 
+      style:
+        height: @props.height + REGION_SELECTION_VERTICAL_PADDING
+        position: 'absolute'
+        width: selection_width
+        backgroundColor: "rgb(246, 247, 249)"
+        cursor: 'pointer'
+        left: selection_left
+        top: -2 #- REGION_SELECTION_VERTICAL_PADDING
+        borderTop: "2px solid"
+        borderTopColor: if hist.selected_opinions then focus_color() else 'transparent'
 
-        if !hist.selected_opinions
-          DIV
-            style: css.crossbrowserify
-              fontSize: 12
-              textAlign: 'center'
-              whiteSpace: 'nowrap'
-              marginTop: -9
-              userSelect: 'none'
-              pointerEvents: 'none'
+      if !hist.selected_opinions
+        DIV
+          style: css.crossbrowserify
+            fontSize: 12
+            textAlign: 'center'
+            whiteSpace: 'nowrap'
+            marginTop: -3 #-9
+            marginLeft: -4
+            userSelect: 'none'
+            pointerEvents: 'none'
 
-            TRANSLATE "engage.histogram.select_these_opinions", 'Select these opinions'
+          TRANSLATE "engage.histogram.select_these_opinions", 'highlight opinions'
 
   onClick: (ev) -> 
 
     ev.stopPropagation()
-    hist = fetch @props.key
+    hist = @get_hist_state()
 
     if @props.backgrounded
       if @props.on_click_when_backgrounded
@@ -436,28 +424,29 @@ window.Histogram = ReactiveComponent
       if is_clicking_user
         user_key = ev.target.getAttribute('data-user')
         user_opinion = _.findWhere @props.opinions, {user: user_key}
-        is_deselection = hist.selected_opinion == user_opinion.key && 
-                          !@local.last_selection_via_drag
+
+        is_deselection = (hist.selected_opinion == user_opinion.key || fetch('filtered').users?[user_key]) 
         if is_deselection
-          hist.selected_opinion = null
+          reset_selection_state(hist)
         else 
           hist.selected_opinion = user_opinion.key
           hist.selected_opinions = null
       else
-        max = hist.selected_opinion_value + hist.region_selection_width
-        min = hist.selected_opinion_value - hist.region_selection_width
+        max = hist.selected_opinion_value + REGION_SELECTION_WIDTH
+        min = hist.selected_opinion_value - REGION_SELECTION_WIDTH
         is_deselection = \
+          (hist.originating_histogram && hist.originating_histogram != @props.key) || ( \
           hist.selected_opinions && 
-           !@local.last_selection_via_drag &&
-           (!@local.touched || inRange(@local.mouse_opinion_value, min, max))
+           (!@local.touched || inRange(@local.mouse_opinion_value, min, max)))
 
         if is_deselection
-          hist.selected_opinions = null
+          reset_selection_state(hist)
           if ev.type == 'touchstart'
             @local.mouse_opinion_value = null
         else
           hist.selected_opinion = null
           hist.selected_opinions = @getOpinionsInCurrentRegion()
+          hist.originating_histogram = @props.key
 
       has_selection = hist.selected_opinion || hist.selected_opinions
       hist.selected_opinion_value = if !has_selection 
@@ -466,7 +455,6 @@ window.Histogram = ReactiveComponent
                                       @local.mouse_opinion_value 
                                     else 
                                       user_opinion.stance
-      @local.last_selection_via_drag = false
 
       save hist
       save @local
@@ -481,95 +469,69 @@ window.Histogram = ReactiveComponent
 
     translatePixelXToStance m_x - h_x, h_w
 
-  onMouseMove: (ev) -> 
-    return if fetch(namespaced_key('slider', @props.proposal)).is_moving
+  onMouseMove: (ev) ->     
 
-    if @props.enable_selection && !@props.backgrounded
-      hist = fetch @props.key
-      ev.stopPropagation()
+    return if fetch(namespaced_key('slider', @props.proposal)).is_moving  || \
+              @props.backgrounded || !@props.enable_range_selection
 
-      # handle drag resizing selection area
-      if hist.dragging
-        h_w = @getDOMNode().offsetWidth
-        mouse_x = ev.pageX
-        change_in_selection_region = 2 * (mouse_x - @local.mouse_x_of_last_resize) / h_w
-        hist.region_selection_width += change_in_selection_region
-        hist.region_selection_width = Math.min( 1, Math.max(.03, \
-                                                     hist.region_selection_width))
-        @local.mouse_x_of_last_resize = mouse_x
-        @local.last_selection_via_drag = true
-        save @local
-        save hist
-      else if $(ev.target).closest('.selection_region_resizer').length == 0
-        @local.hoving_over_avatar = ev.target.className.indexOf('avatar') != -1
-        @local.mouse_opinion_value = @getOpinionValueAtFocus(ev)
-
-        if @local.mouse_opinion_value + hist.region_selection_width >= 1
-          @local.mouse_opinion_value = 1 - hist.region_selection_width
-        else if @local.mouse_opinion_value - hist.region_selection_width <= -1
-          @local.mouse_opinion_value = -1 + hist.region_selection_width
-        
-        # dynamic selection on drag
-        if hist.selected_opinions &&
-            @local.mouse_opinion_value # this last conditional is only for touch
-                                       # interactions where there is no mechanism 
-                                       # for "leaving" the histogram
-          hist.selected_opinions = @getOpinionsInCurrentRegion()
-          hist.selected_opinion_value = @local.mouse_opinion_value 
-          save hist
-
-        save @local
-
-  onMouseLeave: (ev) -> 
-    return if fetch(namespaced_key('slider', @props.proposal)).is_moving
-    @local.mouse_opinion_value = null
-    save @local
-
-    hist = fetch @props.key
-    if hist.dragging
-      hist.dragging = false
-      save hist
+    hist = @get_hist_state()    
+    return if hist.originating_histogram && hist.originating_histogram != @props.key
 
 
-  onMouseUp: (ev) -> 
-    return if fetch(namespaced_key('slider', @props.proposal)).is_moving
-    hist = fetch @props.key   
+    ev.stopPropagation()
+
+    @local.hoving_over_avatar = ev.target.className.indexOf('avatar') != -1
+    @local.mouse_opinion_value = @getOpinionValueAtFocus(ev)
+
+    if @local.mouse_opinion_value + REGION_SELECTION_WIDTH >= 1
+      @local.mouse_opinion_value = 1 - REGION_SELECTION_WIDTH
+    else if @local.mouse_opinion_value - REGION_SELECTION_WIDTH <= -1
+      @local.mouse_opinion_value = -1 + REGION_SELECTION_WIDTH
     
-    if hist.dragging
-      hist.dragging = false
+    # dynamic selection on drag
+    if hist.selected_opinions &&
+        @local.mouse_opinion_value # this last conditional is only for touch
+                                   # interactions where there is no mechanism 
+                                   # for "leaving" the histogram
+      hist.selected_opinions = @getOpinionsInCurrentRegion()
+      hist.selected_opinion_value = @local.mouse_opinion_value 
       save hist
+
+    save @local
 
   onMouseDown: (ev) -> 
     return if fetch(namespaced_key('slider', @props.proposal)).is_moving
     ev.stopPropagation()
-
-    hist = fetch @props.key
-    if $(ev.target).closest('.selection_region_resizer').length > 0 && 
-        hist.selected_opinions && 
-        !@local.touched
-      hist.dragging = true
-      @local.mouse_x_of_last_resize = ev.pageX
-      save hist
-
     return false 
       # The return false prevents text selections
       # of other parts of the page when dragging
       # the selection region around.
 
+
+  onMouseLeave: (ev) -> 
+    hist = @get_hist_state() 
+
+    return if fetch(namespaced_key('slider', @props.proposal)).is_moving || \
+              (hist.originating_histogram && hist.originating_histogram != @props.key)
+    @local.mouse_opinion_value = null
+    save @local
+
+
   getOpinionsInCurrentRegion : -> 
-    # return the opinions whose stance is within +/- region_selection_width 
+    # return the opinions whose stance is within +/- REGION_SELECTION_WIDTH 
     # of the moused over area of the histogram
-    hist = fetch @props.key
+
+    hist = @get_hist_state()
     all_opinions = @props.opinions || []  
-    min = @local.mouse_opinion_value - hist.region_selection_width
-    max = @local.mouse_opinion_value + hist.region_selection_width
+    min = @local.mouse_opinion_value - REGION_SELECTION_WIDTH
+    max = @local.mouse_opinion_value + REGION_SELECTION_WIDTH
     selected_opinions = (o.key for o in all_opinions when inRange(o.stance, min, max))
     selected_opinions
 
 
   histocache_key: -> 
     filter_out = fetch 'filtered'
-    opinions = (o for o in @props.opinions when !(filter_out.users?[o.user]))
+    opinions = (o for o in @props.opinions when filter_out.enable_comparison || !(filter_out.users?[o.user]))
 
     key = JSON.stringify _.map(opinions, (o) => 
             Math.round(fetch(o.key).stance * 100) / 100 )
@@ -607,7 +569,7 @@ window.Histogram = ReactiveComponent
       noop = 1
     else if !@local.dirty && histocache_key != @local.histocache?.hash && @current_request != histocache_key
 
-      filtered_opinions = (o for o in @props.opinions when !(filter_out.users?[o.user]))
+      filtered_opinions = (o for o in @props.opinions when filter_out.enable_comparison || !(filter_out.users?[o.user]))
 
       opinions = for opinion, i in filtered_opinions
         {stance: opinion.stance, user: opinion.user}
@@ -713,7 +675,8 @@ HistoAvatars = ReactiveComponent
       for opinion, idx in @props.opinions
         user = opinion.user
 
-        if filter_out.users?[user]
+        backgrounded = filter_out.users?[user]
+        if backgrounded && !filter_out.enable_comparison
           continue
 
         o = fetch(opinion) # subscribe to changes so physics sim will get rerun...
@@ -722,7 +685,7 @@ HistoAvatars = ReactiveComponent
         # creation = new Date(o.created_at).getTime()
         # opacity = .05 + .95 * (creation - sub_creation) / (Date.now() - sub_creation)
 
-        if @props.backgrounded
+        if backgrounded || @props.backgrounded
           avatar_style = if fetch('/current_user').user == user 
                            _.extend({}, regular_avatar_style, {opacity: .25}) 
                          else 
@@ -746,8 +709,10 @@ HistoAvatars = ReactiveComponent
         #     # opacity: opacity
 
         stance = opinion.stance 
-        if Math.abs(stance) > .01
+        if stance > .01
           alt = "#{(stance * 100).toFixed(0)}%"
+        else if stance < -.01
+          alt = "– #{(stance * -100).toFixed(0)}%"
         else 
           alt = translator "engage.histogram.user_is_neutral", "is neutral"
 
@@ -761,8 +726,8 @@ HistoAvatars = ReactiveComponent
 
         avatar user,
           ref: "avatar-#{idx}"
-          focusable: @props.navigating_inside && !@props.backgrounded 
-          hide_tooltip: @props.backgrounded
+          focusable: @props.navigating_inside && !@props.backgrounded && !backgrounded
+          hide_tooltip: @props.backgrounded || backgrounded
           alt: "<user>: #{alt}"
           style: _.extend {}, avatar_style, 
             left: pos?[0]
@@ -907,8 +872,8 @@ positionAvatars = (opts) ->
   # Initialize positions of each node
   targets = {}
   opinions = opts.o.slice()
-  width = opts.w || 400
-  height = opts.h || 70
+  width = opts.w or 400
+  height = opts.h or 70
   r = calculateAvatarRadius width, height, opinions
 
   nodes = opinions.map (o, i) ->
@@ -974,7 +939,7 @@ positionAvatars = (opts) ->
 
 calculateAvatarRadius = (width, height, opinions) -> 
   filter_out = fetch 'filtered'
-  if filter_out.users 
+  if filter_out.users && !filter_out.enable_comparison
     opinions = (o for o in opinions when !(filter_out.users?[o.user]))
 
   opinions.sort (a,b) -> a.stance - b.stance

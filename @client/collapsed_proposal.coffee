@@ -65,6 +65,7 @@ window.CollapsedProposal = ReactiveComponent
 
     can_edit = permit('update proposal', proposal) > 0
 
+    just_you = fetch('filtered').current_filter?.label == 'just you'
 
     slider_interpretation = (value) => 
       if value > .03
@@ -166,7 +167,7 @@ window.CollapsedProposal = ReactiveComponent
               color: '#000'            
               fontSize: 20
               
-            href: proposal_url(proposal)
+            href: proposal_url(proposal, just_you)
 
             proposal.name
 

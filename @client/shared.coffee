@@ -314,7 +314,7 @@ window.namespaced_key = (base_key, base_object) ->
   
   "#{namespace_key}_#{base_key}"
 
-window.proposal_url = (proposal) =>
+window.proposal_url = (proposal, prefer_crafting_page) ->
   # The special thing about this function is that it only links to
   # "?results=true" if the proposal has an opinion.
 
@@ -322,9 +322,7 @@ window.proposal_url = (proposal) =>
   result = '/' + proposal.slug
   subdomain = fetch('/subdomain') 
 
-  if TWO_COL() || (!customization('show_crafting_page_first', proposal) || !proposal.active ) \
-     || (!customization('discussion_enabled', proposal))
-
+  if TWO_COL() || !proposal.active || (!customization('show_crafting_page_first', proposal) && !prefer_crafting_page) || !customization('discussion_enabled', proposal)
     result += '?results=true'
 
   return result

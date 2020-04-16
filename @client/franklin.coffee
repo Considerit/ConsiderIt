@@ -567,6 +567,9 @@ NextProposals = ReactiveComponent
       textAlign: 'center'
       marginBottom: 18
 
+    loc = fetch 'location'
+    hash = loc.url.split('/')[1].replace('-', '_')
+    
     DIV 
       style: {}
 
@@ -605,7 +608,7 @@ NextProposals = ReactiveComponent
           link: 
             component: A 
             args: 
-              href: '/'
+              href: "/##{hash}"
               style: 
                 textDecoration: 'underline'
                 fontWeight: 600

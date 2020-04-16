@@ -66,6 +66,7 @@ window.CollapsedProposal = ReactiveComponent
     can_edit = permit('update proposal', proposal) > 0
 
     just_you = fetch('filtered').current_filter?.label == 'just you'
+    everyone = fetch('filtered').current_filter?.label == 'everyone'
 
     slider_interpretation = (value) => 
       if value > .03
@@ -311,7 +312,7 @@ window.CollapsedProposal = ReactiveComponent
           width: col_sizes.second
           height: 40
           enable_individual_selection: !browser.is_mobile
-          enable_range_selection: !browser.is_mobile
+          enable_range_selection: everyone && !browser.is_mobile
           draw_base: true
           draw_base_labels: !slider_regions
           selection_state: 'filtered'

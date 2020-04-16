@@ -336,7 +336,8 @@ window.Histogram = ReactiveComponent
           selected_opinion: hist.selected_opinion 
           selected_opinions: hist.selected_opinions
           avatar_size: @local.avatar_size 
-          enable_selection: @props.enable_individual_selection
+          enable_individual_selection: @props.enable_individual_selection
+          enable_range_selection: @props.enable_range_selection
           proposal: @props.proposal
           height: @props.height 
           backgrounded: @props.backgrounded
@@ -443,7 +444,7 @@ window.Histogram = ReactiveComponent
           reset_selection_state(hist)
           if ev.type == 'touchstart'
             @local.mouse_opinion_value = null
-        else
+        else if @props.enable_range_selection
           hist.selected_opinion = null
           hist.selected_opinions = @getOpinionsInCurrentRegion()
           hist.originating_histogram = @props.key
@@ -643,7 +644,7 @@ HistoAvatars = ReactiveComponent
       width: @props.avatar_size
       height: @props.avatar_size
       position: 'absolute'
-      cursor: if @props.enable_selection then 'pointer' else 'auto'
+      cursor: if @props.enable_individual_selection then 'pointer' else 'auto'
 
     # 2) The style of a selected avatar
     selected_avatar_style = _.extend {}, regular_avatar_style, 
@@ -670,7 +671,7 @@ HistoAvatars = ReactiveComponent
         position: 'relative'
         top: -1
         cursor: if !@props.backgrounded && 
-                    @props.enable_selection then 'pointer'
+                    @props.enable_range_selection then 'pointer'
 
       for opinion, idx in @props.opinions
         user = opinion.user

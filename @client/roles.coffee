@@ -131,7 +131,7 @@ SubdomainRoles = ReactiveComponent
         wildcard: {label: 'Any registered user can post new proposals', default: true}},
       {
         name: 'visitor', 
-        label: 'Users who can access forum', 
+        label: 'People who can access forum', 
         description: 'If set to private forum, invite specific people to join below.', 
         #icon: 'fa-android', 
         wildcard: {label: 'Public forum. Anyone with a link can see all proposals.', default: true}} 
@@ -214,25 +214,6 @@ AddRolesAndInvite = ReactiveComponent
         save @local
 
 
-    trigger = (e, role) =>
-      @local.role = role
-      @local.roles_menu = false 
-      save @local
-      e.stopPropagation()
-      e.preventDefault()
-
-    set_focus = (idx) => 
-      idx = 0 if !idx?
-      @local.focus = idx 
-      @refs["menuitem-#{idx}"].getDOMNode().focus()
-      save @local 
-      
-
-    close_menu = => 
-      document.activeElement.blur()
-      @local.roles_menu = false
-      save @local
-
     other_roles = (r for r in @props.roles when r.name != @local.role.name)
     DIV 
       style: 
@@ -241,167 +222,28 @@ AddRolesAndInvite = ReactiveComponent
         padding: '18px 24px'
 
 
+      SELECT 
+        id: 'select_role'
+        type: 'text'
+        name: 'select_role'
+        defaultValue: 0
+        onChange: (event) =>
+          role = other_roles[event.target.value]
+          @local.role = role 
+          save @local
 
-      # Show (and optionally change) the role currently being modified 
-      # by the invite component
-      DIV 
-        ref: 'menu_wrap'
-        key: 'select_role_menu'
         style: 
-          fontWeight: 500
           fontSize: 18
-          marginBottom: 6
+          marginBottom: 18
           display: 'inline-block'
 
-        onTouchEnd: => 
-          @local.roles_menu = !@local.roles_menu
-          save(@local)
 
-        onMouseEnter: => @local.roles_menu = true; save(@local)
-        onMouseLeave: close_menu
-
-        onFocus: =>  
-          @local.roles_menu = true
-          save(@local)
-
-        onBlur: (e) => 
-          setTimeout => 
-            # if the focus isn't still on an element inside of this menu, 
-            # then we should close the menu
-            if $(document.activeElement).closest(@refs.menu_wrap.getDOMNode()).length == 0
-              @local.roles_menu = false; save @local
-          , 0
-
-        onKeyDown: (e) => 
-          if e.which == 13 || e.which == 27 # ENTER or ESC
-            close_menu()
-            e.preventDefault()
-          else if e.which == 38 || e.which == 40 # UP / DOWN ARROW
-            @local.focs = -1 if !@local.focus?
-            if e.which == 38
-              @local.focus--
-              if @local.focus < 0 
-                @local.focus = other_roles.length - 1
-            else 
-              @local.focus++
-              if @local.focus > other_roles.length - 1
-                @local.focus = 0 
-            set_focus(@local.focus)
-            e.preventDefault() # prevent window from scrolling too
-
-
-
-
-        if (r for r in other_roles when !r.hide).length > 0 
-          BUTTON 
-            id: 'select_new_role'
-            tabIndex: 0
-            'aria-haspopup': "true"
-            'aria-owns': "role_menu_popup"          
-            style: 
-              backgroundColor: '#ddd'
-              padding: '8px 12px'
-              borderRadius: 8
-              cursor: 'pointer'
-              border: 'none'
-              border: '1px solid #aaa'
-
-            I 
-              className: "fa #{@local.role.icon}"
-              style: 
-                displayName: 'inline-block'
-                margin: '0 8px 0 0'
-            "Add #{@local.role.label}"
-
-            
-            I style: {marginLeft: 8}, className: "fa fa-caret-down"
-        else 
-          DIV  
-            id: 'select_new_role'
-            style: 
-              backgroundColor: 'rgba(100,100,150,.1)'
-              padding: '8px 12px'
-              borderRadius: 8
-              border: 'none'
-
-            I 
-              className: "fa #{@local.role.icon}"
-              style: 
-                displayName: 'inline-block'
-                margin: '0 8px 0 0'
-            "Add #{@local.role.label}"
-
-
-
-        UL 
-          id: 'role_menu_popup'
-          role: "menu"
-          'aria-hidden': !@local.roles_menu
-          hidden: !@local.roles_menu
-
-          style: 
-            width: 500
-            position: 'absolute'
-            left: if @local.roles_menu then 24 else -9999            
-            zIndex: 99
-            listStyle: 'none'
-            backgroundColor: '#fff'
-            border: '1px solid #eee'
-
-          for role,idx in other_roles when !role.hide
-            LI 
-              role: "menuitem"              
-              ref: "menuitem-#{idx}"              
-              className: 'invite_menu_item'
-              tabIndex: 0                
-              style: 
-                padding: '2px 12px'
-                fontSize: 18
-                cursor: 'pointer'
-                borderBottom: '1px solid #fafafa'
-                backgroundColor: if @local.focus == idx then '#414141'
-                color: if @local.focus == idx then 'white'
-              key: "menuitem-#{idx}"
-
-              onClick: do(idx, role) => (e) => 
-                if @local.focus != idx 
-                  set_focus idx 
-                trigger(e, role)
-
-              onTouchEnd: do(idx, role) => (e) =>
-                if @local.focus != idx 
-                  set_focus idx 
-                trigger(e, role)
-
-              onKeyDown: do(role) => (e) => 
-                trigger(e, role) if e.which == 13 #ENTER
-                  
-              onFocus: do(idx) => (e) => 
-                if @local.focus != idx 
-                  set_focus idx
-                e.stopPropagation()
-
-              onMouseEnter: do(idx) => => 
-                if @local.focus != idx 
-                  set_focus idx
-              
-              onBlur: do(idx) => (e) =>
-                @local.focus = null 
-                save @local  
-              
-              onMouseExit: do(idx) => => 
-                @local.focus = null 
-                save @local
-
-              I 
-                className: "fa #{role.icon}"
-                style: 
-                  displayName: 'inline-block'
-                  margin: '0 8px 0 0'
-              "Add #{role.label}"
-
-
-
+        for role,idx in other_roles 
+          if !role.hide
+            do (role, idx) => 
+              OPTION
+                value: idx
+                "Add #{role.label}"
 
 
       # Show everyone queued for being added/invited to a role

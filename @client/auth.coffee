@@ -532,11 +532,11 @@ Auth = ReactiveComponent
             style: 
               fontSize: 24
             checked: @local.tags['considerit_terms.editable']
-            onChange: => (event) =>
+            onChange: (event) =>
               @local.tags = @local.tags or {}
               @local.tags['considerit_terms.editable'] = current_user.tags['considerit_terms.editable'] = event.target.checked
+              save current_user
               save @local
-
           LABEL 
             htmlFor: slugify("considerit_terms.editableinputBox")
             style: 

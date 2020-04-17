@@ -326,10 +326,13 @@ Auth = ReactiveComponent
 
         render
 
-    render_user_questions = =>
-      user_questions = @userQuestionInputs()
+    render_host_questions = =>
+      host_questions = @userQuestionInputs()
 
-      if user_questions.length > 0 
+      if host_questions.length > 0 
+
+        host_framing = customization 'host_questions_framing'
+
         DIV
           style: 
             padding: "24px 24px"
@@ -339,7 +342,14 @@ Auth = ReactiveComponent
           H4
             style: _.extend {}, section_heading_style, 
               marginBottom: 18
-            translator('auth.user_questions.heading', 'Questions from the forum host') 
+            translator('auth.host_questions.heading', 'Questions from the forum host') 
+
+          if host_framing 
+            DIV 
+              style: 
+                fontSize: 14
+                marginBottom: 12
+              dangerouslySetInnerHTML: __html: host_framing
 
 
           UL 
@@ -347,7 +357,7 @@ Auth = ReactiveComponent
               padding: "6px 0px"
               listStyle: 'none'
 
-            for [label, render] in user_questions
+            for [label, render] in host_questions
               field_id = render?.props?.id or render?[0]?.props?.id
               LI 
                 style: 
@@ -406,7 +416,7 @@ Auth = ReactiveComponent
             render_field avatar_field[0], avatar_field[1]
 
 
-            render_user_questions()
+            render_host_questions()
 
             if pledges.length > 0 
             
@@ -463,7 +473,7 @@ Auth = ReactiveComponent
             render_field name_label, @inputBox('name', full_name_placeholder)
             render_field avatar_field[0], avatar_field[1]
 
-            render_user_questions()
+            render_host_questions()
 
         # The RESET PASSWORD form
         when 'reset password'
@@ -481,7 +491,7 @@ Auth = ReactiveComponent
           render_field "#{code_label}:", @inputBox('verification_code', code_placeholder)
 
         when 'user questions'
-          render_user_questions()
+          render_host_questions()
 
         else
           throw "Unrecognized authentication form #{auth.form}"

@@ -287,7 +287,7 @@ window.clustered_proposals_with_tabs = (current_filter) ->
   homepage_tabs = fetch 'homepage_tabs'
 
   clusters = null
-  if !current_filter
+  if !current_filter || !customization('homepage_tabs')
     current_filter = homepage_tabs.filter
     clusters = homepage_tabs.clusters
   else 

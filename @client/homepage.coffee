@@ -331,7 +331,7 @@ window.HomepageTabTransition = ReactiveComponent
         filters.unshift ["Show all", '*']
 
       homepage_tabs = fetch 'homepage_tabs'
-      if !homepage_tabs.filter?
+      if !homepage_tabs.filter? || (loc.query_params.tab && loc.query_params.tab != homepage_tabs.filter)
         if loc.query_params.tab
           homepage_tab.filter = decodeURI loc.query_params.tab
         else 
@@ -370,6 +370,9 @@ window.HomepageTabs = ReactiveComponent
         position: 'relative'
         top: 2
         marginTop: 20
+
+      A 
+        name: 'active_tab'
 
       UL 
         role: 'tablist'
@@ -426,10 +429,10 @@ window.HomepageTabs = ReactiveComponent
                 if e.which == 13 || e.which == 32 # ENTER or SPACE
                   e.currentTarget.click() 
                   e.preventDefault()
-              onClick: => 
-                homepage_tabs.filter = filter 
-                homepage_tabs.clusters = clusters
-                save homepage_tabs
+              onClick: =>
+                loc = fetch 'location'
+                loc.query_params.tab = filter 
+                save loc  
                 document.activeElement.blur()
 
               H4 
@@ -560,19 +563,6 @@ window.Cluster = ReactiveComponent
       if customization('footer', cluster_key) && !is_collapsed
         customization('footer', cluster_key)()
 
-
-
-
-  # storeSortOrder: -> 
-  #   p = (p.key for p in sorted_proposals(@props.cluster.proposals))
-  #   c = fetch("cluster-#{slugify(@props.cluster.name)}-sort_order")
-  #   order = JSON.stringify(p)
-  #   if order != c.sort_order
-  #     c.sort_order = order 
-  #     save c
-
-  # componentDidMount: -> @storeSortOrder()
-  # componentDidUpdate: -> @storeSortOrder()
 
 ClusterHeading = ReactiveComponent
   displayName: 'ClusterHeading'

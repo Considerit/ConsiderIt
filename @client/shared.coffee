@@ -280,25 +280,43 @@ window.clustered_proposals = (keep_as_map) ->
   ordered_clusters.sort (a,b) -> a.sort_order - b.sort_order
   ordered_clusters 
 
-window.clustered_proposals_with_tabs = -> 
+window.clustered_proposals_with_tabs = (current_filter) -> 
+
+
   all_clusters = clustered_proposals()
   homepage_tabs = fetch 'homepage_tabs'
-  if homepage_tabs.filter? && homepage_tabs.filter != 'Show all'
+
+  clusters = null
+  if !current_filter
+    current_filter = homepage_tabs.filter
+    clusters = homepage_tabs.clusters
+  else 
+    filters = ([k,v] for k,v of customization('homepage_tabs'))
+    for [filter, cclusters] in filters 
+      if filter == current_filter
+        clusters = cclusters
+        break 
+
+  if !clusters 
+    console.error "No clusters found for #{current_filter}"
+
+  if current_filter && current_filter != 'Show all'
     to_remove = []
     for cluster, index in all_clusters or []
       cluster_key = "list/#{cluster.name}"
 
-      fails_filter = homepage_tabs.filter? && (homepage_tabs.clusters != '*' && !(cluster.name in (homepage_tabs.clusters or [])) )
-      if fails_filter && ('*' in (homepage_tabs.clusters or []))
+      fails_filter = current_filter && (clusters != '*' && !(cluster.name in (clusters or [])) )
+      if fails_filter && ('*' in (clusters or []))
         in_others = []
-        for filter, clusters of customization('homepage_tabs')
-          in_others = in_others.concat clusters 
+        for filter, cclusters of customization('homepage_tabs')
+          in_others = in_others.concat cclusters 
 
         fails_filter &&= cluster.name in in_others
       if fails_filter
         to_remove.push cluster 
 
     all_clusters = _.difference all_clusters, to_remove
+
   all_clusters
 
 

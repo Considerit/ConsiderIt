@@ -19,6 +19,7 @@ require './auth'
 require './avatar'
 require './browser_hacks'
 require './browser_location'
+require './proposal_navigation'
 require './bubblemouth'
 require './edit_proposal'
 require './customizations'
@@ -39,7 +40,6 @@ require './edit_point'
 require './edit_comment'
 require './point'
 require './translations'
-require './proposal_navigation'
 require './legal'
 require './statement'
 
@@ -470,7 +470,7 @@ Proposal = ReactiveComponent
             width: w
 
 
-          (customization('ProposalNavigation') or NextProposals)
+          (customization('ProposalNavigation') or GroupedProposalNavigation) # or NextProposals)
             width: w
             proposal: @proposal
 
@@ -490,129 +490,6 @@ Proposal = ReactiveComponent
           your_points_key: edit_mode
 
 
-
-window.get_next_proposals = (args) -> 
-  relative_to = args.relative_to
-  all_proposals = fetch '/proposals' 
-  subdomain = fetch('/subdomain')
-  mod = (n, m) -> ((n % m) + m) % m
-
-  return [[],[]] if !all_proposals.proposals || all_proposals.proposals.length == 0 
-
-  # Determine the next proposal
-  next_proposals = []; prev_proposals = []
-  clusters = clustered_proposals_with_tabs()        
-  all_proposals_flat = _.flatten (sorted_proposals(cluster.proposals) for cluster in clusters)
-  if subdomain.name == 'HALA' && fetch('homepage_tabs').filter == 'Draft zoning changes'
-    hala = fetch('hala')
-    hala.name ||= capitalize(relative_to.slug.split('--')[0].replace(/_/g, ' '))
-    all_proposals_flat = (p for p in all_proposals_flat when p.name.toLowerCase().indexOf(hala.name.toLowerCase()) > -1)
-  else if subdomain.name in ['cprs-network', 'engage-cprs']
-    all_proposals_flat = []
-  
-  idx = 0
-  for proposal, idx in all_proposals_flat
-    if proposal == relative_to
-      break
-
-  next_idx = mod(idx + 1, all_proposals_flat.length)
-  prev_idx = mod(idx - 1, all_proposals_flat.length)
-
-  for idx in [0..(args.count or all_proposals.proposals.length) - 1]
-    break if !all_proposals_flat[ next_idx + idx ]
-    continue if all_proposals_flat[ next_idx + idx ].key == relative_to.key
-    next_proposals.push all_proposals_flat[ next_idx + idx ]
-
-  if !args.count || (next_proposals.length < all_proposals.proposals.length && next_idx > 0)
-    for idx in [0..(args.count or all_proposals.proposals.length) - 1 - next_proposals.length]
-      break if !all_proposals_flat[ idx ] || all_proposals_flat[ idx ].key == relative_to.key
-      next_proposals.push all_proposals_flat[ idx ]
-
-
-  for idx in [0..(args.count or all_proposals.proposals.length) - 1]
-    break if prev_idx - idx < 0
-    continue if !all_proposals_flat[ prev_idx - idx ] || all_proposals_flat[ prev_idx - idx ].key == relative_to.key
-    prev_proposals.push all_proposals_flat[ prev_idx - idx ]
-
-
-
-  [prev_proposals, next_proposals]
-
-
-NextProposals = ReactiveComponent
-  displayName: 'NextProposals'
-
-  render: -> 
-
-    [dummy, next] = get_next_proposals
-                      relative_to: @props.proposal 
-
-    count = @props.count or 5
-
-    to_show_first = []
-    to_show_later = []
-    for proposal in next 
-      if !proposal.your_opinion.published
-        to_show_first.push proposal 
-      else 
-        to_show_later.push proposal 
-
-    to_show = to_show_first.concat(to_show_later)
-    return SPAN null if to_show.length < 2 && arest.cache['/proposals']?.proposals?
-
-    heading_style = _.defaults {}, customization('list_label_style'),
-      fontSize: 36
-      fontWeight: 700
-      fontStyle: 'oblique'
-      textAlign: 'center'
-      marginBottom: 18
-
-    loc = fetch 'location'
-    hash = loc.url.split('/')[1].replace('-', '_')
-    
-    DIV 
-      style: {}
-
-      H2
-        style: heading_style
-
-        TRANSLATE
-          id: "engage.related_proposals" 
-          'Explore a related idea'
-
-      if !to_show || to_show.length == 0
-        LOADING_INDICATOR
-
-      else 
-        UL null, 
-
-          for proposal, idx in to_show
-            break if idx > count 
-
-            cluster = proposal.cluster or 'Proposals'
-
-            CollapsedProposal 
-              key: "collapsed#{proposal.key or proposal}"
-              proposal: proposal
-              show_category: true
-              width: @props.width
-              hide_scores: true
-
-      DIV 
-        style: 
-          textAlign: 'right'
-          fontSize: 22
-
-        TRANSLATE
-          id: 'engage.back_to_homepage_option'
-          link: 
-            component: A 
-            args: 
-              href: "/##{hash}"
-              style: 
-                textDecoration: 'underline'
-                fontWeight: 600
-          "…or go <link>back to the homepage</link>"
 
 
 

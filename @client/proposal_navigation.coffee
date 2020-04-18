@@ -191,10 +191,10 @@ window.GroupedProposalNavigation = (args) ->
         for [name, lists] in sections 
           active_section = false 
 
-          if customization('homepage_tabs')
-            lists = clustered_proposals_with_tabs(name)
-          else 
-            lists = 
+          # if customization('homepage_tabs')
+          #   lists = clustered_proposals_with_tabs(name)
+          # else 
+          #   lists = 
 
           total_proposals = 0
           for list in lists

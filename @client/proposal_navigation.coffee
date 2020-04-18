@@ -191,7 +191,10 @@ window.GroupedProposalNavigation = (args) ->
         for [name, lists] in sections 
           active_section = false 
 
-          lists = clustered_proposals_with_tabs(name)
+          if customization('homepage_tabs'))
+            lists = clustered_proposals_with_tabs(name)
+          else 
+            lists = 
 
           total_proposals = 0
           for list in lists
@@ -309,7 +312,7 @@ window.GroupedProposalNavigation = (args) ->
                                   DIV 
                                     style: 
                                       position: 'absolute'
-                                      left: -125
+                                      left: -150
                                       top: 0
                                     dangerouslySetInnerHTML: __html: "You are here &rarr;"
 

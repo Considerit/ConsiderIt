@@ -664,7 +664,7 @@ OpinionFilter = ReactiveComponent
               padding: 0
               display: 'inline-block'
               color: focus_color() #'inherit'
-              textTransform: 'lowercase'
+              # textTransform: 'lowercase'
               borderRadius: 16
               textAlign: (@props.style or {}).textAlign
 

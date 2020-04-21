@@ -148,6 +148,8 @@ window.reset_selection_state = (state) ->
   save hist
 
 
+ENABLE_SERVER_HISTOCACHE = true 
+
 window.Histogram = ReactiveComponent
   displayName : 'Histogram'
 
@@ -171,7 +173,7 @@ window.Histogram = ReactiveComponent
     # extraction from @try_histocache
     proposal = fetch(@props.proposal)
     histocache_key = @histocache_key()
-    if proposal.histocache?[histocache_key]
+    if ENABLE_SERVER_HISTOCACHE && proposal.histocache?[histocache_key]
       if histocache_key != @local.histocache?.hash
         @local.histocache =
           hash: histocache_key 
@@ -540,6 +542,7 @@ window.Histogram = ReactiveComponent
     md5 key
 
   try_histocache : -> 
+    return false if !ENABLE_SERVER_HISTOCACHE
     proposal = fetch(@props.proposal)
     histocache_key = @histocache_key()
 
@@ -590,7 +593,7 @@ window.Histogram = ReactiveComponent
             done: (positions) =>   
               return if !@isMounted()
               if Object.keys(positions).length != 0 && @current_request == histocache_key
-                @local.histocaches = 
+                @local.histocache = 
                   hash: histocache_key
                   positions: positions
 

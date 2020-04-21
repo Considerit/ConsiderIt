@@ -607,7 +607,7 @@ OpinionFilter = ReactiveComponent
             fontSize: 20
             position: 'relative'
 
-          if current_filter?.label in ['everyone', 'just you']
+          if true || current_filter?.label in ['everyone', 'just you']
             TRANSLATE "engage.opinion_filter.label", 'show opinion of' 
           else 
             TRANSLATE "engage.opinion_filter.label_short", 'showing'
@@ -666,9 +666,10 @@ OpinionFilter = ReactiveComponent
               color: focus_color() #'inherit'
               textTransform: 'lowercase'
               borderRadius: 16
+              textAlign: (@props.style or {}).textAlign
 
             menu_style: 
-              minWidth: 250
+              minWidth: 300
               backgroundColor: '#eee'
               border: "1px solid #{focus_color()}"
               left: 'auto'

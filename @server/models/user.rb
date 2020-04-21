@@ -164,6 +164,31 @@ class User < ActiveRecord::Base
 
   end
 
+  def self.fix_active_in
+    ActsAsTenant.without_tenant do
+      Subdomain.all.each do |subdomain|
+        users = {}
+        subdomain.opinions.published.each do |o|
+          users[o.user_id] = o.user
+        end
+        subdomain.comments.each do |o|
+          users[o.user_id] = o.user
+        end
+        subdomain.points.published.each do |o|
+          users[o.user_id] = o.user
+        end
+        subdomain.proposals.each do |o|
+          users[o.user_id] = o.user
+        end       
+        users.each do |k,u|
+          if u 
+            u.add_to_active_in(subdomain) 
+          end
+        end
+      end
+    end
+  end
+
   def emails_received
     Oj.load(self.emails || "{}")
   end

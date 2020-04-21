@@ -193,6 +193,8 @@ AddRolesAndInvite = ReactiveComponent
     target = fetch @props.target
     users = fetch '/users'
 
+    console.log {roles: @props.roles}
+
     if !@local.role
       @local.added = []
       @local.role = @props.roles[0]
@@ -214,7 +216,7 @@ AddRolesAndInvite = ReactiveComponent
         save @local
 
 
-    other_roles = (r for r in @props.roles when r.name != @local.role.name)
+    other_roles = @props.roles
     DIV 
       style: 
         position: 'relative'

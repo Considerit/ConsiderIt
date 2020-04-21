@@ -534,8 +534,7 @@ Auth = ReactiveComponent
             checked: @local.tags['considerit_terms.editable']
             onChange: (event) =>
               @local.tags = @local.tags or {}
-              @local.tags['considerit_terms.editable'] = current_user.tags['considerit_terms.editable'] = event.target.checked
-              save current_user
+              @local.tags['considerit_terms.editable'] = @local.agreed_to_terms = event.target.checked
               save @local
           LABEL 
             htmlFor: slugify("considerit_terms.editableinputBox")
@@ -1103,7 +1102,7 @@ Auth = ReactiveComponent
 
       save @local
 
-    if auth.ask_questions && auth.form not in ['login', 'reset password', 'verify email'] && !current_user.tags['considerit_terms.editable']
+    if auth.ask_questions && auth.form not in ['login', 'reset password', 'verify email'] && !@local.agreed_to_terms
       @local.errors.push translator('auth.validation.agree_to_terms', "To proceed, you must agree to the terms") 
 
     if @local.errors.length == 0

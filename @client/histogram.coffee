@@ -148,7 +148,7 @@ window.reset_selection_state = (state) ->
   save hist
 
 
-ENABLE_SERVER_HISTOCACHE = true 
+ENABLE_SERVER_HISTOCACHE = false 
 
 window.Histogram = ReactiveComponent
   displayName : 'Histogram'

@@ -14,6 +14,10 @@ task :clear_null_inclusions => :environment do
   Inclusion.where(:point_id => nil).destroy_all
 end
 
+task :fix_active_in => :environment do 
+  User.fix_active_in
+end
+
 
 task :migrate_roles => :environment do 
   Subdomain.all.each do |sub|

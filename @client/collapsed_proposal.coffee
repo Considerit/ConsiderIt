@@ -183,10 +183,15 @@ window.CollapsedProposal = ReactiveComponent
               customization('proposal_meta_data')(proposal)
 
             else if !@props.hide_metadata && customization('show_proposal_meta_data')
+              show_author_name_in_meta_data = !icons && (editor = proposal_editor(proposal)) && editor == proposal.user
+
               SPAN 
                 style: 
                   paddingRight: 16
 
+                if !show_author_name_in_meta_data
+                  "Added: "
+                
                 prettyDate(proposal.created_at)
 
 
@@ -195,7 +200,7 @@ window.CollapsedProposal = ReactiveComponent
                     padding: '0 8px'
                   '|'
 
-                if !icons && (editor = proposal_editor(proposal)) && editor == proposal.user
+                if show_author_name_in_meta_data
                   [ 
                     SPAN 
                       style: {}
@@ -213,17 +218,31 @@ window.CollapsedProposal = ReactiveComponent
 
 
                 if customization('discussion_enabled',proposal)
-                  A 
-                    href: proposal_url(proposal)
-                    style: 
-                      #fontWeight: 500
-                      cursor: 'pointer'
+                    A 
+                      href: proposal_url(proposal, true)
+                      style: 
+                        #fontWeight: 500
+                        cursor: 'pointer'
 
-                    TRANSLATE
-                      id: "engage.point_count"
-                      cnt: proposal.point_count
+                      TRANSLATE
+                        id: "engage.point_count"
+                        cnt: proposal.point_count
 
-                      "{cnt, plural, one {# consideration} other {# considerations}}"
+                        "{cnt, plural, one {# consideration} other {# considerations}}"
+
+                      SPAN 
+                        style: 
+                          padding: '0 8px'
+                        '|'
+
+                      SPAN 
+                        style: 
+                          textDecoration: 'underline'
+                        TRANSLATE
+                          id: "engage.add_your_own"
+
+                          "add a consideration"
+
 
 
             if @props.show_category && proposal.cluster

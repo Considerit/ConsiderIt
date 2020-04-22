@@ -364,6 +364,38 @@ window.GroupedProposalNavigation = (args) ->
 
 
 
+window.BackHomeNavigation = (args) -> 
+  proposals = fetch('/proposals').proposals
+
+  heading_style = _.defaults {}, customization('list_label_style'),
+    fontSize: 36
+    fontWeight: 400
+    fontStyle: 'oblique'
+    textAlign: 'center'
+    marginBottom: 18
+
+
+  loc = fetch 'location'
+  hash = loc.url.split('/')[1].replace('-', '_')
+
+  DIV 
+    style: {}
+
+    H2
+      style: heading_style
+
+      
+      'Done? Go '
+
+      A 
+        href: "/##{hash}"
+        style: 
+          textDecoration: 'underline'
+          fontWeight: 700
+        "back to the homepage"
+      '.'
+
+
 
 
 

@@ -19,6 +19,7 @@ class CurrentUserController < ApplicationController
   # Gets the current user data
   def show
     #puts("Current_user is #{current_user.id}")
+    current_user.add_to_active_in
     dirty_key '/current_user'
     render :json => []
   end  

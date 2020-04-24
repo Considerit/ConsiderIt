@@ -41,6 +41,8 @@ class HtmlController < ApplicationController
 
     if !session[:search_bot]
       referer = params.has_key?('u') ? 'from email notification' : request.referer
+
+      current_user.add_to_active_in
       write_to_log({
         :what => 'landed on site',
         :where => request.fullpath,

@@ -184,7 +184,7 @@ class User < ActiveRecord::Base
           if u 
             u.add_to_active_in(subdomain) 
             begin
-              raise
+              raise "Had to add #{u.id} #{u.name} to active_in for #{subdomain.name} resulting in #{u.active_in}"
             rescue => error
               ExceptionNotifier.notify_exception(error,
                       :data => {:message => "Had to add #{u.id} #{u.name} to active_in for #{subdomain.name} resulting in #{u.active_in}"})            

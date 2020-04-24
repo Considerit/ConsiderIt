@@ -75,6 +75,8 @@ protected
   end
 
   def write_to_log(options)
+    return false 
+    
     begin
       Log.create!({
         :subdomain_id => current_subdomain.id,

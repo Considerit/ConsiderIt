@@ -398,10 +398,12 @@ class ImportDataController < ApplicationController
   def export
     subdomain = current_subdomain
 
+    tag_whitelist = request.query_parameters.keys()
+
     exports = [
       {fname: "#{subdomain.name}-opinions.csv",  rows: Exports.opinions(subdomain)},
       {fname: "#{subdomain.name}-points.csv",    rows: Exports.points(subdomain)},
-      {fname: "#{subdomain.name}-users.csv",     rows: Exports.users(subdomain)},
+      {fname: "#{subdomain.name}-users.csv",     rows: Exports.users(subdomain, tag_whitelist)},
       {fname: "#{subdomain.name}-proposals.csv", rows: Exports.proposals(subdomain)},
     ]
 

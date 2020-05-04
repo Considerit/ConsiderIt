@@ -97,54 +97,34 @@ module Exports
     rows
   end
 
-  def users(subdomain)
+  def users(subdomain, tag_whitelist)
     fname = "#{subdomain.name}-users"
-    fields = {}
-    subdomain.users.each do |user|
-      if !user.super_admin
-        for k,v in JSON.parse( user.tags || '{}' )
-          fields[k.split('.')[0]] = 1
-        end
-      end
-    end 
 
     heading = ['email', 'name', 'date joined'] 
-    fields = fields.keys()
-    for field in fields 
-      heading.append field 
-    end 
+
+    if tag_whitelist
+      tag_whitelist.each do |tag|
+        heading.append tag.split('.')[0]
+      end
+    end
 
     rows = []
     rows.append heading 
 
     subdomain.users.each do |user|
       
-      tags = {}
-      for k,v in JSON.parse( user.tags || '{}' )
-        if k == 'age.editable' && ['hala','engageseattle'].include?(subdomain.name)
-          if v.to_i > 0          
-            v = v.to_i
-
-            if v < 20
-              v = '0-20'
-            elsif v > 70
-              v = '70+'
-            else 
-              v = "#{10 * ((v / 10).floor)}-#{10 * ((v / 10).floor + 1)}"
-            end 
-          else 
-            next 
-          end
-        end 
-        tags[k.split('.')[0]] = v
-      end
-
       row = [user.email, user.name, user.created_at]
-      for field in fields
 
-        row.append tags.has_key?(field) ? tags[field] : ""
-      end
+      if tag_whitelist
+        user_tags = JSON.parse( user.tags || '{}' )
+
+        tag_whitelist.each do |tag|
+          row.append user_tags.has_key?(tag) ? user_tags[tag] : ""
+        end 
+      end 
+
       rows.append row
+
     end
 
     rows

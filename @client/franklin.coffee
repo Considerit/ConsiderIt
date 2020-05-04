@@ -2175,8 +2175,8 @@ Page = ReactiveComponent
             when '/dashboard/email_notifications'
               Notifications 
                 key: '/page/dashboard/email_notifications'
-            when '/dashboard/import_data'
-              ImportDataDash key: "/page/dashboard/import_data"
+            when '/dashboard/data_import_export'
+              DataDash key: "/page/dashboard/data_import_export"
             when '/dashboard/moderate'
               ModerationDash key: "/page/dashboard/moderate"
             when '/dashboard/application'

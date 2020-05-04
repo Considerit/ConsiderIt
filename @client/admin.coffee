@@ -35,8 +35,8 @@ window.DashHeader = ReactiveComponent
             id: "admin.dash_header.#{@props.name}"
             @props.name   
 
-ImportDataDash = ReactiveComponent
-  displayName: 'ImportDataDash'
+DataDash = ReactiveComponent
+  displayName: 'DataDash'
 
   render : ->
 
@@ -53,13 +53,20 @@ ImportDataDash = ReactiveComponent
       DIV style: {width: HOMEPAGE_WIDTH(), margin: '15px auto'},
 
       if subdomain.plan || current_user.is_super_admin
+        query = ''
+        auth_questions = customization 'auth_questions'
+        if auth_questions
+          auth_questions = (a.tag for a in auth_questions)
+
+          query = "?#{auth_questions.join('&')}" 
+
         DIV null, 
           "Export data from Considerit. A download will begin in a couple seconds after hitting export. The zip file contains four spreadsheets: opinions, points, proposals, and users."
           DIV style: marginTop: 20, display: 'block'
           A 
             style: 
               backgroundColor: focus_color()
-            href: "/dashboard/export"
+            href: "/dashboard/export#{query}"
             "data-nojax": true
             className: 'primary_button'
 
@@ -92,7 +99,7 @@ ImportDataDash = ReactiveComponent
           P style: {marginBottom: 6}, 
             "You do not have to upload every file, just what you need to. Importing the same spreadsheet multiple times is ok."
 
-        FORM action: '/dashboard/import_data',
+        FORM action: '/dashboard/data_import_export',
           TABLE null, TBODY null,
             for table in tables
               TR null,
@@ -1328,6 +1335,6 @@ DirectMessage = ReactiveComponent
 ## Export...
 window.ModerationDash = ModerationDash
 window.AppSettingsDash = AppSettingsDash
-window.ImportDataDash = ImportDataDash
+window.DataDash = DataDash
 window.DashHeader = DashHeader
 window.CustomizationsDash = CustomizationsDash

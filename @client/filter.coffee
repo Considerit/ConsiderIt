@@ -560,6 +560,8 @@ OpinionFilter = ReactiveComponent
     return DIV null if !users.users
     filters_for_admin = customization('opinion_filters_admin_only') 
     custom_filters = customization 'opinion_filters'
+
+    is_admin = fetch('/current_user').is_admin
     
     filters = [{
                 label: 'everyone'
@@ -573,8 +575,10 @@ OpinionFilter = ReactiveComponent
                   user.key == fetch('/current_user').user
               }]
 
-    if custom_filters && (!filters_for_admin || fetch('/current_user').is_admin)
-      filters = filters.concat custom_filters
+    if custom_filters && (!filters_for_admin || is_admin)
+      for filter in custom_filters
+        if !filter.admin_only || is_admin
+          filters.push filter
 
     if !filter_out.current_filter
       dfault = customization('opinion_filters_default') or 'everyone'

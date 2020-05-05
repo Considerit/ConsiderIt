@@ -71,13 +71,28 @@ module Exports
     fname = "#{subdomain.name}-proposals"
     rows = []
     heading = ['slug', 'url', 'created', "username", "author", 'name', 'category', 'description', '#points', '#opinions', 'total score', 'avg score', 'std deviation']
+    
 
     if SPECIAL_GROUPS.has_key?(subdomain.name.downcase)
-      SPECIAL_GROUPS[subdomain.name.downcase].each do |group|
-        heading.append("#{group[:label] || group[:tag]} opinions")
-        heading.append("difference")
+
+      super_heading = []
+      heading.each do |head|
+        super_heading.append ""
       end 
+
+      SPECIAL_GROUPS[subdomain.name.downcase].each do |group|
+        group[:vals].each do |val|
+          super_heading = super_heading.concat ["#{group[:label] || group[:tag]}-#{val}", "", ""]
+          heading.append("#opinions")
+          heading.append("avg score")
+          heading.append("difference w/ rest")
+        end 
+      end 
+
+      rows.append super_heading
+
     end
+
     rows.append heading 
 
     subdomain.proposals.each do |proposal|
@@ -89,6 +104,7 @@ module Exports
       group_diffs = group_differences proposal 
       group_diffs.each do |diff|
         row.append diff[:ingroup][:count]
+        row.append diff[:ingroup][:avg].round(2)
         row.append diff[:diff].round(2)
       end
       rows.append row
@@ -106,7 +122,17 @@ module Exports
       tag_whitelist.each do |tag|
         heading.append tag.split('.')[0]
       end
+
     end
+
+    groups = SPECIAL_GROUPS[subdomain.name.downcase]
+    if groups 
+      groups.each do |g|
+        if g[:proposal_id]
+          heading.append g[:label]
+        end 
+      end
+    end 
 
     rows = []
     rows.append heading 
@@ -121,6 +147,21 @@ module Exports
         tag_whitelist.each do |tag|
           row.append user_tags.has_key?(tag) ? user_tags[tag] : ""
         end 
+
+        
+      end 
+
+      if groups
+        groups.each do |g|
+          if g[:proposal_id]
+            o = opinion_for_proposal(user, g[:proposal_id])
+            if !o || !o.published
+              row.append ""
+            else
+              row.append o.stance.round(2)
+            end  
+          end 
+        end
       end 
 
       rows.append row
@@ -133,6 +174,11 @@ module Exports
 end
 
 
+def opinion_for_proposal(user, proposal_id)
+  user.opinions.published.find_by_proposal_id(proposal_id)
+  Proposal.find(proposal_id).opinions.find_by_user_id(user.id)
+end 
+
 def group_differences(proposal)
 
   subdomain = proposal.subdomain
@@ -141,43 +187,87 @@ def group_differences(proposal)
   groups = SPECIAL_GROUPS[subdomain.name.downcase]
   differences = []
   groups.each do |group|
-    in_group = []
-    out_group = []
 
-    proposal.opinions.published.each do |o|
-      if passes_tag(o.user, group[:tag])
-        in_group.append(o.stance) 
-      else 
-        out_group.append(o.stance)
+    group[:vals].each do |val|
+
+      in_group = []
+      out_group = []
+
+      proposal.opinions.published.each do |o|
+
+        if group[:proposal_id] 
+          o = opinion_for_proposal(o.user, group[:proposal_id])
+          next if !o || !o.published
+
+          if val
+            passes = o.stance > 0
+          else 
+            passes = o.stance < 0
+          end 
+
+        else 
+          passes = passes_val(o.user, group[:tag], val)
+        end 
+
+        if passes
+          in_group.append(o.stance) 
+        else 
+          out_group.append(o.stance)
+        end
       end
+
+      sin = stats in_group
+      sout = stats out_group
+
+      differences.append({
+        group: group,
+        val: val,
+        ingroup: sin, 
+        outgroup: sout,
+        diff: sin[:count] > 0 ? sin[:avg] - sout[:avg] : 0
+      })
     end
-
-    sin = stats in_group
-    sout = stats out_group
-
-    differences.append({
-      group: group,
-      ingroup: sin, 
-      outgroup: sout,
-      diff: sin[:count] > 0 ? sin[:avg] - sout[:avg] : 0
-    })
-
   end
 
   differences
 end
 
 USER_TAGS = {}
-def passes_tag(user, tag)
+def passes_val(user, tag, val)
   if !USER_TAGS.has_key?(user.id)
     USER_TAGS[user.id] = Oj.load(user.tags || '{}')
   end
 
   tags = USER_TAGS[user.id]
-  tags.has_key?(tag) && !['no', 'false'].include?("#{tags[tag]}".downcase)
+  tags.has_key?(tag) && tags[tag].downcase == val.downcase
 end
 
 SPECIAL_GROUPS = {
+
+
+  'denverclimateaction' => [
+    {
+      label: "Agrees with urgency of climate action",
+      proposal_id: 14653,
+      vals: [true, false]
+    },
+    {
+      label: "Agrees with equity aspect of TF goal",
+      proposal_id: 14654,
+      vals: [true, false]
+    },
+    {
+      label: "racethnicity",
+      tag: 'denverclimateaction-racethnicity.editable',
+      vals: ['White',"Hispanic or Latinx","Black or African American","Asian or Asian American","American Indian or Alaska Native","Native Hawaiian or other Pacific Islander","Multiple Races","Prefer not to answer"]
+    }, 
+    {
+      label: "income",
+      tag: 'denverclimateaction-income.editable',
+      vals: ['Less than $10,000', '$10,000-$49,999', '$50,000 - $99,999', '$100,000 - $149,999', '$150,000+', 'Prefer not to answer'] 
+    }
+  ],
+
   'newblueplan' => [{
       label: 'Elected Dem. Leader',
       tag: 'elected_wa-dems.editable'

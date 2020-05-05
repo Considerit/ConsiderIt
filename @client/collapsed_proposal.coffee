@@ -230,18 +230,21 @@ window.CollapsedProposal = ReactiveComponent
 
                         "{cnt, plural, one {# consideration} other {# considerations}}"
 
-                      SPAN 
-                        style: 
-                          padding: '0 8px'
-                        '|'
+                      if proposal.active 
+                        [
+                          SPAN 
+                            style: 
+                              padding: '0 8px'
+                            '|'
 
-                      SPAN 
-                        style: 
-                          textDecoration: 'underline'
-                        TRANSLATE
-                          id: "engage.add_your_own"
+                          SPAN 
+                            style: 
+                              textDecoration: 'underline'
+                            TRANSLATE
+                              id: "engage.add_your_own"
 
-                          "add a consideration"
+                              "add a consideration"
+                        ]
 
 
 

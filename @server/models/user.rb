@@ -154,14 +154,19 @@ class User < ActiveRecord::Base
   def add_to_active_in(subdomain=nil)
     subdomain ||= current_subdomain
     
-    active_subdomains = Oj.load(self.active_in || "[]")
+    if !self.active_in 
+      self.active_in = "[]"
+      self.save
+    end 
+
+    active_subdomains = Oj.load(self.active_in)
 
     if !active_subdomains.include?("#{subdomain.id}")
       active_subdomains.push "#{subdomain.id}"
       self.active_in = JSON.dump active_subdomains
       self.save
+      return "added"
     end
-
   end
 
   def self.fix_active_in
@@ -182,12 +187,14 @@ class User < ActiveRecord::Base
         end       
         users.each do |k,u|
           if u 
-            u.add_to_active_in(subdomain) 
-            begin
-              raise "Had to add #{u.id} #{u.name} to active_in for #{subdomain.name} resulting in #{u.active_in}"
-            rescue => error
-              ExceptionNotifier.notify_exception(error,
-                      :data => {:message => "Had to add #{u.id} #{u.name} to active_in for #{subdomain.name} resulting in #{u.active_in}"})            
+            r = u.add_to_active_in(subdomain) 
+            if r == 'added'
+              begin
+                raise "Had to add #{u.id} #{u.name} to active_in for #{subdomain.id} #{subdomain.name} resulting in #{u.active_in}"
+              rescue => error
+                ExceptionNotifier.notify_exception(error,
+                        :data => {:message => "Had to add #{u.id} #{u.name} to active_in for #{subdomain.id} #{subdomain.name} resulting in #{u.active_in}"})            
+              end
             end
           end
         end

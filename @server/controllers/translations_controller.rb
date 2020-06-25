@@ -19,6 +19,8 @@ class TranslationsController < ApplicationController
 
 
   def update
+
+
     key = params[:key]
     exclude = {'authenticity_token' => 1, 'subdomain' => 1, 'action' => 1, 'controller' => 1}
     updated = params.select{|k,v| !exclude.has_key?(k)}
@@ -44,12 +46,13 @@ class TranslationsController < ApplicationController
         # If it is en, add it as default text, otherwise add it as a proposal.
         if !old.has_key?(id)
           if !key.end_with?('/en')
-            if message[:txt] || message["txt"]
-              message = {
-                proposals: [{"txt": message.txt, u: "/user/#{current_user.id}"}]
-              }
-            elsif message[:proposals]
-              message[:proposals] = [message[:proposals][0]] # only one proposal per user per message
+            txt = message[:txt] || message["txt"]
+            if txt
+              message = {}
+              message["proposals"] = [{"txt": txt, u: "/user/#{current_user.id}"}]
+              
+            elsif message["proposals"]
+              message["proposals"] = [message["proposals"][0]] # only one proposal per user per message
             else 
               next # no txt and no proposals?
             end 
@@ -58,32 +61,41 @@ class TranslationsController < ApplicationController
 
           old[id] = message 
 
-        elsif message[:proposals]
+        elsif message["proposals"]
+
+
           # should only be allowed to add or replace their own proposal
-          old_proposals = old[id][:proposals] || []
+          old_proposals = old[id]["proposals"] || []
           new_proposal = nil 
-          message[:proposals].each do |proposal|
+          message["proposals"].each do |proposal|
             if proposal[:u] == "/user/#{current_user.id}"
               new_proposal = proposal 
               break 
             end 
           end 
 
+          # if it comes from the client not as a proposal, then turn it into one...
+          if new_proposal && message["txt"] && new_proposal["txt"] != message["txt"]
+            new_proposal = {}
+            new_proposal["txt"] = message["txt"]
+            new_proposal["u"] = "/user/#{current_user.id}"
+          end 
+
           if new_proposal
             translations_made = true
             old_proposal = nil
             old_proposals.each do |proposal|
-              if proposal.u == "/user/#{current_user.id}"
+              if proposal["u"] == "/user/#{current_user.id}"
                 old_proposal = proposal 
               end 
             end 
             if old_proposal
-              old_proposal.txt = new_proposal.txt 
+              old_proposal["txt"] = new_proposal["txt"]
             else 
               old_proposals.push new_proposal
             end 
 
-            old[id][:proposals] = old_proposals
+            old[id]["proposals"] = old_proposals
 
           end
 

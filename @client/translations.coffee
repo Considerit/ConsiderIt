@@ -188,7 +188,6 @@ window.T = window.t = window.translator = (args, native_text) ->
         u = fetch('/current_user').user
         for proposal in translations[id].proposals
           if proposal.u == u 
-            console.log u, proposal.u
             message = proposal.txt 
       if message
         lang_used = lang 
@@ -490,12 +489,15 @@ TranslationsForLang = ReactiveComponent
                       # display: 'inline-block'
                       # verticalAlign: 'top'
 
-                    do => 
+                    do (name, idx) => 
                       show_tooltip = => 
                         tooltip = fetch 'tooltip'
-                        tooltip.coords = $(@refs["message-#{name}-#{idx}"].getDOMNode()).offset()
-                        tooltip.tip = if no_id then 'no ID' else name 
-                        save tooltip
+                        node = @refs["message-#{name}-#{idx}"]
+                        if node 
+                          tooltip.coords = $(node.getDOMNode()).offset()
+                          tooltip.tip = if no_id then 'no ID' else name 
+                          save tooltip
+
                       hide_tooltip = => 
                         tooltip = fetch 'tooltip'
                         tooltip.coords = null
@@ -547,6 +549,10 @@ TranslationsForLang = ReactiveComponent
 
                         for proposal, idx in updated_translations[name].proposals
                           do (proposal, name, idx) =>
+                            if proposal.u 
+                              proposer = fetch(proposal.u)
+                            else 
+                              proposer = current_user 
                             LI 
                               style: 
                                 padding: "2px 0px 8px 0px"
@@ -561,7 +567,7 @@ TranslationsForLang = ReactiveComponent
                                   fontSize: 14
                                   color: "#aaa"
                                   paddingRight: 4
-                                "by #{current_user.name or current_user.user}"
+                                "by #{proposer.name or proposer.user}"
 
                               BUTTON
                                 style: 
@@ -581,7 +587,6 @@ TranslationsForLang = ReactiveComponent
 window.get_temporary_translations = (lang, key) ->
   key ||= '/translations'
   translations = fetch "#{key}/#{lang}"
-  console.log lang,key
   _.defaults fetch("local#{translations.key}"), JSON.parse(JSON.stringify(translations))
 
 

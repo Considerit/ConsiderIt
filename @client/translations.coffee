@@ -424,6 +424,20 @@ TranslationsForLang = ReactiveComponent
           language: available_languages[lang]
           "Translations for {language} ({percent_complete}% completed)"
 
+      if current_user.is_super_admin
+        BUTTON
+          onClick: =>  
+            for name,v of updated_translations
+              if v.proposals?.length > 0
+                # accept the latest one
+                idx = v.proposals.length - 1
+                proposal = v.proposals[idx]
+                v.txt = proposal.txt 
+                v.u = proposal.u
+                v.proposals.splice(idx, 1)
+            save updated_translations
+          "Accept all proposed translations"
+
 
       TABLE 
         style: 

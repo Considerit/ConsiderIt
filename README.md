@@ -42,7 +42,7 @@ Built on
 --------
 
 - [Ruby on Rails](http://rubyonrails.org/) — Our back end is a Rails app. It is possible that we will move to a pure Javascript stack. 
-- [Statebus.js](https://invisible.college/statebus/) – Statebus provides reactive state management. We use an early client-only version of Statebus called ActiveREST. 
+- [Statebus.js](https://stateb.us/) – Statebus provides reactive state management. We use an early client-only version of Statebus called ActiveREST. 
 - [React.js](https://facebook.github.io/react/) – Our front end is a Statebus-wrapped version of React.js.
 - [MySQL](https://www.mysql.com/) — MySQL is our database.
 

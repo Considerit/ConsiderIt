@@ -127,7 +127,11 @@ def translator(args, native_text = nil)
 
   # which language should we use? ordered by preference. 
   begin 
-    langs = [user[:lang], subdomain[:lang], DEVELOPMENT_LANGUAGE].uniq
+    if user 
+      langs = [user[:lang], subdomain[:lang], DEVELOPMENT_LANGUAGE].uniq
+    else 
+      langs = [subdomain[:lang], DEVELOPMENT_LANGUAGE].uniq
+    end
   rescue
     raise "Could not get langs for translating for email: user #{user} subdomain #{subdomain} args #{args}"
   end 

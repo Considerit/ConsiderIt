@@ -28,7 +28,6 @@ class TranslationsController < ApplicationController
     if permit('update all translations') > 0
       update_translations(key, updated)
     else 
-
       translations_made = false
 
       # allow non super admins to:
@@ -68,18 +67,18 @@ class TranslationsController < ApplicationController
           old_proposals = old[id]["proposals"] || []
           new_proposal = nil 
           message["proposals"].each do |proposal|
-            if proposal[:u] == "/user/#{current_user.id}"
+            if proposal["u"] == "/user/#{current_user.id}"
               new_proposal = proposal 
               break 
             end 
           end 
 
-          # if it comes from the client not as a proposal, then turn it into one...
-          if new_proposal && message["txt"] && new_proposal["txt"] != message["txt"]
-            new_proposal = {}
-            new_proposal["txt"] = message["txt"]
-            new_proposal["u"] = "/user/#{current_user.id}"
-          end 
+          # # if it comes from the client not as a proposal, then turn it into one...
+          # if new_proposal && message["txt"] && new_proposal["txt"] != message["txt"]
+          #   new_proposal = {}
+          #   new_proposal["txt"] = message["txt"]
+          #   new_proposal["u"] = "/user/#{current_user.id}"
+          # end 
 
           if new_proposal
             translations_made = true
@@ -105,7 +104,6 @@ class TranslationsController < ApplicationController
       update_translations(key, old)
 
       if translations_made
-        # TODO: test this email function
         EventMailer.translations_proposed(current_subdomain).deliver_later
       end
  

@@ -5,6 +5,9 @@
 # Tailor considerit applications by subdomain
 
 window.customizations = {}
+customizations_by_file = {}
+window.db_customization_loaded = {}
+
 window._ = _
 
 
@@ -21,17 +24,64 @@ window._ = _
 # special configs for that object (object.key) or key.
 
 
-db_customization_loaded = {}
+
+# Either stringify functions or convert them to functions. 
+# Will toggle -- it recurses down obj and finds a stringified
+# function, it will return an actual function. If it encounters
+# a function, it will stringify it. 
+FUNCTION_IDENTIFIER = "#javascript\n"
+convert_customization = (obj) ->  
+  __convert obj, []
+
+__convert = (obj, path) ->
+
+  if Array.isArray(obj)
+    return (__convert(vv, path) for vv in obj)
+
+  else if typeof(obj) == 'object' 
+    tree = {}
+    for k,v of obj 
+      p = path.slice()
+      p.push k 
+      tree[k] = __convert(v,p)
+    return tree
+
+  else if typeof(obj) == 'function'
+    return "#{FUNCTION_IDENTIFIER}#{obj.toString()}"
+
+  else if typeof(obj) == 'string' && obj.startsWith(FUNCTION_IDENTIFIER)
+    str_func = obj.substring FUNCTION_IDENTIFIER.length
+    func = new Function("return #{str_func}")()
+    return func
+
+  else 
+    return obj
 
 
-window.load_customization = (subdomain_name, obj) ->
 
-  db_customization_loaded[subdomain_name] = obj
+
+window.load_customization = (subdomain) ->
+  return if !subdomain.name
+  subdomain_name = subdomain.name?.toLowerCase()
 
   try 
-    new Function(obj)() # will create window.customization_obj
-    customizations[subdomain_name] ||= {}
-    _.extend customizations[subdomain_name], window.customization_obj
+    customizations_file_used = !!customizations_by_file[subdomain_name]
+    if customizations_file_used
+      console.log "#{subdomain_name} config for import: \n", JSON.stringify(convert_customization(customizations_by_file[subdomain_name]), null, 2)
+
+    if subdomain.customization_obj
+      new Function(subdomain.customization_obj)() # will create window.customization_obj      
+      stringified = convert_customization window.customization_obj
+      subdomain.customizations = JSON.stringify stringified, null, 2
+      save subdomain
+    else 
+      subdomain = fetch '/subdomain'
+      stringified = JSON.parse subdomain.customizations 
+
+    customizations[subdomain_name] = _.extend {}, (customizations_by_file[subdomain_name] or {}), convert_customization(stringified)
+
+    db_customization_loaded[subdomain_name] = true
+
   catch error 
     console.error error
 
@@ -51,9 +101,8 @@ window.customization = (field, object_or_key) ->
 
   subdomain_name = subdomain.name?.toLowerCase()
   
-  if subdomain.customization_obj? && subdomain.customization_obj != db_customization_loaded[subdomain_name]
-    load_customization subdomain_name, subdomain.customization_obj
-
+  if !db_customization_loaded[subdomain.name]
+    load_customization subdomain
 
   key = if obj 
           if obj.key then obj.key else obj
@@ -215,11 +264,6 @@ customizations.default =
 # SUBDOMAIN CONFIGURATIONS
 
 
-customizations.homepage = 
-  homepage_default_sort_order: 'trending'
-
-
-
 text_and_masthead = ['educacion2025', 'ynpn', 'lsfyl', 'kealaiwikuamoo', 'iwikuamoo']
 masthead_only = ["kamakakoi","seattletimes","kevin","ihub","SilverLakeNC",\
                  "Relief-Demo","GS-Demo","ri","ITFeedback","Committee-Meeting","policyninja", \
@@ -233,15 +277,12 @@ masthead_only = ["kamakakoi","seattletimes","kevin","ihub","SilverLakeNC",\
 
 
 for sub in text_and_masthead
-  customizations[sub.toLowerCase()] = 
+  customizations_by_file[sub.toLowerCase()] = 
     HomepageHeader: LegacyImageHeader()
 
 for sub in masthead_only
-  customizations[sub.toLowerCase()] = 
+  customizations_by_file[sub.toLowerCase()] = 
     HomepageHeader: LegacyImageHeader()
-
-
-
 
 
 

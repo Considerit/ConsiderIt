@@ -691,6 +691,8 @@ CustomizationsDash = ReactiveComponent
       @local.save_complete = true
       save @local
 
+      db_customization_loaded[subdomain.name] = false
+
 
 
 CodeMirrorTextArea = ReactiveComponent

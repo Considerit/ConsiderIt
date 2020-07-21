@@ -110,11 +110,14 @@ window.point_labels =
 # SLIDER POLE LABELS
 
 window.get_slider_label = (id, proposal) -> 
-  if proposal
-    label = customization(id, proposal)
-  else 
-    label = customization(id)
+  side = id.split('.')?[1] or id
 
+  if proposal
+    conf = customization('slider_pole_labels', proposal)
+  else 
+    conf = customization('slider_pole_labels')
+
+  label = conf[side]
   if !label 
     ""
   else

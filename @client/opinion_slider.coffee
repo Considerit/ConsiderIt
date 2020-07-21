@@ -47,13 +47,8 @@ window.OpinionSlider = ReactiveComponent
       className: 'opinion_slider'
       style : slider_style
 
-      # Draw the pole labels of the slider
-      #@drawPoleLabels()
-
       if (@props.focused || TWO_COL()) && @props.permitted && !hist_selection
         @drawFeedback() 
-
-
 
       Slider
         key: @props.key
@@ -154,6 +149,7 @@ window.OpinionSlider = ReactiveComponent
         translator "engage.slider_feedback.default.neutral", "You are neutral"
       else 
         "#{Math.round(value * 100)}%"
+
 
 
     labels = customization 'slider_pole_labels', @proposal

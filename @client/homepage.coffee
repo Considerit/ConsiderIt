@@ -98,14 +98,6 @@ window.Homepage = ReactiveComponent
       SimpleHomepage()
 
 
-
-      # if customization('tawkspace')
-      #   IFRAME 
-      #     src: customization('tawkspace')
-      #     height: 500
-      #     width: CONTENT_WIDTH()
-
-
 #############
 # SimpleHomepage
 #

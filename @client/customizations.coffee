@@ -17,9 +17,6 @@ window._ = _
 # The customization method returns the proper value of the field for this 
 # subdomain, or the default value if it hasn't been defined for the subdomain.
 #
-# Nested customizations can be fetched with . notation, by passing e.g. 
-# "auth.use_footer" or with a bracket, like "auth.use_footer['on good days']"
-#
 # object_or_key is optional. If passed, customization will additionally check for 
 # special configs for that object (object.key) or key.
 
@@ -142,7 +139,7 @@ window.customization = (field, object_or_key) ->
 
   value = undefined
   for config in chain_of_configs
-    value = customization_value(field, config)
+    value = config[field]
 
     break if value?
 
@@ -150,36 +147,6 @@ window.customization = (field, object_or_key) ->
   #   console.error "Could not find a value for #{field} #{if key then key else ''}"
 
   value
-
-
-# Checks to see if this configuration is defined for a customization field
-customization_value = (field, config) -> 
-  val = config
-
-  fields = field.split('.')
-
-  for f, idx in fields
-
-    if f.indexOf('[') > 0
-      brackets = f.match(/\[(.*?)\]/g)
-      f = f.substring(0, f.indexOf('['))
-
-    if val[f]? || idx == fields.length - 1        
-      val = val[f]
-
-      if brackets?.length > 0
-        for b in brackets
-          f = b.substring(2,b.length - 2)
-          if val? && val[f]?
-            val = val[f]
-
-          else
-            return undefined
-
-    else 
-      return undefined
-
-  val
 
 
 

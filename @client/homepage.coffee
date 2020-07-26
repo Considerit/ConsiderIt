@@ -247,7 +247,10 @@ window.SimpleHomepage = ReactiveComponent
     homepage_tabs = fetch 'homepage_tabs'
 
     if customization('homepage_tab_views')?[homepage_tabs.filter]
-      return customization('homepage_tab_views')[homepage_tabs.filter]()
+      view = customization('homepage_tab_views')[homepage_tabs.filter]()
+      if typeof(view) == 'function'
+        view = view()
+      return view
 
     proposals = fetch '/proposals'
     current_user = fetch('/current_user')

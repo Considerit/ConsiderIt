@@ -654,8 +654,25 @@ ProposalDescription = ReactiveComponent
                   fontSize: POINT_FONT_SIZE()
                   #fontWeight: 300
 
-                if (customization('proposal_description')?[@proposal.cluster] or (customization('proposal_description') && _.isFunction(customization('proposal_description'))))
-                  (customization('proposal_description')?[@proposal.cluster] or customization('proposal_description'))({proposal: @proposal})
+                if cust_desc = customization('proposal_description')
+                  if typeof(cust_desc) == 'function'
+                    cust_desc(@proposal)
+                  else if cust_desc[@proposal.cluster] # is associative, indexed by list name
+
+
+                    result = cust_desc[@proposal.cluster] {proposal: @proposal} # assumes ReactiveComponent. No good reason for the assumption.
+
+                    if typeof(result) == 'function' && /^function \(props, children\)/.test(Function.prototype.toString.call(result))  
+                                     # if this is a ReactiveComponent; this code is bad partially
+                                     # because of customizations backwards compatibility. Hopefully 
+                                     # cleanup after refactoring.
+                      result = cust_desc[@proposal.cluster]() {proposal: @proposal}
+                    else 
+                      result
+
+                  else 
+                    DIV dangerouslySetInnerHTML:{__html: body}
+
                 else 
                   DIV dangerouslySetInnerHTML:{__html: body}
 

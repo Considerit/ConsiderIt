@@ -283,7 +283,7 @@ window.ExpandableSection = ReactiveComponent
 
 
 # A small header with text and optionally a logo
-window.ShortHeader = (opts) -> -> 
+window.ShortHeader = (opts) ->
   subdomain = fetch '/subdomain'   
   loc = fetch 'location'
 
@@ -378,7 +378,7 @@ window.ShortHeader = (opts) -> ->
 
 
 # The old image banner + optional text description below
-window.LegacyImageHeader = (opts) -> -> 
+window.LegacyImageHeader = (opts) ->
   subdomain = fetch '/subdomain'   
   loc = fetch 'location'    
   homepage = loc.url == '/'
@@ -546,7 +546,7 @@ window.HawaiiHeader = (opts) -> ->
 
 
 
-window.SeattleHeader = (opts) -> -> 
+window.SeattleHeader = (opts) -> 
 
   homepage = fetch('location').url == '/'
   subdomain = fetch '/subdomain'

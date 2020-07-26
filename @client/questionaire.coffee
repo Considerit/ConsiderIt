@@ -21,7 +21,7 @@ window.Questionaire = ReactiveComponent
           if response.your_opinion.published && response.your_opinion.stance == 1.0
             @local.top_response = response.key
 
-    selection_limit = customization('selection_limit', cluster_key)
+    selection_limit = 5
     if !@local.total_selected?
       @local.total_selected = 0
       for group in groups

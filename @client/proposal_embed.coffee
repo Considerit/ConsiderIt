@@ -13,8 +13,7 @@ require './translations'
 # require './opinion_slider'
 
 
-window.focus_color = -> 
-  customization('focus_color') or focus_blue
+window.focus_color = -> focus_blue
 
 
 # The containing window calls this to let us know that the containing window is allowing 

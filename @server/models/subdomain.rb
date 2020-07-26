@@ -40,21 +40,32 @@ class Subdomain < ActiveRecord::Base
 
     json['branding'] = self.branding_info
 
-    if self.customizations || current_user.super_admin
+
+    #######################################################
+    ## Remove first if block after customization migrations
+
+    if self.customizations && self.customizations[0] != '{'
+
       shared = File.read("@client/customizations_helpers.coffee")
       if current_user.super_admin
         json['shared_code'] = shared
       end 
+
+      str = self.customizations.gsub('"', '\\"').gsub('$', '\\$')
+      json['customizations'] = self.customizations
+      json['customization_obj'] = %x(echo "#{shared.gsub '"', '\\"'}\nwindow.customization_obj={\n#{str}\n}" | coffee -scb)
+
+    else 
+      if current_user.super_admin
+        shared = File.read("@client/customizations_helpers.coffee")
+        json['shared_code'] = shared
+      end
+
+      json['customizations'] = self.customizations
     end
 
-    if self.customizations 
-      str = self.customizations.gsub('"', '\\"').gsub('$', '\\$')
-      if current_user.super_admin
-        json['customizations'] = self.customizations
-      end 
-      json['customization_obj'] = %x(echo "#{shared.gsub '"', '\\"'}\nwindow.customization_obj={\n#{str}\n}" | coffee -scb)
-    end 
-    
+    ###################################################
+
     json
   end
 

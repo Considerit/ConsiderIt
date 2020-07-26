@@ -5,6 +5,9 @@
 # Tailor considerit applications by subdomain
 
 window.customizations = {}
+customizations_by_file = {}
+window.db_customization_loaded = {}
+
 window._ = _
 
 
@@ -14,24 +17,70 @@ window._ = _
 # The customization method returns the proper value of the field for this 
 # subdomain, or the default value if it hasn't been defined for the subdomain.
 #
-# Nested customizations can be fetched with . notation, by passing e.g. 
-# "auth.use_footer" or with a bracket, like "auth.use_footer['on good days']"
-#
 # object_or_key is optional. If passed, customization will additionally check for 
 # special configs for that object (object.key) or key.
 
 
-db_customization_loaded = {}
+
+# Either stringify functions or convert them to functions. 
+# Will toggle -- it recurses down obj and finds a stringified
+# function, it will return an actual function. If it encounters
+# a function, it will stringify it. 
+FUNCTION_IDENTIFIER = "#javascript\n"
+convert_customization = (obj) ->  
+  __convert obj, []
+
+__convert = (obj, path) ->
+
+  if Array.isArray(obj)
+    return (__convert(vv, path) for vv in obj)
+
+  else if typeof(obj) == 'object' 
+    tree = {}
+    for k,v of obj 
+      p = path.slice()
+      p.push k 
+      tree[k] = __convert(v,p)
+    return tree
+
+  else if typeof(obj) == 'function'
+    return "#{FUNCTION_IDENTIFIER}#{obj.toString()}"
+
+  else if typeof(obj) == 'string' && obj.startsWith(FUNCTION_IDENTIFIER)
+    str_func = obj.substring FUNCTION_IDENTIFIER.length
+    func = new Function("return #{str_func}")()
+    return func
+
+  else 
+    return obj
 
 
-window.load_customization = (subdomain_name, obj) ->
 
-  db_customization_loaded[subdomain_name] = obj
+
+window.load_customization = (subdomain) ->
+  return if !subdomain.name
+  subdomain_name = subdomain.name?.toLowerCase()
 
   try 
-    new Function(obj)() # will create window.customization_obj
-    customizations[subdomain_name] ||= {}
-    _.extend customizations[subdomain_name], window.customization_obj
+    customizations_file_used = !!customizations_by_file[subdomain_name]
+    if customizations_file_used
+      console.log "#{subdomain_name} config for import: \n", JSON.stringify(convert_customization(customizations_by_file[subdomain_name]), null, 2)
+
+    if subdomain.customization_obj
+      new Function(subdomain.customization_obj)() # will create window.customization_obj    
+      stringified = convert_customization window.customization_obj
+
+      if false && fetch('/current_user').is_super_admin
+        subdomain.customizations = JSON.stringify stringified, null, 2
+        save subdomain
+    else 
+      subdomain = fetch '/subdomain'
+      stringified = JSON.parse subdomain.customizations 
+
+    customizations[subdomain_name] = _.extend {}, (customizations_by_file[subdomain_name] or {}), convert_customization(stringified)
+
+    db_customization_loaded[subdomain_name] = true
+
   catch error 
     console.error error
 
@@ -51,9 +100,8 @@ window.customization = (field, object_or_key) ->
 
   subdomain_name = subdomain.name?.toLowerCase()
   
-  if subdomain.customization_obj? && subdomain.customization_obj != db_customization_loaded[subdomain_name]
-    load_customization subdomain_name, subdomain.customization_obj
-
+  if !db_customization_loaded[subdomain_name]
+    load_customization subdomain
 
   key = if obj 
           if obj.key then obj.key else obj
@@ -93,7 +141,7 @@ window.customization = (field, object_or_key) ->
 
   value = undefined
   for config in chain_of_configs
-    value = customization_value(field, config)
+    value = config[field]
 
     break if value?
 
@@ -101,36 +149,6 @@ window.customization = (field, object_or_key) ->
   #   console.error "Could not find a value for #{field} #{if key then key else ''}"
 
   value
-
-
-# Checks to see if this configuration is defined for a customization field
-customization_value = (field, config) -> 
-  val = config
-
-  fields = field.split('.')
-
-  for f, idx in fields
-
-    if f.indexOf('[') > 0
-      brackets = f.match(/\[(.*?)\]/g)
-      f = f.substring(0, f.indexOf('['))
-
-    if val[f]? || idx == fields.length - 1        
-      val = val[f]
-
-      if brackets?.length > 0
-        for b in brackets
-          f = b.substring(2,b.length - 2)
-          if val? && val[f]?
-            val = val[f]
-
-          else
-            return undefined
-
-    else 
-      return undefined
-
-  val
 
 
 
@@ -197,7 +215,7 @@ customizations.default =
 
   auth_questions: []
 
-  SiteHeader : ShortHeader()
+  SiteHeader : ShortHeader
   SiteFooter : DefaultFooter
 
   new_proposal_fields: -> 
@@ -215,11 +233,6 @@ customizations.default =
 # SUBDOMAIN CONFIGURATIONS
 
 
-customizations.homepage = 
-  homepage_default_sort_order: 'trending'
-
-
-
 text_and_masthead = ['educacion2025', 'ynpn', 'lsfyl', 'kealaiwikuamoo', 'iwikuamoo']
 masthead_only = ["kamakakoi","seattletimes","kevin","ihub","SilverLakeNC",\
                  "Relief-Demo","GS-Demo","ri","ITFeedback","Committee-Meeting","policyninja", \
@@ -233,12 +246,17 @@ masthead_only = ["kamakakoi","seattletimes","kevin","ihub","SilverLakeNC",\
 
 
 for sub in text_and_masthead
-  customizations[sub.toLowerCase()] = 
-    HomepageHeader: LegacyImageHeader()
+  customizations_by_file[sub.toLowerCase()] = 
+    HomepageHeader: LegacyImageHeader
 
 for sub in masthead_only
-  customizations[sub.toLowerCase()] = 
-    HomepageHeader: LegacyImageHeader()
+  customizations_by_file[sub.toLowerCase()] = 
+    HomepageHeader: LegacyImageHeader
+
+
+
+
+
 
 
 

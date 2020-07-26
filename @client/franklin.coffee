@@ -99,8 +99,7 @@ window.updateProposalMode = (proposal_mode, triggered_by) ->
       triggered_by: triggered_by 
   
 
-window.focus_color = -> 
-  customization('focus_color') or focus_blue
+window.focus_color = -> focus_blue
 
 
 
@@ -655,8 +654,25 @@ ProposalDescription = ReactiveComponent
                   fontSize: POINT_FONT_SIZE()
                   #fontWeight: 300
 
-                if (customization('proposal_description')?[@proposal.cluster] or (customization('proposal_description') && _.isFunction(customization('proposal_description'))))
-                  (customization('proposal_description')?[@proposal.cluster] or customization('proposal_description'))({proposal: @proposal})
+                if cust_desc = customization('proposal_description')
+                  if typeof(cust_desc) == 'function'
+                    cust_desc(@proposal)
+                  else if cust_desc[@proposal.cluster] # is associative, indexed by list name
+
+
+                    result = cust_desc[@proposal.cluster] {proposal: @proposal} # assumes ReactiveComponent. No good reason for the assumption.
+
+                    if typeof(result) == 'function' && /^function \(props, children\)/.test(Function.prototype.toString.call(result))  
+                                     # if this is a ReactiveComponent; this code is bad partially
+                                     # because of customizations backwards compatibility. Hopefully 
+                                     # cleanup after refactoring.
+                      result = cust_desc[@proposal.cluster]() {proposal: @proposal}
+                    else 
+                      result
+
+                  else 
+                    DIV dangerouslySetInnerHTML:{__html: body}
+
                 else 
                   DIV dangerouslySetInnerHTML:{__html: body}
 
@@ -1483,8 +1499,9 @@ PointsList = ReactiveComponent
 
 
     get_heading = (valence) => 
-      heading = customization("point_labels.#{header_prefix}_header", @proposal)
-      plural_point = customization("point_labels.#{valence}", @proposal)
+      point_labels = customization("point_labels", @proposal)
+      heading = point_labels["#{header_prefix}_header"]
+      plural_point = point_labels[valence]
 
       plural_point_t = translator
                         id: "point_labels.#{plural_point}"
@@ -1660,10 +1677,12 @@ PointsList = ReactiveComponent
 
           if @props.rendered_as == 'decision_board_point'
 
+            point_labels = customization('point_labels', @proposal)
             if @props.valence == 'pros' 
-              noun = customization('point_labels.pro', @proposal)
+              noun = point_labels.pro
             else 
-              noun = customization('point_labels.con', @proposal) 
+              noun = point_labels.con
+
             noun = translator
                      id: "point_labels.#{noun}"
                      noun 
@@ -1688,10 +1707,11 @@ PointsList = ReactiveComponent
           your_points_key: @props.key
 
   drawAddNewPointInCommunityCol: ->
+    point_labels = customization('point_labels', @proposal)
     if @props.valence == 'pros' 
-      point_label = customization('point_labels.pro', @proposal)
+      point_label = point_labels.pro
     else 
-      point_label = customization('point_labels.con', @proposal) 
+      point_label = point_labels.con
     point_label = translator
                    id: "point_labels.#{point_label}"
                    point_label 
@@ -1723,10 +1743,12 @@ PointsList = ReactiveComponent
   drawAddNewPointInDecisionBoard: -> 
     your_points = @data()
 
+    point_labels = customization('point_labels', @proposal)
     if @props.valence == 'pros' 
-      point_label = customization('point_labels.pro', @proposal)
+      point_label = point_labels.pro
     else 
-      point_label = customization('point_labels.con', @proposal) 
+      point_label = point_labels.con
+
     point_label = translator
                    id: "point_labels.#{point_label}"
                    point_label 
@@ -1769,10 +1791,13 @@ PointsList = ReactiveComponent
   drawDropTarget: -> 
     left_or_right = if @props.valence == 'pros' then 'right' else 'left'
 
+
+    point_labels = customization('point_labels', @proposal)
     if @props.valence == 'pros' 
-      point_label = customization('point_labels.pro', @proposal)
+      point_label = point_labels.pro
     else 
-      point_label = customization('point_labels.con', @proposal) 
+      point_label = point_labels.con
+
     point_label = translator
                    id: "point_labels.#{point_label}"
                    point_label 

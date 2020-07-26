@@ -560,6 +560,8 @@ OpinionFilter = ReactiveComponent
     return DIV null if !users.users
     filters_for_admin = customization('opinion_filters_admin_only') 
     custom_filters = customization 'opinion_filters'
+    if typeof(custom_filters) == 'function'
+      custom_filters = custom_filters()
 
     is_admin = fetch('/current_user').is_admin
     

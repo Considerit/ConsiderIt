@@ -65,14 +65,6 @@ class HtmlController < ApplicationController
       @vendor = 'https:' + Rails.application.config.action_controller.asset_host
     end
 
-
-    if current_subdomain.customizations
-      customization_obj = current_subdomain.customizations.gsub '"', '\\"'
-      customization_obj = "{\n#{customization_obj}\n}"
-    else 
-      customization_obj = "{}"
-    end
-
     dirty_key '/asset_manifest'
 
     # CSP policy if we ever want to implement in future

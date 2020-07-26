@@ -110,11 +110,14 @@ window.point_labels =
 # SLIDER POLE LABELS
 
 window.get_slider_label = (id, proposal) -> 
-  if proposal
-    label = customization(id, proposal)
-  else 
-    label = customization(id)
+  side = id.split('.')?[1] or id
 
+  if proposal
+    conf = customization('slider_pole_labels', proposal)
+  else 
+    conf = customization('slider_pole_labels')
+
+  label = conf[side]
   if !label 
     ""
   else
@@ -280,7 +283,7 @@ window.ExpandableSection = ReactiveComponent
 
 
 # A small header with text and optionally a logo
-window.ShortHeader = (opts) -> -> 
+window.ShortHeader = (opts) ->
   subdomain = fetch '/subdomain'   
   loc = fetch 'location'
 
@@ -375,7 +378,7 @@ window.ShortHeader = (opts) -> ->
 
 
 # The old image banner + optional text description below
-window.LegacyImageHeader = (opts) -> -> 
+window.LegacyImageHeader = (opts) ->
   subdomain = fetch '/subdomain'   
   loc = fetch 'location'    
   homepage = loc.url == '/'
@@ -543,7 +546,7 @@ window.HawaiiHeader = (opts) -> ->
 
 
 
-window.SeattleHeader = (opts) -> -> 
+window.SeattleHeader = (opts) -> 
 
   homepage = fetch('location').url == '/'
   subdomain = fetch '/subdomain'

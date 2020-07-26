@@ -5,8 +5,10 @@ require './shared'
 
 
 all_roles = -> 
-  pro_label = customization('point_labels.pro')
-  con_label = customization('point_labels.con')
+  point_labels = customization('point_labels')
+
+  pro_label = point_labels.pro
+  con_label = point_labels.con
 
   pro_label = translator
                 id: "point_labels.#{pro_label}"

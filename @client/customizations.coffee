@@ -67,10 +67,12 @@ window.load_customization = (subdomain) ->
       console.log "#{subdomain_name} config for import: \n", JSON.stringify(convert_customization(customizations_by_file[subdomain_name]), null, 2)
 
     if subdomain.customization_obj
-      new Function(subdomain.customization_obj)() # will create window.customization_obj      
+      new Function(subdomain.customization_obj)() # will create window.customization_obj    
       stringified = convert_customization window.customization_obj
-      subdomain.customizations = JSON.stringify stringified, null, 2
-      save subdomain
+
+      if false && fetch('/current_user').is_super_admin
+        subdomain.customizations = JSON.stringify stringified, null, 2
+        save subdomain
     else 
       subdomain = fetch '/subdomain'
       stringified = JSON.parse subdomain.customizations 
@@ -98,7 +100,7 @@ window.customization = (field, object_or_key) ->
 
   subdomain_name = subdomain.name?.toLowerCase()
   
-  if !db_customization_loaded[subdomain.name]
+  if !db_customization_loaded[subdomain_name]
     load_customization subdomain
 
   key = if obj 
@@ -213,7 +215,7 @@ customizations.default =
 
   auth_questions: []
 
-  SiteHeader : ShortHeader()
+  SiteHeader : ShortHeader
   SiteFooter : DefaultFooter
 
   new_proposal_fields: -> 
@@ -245,11 +247,19 @@ masthead_only = ["kamakakoi","seattletimes","kevin","ihub","SilverLakeNC",\
 
 for sub in text_and_masthead
   customizations_by_file[sub.toLowerCase()] = 
-    HomepageHeader: LegacyImageHeader()
+    HomepageHeader: LegacyImageHeader
 
 for sub in masthead_only
   customizations_by_file[sub.toLowerCase()] = 
-    HomepageHeader: LegacyImageHeader()
+    HomepageHeader: LegacyImageHeader
+
+
+
+
+
+
+
+
 
 
 

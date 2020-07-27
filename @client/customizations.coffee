@@ -31,7 +31,6 @@ convert_customization = (obj) ->
   __convert obj, []
 
 __convert = (obj, path) ->
-
   if Array.isArray(obj)
     return (__convert(vv, path) for vv in obj)
 
@@ -70,7 +69,7 @@ window.load_customization = (subdomain) ->
       new Function(subdomain.customization_obj)() # will create window.customization_obj    
       stringified = convert_customization window.customization_obj
 
-      if false && fetch('/current_user').is_super_admin
+      if fetch('/current_user').is_super_admin
         subdomain.customizations = JSON.stringify stringified, null, 2
         save subdomain
     else 

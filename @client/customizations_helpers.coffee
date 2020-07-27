@@ -434,7 +434,7 @@ window.LegacyImageHeader = (opts) ->
         opts.text
 
 
-window.HawaiiHeader = (opts) -> ->
+window.HawaiiHeader = (opts) ->
 
   homepage = fetch('location').url == '/'
   subdomain = fetch '/subdomain'

@@ -440,7 +440,7 @@ window.HawaiiHeader = (opts) ->
   subdomain = fetch '/subdomain'
 
   background_color = opts.background_color or (if subdomain.branding.primary_color && subdomain.branding.primary_color != '' then subdomain.branding.primary_color) or '#000'
-  hsl = parseCssHsl(opts.background_color)
+  hsl = parseCssHsl(opts.background_color or "#ffffff")
   is_light = hsl.l > .75
 
   opts ||= {}
@@ -708,73 +708,3 @@ window.SeattleHeader = (opts) ->
               padding: "30px 42px"
 
             "The comment period is now closed. Thank you for your input!"
-
-
-
-
-
-#####################
-# SUBDOMAIN VARIABLES
-
-window.seattle_vars = 
-  teal: "#0FB09A"
-  turquoise: '#67B5B5'
-  brown: '#A77C53'
-  gray: "#000"
-  pink: '#F06668'
-  dark: '#5C1517'
-  magenta: '#d51c5c'
-
-  section_description: 
-    fontSize: 18
-    fontWeight: 400 
-    color: '#444'
-
-window.dao_vars = 
-  blue: '#348AC7'
-  red: '#F83E34'
-  purple: '#7474BF'
-  yellow: '#F8E71C'
-
-
-window.bitcoin_filters = [ {
-    label: 'users'
-    tooltip: 'User sent in verification image.'
-    pass: (user) -> passes_tags(user, 'verified')
-    icon: "<span style='color:green'>\u2713 verified</span>"
-
-  }, {
-    label: 'miners'
-    tooltip: 'Controls > 1% hashrate.'
-    pass: (user) -> passes_tags(user, ['bitcoin_large_miner', 'verified'])
-    icon: "<span style=''>\u26CF miner</span>"      
-  }, {
-    label: 'developers'
-    tooltip: 'Self reported in user profile.'
-    pass: (user) -> passes_tags(user, ['bitcoin_developer.editable', 'verified'])
-    icon: "<span style=''><img src='https://dl.dropboxusercontent.com/u/3403211/dev.png' style='width:20px' /> developer</span>"            
-  },{
-    label: 'businesses'
-    tooltip: 'Self reported in user profile'
-    pass: (user) -> passes_tags(user, ['bitcoin_business.editable', 'verified'])
-    icon: (user) -> "<span style=''>operates: #{fetch(user).tags['bitcoin_business.editable']}</span>"            
-
-  }
-]
-
-window.bitcoin_auth =   [
-    {
-      tag: 'bitcoin_developer.editable'
-      question: 'Others consider me a bitcoin developer'
-      input: 'dropdown'
-      options:['No', 'Yes']
-      required: false
-    },{
-      tag: 'bitcoin_business.editable'
-      question: 'I operate these bitcoin businesses (urls)'
-      input: 'text'
-      required: false
-    }
-  ]
-
-

@@ -1232,7 +1232,7 @@ _.extend dict.en,
   name_prompt: 'Your name'
   full_name: (args) -> 
     subdomain = fetch '/subdomain'
-    if subdomain.name in ['bitcoin', 'bitcoinclassic']
+    if subdomain.name in ['bitcoin', 'bitcoinclassic', 'bch']
       'user name or company name'
     else
       'first and last name or pseudonym'
@@ -1321,7 +1321,7 @@ _.extend dict.pt,
   name_prompt: 'Meu nome é'
   full_name: (args) -> 
     subdomain = fetch '/subdomain'
-    if subdomain.name in ['bitcoin', 'bitcoinclassic']
+    if subdomain.name in ['bitcoin', 'bitcoinclassic', 'bch']
       'nome de usuário ou nome da empresa'
     else
       'nome e sobrenome'

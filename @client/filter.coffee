@@ -605,7 +605,7 @@ OpinionFilter = ReactiveComponent
           marginTop: 0
           lineHeight: 1
 
-        if fetch('/subdomain').name in ['bitcoin', 'bitcoinclassic']
+        if fetch('/subdomain').name in ['bitcoin', 'bitcoinclassic', 'bch']
           VerificationProcessExplanation()
 
         DIV

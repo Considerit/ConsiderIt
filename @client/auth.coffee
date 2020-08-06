@@ -1049,13 +1049,13 @@ Auth = ReactiveComponent
           throw "Unsupported question type: #{question.input} for #{question.tag}"
 
       if !question.required && question.input != 'boolean' 
-        label = [label, SPAN 
-                          style: 
-                            color: '#888'
-                            fontSize: 12
-                            paddingLeft: 10
-                          translator('optional') ]
+        op = DIV 
+              style: 
+                color: '#888'
+                fontSize: 12
+              translator('optional')
 
+        label = [op, label] 
 
       inputs.push [label,input]
     inputs

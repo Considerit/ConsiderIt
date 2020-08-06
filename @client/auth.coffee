@@ -1027,6 +1027,7 @@ Auth = ReactiveComponent
             style: _.defaults question.input_style or {},
               fontSize: 18
               marginTop: 4
+              maxWidth: '100%'
             value: @local.tags[question.tag]
             onChange: do(question) => (event) =>
               @local.tags = @local.tags or {}

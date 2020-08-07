@@ -357,7 +357,7 @@ window.CollapsedProposal = ReactiveComponent
           handle_props:
             use_face: false
           label: translator
-                    id: "engage.slider.instructions"
+                    id: "sliders.instructions"
                     negative_pole: get_slider_label("slider_pole_labels.oppose", proposal)
                     positive_pole: get_slider_label("slider_pole_labels.support", proposal)
                     "Express your opinion on a slider from {negative_pole} to {positive_pole}"

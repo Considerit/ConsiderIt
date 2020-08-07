@@ -1500,16 +1500,17 @@ PointsList = ReactiveComponent
 
     get_heading = (valence) => 
       point_labels = customization("point_labels", @proposal)
-      heading = point_labels["#{header_prefix}_header"]
-      plural_point = point_labels[valence]
 
-      plural_point_t = translator
-                        id: "point_labels.#{plural_point}"
-                        plural_point 
+
+      heading = point_labels["#{header_prefix}_header"]
+
+
+      plural_point = get_point_label valence, @proposal
 
       heading_t = translator
-                    id: "engage.header_#{header_prefix}.#{heading}"
-                    arguments: capitalize(plural_point_t)
+                    id: "point_labels.header_#{header_prefix}.#{heading}"
+                    key: if point_labels.translate then "/translations" else "/translations/#{fetch('/subdomain').name}"
+                    arguments: capitalize(plural_point)
                     heading
 
       heading_t
@@ -1677,15 +1678,11 @@ PointsList = ReactiveComponent
 
           if @props.rendered_as == 'decision_board_point'
 
-            point_labels = customization('point_labels', @proposal)
             if @props.valence == 'pros' 
-              noun = point_labels.pro
+              noun = get_point_label 'pro', @proposal 
             else 
-              noun = point_labels.con
+              noun = get_point_label 'con', @proposal 
 
-            noun = translator
-                     id: "point_labels.#{noun}"
-                     noun 
             noun = capitalize noun   
 
             A
@@ -1707,14 +1704,10 @@ PointsList = ReactiveComponent
           your_points_key: @props.key
 
   drawAddNewPointInCommunityCol: ->
-    point_labels = customization('point_labels', @proposal)
     if @props.valence == 'pros' 
-      point_label = point_labels.pro
+      point_label = get_point_label 'pro', @proposal 
     else 
-      point_label = point_labels.con
-    point_label = translator
-                   id: "point_labels.#{point_label}"
-                   point_label 
+      point_label = get_point_label 'con', @proposal 
 
     button_text = translator 
                     id: "engage.add_a_point"
@@ -1743,15 +1736,10 @@ PointsList = ReactiveComponent
   drawAddNewPointInDecisionBoard: -> 
     your_points = @data()
 
-    point_labels = customization('point_labels', @proposal)
     if @props.valence == 'pros' 
-      point_label = point_labels.pro
+      point_label = get_point_label 'pro', @proposal 
     else 
-      point_label = point_labels.con
-
-    point_label = translator
-                   id: "point_labels.#{point_label}"
-                   point_label 
+      point_label = get_point_label 'con', @proposal 
 
 
     DIV 
@@ -1791,18 +1779,11 @@ PointsList = ReactiveComponent
   drawDropTarget: -> 
     left_or_right = if @props.valence == 'pros' then 'right' else 'left'
 
-
-    point_labels = customization('point_labels', @proposal)
     if @props.valence == 'pros' 
-      point_label = point_labels.pro
+      point_label = get_point_label 'pro', @proposal 
     else 
-      point_label = point_labels.con
+      point_label = get_point_label 'con', @proposal 
 
-    point_label = translator
-                   id: "point_labels.#{point_label}"
-                   point_label 
-
-    
     drop_target_text = TRANSLATE 
                          id: "engage.drag_point.#{left_or_right}"
                          pro_or_con: point_label 

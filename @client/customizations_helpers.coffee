@@ -25,16 +25,9 @@ window.cluster_link = (href, anchor) ->
 # PRO/CON LABELS
 
 window.point_labels = 
-  question_ideas: 
-    pro: 'idea'
-    pros: 'ideas' 
-    con: 'question'
-    cons: 'questions'
-    your_header: "Give your {arguments}" 
-    other_header: "Others' {arguments}" 
-    top_header: "Top {arguments}" 
 
   pro_con: 
+    translate: true
     pro: 'pro'
     pros: 'pros' 
     con: 'con'
@@ -46,6 +39,7 @@ window.point_labels =
     your_pros_header: null
 
   strengths_weaknesses: 
+    translate: true    
     pro: 'strength'
     pros: 'strengths' 
     con: 'weakness'
@@ -54,56 +48,27 @@ window.point_labels =
     other_header: "{arguments} observed" 
     top_header: "Top {arguments}" 
 
-  strengths_limitations:
-    pro: 'strength'
-    pros: 'strengths' 
-    con: 'limitation'
-    cons: 'limitations'
-    your_header: "{arguments} you observed" 
-    other_header: "{arguments} observed" 
-    top_header: "Top {arguments}" 
 
+window.get_point_label = (id, proposal) -> 
+  prop = id.split('.')?[1] or id
 
-  challenge_justify:
-    pro: 'justification'
-    pros: 'justifications' 
-    con: 'challenge'
-    cons: 'challenges'
-    your_header: "Give your {arguments}" 
-    other_header: "{arguments} identified" 
-    top_header: "Top {arguments}" 
+  if proposal
+    conf = customization('point_labels', proposal)
+  else 
+    conf = customization('point_labels')
 
+  val = conf[prop]
 
-  strengths_improvements: 
-    pro: 'strength'
-    pros: 'strengths' 
-    con: 'improvement'
-    cons: 'improvements'
-    your_header: "{arguments} you observe" 
-    your_cons_header: "Your suggested improvements"
-    your_pros_header: "Strengths you observe"
-    other_header: "{arguments} identified" 
-    top_header: "Top {arguments}" 
-
-
-  support_challenge_claim: 
-    pro: 'supporting claim'
-    pros: 'supporting claims' 
-    con: 'challenging claim'
-    cons: 'challenging claims'
-    your_header: "{arguments} you recognize" 
-    other_header: "{arguments} identified" 
-    top_header: "Top {arguments}" 
-
-
-  delta_pluses:
-    pro: 'plus'
-    pros: 'pluses' 
-    con: 'delta'
-    cons: 'deltas'
-    your_header: "{arguments} you recognize" 
-    other_header: "{arguments} identified" 
-    top_header: "Top {arguments}" 
+  if !val 
+    ""
+  else
+    if conf.translate
+      translator "point_labels.#{val}", val 
+    else 
+      translator 
+        id: "point_labels.#{val}"
+        key: "/translations/#{fetch('/subdomain').name}"
+        val 
 
 
 #####################
@@ -121,86 +86,73 @@ window.get_slider_label = (id, proposal) ->
   if !label 
     ""
   else
-    translator "engage.slider_label.#{label}", label 
+    if conf.translate
+      translator "sliders.pole.#{label}", label 
+    else 
+      translator 
+        id: "sliders.pole.#{label}"
+        key: "/translations/#{fetch('/subdomain').name}"
+        label 
 
+
+fully_firmly_slightly_scale = (value, proposal) ->
+
+  if Math.abs(value) < 0.02
+    translator
+      id: "sliders.feedback.neutral"
+      "You are neutral"
+  else 
+    valence = get_slider_label (if value > 0 then 'support' else 'oppose'), proposal
+
+    degree = Math.abs value
+    strength_of_opinion = if degree > .999
+                            "Fully"
+                          else if degree > .5
+                            "Firmly"
+                          else
+                            "Slightly" 
+    
+    translator
+      id: "sliders.feedback.#{strength_of_opinion}"
+      strength_of_opinion: strength_of_opinion
+      valence: valence
+      "You #{strength_of_opinion} {valence}"
 
 
 window.slider_labels = 
 
   agree_disagree:
+    translate: true
     support: 'Agree'
     oppose: 'Disagree'
 
-    slider_feedback: (value, proposal) -> 
-      if Math.abs(value) < 0.05
-        translator
-          id: "engage.slider_feedback.agree_disagree.neutral"
-          "You are undecided"
-      else 
-        degree = Math.abs value
-        strength_of_opinion = if degree > .999
-                                "Fully"
-                              else if degree > .5
-                                "Firmly"
-                              else
-                                "Slightly" 
-
-        valence = get_slider_label "slider_pole_labels." + \
-                                (if value > 0 then 'support' else 'oppose'), \
-                                proposal
-
-        
-        translator
-          id: "engage.slider_feedback.agree_disagree.#{strength_of_opinion}-#{(if value > 0 then 'support' else 'oppose')}"
-          strength_of_opinion: strength_of_opinion
-          valence: valence
-          "You #{strength_of_opinion} {valence}"
+    slider_feedback: fully_firmly_slightly_scale
 
   support_oppose:
+    translate: true    
     support: 'Support'
     oppose: 'Oppose'
 
-    slider_feedback: (value, proposal) -> 
-      if Math.abs(value) < 0.05
-        translator
-          id: "engage.slider_feedback.support_oppose.neutral"
-          "You are undecided"
+    slider_feedback: fully_firmly_slightly_scale
 
-      else 
-        degree = Math.abs value
-        strength_of_opinion = if degree > .999
-                                "Fully"
-                              else if degree > .5
-                                "Firmly"
-                              else
-                                "Slightly" 
+  priority:
+    translate: true    
+    support: 'High Priority'
+    oppose: 'Low Priority'    
 
-        valence = get_slider_label "slider_pole_labels." + \
-                                (if value > 0 then 'support' else 'oppose'), \
-                                proposal
-
-        translator
-          id: "engage.slider_feedback.support_oppose.#{strength_of_opinion}-#{(if value > 0 then 'support' else 'oppose')}"
-          strength_of_opinion: strength_of_opinion
-          valence: valence
-          "You #{strength_of_opinion} {valence}"
-
+  important_unimportant:
+    translate: true    
+    support: 'Important'
+    oppose: 'Unimportant'    
 
   relevance:
     support: 'Big impact!'
     oppose: 'No impact on me'    
 
-  priority:
-    support: 'High Priority'
-    oppose: 'Low Priority'    
-
   interested:
     support: 'Interested'
     oppose: 'Uninterested'    
 
-  important_unimportant:
-    support: 'Important'
-    oppose: 'Unimportant'    
 
 
   yes_no:

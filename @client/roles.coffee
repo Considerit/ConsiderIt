@@ -5,17 +5,8 @@ require './shared'
 
 
 all_roles = -> 
-  point_labels = customization('point_labels')
-
-  pro_label = point_labels.pro
-  con_label = point_labels.con
-
-  pro_label = translator
-                id: "point_labels.#{pro_label}"
-                pro_label 
-  con_label = translator
-                id: "point_labels.#{con_label}"
-                con_label 
+  pro_label = get_point_label 'pro'
+  con_label = get_point_label 'con'
 
   all = [ 
     {

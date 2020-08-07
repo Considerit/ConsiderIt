@@ -719,7 +719,7 @@ ClusterHeading = ReactiveComponent
                 fontStyle: 'oblique'
 
               TRANSLATE
-                id: "engage.header.#{histo_title}"
+                id: "engage.list_opinions_title.#{histo_title}"
                 histo_title
 
 

@@ -254,7 +254,7 @@ TranslationsDash = ReactiveComponent
               marginLeft: 14
               display: 'inline-block'
             onChange: (ev) => 
-              local.translating_lang = ev.target.value 
+              local.translating_lang = ev.target.value
               save local
 
             for [k,v] in all_langs
@@ -337,13 +337,16 @@ TranslationsDash = ReactiveComponent
           DIV null, 
 
             TranslationsForLang
-              key: "/translations"
+              key: "translations_for_#{local.translating_lang}"
+              translation_key_prefix: "/translations"
               lang: local.translating_lang
 
             # if current_user.is_admin 
             TranslationsForLang
-              key: "/translations/#{subdomain.name}"
+              key: "forum_translations_for_#{local.translating_lang}"            
+              translation_key_prefix: "/translations/#{subdomain.name}"
               lang: local.translating_lang
+              forum_specific: true
 
 
             DIV
@@ -379,8 +382,8 @@ TranslationsForLang = ReactiveComponent
     lang = @props.lang 
 
     available_languages = fetch("/translations").available_languages
-    native_messages = fetch "#{@props.key}/#{DEVELOPMENT_LANGUAGE}"
-    translations = fetch "#{@props.key}/#{lang}"
+    native_messages = fetch "#{@props.translation_key_prefix}/#{DEVELOPMENT_LANGUAGE}"
+    translations = fetch "#{@props.translation_key_prefix}/#{lang}"
 
     return DIV() if waiting_for(native_messages) || waiting_for(translations)
 
@@ -390,7 +393,7 @@ TranslationsForLang = ReactiveComponent
     # create local copy of proposed translations before saving
     # TODO: I think this is making a shallow clone, which means that updated_translations and translations might 
     #       point to the same {txt, proposals} objects. 
-    updated_translations = get_temporary_translations(lang, @props.key)
+    updated_translations = get_temporary_translations(lang, @props.translation_key_prefix)
 
 
     # sections = {"all": to_translate}
@@ -407,7 +410,10 @@ TranslationsForLang = ReactiveComponent
 
     current_user = fetch '/current_user'
 
-    cols = ['Message in English', "Translation to #{available_languages[lang]}"]
+    if @props.forum_specific
+      cols = ['Message', "Translation. Leave blank if Message already #{available_languages[lang]}"]
+    else 
+      cols = ['Message in English', "Translation to #{available_languages[lang]}"]
 
     DIV 
       style: 
@@ -420,7 +426,7 @@ TranslationsForLang = ReactiveComponent
 
         TRANSLATE 
           id: "translations.language_header"
-          percent_complete: Math.round(translation_progress(lang, @props.key) * 100)
+          percent_complete: Math.round(translation_progress(lang, @props.translation_key_prefix) * 100)
           language: available_languages[lang]
           "Translations for {language} ({percent_complete}% completed)"
 

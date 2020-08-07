@@ -207,23 +207,12 @@ window.EditPoint = ReactiveComponent
     guidelines_w = if mobile then 'auto' else 230
     guidelines_h = 238
 
-    point_labels = customization('point_labels', @proposal)
-
     singular =  if @props.valence == 'pros' 
-                  point_labels.pro
+                  get_point_label 'pro', @proposal
                 else 
-                  point_labels.con
-    singular = translator
-                 id: "point_labels.#{singular}"
-                 singular 
+                  get_point_label 'con', @proposal
 
-    plural =  if @props.valence == 'pros' 
-                point_labels.pros
-              else 
-                point_labels.cons
-    plural = translator
-                id: "point_labels.#{plural}"
-                plural 
+    plural =  get_point_label @props.valence, @proposal 
 
 
     DIV 

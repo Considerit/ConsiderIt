@@ -80,7 +80,7 @@ window.OpinionSlider = ReactiveComponent
         respond_to_click: false
 
         label: translator
-                 id: "engage.opinion_slider.directions"
+                 id: "sliders.instructions-with-proposal"
                  negative_pole: @props.pole_labels[0]
                  positive_pole: @props.pole_labels[1]
                  proposal_name: @proposal.name
@@ -91,7 +91,7 @@ window.OpinionSlider = ReactiveComponent
           else if value < -.03 
             "#{-1 * (value * 100).toFixed(0)}% #{@props.pole_labels[0]}"
           else 
-            translator "engage.slider_feedback.neutral", "Neutral"
+            translator "sliders.feedback-short.neutral", "Neutral"
 
       @saveYourOpinionNotice()
 
@@ -121,7 +121,7 @@ window.OpinionSlider = ReactiveComponent
       color: focus_color()
 
     notice = if current_user.logged_in
-               translator "engage.save_your_opinion.button", "Save your opinion"
+               translator "engage.save_opinion_button", "Save your opinion"
              else 
                translator "engage.login_to_save_opinion", 'Log in to save your opinion'
     
@@ -145,8 +145,8 @@ window.OpinionSlider = ReactiveComponent
   drawFeedback: -> 
     slider = fetch @props.key
     default_feedback = (value, proposal) -> 
-      if Math.abs(value) < 0.01
-        translator "engage.slider_feedback.default.neutral", "You are neutral"
+      if Math.abs(value) < 0.02
+        translator "sliders.feedback.neutral", "You are neutral"
       else 
         "#{Math.round(value * 100)}%"
 
@@ -155,11 +155,11 @@ window.OpinionSlider = ReactiveComponent
     labels = customization 'slider_pole_labels', @proposal
     slider_feedback = 
       if !slider.has_moved 
-        TRANSLATE "engage.slide_prompt", 'Slide Your Overall Opinion'
+        TRANSLATE "sliders.slide_prompt", 'Slide Your Overall Opinion'
       else if func = labels.slider_feedback or default_feedback
         func slider.value, @proposal
       else if TWO_COL() 
-        TRANSLATE "engage.slide_feedback_short", "Your opinion"
+        TRANSLATE "sliders.slide_feedback_short", "Your opinion"
       else 
         ''
 

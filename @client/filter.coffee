@@ -605,7 +605,7 @@ OpinionFilter = ReactiveComponent
           marginTop: 0
           lineHeight: 1
 
-        if fetch('/subdomain').name in ['bitcoin', 'bitcoinclassic', 'bch']
+        if customization('verification-by-pic') 
           VerificationProcessExplanation()
 
         DIV

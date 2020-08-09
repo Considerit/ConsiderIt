@@ -11,32 +11,43 @@ task :send_email_notifications => :environment do
     begin
       raise 'aborting: send_email_notifications already running'
     rescue => err
-      ExceptionNotifier.notify_exception err, :env => request.env
+      ExceptionNotifier.notify_exception err
     end
   else 
+
     open_f = File.new(f, "w+")
 
     begin
 
-      notifications = Notifier.aggregate(filter: {'sent_email' => false})
+      subdomains = Notification.where({'sent_email' => false}).distinct.pluck(:subdomain_id)
 
-      for subdomain_id, n_for_subdomain in notifications
+      for subdomain_id in subdomains 
+        begin 
 
-        for user_id, notifications_for_user in n_for_subdomain
+          subdomain = Subdomain.find(subdomain_id)
+          notifications = Notifier.aggregate(filter: {'subdomain_id' => subdomain_id, 'sent_email' => false})
+          n_for_subdomain = notifications[subdomain_id] || {}
 
-          user = User.find user_id
-          prefs = user.subscription_settings(Subdomain.find(subdomain_id))
+          for user_id, notifications_for_user in n_for_subdomain
 
-          begin 
-            send_digest(Subdomain.find(subdomain_id), user, notifications_for_user, prefs)
-          rescue => e
-            pp 'WE FAILED', e
-            ExceptionNotifier.notify_exception(e)      
-          end    
+            user = User.find user_id
+            prefs = user.subscription_settings(subdomain)
+
+            begin 
+              send_digest(Subdomain.find(subdomain_id), user, notifications_for_user, prefs)
+            rescue => e
+              pp "Failed to send notification to /user/#{user.id} for #{subdomain.name}", e
+              ExceptionNotifier.notify_exception(e)      
+            end    
+          end
+        rescue => e 
+          pp "Notification runner failed for subdomain #{subdomain.name}", e
+          ExceptionNotifier.notify_exception(e)      
         end
+
       end
     rescue => e
-     pp 'WE FAILED', e
+     pp 'Notification runner failure', e
      ExceptionNotifier.notify_exception(e)      
     end
 

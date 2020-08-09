@@ -70,6 +70,12 @@ end
 def permit(action, object = nil, user = nil)
 
   user ||= current_user
+  if object && object.class.name == 'Subdomain'
+    subdomain = object
+  else 
+    subdomain = current_subdomain
+  end
+
   return Permission::PERMITTED if user.super_admin
 
   case action
@@ -78,23 +84,23 @@ def permit(action, object = nil, user = nil)
 
   when 'update subdomain', 'delete subdomain'
     return Permission::NOT_LOGGED_IN if !user.registered
-    return Permission::INSUFFICIENT_PRIVILEGES if !user.is_admin?
+    return Permission::INSUFFICIENT_PRIVILEGES if !user.is_admin?(subdomain)
     return Permission::UNVERIFIED_EMAIL if !user.verified  
 
   when 'create proposal'
     return Permission::NOT_LOGGED_IN if !user.registered
-    if !user.is_admin? && !Permitted::matchEmail(current_subdomain.user_roles['proposer'], user)
+    if !user.is_admin?(subdomain) && !Permitted::matchEmail(subdomain.user_roles['proposer'], user)
       return Permission::INSUFFICIENT_PRIVILEGES 
     end
 
   when 'read proposal', 'access forum'
-    if !user.is_admin? && !Permitted::matchSomeRole(current_subdomain.user_roles, ['visitor', 'proposer'], user) 
+    if !user.is_admin?(subdomain) && !Permitted::matchSomeRole(subdomain.user_roles, ['visitor'], user) 
       if !user.registered
         return Permission::NOT_LOGGED_IN 
       else
         return Permission::INSUFFICIENT_PRIVILEGES 
       end
-    elsif !current_subdomain.user_roles['visitor'].index('*')
+    elsif !subdomain.user_roles['visitor'].index('*')
       if !user.registered
         return Permission::NOT_LOGGED_IN 
       elsif !user.verified
@@ -110,7 +116,7 @@ def permit(action, object = nil, user = nil)
 
     return Permission::NOT_LOGGED_IN if !user.registered
 
-    if !user.is_admin? && !Permitted::matchEmail(proposal.user_roles['editor'], user)
+    if !user.is_admin?(subdomain) && !Permitted::matchEmail(proposal.user_roles['editor'], user)
       return Permission::INSUFFICIENT_PRIVILEGES
     end
 
@@ -122,7 +128,7 @@ def permit(action, object = nil, user = nil)
     proposal = object
     return Permission::DISABLED if !proposal.active
     return Permission::NOT_LOGGED_IN if !user.registered
-    if !user.is_admin? && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'writer', 'opiner'], user)
+    if !user.is_admin?(subdomain) && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'writer', 'opiner'], user)
       return Permission::INSUFFICIENT_PRIVILEGES
     end
 
@@ -136,7 +142,7 @@ def permit(action, object = nil, user = nil)
   when 'read point'
     point = object
 
-    if user.id != point.user_id && !user.is_admin?
+    if user.id != point.user_id && !user.is_admin?(subdomain)
       return Permission::DISABLED if point.published && !(point.moderation_status.nil? || point.moderation_status != 0)
     end
 
@@ -144,7 +150,7 @@ def permit(action, object = nil, user = nil)
     proposal = object
     return Permission::DISABLED if !proposal.active
 
-    if !user.is_admin? && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'writer'], user)
+    if !user.is_admin?(subdomain) && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'writer'], user)
       if !user.registered
         return Permission::NOT_LOGGED_IN  
       else 
@@ -154,13 +160,13 @@ def permit(action, object = nil, user = nil)
 
   when 'update point'
     point = object
-    if !user.is_admin? && user.id != point.user_id
+    if !user.is_admin?(subdomain) && user.id != point.user_id
       return Permission::INSUFFICIENT_PRIVILEGES 
     end
 
   when 'delete point'
     point = object
-    if !user.is_admin?
+    if !user.is_admin?(subdomain)
       return Permission::INSUFFICIENT_PRIVILEGES if user.id != point.user_id
       return Permission::DISABLED if point.inclusions.count > 1
     end
@@ -177,7 +183,7 @@ def permit(action, object = nil, user = nil)
     return Permission.DISABLED if !proposal.active
     return Permission::NOT_LOGGED_IN if !user.registered
   
-    if !user.is_admin? && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'writer', 'commenter'], user)
+    if !user.is_admin?(subdomain) && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'writer', 'commenter'], user)
       return Permission::INSUFFICIENT_PRIVILEGES
     end
 
@@ -186,12 +192,12 @@ def permit(action, object = nil, user = nil)
     can_read = permit 'read comment', comment
     return can_read if can_read < 0
 
-    if !user.is_admin? && user.id != comment.user_id
+    if !user.is_admin?(subdomain) && user.id != comment.user_id
       return Permission::INSUFFICIENT_PRIVILEGES 
     end
 
   when 'update user'
-    if !user.is_admin?
+    if !user.is_admin?(subdomain)
       return Permission::INSUFFICIENT_PRIVILEGES 
     end
 

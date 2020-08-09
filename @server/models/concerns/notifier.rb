@@ -287,6 +287,9 @@ module Notifier
       # doesn't get notified
       next if user.id == protagonist_id
 
+      # only create notifications for permitted users (relevant if the forum permissions have changed)
+      next if permit("access forum", subdomain, user) < 0 
+
       event_object_relationship = Notifier.event_relationship_mapper(event_object, user)
 
       method = user.subscription_settings(subdomain)['send_emails']

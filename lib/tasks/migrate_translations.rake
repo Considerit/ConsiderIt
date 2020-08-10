@@ -58,7 +58,7 @@ task :migrate_translations => :environment do
       trans = get_translations lang_key
 
       $to_rename.each do |source, dest|
-        if trans.has_key?(source)
+        if trans.has_key?(source) && !trans.has_key?(dest)
           pp "  Rename #{source} to #{dest}", trans[source]
           trans[dest] = trans.delete source
           pp "renamed", trans[source], trans[dest]

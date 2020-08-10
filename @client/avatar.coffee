@@ -39,7 +39,7 @@ show_tooltip = (e) ->
       
     if !anonymous && (filters = customization('opinion_filters')) && (!customization('opinion_filters_admin_only') || current_user.is_admin)
       for filter in filters when (!filter.admin_only || current_user.is_admin)
-        if filter.pass(user) && filter.icon
+        if filter.icon && filter.pass(user)
           if typeof(filter.icon) != 'string'
             icon = filter.icon(user)
           else

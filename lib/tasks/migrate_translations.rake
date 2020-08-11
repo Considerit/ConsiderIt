@@ -46,7 +46,7 @@ task :migrate_translations => :environment do
 
   end
 
-  def execute_translation_migration(overwrite)
+  def execute_translation_migration(overwrite = false)
     base_translations = get_translations '/translations'
     base_translations["available_languages"].each do |langcode, lang| 
       pp "",""
@@ -94,6 +94,17 @@ task :migrate_translations => :environment do
   delete_translation "engage.header.Students' feedback"
   delete_translation "engage.header.Students' opinions"
   delete_translation "engage.header.Votes"
+  delete_translation "engage.list_opinions_title.Citizens' opinions"
+  delete_translation "engage.list_opinions_title.Commitments"
+  delete_translation "engage.list_opinions_title.PC's ratings"
+  delete_translation "engage.list_opinions_title.Student responses"
+  delete_translation "engage.list_opinions_title.Students' feedback"
+  delete_translation "engage.list_opinions_title.Students' opinions"
+  delete_translation "engage.list_opinions_title.Votes"
+
+  delete_translation "point_labels.Shade"
+  delete_translation "point_labels.Love"
+
   rename_translation "engage.header.Opinions", "engage.list_opinions_title.Opinions"
 
   delete_translation "engage.header_your.Throw your --valences--"

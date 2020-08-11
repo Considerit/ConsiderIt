@@ -720,6 +720,7 @@ ClusterHeading = ReactiveComponent
 
               TRANSLATE
                 id: "engage.list_opinions_title.#{histo_title}"
+                key: if histo_title == customizations.default.list_opinions_title then '/translations' else "/translations/#{subdomain.name}"
                 histo_title
 
 

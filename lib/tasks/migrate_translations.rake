@@ -46,7 +46,7 @@ task :migrate_translations => :environment do
 
   end
 
-  def execute_translation_migration
+  def execute_translation_migration(overwrite)
     base_translations = get_translations '/translations'
     base_translations["available_languages"].each do |langcode, lang| 
       pp "",""
@@ -58,10 +58,14 @@ task :migrate_translations => :environment do
       trans = get_translations lang_key
 
       $to_rename.each do |source, dest|
-        if trans.has_key?(source) && !trans.has_key?(dest)
-          pp "  Rename #{source} to #{dest}", trans[source]
-          trans[dest] = trans.delete source
-          pp "renamed", trans[source], trans[dest]
+        if trans.has_key?(source)
+          if trans.has_key?(dest) && !overwrite
+            $to_delete[source] = 1
+          else 
+            pp "  Rename #{source} to #{dest}", trans[source]
+            trans[dest] = trans.delete source
+            pp "renamed", trans[source], trans[dest]
+          end
         end 
       end 
 

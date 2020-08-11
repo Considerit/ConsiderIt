@@ -314,7 +314,7 @@ window.ShortHeader = (opts) ->
               fontWeight: 600
               display: 'inline'
 
-            , 'homepage'
+            , TRANSLATE("engage.navigate_back_to_homepage" , 'homepage')
 
 
       if opts.text

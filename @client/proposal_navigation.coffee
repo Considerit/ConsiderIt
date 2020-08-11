@@ -176,7 +176,9 @@ window.GroupedProposalNavigation = (args) ->
     H2
       style: heading_style
 
-      'Done? Navigate to a different question'
+      TRANSLATE
+        id: 'engage.navigate_elsewhere.groupednav.header'
+        'Done? Navigate to a different question'
 
     if !proposals || proposals.length == 0 
       LOADING_INDICATOR
@@ -311,7 +313,7 @@ window.GroupedProposalNavigation = (args) ->
                                       position: 'absolute'
                                       left: -150
                                       top: 0
-                                    dangerouslySetInnerHTML: __html: "You are here &rarr;"
+                                    dangerouslySetInnerHTML: __html: "#{TRANSLATE('engage.navigation_helper_current_location', 'You are here')} &rarr;"
 
                               CollapsedProposal 
                                 key: "collapsed#{proposal.key or proposal}"

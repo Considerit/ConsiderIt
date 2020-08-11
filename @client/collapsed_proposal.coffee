@@ -190,7 +190,7 @@ window.CollapsedProposal = ReactiveComponent
                   paddingRight: 16
 
                 if !show_author_name_in_meta_data
-                  "Added: "
+                  TRANSLATE 'engage.proposal_metadata_date_added', "Added: "
                 
                 prettyDate(proposal.created_at)
 

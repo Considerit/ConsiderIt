@@ -170,7 +170,7 @@ module Notifier
   # This is where you come to configure new events, digests, defaults, etc. 
 
   def self.default_subscription(subdomain)
-    if subdomain.name == 'galacticfederation'
+    if ['galacticfederation', 'ainaalohafutures'].include?(subdomain.name)
       nil
     else 
       '1_day'

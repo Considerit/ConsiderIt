@@ -40,6 +40,8 @@ namespace :customizations do
       show_new = row['community can add to list']
       starts_closed = row['starts closed']
 
+      slider = row['slider']
+
       list = {}
       list_defaults.each do |k,v|
         list[k] = v
@@ -62,6 +64,34 @@ namespace :customizations do
       if starts_closed
         list[:list_is_archived] = true 
       end
+
+      if slider
+        sldr =  case slider 
+        when 'concern'
+          {
+            support: 'Most Concerning',
+            oppose: 'Least Concerning'
+          }
+        when 'importance'
+          {
+            support: 'Most Important',
+            oppose: 'Least Important'
+          }
+
+        when 'effectiveness'
+          {
+            support: 'Most Effective',
+            oppose: 'Least Effective'
+          }
+
+        else 
+          nil 
+        end 
+        if sldr 
+          list[:slider_pole_labels] = sldr 
+        end
+        
+      end 
 
 
       out.puts "  \"list/#{name}\":\n"

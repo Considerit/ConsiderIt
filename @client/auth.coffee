@@ -448,8 +448,14 @@ Auth = ReactiveComponent
                         name:"pledge-#{idx}"
                         style: 
                           fontSize: 24
+                          verticalAlign: 'top'
+                          marginLeft: 0
 
                       LABEL 
+                        style: 
+                          display: 'inline-block'
+                          width: '90%'
+                          paddingLeft: 8
                         htmlFor: "pledge-#{idx}"
                         dangerouslySetInnerHTML: __html: pledge
 
@@ -525,12 +531,14 @@ Auth = ReactiveComponent
         DIV 
           style: 
             marginTop: 24
+
           INPUT
             id: slugify("considerit_terms.editableinputBox")
             key: "considerit_terms.editable_inputBox"
             type:'checkbox'
             style: 
               fontSize: 24
+              verticalAlign: 'top'
             checked: @local.tags['considerit_terms.editable']
             onChange: (event) =>
               @local.tags = @local.tags or {}
@@ -540,6 +548,7 @@ Auth = ReactiveComponent
             htmlFor: slugify("considerit_terms.editableinputBox")
             style: 
               fontSize: 18
+              paddingLeft: 8
             dangerouslySetInnerHTML: __html: terms
 
 
@@ -988,35 +997,29 @@ Auth = ReactiveComponent
             DIV 
               style: 
                 marginBottom: 10
-                marginLeft: -18
+
+              INPUT
+                id: slugify("#{question.tag}inputBox")
+                key: "#{question.tag}_inputBox"
+                type:'checkbox'
+                style: 
+                  fontSize: 24
+                  verticalAlign: 'top'
+                  marginLeft: 0
+                checked: @local.tags[question.tag]
+                onChange: do(question) => (event) =>
+                  @local.tags = @local.tags or {}
+                  @local.tags[question.tag] = current_user.tags[question.tag] = event.target.checked
+                  save @local
 
               LABEL 
                 htmlFor: slugify("#{question.tag}inputBox")
                 style: 
-                  fontSize: 18
-                  marginLeft: 18
-                  float: 'left'
+                  display: 'inline-block'
+                  width: '90%'
+                  paddingLeft: 8
+                dangerouslySetInnerHTML: __html: question.question
 
-                INPUT
-                  id: slugify("#{question.tag}inputBox")
-                  key: "#{question.tag}_inputBox"
-                  type:'checkbox'
-                  style: 
-                    fontSize: 24
-                    margin: 0
-                    marginLeft: -34
-                  checked: @local.tags[question.tag]
-                  onChange: do(question) => (event) =>
-                    @local.tags = @local.tags or {}
-                    @local.tags[question.tag] = current_user.tags[question.tag] = event.target.checked
-                    save @local
-
-                SPAN 
-                  style: 
-                    paddingLeft: 20
-                  dangerouslySetInnerHTML: __html: question.question
-
-              DIV style: clear: 'both'
 
           label = ''
 

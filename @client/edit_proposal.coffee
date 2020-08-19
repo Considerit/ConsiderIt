@@ -66,9 +66,9 @@ window.EditProposal = ReactiveComponent
     else 
       cluster = proposal.cluster 
 
-    if !@local.description_fields && (@props.fresh || @data().slug)
-      @local.description_fields = if @data().description_fields 
-                                    $.parseJSON(@data().description_fields) || [] 
+    if !@local.description_fields && (@props.fresh || proposal.slug)
+      @local.description_fields = if proposal.description_fields 
+                                    $.parseJSON(proposal.description_fields) || [] 
                                   else 
                                     []
       @local.open_fields = []
@@ -408,15 +408,13 @@ window.EditProposal = ReactiveComponent
   saveProposal : -> 
 
     $el = $(@getDOMNode())
-
+    
     name = $el.find('#name').val()
     description = fetch("description-#{@data().key}").html
 
 
     cluster = $el.find('#cluster').val()
     cluster = null if cluster == ""
-
-    slug = slugify("#{name}-#{cluster}")
 
     active = $el.find('#open_for_discussion:checked').length > 0
     hide_on_homepage = $el.find('#listed_on_homepage:checked').length == 0
@@ -427,7 +425,6 @@ window.EditProposal = ReactiveComponent
         name : name
         description : description
         cluster : cluster
-        slug : slug
         active: active
         hide_on_homepage: hide_on_homepage
 
@@ -436,7 +433,6 @@ window.EditProposal = ReactiveComponent
       _.extend proposal, 
         cluster: cluster
         name: name
-        slug: slug
         description: description
         active: active
         hide_on_homepage: hide_on_homepage
@@ -458,7 +454,7 @@ window.EditProposal = ReactiveComponent
     save proposal, => 
       if proposal.errors?.length == 0
         window.scrollTo(0,0)
-        loadPage "/#{slug}"
+        loadPage "/#{proposal.slug}"
       else
         @local.errors = proposal.errors
         save @local

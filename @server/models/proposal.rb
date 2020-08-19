@@ -1,4 +1,5 @@
 # coding: utf-8
+
 class Proposal < ActiveRecord::Base
   has_many :points, :dependent => :destroy
   has_many :opinions, :dependent => :destroy
@@ -15,30 +16,8 @@ class Proposal < ActiveRecord::Base
 
   scope :active, -> {where( :active => true, :published => true )}
 
-
-  # Sanitize the HTML fields that we insert dangerously in the client. 
-  # We allow superadmins to post arbitrary HTML though. 
-  before_validation(on: [:create]) do
-
-    if !defined?(Rails::Console) && current_user && !current_user.is_admin?
-      # Initialize fields if empty
-      self.description        = self.description || '' 
-      self.description_fields = self.description_fields || '[]' 
-    end
-
-    if current_user && !current_user.is_admin?
-      # Sanitize description
-      self.description = sanitize_helper(self.description)
-      # Sanitize description_fields[i].html
-      self.description_fields =
-        JSON.dump(JSON.parse(self.description_fields || '{}').map { |field|
-                    field['html'] = sanitize_helper(field['html'])
-                    field
-                  })    
-    end
-  end
-
-  
+  before_validation :strip_html
+  before_validation :set_slug
 
   def self.all_proposals_for_subdomain(subdomain = nil)
     subdomain ||= current_subdomain
@@ -315,6 +294,49 @@ class Proposal < ActiveRecord::Base
   def add_seo_keyword(keyword)
     self.seo_keywords ||= ""
     self.seo_keywords += "#{keyword}," if !self.seo_keywords.index("#{keyword},")
+  end
+
+
+  private 
+
+  # Sanitize the HTML fields that we insert dangerously in the client. 
+  # We allow superadmins to post arbitrary HTML though.
+  def strip_html
+    if !defined?(Rails::Console) && current_user && !current_user.is_admin?
+      # Initialize fields if empty
+      self.description        = self.description || '' 
+      self.description_fields = self.description_fields || '[]' 
+    end
+
+    if current_user && !current_user.is_admin?
+      # Sanitize description
+      self.description = sanitize_helper(self.description)
+      # Sanitize description_fields[i].html
+      self.description_fields =
+        JSON.dump(JSON.parse(self.description_fields || '{}').map { |field|
+                    field['html'] = sanitize_helper(field['html'])
+                    field
+                  })    
+    end
+  end 
+
+  def set_slug
+    if !self.slug || self.slug.length == 0 || self.slug.length >= 120
+
+      len_name = self.name.length 
+      len_cluster = (self.cluster || '').length
+
+      if len_name + len_cluster >= 120
+        if len_cluster > 32
+          self.slug = slugify "#{self.name[0...88]}-#{self.cluster[0...31]}"
+        else 
+          self.slug = slugify "#{self.name[0...(120-len_cluster-1)]}-#{self.cluster}"
+        end
+      else 
+        self.slug = slugify "#{self.name}-#{self.cluster}"
+      end
+
+    end 
   end
 
 

@@ -357,7 +357,6 @@ window.NewProposal = ReactiveComponent
                 active = true 
                 hide_on_homepage = false
                 category = @refs.category.getDOMNode().value
-                slug = slugify("#{name}-#{category}")
 
                 if current_user.is_admin && @local.category == 'new category'
                   category = @refs.new_category.getDOMNode().value or cluster_name
@@ -367,7 +366,6 @@ window.NewProposal = ReactiveComponent
                   name : name
                   description : description
                   cluster : category
-                  slug : slug
                   active: active
                   hide_on_homepage: hide_on_homepage
 

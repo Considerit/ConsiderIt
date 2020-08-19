@@ -22,13 +22,6 @@ class ProposalController < ApplicationController
 
   def validate_input(attrs, proposal)
     errors = []
-    if !attrs['slug'] || attrs['slug'].length == 0
-      errors.append translator('errors.proposal.url_missing', 'Url field is missing')
-    end
-
-    if (!proposal || (proposal && proposal.slug != attrs['slug'])) && Proposal.find_by_slug(attrs['slug'])
-      errors.append translator('errors.proposal.url_taken', 'That Url is already taken')
-    end
 
     if !attrs['name'] || attrs['name'].length == 0
       errors.append translator('errors.summary_required', 'A summary is required')
@@ -42,13 +35,6 @@ class ProposalController < ApplicationController
 
     fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage', 'description_fields']
     attrs = params.select{|k,v| fields.include? k}
-
-    if !!attrs['slug'] && attrs['slug'].length > 0
-      attrs['slug'] = attrs['slug'].strip
-      if attrs['slug'].length > 120
-        attrs['slug'] = attrs['slug'][0..120]
-      end
-    end
 
     errors = validate_input attrs, nil
 
@@ -91,7 +77,7 @@ class ProposalController < ApplicationController
       write_to_log({
         :what => 'created new proposal',
         :where => request.fullpath,
-        :details => {:proposal => "/#{proposal.slug}"}
+        :details => {:proposal => "/#{proposal.id}"}
       })
     else 
       result = {
@@ -112,7 +98,7 @@ class ProposalController < ApplicationController
     if permit('update proposal', proposal) > 0
       fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage', 'description_fields']
       updated_fields = params.select{|k,v| fields.include?(k) && v != proposal[k]}
-      
+
       if updated_fields.include?('cluster') && updated_fields['cluster'] && updated_fields['cluster'].length > 0
         updated_fields['cluster'] = updated_fields['cluster'].strip
       end

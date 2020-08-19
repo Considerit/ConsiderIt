@@ -173,20 +173,15 @@ class ImportDataController < ApplicationController
 
             slug = nil 
             if row.has_key? 'url'
-              slug = row['url'].gsub(' ', '_').gsub(',','_').gsub('.','').downcase
+              slug = slugify(row['url'])
+              proposal = Proposal.find_by_slug slug 
             else
-              if row.has_key?('cluster') || row.has_key?('list')
-                cluster = "-" + (row['cluster'] || row['list'])
-              else 
-                cluster = ""
-              end
               topic = row['topic']
-              if (topic + cluster).length > 255
-                topic = topic[0..(255 - cluster.length)]
-              end
-              slug = slugify("#{topic}#{cluster}")
-              if !slug 
-                raise "Could not convert #{row['topic']} to a url"
+              if row.has_key?('cluster') || row.has_key?('list')
+                cluster = row['cluster'] || row['list']
+                proposal = Proposal.where(:name => topic, :cluster => cluster).first
+              else 
+                proposal = Proposal.find_by_name(topic)
               end
             end
 
@@ -198,7 +193,6 @@ class ImportDataController < ApplicationController
               'cluster' => row['cluster'] || row['list']
             })
 
-            proposal = Proposal.find_by_slug attrs['slug']
             attrs['roles'] = "{\"editor\":[\"/user/#{user.id}\"], \"writer\":[\"*\"], \"commenter\":[\"*\"], \"opiner\":[\"*\"], \"observer\":[\"*\", \"*\"]}"
 
             if !proposal
@@ -427,20 +421,6 @@ class ImportDataController < ApplicationController
 
 end 
 
-def slugify(str)
-  slug = str.downcase
-    .gsub(/\s+/, '-')           # Replace spaces with -
-    .gsub(/[^\w\-]+/, '')       # Remove all non-word chars
-    .gsub(/\-\-+/, '-')         # Replace multiple - with single -
-    .gsub(/^-+/, '')             # Trim - from start of text
-    .gsub(/-+$/, '')             # Trim - from end of text
-
-  if str.length > 0 && (!slug || slug.length == 0)
-    return nil 
-  end 
-
-  slug
-end
 
 def write_csv(fname, rows)
 

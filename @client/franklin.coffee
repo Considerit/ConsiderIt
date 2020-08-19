@@ -625,12 +625,14 @@ ProposalDescription = ReactiveComponent
                 "submitted {timestamp} by {author}"
 
           if @proposal.under_review 
-            SPAN 
+            DIV 
               style: 
                 color: 'white'
                 backgroundColor: 'orange'
                 fontSize: 14
                 padding: 2
+                marginTop: 8
+                display: 'inline-block'
 
               TRANSLATE 
                 id: 'engage.proposal_in_moderation_notice'

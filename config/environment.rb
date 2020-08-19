@@ -51,6 +51,22 @@ def current_subdomain
   Thread.current[:subdomain]
 end
 
+def slugify(str)
+  slug = str.downcase
+    .gsub(/\s+/, '-')           # Replace spaces with -
+    .gsub(/[^\w\-]+/, '')       # Remove all non-word chars
+    .gsub(/\-\-+/, '-')         # Replace multiple - with single -
+    .gsub(/^-+/, '')             # Trim - from start of text
+    .gsub(/-+$/, '')             # Trim - from end of text
+
+  if str.length > 0 && (!slug || slug.length == 0)
+    return nil 
+  end 
+
+  slug
+end
+
+
 
 # Initialize the rails application
 ConsiderIt::Application.initialize! do |config|

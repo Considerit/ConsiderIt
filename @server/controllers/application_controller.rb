@@ -277,9 +277,12 @@ protected
         slug = key[6..key.length]
         proposal = Proposal.find_by_slug slug
 
-        clean = proposal.full_data
-
-        response.append clean
+        begin 
+          clean = proposal.full_data
+          response.append clean
+        rescue => e
+          ExceptionNotifier.notify_exception(e, data: {slug: slug, key: key})
+        end
 
       elsif key == '/asset_manifest'
         manifest = JSON.parse(File.open("public/assets/rev-manifest.json", "rb") {|io| io.read})

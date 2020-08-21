@@ -164,7 +164,7 @@ window.DropMenu = ReactiveComponent
           if e.which == 13 || e.which == 32  
             @local.show_menu = !@local.show_menu
             if @local.show_menu
-              set_focus(0) 
+              set_active(0) 
             save @local
             e.preventDefault()
             e.stopPropagation() 

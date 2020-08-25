@@ -660,3 +660,84 @@ window.SeattleHeader = (opts) ->
               padding: "30px 42px"
 
             "The comment period is now closed. Thank you for your input!"
+
+
+window.PhotoBanner = (opts) -> 
+  homepage = fetch('location').url == '/'
+  if !homepage
+    return  DIV
+              style: 
+                backgroundColor: 'white'
+              DIV
+                style:
+                  width: HOMEPAGE_WIDTH()
+                  margin: 'auto'
+                  fontSize: 43
+                  padding: '10px 0' 
+
+                A
+                  href: '/' 
+
+                  '< '
+
+                  SPAN
+                    style:
+                      fontSize: 32
+                      position: 'relative'
+                      left: 5
+                    'Homepage'
+
+  DIV null,
+
+    DIV 
+      style:
+        backgroundImage: opts.backgroundImage 
+        backgroundSize: 'cover'
+        paddingTop: 140 
+
+      DIV
+        style: _.defaults {}, opts.header_style or {},
+          padding: '48px 48px 48px 48px'
+          width: HOMEPAGE_WIDTH()
+          maxWidth: 720
+          margin: 'auto'
+          backgroundColor: 'rgba(0, 85, 150, .8)'
+          color: 'white'
+          position: 'relative'
+          top: 0 
+
+        DIV
+          style: _.defaults {}, opts.header_text_style or {},
+            fontSize: 56
+            fontWeight: 800
+            fontStyle: 'oblique'
+            textAlign: 'center'
+            paddingBottom: 28 
+          opts.header
+
+        DIV null, 
+          opts.supporting_text?()
+
+      if customization('homepage_tabs')
+        HomepageTabs
+          tab_style: _.defaults {}, opts.tab_style or {},
+            textTransform: 'uppercase'
+            fontStyle: 'oblique'
+            fontWeight: 600
+            fontSize: 20
+            padding: '10px 16px 4px'
+          tab_wrapper_style: _.defaults {}, opts.tab_wrapper_style or {},
+            backgroundColor: '#334c79' # '#005596'
+            margin: '0 6px'
+          active_style: _.defaults {}, opts.tab_active_style or {},
+            backgroundColor: 'white'
+            color: 'black'
+          active_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
+            backgroundColor: '#334c79'
+          hovering_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
+            backgroundColor: '#334c79'
+          wrapper_style: _.defaults {}, opts.tabs_wrapper_style or {},
+            marginTop: 80
+            top: 0
+          list_style: opts.tabs_list_style or {}
+

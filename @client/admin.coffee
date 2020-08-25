@@ -511,7 +511,6 @@ CustomizationsDash = ReactiveComponent
     @local.customization_filter ?= ''
     @local.property_changes ?= {}
 
-
     code_properties = ( [k,v] for k,v of JSON.parse(subdomain.customizations) when typeof(v) == 'string' && v.startsWith(FUNCTION_IDENTIFIER) )
 
 
@@ -559,7 +558,7 @@ CustomizationsDash = ReactiveComponent
             className: 'input_group'
             BUTTON 
               className: 'primary_button button'
-              onClick: @submit
+              onClick: => @submit()
               style: 
                 backgroundColor: focus_color()
               'Save'
@@ -666,10 +665,6 @@ CustomizationsDash = ReactiveComponent
                     style: 
                       backgroundColor: focus_color()
                     'Save'
-
-
-
-
 
 
 

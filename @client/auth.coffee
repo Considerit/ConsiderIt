@@ -1023,6 +1023,38 @@ Auth = ReactiveComponent
 
           label = ''
 
+        when 'checklist'
+          input = DIV 
+            style: 
+              marginBottom: 10
+
+            for option in question.options
+              key = "#{question.tag.substring(0, question.tag.length - '.editable'.length)}:#{option} .editable"
+
+              DIV null,
+
+                INPUT
+                  id: slugify("#{key}-inputBox")
+                  key: "#{key}_inputBox"
+                  type:'checkbox'
+                  style: 
+                    fontSize: 24
+                    verticalAlign: 'top'
+                    marginLeft: 0
+                  checked: @local.tags[key]
+                  onChange: do(question, option, key) => (event) =>
+                    @local.tags = @local.tags or {}
+                    @local.tags[key] = current_user.tags[key] = event.target.checked
+                    save @local
+
+                LABEL 
+                  htmlFor: slugify("#{key}-inputBox")
+                  style: 
+                    display: 'inline-block'
+                    width: '90%'
+                    paddingLeft: 8
+                  dangerouslySetInnerHTML: __html: option
+
         when 'dropdown'
           input = SELECT
             id: slugify("#{question.tag}inputBox")
@@ -1051,7 +1083,7 @@ Auth = ReactiveComponent
         else
           throw "Unsupported question type: #{question.input} for #{question.tag}"
 
-      if !question.required && question.input != 'boolean' 
+      if !question.required && question.input not in ['boolean', 'checklist']
         op = DIV 
               style: 
                 color: '#888'
@@ -1086,7 +1118,7 @@ Auth = ReactiveComponent
       questions = customization('auth_questions')
       for question in questions
         if question.required
-          has_response = question.input == 'boolean' || !!current_user.tags[question.tag]
+          has_response = question.input in ['boolean', 'checklist'] || !!current_user.tags[question.tag]
 
           if !has_response || (question.require_checked && !current_user.tags[question.tag])
             @local.errors.push translator 

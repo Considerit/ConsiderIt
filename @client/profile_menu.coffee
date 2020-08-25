@@ -30,20 +30,6 @@ window.ProfileMenu = ReactiveComponent
     light_background = hsl.l > .75
 
 
-    set_focus = (idx) => 
-      idx = 0 if !idx?
-      @local.focus = idx 
-      save @local 
-      setTimeout => 
-        @refs["menuitem-#{idx}"].getDOMNode().focus()
-      , 0
-
-
-    close_menu = => 
-      document.activeElement.blur()
-      @local.menu = false
-      save @local
-
     DIV
       id: 'user_nav'
       style: _.defaults {}, (customization('profile_menu_style') or {}), (@props.style or {}),

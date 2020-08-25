@@ -1,5 +1,5 @@
 require 'csv'
-
+require 'json'
 
 namespace :customizations do 
   task :generate_lists, [:fpath] => :environment do |t, args|
@@ -27,7 +27,7 @@ namespace :customizations do
 
     lists = []
 
-
+    config = {}
 
 
     out = File.open('lib/tasks/client_data/customizations.txt', 'w')
@@ -61,7 +61,7 @@ namespace :customizations do
         end 
       end 
 
-      if starts_closed
+      if starts_closed && !(starts_closed.downcase == 'no' || starts_closed.downcase == 'false')
         list[:list_is_archived] = true 
       end
 
@@ -83,6 +83,11 @@ namespace :customizations do
             support: 'Most Effective',
             oppose: 'Least Effective'
           }
+        when 'priority'
+          {
+            support: 'High Priority',
+            oppose: 'Low Priority'
+          }
 
         else 
           nil 
@@ -90,21 +95,25 @@ namespace :customizations do
         if sldr 
           list[:slider_pole_labels] = sldr 
         end
-        
+
+
+
+
       end 
 
 
-      out.puts "  \"list/#{name}\":\n"
-      list.each do |k,v|
-        # if false && v.is_a? String
-        #   out.puts "    #{k}: \"#{JSON.dump(v)}\"\n"
-        # else 
-        out.puts "    #{JSON.dump(k)}: #{JSON.dump(v)}\n"
-        # end
-      end
+      # out.puts "  \"list/#{name}\": {\n"
+      # list.each do |k,v|
+      #   # if false && v.is_a? String
+      #   #   out.puts "    #{k}: \"#{JSON.dump(v)}\"\n"
+      #   # else 
+      #   out.puts "    #{JSON.dump(k)}: #{JSON.dump(v)},\n"
+      #   # end
+      # end
 
-      out.puts "\n"
+      # out.puts "  }\n"
 
+      config["list/#{name}"] = list 
 
       section = row['section']
       if section 
@@ -115,13 +124,19 @@ namespace :customizations do
       end 
     end
 
+    config["homepage_tabs"] = {}
 
-    out.puts "  \"homepage_tabs\": \n"
+    # out.puts "  \"homepage_tabs\": { \n"
     sections.each do |name, section|
-      out.puts "    #{JSON.dump(name)}: #{JSON.dump(section)}\n"
+      config["homepage_tabs"][name] = section
     end 
 
+    # out.puts "  }"
+
+    out.puts JSON.pretty_generate(config)
     out.close
+
+    puts JSON.pretty_generate(config)
 
   end
 end

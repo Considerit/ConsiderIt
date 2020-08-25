@@ -483,15 +483,23 @@ CustomizationsDash = ReactiveComponent
     current_user = fetch '/current_user'
     subdomains = fetch('/subdomains')
 
-    sub_ids = {'': ''}
-    for sub in subdomains.subs when sub.customizations?.length > 0 && sub.name != subdomain.name
-      sub_ids[sub.name.toLowerCase()] = sub.customizations
-
     if !@local.compare_to?
-      @local.compare_to = '' #_.keys(sub_ids)[0]
+      @local.compare_to = ''
       save @local
 
-    compare_to = sub_ids[@local.compare_to]
+    other_subs = []
+    for sub in subdomains.subs when sub.customizations?.length > 0 && sub.name != subdomain.name
+      other_subs.push [sub.name.toLowerCase(), sub.customizations]
+      if sub.name.toLowerCase() == @local.compare_to
+        compare_to = sub.customizations
+
+    other_subs.sort (a,b) -> 
+      if a[0] < b[0]
+        return -1
+      else if a[0] > b[0]
+        return 1
+      else 
+        return 0
 
     return SPAN null if !subdomain.name || !current_user.is_super_admin || !subdomains.subs
 
@@ -499,8 +507,13 @@ CustomizationsDash = ReactiveComponent
       location.reload()
       return SPAN null
 
-    @local.current_value ||= subdomain.customizations
-    @local.customization_filter ||= ''
+    @local.current_value ?= subdomain.customizations
+    @local.customization_filter ?= ''
+    @local.property_changes ?= {}
+
+
+    code_properties = ( [k,v] for k,v of JSON.parse(subdomain.customizations) when typeof(v) == 'string' && v.startsWith(FUNCTION_IDENTIFIER) )
+
 
     DIV 
       style: 
@@ -528,16 +541,16 @@ CustomizationsDash = ReactiveComponent
             width: if @local.compare_to != '' then '58%' else '75%'
             verticalAlign: 'top'
 
-          DIV 
+          H1 
             style: 
               fontStyle: 'italic'
-              fontSize: 24
+              fontSize: 44
               fontWeight: 600
             "Customizations for #{subdomain.name}.consider.it:"
 
           CodeMirrorTextArea 
-            ref: 'cm_editor'
             id: 'customizations'
+            key: md5(subdomain.customizations) # update text area if subdomain.customizations changes elsewhere
             default_value: subdomain.customizations or "\n\n\n\n\n\n\n"
             onChange: (val) => 
               @local.current_value = val
@@ -601,17 +614,64 @@ CustomizationsDash = ReactiveComponent
                 @local.compare_to = ev.target.value 
                 save @local
 
-              for sub, id of sub_ids when @local.customization_filter.length == 0 || id.toLowerCase().indexOf(@local.customization_filter.toLowerCase()) > -1
+              for [sub, id] in other_subs when @local.customization_filter.length == 0 || id.toLowerCase().indexOf(@local.customization_filter.toLowerCase()) > -1
                 OPTION 
                   value: sub
                   sub 
             ".consider.it:"
 
-          if compare_to
+          if !!compare_to
             CodeMirrorTextArea 
               key: compare_to
               id: 'comparison'
               default_value: compare_to
+
+
+      if code_properties.length > 0 
+        DIV 
+          style: 
+            marginTop: 50
+          H2 
+            style: 
+              fontSize: 36
+
+            "Easier code-editing sections"
+
+          for k,v of JSON.parse(subdomain.customizations)
+
+            if typeof(v) == 'string' && v.startsWith(FUNCTION_IDENTIFIER)
+              js = v.substring(FUNCTION_IDENTIFIER.length)
+
+              DIV null, 
+                H3 
+                  style: 
+                    fontSize: 24
+                    marginTop: 36
+
+                  k 
+
+                CodeMirrorTextArea 
+                  key: "#{md5(subdomain.customizations)}-#{k}" # update text area if subdomain.customizations changes elsewhere
+                  default_value: js
+                  onChange: do (k,v) => (val) => 
+                    @local.property_changes[k] = val
+
+                DIV 
+                  className: 'input_group'
+
+                  BUTTON 
+                    className: 'primary_button button'
+                    onClick: => 
+                      @submit_change(k, @local.property_changes[k], true)
+                    style: 
+                      backgroundColor: focus_color()
+                    'Save'
+
+
+
+
+
+
 
       DIV null, 
 
@@ -675,11 +735,23 @@ CustomizationsDash = ReactiveComponent
 
 
 
-
-  submit : -> 
+  submit_change : (property, value, is_javascript) -> 
     subdomain = fetch '/subdomain'
 
-    subdomain.customizations = @local.current_value
+    if is_javascript 
+      value = "#{FUNCTION_IDENTIFIER}#{value}"
+
+    customizations = JSON.parse subdomain.customizations 
+    customizations[property] = value     
+
+    @submit JSON.stringify customizations, null, 2
+
+
+  submit : (value) -> 
+    value ?= @local.current_value
+
+    subdomain = fetch '/subdomain'
+    subdomain.customizations = value
 
     @local.save_complete = false
     save @local

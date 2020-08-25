@@ -26,7 +26,7 @@ window._ = _
 # Will toggle -- it recurses down obj and finds a stringified
 # function, it will return an actual function. If it encounters
 # a function, it will stringify it. 
-FUNCTION_IDENTIFIER = "#javascript\n"
+window.FUNCTION_IDENTIFIER = "#javascript\n"
 convert_customization = (obj) ->  
   __convert obj, []
 
@@ -251,14 +251,6 @@ for sub in text_and_masthead
 for sub in masthead_only
   customizations_by_file[sub.toLowerCase()] = 
     HomepageHeader: LegacyImageHeader
-
-
-
-
-
-
-
-
 
 
 

@@ -664,6 +664,9 @@ window.SeattleHeader = (opts) ->
 
 window.PhotoBanner = (opts) -> 
   homepage = fetch('location').url == '/'
+
+  opts ?= {}
+  opts.tab_background_color ?= '#666'
   if !homepage
     return  DIV
               style: 
@@ -712,8 +715,8 @@ window.PhotoBanner = (opts) ->
             fontWeight: 800
             fontStyle: 'oblique'
             textAlign: 'center'
-            paddingBottom: 28 
-          opts.header
+            paddingBottom: 28
+          dangerouslySetInnerHTML: __html: opts.header 
 
         DIV null, 
           opts.supporting_text?()
@@ -727,15 +730,15 @@ window.PhotoBanner = (opts) ->
             fontSize: 20
             padding: '10px 16px 4px'
           tab_wrapper_style: _.defaults {}, opts.tab_wrapper_style or {},
-            backgroundColor: '#334c79' # '#005596'
+            backgroundColor: opts.tab_background_color # '#005596'
             margin: '0 6px'
           active_style: _.defaults {}, opts.tab_active_style or {},
             backgroundColor: 'white'
             color: 'black'
           active_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
-            backgroundColor: '#334c79'
+            backgroundColor: opts.tab_background_color
           hovering_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
-            backgroundColor: '#334c79'
+            backgroundColor: opts.tab_background_color
           wrapper_style: _.defaults {}, opts.tabs_wrapper_style or {},
             marginTop: 80
             top: 0

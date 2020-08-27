@@ -41,6 +41,20 @@ class TranslationsController < ApplicationController
           next 
         end
 
+        if id == 'engage.slider_label.Agree'
+          begin
+            raise "Translator got a sneaky, old translation string"
+          rescue => e
+            if current_subdomain
+              sub = current_subdomain.name
+            else 
+              sub = nil
+            end 
+            ExceptionNotifier.notify_exception(e, data: {request: request, params: params, subdomain: sub})
+          end
+        end
+
+
         # Check if this message is present; if not, allow it to be added. 
         # If it is en, add it as default text, otherwise add it as a proposal.
         if !old.has_key?(id)

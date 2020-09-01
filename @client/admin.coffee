@@ -551,12 +551,13 @@ CustomizationsDash = ReactiveComponent
               fontWeight: 600
             "Customizations for #{subdomain.name}.consider.it:"
 
-          CodeMirrorTextArea 
-            id: 'customizations'
-            key: md5(subdomain.customizations) # update text area if subdomain.customizations changes elsewhere
-            default_value: subdomain.customizations or "\n\n\n\n\n\n\n"
-            onChange: (val) => 
-              @local.current_value = val
+          DIV null, 
+            CodeMirrorTextArea 
+              id: 'customizations'
+              key: md5(subdomain.customizations) # update text area if subdomain.customizations changes elsewhere
+              default_value: subdomain.customizations or "\n\n\n\n\n\n\n"
+              onChange: (val) => 
+                @local.current_value = val
 
           DIV 
             className: 'input_group'
@@ -653,11 +654,12 @@ CustomizationsDash = ReactiveComponent
 
                   k 
 
-                CodeMirrorTextArea 
-                  key: "#{md5(subdomain.customizations)}-#{k}" # update text area if subdomain.customizations changes elsewhere
-                  default_value: js
-                  onChange: do (k,v) => (val) => 
-                    @local.property_changes[k] = val
+                DIV null, 
+                  CodeMirrorTextArea 
+                    key: "#{md5(subdomain.customizations)}-#{k}" # update text area if subdomain.customizations changes elsewhere
+                    default_value: js
+                    onChange: do (k,v) => (val) => 
+                      @local.property_changes[k] = val
 
                 DIV 
                   className: 'input_group'

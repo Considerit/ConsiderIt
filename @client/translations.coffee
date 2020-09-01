@@ -372,6 +372,13 @@ TranslationsDash = ReactiveComponent
                 
                 "Save Changes"
 
+              if fetch('translations_interface').saved_successfully
+                DIV
+                  style: 
+                    color: 'green'
+                    marginTop: 10
+                  "Successfully saved"
+
 
 
 TranslationsForLang = ReactiveComponent
@@ -627,41 +634,73 @@ window.get_temporary_translations = (lang, key) ->
 
 editable_translation = (id, updated_translations, style) -> 
   current_user = fetch '/current_user'
-  val = null 
+
+
+  accepted = proposed = val = null 
+
   if updated_translations[id]?.txt 
-    val = updated_translations[id].txt
-  else if updated_translations[id]?.proposals
+    accepted = val = updated_translations[id].txt
+  
+  if updated_translations[id]?.proposals
     for proposal in updated_translations[id].proposals
       if proposal.u == current_user.user 
-        val = proposal.txt 
+        proposed = val = proposal.txt 
 
-  AutoGrowTextArea
-    defaultValue: val
-    style: _.defaults (style or {}),
-      verticalAlign: 'top'
-      fontSize: 'inherit'
-      width: '100%'
-      borderColor: '#ddd'
-    onChange: (e) -> 
-      trans = e.target.value
-      updated_translations[id] ||= {}
+  SPAN 
+    key: "#{id}-#{updated_translations[id]?.proposals?.length}" 
 
-      if current_user.is_super_admin
-        updated_translations[id].txt = trans 
-        updated_translations[id].u = current_user.user 
-      else 
-        updated_translations[id].proposals ||= []
-        found = false 
-        for proposal in updated_translations[id].proposals
-          if proposal.u == current_user.user 
-            proposal.txt = trans 
-            found = true 
-            break 
-        if !found 
-          updated_translations[id].proposals.unshift {txt: trans, u: current_user.user}
+    if accepted && proposed 
+      DIV null, 
+          
+
+        DIV 
+          style: 
+            fontStyle: 'italic'
+            fontSize: 14
+
+          "Current translation:"
+
+        accepted 
+
+        DIV 
+          style: 
+            fontStyle: 'italic'
+            marginTop: 12
+            fontSize: 14
+
+          "Your proposed translation:"
 
 
-      save updated_translations
+
+
+
+    AutoGrowTextArea
+      defaultValue: val
+      style: _.defaults (style or {}),
+        verticalAlign: 'top'
+        fontSize: 'inherit'
+        width: '100%'
+        borderColor: '#ddd'
+      onChange: (e) -> 
+        trans = e.target.value
+        updated_translations[id] ||= {}
+
+        if current_user.is_super_admin
+          updated_translations[id].txt = trans 
+          updated_translations[id].u = current_user.user 
+        else 
+          updated_translations[id].proposals ||= []
+          found = false 
+          for proposal in updated_translations[id].proposals
+            if proposal.u == current_user.user 
+              proposal.txt = trans 
+              found = true 
+              break 
+          if !found 
+            updated_translations[id].proposals.unshift {txt: trans, u: current_user.user}
+
+
+        save updated_translations
 
 
 
@@ -671,7 +710,15 @@ promote_temporary_translations = (lang, key) ->
   updated_translations = fetch "local#{translations.key}"
   Object.assign translations, updated_translations
   translations.key = "#{key}/#{lang}"
-  save translations
+  save translations, -> 
+    trans_UI = fetch('translations_interface')
+    trans_UI.saved_successfully = true 
+    save trans_UI 
+    _.delay ->
+      trans_UI.saved_successfully = false
+      save trans_UI
+    , 4000
+
 
 
 

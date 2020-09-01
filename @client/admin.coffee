@@ -514,6 +514,7 @@ CustomizationsDash = ReactiveComponent
     try
       code_properties = ( [k,v] for k,v of JSON.parse(subdomain.customizations) when typeof(v) == 'string' && v.startsWith(FUNCTION_IDENTIFIER) )
     catch error 
+      code_properties = []
       console.error error
 
 

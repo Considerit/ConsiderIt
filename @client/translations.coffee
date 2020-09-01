@@ -599,6 +599,21 @@ TranslationsForLang = ReactiveComponent
                                   save updated_translations
                                 "Ok"
 
+                              BUTTON
+                                style: 
+                                  backgroundColor: 'transparent'
+                                  display: 'inline-block'
+                                  marginLeft: 20
+                                  border: 'none'
+                                  color: '#999'
+                                  textDecoration: 'underline'
+                                  fontSize: 14
+
+                                onClick: => 
+                                  updated_translations[name].proposals.splice(idx, 1)
+                                  save updated_translations
+                                "reject"
+
             rows
 
 

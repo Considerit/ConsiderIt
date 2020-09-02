@@ -72,7 +72,7 @@ window.Questionaire = ReactiveComponent
               textDecoration: 'underline'
               padding: 0
               textTransform: 'lowercase'
-            t('log_in')
+            translator "auth.log_in", 'Log in'
 
           ' before answering this question.'
 

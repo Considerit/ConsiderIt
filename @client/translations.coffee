@@ -199,8 +199,8 @@ window.T = window.t = window.translator = (args, native_text) ->
 
   catch e
      # this is a bad fallback, as plural rules won't work
+    console.error "Error translating #{id}", {error: e, message, native_text}
     message = translations_native[id]?.txt
-
 
   if args.return_lang_used # useful for a T wrapper that enables in situ translations
     {message, lang_used, target_lang: langs[0]}

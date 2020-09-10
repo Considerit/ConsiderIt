@@ -48,7 +48,7 @@ window.loadPage = (url, query_params) ->
     # after it is processed. 
     loc.seek_to_hash = hash
 
-  loc.url = url_parts.pathname
+  loc.url = decodeURI(url_parts.pathname)
   loc.hash = hash
 
   save loc

@@ -789,7 +789,7 @@ window.cssTriangle = (direction, color, width, height, style) ->
 window.slugify = (text) -> 
   slug = text.toString().toLowerCase()
     .replace(/\s+/g, '-')           # Replace spaces with -
-    .replace(/[^\w\-]+/g, '')       # Remove all non-word chars
+    .replace(/[^a-zA-Z0-9_\u3400-\u9FBF\s-]/g, '') # Remove all non-word chars (modification for chinese chars)
     .replace(/\-\-+/g, '-')         # Replace multiple - with single -
     .replace(/^-+/, '')             # Trim - from start of text
     .replace(/-+$/, '')             # Trim - from end of text

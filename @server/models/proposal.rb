@@ -17,7 +17,7 @@ class Proposal < ActiveRecord::Base
   scope :active, -> {where( :active => true, :published => true )}
 
   before_validation :strip_html
-  before_validation :set_slug
+  before_save :set_slug
 
   def self.all_proposals_for_subdomain(subdomain = nil)
     subdomain ||= current_subdomain
@@ -248,19 +248,12 @@ class Proposal < ActiveRecord::Base
       end
 
       # Filter role if the client isn't supposed to see it
-      if filter && role != 'editor'   # FIND BETTER FIX: mike added
-                                      # "result != editor" so bitcoin
-                                      # candidates can see the editor,
-                                      # because he's temporarily
-                                      # encoding 'editor' as
-                                      # 'candidate' and needs to
-                                      # display their photo.
-
-        # Remove all specific email address for privacy. Leave wildcards.
+      if filter
+        # Remove all specific email address for privacy.
         # Is used by client permissions system to determining whether 
         # to show action buttons for unauthenticated users. 
         result[role] = result[role].map{|email_or_key|
-          email_or_key.index('*') || email_or_key == "/user/#{current_user.id}" ? email_or_key : '-'
+          email_or_key.index('*') || email_or_key == "/user/#{current_user.id}" || email_or_key.index('@') == nil ? email_or_key : '-'
         }.uniq
       end
     end
@@ -297,6 +290,8 @@ class Proposal < ActiveRecord::Base
   end
 
 
+
+
   private 
 
   # Sanitize the HTML fields that we insert dangerously in the client. 
@@ -322,18 +317,27 @@ class Proposal < ActiveRecord::Base
 
   def set_slug
     if !self.slug || self.slug.length == 0 || self.slug.length >= 120
+      
+      if self.id
+        str_id = self.id.to_s
+      else 
+        ActsAsTenant.without_tenant do 
+          str_id = Proposal.last ? (Proposal.last.id + 1).to_s : "1"
+        end 
+      end
 
       len_name = self.name.length 
       len_cluster = (self.cluster || '').length
+      len_id = str_id.length
 
-      if len_name + len_cluster >= 120
+      if len_name + len_cluster + len_id + 2 >= 120
         if len_cluster > 32
-          self.slug = slugify "#{self.name[0...88]}-#{self.cluster[0...31]}"
+          self.slug = slugify "#{self.name[0...88]}-#{self.cluster[0...(31-len_id)]}-#{str_id}"
         else 
-          self.slug = slugify "#{self.name[0...(120-len_cluster-1)]}-#{self.cluster}"
+          self.slug = slugify "#{self.name[0...(120-len_cluster-1-len_id)]}-#{self.cluster}-#{str_id}"
         end
       else 
-        self.slug = slugify "#{self.name}-#{self.cluster}"
+        self.slug = slugify "#{self.name}-#{self.cluster}-#{str_id}"
       end
 
     end 

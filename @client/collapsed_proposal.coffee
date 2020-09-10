@@ -75,9 +75,10 @@ window.CollapsedProposal = ReactiveComponent
         "#{-1 * (value * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.oppose", proposal)}"
       else 
         translator "engage.slider_feedback.neutral", "Neutral"
+
     LI
       key: proposal.key
-      id: 'p' + proposal.slug.replace('-', '_')  # Initial 'p' is because all ids must begin 
+      id: 'p' + (proposal.slug or "#{proposal.id}").replace('-', '_')  # Initial 'p' is because all ids must begin 
                                            # with letter. seeking to hash was failing 
                                            # on proposals whose name began with number.
       style: _.defaults {}, (@props.wrapper_style or {}),

@@ -73,11 +73,17 @@ permit = (action) ->
       if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'writer', 'opiner'])
         return Permission.INSUFFICIENT_PRIVILEGES 
 
-      required_info = _.pluck _.where(customization('auth_questions'), {required: true}), 'tag' 
-      existing_required_info = _.intersection required_info, _.keys(current_user.tags)
+      required_info = []
+      for question in _.where(customization('auth_questions'), {required: true})
+        answered = false 
+        for tag,val of current_user.tags 
+          continue if !tag.startsWith('sanleandro')
+          if tag == question.tag || (question.input == "checklist" && tag.startsWith(question.tag.split('.')[0]))
+            answered = true 
+            break
 
-      if existing_required_info.length != required_info.length
-        return Permission.INSUFFICIENT_INFORMATION
+        if !answered 
+          return Permission.INSUFFICIENT_INFORMATION
 
     when 'update opinion'
       proposal = fetch arguments[1]

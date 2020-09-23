@@ -77,7 +77,6 @@ permit = (action) ->
       for question in _.where(customization('auth_questions'), {required: true})
         answered = false 
         for tag,val of current_user.tags 
-          continue if !tag.startsWith('sanleandro')
           if tag == question.tag || (question.input == "checklist" && tag.startsWith(question.tag.split('.')[0]))
             answered = true 
             break

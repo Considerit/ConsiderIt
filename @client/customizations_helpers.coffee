@@ -653,7 +653,7 @@ window.SeattleHeader = (opts) ->
           DIV 
             style: 
               marginTop: 40
-              backgroundColor: seattle_vars.pink
+              backgroundColor: "#F06668"
               color: 'white'
               fontSize: 28
               textAlign: 'center'

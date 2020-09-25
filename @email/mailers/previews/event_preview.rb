@@ -15,4 +15,11 @@ class EventPreview < ActionMailer::Preview
     EventMailer.send_message(attrs, User.where('registered').last, subdomain)
   end
 
+  def translations_proposed
+
+    subdomain = Subdomain.first
+    EventMailer.translations_proposed(subdomain)
+
+  end
+
 end

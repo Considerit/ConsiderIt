@@ -28,7 +28,7 @@ class EventMailer < Mailer
     message['sender'] = current_user
 
     @subdomain = subdomain
-    @url = "https://#{subdomain.name}.consider.it/translations"
+    @url = "https://#{subdomain.name}.consider.it/dashboard/translations"
 
     to = "translations@consider.it"
 

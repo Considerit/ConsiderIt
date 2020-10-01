@@ -495,6 +495,20 @@ window.HawaiiHeader = (opts) ->
 
           HomepageTabs
             tab_style: opts.tab_style
+            tab_wrapper_style: _.defaults {}, opts.tab_wrapper_style or {},
+              backgroundColor: opts.tab_background_color # '#005596'
+              margin: '0 6px'
+            active_style: _.defaults {}, opts.tab_active_style or {},
+              backgroundColor: 'white'
+              color: 'black'
+            active_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
+              backgroundColor: opts.tab_background_color
+            hovering_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
+              backgroundColor: opts.tab_background_color
+            wrapper_style: _.defaults {}, opts.tabs_wrapper_style or {},
+              marginTop: 80
+              top: 0
+            list_style: opts.tabs_list_style or {}
 
 
 
@@ -542,6 +556,30 @@ window.SeattleHeader = (opts) ->
     top: 22
     left: 20
     color: "#0B4D92"
+
+
+  if !homepage
+    return  DIV
+              style: 
+                backgroundColor: 'white'
+              DIV
+                style:
+                  width: HOMEPAGE_WIDTH()
+                  margin: 'auto'
+                  fontSize: 43
+                  padding: '10px 0' 
+
+                A
+                  href: '/' 
+
+                  '< '
+
+                  SPAN
+                    style:
+                      fontSize: 32
+                      position: 'relative'
+                      left: 5
+                    'Homepage'
 
 
   DIV
@@ -660,6 +698,30 @@ window.SeattleHeader = (opts) ->
               padding: "30px 42px"
 
             "The comment period is now closed. Thank you for your input!"
+
+
+      if customization('homepage_tabs')
+        HomepageTabs
+          tab_style: _.defaults {}, opts.tab_style or {},
+            textTransform: 'uppercase'
+            fontStyle: 'oblique'
+            fontWeight: 600
+            fontSize: 20
+            padding: '10px 16px 4px'
+          tab_wrapper_style: _.defaults {}, opts.tab_wrapper_style or {},
+            backgroundColor: opts.tab_background_color # '#005596'
+            margin: '0 6px'
+          active_style: _.defaults {}, opts.tab_active_style or {},
+            backgroundColor: 'white'
+            color: 'black'
+          active_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
+            backgroundColor: opts.tab_background_color
+          hovering_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
+            backgroundColor: opts.tab_background_color
+          wrapper_style: _.defaults {}, opts.tabs_wrapper_style or {},
+            marginTop: 80
+            top: 0
+          list_style: opts.tabs_list_style or {}
 
 
 window.PhotoBanner = (opts) -> 

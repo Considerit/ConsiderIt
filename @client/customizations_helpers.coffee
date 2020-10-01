@@ -703,24 +703,28 @@ window.SeattleHeader = (opts) ->
       if customization('homepage_tabs')
         HomepageTabs
           tab_style: _.defaults {}, opts.tab_style or {},
-            textTransform: 'uppercase'
-            fontStyle: 'oblique'
-            fontWeight: 600
-            fontSize: 20
-            padding: '10px 16px 4px'
+            padding: '10px 30px 0px 30px',
+            color: seattle_vars.teal,
+            border: '1px solid',
+            borderBottom: 'none',
+            borderColor: 'transparent',
+            fontSize: 18,
+            fontWeight: 700,
+            opacity: 0.3
+          hover_style:
+            opacity: 1
+          
           tab_wrapper_style: _.defaults {}, opts.tab_wrapper_style or {},
             backgroundColor: opts.tab_background_color # '#005596'
-            margin: '0 6px'
           active_style: _.defaults {}, opts.tab_active_style or {},
+            opacity: 1,
+            borderColor: seattle_vars.teal,
             backgroundColor: 'white'
-            color: 'black'
           active_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
             backgroundColor: opts.tab_background_color
           hovering_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
             backgroundColor: opts.tab_background_color
-          wrapper_style: _.defaults {}, opts.tabs_wrapper_style or {},
-            marginTop: 80
-            top: 0
+          wrapper_style: _.defaults {}, opts.tabs_wrapper_style or {}
           list_style: opts.tabs_list_style or {}
 
 

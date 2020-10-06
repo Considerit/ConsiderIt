@@ -4,7 +4,7 @@ require './shared'
 
 
 
-all_roles = -> 
+proposal_roles = -> 
   pro_label = get_point_label 'pro'
   con_label = get_point_label 'con'
 
@@ -14,7 +14,6 @@ all_roles = ->
       label: 'Editors', 
       description: 'Can modify the description of the proposal, as well as ' + \
                    'write, comment, and opine.', 
-      icon: 'fa-edit', 
       wildcard: 
         label: 'Any registered user can edit'
         default: false
@@ -25,7 +24,6 @@ all_roles = ->
       label: 'Writers', 
       description: "Can write #{pro_label} and #{con_label} points that are " + \
                    "shared with others. Any writer can comment and opine.", 
-      icon: 'fa-th-list', 
       wildcard: 
         label: 'Any registered user who can observe can write'
         default: true
@@ -34,7 +32,6 @@ all_roles = ->
       name: 'commenter', 
       label: 'Commenters', 
       description: "Can comment on #{pro_label} and #{con_label} points.", 
-      icon: 'fa-comment', 
       wildcard: 
         label: 'Any registered user who can observe can comment'
         default: true
@@ -43,7 +40,6 @@ all_roles = ->
       name: 'opiner', 
       label: 'Opiners', 
       description: 'Can drag the slider and build a list of other people\'s Pros/Cons, but can\'t write new Pros, Cons or Comments.'
-      icon: 'fa-bar-chart', 
       wildcard: 
         label: 'Any registered user who can observe can opine'
         default: true
@@ -52,7 +48,6 @@ all_roles = ->
       name: 'observer', 
       label: 'Observers', 
       description: 'Can access this proposal. But that\'s it.', 
-      icon: 'fa-eye', 
       wildcard: 
         label: "Public. Anyone can view"
         default: true
@@ -77,14 +72,14 @@ ProposalRoles = ReactiveComponent
     if !proposal.roles
       InitializeProposalRoles(proposal)
 
-    SpecifyRoles proposal, all_roles()
+    SpecifyRoles proposal, proposal_roles()
 
 window.InitializeProposalRoles = (proposal) -> 
   current_user = fetch '/current_user'
   subdomain = fetch '/subdomain'
 
   proposal.roles = {}
-  for role in all_roles()
+  for role in proposal_roles()
     proposal.roles[role.name] = []
     if role.wildcard && role.wildcard.default
       if role.name == 'observer' 
@@ -107,26 +102,22 @@ SubdomainRoles = ReactiveComponent
         name: 'admin', 
         label: 'Administrators', 
         description: 'Can configure everything related to this forum.', 
-        #icon: 'fa-wrench'
       }, 
       {
         hide: true,
         name: 'moderator', 
         label: 'Moderators', 
         description: 'Can moderate user content. Will receive emails for content needing moderation.', 
-        icon: 'fa-fire-extinguisher'
       },{
         hide: false,
         name: 'proposer', 
         label: 'Proposers', 
         description: 'Can add new proposals.', 
-        #icon: 'fa-lightbulb-o', 
         wildcard: {label: 'Any registered user can post new proposals', default: true}},
       {
         name: 'visitor', 
         label: 'People who can access forum', 
         description: 'If set to private forum, invite specific people to join below.', 
-        #icon: 'fa-android', 
         wildcard: {label: 'Public forum. Anyone with a link can see all proposals.', default: true}} 
     ]
 

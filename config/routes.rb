@@ -54,7 +54,6 @@ ConsiderIt::Application.routes.draw do
 
   resources :proposal
   get '/proposals' => 'proposal#index'
-  get '/metrics' => 'subdomain#metrics'
   get '/all_comments' => 'comment#all_for_subdomain'
 
   resources :point, :only => [:create, :update, :destroy, :show]

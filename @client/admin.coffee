@@ -642,7 +642,6 @@ CustomizationsDash = ReactiveComponent
             "Easier code-editing sections"
 
           for k,v of JSON.parse(subdomain.customizations)
-
             if typeof(v) == 'string' && v.startsWith(FUNCTION_IDENTIFIER)
               js = v.substring(FUNCTION_IDENTIFIER.length)
 
@@ -658,18 +657,23 @@ CustomizationsDash = ReactiveComponent
                   CodeMirrorTextArea 
                     key: "#{md5(subdomain.customizations)}-#{k}" # update text area if subdomain.customizations changes elsewhere
                     default_value: js
-                    onChange: do (k,v) => (val) => 
+                    onChange: do (k) => (val) => 
                       @local.property_changes[k] = val
+                      save @local
 
                 DIV 
                   className: 'input_group'
 
                   BUTTON 
                     className: 'primary_button button'
-                    onClick: => 
-                      @submit_change(k, @local.property_changes[k], true)
+                    onClick: do (k) => => 
+                      if k of @local.property_changes
+                        @submit_change(k, @local.property_changes[k], true)
                     style: 
                       backgroundColor: focus_color()
+                      opacity: if k not of @local.property_changes then .5
+                      cursor: if k not of @local.property_changes then 'default'
+                    disabled: if k not of @local.property_changes then true
                     'Save'
 
 
@@ -745,7 +749,8 @@ CustomizationsDash = ReactiveComponent
     customizations = JSON.parse subdomain.customizations 
     customizations[property] = value     
 
-    @submit JSON.stringify customizations, null, 2
+    new_json = JSON.stringify customizations, null, 2
+    @submit new_json
 
 
   submit : (value) -> 
@@ -799,7 +804,8 @@ CodeMirrorTextArea = ReactiveComponent
           extraKeys: 
             Tab: betterTab
     if @props.onChange
-      @m.on('change', => @props.onChange(@m.getValue()))
+      @m.on 'change', => 
+        @props.onChange @m.getValue()
 
   componentWillUnmount: -> 
     @m.getTextArea().remove()

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171011200704) do
+ActiveRecord::Schema.define(version: 20201006220518) do
 
   create_table "comments", force: :cascade do |t|
     t.integer  "commentable_id",    limit: 4,     default: 0
@@ -30,6 +30,13 @@ ActiveRecord::Schema.define(version: 20171011200704) do
   add_index "comments", ["subdomain_id", "commentable_id", "commentable_type"], name: "select_comments_on_commentable", using: :btree
   add_index "comments", ["subdomain_id"], name: "index_comments_on_subdomain_id", using: :btree
   add_index "comments", ["user_id"], name: "index_comments_on_user_id", using: :btree
+
+  create_table "datastore", id: false, force: :cascade do |t|
+    t.string "k", limit: 255,      null: false
+    t.text   "v", limit: 16777215
+  end
+
+  add_index "datastore", ["k"], name: "index_datastore_on_k", unique: true, using: :btree
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   limit: 4,     default: 0
@@ -187,6 +194,15 @@ ActiveRecord::Schema.define(version: 20171011200704) do
     t.text     "zips",                                   limit: 65535
     t.text     "roles",                                  limit: 65535
     t.text     "histocache",                             limit: 16777215
+    t.text     "json",                                   limit: 16777215
+    t.string   "pic_file_name",                          limit: 255
+    t.string   "pic_content_type",                       limit: 255
+    t.integer  "pic_file_size",                          limit: 4
+    t.datetime "pic_updated_at"
+    t.string   "banner_file_name",                       limit: 255
+    t.string   "banner_content_type",                    limit: 255
+    t.integer  "banner_file_size",                       limit: 4
+    t.datetime "banner_updated_at"
   end
 
   add_index "proposals", ["subdomain_id", "active"], name: "select_proposal_by_active", using: :btree
@@ -234,9 +250,8 @@ ActiveRecord::Schema.define(version: 20171011200704) do
     t.text     "branding",                   limit: 16777215
     t.integer  "plan",                       limit: 4,        default: 0
     t.text     "customizations",             limit: 16777215
-    t.string   "lang",                       limit: 255,      default: "en"
+    t.string   "lang",                       limit: 255
     t.string   "SSO_domain",                 limit: 255
-    t.text     "SSO_settings",               limit: 16777215
   end
 
   add_index "subdomains", ["name"], name: "by_identifier", length: {"name"=>10}, using: :btree
@@ -273,6 +288,7 @@ ActiveRecord::Schema.define(version: 20171011200704) do
     t.text     "subscriptions",          limit: 65535
     t.text     "emails",                 limit: 65535
     t.boolean  "complete_profile",                     default: false
+    t.string   "lang",                   limit: 255
   end
 
   add_index "users", ["avatar_file_name"], name: "index_users_on_avatar_file_name", using: :btree

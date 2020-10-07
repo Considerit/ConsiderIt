@@ -5,6 +5,17 @@ class Proposal < ActiveRecord::Base
   has_many :opinions, :dependent => :destroy
   has_many :inclusions, :dependent => :destroy
 
+  has_attached_file :pic, 
+    :processors => [:thumbnail, :compression],
+    :styles => { 
+        :square => "250x250#"
+    }
+
+  validates_attachment_content_type :pic, :content_type => %w(image/jpeg image/jpg image/png image/gif)
+
+  has_attached_file :banner, :processors => [:thumbnail, :compression]
+  validates_attachment_content_type :banner, :content_type => %w(image/jpeg image/jpg image/png image/gif)
+
   belongs_to :user
 
   acts_as_tenant :subdomain
@@ -74,6 +85,8 @@ class Proposal < ActiveRecord::Base
         your_opinions[opinion.proposal_id] = opinion
       end 
     end 
+
+
 
     proposals_obj = {
       key: '/proposals',
@@ -192,6 +205,14 @@ class Proposal < ActiveRecord::Base
     if self.subdomain.moderate_proposals_mode == 1 && self.moderation_status == nil 
       json['under_review'] = true
     end 
+
+    if self.pic_file_name 
+      json['pic'] = self.pic.url(:square)
+    end
+
+    if self.banner_file_name 
+      json['banner'] = self.banner.url
+    end
 
     #json['description_fields'] = JSON.parse(json['description_fields'] || '[]')
 

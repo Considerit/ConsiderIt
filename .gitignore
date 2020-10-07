@@ -32,6 +32,8 @@ public/system/default_avatar
 public/system/paperclip_attachments.yml
 public/sitemaps/*
 public/test/results/*
+public/system/pics
+public/system/banners
 
 lib/tasks/client_data/*
 

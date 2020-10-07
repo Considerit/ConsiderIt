@@ -83,6 +83,8 @@ ConsiderIt::Application.routes.draw do
 
 
   match 'update_images_hack' => 'subdomain#update_images_hack', :via => [:put]
+  match 'update_proposal_pic_hack' => 'proposal#update_images_hack', :via => [:put]
+
 
   post '/log' => 'log#create'
 

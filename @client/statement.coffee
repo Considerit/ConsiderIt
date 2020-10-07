@@ -6,7 +6,6 @@ window.BUBBLE_WRAP = ReactiveComponent
 
     left_or_right = 'right' 
     ioffset = -10
-    user = @props.user 
 
     w = @props.width or POINT_WIDTH()
     mouth_w = (@props.mouth_style or {}).width or POINT_MOUTH_WIDTH
@@ -17,23 +16,30 @@ window.BUBBLE_WRAP = ReactiveComponent
       left: -mouth_w + 1
       transform: 'rotate(270deg) scaleX(-1)'
 
+    pic_style = _.defaults {}, (@props.avatar_style or {}),
+      position: 'absolute'
+      top: 0
+      width: 50
+      height: 50
+      left: -64
+      boxShadow: '-1px 2px 0 0 #eeeeee;'
+
     DIV
       style: 
         position: 'relative'
         listStyle: 'none outside none'
         marginBottom: '0.5em'
 
-      Avatar
-        key: user
-        style: _.defaults {}, (@props.avatar_style or {}),
-          position: 'absolute'
-          top: 0
-          width: 50
-          height: 50
-          left: -64
-          boxShadow: '-1px 2px 0 0 #eeeeee;'
-        hide_tooltip: false 
-        anonymous: @props.anon
+      if @props.user 
+        Avatar
+          key: @props.user 
+          style: pic_style
+          hide_tooltip: false 
+          anonymous: @props.anon
+      else if @props.pic 
+        IMG 
+          style: pic_style
+          src: @props.pic
 
       DIV 
         style : _.defaults {}, (@props.bubble_style or {}),

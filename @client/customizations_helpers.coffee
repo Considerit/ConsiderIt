@@ -740,6 +740,7 @@ window.SeattleHeader = (opts) ->
 
 window.PhotoBanner = (opts) -> 
   homepage = fetch('location').url == '/'
+  subdomain = fetch '/subdomain'
 
   opts ?= {}
   opts.tab_background_color ?= '#666'
@@ -770,7 +771,7 @@ window.PhotoBanner = (opts) ->
 
     DIV 
       style:
-        backgroundImage: opts.backgroundImage 
+        backgroundImage: opts.backgroundImage or subdomain.branding?.masthead 
         backgroundSize: 'cover'
         paddingTop: 140 
 

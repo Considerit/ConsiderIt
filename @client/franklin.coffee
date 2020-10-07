@@ -542,214 +542,227 @@ ProposalDescription = ReactiveComponent
       overflow: if @local.description_collapsed then 'hidden'
       fontSize: 18
 
-    DIV           
-      style: 
-        width: HOMEPAGE_WIDTH()
-        position: 'relative'
-        margin: '36px auto 12px auto'
-        fontSize: 18
-        marginBottom: 18      
+    wrapper_style = {}
+    if @proposal.banner
+      wrapper_style = 
+        background: "url(#{@proposal.banner}) no-repeat center top fixed"
+        backgroundSize: 'cover'
+        paddingTop: 240
 
-      if !@proposal.active
-        SPAN 
-          style: 
-            display: 'inline-block'
-            color: 'rgb(250, 146, 45)'
-            padding: '4px 0px'
-            marginTop: 10
-          I className: 'fa fa-info-circle', style: {paddingRight: 7}
+    DIV 
+      style: wrapper_style
 
-          TRANSLATE
-            id: 'engage.proposal_closed'
-            'Closed to new contributions at this time.'
+      DIV           
+        style: 
+          width: HOMEPAGE_WIDTH()
+          position: 'relative'
+          margin: '36px auto 12px auto'
+          fontSize: 18
+          marginBottom: 18      
 
-      BUBBLE_WRAP 
-        user: editor
-        width: HOMEPAGE_WIDTH()
-        mouth_style: 
-          width: 24
-          display: if !customization('show_proposer_icon', "list/#{@proposal.cluster}") then 'none'
-          bottom: 28
-          top: 'auto'
-          transform: 'rotate(-90deg)'
-        bubble_style: 
-          padding: '12px 24px'
-          borderRadius: 42
-        avatar_style: 
-          display: if !customization('show_proposer_icon', "list/#{@proposal.cluster}") then 'none'
-          width: 124
-          height: 124
-          left: -28 - 124
-          bottom: -30 
-          top: 'auto'
-        mouth_shadow:
-          dx: -3
+        if !@proposal.active
+          SPAN 
+            style: 
+              display: 'inline-block'
+              color: 'rgb(250, 146, 45)'
+              padding: '4px 0px'
+              marginTop: 10
+            I className: 'fa fa-info-circle', style: {paddingRight: 7}
 
+            TRANSLATE
+              id: 'engage.proposal_closed'
+              'Closed to new contributions at this time.'
 
-        
-        DIV 
-          style: 
-            wordWrap: 'break-word'
-
-          DIV 
-            style: _.defaults {}, (title_style or {}),
-              fontSize: POINT_FONT_SIZE()
-              lineHeight: 1.2
-
-            className: 'statement'
-
-            title
+        BUBBLE_WRAP 
+          user: if !@proposal.pic then editor
+          pic: if @proposal.pic then @proposal.pic
+          width: HOMEPAGE_WIDTH()
+          mouth_style: 
+            width: 24
+            display: if !customization('show_proposer_icon', "list/#{@proposal.cluster}") then 'none'
+            bottom: 28
+            top: 'auto'
+            transform: 'rotate(-90deg)'
+          bubble_style: 
+            padding: '12px 24px'
+            borderRadius: 42
+          avatar_style: 
+            display: if !customization('show_proposer_icon', "list/#{@proposal.cluster}") then 'none'
+            width: 124
+            height: 124
+            left: -28 - 124
+            bottom: -30 
+            top: 'auto'
+            boxShadow: if @proposal.pic then 'none'
+          mouth_shadow:
+            dx: -3
 
 
           
           DIV 
             style: 
-              marginTop: 4
-              fontSize: 14
-              color: "black"
+              wordWrap: 'break-word'
 
-            if @proposal.cluster 
-              SPAN null, 
-                "##{@proposal.cluster or 'proposals'}"
+            DIV 
+              style: _.defaults {}, (title_style or {}),
+                fontSize: POINT_FONT_SIZE()
+                lineHeight: 1.2
 
-                if customization('show_proposal_meta_data')
-                  SPAN 
-                    style: 
-                      padding: '0 8px'
-                    '|'
-            if customization('show_proposal_meta_data')
-              TRANSLATE 
-                id: "engage.proposal_meta_data"
-                timestamp: prettyDate(@proposal.created_at)
-                author: fetch(editor)?.name
-                "submitted {timestamp} by {author}"
+              className: 'statement'
 
-          if @proposal.under_review 
+              title
+
+
+            
             DIV 
               style: 
-                color: 'white'
-                backgroundColor: 'orange'
+                marginTop: 4
                 fontSize: 14
-                padding: 2
-                marginTop: 8
-                display: 'inline-block'
+                color: "black"
 
-              TRANSLATE 
-                id: 'engage.proposal_in_moderation_notice'
-                'Under review (like all new proposals)'
+              if @proposal.cluster 
+                SPAN null, 
+                  "##{@proposal.cluster or 'proposals'}"
 
+                  if customization('show_proposal_meta_data')
+                    SPAN 
+                      style: 
+                        padding: '0 8px'
+                      '|'
+              if customization('show_proposal_meta_data')
+                TRANSLATE 
+                  id: "engage.proposal_meta_data"
+                  timestamp: prettyDate(@proposal.created_at)
+                  author: fetch(editor)?.name
+                  "submitted {timestamp} by {author}"
 
-          DIV 
-            className: 'proposal_details'
-            style:
-              maxHeight: if @local.description_collapsed then @max_description_height
-              overflowY: if @local.description_collapsed then 'hidden'
-
-            if body 
-
+            if @proposal.under_review 
               DIV 
-                className: "statement"
+                style: 
+                  color: 'white'
+                  backgroundColor: 'orange'
+                  fontSize: 14
+                  padding: 2
+                  marginTop: 8
+                  display: 'inline-block'
 
-                style: _.defaults {}, (body_style or {}),
-                  wordWrap: 'break-word'
-                  marginTop: '0.5em'
-                  fontSize: POINT_FONT_SIZE()
-                  #fontWeight: 300
-
-                if cust_desc = customization('proposal_description')
-                  if typeof(cust_desc) == 'function'
-                    cust_desc(@proposal)
-                  else if cust_desc[@proposal.cluster] # is associative, indexed by list name
+                TRANSLATE 
+                  id: 'engage.proposal_in_moderation_notice'
+                  'Under review (like all new proposals)'
 
 
-                    result = cust_desc[@proposal.cluster] {proposal: @proposal} # assumes ReactiveComponent. No good reason for the assumption.
+            DIV 
+              className: 'proposal_details'
+              style:
+                maxHeight: if @local.description_collapsed then @max_description_height
+                overflowY: if @local.description_collapsed then 'hidden'
 
-                    if typeof(result) == 'function' && /^function \(props, children\)/.test(Function.prototype.toString.call(result))  
-                                     # if this is a ReactiveComponent; this code is bad partially
-                                     # because of customizations backwards compatibility. Hopefully 
-                                     # cleanup after refactoring.
-                      result = cust_desc[@proposal.cluster]() {proposal: @proposal}
+              if body 
+
+                DIV 
+                  className: "statement"
+
+                  style: _.defaults {}, (body_style or {}),
+                    wordWrap: 'break-word'
+                    marginTop: '0.5em'
+                    fontSize: POINT_FONT_SIZE()
+                    #fontWeight: 300
+
+                  if cust_desc = customization('proposal_description')
+                    if typeof(cust_desc) == 'function'
+                      cust_desc(@proposal)
+                    else if cust_desc[@proposal.cluster] # is associative, indexed by list name
+
+
+                      result = cust_desc[@proposal.cluster] {proposal: @proposal} # assumes ReactiveComponent. No good reason for the assumption.
+
+                      if typeof(result) == 'function' && /^function \(props, children\)/.test(Function.prototype.toString.call(result))  
+                                       # if this is a ReactiveComponent; this code is bad partially
+                                       # because of customizations backwards compatibility. Hopefully 
+                                       # cleanup after refactoring.
+                        result = cust_desc[@proposal.cluster]() {proposal: @proposal}
+                      else 
+                        result
+
                     else 
-                      result
+                      DIV dangerouslySetInnerHTML:{__html: body}
 
                   else 
                     DIV dangerouslySetInnerHTML:{__html: body}
 
-                else 
-                  DIV dangerouslySetInnerHTML:{__html: body}
-
-            if @local.description_fields
-              DIV 
-                id: 'description_fields'
-                style: 
-                  marginTop: '1em'
-                for item in @local.description_fields
-                  if item.group
-                    @renderDescriptionFieldGroup item
-                  else
-                    @renderDescriptionField item
+              if @local.description_fields
+                DIV 
+                  id: 'description_fields'
+                  style: 
+                    marginTop: '1em'
+                  for item in @local.description_fields
+                    if item.group
+                      @renderDescriptionFieldGroup item
+                    else
+                      @renderDescriptionField item
 
 
-          if @local.description_collapsed
-            BUTTON
-              id: 'expand_full_text'
-              style:
-                textDecoration: 'underline'
-                cursor: 'pointer'
-                padding: '24px 0 10px 0'
-                fontWeight: 600
-                textAlign: 'left'
-                border: 'none'
-                width: '100%'
-                backgroundColor: 'transparent'
+            if @local.description_collapsed
+              BUTTON
+                id: 'expand_full_text'
+                style:
+                  textDecoration: 'underline'
+                  cursor: 'pointer'
+                  padding: '24px 0 10px 0'
+                  fontWeight: 600
+                  textAlign: 'left'
+                  border: 'none'
+                  width: '100%'
+                  backgroundColor: 'transparent'
 
-              onMouseDown: => 
-                @local.description_collapsed = false
-                save(@local)
-
-              onKeyDown: (e) =>
-                if e.which == 13 || e.which == 32 # ENTER or SPACE
+                onMouseDown: => 
                   @local.description_collapsed = false
-                  e.preventDefault()
-                  document.activeElement.blur()
                   save(@local)
 
-              TRANSLATE 
-                id: 'engage.show_full_proposal_description'
-                'Expand full text'
+                onKeyDown: (e) =>
+                  if e.which == 13 || e.which == 32 # ENTER or SPACE
+                    @local.description_collapsed = false
+                    e.preventDefault()
+                    document.activeElement.blur()
+                    save(@local)
+
+                TRANSLATE 
+                  id: 'engage.show_full_proposal_description'
+                  'Expand full text'
 
 
 
 
-      if permit('update proposal', @proposal) > 0
-        DIV
-          style: 
-            marginTop: 5
+        if permit('update proposal', @proposal) > 0
+          DIV
+            style: 
+              marginTop: 5
 
-          A 
-            href: "#{@proposal.key}/edit"
-            style:
-              marginRight: 10
-              color: '#999'
-              backgroundColor: 'transparent'
-              border: 'none'
-              padding: 0
-            TRANSLATE 'engage.edit_button', 'edit'
 
-          if permit('delete proposal', @proposal) > 0
-            BUTTON
+            A 
+              href: "#{@proposal.key}/edit"
               style:
                 marginRight: 10
                 color: '#999'
-                backgroundColor: 'transparent'
+                backgroundColor: 'white'
                 border: 'none'
                 padding: 0
+              TRANSLATE 'engage.edit_button', 'edit'
 
-              onClick: => 
-                if confirm('Delete this proposal forever?')
-                  destroy(@proposal.key)
-                  loadPage('/')
-              TRANSLATE 'engage.delete_button', 'delete'
+            if permit('delete proposal', @proposal) > 0
+              BUTTON
+                style:
+                  marginRight: 10
+                  color: '#999'
+                  backgroundColor: 'white'
+                  border: 'none'
+                  padding: 0
+
+                onClick: => 
+                  if confirm('Delete this proposal forever?')
+                    destroy(@proposal.key)
+                    loadPage('/')
+                TRANSLATE 'engage.delete_button', 'delete'
 
 
 

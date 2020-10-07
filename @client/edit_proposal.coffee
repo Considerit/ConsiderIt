@@ -2,7 +2,7 @@ window.EditProposal = ReactiveComponent
   displayName: 'EditProposal'
 
   render : ->
-    user = fetch('/current_user')
+    current_user = fetch('/current_user')
     proposal = @data()
     subdomain = fetch '/subdomain'
 
@@ -166,7 +166,7 @@ window.EditProposal = ReactiveComponent
               style: 
                 marginBottom: 20
                 marginLeft: 45
-                display: if not fetch('/current_user').is_admin then 'none'
+                display: if not current_user.is_admin then 'none'
 
               for field in @local.description_fields
                 field_open = field.id in @local.open_fields
@@ -288,7 +288,7 @@ window.EditProposal = ReactiveComponent
           
         DIV 
           style: _.extend {}, block_style,
-            display: if !user.is_admin then 'none'
+            display: if !current_user.is_admin then 'none'
 
           LABEL 
             htmlFor: 'listed_on_homepage'
@@ -305,7 +305,7 @@ window.EditProposal = ReactiveComponent
 
         DIV
           style: _.extend {}, block_style,
-            display: if !user.is_admin then 'none'
+            display: if !current_user.is_admin then 'none'
 
           LABEL 
             htmlFor: 'open_for_discussion'
@@ -318,11 +318,49 @@ window.EditProposal = ReactiveComponent
             type: 'checkbox'
             defaultChecked: if @props.fresh then true else proposal.active
             style: {fontSize: 24}
+
+        
+        if current_user.is_admin 
+          FORM 
+            id: 'proposal_pic_files'
+            action: '/update_proposal_pic_hack'
+
+            DIV 
+              className: 'input_group'
+              style: block_style
+
+              DIV null, 
+                LABEL 
+                  style: label_style
+                  htmlFor: 'pic'
+                  'Pic'
+              INPUT 
+                id: 'pic'
+                type: 'file'
+                name: 'pic'
+                onChange: (ev) =>
+                  @submit_pic = true
+
+            DIV 
+              className: 'input_group'
+              style: block_style
+
+              DIV null, 
+                LABEL 
+                  style: label_style
+                  htmlFor: 'banner'
+                  'Banner'
+              INPUT 
+                id: 'banner'
+                type: 'file'
+                name: 'banner'
+                onChange: (ev) =>
+                  @submit_pic = true
           
 
         DIV 
           style: 
-            display: if !user.is_admin then 'none'
+            display: if !current_user.is_admin then 'none'
 
           SPAN 
             style: _.extend {}, label_style,
@@ -405,6 +443,10 @@ window.EditProposal = ReactiveComponent
 
             translator 'engage.cancel_button', 'cancel'
 
+        if @local.file_errors
+          DIV style: {color: 'red'}, 'Error uploading files!'
+
+
   saveProposal : -> 
 
     $el = $(@getDOMNode())
@@ -451,10 +493,27 @@ window.EditProposal = ReactiveComponent
     @local.errors = []
     save @local
 
-    save proposal, => 
+    after_save = => 
       if proposal.errors?.length == 0
         window.scrollTo(0,0)
         loadPage "/#{proposal.slug}"
       else
         @local.errors = proposal.errors
         save @local
+
+
+    save proposal, => 
+
+      if @submit_pic
+        current_user = fetch '/current_user'
+        $('#proposal_pic_files').ajaxSubmit
+          type: 'PUT'
+          data: 
+            authenticity_token: current_user.csrf
+            id: proposal.id
+          success: after_save
+          error: => 
+            @local.file_errors = true
+            save @local
+      else 
+        after_save()

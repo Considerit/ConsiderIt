@@ -1,4 +1,6 @@
 class ProposalController < ApplicationController
+  skip_before_action :verify_authenticity_token, :only => :update_images_hack
+
   include SubdomainController::Invitations
 
   respond_to :json
@@ -167,6 +169,20 @@ class ProposalController < ApplicationController
     dirty_key '/proposals'
     proposal.destroy
     render :json => {:success => true}
+  end
+
+  def update_images_hack
+    proposal = Proposal.find(params[:id])
+    attrs = {}
+    if params['pic']
+      attrs['pic'] = params['pic']
+    end
+    if params['banner']
+      attrs['banner'] = params['banner']
+    end
+    proposal.update_attributes attrs
+    dirty_key proposal.key
+    render :json => []
   end
 
   def copy_to_subdomain

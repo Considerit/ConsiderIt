@@ -117,8 +117,23 @@ window.CollapsedProposal = ReactiveComponent
 
           if icons
             editor = proposal_editor(proposal)
+
+            if proposal.pic
+              A
+                href: proposal_url(proposal)
+                'aria-hidden': true
+                tabIndex: -1
+                IMG
+                  src: proposal.pic 
+                  style:
+                    height: 40
+                    width: 40
+                    borderRadius: 0
+                    backgroundColor: '#ddd'
+                    # opacity: opacity
+
             # Person's icon
-            if editor 
+            else if editor 
               A
                 href: proposal_url(proposal)
                 'aria-hidden': true

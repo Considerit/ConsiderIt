@@ -100,9 +100,19 @@ class User < ActiveRecord::Base
     end
     users = ActiveRecord::Base.connection.exec_query( "SELECT #{fields} FROM users WHERE registered=1 AND active_in like '%\"#{current_subdomain.id}\"%'")
 
-    # if current_user.is_admin?
-    users.each{|u| u['tags']=Oj.load(u['tags']||'{}')}      
-    # end
+    users.each{|u| u['tags']=Oj.load(u['tags']||'{}')}
+    
+    # if current_user.super_admin
+    #   users.each{|u| u['tags']=Oj.load(u['tags']||'{}')}
+    # else
+    #   config = current_subdomain.customization_json
+    #   relevant_tags = []
+
+    #   users.each do |u|
+    #     u['tags'] = Oj.load(u['tags'] || '{}')
+    #   end 
+
+    # end 
 
     {key: '/users', users: users.as_json}
   end

@@ -63,7 +63,6 @@ class Subdomain < ActiveRecord::Base
 
       json['customizations'] = self.customizations
     end
-
     ###################################################
 
     json
@@ -176,6 +175,10 @@ class Subdomain < ActiveRecord::Base
 
     classes
 
+  end
+
+  def customization_json
+    Oj.load (self.customizations || {})
   end
 
 

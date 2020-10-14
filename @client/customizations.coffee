@@ -65,16 +65,8 @@ window.load_customization = (subdomain) ->
     if customizations_file_used
       console.log "#{subdomain_name} config for import: \n", JSON.stringify(convert_customization(customizations_by_file[subdomain_name]), null, 2)
 
-    if subdomain.customization_obj
-      new Function(subdomain.customization_obj)() # will create window.customization_obj    
-      stringified = convert_customization window.customization_obj
-
-      if fetch('/current_user').is_super_admin
-        subdomain.customizations = JSON.stringify stringified, null, 2
-        save subdomain
-    else 
-      subdomain = fetch '/subdomain'
-      stringified = JSON.parse subdomain.customizations 
+    subdomain = fetch '/subdomain'
+    stringified = JSON.parse subdomain.customizations 
 
     customizations[subdomain_name] = _.extend {}, (customizations_by_file[subdomain_name] or {}), convert_customization(stringified)
 
@@ -241,7 +233,7 @@ masthead_only = ["kamakakoi","seattletimes","kevin","ihub","SilverLakeNC",\
                  "PublicForum","AMA-RFS","AmySchumer","VillaGB","AwesomeHenri", \
                  "citySENS","alcala","MovilidadCDMX","deus_ex","neuwrite","bitesizebio","HowScienceIsMade","SABF", \
                  "engagedpublic","sabfteam","Tunisia","theartofco","SGU","radiolab","ThisLand", \
-                 "Actuality"]
+                 "Actuality", 'cimsec', 'sosh', 'swotconsultants']
 
 
 for sub in text_and_masthead
@@ -251,6 +243,10 @@ for sub in text_and_masthead
 for sub in masthead_only
   customizations_by_file[sub.toLowerCase()] = 
     HomepageHeader: LegacyImageHeader
+
+
+
+
 
 
 

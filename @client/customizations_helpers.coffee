@@ -18,7 +18,7 @@ window.cluster_link = (href, anchor) ->
   anchor ||= href 
   "<a href='#{href}' target='_blank' style='font-weight: 600; text-decoration:underline'>#{anchor}</a>"
 
-
+window.DEFAULT_BACKGROUND_COLOR = '#eee'
 
 
 #################
@@ -245,17 +245,16 @@ window.ShortHeader = (opts) ->
 
   opts ||= {}
   _.defaults opts, (customization('forum_header') or {}),
-    background: customization('background') or subdomain.branding.primary_color
-    text: customization('prompt') or subdomain.branding.masthead_header_text or subdomain.app_title
+    background: customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
+    text: customization('banner')?.title or subdomain.app_title
     external_link: subdomain.external_project_url
-    logo_src: subdomain.branding.logo
+    logo_src: customization('banner')?.logo?.url
     logo_height: 50
     min_height: 70
     padding: '8px 0'
     padding_left_icon: 20
 
-  hsl = parseCssHsl(opts.background)
-  is_light = hsl.l > .75
+  is_light = is_light_background()
 
 
   DIV 
@@ -339,16 +338,15 @@ window.LegacyImageHeader = (opts) ->
 
   opts ||= {}
   _.defaults opts, 
-    background_color: subdomain.branding.primary_color
-    background_image_url: subdomain.branding.masthead
-    text: subdomain.branding.masthead_header_text
+    background_color: customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
+    background_image_url: customization('banner')?.background_image_url
+    text: customization('banner')?.title
     external_link: subdomain.external_project_url
 
   if !opts.background_image_url
     throw 'LegacyImageHeader can\'t be used without a branding masthead'
 
-  hsl = parseCssHsl(opts.background_color)
-  is_light = hsl.l > .75
+  is_light = is_light_background()
     
   DIV null,
 
@@ -391,15 +389,14 @@ window.HawaiiHeader = (opts) ->
   homepage = fetch('location').url == '/'
   subdomain = fetch '/subdomain'
 
-  background_color = opts.background_color or (if subdomain.branding.primary_color && subdomain.branding.primary_color != '' then subdomain.branding.primary_color) or '#000'
-  hsl = parseCssHsl(opts.background_color or "#ffffff")
-  is_light = hsl.l > .75
+  background_color = opts.background_color or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
+  is_light = is_light_background(background_color)
 
   opts ||= {}
   _.defaults opts, 
     background_color: background_color
-    background_image_url: opts.background_image_url or subdomain.branding.masthead
-    logo: subdomain.branding.logo
+    background_image_url: opts.background_image_url or customization('banner')?.background_image_url
+    logo: customization('banner')?.logo?.url
     logo_width: 200
     title: '<title is required>'
     subtitle: null
@@ -520,10 +517,10 @@ window.SeattleHeader = (opts) ->
   opts ||= {}
   _.defaults opts, 
 
-    external_link: subdomain.branding.external_project_url
+    external_link: subdomain.external_project_url
 
     background_color: '#fff'
-    background_image_url: subdomain.branding.masthead
+    background_image_url: customization('banner')?.background_image_url
 
     external_link_style: {}
     quote_style: {}
@@ -771,7 +768,7 @@ window.PhotoBanner = (opts) ->
 
     DIV 
       style:
-        backgroundImage: opts.backgroundImage or subdomain.branding?.masthead 
+        backgroundImage: opts.backgroundImage or customization('banner')?.background_image_url 
         backgroundSize: 'cover'
         paddingTop: 140 
 

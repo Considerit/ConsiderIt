@@ -86,7 +86,7 @@ window.Homepage = ReactiveComponent
 
     return SPAN null if !subdomain.name
 
-    title = subdomain.branding.masthead_header_text or subdomain.app_title or "#{subdomain.name} considerit homepage"
+    title = customization('banner')?.title or subdomain.app_title or "#{subdomain.name} considerit homepage"
 
     if doc.title != title
       doc.title = title

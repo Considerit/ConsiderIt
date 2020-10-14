@@ -26,9 +26,7 @@ window.ProfileMenu = ReactiveComponent
 
     menu_options = _.compact menu_options
 
-    hsl = parseCssHsl(subdomain.branding.primary_color)
-    light_background = hsl.l > .75
-
+    light_background = is_light_background() 
 
     DIV
       id: 'user_nav'

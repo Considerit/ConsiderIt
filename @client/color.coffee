@@ -1,9 +1,5 @@
 ##################
 # Colors
-#
-# See @server/models/subdomain#branding_info for hardcoding color values
-# when doing development. 
-
 
 
 window.focus_blue = '#2478CC'
@@ -100,3 +96,7 @@ window.getNiceRandomHues = (num, seed) ->
     h += golden_ratio_conjugate
     i -= 1
   hues
+
+window.is_light_background = (color) ->
+  color ||= customization('banner')?.background_css || DEFAULT_BACKGROUND_COLOR
+  parseCssHsl(color).l > .75

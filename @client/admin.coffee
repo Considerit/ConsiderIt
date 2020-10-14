@@ -312,31 +312,7 @@ AppSettingsDash = ReactiveComponent
                   'hello@consider.it'
                 ' to inquire further.'
 
-
-
-          # DIV className: 'input_group',
-          #   LABEL htmlFor: 'notifications_sender_email', 'Contact email'
-          #   INPUT 
-          #     id: 'notifications_sender_email'
-          #     type: 'text'
-          #     name: 'notifications_sender_email'
-          #     defaultValue: subdomain.notifications_sender_email
-          #     placeholder: 'Sender email address for notification emails. Default is admin@consider.it.'
-
-
           if current_user.is_super_admin
-
-
-
-            # DIV className: 'input_group',
-            #   LABEL htmlFor: 'about_page_url', 'About Page URL'
-            #   INPUT 
-            #     id: 'about_page_url'
-            #     type: 'text'
-            #     name: 'about_page_url'
-            #     defaultValue: subdomain.about_page_url
-            #     placeholder: 'The about page will then contain a window to this url.'
-
 
             DIV null,
 
@@ -348,35 +324,6 @@ AppSettingsDash = ReactiveComponent
                   name: 'plan'
                   defaultValue: subdomain.plan
                   placeholder: '0 for free plan, 1 for custom, 2 for consulting.'
-
-              DIV className: 'input_group',
-                LABEL htmlFor: 'masthead_header_text', 'Masthead header text'
-                INPUT 
-                  id: 'masthead_header_text'
-                  type: 'text'
-                  name: 'masthead_header_text'
-                  defaultValue: subdomain.branding.masthead_header_text
-                  placeholder: 'This will be shown in bold white text across the top of the header.'
-
-              DIV className: 'input_group',
-                LABEL htmlFor: 'primary_color', 'Primary color (CSS format)'
-                INPUT 
-                  id: 'primary_color'
-                  type: 'text'
-                  name: 'primary_color'
-                  defaultValue: subdomain.branding.primary_color
-                  placeholder: 'The primary brand color. Needs to be dark.'
-
-              # DIV className: 'input_group',
-              #   LABEL htmlFor: 'homepage_text', 'Homepage text'
-              #   TEXTAREA 
-              #     id: 'homepage_text'
-              #     name: 'homepage_text'
-              #     defaultValue: subdomain.branding.homepage_text
-              #     placeholder: 'Shown in homepage. Can be HTML.'
-              #     style: 
-              #       display: 'block'
-              #       width: HOMEPAGE_WIDTH()
 
 
           FORM id: 'subdomain_files', action: '/update_images_hack',
@@ -444,11 +391,11 @@ AppSettingsDash = ReactiveComponent
     for f in fields
       subdomain[f] = $(@getDOMNode()).find("##{f}").val()
 
-    if current_user.is_super_admin
-      subdomain.branding =
-        primary_color: $('#primary_color').val()
-        masthead_header_text: $('#masthead_header_text').val()
-        # homepage_text: $('#homepage_text').val()
+    # if current_user.is_super_admin
+    #   subdomain.branding =
+    #     primary_color: $('#primary_color').val()
+    #     masthead_header_text: $('#masthead_header_text').val()
+    #     # homepage_text: $('#homepage_text').val()
 
     @local.save_complete = @local.file_errors = false
     save @local

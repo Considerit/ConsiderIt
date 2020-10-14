@@ -167,7 +167,7 @@ class SubdomainController < ApplicationController
       attrs['plan'] = params['plan'].to_i
     end 
 
-    if current_user.super_admin && params.has_key?('customizations')
+    if current_user.is_admin? && params.has_key?('customizations')
       attrs['customizations'] = params['customizations']
     end 
 

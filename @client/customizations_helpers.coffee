@@ -246,7 +246,7 @@ window.ShortHeader = (opts) ->
   opts ||= {}
   _.defaults opts, (customization('forum_header') or {}),
     background: customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
-    text: customization('banner')?.title or subdomain.app_title
+    text: customization('banner')?.title or subdomain.name
     external_link: subdomain.external_project_url
     logo_src: customization('banner')?.logo?.url
     logo_height: 50
@@ -344,7 +344,7 @@ window.LegacyImageHeader = (opts) ->
     external_link: subdomain.external_project_url
 
   if !opts.background_image_url
-    throw 'LegacyImageHeader can\'t be used without a branding masthead'
+    throw 'LegacyImageHeader can\'t be used without a masthead'
 
   is_light = is_light_background()
     

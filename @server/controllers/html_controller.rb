@@ -114,7 +114,7 @@ class HtmlController < ApplicationController
 
     else
       banner = current_subdomain.customization_json['banner'] || {}
-      title = banner.fetch('title', current_subdomain.app_title || current_subdomain.name)
+      title = banner.fetch('title', current_subdomain.name)
 
       image = current_subdomain.logo_file_name
       if image && image[0] != '/' && !image.index('http')

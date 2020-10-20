@@ -100,7 +100,7 @@ class UserMailer < Mailer
     case invitation_obj.class.to_s
 
     when 'Subdomain'
-      subject = translator({id: "email.invitation.#{role}", name: inviter.name, place: invitation_obj.app_title}, 
+      subject = translator({id: "email.invitation.#{role}", name: inviter.name, place: invitation_obj.name}, 
                            "{name} invites you to #{@action} {place}")
     when 'Proposal'
       subject = translator({id: "email.invitation.#{role}", name: inviter.name, place: invitation_obj.name}, 

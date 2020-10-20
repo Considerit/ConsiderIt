@@ -111,7 +111,7 @@ window.Notifications = ReactiveComponent
 
               TRANSLATE 
                 id: "email_notifications.digests_purpose", 
-                project_name: subdomain.app_title or subdomain.name
+                project_name: subdomain.name
                 "The emails summarize relevant new activity for you regarding {project_name}"
 
 

@@ -127,7 +127,7 @@ protected
         rescue ActiveRecord::RecordNotFound
           # create a subdomain if one doesn't yet exist
           if Subdomain.count == 0
-            new_subdomain = Subdomain.new name: "test", app_title: "test"
+            new_subdomain = Subdomain.new name: "test"
             new_subdomain.save
           end
           candidate_subdomain = Subdomain.first

@@ -221,15 +221,6 @@ AppSettingsDash = ReactiveComponent
         DIV style: {width: HOMEPAGE_WIDTH(), margin: '20px auto'}, 
 
           DIV className: 'input_group',
-            LABEL htmlFor: 'app_title', 'The name of this application'
-            INPUT 
-              id: 'app_title'
-              type: 'text'
-              name: 'app_title'
-              defaultValue: subdomain.app_title
-              placeholder: 'Shows in email subject lines and in the window title.'
-
-          DIV className: 'input_group',
             LABEL htmlFor: 'external_project_url', 'Project url'
             INPUT 
               id: 'external_project_url'
@@ -386,7 +377,7 @@ AppSettingsDash = ReactiveComponent
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 
-    fields = ['about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url', 'plan', 'google_analytics_code', 'lang']
+    fields = ['external_project_url', 'plan', 'google_analytics_code', 'lang']
 
     for f in fields
       subdomain[f] = $(@getDOMNode()).find("##{f}").val()

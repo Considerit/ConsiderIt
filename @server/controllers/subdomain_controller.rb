@@ -65,7 +65,7 @@ class SubdomainController < ApplicationController
         render :json => [{errors: errors}]
       end
     else      
-      new_subdomain = Subdomain.new name: subdomain, app_title: params[:app_title]
+      new_subdomain = Subdomain.new name: subdomain
       roles = new_subdomain.user_roles
       roles['admin'].push "/user/#{current_user.id}"
       roles['visitor'].push "*"
@@ -151,12 +151,12 @@ class SubdomainController < ApplicationController
       raise PermissionDenied.new Permission::DISABLED
     end
 
-    fields = ['lang', 'moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url', 'google_analytics_code']
+    fields = ['lang', 'moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'external_project_url', 'google_analytics_code']
     attrs = params.select{|k,v| fields.include? k}
 
     update_roles
 
-    serialized_fields = ['roles', 'branding']
+    serialized_fields = ['roles']
     for field in serialized_fields
       if params.has_key? field
         attrs[field] = JSON.dump params[field]

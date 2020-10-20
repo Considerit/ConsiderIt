@@ -1,4 +1,5 @@
 require './shared'
+require './banner'
 require './customizations'
 require './permissions'
 require './browser_hacks' # for access to browser object
@@ -22,10 +23,7 @@ window.AuthCallout = ReactiveComponent
     DIV  
       style: 
         width: '100%'
-        #backgroundColor: '#545454'
         paddingBottom: 16
-        #color: 'white'
-        #marginTop: 12
 
       DIV 
         style: 

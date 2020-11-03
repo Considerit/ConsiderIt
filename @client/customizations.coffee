@@ -70,7 +70,7 @@ window.load_customization = (subdomain) ->
 
     customizations[subdomain_name] = _.extend {}, (customizations_by_file[subdomain_name] or {}), convert_customization(stringified)
 
-    db_customization_loaded[subdomain_name] = true
+    db_customization_loaded[subdomain_name] = {"#{subdomain.customizations}": true}
 
   catch error 
     console.error error
@@ -83,7 +83,6 @@ window.customization = (field, object_or_key) ->
   else 
     obj = object_or_key
 
-
   if obj && obj.subdomain_id && "#{obj.subdomain_id}" != document.querySelector("meta[name='forum']")?.getAttribute("content")
     subdomain = fetch "/subdomain/#{obj.subdomain_id}" 
   else 
@@ -91,7 +90,7 @@ window.customization = (field, object_or_key) ->
 
   subdomain_name = subdomain.name?.toLowerCase()
   
-  if !db_customization_loaded[subdomain_name]
+  if !db_customization_loaded[subdomain_name]?[subdomain.customizations]
     load_customization subdomain
 
   key = if obj 
@@ -206,7 +205,7 @@ customizations.default =
 
   auth_questions: []
 
-  SiteHeader : ShortHeader
+  SiteHeader : PhotoBanner
   SiteFooter : DefaultFooter
 
   new_proposal_fields: -> 
@@ -243,9 +242,6 @@ for sub in text_and_masthead
 for sub in masthead_only
   customizations_by_file[sub.toLowerCase()] = 
     HomepageHeader: LegacyImageHeader
-
-
-
 
 
 

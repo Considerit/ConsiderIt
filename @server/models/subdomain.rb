@@ -66,16 +66,19 @@ class Subdomain < ActiveRecord::Base
 
   def customization_json
     config = Oj.load (self.customizations || "{}")
+    config['banner'] ||= {}
 
     if self.logo_file_name
-      config['banner'] ||= {}
       config['banner']['logo'] ||= {}
       config['banner']['logo']['url'] = self.logo.url
+    elsif config['banner'].has_key?('logo')
+      config['banner'].delete('logo')
     end 
 
     if self.masthead_file_name
-      config['banner'] ||= {}
       config['banner']['background_image_url'] = self.masthead.url
+    elsif config['banner'].has_key?('background_image_url')
+      config['banner'].delete('background_image_url')
     end 
 
     config

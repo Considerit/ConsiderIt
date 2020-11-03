@@ -198,11 +198,19 @@ class SubdomainController < ApplicationController
 
   def update_images_hack
     attrs = {}
-    if params['masthead']
-      attrs['masthead'] = params['masthead']
+    if masthead = params['masthead']
+      if masthead == '*delete*'
+        attrs['masthead'] = nil
+      else 
+        attrs['masthead'] = masthead
+      end 
     end
-    if params['logo']
-      attrs['logo'] = params['logo']
+    if logo = params['logo']
+      if logo == '*delete*'
+        attrs['logo'] = nil
+      else 
+        attrs['logo'] = params['logo']
+      end
     end
 
     current_tenant.update_attributes attrs

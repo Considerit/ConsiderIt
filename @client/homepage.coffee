@@ -1,5 +1,4 @@
 require './shared'
-require './banner'
 require './customizations'
 require './permissions'
 require './browser_hacks' # for access to browser object

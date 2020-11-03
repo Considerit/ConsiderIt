@@ -98,5 +98,29 @@ window.getNiceRandomHues = (num, seed) ->
   hues
 
 window.is_light_background = (color) ->
-  color ||= customization('banner')?.background_css || DEFAULT_BACKGROUND_COLOR
+  color ||= fetch('edit_banner').background_css or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
   parseCssHsl(color).l > .75
+
+hsp_sample_size = 100
+window.is_image_mostly_light = (image_data, width, height) ->
+  row_sample = _.sample _.range(height), hsp_sample_size
+  light_pixels = 0
+
+  for row in row_sample
+    col_sample = _.sample _.range(width), hsp_sample_size
+    for col in col_sample
+
+      start = row * (width * 4) + col * 4
+      r = image_data[start]
+      g = image_data[start + 1]
+      b = image_data[start + 2]
+      hsp = Math.sqrt( # HSP equation from http://alienryderflex.com/hsp.html
+          0.299 * (r * r) +
+          0.587 * (g * g) +
+          0.114 * (b * b)
+        ) 
+      if hsp > 127.5
+        light_pixels += 1
+
+  light_pixels >= hsp_sample_size * hsp_sample_size / 2
+

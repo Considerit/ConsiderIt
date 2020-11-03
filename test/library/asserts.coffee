@@ -17,7 +17,7 @@ _.extend casper.test,
   assertInResultsState : ->
     @assertExists '[data-role="proposal"][data-state="results"]', 'Proposal is in results state'
     @assertElementCount '[data-role="proposal"]', 1, "there is only one proposal on the page"
-    @assertVisible '.proposal_details', 'Proposal details are visible'
+    @assertVisible '.wysiwyg_text', 'Proposal details are visible'
     @assertElementCount '.histogram_bar', 7, 'There are seven histogram bars visible'
     @assertExists '.points_by_community[data-state="results"]', 'Pros and cons in together state'
     @assertSelectorHasText '.points_heading_label', 'Pros', 'Pros present in pros header'
@@ -26,7 +26,7 @@ _.extend casper.test,
   assertInCraftingState : (state_suffix = '') ->
     @assertExists '[data-role="proposal"][data-state="crafting"]', 'Proposal is in crafting state' + state_suffix
     @assertElementCount '[data-role="proposal"]', 1, "there is only one proposal on the page" + state_suffix
-    @assertVisible '.proposal_details', 'Proposal details are visible' + state_suffix
+    @assertVisible '.wysiwyg_text', 'Proposal details are visible' + state_suffix
     @assertExists '.decision_board_layout[data-state="crafting"]', 'Decision slate is visible' + state_suffix
     @assertExists '.points_by_community[data-state="crafting"]', 'Pros and cons on margins' + state_suffix
     @assertExists '.slider_container', 'Slider present' + state_suffix

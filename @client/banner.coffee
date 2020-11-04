@@ -402,6 +402,8 @@ CustomizeLogo = ReactiveComponent
             transform: 'rotate(45deg)'
             zIndex: 2
 
+DEFAULT_TEXT_BLOCK_COLOR = "#000000"
+DEFAULT_TEXT_BLOCK_OPACITY = 255 * .8
 CustomizeTextBlock = ReactiveComponent
   displayName: 'CustomizeTextBlock'
   render : ->
@@ -418,7 +420,7 @@ CustomizeTextBlock = ReactiveComponent
         id: 'text_background_css'
         type: 'color'
         name: 'text_background_css'
-        defaultValue: customization('banner')?.text_background_css
+        defaultValue: customization('banner')?.text_background_css or DEFAULT_TEXT_BLOCK_COLOR
         style: 
           width: '100%'
           display: 'block'
@@ -433,7 +435,7 @@ CustomizeTextBlock = ReactiveComponent
         step: 1
         max: 255
         name: 'text_background_css_opacity'
-        defaultValue: customization('banner')?.text_background_css_opacity
+        defaultValue: customization('banner')?.text_background_css_opacity or DEFAULT_TEXT_BLOCK_OPACITY
         style:
           width: '100%'
           display: 'block'
@@ -599,8 +601,13 @@ window.EditBanner = ReactiveComponent
         BUTTON
           style: 
             border: 'none'
-            color: if is_light then 'rgba(0,0,0,.6)' else 'rgba(255,255,255,.6)'
-            backgroundColor: if is_light then "rgba(255,255,255,.2)" else "rgba(0,0,0,.2)"
+
+            # backgroundColor: if is_light then "rgba(255,255,255,.2)" else "rgba(0,0,0,.2)"
+            # color: if is_light then 'rgba(0,0,0,.6)' else 'rgba(255,255,255,.6)'
+
+            backgroundColor: if is_light then "rgba(0,0,0,.8)" else "rgba(255,255,255,.8)"
+            color: if !is_light then 'black' else 'white'
+
             padding: '4px 8px'
             borderRadius: 8
             cursor: 'pointer'
@@ -631,14 +638,16 @@ window.EditBanner = ReactiveComponent
       style: 
         position: 'absolute'
         left: "50%"
-        marginLeft: -80
-        top: 8
+        marginLeft: -80 - 8*2
+        top: 0
+        padding: "4px 8px"
         zIndex: 2
+        backgroundColor: if !is_light then "rgba(0,0,0,.3)" else "rgba(255,255,255,.3)"
 
       DIV null,
         BUTTON 
           style: 
-            backgroundColor: if is_light then "rgba(0,0,0,.7)" else "rgba(255,255,255,.7)"
+            backgroundColor: if is_light then "rgba(0,0,0,.8)" else "rgba(255,255,255,.8)"
             color: if !is_light then 'black' else 'white'
             border: 'none'
             borderRadius: 8
@@ -929,10 +938,11 @@ window.PhotoBanner = (opts) ->
   has_description = description?.trim().length > 0 && description.trim() != '<p><br></p>'
 
   is_dark_theme = !is_light_background()
-  text_block_color = edit_banner.text_background_css or customization('banner')?.text_background_css 
-  text_block_opacity = parseInt(edit_banner.text_background_css_opacity or customization('banner')?.text_background_css_opacity or 255 * .8)
+  text_block_color = edit_banner.text_background_css or customization('banner')?.text_background_css or DEFAULT_TEXT_BLOCK_COLOR
+  text_block_opacity = parseInt(edit_banner.text_background_css_opacity or customization('banner')?.text_background_css_opacity or DEFAULT_TEXT_BLOCK_OPACITY)
   text_block_background = if has_image_background then "#{text_block_color}#{convert_opacity(text_block_opacity)}" or 'rgba(0, 0, 0, .8)'
   
+  console.log text_block_background, has_image_background, text_block_color
   if text_block_color && text_block_opacity > 126
     text_block_is_dark = !is_light_background(text_block_color)
   else 

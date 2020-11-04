@@ -5,36 +5,50 @@ CustomizeTitle = ReactiveComponent
   displayName: 'CustomizeTitle'
 
   render : ->
+    subdomain = fetch '/subdomain'
     edit_banner = fetch 'edit_banner'
-    title = edit_banner.title or customization('banner')?.title or @props.title or subdomain.name
+    title = edit_banner.title or customization('banner')?.title or @props.title
     is_admin = fetch('/current_user').is_admin
+    is_light = is_light_background()
 
-    if is_admin && edit_banner.editing
-      INPUT 
-        ref: 'primary_input'
-        style: _.defaults {}, @props.style or {}, 
-          display: 'block'
-          border: 'none'
-          backgroundColor: 'transparent'
-          color: 'inherit'
-          width: '100%'
-          padding: 0
-          lineHeight: 1.4
-        defaultValue: title
-        onChange: (e) ->
-          edit_banner.title = e.target.value 
-          save edit_banner
-        placeholder: translator('banner.title.placeholder', 'A pithy title for your forum.')
-    else 
-      DIV
-        style: @props.style or {}
-        dangerouslySetInnerHTML: __html: title
-        onDoubleClick: if is_admin then => 
-          edit_banner.editing = true 
-          save edit_banner
-          setTimeout => 
-            @refs.primary_input?.getDOMNode().focus()
-            @refs.primary_input?.getDOMNode().setSelectionRange(-1, -1) # put cursor at end
+    DIV null, 
+
+      STYLE
+        dangerouslySetInnerHTML: __html: """
+          input#description::placeholder {
+            color: #{if is_light then 'rgba(0,0,0,.4)' else 'rgb(255,255,255,.6)'};
+          }
+        """
+
+      if is_admin && edit_banner.editing
+
+        INPUT 
+          id: 'description'
+          ref: 'primary_input'
+          style: _.defaults {}, @props.style or {}, 
+            display: 'block'
+            border: 'none'
+            backgroundColor: 'transparent'
+            color: 'inherit'
+            width: '100%'
+            padding: 0
+            lineHeight: 1.4
+          defaultValue: title
+          onChange: (e) ->
+            edit_banner.title = e.target.value 
+            save edit_banner
+          placeholder: translator('banner.title.placeholder', 'A pithy title for your forum.')
+
+      else 
+        DIV
+          style: @props.style or {}
+          dangerouslySetInnerHTML: __html: title
+          onDoubleClick: if is_admin then => 
+            edit_banner.editing = true 
+            save edit_banner
+            setTimeout => 
+              @refs.primary_input?.getDOMNode().focus()
+              @refs.primary_input?.getDOMNode().setSelectionRange(-1, -1) # put cursor at end
 
 
 CustomizeDescription = ReactiveComponent
@@ -48,6 +62,9 @@ CustomizeDescription = ReactiveComponent
     
     has_description = description?.trim().length > 0 && description.trim() != '<p><br></p>'
     is_light = is_light_background()
+
+    focus_on_mount = @local.focus_on_mount
+    @local.focus_on_mount = false
 
     if is_admin && edit_banner.editing
       DIV 
@@ -65,6 +82,7 @@ CustomizeDescription = ReactiveComponent
           horizontal: true
           html: customization('banner')?.description
           placeholder: translator("banner.description.label", "Let people know about this forum! What is its purpose? Who it is for? How long it will be open?")
+          focus_on_mount: focus_on_mount
           button_style: 
             backgroundColor: 'white'  
     else
@@ -78,6 +96,7 @@ CustomizeDescription = ReactiveComponent
             dangerouslySetInnerHTML: __html: description
             onDoubleClick: if is_admin then => 
               edit_banner.editing = true 
+              @local.focus_on_mount = true
               save edit_banner
               setTimeout => 
                 @refs.primary_input?.getDOMNode().focus()
@@ -521,7 +540,7 @@ CustomizeBackground = ReactiveComponent
                 id: 'background_color'
                 type: 'color'
                 name: 'background_color'
-                defaultValue: customization('banner')?.background_css
+                defaultValue: customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
                 onChange: (e) =>
                   edit_banner.background_css = e.target.value
                   save edit_banner
@@ -591,7 +610,8 @@ window.EditBanner = ReactiveComponent
               enter_edit(e)  
               e.preventDefault()
 
-          'edit banner'
+          translator 'banner.edit_button', 'edit banner'
+
 
 
     delete_masthead = (e) =>
@@ -629,7 +649,7 @@ window.EditBanner = ReactiveComponent
               @submit(e)  
               e.preventDefault()
 
-          'Save changes'
+          translator 'banner.save_changes_button', 'Save changes'
 
         BUTTON
           style: 
@@ -643,7 +663,7 @@ window.EditBanner = ReactiveComponent
               @exit_edit(e)  
               e.preventDefault()
 
-          'cancel'
+          translator 'banner.cancel_button', 'cancel'
 
         if @local.file_errors
           DIV style: {color: 'red'}, 'Error uploading files!'
@@ -752,13 +772,10 @@ window.EditBanner = ReactiveComponent
 
   exit_edit: ->
     edit_banner = fetch 'edit_banner'
-    edit_banner.title = null 
-    edit_banner.editing = false 
-    edit_banner.masthead_preview = null 
-    edit_banner.logo_preview = null
-    edit_banner.logo_left = edit_banner.logo_top = edit_banner.logo_height = null
-    edit_banner.background_css = null
-    edit_banner.text_background_css = edit_banner.text_background_css_opacity = null
+
+    for k,v of edit_banner
+      if k != 'key'
+        delete edit_banner[k]
     
     wysiwyg_description = fetch("forum-description")
     wysiwyg_description.html = null 
@@ -899,7 +916,7 @@ window.PhotoBanner = (opts) ->
       paddingTop: 140 
   else 
     wrapper_style = 
-      background: edit_banner.background_css or customization('banner')?.background_css or "rgba(223,98,100,1)"
+      background: edit_banner.background_css or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
 
   convert_opacity = (value) ->
     if !value

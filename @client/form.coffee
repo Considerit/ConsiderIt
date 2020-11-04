@@ -341,6 +341,9 @@ window.WysiwygEditor = ReactiveComponent
 
       save my_data
 
+    if @props.focus_on_mount
+      @editor.focus()
+
 # Some overrides to Quill base styles
 styles += """
 .ql-clipboard {display: none;}

@@ -58,6 +58,7 @@ CustomizeDescription = ReactiveComponent
     edit_banner = fetch 'edit_banner'
     is_admin = fetch('/current_user').is_admin
 
+    description = fetch("forum-description").html or customization('banner')?.description
     has_description = description?.trim().length > 0 && description.trim() != '<p><br></p>'
 
     is_light = is_light_background()
@@ -92,7 +93,7 @@ CustomizeDescription = ReactiveComponent
             style: 
               fontSize: 18
               padding: '6px 8px'
-            dangerouslySetInnerHTML: __html: fetch("forum-description").html or customization('banner')?.description
+            dangerouslySetInnerHTML: __html: description
             onDoubleClick: if is_admin then => 
               edit_banner.editing = true 
               @local.focus_on_mount = true
@@ -464,6 +465,7 @@ CustomizeBackground = ReactiveComponent
     return SPAN(null) if !editing
 
     is_light = is_light_background()
+
     icon_height = 50
     color = if is_light then 'rgba(0,0,0,1)' else 'rgba(255,255,255,1)'
 
@@ -518,7 +520,7 @@ CustomizeBackground = ReactiveComponent
               id: 'background_color'
               type: 'checkbox'
               name: 'background_color'
-              defaultValue: is_light
+              defaultChecked: is_light
               onChange: (e) =>
                 edit_banner.background_css = if e.target.checked then "rgb(255,255,255)" else 'rgb(0,0,0)'
                 save edit_banner

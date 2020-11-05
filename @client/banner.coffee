@@ -58,9 +58,8 @@ CustomizeDescription = ReactiveComponent
     edit_banner = fetch 'edit_banner'
     is_admin = fetch('/current_user').is_admin
 
-    description = fetch("forum-description").html or customization('banner')?.description
-    
     has_description = description?.trim().length > 0 && description.trim() != '<p><br></p>'
+
     is_light = is_light_background()
 
     focus_on_mount = @local.focus_on_mount
@@ -93,7 +92,7 @@ CustomizeDescription = ReactiveComponent
             style: 
               fontSize: 18
               padding: '6px 8px'
-            dangerouslySetInnerHTML: __html: description
+            dangerouslySetInnerHTML: __html: fetch("forum-description").html or customization('banner')?.description
             onDoubleClick: if is_admin then => 
               edit_banner.editing = true 
               @local.focus_on_mount = true
@@ -102,8 +101,8 @@ CustomizeDescription = ReactiveComponent
                 @refs.primary_input?.getDOMNode().focus()
                 @refs.primary_input?.getDOMNode().setSelectionRange(-1, -1) # put cursor at end
 
-        else if @props.supporting_text
-          @props.supporting_text()
+        else if @props.opts.supporting_text
+          @props.opts.supporting_text()
 
 
 UploadFileSVG = (opts) ->
@@ -933,8 +932,8 @@ window.PhotoBanner = (opts) ->
       parseInt(value).toString(16)
 
 
-  description = fetch("forum-description").html or customization('banner')?.description
-  has_description = description?.trim().length > 0 && description.trim() != '<p><br></p>'
+  description = fetch("forum-description").html or customization('banner')?.description or opts.supporting_text
+  has_description = opts.supporting_text || (description?.trim().length > 0 && description.trim() != '<p><br></p>')
 
   is_dark_theme = !is_light_background()
   text_block_color = edit_banner.text_background_css or customization('banner')?.text_background_css or DEFAULT_TEXT_BLOCK_COLOR
@@ -991,6 +990,7 @@ window.PhotoBanner = (opts) ->
 
         CustomizeDescription
           key: 'editable_description'
+          opts: opts
           style: 
             border: if !has_description then (if is_dark_theme then '1px solid rgba(255,255,255,.5)' else '1px solid rgba(0,0,0,.5)')
             padding: "6px 8px"

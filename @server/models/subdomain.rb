@@ -12,7 +12,7 @@ class Subdomain < ActiveRecord::Base
   validates_attachment_content_type :logo, :content_type => %w(image/jpeg image/jpg image/png image/gif)
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:id, :lang, :name, :created_at, :about_page_url, :notifications_sender_email, :app_title, :external_project_url, :moderate_points_mode, :moderate_comments_mode, :moderate_proposals_mode, :host_with_port, :plan, :SSO_domain]
+  self.my_public_fields = [:id, :lang, :name, :created_at, :about_page_url, :external_project_url, :moderate_points_mode, :moderate_comments_mode, :moderate_proposals_mode, :host_with_port, :plan, :SSO_domain]
 
   scope :public_fields, -> { select(self.my_public_fields) }
 
@@ -38,33 +38,13 @@ class Subdomain < ActiveRecord::Base
       json['roles'] = self.user_roles(filter = true)
     end
 
-    json['branding'] = self.branding_info
 
-
-    #######################################################
-    ## Remove first if block after customization migrations
-
-    if self.customizations && self.customizations[0] != '{'
-
+    if current_user.super_admin
       shared = File.read("@client/customizations_helpers.coffee")
-      if current_user.super_admin
-        json['shared_code'] = shared
-      end 
-
-      str = self.customizations.gsub('"', '\\"').gsub('$', '\\$')
-      json['customizations'] = self.customizations
-      json['customization_obj'] = %x(echo "#{shared.gsub '"', '\\"'}\nwindow.customization_obj={\n#{str}\n}" | coffee -scb)
-
-    else 
-      if current_user.super_admin
-        shared = File.read("@client/customizations_helpers.coffee")
-        json['shared_code'] = shared
-      end
-
-      json['customizations'] = self.customizations
+      json['shared_code'] = shared
     end
-    ###################################################
 
+    json['customizations'] = JSON.pretty_generate(self.customization_json)
     json
   end
 
@@ -84,36 +64,27 @@ class Subdomain < ActiveRecord::Base
     self.save
   end
 
-  # Subdomain-specific info
-  # Assembled from a couple image fields and a serialized "branding" field.
-  # 
-  # This can be a bit annoying during development. Hardcode colors here
-  # for different subdomains during development. 
-  #
-  # The serialized branding object can contain: 
-  #   masthead_header_text
-  #      This is bolded, white text in the header of the page.
-  #   primary_color
-  #      Used throughout site. Should be dark.
-  #   masthead_background_image
-  #      If this is set, the image is applied as a height = 300px background 
-  #      image covering the area
-  #   logo
-  #      A customer's logo. Shown in the footer if set. Isn't sized, just puts in whatever is uploaded. 
-  #   description
-  #      HTML description of the site, displayed in the default headers
-  def branding_info
-    brands = Oj.load(self.branding || "{}")
+  def customization_json
+    config = Oj.load (self.customizations || "{}")
+    config['banner'] ||= {}
 
-    if !brands.has_key?('primary_color') || brands['primary_color'] == ''
-      brands['primary_color'] = '#eee'
-    end
+    if self.logo_file_name
+      config['banner']['logo'] ||= {}
+      config['banner']['logo']['url'] = self.logo.url
+    elsif config['banner'].has_key?('logo')
+      config['banner'].delete('logo')
+    end 
 
-    brands['masthead'] = self.masthead_file_name ? self.masthead.url : nil
-    brands['logo'] = self.logo_file_name ? self.logo.url : nil
+    if self.masthead_file_name
+      config['banner']['background_image_url'] = self.masthead.url
+    elsif config['banner'].has_key?('background_image_url')
+      config['banner'].delete('background_image_url')
+    end 
 
-    brands
+    config
+
   end
+
 
   # Returns a hash of all the roles. Each role is expressed
   # as a list of (1) user keys, (2) email addresses (for users w/o an account)
@@ -147,11 +118,7 @@ class Subdomain < ActiveRecord::Base
   end
 
   def title 
-    if self.app_title && self.app_title.length > 0
-      self.app_title
-    else 
-      self.name
-    end
+    self.name
   end
 
   def set_roles(new_roles)
@@ -177,9 +144,6 @@ class Subdomain < ActiveRecord::Base
 
   end
 
-  def customization_json
-    Oj.load (self.customizations || {})
-  end
 
 
 

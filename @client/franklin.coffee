@@ -652,7 +652,7 @@ ProposalDescription = ReactiveComponent
 
 
             DIV 
-              className: 'proposal_details'
+              className: 'wysiwyg_text'
               style:
                 maxHeight: if @local.description_collapsed then @max_description_height
                 overflowY: if @local.description_collapsed then 'hidden'
@@ -768,12 +768,12 @@ ProposalDescription = ReactiveComponent
 
   componentDidMount : ->
     if (@proposal.description and @max_description_height and @local.description_collapsed == undefined \
-        and $('.proposal_details').height() > @max_description_height)
+        and $('.wysiwyg_text').height() > @max_description_height)
       @local.description_collapsed = true; save(@local)
 
   componentDidUpdate : ->
     if (@proposal.description and @max_description_height and @local.description_collapsed == undefined \
-        and $('.proposal_details').height() > @max_description_height)
+        and $('.wysiwyg_text').height() > @max_description_height)
       @local.description_collapsed = true; save(@local)
 
 
@@ -848,44 +848,44 @@ ProposalDescription = ReactiveComponent
 #       user generated fields are in sync with the styling in the 
 #       wysiwyg editor. 
 styles += """
-.proposal_details code, .proposal_details pre {
+.wysiwyg_text code, .wysiwyg_text pre {
   font-family: "Courier New",Courier,"Lucida Sans Typewriter","Lucida Typewriter",monospace;
-},.proposal_details br, .description_field br {
+},.wysiwyg_text br, .description_field br {
   padding-bottom: 0.5em; }
-.proposal_details p, 
-.proposal_details ul, 
+.wysiwyg_text p, 
+.wysiwyg_text ul, 
 .description_field ul, 
-.proposal_details ol, 
+.wysiwyg_text ol, 
 .description_field ol, 
-.proposal_details table, 
+.wysiwyg_text table, 
 .description_field p, 
 .description_field table {
   margin-bottom: 0.5em; }
-.proposal_details td, .description_field td {
+.wysiwyg_text td, .description_field td {
   padding: 0 3px; }
-.proposal_details li, .description_field li {
+.wysiwyg_text li, .description_field li {
   list-style: outside; padding-bottom: 8px;}
-.proposal_details ol li {
+.wysiwyg_text ol li {
   list-style-type: decimal; }  
-.proposal_details ul, .description_field ul,
-.proposal_details ol, .description_field ol {
+.wysiwyg_text ul, .description_field ul,
+.wysiwyg_text ol, .description_field ol {
   padding-left: 20px;
   margin-left: 20px; }
-.proposal_details a, .description_field a {
+.wysiwyg_text a, .description_field a {
   text-decoration: underline; }
-.proposal_details blockquote, .description_field blockquote {
+.wysiwyg_text blockquote, .description_field blockquote {
   opacity: 0.7;
   padding: 10px 20px; }
-.proposal_details table, .description_field table {
+.wysiwyg_text table, .description_field table {
   padding: 20px 0px; font-size: 11px; 
 }
-.proposal_details .ql-editor li, .description_field .ql-editor li {
+.wysiwyg_text .ql-editor li, .description_field .ql-editor li {
   list-style: inside;
 }
-.proposal_details .ql-editor ul, .description_field .ql-editor ol{
+.wysiwyg_text .ql-editor ul, .description_field .ql-editor ol{
   margin-left: 0;
 }
-.proposal_details .ql-editor ol li {
+.wysiwyg_text .ql-editor ol li {
   list-style-type: none; }  
 """
 

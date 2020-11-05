@@ -16,7 +16,7 @@ private
   end  
 
   def default_sender(subdomain)
-    subdomain && subdomain.notifications_sender_email && subdomain.notifications_sender_email.length > 0 ? subdomain.notifications_sender_email : APP_CONFIG[:email]
+    APP_CONFIG[:email]
   end
 
   def subject_line(subject, subdomain)

@@ -131,7 +131,7 @@ casper.test.begin 'Basic proposal pre-publishing and deletion tests', 11, (test)
 # can a position be submitted?
 
 proposal_summary = "Should creating a proposal be rigorously tested?"
-proposal_details = "We could test all day all night all day all night."
+wysiwyg_text = "We could test all day all night all day all night."
 
 
 test_proposal_publicity = (test, publicity) ->
@@ -145,7 +145,7 @@ test_proposal_publicity = (test, publicity) ->
 
   casper.waitUntilStateTransitioned 'crafting', ->
     test.assertExists '.description_region_summary.editable', 'Proposal summary is editable'
-    test.assertExists '.proposal_details.editable', 'Proposal details is editable'
+    test.assertExists '.wysiwyg_text.editable', 'Proposal details is editable'
 
     proposal_id = @getCurrentUrl().substring(@getCurrentUrl().lastIndexOf('/') + 1, @getCurrentUrl().length)
 
@@ -157,17 +157,17 @@ test_proposal_publicity = (test, publicity) ->
       @wait 200, ->
         test.assertSelectorHasText '.description_region_summary.editable', proposal_summary, 'proposal summary can be modified'
 
-    @thenClick '.proposal_details.editable'
+    @thenClick '.wysiwyg_text.editable'
 
     @waitUntilVisible '.editable-input textarea', ->
-      @sendKeys ".editable-input textarea", proposal_details
+      @sendKeys ".editable-input textarea", wysiwyg_text
 
       @HTMLCapture 'body', 
         caption : "Editing a proposal"
 
       @click '.editable-buttons button[type="submit"]'
       @wait 200, ->
-        test.assertSelectorHasText '.proposal_details.editable', proposal_details, 'proposal details can be modified'
+        test.assertSelectorHasText '.wysiwyg_text.editable', wysiwyg_text, 'proposal details can be modified'
 
     if publicity == 'private' || publicity == 'link-only'
       @then ->

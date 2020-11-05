@@ -124,7 +124,7 @@ window.WysiwygEditor = ReactiveComponent
       @local.initialized = true
       save @local; save my_data
 
-    @show_placeholder = (!my_data.html || (@editor?.getText().trim().length == 0)) && !!@props.placeholder
+    toolbar_horizontal = @props.horizontal
 
     toolbar_items = [
       {
@@ -190,14 +190,14 @@ window.WysiwygEditor = ReactiveComponent
               ref: 'toolbar'
               role: 'toolbar'
               'title': 'Rich text markup'
-              'aria-orientation': 'vertical'
+              'aria-orientation': if toolbar_horizontal then 'horizontal' else 'vertical'
               id: 'toolbar'
               tabIndex: 0
               style: 
                 position: 'absolute'
-                width: 30
-                left: -32
-                top: 0
+                width: if !toolbar_horizontal then 30
+                left: if !toolbar_horizontal then -32
+                top: if toolbar_horizontal then -23 else 0
                 display: 'block'
                 visibility: if wysiwyg_editor.showing != @props.key then 'hidden'
 
@@ -235,7 +235,7 @@ window.WysiwygEditor = ReactiveComponent
                     tabIndex: if @local.focused_toolbar_item == idx then 0 else -1
                     className: button.className
                     'aria-label': button.title
-                    style: 
+                    style: _.defaults {}, @props.button_style, 
                       fontSize: 14
                       width: 28
                       textAlign: 'center'
@@ -244,7 +244,7 @@ window.WysiwygEditor = ReactiveComponent
                       border: '1px solid #aaa'
                       borderRadius: 3
                       backgroundColor: 'transparent'
-                      display: 'block'
+                      display: if toolbar_horizontal then 'inline-block' else 'block'
                       marginBottom: 4
                     title: button.title
                     value: if button.value then button.value 
@@ -273,12 +273,10 @@ window.WysiwygEditor = ReactiveComponent
                       , 0
 
           DIV 
-            style: _.extend {}, @props.container_style, 
+            style: _.defaults {}, @props.container_style, 
               outline: if fetch('wysiwyg_editor').showing == @props.key then "2px solid #{focus_color()}"
-            className: 'proposal_details' # for formatting like proposals 
+            className: 'wysiwyg_text' # for formatting like proposals 
           
-          
-
             DIV 
               id: 'editor'
               dangerouslySetInnerHTML:{__html: @props.html}
@@ -310,7 +308,6 @@ window.WysiwygEditor = ReactiveComponent
   componentDidMount : -> 
     return if !@supports_Quill
 
-
     getHTML = => 
       @getDOMNode().querySelector(".ql-editor").innerHTML
 
@@ -320,12 +317,12 @@ window.WysiwygEditor = ReactiveComponent
         toolbar: 
           container: $(@getDOMNode()).find('#toolbar')[0]
       styles: true #if/when we want to define all styles, set to false
-      placeholder: if @show_placeholder then @props.placeholder else ''
+      placeholder: @props.placeholder
 
     keyboard = @editor.getModule('keyboard')
     delete keyboard.bindings[9]    # 9 is the key code for tab; restore tabbing for accessibility
 
-    @editor.on 'text-change', (delta, old_contents, source) => 
+    @editor.on 'text-change', (delta, old_contents, source) =>
       my_data = fetch @props.key
       my_data.html = getHTML()
 
@@ -344,8 +341,12 @@ window.WysiwygEditor = ReactiveComponent
 
       save my_data
 
+    if @props.focus_on_mount
+      @editor.focus()
+
 # Some overrides to Quill base styles
 styles += """
+.ql-clipboard {display: none;}
 html .ql-container{
   font-family: inherit;
   font-size: inherit;
@@ -364,6 +365,10 @@ html .ql-container{
   position: absolute;
   color: rgba(0,0,0,.4);
   font-weight: 500;
+}
+
+.dark .ql-editor.ql-blank::before{
+  color: rgba(255,255,255,.4);
 }
 
 
@@ -717,13 +722,6 @@ html .ql-container{
 }
 .ql-editor .ql-align-right {
   text-align: right;
-}
-.ql-editor.ql-blank::before {
-  color: rgba(0,0,0,0.6);
-  content: attr(data-placeholder);
-  font-style: italic;
-  pointer-events: none;
-  position: absolute;
 }
 """
 

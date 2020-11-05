@@ -113,13 +113,12 @@ class HtmlController < ApplicationController
       @favicon = '/images/internethealthreport/favicon.png'
 
     else
-      title = current_subdomain.branding_info['masthead_header_text']
-      if !title or title.length == 0 
-        title = current_subdomain['app_title'] or "#{current_subdomain.name}"
-      end
-      image = current_subdomain.branding_info['logo']
+      banner = current_subdomain.customization_json['banner'] || {}
+      title = banner.fetch('title', current_subdomain.name)
+
+      image = current_subdomain.logo_file_name
       if image && image[0] != '/' && !image.index('http')
-        image = "#{request.protocol}#{Rails.application.config.action_controller.asset_host or 'localhost:3000'}#{image}"
+        image = "#{request.protocol}#{Rails.application.config.action_controller.asset_host || 'localhost:3000'}#{image}"
       end 
       cnt = Proposal.active.count
       if cnt == 1

@@ -1,5 +1,6 @@
 require './profile_menu'
 require './customizations'
+require './banner'
 
 
 window.Header = ReactiveComponent
@@ -12,6 +13,8 @@ window.Header = ReactiveComponent
     auth = fetch('auth')
     return SPAN null if auth.form && auth.form not in ['edit profile']
 
+    is_homepage = fetch('location').url == '/'
+    editing_banner = fetch('edit_banner').editing
 
     HEADER null, 
       # DIV 
@@ -41,10 +44,12 @@ window.Header = ReactiveComponent
             style: 
               position: 'absolute'
               left: 40
+              zIndex: 2
             GoogleTranslate()
 
 
-        if fetch('location').url == '/' && customization('HomepageHeader')
+
+        if is_homepage && customization('HomepageHeader')
           customization('HomepageHeader').apply(@)
         else 
           customization('SiteHeader').apply(@)

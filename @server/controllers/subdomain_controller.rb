@@ -65,7 +65,7 @@ class SubdomainController < ApplicationController
         render :json => [{errors: errors}]
       end
     else      
-      new_subdomain = Subdomain.new name: subdomain, app_title: params[:app_title]
+      new_subdomain = Subdomain.new name: subdomain
       roles = new_subdomain.user_roles
       roles['admin'].push "/user/#{current_user.id}"
       roles['visitor'].push "*"
@@ -151,12 +151,12 @@ class SubdomainController < ApplicationController
       raise PermissionDenied.new Permission::DISABLED
     end
 
-    fields = ['lang', 'moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url', 'google_analytics_code']
+    fields = ['lang', 'moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'external_project_url', 'google_analytics_code']
     attrs = params.select{|k,v| fields.include? k}
 
     update_roles
 
-    serialized_fields = ['roles', 'branding']
+    serialized_fields = ['roles']
     for field in serialized_fields
       if params.has_key? field
         attrs[field] = JSON.dump params[field]
@@ -167,7 +167,7 @@ class SubdomainController < ApplicationController
       attrs['plan'] = params['plan'].to_i
     end 
 
-    if current_user.super_admin && params.has_key?('customizations')
+    if current_user.is_admin? && params.has_key?('customizations')
       attrs['customizations'] = params['customizations']
     end 
 
@@ -198,11 +198,19 @@ class SubdomainController < ApplicationController
 
   def update_images_hack
     attrs = {}
-    if params['masthead']
-      attrs['masthead'] = params['masthead']
+    if masthead = params['masthead']
+      if masthead == '*delete*'
+        attrs['masthead'] = nil
+      else 
+        attrs['masthead'] = masthead
+      end 
     end
-    if params['logo']
-      attrs['logo'] = params['logo']
+    if logo = params['logo']
+      if logo == '*delete*'
+        attrs['logo'] = nil
+      else 
+        attrs['logo'] = params['logo']
+      end
     end
 
     current_tenant.update_attributes attrs

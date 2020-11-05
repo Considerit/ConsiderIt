@@ -143,7 +143,7 @@ ProposalDescription = ReactiveComponent
 
       else if @proposal.description?.length > 0 && len > 0 
         DIV
-          className: 'proposal_details'
+          className: 'wysiwyg_text'
           style: 
             paddingTop: 5
 

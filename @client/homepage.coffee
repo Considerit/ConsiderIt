@@ -22,10 +22,7 @@ window.AuthCallout = ReactiveComponent
     DIV  
       style: 
         width: '100%'
-        #backgroundColor: '#545454'
         paddingBottom: 16
-        #color: 'white'
-        #marginTop: 12
 
       DIV 
         style: 
@@ -86,7 +83,7 @@ window.Homepage = ReactiveComponent
 
     return SPAN null if !subdomain.name
 
-    title = subdomain.branding.masthead_header_text or subdomain.app_title or "#{subdomain.name} considerit homepage"
+    title = customization('banner')?.title or "#{subdomain.name} considerit forum"
 
     if doc.title != title
       doc.title = title

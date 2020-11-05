@@ -462,7 +462,7 @@ CustomizeBackground = ReactiveComponent
 
     editing = edit_banner.editing 
     
-    return SPAN(null) if !has_masthead && !editing
+    return SPAN(null) if !editing
 
     is_light = is_light_background()
     icon_height = 50
@@ -476,101 +476,100 @@ CustomizeBackground = ReactiveComponent
         backgroundColor: if is_light then 'rgba(255,255,255,.4)' else 'rgba(0,0,0,.4)'
         padding: '12px 24px'
 
-      if editing # upload icon
-        DIV null,
+      DIV null,
+        DIV
+          style: 
+            cursor: 'pointer'
+            
+          onClick: ->
+            document.querySelector('input#masthead').click()
+
+          onKeyDown: (e) => 
+            if e.which == 13 || e.which == 32 # ENTER or SPACE
+              e.target.click()
+              e.preventDefault()
+
           DIV
             style: 
+              margin: 'auto'
+              height: icon_height
+              width: icon_height
+
+            UploadBackgroundImageSVG
+              height: icon_height
+              fill: if is_light then 'black' else 'white'
+
+          DIV 
+            style: 
+              fontSize: 14
+              color: color
+              zIndex: 1
+              left: '50%'
+              marginBottom: 12
+            'Upload background'
+
+        DIV 
+          style: 
+            fontSize: 14
+            position: 'relative'
+            left: if has_masthead then -20
+
+          if has_masthead
+            INPUT 
+              id: 'background_color'
+              type: 'checkbox'
+              name: 'background_color'
+              defaultValue: is_light
+              onChange: (e) =>
+                edit_banner.background_css = if e.target.checked then "rgb(255,255,255)" else 'rgb(0,0,0)'
+                save edit_banner
+
+
+          LABEL 
+            style: 
+              color: color
+              marginRight: 4
+            htmlFor: "background_color"
+
+            if has_masthead
+              translator("banner.background_css_is_light.label", "Light theme")
+            else 
+              translator("banner.background_css.label", "...or set to color") + ':'
+
+          if !has_masthead
+            INPUT 
+              id: 'background_color'
+              type: 'color'
+              name: 'background_color'
+              defaultValue: customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
+              onChange: (e) =>
+                edit_banner.background_css = e.target.value
+                save edit_banner
+
+
+        if has_masthead
+          BUTTON 
+            style: 
+              border: 'none'
+              background: 'none'
               cursor: 'pointer'
-              
+              padding: 0
+              zIndex: 1
+              color: color
+              fontSize: 14
+              display: 'block'
+              marginTop: 12
+              textDecoration: 'underline'
+
             onClick: ->
-              document.querySelector('input#masthead').click()
+              document.querySelector('button#delete_masthead').click()
 
             onKeyDown: (e) => 
               if e.which == 13 || e.which == 32 # ENTER or SPACE
                 e.target.click()
                 e.preventDefault()
 
-            DIV
-              style: 
-                margin: 'auto'
-                height: icon_height
-                width: icon_height
-
-              UploadBackgroundImageSVG
-                height: icon_height
-                fill: if is_light then 'black' else 'white'
-
-            DIV 
-              style: 
-                fontSize: 14
-                color: color
-                zIndex: 1
-                left: '50%'
-                marginBottom: 12
-              'Upload background'
-
-          DIV 
-            style: 
-              fontSize: 14
-              position: 'relative'
-              left: if has_masthead then -20
-
-            if has_masthead
-              INPUT 
-                id: 'background_color'
-                type: 'checkbox'
-                name: 'background_color'
-                defaultValue: is_light
-                onChange: (e) =>
-                  edit_banner.background_css = if e.target.checked then "rgb(255,255,255)" else 'rgb(0,0,0)'
-                  save edit_banner
-
-
-            LABEL 
-              style: 
-                color: color
-                marginRight: 4
-              htmlFor: "background_color"
-
-              if has_masthead
-                translator("banner.background_css_is_light.label", "Light theme")
-              else 
-                translator("banner.background_css.label", "...or set to color") + ':'
-
-            if !has_masthead
-              INPUT 
-                id: 'background_color'
-                type: 'color'
-                name: 'background_color'
-                defaultValue: customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
-                onChange: (e) =>
-                  edit_banner.background_css = e.target.value
-                  save edit_banner
-
-
-          if editing && has_masthead
-            BUTTON 
-              style: 
-                border: 'none'
-                background: 'none'
-                cursor: 'pointer'
-                padding: 0
-                zIndex: 1
-                color: color
-                fontSize: 14
-                display: 'block'
-                marginTop: 12
-                textDecoration: 'underline'
-
-              onClick: ->
-                document.querySelector('button#delete_masthead').click()
-
-              onKeyDown: (e) => 
-                if e.which == 13 || e.which == 32 # ENTER or SPACE
-                  e.target.click()
-                  e.preventDefault()
-
-              'remove background'
+            'remove background'
 
 
 window.EditBanner = ReactiveComponent
@@ -942,7 +941,6 @@ window.PhotoBanner = (opts) ->
   text_block_opacity = parseInt(edit_banner.text_background_css_opacity or customization('banner')?.text_background_css_opacity or DEFAULT_TEXT_BLOCK_OPACITY)
   text_block_background = if has_image_background then "#{text_block_color}#{convert_opacity(text_block_opacity)}" or 'rgba(0, 0, 0, .8)'
   
-  console.log text_block_background, has_image_background, text_block_color
   if text_block_color && text_block_opacity > 126
     text_block_is_dark = !is_light_background(text_block_color)
   else 

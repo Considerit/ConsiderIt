@@ -232,7 +232,7 @@ Proposal = ReactiveComponent
           (customization('opinion_callout')?[@proposal.cluster] or customization('opinion_callout'))()
         else 
           H1
-            style: _.defaults {}, customization('list_label_style'),
+            style: _.defaults {}, customization('list_title_style'),
               fontSize: 36
               fontWeight: 700
               fontStyle: 'oblique'
@@ -531,7 +531,7 @@ ProposalDescription = ReactiveComponent
     title = @proposal.name 
     body = @proposal.description 
 
-    title_style = _.defaults {}, customization('list_label_style'),
+    title_style = _.defaults {}, customization('list_title_style'),
       fontSize: 36
       fontWeight: 700
       fontStyle: 'oblique'

@@ -12,11 +12,10 @@ namespace :customizations do
       # list_is_archived: false,
       # list_opinions_title: 'Opinions',
       # slider_pole_labels: slider_labels.important_unimportant,
-      # list_label_style: {}, 
+      # list_title_style: {}, 
       # list_items_title: '',
       # list_no_filters: false,
       # list_uncollapseable,
-      # list_label_style
     }
 
     file_path = args[:fpath] || 'lib/tasks/client_data/lists.csv'
@@ -47,7 +46,7 @@ namespace :customizations do
         list[k] = v
       end
 
-      list[:list_label] = header
+      list[:list_title] = header
 
       if desc 
         list[:list_description] = desc 

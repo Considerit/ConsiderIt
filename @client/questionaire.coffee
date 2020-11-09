@@ -96,7 +96,7 @@ window.Questionaire = ReactiveComponent
                 marginBottom: 8
                 fontStyle: 'italic'
 
-              customization 'list_label', group
+              customization 'list_title', group
 
             UL 
               style: 
@@ -296,7 +296,7 @@ window.Questionaire = ReactiveComponent
             add_new: false 
 
           H1 
-            style: _.extend {}, customization('list_label_style'),
+            style: _.extend {}, customization('list_title_style'),
               fontSize: 32
               fontWeight: 600
             'Results'

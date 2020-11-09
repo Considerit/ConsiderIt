@@ -97,8 +97,7 @@ EditableTitle = ReactiveComponent
 
     list_items_title = customization('list_items_title', list_key) or list.name or 'Proposals'
 
-    # list_label is deprecated, will be migrated / removed
-    title = (edit_list.editing and edit_list.list_title) or customization('list_title', list_key) or customization('list_label', list_key) or list_items_title
+    title = (edit_list.editing and edit_list.list_title) or customization('list_title', list_key) or list_items_title
 
     if title == 'Show all'
       title = translator "engage.all_proposals_list", "All Proposals"
@@ -232,7 +231,7 @@ EditableDescription = ReactiveComponent
     list_key = "list/#{list.name}"    
     edit_list = fetch "edit-#{list_key}"
 
-    description = edit_list.list_description or customization('list_description', list_key) or customization('list_one_line_desc', list_key)
+    description = edit_list.list_description or customization('list_description', list_key)
     description_style = customization 'list_description_style', list_key
 
     current_user = fetch '/current_user'
@@ -261,7 +260,7 @@ EditableDescription = ReactiveComponent
             WysiwygEditor
               key: "#{list_key}-description"
               horizontal: true
-              html: customization('list_description', list_key) or customization('list_one_line_desc', list_key)
+              html: customization('list_description', list_key)
               placeholder: translator("engage.list_description", "(optional) Description")
 
         else 
@@ -295,7 +294,7 @@ EditList = ReactiveComponent
       customizations[list_key] ?= {}
       list_config = customizations[list_key]
 
-      fields = ['list_title', 'list_description']
+      fields = ['list_title', 'list_description', 'list_show_new_button']
 
       for f in fields
         val = edit_list[f]
@@ -371,7 +370,7 @@ window.ListHeading = ReactiveComponent
 
     subdomain = fetch '/subdomain'
 
-    description = edit_list.description or customization('list_description', list_key) or customization('list_one_line_desc', list_key)
+    description = edit_list.description or customization('list_description', list_key)
 
     DIVIDER = customization 'list_divider', list_key
 

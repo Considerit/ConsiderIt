@@ -75,7 +75,7 @@ window.NextProposals = ReactiveComponent
     to_show = to_show_first.concat(to_show_later)
     return SPAN null if to_show.length < 2 && arest.cache['/proposals']?.proposals?
 
-    heading_style = _.defaults {}, customization('list_label_style'),
+    heading_style = _.defaults {}, customization('list_title_style'),
       fontSize: 36
       fontWeight: 700
       fontStyle: 'oblique'
@@ -137,7 +137,7 @@ window.NextProposals = ReactiveComponent
 window.GroupedProposalNavigation = (args) -> 
   proposals = fetch('/proposals').proposals
 
-  heading_style = _.defaults {}, customization('list_label_style'),
+  heading_style = _.defaults {}, customization('list_title_style'),
     fontSize: 36
     fontWeight: 700
     fontStyle: 'oblique'
@@ -244,7 +244,7 @@ window.GroupedProposalNavigation = (args) ->
 
                   cluster_key = list.key    
                   list_items_title = customization('list_items_title', cluster_key) or list.name or 'Proposals'
-                  heading_text = customization('list_label', cluster_key) or list_items_title
+                  heading_text = customization('list_title', cluster_key) or list_items_title
 
                   continue if (list.proposals or []).length == 0 
 
@@ -369,7 +369,7 @@ window.GroupedProposalNavigation = (args) ->
 window.BackHomeNavigation = (args) -> 
   proposals = fetch('/proposals').proposals
 
-  heading_style = _.defaults {}, customization('list_label_style'),
+  heading_style = _.defaults {}, customization('list_title_style'),
     fontSize: 36
     fontWeight: 400
     fontStyle: 'oblique'

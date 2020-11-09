@@ -42,8 +42,8 @@ task :migrate_customizations => :environment do
       s.customizations = JSON.dump(customizations)
       pp "Imported title for #{s.name}: #{banner['title']}"
       s.save 
-    else 
-      pp "Not setting #{s.name} title to #{s.app_title} because already has #{banner['title']}" 
+      # else 
+      #   pp "Not setting #{s.name} title to #{s.app_title} because already has #{banner['title']}" 
     end 
   end
 
@@ -77,6 +77,50 @@ task :migrate_customizations => :environment do
         pp "Migrated customizations for #{s.name}: ", customizations['banner'] #JSON.dump(customizations)
         s.customizations = JSON.dump(customizations)
         s.save 
+      end
+
+    end
+  end
+
+
+  pp '\n************\n'
+
+  pp 'Migrate lists'
+  Subdomain.all.each do |s|
+    if s.customizations 
+      changed = false
+
+      customizations = JSON.load(s.customizations || "{}")
+
+      customizations.each do |key, val|
+        if key.match 'list/'
+          if val.has_key?("list_one_line_desc")
+            val['list_description'] = val['list_one_line_desc']
+            val.delete('list_one_line_desc')
+            pp 'moved to list_description', key
+            changed = true
+          end
+
+          if val.has_key?('list_label')
+            val['list_title'] = val['list_label']
+            val.delete('list_label')
+            pp 'moved to list_title', key
+            changed = true 
+          end 
+
+          if val.has_key?('list_label_style')
+            val['list_title_style'] = val['list_label_style']
+            val.delete('list_label_style')
+            pp 'moved to list_title_style', key
+            changed = true 
+          end 
+
+        end         
+      end
+      
+      if changed 
+        s.customizations = JSON.dump(customizations)
+        s.save  
       end
 
     end

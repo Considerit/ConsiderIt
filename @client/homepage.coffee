@@ -6,8 +6,8 @@ require './browser_location' # for loadPage
 require './filter'
 require './browser_location'
 require './collapsed_proposal'
-require './questionaire'
 require './new_proposal'
+require './lists'
 
 
 window.AuthCallout = ReactiveComponent
@@ -95,13 +95,6 @@ window.Homepage = ReactiveComponent
       SimpleHomepage()
 
 
-#############
-# SimpleHomepage
-#
-# Two column layout, with proposal name and mini histogram. 
-# Divided into clusters. 
-
-
 window.proposal_editor = (proposal) ->
   editors = (e for e in proposal.roles.editor when e != '*')
   editor = editors.length > 0 and editors[0]
@@ -119,9 +112,6 @@ window.column_sizes = (args) ->
     gutter: 50
   }
 
-
-window.HomepageTabUrlReflector = ReactiveComponent
-  displayName: "HomepageTabUrlReflector"
 
 window.TagHomepage = ReactiveComponent
   displayName: 'TagHomepage'
@@ -171,7 +161,7 @@ window.TagHomepage = ReactiveComponent
 
       ManualProposalResort sort_key: @local.key
 
-      ClusterHeading 
+      ListHeading 
         cluster: 
           key: "list/#{dummy_cluster}"
           name: dummy_cluster
@@ -235,6 +225,12 @@ window.TagHomepage = ReactiveComponent
           translator "engage.show_hidden_proposals", 'Show all proposals'
 
 
+#############
+# SimpleHomepage
+#
+# Two column layout, with proposal name and mini histogram. 
+# Divided into clusters. 
+
 window.SimpleHomepage = ReactiveComponent
   displayName: 'SimpleHomepage'
 
@@ -282,9 +278,9 @@ window.SimpleHomepage = ReactiveComponent
       DIV null, 
         # List all clusters
         for cluster, index in clusters or []
-          Cluster
+          List
             key: "list/#{cluster.name}"
-            cluster: cluster 
+            list: cluster 
             index: index
 
 
@@ -481,322 +477,6 @@ window.ManualProposalResort = ReactiveComponent
                 invalidate_proposal_sorts()
                 e.preventDefault()
         "<button>Re-sort this list</button> if you want. It is out of order."
-
-
-window.Cluster = ReactiveComponent
-  displayName: 'Cluster'
-
-
-  # cluster of proposals
-  render: -> 
-    cluster = @props.cluster
-
-
-    current_user = fetch '/current_user'
-    subdomain = fetch '/subdomain'
-
-    # subscribe to a key that will alert us to when sort order has changed
-    fetch('homepage_you_updated_proposal')
-
-    collapsed = fetch 'collapsed_clusters'
-    is_collapsed = !!collapsed[@props.key]
-
-    proposals = sorted_proposals(cluster.proposals, @local.key, true)
-
-    return SPAN null if !proposals
-
-    cluster_key = "list/#{cluster.name}"
-
-    ARTICLE
-      key: cluster.name
-      id: if cluster.name && cluster.name then cluster.name.toLowerCase()
-      style: 
-        marginBottom: if !is_collapsed then 28
-        position: 'relative'
-
-      A name: if cluster.name && cluster.name then cluster.name.toLowerCase().replace(/ /g, '_')
-
-
-      ManualProposalResort sort_key: @local.key
-
-      ClusterHeading 
-        cluster: cluster 
-        proposals_count: proposals.length
-
-      if customization('questionaire', cluster_key) && !is_collapsed
-        Questionaire 
-          cluster_key: cluster_key
-
-      else if !is_collapsed
-        UL null, 
-          for proposal,idx in proposals
-
-            CollapsedProposal 
-              key: "collapsed#{proposal.key}"
-              proposal: proposal
-
-          if customization('list_show_new_button', cluster_key)
-            LI 
-              key: "new#{cluster_key}"
-              style: 
-                margin: 0 
-                padding: 0
-                listStyle: 'none'
-                display: 'inline-block'
-                marginBottom: 20
-                marginTop: 6
-                
-
-              NewProposal 
-                cluster_name: cluster.name
-                local: @local.key
-                label_style: {}
-
-      if customization('footer', cluster_key) && !is_collapsed
-        customization('footer', cluster_key)()
-
-
-ClusterHeading = ReactiveComponent
-  displayName: 'ClusterHeading'
-
-  render: -> 
-    cluster = @props.cluster 
-
-    cluster_key = "list/#{cluster.name}"    
-    collapsed = fetch 'collapsed_clusters'    
-    is_collapsed = !!collapsed[cluster_key]
-
-
-    subdomain = fetch '/subdomain'
-
-    tw = if is_collapsed then 15 else 20
-    th = if is_collapsed then 20 else 15
-
-    list_uncollapseable = customization 'list_uncollapseable', cluster_key
-    list_items_title = customization('list_items_title', cluster_key) or cluster.name or 'Proposals'
-
-    heading_text = customization('list_label', cluster_key) or list_items_title
-
-    if heading_text == 'Show all'
-      heading_text = translator "engage.all_proposals_list", "All Proposals"
-    else 
-      if heading_text == "Proposals"
-        heading_text = translator "engage.default_proposals_list", "Proposals"
-      else 
-        heading_text = translator 
-                         id: "proposal_list.#{heading_text}"
-                         key: "/translations/#{subdomain.name}"
-                         heading_text 
-
-    heading_style = _.defaults {}, customization('list_label_style', cluster_key),
-      fontSize: 36
-      fontWeight: 700
-      fontStyle: 'oblique'
-
-
-    if heading_text.replace(/^\s+|\s+$/g, '').length == 0 # trim whitespace
-      heading_style.fontSize = 0 
-
-    description = customization('list_description', cluster_key) or customization('list_one_line_desc', cluster_key)
-    description_style = customization 'list_description_style', cluster_key
-
-    DIVIDER = customization 'list_divider', cluster_key
-
-    HEADING = H1
-    LABEL_ENCLOSE = if list_uncollapseable then DIV else BUTTON
-
-    toggle_list = ->
-      if !list_uncollapseable
-        collapsed[cluster_key] = !collapsed[cluster_key] 
-        save collapsed
-
-    DIV 
-      style: 
-        width: HOMEPAGE_WIDTH()
-        marginBottom: 16 #24
-
-      DIVIDER?()
-
-      DIV 
-        style: 
-          position: 'relative'
-
-
-        H1
-          style: heading_style
-
-          LABEL_ENCLOSE 
-            tabIndex: if !list_uncollapseable then 0
-            'aria-label': "#{heading_text}. #{translator('Expand or collapse list.')}"
-            'aria-pressed': !collapsed[cluster_key]
-            onMouseEnter: => @local.hover_label = true; save @local 
-            onMouseLeave: => @local.hover_label = false; save @local
-            style: 
-              padding: 0 
-              margin: 0 
-              border: 'none'
-              backgroundColor: 'transparent'
-              fontWeight: heading_style.fontWeight
-              cursor: if !list_uncollapseable then 'pointer'
-              textAlign: 'left'
-              color: heading_style.color
-              position: 'relative'
-              fontFamily: heading_style.fontFamily
-              fontStyle: heading_style.fontStyle
-              textDecoration: heading_style.textDecoration
-                
-            onKeyDown: if !list_uncollapseable then (e) -> 
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                toggle_list()
-                e.preventDefault()
-            onClick: if !list_uncollapseable then (e) -> 
-              toggle_list()
-              document.activeElement.blur()
-
-            heading_text 
-
-            if !list_uncollapseable
-              SPAN 
-                'aria-hidden': true
-                style: cssTriangle (if is_collapsed then 'right' else 'bottom'), (heading_style.color or 'black'), tw, th,
-                  position: 'absolute'
-                  left: -tw - 20
-                  top: 16
-                  width: tw
-                  height: th
-                  display: if @local.hover_label or is_collapsed then 'inline-block' else 'none'
-                  outline: 'none'
-
-
-        if !is_collapsed
-
-
-
-          if description
-
-            DIV                
-              style: _.defaults {}, (description_style or {}),
-                fontSize: 18
-                fontWeight: 400 
-                color: '#444'
-                marginTop: 6
-
-              if _.isFunction(description)  
-                description()
-              else 
-                desc = description
-                if typeof desc == 'string'
-                  desc = [description]
-
-                for para, idx in desc
-                  DIV 
-                    key: idx
-                    style:
-                      marginBottom: 10
-                    dangerouslySetInnerHTML: {__html: para}
-
-          else if widthWhenRendered(heading_text, heading_style) <= column_sizes().first + column_sizes().gutter
-
-            histo_title = customization('list_opinions_title', cluster_key)
-
-            DIV
-              style: 
-                width: column_sizes().second
-                display: 'inline-block'
-                verticalAlign: 'top'
-                marginLeft: column_sizes().margin
-                whiteSpace: 'nowrap'
-                position: 'absolute'
-                top: 0
-                right: 0
-                textAlign: 'right'
-                fontWeight: heading_style.fontWeight
-                color: heading_style.color
-                fontSize: heading_style.fontSize
-                fontStyle: 'oblique'
-
-              TRANSLATE
-                id: "engage.list_opinions_title.#{histo_title}"
-                key: if histo_title == customizations.default.list_opinions_title then '/translations' else "/translations/#{subdomain.name}"
-                histo_title
-
-
-      if @props.proposals_count > 0 && !customization('questionaire', cluster_key) && !is_collapsed && !customization('list_no_filters', cluster_key)
-        list_actions
-          cluster: cluster
-          add_new: customization('list_show_new_button', cluster_key) && !is_collapsed && @props.proposals_count > 4
-          can_sort: customization('homepage_show_search_and_sort') && @props.proposals_count > 8 
-
-
-
-
-
-
-window.list_actions = (props) -> 
-
-  add_new = props.add_new
-  if add_new 
-    permitted = permit('create proposal')
-    add_new &&= permitted > 0 || permitted == Permission.NOT_LOGGED_IN
-
-  DIV 
-    style: 
-      marginTop: 12
-      marginBottom: 50
-
-    if add_new
-
-      SPAN null, 
-        A
-          style: 
-            textDecoration: 'underline'
-            fontSize: 20
-            color: focus_color()
-            fontFamily: customization('font')
-            fontStyle: 'normal'
-            fontWeight: 700
-          onClick: (e) => 
-            show_all = fetch('show_all_proposals')
-            show_all.show_all = true 
-            save show_all
-            e.stopPropagation()
-
-            setTimeout =>
-              $("[name='add_new_#{props.cluster.name}']").ensureInView()
-            , 1
-          translator "engage.add_new_proposal_to_list", 'add new'
-
-    if props.can_sort && add_new
-      SPAN 
-        style: 
-          padding: '0 24px'
-          fontSize: 20
-        '|'
-
-    if props.can_sort
-      SortProposalsMenu()
-
-
-
-    OpinionFilter
-      style: 
-        display: 'inline-block'
-        float: 'right'
-        maxWidth: column_sizes().second
-        textAlign: 'right'
-      enable_comparison_wrapper_style: 
-        position: 'absolute'
-        right: 0 
-        bottom: -20
-        fontSize: 14
-        zIndex: 99
-      
-
-    DIV 
-      style: 
-        clear: 'both'
-
-
 
 
 ProposalsLoading = ReactiveComponent

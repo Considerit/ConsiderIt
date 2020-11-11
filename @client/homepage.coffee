@@ -128,7 +128,7 @@ window.TagHomepage = ReactiveComponent
     if !proposals || !users.users
       return ProposalsLoading()   
 
-    clusters = get_all_clusters()
+    clusters = get_all_lists()
 
     hues = getNiceRandomHues clusters.length
     colors = {}
@@ -161,7 +161,7 @@ window.TagHomepage = ReactiveComponent
 
       ManualProposalResort sort_key: @local.key
 
-      ListHeading 
+      ListHeader 
         cluster: 
           key: "list/#{dummy_cluster}"
           name: dummy_cluster
@@ -283,23 +283,15 @@ window.SimpleHomepage = ReactiveComponent
             list: cluster 
             index: index
 
+        if current_user.is_admin && homepage_tabs.filter not in ['About', 'FAQ']
 
-        if permit('create proposal') > 0 && customization('homepage_show_new_proposal_button') \
-            && homepage_tabs.filter not in ['About', 'FAQ'] && ( !subdomain.SSO_domain || current_user.logged_in)
-          A 
-            style: 
-              color: logo_red
-              marginTop: 35
-              display: 'inline-block'
-              borderBottom: "1px solid #{logo_red}"
-            href: '/proposal/new'
-
-            translator 'engage.add_new_proposal_button', "Create new proposal"
+          NewList()
+          
 
   typeset : -> 
     subdomain = fetch('/subdomain')
     if subdomain.name == 'RANDOM2015' && $('.MathJax').length == 0
-      MathJax.Hub.Queue(["Typeset",MathJax.Hub,".proposal_homepage_name"])
+      MathJax.Hub.Queue(["Typeset", MathJax.Hub, ".proposal_homepage_name"])
 
   componentDidMount : -> @typeset()
   componentDidUpdate : -> @typeset()

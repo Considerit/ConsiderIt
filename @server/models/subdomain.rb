@@ -65,7 +65,13 @@ class Subdomain < ActiveRecord::Base
   end
 
   def customization_json
-    config = Oj.load (self.customizations || "{}")
+    begin
+      config = Oj.load (self.customizations || "{}")
+    rescue e
+      config = Oj.load "{}"
+      ExceptionNotifier.notify_exception e, :env => request.env
+    end 
+
     config['banner'] ||= {}
 
     if self.logo_file_name

@@ -1102,7 +1102,7 @@ ModerateItem = ReactiveComponent
               proposal.cluster = e.target.value
               save proposal
 
-            for clust in get_all_clusters()
+            for clust in get_all_lists()
               OPTION  
                 value: clust
                 clust

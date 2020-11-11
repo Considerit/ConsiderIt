@@ -213,7 +213,7 @@ window.opinionsForProposal = (proposal) ->
   opinions = fetch(proposal).opinions || []
   opinions
 
-window.get_all_clusters = ->
+window.get_all_lists = ->
   proposals = fetch '/proposals'
   all_clusters = ((p.cluster or 'Proposals').trim() for p in proposals.proposals)
 
@@ -241,7 +241,7 @@ window.clustered_proposals = (keep_as_map) ->
   # create clusters
   clusters = {}
 
-  all_clusters = get_all_clusters()
+  all_clusters = get_all_lists()
 
   # By default sort proposals by the newest of the proposals.
   # But we'll only do this on page load, so that clusters don't move

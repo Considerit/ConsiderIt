@@ -67,7 +67,7 @@ class Subdomain < ActiveRecord::Base
   def customization_json
     begin
       config = Oj.load (self.customizations || "{}")
-    rescue e
+    rescue => e
       config = Oj.load "{}"
       ExceptionNotifier.notify_exception e, :env => request.env
     end 

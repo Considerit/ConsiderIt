@@ -43,7 +43,7 @@ window.DropMenu = ReactiveComponent
   displayName: 'DropMenu'
 
   render : ->
-
+    @local.active_option ?= -1
     open_menu_on = @props.open_menu_on or 'focus' #other option is 'activation'
 
     wrapper_style = _.defaults {}, @props.wrapper_style, 
@@ -77,12 +77,13 @@ window.DropMenu = ReactiveComponent
     render_option = @props.render_option
 
     set_active = (idx) => 
-      idx = 0 if !idx?
+      idx = -1 if !idx?
       @local.active_option = idx 
       save @local 
-      setTimeout => 
-        @refs["menuitem-#{idx}"].getDOMNode().focus()
-      , 0
+      if idx != -1
+        setTimeout => 
+          @refs["menuitem-#{idx}"].getDOMNode().focus()
+        , 0
 
 
     trigger = (e) => 
@@ -152,12 +153,12 @@ window.DropMenu = ReactiveComponent
 
         onMouseEnter: if open_menu_on == 'focus' then (e) => 
                 @local.show_menu = true
-                set_active(0)
+                set_active(-1)
                 save @local 
 
         onClick: if open_menu_on != 'focus' then (e) => 
                 @local.show_menu = !@local.show_menu
-                set_active(0) if @local.show_menu
+                set_active(-1) if @local.show_menu
                 save @local
 
         onKeyDown: (e) => 
@@ -222,11 +223,11 @@ window.DropMenu = ReactiveComponent
                     set_active idx
 
                 onBlur: (e) => 
-                  @local.active_option = null 
+                  @local.active_option = -1 
                   save @local  
 
                 onMouseExit: (e) => 
-                  @local.active_option = null 
+                  @local.active_option = -1 
                   save @local
                   e.stopPropagation()
 

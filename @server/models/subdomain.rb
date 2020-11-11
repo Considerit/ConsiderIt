@@ -69,7 +69,7 @@ class Subdomain < ActiveRecord::Base
       config = Oj.load (self.customizations || "{}")
     rescue => e
       config = Oj.load "{}"
-      ExceptionNotifier.notify_exception e, :env => request.env
+      ExceptionNotifier.notify_exception e
     end 
 
     config['banner'] ||= {}

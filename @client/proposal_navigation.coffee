@@ -243,7 +243,7 @@ window.GroupedProposalNavigation = (args) ->
                   th = if is_collapsed then 20 else 15
 
                   cluster_key = list.key    
-                  list_items_title = customization('list_items_title', cluster_key) or list.name or 'Proposals'
+                  list_items_title = list.name or 'Proposals'
                   heading_text = customization('list_title', cluster_key) or list_items_title
 
                   continue if (list.proposals or []).length == 0 

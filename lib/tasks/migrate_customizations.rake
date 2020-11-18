@@ -115,6 +115,10 @@ task :migrate_customizations => :environment do
             changed = true 
           end 
 
+          if val.has_key?('list_items_title')
+            val.delete('list_items_title')
+            changed = true
+          end
         end         
       end
       

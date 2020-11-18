@@ -233,80 +233,6 @@ window.NewProposal = ReactiveComponent
                   minHeight: 120
 
 
-          # Category
-
-          do =>
-            available_lists = (clust for clust in get_all_lists() when customization('list_show_new_button', "list/#{clust}"))
-
-            if (!current_user.is_admin && available_lists.length <= 1) || customization('hide_category_for_new', list_key)
-              INPUT
-                type: 'hidden'
-                value: list_name
-                ref: 'category'
-
-            else 
-              DIV null,
-                DIV 
-                  style: 
-                    marginTop: 8
-
-                                  
-                  LABEL               
-                    style: _.extend {}, label_style,
-                      marginLeft: 8
-
-
-                    htmlFor: "#{list_slug}-category"
-
-                    TRANSLATE "engage.edit_proposal.category_select_label", 'Category'
-                  
-                  SELECT
-                    id: "#{list_slug}-category"
-                    style: 
-                      fontSize: 18
-                      width: w
-                    value: @local.category
-                    ref: 'category'
-                    onChange: (e) =>
-                      @local.category = e.target.value
-                      save @local
-
-                    [
-                      if current_user.is_admin
-
-                        [
-                          OPTION 
-                            style: 
-                              fontStyle: 'italic'
-                            value: 'new category'
-                            'Create new category'
-
-                          OPTION 
-                            disabled: "disabled"
-                            '--------'
-                        ]
-
-                      for clust in available_lists
-                        OPTION  
-                          value: clust
-                          customization('list_title', "list/#{clust}") or clust
-
-                    ]
-
-                if current_user.is_admin && @local.category == 'new category'
-                  INPUT 
-                    type: 'text'
-                    ref: 'new_category'
-                    placeholder: 'category name'
-                    style: 
-                      fontSize: 16
-                      padding: '4px 6px'
-                      #marginLeft: 4
-                      marginTop: 4
-                      display: 'block'
-
-
-
           if @local.errors?.length > 0
             
             DIV
@@ -356,10 +282,7 @@ window.NewProposal = ReactiveComponent
                 description = proposal_fields.create_description(fields)
                 active = true 
                 hide_on_homepage = false
-                category = @refs.category.getDOMNode().value
-
-                if current_user.is_admin && @local.category == 'new category'
-                  category = @refs.new_category.getDOMNode().value or list_name
+                category = list_name
 
                 proposal =
                   key : '/new/proposal'

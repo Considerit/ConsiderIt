@@ -62,9 +62,9 @@ window.EditProposal = ReactiveComponent
 
     if @props.fresh 
       loc = fetch 'location'
-      cluster = loc.query_params.category or ''
+      list = loc.query_params.category or ''
     else 
-      cluster = proposal.cluster 
+      list = proposal.cluster 
 
     if !@local.description_fields && (@props.fresh || proposal.slug)
       @local.description_fields = if proposal.description_fields 
@@ -95,6 +95,8 @@ window.EditProposal = ReactiveComponent
         @local.open_fields.push field.id
       save @local
 
+    available_lists = (clust for clust in get_all_lists() when customization('list_show_new_button', "list/#{clust}"))
+    
     DIV null, 
       DIV 
         style: 
@@ -117,22 +119,6 @@ window.EditProposal = ReactiveComponent
               translator 'engage.add_new_proposal_button', "Create new proposal"
             else 
               "#{capitalize(translator('engage.edit_button', 'edit'))} '#{proposal.name}'"
-
-          # DIV 
-          #   style: 
-          #     fontSize: 18
-
-          #   t('make_it') + ' ' 
-          #   SPAN 
-          #     style: 
-          #       fontWeight: 600
-          #     t("unambiguous")
-          #   ' ' + t('and') + ' '
-          #   SPAN 
-          #     style: 
-          #       fontWeight: 600
-          #     t('error_free')
-          #   '.'
 
         DIV style: block_style,
           LABEL 
@@ -274,18 +260,57 @@ window.EditProposal = ReactiveComponent
           style: block_style
 
           LABEL 
-            htmlFor:'cluster'
+            htmlFor:'list'
             style: label_style
-            translator('category') + ' (' + translator('optional') + '):'
-
-          INPUT 
-            id: 'cluster'
-            name: 'cluster'
-            pattern: '^.{3,}'
-            placeholder: translator("engage.proposal_cluster_placeholder", 'The proposal will be shown on the homepage under this category. (Default="Proposals")')
-            defaultValue: cluster 
-            style: input_style
+            translator('category') + ' [' + translator('optional') + ']:'
           
+
+          SELECT
+            ref: 'list'
+            id: "list"
+            name: "list"
+            style: 
+              fontSize: 18
+            defaultValue: list
+            onChange: (e) => 
+              @local.list = e.target.value
+              save @local
+
+            [
+              if current_user.is_admin
+
+                [
+                  OPTION 
+                    style: 
+                      fontStyle: 'italic'
+                    value: 'new list'
+                    'Create new category'
+
+                  OPTION 
+                    disabled: "disabled"
+                    '--------'
+                ]
+
+              for list_name in available_lists
+                OPTION  
+                  value: list_name
+                  customization('list_title', "list/#{list_name}") or list_name
+
+            ]
+
+          if current_user.is_admin && @local.list == 'new list'
+            INPUT 
+              type: 'text'
+              ref: 'new_list'
+              style: 
+                fontSize: 16
+                padding: '4px 6px'
+                #marginLeft: 4
+                marginTop: 4
+                display: 'block'
+
+
+
         DIV 
           style: _.extend {}, block_style,
             display: if !current_user.is_admin then 'none'
@@ -448,15 +473,16 @@ window.EditProposal = ReactiveComponent
 
 
   saveProposal : -> 
-
+    current_user = fetch '/current_user'
     $el = $(@getDOMNode())
     
     name = $el.find('#name').val()
     description = fetch("description-#{@data().key}").html
 
-
-    cluster = $el.find('#cluster').val()
-    cluster = null if cluster == ""
+    list = @refs.list.getDOMNode().value
+    if current_user.is_admin && list == 'new list'
+      list = @refs.new_list.getDOMNode().value or list_name    
+    list = null if list == ''
 
     active = $el.find('#open_for_discussion:checked').length > 0
     hide_on_homepage = $el.find('#listed_on_homepage:checked').length == 0
@@ -466,14 +492,14 @@ window.EditProposal = ReactiveComponent
         key : '/new/proposal'
         name : name
         description : description
-        cluster : cluster
+        cluster : list
         active: active
         hide_on_homepage: hide_on_homepage
 
     else 
       proposal = @data()
       _.extend proposal, 
-        cluster: cluster
+        cluster: list
         name: name
         description: description
         active: active

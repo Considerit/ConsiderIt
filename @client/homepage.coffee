@@ -162,11 +162,12 @@ window.TagHomepage = ReactiveComponent
       ManualProposalResort sort_key: @local.key
 
       ListHeader 
-        cluster: 
+        list: 
           key: "list/#{dummy_cluster}"
           name: dummy_cluster
           proposals: []
           list_is_archived: customization('list_is_archived', "list/#{dummy_cluster}")
+        allow_editing: false
         proposals_count: proposals.length 
 
 

@@ -986,7 +986,7 @@ window.PhotoBanner = (opts) ->
           style: _.defaults {}, opts.header_text_style or {},
             fontSize: 56
             fontWeight: 800
-            fontStyle: 'oblique'
+            fontFamily: header_font()
             textAlign: 'center'
             marginBottom: if has_description || edit_banner.editing then 28
 
@@ -1003,7 +1003,7 @@ window.PhotoBanner = (opts) ->
         HomepageTabs
           tab_style: _.defaults {}, opts.tab_style or {},
             textTransform: 'uppercase'
-            fontStyle: 'oblique'
+            fontFamily: header_font()
             fontWeight: 600
             fontSize: 20
             padding: '10px 16px 4px'

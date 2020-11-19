@@ -201,8 +201,8 @@ customizations.default =
 
   homepage_list_order: []
 
-  font: "'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
-
+  font: "'Open Sans', 'Open Sans', 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
+  header_font: "'Fira Sans Condensed', 'Avenir Next Condensed', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
   auth_questions: []
 
   SiteHeader : PhotoBanner

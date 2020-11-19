@@ -78,7 +78,6 @@ window.NextProposals = ReactiveComponent
     heading_style = _.defaults {}, customization('list_title_style'),
       fontSize: 36
       fontWeight: 700
-      fontStyle: 'oblique'
       textAlign: 'center'
       marginBottom: 18
 
@@ -140,7 +139,6 @@ window.GroupedProposalNavigation = (args) ->
   heading_style = _.defaults {}, customization('list_title_style'),
     fontSize: 36
     fontWeight: 700
-    fontStyle: 'oblique'
     textAlign: 'center'
     marginBottom: 18
 

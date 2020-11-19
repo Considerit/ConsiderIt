@@ -171,7 +171,6 @@ window.CollapsedProposal = ReactiveComponent
         DIV
           style:
             display: 'inline-block'
-            fontWeight: 400
             paddingBottom: if !can_edit then 20 else 4
             width: col_sizes.first
 

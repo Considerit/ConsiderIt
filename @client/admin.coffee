@@ -840,12 +840,11 @@ ModerationDash = ReactiveComponent
                   style: 
                     backgroundColor: if @local.model == model then '#444' else 'transparent'
                     color: if @local.model == model then 'white' else '#aaa'
-                    fontSize: 36
+                    fontSize: 28
                     marginRight: 32
                     border: 'none'
                     borderRadius: 4
-                    fontWeight: 600
-                    fontStyle: 'oblique'
+                    fontWeight: 700
 
                   onClick: => select_class(model)
                   onKeyPress: (e) => 
@@ -877,8 +876,7 @@ ModerationDash = ReactiveComponent
                 H1 
                   style: 
                     fontSize: 24
-                    fontStyle: 'oblique'
-                    fontWeight: 600
+                    fontWeight: 700
                     textAlign: 'center'
                     backgroundColor: '#e0e0e0'
                     margin: '20px 0'
@@ -895,7 +893,6 @@ ModerationDash = ReactiveComponent
                       #float: 'right'
                       color: '#aaa'
                       fontWeight: 400
-                      fontStyle: 'oblique'
                       verticalAlign: 'middle'
                       paddingRight: 10
                       paddingLeft: 40
@@ -1219,7 +1216,6 @@ ModerationOptions = ReactiveComponent
             border: 'none'
             textDecoration: 'underline'
             color: '#aaa'
-            fontStyle: 'oblique'
           onClick: => 
             @local.edit_settings = true
             save @local

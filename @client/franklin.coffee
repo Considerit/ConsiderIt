@@ -235,7 +235,6 @@ Proposal = ReactiveComponent
             style: _.defaults {}, customization('list_title_style'),
               fontSize: 36
               fontWeight: 700
-              fontStyle: 'oblique'
               textAlign: 'center'
               marginTop: 48
 
@@ -306,9 +305,8 @@ Proposal = ReactiveComponent
               base_style: "2px solid #{if mode == 'crafting' then focus_color() else '#414141'}"
               label_style: 
                 fontSize: 14
-                fontWeight: 400
+                fontWeight: 300
                 color: 'black'
-                fontStyle: 'oblique'
                 bottom: -28
 
               on_click_when_backgrounded: ->
@@ -534,7 +532,7 @@ ProposalDescription = ReactiveComponent
     title_style = _.defaults {}, customization('list_title_style'),
       fontSize: 36
       fontWeight: 700
-      fontStyle: 'oblique'
+
     body_style = 
       paddingTop: '1em'
       position: 'relative'

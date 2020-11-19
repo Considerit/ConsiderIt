@@ -784,6 +784,9 @@ window.cssTriangle = (direction, color, width, height, style) ->
 
   style
 
+window.header_font = ->
+  customization('header_font') or customization('font')
+
 
 # from https://gist.github.com/mathewbyrne/1280286
 window.slugify = (text) -> 
@@ -960,7 +963,9 @@ a.skip:hover {
   position: relative;
   font-size: 16px;
   color: black;
-  min-height: 100%; }
+  min-height: 100%; 
+  font-weight: 300;
+}
 
 
 .flipped {

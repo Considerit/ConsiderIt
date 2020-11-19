@@ -298,11 +298,10 @@ Auth = ReactiveComponent
 
 
     section_heading_style =             
-      color: '#888'
-      fontSize: 24
+      color: '#222'
+      fontSize: 18
       display: 'block'
       fontWeight: 700
-      fontStyle: 'oblique'
 
     subsection_heading_style = 
       display: 'block'

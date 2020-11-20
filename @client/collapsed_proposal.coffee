@@ -281,8 +281,9 @@ window.CollapsedProposal = ReactiveComponent
                   #border: "1px solid #{@props.category_color}"
                   #backgroundColor: @props.category_color
                   padding: '1px 2px'
-                  #color: 'white' #@props.category_color
-                  fontStyle: 'italic'
+                  color: @props.category_color or 'black'
+                  fontWeight: 500
+                  # fontStyle: 'italic'
                   #fontSize: 12
 
                 cluster

@@ -165,6 +165,7 @@ customizations.default =
   point_labels : point_labels.pro_con
   slider_pole_labels : slider_labels.agree_disagree
   list_opinions_title: 'Opinions'
+  list_items_title: 'Proposals'
 
   # Proposal options
   discussion_enabled: true

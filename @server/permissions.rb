@@ -82,7 +82,11 @@ def permit(action, object = nil, user = nil)
   when 'create subdomain'
     return Permission::NOT_LOGGED_IN if !user.registered
 
-  when 'update subdomain', 'delete subdomain'
+  when 'update subdomain'
+    return Permission::NOT_LOGGED_IN if !user.registered
+    return Permission::INSUFFICIENT_PRIVILEGES if !user.is_admin?(subdomain)
+
+  when 'delete subdomain'
     return Permission::NOT_LOGGED_IN if !user.registered
     return Permission::INSUFFICIENT_PRIVILEGES if !user.is_admin?(subdomain)
     return Permission::UNVERIFIED_EMAIL if !user.verified  

@@ -9,8 +9,6 @@ window.NewProposal = ReactiveComponent
     list_state = fetch(@props.local)
     loc = fetch 'location'
 
-    return SPAN null if list_name == 'Blocksize Survey'
-
     current_user = fetch '/current_user'
 
     if list_state.adding_new_proposal != list_name && \
@@ -21,11 +19,14 @@ window.NewProposal = ReactiveComponent
     adding = list_state.adding_new_proposal == list_name 
     list_slug = slugify(list_name)
 
-    permitted = permit('create proposal')
+    if @props.aggregates
+      available_lists = (lst for lst in lists_current_user_can_add_to(@props.aggregates) when lst != list_name)
+      permitted = available_lists.length
+    else 
+      permitted = permit('create proposal', list_name)
+
     needs_to_login = permitted == Permission.NOT_LOGGED_IN
     permitted = permitted > 0
-
-    @local.category ||= list_name
 
     return SPAN null if !permitted && !needs_to_login
 
@@ -232,6 +233,32 @@ window.NewProposal = ReactiveComponent
                   marginBottom: 8
                   minHeight: 120
 
+          if @props.aggregates && available_lists.length > 0 
+            DIV
+              style: 
+                marginTop: 12
+
+              LABEL 
+                htmlFor: 'category'
+                style: {} #label_style
+                translator('category')
+              
+
+              SELECT
+                ref: 'category'
+                id: "category"
+                name: "category"
+                style: 
+                  fontSize: 18
+                  display: 'block'
+                defaultValue: available_lists[0]
+
+                for list_name in available_lists
+                  OPTION  
+                    value: list_name
+                    customization('list_title', "list/#{list_name}") or list_name
+
+
 
           if @local.errors?.length > 0
             
@@ -283,6 +310,10 @@ window.NewProposal = ReactiveComponent
                 active = true 
                 hide_on_homepage = false
                 category = list_name
+                if @props.aggregates && @refs.category
+                  category = @refs.category.getDOMNode().value
+                else 
+                  category = list_name
 
                 proposal =
                   key : '/new/proposal'

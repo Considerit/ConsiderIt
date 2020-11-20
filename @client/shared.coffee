@@ -320,6 +320,16 @@ window.clustered_proposals_with_tabs = (current_filter) ->
   all_clusters
 
 
+window.lists_current_user_can_add_to = (lists) -> 
+  appendable = []
+  for list in lists 
+    if permit('create proposal', "list/#{list}") > 0
+      appendable.push list 
+  appendable
+
+
+
+
 ######
 # Expands a key like 'slider' to one that is namespaced to a parent object, 
 # like the current proposal. Will return a local key like 'proposal/345/slider' 

@@ -15,18 +15,28 @@ window.List = ReactiveComponent
     # subscribe to a key that will alert us to when sort order has changed
     fetch('homepage_you_updated_proposal')
 
-    collapsed = fetch 'collapsed_lists'
-    is_collapsed = !!collapsed[@props.key]
-
     proposals = if !@props.fresh then sorted_proposals(list.proposals, @local.key, true) or [] else []
 
     list_key = "list/#{list.name}"
+
+    list_state = fetch list_key
+    list_state.show_first_num_items ?= @props.show_first_num_items or 20
+    list_state.collapsed ?= !!customization('list_is_archived', list_key)
+
+    is_collapsed = list_state.collapsed
 
     edit_list = fetch "edit-#{list_key}"
 
     wrapper_style = 
       marginBottom: if !is_collapsed then 28
       position: 'relative'
+
+
+    if @props.aggregates 
+      hues = getNiceRandomHues @props.aggregates.length
+      colors = {}
+      for aggregated_list, idx in @props.aggregates
+        colors[aggregated_list] = hues[idx]
 
 
     ARTICLE
@@ -40,7 +50,8 @@ window.List = ReactiveComponent
         ManualProposalResort sort_key: @local.key
 
       ListHeader 
-        list: list 
+        list: list
+        aggregates: @props.aggregates 
         proposals_count: proposals.length
         fresh: @props.fresh
         allow_editing: !@props.allow_editing? || @props.allow_editing
@@ -50,31 +61,65 @@ window.List = ReactiveComponent
           list_key: list_key
 
       else if !is_collapsed && !@props.fresh
-        UL null, 
-          for proposal,idx in proposals
-            CollapsedProposal 
-              key: "collapsed#{proposal.key}"
-              proposal: proposal
+        DIV null, 
+          UL null, 
+            for proposal,idx in proposals
+              continue if idx > list_state.show_first_num_items - 1 && !list_state.show_all_proposals
 
-          if customization('list_show_new_button', list_key) && !edit_list.editing
-            LI 
-              key: "new#{list_key}"
-              style: 
-                margin: 0 
-                padding: 0
-                listStyle: 'none'
-                display: 'inline-block'
-                marginBottom: 20
-                marginTop: 6
-                
+              CollapsedProposal 
+                key: "collapsed#{proposal.key}"
+                proposal: proposal
+                show_category: !!@props.aggregates
+                category_color: if !!@props.aggregates then hsv2rgb(colors[(proposal.cluster or 'Proposals')], .9, .8)
 
-              NewProposal 
-                list_name: list.name
-                local: @local.key
-                label_style: {}
+            if  (list_state.show_all_proposals || proposals.length <= list_state.show_first_num_items) && \
+               ((@props.aggregates && lists_current_user_can_add_to(@props.aggregates).length > 0) || customization('list_show_new_button', list_key)) && \
+                !edit_list.editing
+
+              LI 
+                key: "new#{list_key}"
+                style: 
+                  margin: 0 
+                  padding: 0
+                  listStyle: 'none'
+                  display: 'inline-block'
+                  marginBottom: 20
+                  marginTop: 6
+                  
+                NewProposal 
+                  list_name: list.name
+                  local: @local.key
+                  label_style: {}
+                  aggregates: @props.aggregates
+
+          if !list_state.show_all_proposals && proposals.length > list_state.show_first_num_items 
+            BUTTON
+              style:
+                backgroundColor: '#f9f9f9'
+                width: HOMEPAGE_WIDTH()
+                textDecoration: 'underline'
+                cursor: 'pointer'
+                paddingTop: 10
+                paddingBottom: 10
+                fontWeight: 600
+                textAlign: 'center'
+                marginTop: 40
+                border: 'none'
+                fontSize: 22
+
+              onMouseDown: => 
+                list_state.show_all_proposals = true
+                save list_state
+
+              translator "engage.show_hidden_proposals", 'Show all'
+
 
       if customization('footer', list_key) && !is_collapsed
         customization('footer', list_key)()
+
+
+
+
 
 EditList = ReactiveComponent
   displayName: 'EditList'
@@ -226,7 +271,7 @@ EditList = ReactiveComponent
               customizations[list_key].list_description ?= ''
               if customizations[list_key].list_description?.length > 0 
                 customizations[list_key].list_description += "<br>" 
-              customizations[list_description_key].list_description += "<DIV style='font-style:italic'>Participation was closed by the host on #{new Date().toDateString()}</div>" 
+              customizations[list_key].list_description += "<DIV style='font-style:italic'>Participation was closed by the host on #{new Date().toDateString()}</div>" 
 
               subdomain.customizations = JSON.stringify customizations, null, 2
               save subdomain
@@ -321,11 +366,11 @@ window.ListHeader = ReactiveComponent
   render: -> 
     list = @props.list 
     list_key = "list/#{list.name}"    
+    list_state = fetch list_key
 
     edit_list = fetch "edit-#{list_key}"
 
-    collapsed = fetch 'collapsed_lists'    
-    is_collapsed = !!collapsed[list_key]
+    is_collapsed = list_state.collapsed
 
     subdomain = fetch '/subdomain'
 
@@ -333,6 +378,7 @@ window.ListHeader = ReactiveComponent
 
     DIVIDER = customization 'list_divider', list_key
 
+    histo_title = customization('list_opinions_title', list_key)
 
     wrapper_style = 
       width: HOMEPAGE_WIDTH()
@@ -358,44 +404,24 @@ window.ListHeader = ReactiveComponent
           position: 'relative'
 
 
-        EditableTitle
-          list: @props.list
-          fresh: @props.fresh
+        DIV 
+          style: 
+            width: HOMEPAGE_WIDTH()
+            margin: 'auto'
+
+          EditableTitle
+            list: @props.list
+            fresh: @props.fresh
 
 
-        if !is_collapsed
+          if !is_collapsed
 
+            DIV null, 
+              if description?.length > 0 || edit_list.editing
+                EditableDescription
+                  list: @props.list
+                  fresh: @props.fresh
 
-
-          if description?.length > 0 || edit_list.editing
-            EditableDescription
-              list: @props.list
-              fresh: @props.fresh
-
-
-          else if true || widthWhenRendered(heading_text, heading_style) <= column_sizes().first + column_sizes().gutter
-
-            histo_title = customization('list_opinions_title', list_key)
-
-            H2
-              style: 
-                width: column_sizes().second
-                display: 'inline-block'
-                verticalAlign: 'top'
-                marginLeft: column_sizes().margin
-                whiteSpace: 'nowrap'
-                position: 'absolute'
-                top: 0
-                right: 0
-                textAlign: 'right'
-                fontWeight: 700 # heading_style.fontWeight
-                color: 'black' # heading_style.color
-                fontSize: 36 #heading_style.fontSize
-
-              TRANSLATE
-                id: "engage.list_opinions_title.#{histo_title}"
-                key: if histo_title == customizations.default.list_opinions_title then '/translations' else "/translations/#{subdomain.name}"
-                histo_title
 
         if edit_list.editing
 
@@ -409,233 +435,272 @@ window.ListHeader = ReactiveComponent
             marginLeft: 8
             marginTop: 8
 
-          DIV null, 
-            DIV 
-              style: 
-                padding: '12px 0'
-
-              LABEL
-                style: list_config_label_style
-                htmlFor: 'list_show_new_button'
-
-                translator "engage.list-config-who-can-add", "Who can add items to this list?"
-
+          if !@props.aggregates
+            DIV null, 
               DIV 
-                style: option_block
-
-                INPUT 
-                  id: 'any-participant'
-                  type: 'radio'
-                  name: 'list_show_new_button'
-                  defaultChecked: customization('list_show_new_button', list_key)
-                  onChange: (e) =>
-                    edit_list.list_show_new_button = true
-                    save edit_list
-
-                LABEL
-                  style: 
-                    marginLeft: 4
-                  htmlFor: 'any-participant'
-
-                  translator "engage.list-config-who-can-add-anyone", "Any registered participant"
-
-              DIV
-                style: option_block
-
-                INPUT 
-                  id: 'host-only'
-                  type: 'radio'
-                  name: 'list_show_new_button'
-                  defaultChecked: !customization('list_show_new_button', list_key)
-                  onChange: (e) =>
-                    edit_list.list_show_new_button = false
-                    save edit_list
-
-                LABEL
-                  style: 
-                    marginLeft: 4
-                  htmlFor: 'host-only'
-
-                  translator "engage.list-config-who-can-add-only-hosts", "Only forum hosts"
-
-            DIV 
-              style: 
-                padding: '12px 0'
-
-              LABEL
-                style: list_config_label_style
-
-                translator "engage.list-config-spectrum", "On what spectrum is each item evaluated?"
-
-
-
-              DIV 
-                ref: 'slider_config'
                 style: 
-                  padding: '24px 48px 32px 48px'
-                  position: 'relative'
-                  width: column_sizes().second + 48 * 2 + 50
-                  color: focus_color() #'inherit'
-                  border: "1px solid #ddd"
-                  backgroundColor: 'white'
-                  marginTop: 8
-                  left: -12
+                  padding: '12px 0'
+
+                LABEL
+                  style: list_config_label_style
+                  htmlFor: 'list_show_new_button'
+
+                  translator "engage.list-config-who-can-add", "Who can add items to this list?"
 
                 DIV 
-                  style: 
-                    position: 'relative'
-                    width: column_sizes().second
+                  style: option_block
 
-
-                  SPAN 
-                    style: 
-                      display: 'block'
-                      width: '100%'
-                      borderBottom: '1px solid'
-                      borderColor: '#999'
-                  
                   INPUT 
-                    type: 'text'
-                    style: 
-                      position: 'absolute'
-                      left: 0
-                      border: '1px solid'
-                      borderColor: if edit_list.slider_pole_labels && edit_list.slider_pole_labels.oppose == '' then '#eee' else 'transparent'
-                      outline: 'none'
-                      color: '#999'
-                      fontSize: 16
-                    ref: 'oppose_slider'
-                    defaultValue: customization('slider_pole_labels', list_key).oppose 
-                    placeholder: translator 'engage.slider_config.negative-pole-placeholder', 'Negative pole'
-                    onChange: (e) ->
-                      edit_list.slider_pole_labels ?= {}
-                      edit_list.slider_pole_labels.oppose = e.target.value 
+                    id: 'any-participant'
+                    type: 'radio'
+                    name: 'list_show_new_button'
+                    defaultChecked: customization('list_show_new_button', list_key)
+                    onChange: (e) =>
+                      edit_list.list_show_new_button = true
                       save edit_list
 
-                  INPUT
-                    type: 'text'
+                  LABEL
                     style: 
-                      position: 'absolute'
-                      right: 0
-                      border: '1px solid'
-                      borderColor: if edit_list.slider_pole_labels && edit_list.slider_pole_labels.support == '' then 'eee' else 'transparent'
-                      outline: 'none'
-                      color: '#999'
-                      fontSize: 16
-                      textAlign: 'right'
+                      marginLeft: 4
+                    htmlFor: 'any-participant'
 
-                    ref: 'support_slider'
-                    defaultValue: customization('slider_pole_labels', list_key).support
-                    onChange: (e) ->
-                      edit_list.slider_pole_labels ?= {}
-                      edit_list.slider_pole_labels.support = e.target.value 
+                    translator "engage.list-config-who-can-add-anyone", "Any registered participant"
+
+                DIV
+                  style: option_block
+
+                  INPUT 
+                    id: 'host-only'
+                    type: 'radio'
+                    name: 'list_show_new_button'
+                    defaultChecked: !customization('list_show_new_button', list_key)
+                    onChange: (e) =>
+                      edit_list.list_show_new_button = false
                       save edit_list
-                    placeholder: translator 'engage.slider_config.positive-pole-placeholder', 'Positive pole'
+
+                  LABEL
+                    style: 
+                      marginLeft: 4
+                    htmlFor: 'host-only'
+
+                    translator "engage.list-config-who-can-add-only-hosts", "Only forum hosts"
+
+            if !@props.aggregates
+
+              DIV 
+                style: 
+                  padding: '12px 0'
+
+                LABEL
+                  style: list_config_label_style
+
+                  translator "engage.list-config-spectrum", "On what spectrum is each item evaluated?"
 
 
 
-                DropMenu
-                  options: [{support: '', oppose: ''}].concat (v for k,v of slider_labels)
-                  open_menu_on: 'activation'
-
-                  wrapper_style: 
-                    display: 'inline-block'
-                    position: 'absolute'
-                    right: 50
-                    top: 0
-                    height: '100%'
-                    padding: '18px 4px'
-                    borderLeft: "1px solid #eee"
-
-                  anchor_style: 
-                    color: 'inherit' #focus_color() #'inherit'
-                    height: '100%'
-                    padding: '18px 4px'
-                    position: 'absolute'
-                    top: 0
-                    left: 0
-                    width: 58
-
-                  menu_style: 
+                DIV 
+                  ref: 'slider_config'
+                  style: 
+                    padding: '24px 48px 32px 48px'
+                    position: 'relative'
                     width: column_sizes().second + 48 * 2 + 50
-                    backgroundColor: '#fff'
-                    border: "1px solid #aaa"
-                    right: -99999
-                    left: 'auto'
-                    top: 51
-                    fontWeight: 400
-                    overflow: 'hidden'
-                    boxShadow: '0 1px 2px rgba(0,0,0,.3)'
+                    color: focus_color() #'inherit'
+                    border: "1px solid #ddd"
+                    backgroundColor: 'white'
+                    marginTop: 8
+                    left: -12
 
-                  menu_when_open_style: 
-                    right: -50
-
-                  option_style: 
-                    padding: '6px 0px'
-                    display: 'block'
-                    color: '#888'
-
-                  active_option_style: 
-                    color: 'black'
-                    backgroundColor: '#efefef'
+                  DIV 
+                    style: 
+                      position: 'relative'
+                      width: column_sizes().second
 
 
-                  selection_made_callback: (option) => 
-                    @refs.oppose_slider.getDOMNode().value = option.oppose
-                    @refs.support_slider.getDOMNode().value = option.support
-                    edit_list.slider_pole_labels = 
-                      support: option.support 
-                      oppose: option.oppose 
-                    save edit_list
-
-                    setTimeout =>
-                      $(@refs.slider_config.getDOMNode()).ensureInView()
-                    , 0
-
-
-                  render_anchor: ->
-                    SPAN style: _.extend cssTriangle 'bottom', focus_color(), 15, 9,
-                      display: 'inline-block'
-
-                  render_option: (option, is_active) ->
-                    if option.oppose == ''
-                      return  DIV 
-                                style: 
-                                  fontSize: 18
-                                  borderBottom: '1px dashed #ccc'
-                                  textAlign: 'center'
-                                  padding: '12px 0'
-
-                                translator "engage.list-config-custom-spectrum", "Custom Spectrum"
-
-                    DIV 
+                    SPAN 
                       style: 
-                        margin: "12px #{48+28}px 12px 48px"
-                        position: 'relative'
+                        display: 'block'
+                        width: '100%'
+                        borderBottom: '1px solid'
+                        borderColor: '#999'
+                    
+                    INPUT 
+                      type: 'text'
+                      style: 
+                        position: 'absolute'
+                        left: 0
+                        border: '1px solid'
+                        borderColor: if edit_list.slider_pole_labels && edit_list.slider_pole_labels.oppose == '' then '#eee' else 'transparent'
+                        outline: 'none'
+                        color: '#999'
                         fontSize: 16
+                      ref: 'oppose_slider'
+                      defaultValue: customization('slider_pole_labels', list_key).oppose 
+                      placeholder: translator 'engage.slider_config.negative-pole-placeholder', 'Negative pole'
+                      onChange: (e) ->
+                        edit_list.slider_pole_labels ?= {}
+                        edit_list.slider_pole_labels.oppose = e.target.value 
+                        save edit_list
 
-                      SPAN 
-                        style: 
-                          display: 'inline-block'
-                          width: '100%'
-                          borderBottom: '1px solid'
-                          borderColor: '#666'
+                    INPUT
+                      type: 'text'
+                      style: 
+                        position: 'absolute'
+                        right: 0
+                        border: '1px solid'
+                        borderColor: if edit_list.slider_pole_labels && edit_list.slider_pole_labels.support == '' then 'eee' else 'transparent'
+                        outline: 'none'
+                        color: '#999'
+                        fontSize: 16
+                        textAlign: 'right'
 
-                      BR null
-                      SPAN
+                      ref: 'support_slider'
+                      defaultValue: customization('slider_pole_labels', list_key).support
+                      onChange: (e) ->
+                        edit_list.slider_pole_labels ?= {}
+                        edit_list.slider_pole_labels.support = e.target.value 
+                        save edit_list
+                      placeholder: translator 'engage.slider_config.positive-pole-placeholder', 'Positive pole'
+
+
+
+                  DropMenu
+                    options: [{support: '', oppose: ''}].concat (v for k,v of slider_labels)
+                    open_menu_on: 'activation'
+
+                    wrapper_style: 
+                      display: 'inline-block'
+                      position: 'absolute'
+                      right: 50
+                      top: 0
+                      height: '100%'
+                      padding: '18px 4px'
+                      borderLeft: "1px solid #eee"
+
+                    anchor_style: 
+                      color: 'inherit' #focus_color() #'inherit'
+                      height: '100%'
+                      padding: '18px 4px'
+                      position: 'absolute'
+                      top: 0
+                      left: 0
+                      width: 58
+
+                    menu_style: 
+                      width: column_sizes().second + 48 * 2 + 50
+                      backgroundColor: '#fff'
+                      border: "1px solid #aaa"
+                      right: -99999
+                      left: 'auto'
+                      top: 51
+                      fontWeight: 400
+                      overflow: 'hidden'
+                      boxShadow: '0 1px 2px rgba(0,0,0,.3)'
+
+                    menu_when_open_style: 
+                      right: -50
+
+                    option_style: 
+                      padding: '6px 0px'
+                      display: 'block'
+                      color: '#888'
+
+                    active_option_style: 
+                      color: 'black'
+                      backgroundColor: '#efefef'
+
+
+                    selection_made_callback: (option) => 
+                      @refs.oppose_slider.getDOMNode().value = option.oppose
+                      @refs.support_slider.getDOMNode().value = option.support
+                      edit_list.slider_pole_labels = 
+                        support: option.support 
+                        oppose: option.oppose 
+                      save edit_list
+
+                      setTimeout =>
+                        $(@refs.slider_config.getDOMNode()).ensureInView()
+                      , 0
+
+
+                    render_anchor: ->
+                      SPAN style: _.extend cssTriangle 'bottom', focus_color(), 15, 9,
+                        display: 'inline-block'
+
+                    render_option: (option, is_active) ->
+                      if option.oppose == ''
+                        return  DIV 
+                                  style: 
+                                    fontSize: 18
+                                    borderBottom: '1px dashed #ccc'
+                                    textAlign: 'center'
+                                    padding: '12px 0'
+
+                                  translator "engage.list-config-custom-spectrum", "Custom Spectrum"
+
+                      DIV 
                         style: 
+                          margin: "12px #{48+28}px 12px 48px"
                           position: 'relative'
-                          left: 0
+                          fontSize: 16
 
-                        option.oppose 
+                        SPAN 
+                          style: 
+                            display: 'inline-block'
+                            width: '100%'
+                            borderBottom: '1px solid'
+                            borderColor: '#666'
 
-                      SPAN
-                        style: 
-                          position: 'absolute'
-                          right: 0
-                        option.support
+                        BR null
+                        SPAN
+                          style: 
+                            position: 'relative'
+                            left: 0
 
+                          option.oppose 
 
+                        SPAN
+                          style: 
+                            position: 'absolute'
+                            right: 0
+                          option.support
+
+        if !is_collapsed
+          DIV 
+            style: 
+              position: 'relative'
+
+            H2 
+              style: 
+                width: column_sizes().first
+                whiteSpace: 'nowrap'
+                fontWeight: 400 # heading_style.fontWeight
+                color: 'black' # heading_style.color
+                fontSize: 36 #heading_style.fontSize
+              customization('list_items_title')
+
+            # if true || widthWhenRendered(heading_text, heading_style) <= column_sizes().first + column_sizes().gutter
+
+            
+
+            H2
+              style: 
+                width: column_sizes().second
+                display: 'inline-block'
+                verticalAlign: 'top'
+                marginLeft: column_sizes().margin
+                whiteSpace: 'nowrap'
+                position: 'absolute'
+                top: 0
+                right: 0
+                textAlign: 'right'
+                fontWeight: 400 # heading_style.fontWeight
+                color: 'black' # heading_style.color
+                fontSize: 36 #heading_style.fontSize
+
+              TRANSLATE
+                id: "engage.list_opinions_title.#{histo_title}"
+                key: if histo_title == customizations.default.list_opinions_title then '/translations' else "/translations/#{subdomain.name}"
+                histo_title
 
       if @props.allow_editing
         EditList
@@ -647,8 +712,8 @@ window.ListHeader = ReactiveComponent
 
       if !edit_list.editing && @props.proposals_count > 0 && !customization('questionaire', list_key) && !is_collapsed && !customization('list_no_filters', list_key)
         list_actions
-          list: list
-          add_new: customization('list_show_new_button', list_key) && !is_collapsed && @props.proposals_count > 4
+          list: @props.list
+          add_new: !@props.aggregates && customization('list_show_new_button', list_key) && !is_collapsed && @props.proposals_count > 4
           can_sort: customization('homepage_show_search_and_sort') && @props.proposals_count > 8 
 
 
@@ -727,6 +792,8 @@ EditableTitle = ReactiveComponent
     list = @props.list 
     list_key = "list/#{list.name}"    
 
+    list_state = fetch list_key
+
     edit_list = fetch "edit-#{list_key}"
 
     list_items_title = list.name or 'Proposals'
@@ -744,8 +811,9 @@ EditableTitle = ReactiveComponent
                 title 
 
     heading_style = _.defaults {}, customization('list_label_style', list_key),
-      fontSize: 36
+      fontSize: 44
       fontWeight: 700
+      textAlign: 'left'
 
     if title.replace(/^\s+|\s+$/g, '').length == 0 # trim whitespace
       heading_style.fontSize = 0 
@@ -753,16 +821,15 @@ EditableTitle = ReactiveComponent
     list_uncollapseable = customization 'list_uncollapseable', list_key
     TITLE_WRAPPER = if list_uncollapseable then DIV else BUTTON
 
-    collapsed = fetch 'collapsed_lists'    
-    is_collapsed = !!collapsed[list_key]
+    is_collapsed = list_state.collapsed
 
     tw = if is_collapsed then 15 else 20
     th = if is_collapsed then 20 else 15    
 
     toggle_list = ->
       if !list_uncollapseable
-        collapsed[list_key] = !collapsed[list_key] 
-        save collapsed
+        list_state.collapsed = !list_state.collapsed
+        save list_state
 
     is_admin = fetch('/current_user').is_admin
     title_style = 
@@ -770,7 +837,6 @@ EditableTitle = ReactiveComponent
       margin: 0 
       border: 'none'
       backgroundColor: 'transparent'
-      textAlign: 'left'
       color: heading_style.color
       fontWeight: heading_style.fontWeight
       fontFamily: heading_style.fontFamily
@@ -806,6 +872,7 @@ EditableTitle = ReactiveComponent
             ref: 'input'
             focus_on_mount: true
             style: _.extend {}, title_style, 
+              fontFamily: header_font()
               fontSize: heading_style.fontSize
               width: HOMEPAGE_WIDTH() + 24
               lineHeight: 1.4
@@ -834,12 +901,13 @@ EditableTitle = ReactiveComponent
           TITLE_WRAPPER
             tabIndex: if !list_uncollapseable then 0
             'aria-label': "#{title}. #{translator('Expand or collapse list.')}"
-            'aria-pressed': !collapsed[list_key]
+            'aria-pressed': !is_collapsed
             onMouseEnter: => @local.hover_label = true; save @local 
             onMouseLeave: => @local.hover_label = false; save @local
             style: _.extend {}, title_style, 
               cursor: if !list_uncollapseable then 'pointer'
               position: 'relative'
+              textAlign: 'left'
 
             onKeyDown: if !list_uncollapseable then (e) -> 
               if e.which == 13 || e.which == 32 # ENTER or SPACE
@@ -949,15 +1017,15 @@ EditableDescription = ReactiveComponent
 
 
 window.list_actions = (props) -> 
+  list_key = "list/#{props.list.name}"
 
   add_new = props.add_new
   if add_new 
-    permitted = permit('create proposal')
+    permitted = permit('create proposal', list_key)
     add_new &&= permitted > 0 || permitted == Permission.NOT_LOGGED_IN
 
   DIV 
     style: 
-      marginTop: 12
       marginBottom: 50
 
     if add_new
@@ -972,15 +1040,21 @@ window.list_actions = (props) ->
             fontStyle: 'normal'
             fontWeight: 700
           onClick: (e) => 
-            show_all = fetch('show_all_proposals')
-            show_all.show_all = true 
-            save show_all
+            list_state = fetch list_key
+            list_state.show_all_proposals = true 
+            save list_state
             e.stopPropagation()
 
-            setTimeout =>
-              $("[name='add_new_#{props.list.name}']").ensureInView()
-              $("[name='add_new_#{props.list.name}']").click()
-            , 1
+            wait_for = ->
+              add_new_button = $("[name='add_new_#{props.list.name}']")
+              if add_new_button.length > 0 
+                add_new_button.ensureInView()
+                add_new_button.click()
+              else 
+                setTimeout wait_for, 1
+
+            wait_for()
+
           translator "engage.add_new_proposal_to_list", 'add new'
 
     if props.can_sort && add_new

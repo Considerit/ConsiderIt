@@ -95,7 +95,7 @@ window.EditProposal = ReactiveComponent
         @local.open_fields.push field.id
       save @local
 
-    available_lists = (clust for clust in get_all_lists() when customization('list_show_new_button', "list/#{clust}"))
+    available_lists = lists_current_user_can_add_to get_all_lists()
     
     DIV null, 
       DIV 

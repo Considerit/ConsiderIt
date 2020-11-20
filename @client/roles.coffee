@@ -100,7 +100,7 @@ SubdomainRoles = ReactiveComponent
     roles = [ 
       {
         name: 'admin', 
-        label: 'Administrators', 
+        label: 'Forum Hosts', 
         description: 'Can configure everything related to this forum.', 
       }, 
       {
@@ -113,11 +113,11 @@ SubdomainRoles = ReactiveComponent
         name: 'proposer', 
         label: 'Proposers', 
         description: 'Can add new proposals.', 
-        wildcard: {label: 'Any registered user can post new proposals', default: true}},
+        wildcard: {label: 'By default, any registered user can post new proposals. Can be overridden on a list-by-list basis.', default: true}},
       {
         name: 'visitor', 
         label: 'People who can access forum', 
-        description: 'If set to private forum, invite specific people to join below.', 
+        description: 'If unchecked, you have a private forum. Invite specific people to join below.', 
         wildcard: {label: 'Public forum. Anyone with a link can see all proposals.', default: true}} 
     ]
 
@@ -127,7 +127,7 @@ SubdomainRoles = ReactiveComponent
     # at subdomain_controller#create
 
     DIV null, 
-      DashHeader name: 'User Roles'
+      DashHeader name: 'Permissions & Roles'
       DIV style: {width: HOMEPAGE_WIDTH(), margin: 'auto'},
         SpecifyRoles subdomain, roles
 
@@ -395,14 +395,20 @@ UsersWithRole = ReactiveComponent
             name: "wildcard-#{role.name}"
             type: 'checkbox'
             defaultChecked: target.roles[role.name].indexOf('*') > -1
-            onChange: -> 
-              if $("#wildcard-#{role.name}").is(':checked')
+            onChange: (e) -> 
+              if e.target.checked 
                 target.roles[role.name].push '*'
               else
                 target.roles[role.name] = _.without target.roles[role.name], '*'
 
               save target
 
+              if role.name == 'proposer'
+                subdomain = fetch '/subdomain'
+                customizations = JSON.parse subdomain.customizations
+                customizations.list_show_new_button = e.target.checked
+                subdomain.customizations = JSON.stringify customizations, null, 2
+                save subdomain 
 
           LABEL htmlFor: "wildcard-#{role.name}", role.wildcard.label
 

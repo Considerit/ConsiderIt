@@ -73,7 +73,7 @@ window.List = ReactiveComponent
                 category_color: if !!@props.aggregates then hsv2rgb(colors[(proposal.cluster or 'Proposals')], .9, .8)
 
             if  (list_state.show_all_proposals || proposals.length <= list_state.show_first_num_items) && \
-               ((@props.aggregates && lists_current_user_can_add_to(@props.aggregates).length > 0) || customization('list_show_new_button', list_key)) && \
+               ((@props.aggregates && lists_current_user_can_add_to(@props.aggregates).length > 0) || customization('list_permit_new_items', list_key)) && \
                 !edit_list.editing
 
               LI 
@@ -145,7 +145,7 @@ EditList = ReactiveComponent
       customizations[list_key] ?= {}
       list_config = customizations[list_key]
 
-      fields = ['list_title', 'list_description', 'list_show_new_button', 'slider_pole_labels']
+      fields = ['list_title', 'list_description', 'list_permit_new_items', 'slider_pole_labels']
 
       for f in fields
         val = edit_list[f]
@@ -265,7 +265,7 @@ EditList = ReactiveComponent
               customizations = JSON.parse subdomain.customizations
 
               # don't show a new button for this list anymore
-              customizations[list_key].list_show_new_button = false 
+              customizations[list_key].list_permit_new_items = false 
 
               # add a note in the description that the list was closed to participation
               customizations[list_key].list_description ?= ''
@@ -443,7 +443,7 @@ window.ListHeader = ReactiveComponent
 
                 LABEL
                   style: list_config_label_style
-                  htmlFor: 'list_show_new_button'
+                  htmlFor: 'list_permit_new_items'
 
                   translator "engage.list-config-who-can-add", "Who can add items to this list?"
 
@@ -453,10 +453,10 @@ window.ListHeader = ReactiveComponent
                   INPUT 
                     id: 'any-participant'
                     type: 'radio'
-                    name: 'list_show_new_button'
-                    defaultChecked: customization('list_show_new_button', list_key)
+                    name: 'list_permit_new_items'
+                    defaultChecked: customization('list_permit_new_items', list_key)
                     onChange: (e) =>
-                      edit_list.list_show_new_button = true
+                      edit_list.list_permit_new_items = true
                       save edit_list
 
                   LABEL
@@ -472,10 +472,10 @@ window.ListHeader = ReactiveComponent
                   INPUT 
                     id: 'host-only'
                     type: 'radio'
-                    name: 'list_show_new_button'
-                    defaultChecked: !customization('list_show_new_button', list_key)
+                    name: 'list_permit_new_items'
+                    defaultChecked: !customization('list_permit_new_items', list_key)
                     onChange: (e) =>
-                      edit_list.list_show_new_button = false
+                      edit_list.list_permit_new_items = false
                       save edit_list
 
                   LABEL
@@ -713,7 +713,7 @@ window.ListHeader = ReactiveComponent
       if !edit_list.editing && @props.proposals_count > 0 && !customization('questionaire', list_key) && !is_collapsed && !customization('list_no_filters', list_key)
         list_actions
           list: @props.list
-          add_new: !@props.aggregates && customization('list_show_new_button', list_key) && !is_collapsed && @props.proposals_count > 4
+          add_new: !@props.aggregates && customization('list_permit_new_items', list_key) && !is_collapsed && @props.proposals_count > 4
           can_sort: customization('homepage_show_search_and_sort') && @props.proposals_count > 8 
 
 

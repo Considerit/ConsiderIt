@@ -172,7 +172,7 @@ customizations.default =
 
   homepage_show_search_and_sort: true
 
-  list_show_new_button: true
+  list_permit_new_items: true
 
   homepage_show_new_proposal_button: true
   homepage_default_sort_order: 'trending'

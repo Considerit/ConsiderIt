@@ -7,7 +7,7 @@ namespace :customizations do
     # edit this before running if necessary: 
 
     list_defaults = {
-      # list_show_new_button: true,
+      # list_permit_new_items: true,
       # hide_category_for_new: true,
       # list_is_archived: false,
       # list_opinions_title: 'Opinions',
@@ -54,9 +54,9 @@ namespace :customizations do
 
       if show_new
         if show_new.downcase == 'no' || show_new.downcase == 'false'
-          list[:list_show_new_button] = false 
+          list[:list_permit_new_items] = false 
         else 
-          list[:list_show_new_button] = true 
+          list[:list_permit_new_items] = true 
         end 
       end 
 

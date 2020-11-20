@@ -406,7 +406,7 @@ UsersWithRole = ReactiveComponent
               if role.name == 'proposer'
                 subdomain = fetch '/subdomain'
                 customizations = JSON.parse subdomain.customizations
-                customizations.list_show_new_button = e.target.checked
+                customizations.list_permit_new_items = e.target.checked
                 subdomain.customizations = JSON.stringify customizations, null, 2
                 save subdomain 
 

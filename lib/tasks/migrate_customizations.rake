@@ -90,6 +90,12 @@ task :migrate_customizations => :environment do
     if s.customizations 
       changed = false
 
+      if s.customizations.index('list_show_new_button')
+        s.customizations = s.customizations.gsub('list_show_new_button', 'list_permit_new_items') 
+        changed = true 
+        pp "converted list_show_new_button => list_permit_new_items for #{s.name}"
+      end 
+
       customizations = JSON.load(s.customizations || "{}")
 
       customizations.each do |key, val|
@@ -129,5 +135,28 @@ task :migrate_customizations => :environment do
 
     end
   end
+
+
+  pp 'Migrate list permissions'
+  Subdomain.all.each do |s|
+    if s.customizations 
+      changed = false
+
+      customizations = s.customization_json()
+      if !s.user_roles['proposer'].index('*') && !customizations.has_key?('list_permit_new_items')
+        customizations['list_permit_new_items'] = false
+        pp "CHANGED default show new button", s.name
+        changed = true
+      end
+      
+      if changed 
+        s.customizations = JSON.dump(customizations)
+        s.save  
+      end
+
+    end
+  end
+
+
 
 end

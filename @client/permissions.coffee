@@ -57,7 +57,7 @@ permit = (action) ->
         list_key = list_key.key or list_key
         if !list_key.startsWith 'list/'
           list_key = "list/#{list_key}"
-        can_add_to_list = customization('list_show_new_button', list_key)
+        can_add_to_list = customization('list_permit_new_items', list_key)
       else 
         can_add_to_list = true
 

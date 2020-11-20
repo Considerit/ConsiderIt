@@ -124,6 +124,19 @@ def permit(action, object = nil, user = nil)
       return Permission::INSUFFICIENT_PRIVILEGES
     end
 
+  when 'set category'
+    list_key = "list/#{object}"
+    customizations = subdomain.customization_json()
+    if customizations.has_key?(list_key) && customizations[list_key].has_key?("list_show_new_button")
+      allowed = customizations[list_key]["list_show_new_button"]
+    else
+      allowed = permit('create proposal')
+    end
+
+    if !allowed 
+      return Permission::INSUFFICIENT_PRIVILEGES
+    end
+
   when 'read opinion'
     opinion = object
     return permit 'read proposal', opinion.proposal

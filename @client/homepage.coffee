@@ -78,8 +78,9 @@ window.AuthCallout = ReactiveComponent
 window.Homepage = ReactiveComponent
   displayName: 'Homepage'
   render: ->
-    doc = fetch('document')
-    subdomain = fetch('/subdomain')
+    doc = fetch 'document'
+    subdomain = fetch '/subdomain'
+    homepage_tabs = fetch 'homepage_tabs'
 
     return SPAN null if !subdomain.name
 
@@ -92,7 +93,35 @@ window.Homepage = ReactiveComponent
     DIV 
       key: "homepage_#{subdomain.name}"      
 
-      SimpleHomepage()
+      DIV
+        id: 'homepagetab'
+        role: if customization('homepage_tabs') then "tabpanel"
+        style: 
+          margin: '45px auto'
+          width: HOMEPAGE_WIDTH()
+          position: 'relative'
+
+        if customization('auth_callout')
+          AuthCallout()
+
+        if !fetch('/proposals').proposals
+          ProposalsLoading()   
+        else 
+          if customization('homepage_tab_views')?[homepage_tabs.filter]
+            view = customization('homepage_tab_views')[homepage_tabs.filter]()
+            if typeof(view) == 'function'
+              view = view()
+            view
+          else
+            SimpleHomepage()
+
+  typeset : -> 
+    subdomain = fetch('/subdomain')
+    if subdomain.name == 'RANDOM2015' && $('.MathJax').length == 0
+      MathJax.Hub.Queue(["Typeset", MathJax.Hub, ".proposal_homepage_name"])
+
+  componentDidMount : -> @typeset()
+  componentDidUpdate : -> @typeset()
 
 
 window.proposal_editor = (proposal) ->
@@ -118,185 +147,43 @@ window.TagHomepage = ReactiveComponent
 
   render: -> 
     current_user = fetch('/current_user')
-
-    show_all = fetch('show_all_proposals')
-
-    users = fetch '/users'
-    proposals = fetch '/proposals'
-    proposals = proposals.proposals
-
-    if !proposals || !users.users
-      return ProposalsLoading()   
-
-    clusters = get_all_lists()
-
-    hues = getNiceRandomHues clusters.length
-    colors = {}
-    for cluster, idx in clusters
-      colors[cluster] = hues[idx]
-
-    proposals = sorted_proposals(proposals, @local.key, true)
+    proposals = sorted_proposals(fetch('/proposals').proposals, @local.key, true)
 
     homepage_tabs = fetch 'homepage_tabs'
+    aggregate_list_key = homepage_tabs.filter
 
-    dummy_cluster = homepage_tabs.filter
-
-    collapsed = fetch 'collapsed_clusters'      
-    if !collapsed["list/#{dummy_cluster}"]?
-      collapsed["list/#{dummy_cluster}"] = customization('list_is_archived', "list/#{dummy_cluster}")
-      save collapsed
-
-
-
-    DIV
-      id: 'homepagetab'
-      role: if customization('homepage_tabs') then "tabpanel"
-      style: 
-        margin: '45px auto'
-        width: HOMEPAGE_WIDTH()
-        position: 'relative'
-
-      if customization('auth_callout')
-        AuthCallout()
-
-      ManualProposalResort sort_key: @local.key
-
-      ListHeader 
-        list: 
-          key: "list/#{dummy_cluster}"
-          name: dummy_cluster
-          proposals: []
-          list_is_archived: customization('list_is_archived', "list/#{dummy_cluster}")
-        allow_editing: false
-        proposals_count: proposals.length 
-
-
-
-
-      UL null, 
-
-        for proposal,idx in proposals
-          continue if idx > 20 && !show_all.show_all
-          cluster = proposal.cluster or 'Proposals'
-
-          CollapsedProposal 
-            key: "collapsed#{proposal.key}"
-            proposal: proposal
-            show_category: true
-            category_color: hsv2rgb(colors[cluster], .7, .8)
-
-        if (show_all.show_all || proposals.length <= 20) && customization('list_show_new_button', "list/#{dummy_cluster}")
-          LI 
-            key: "newlist/#{dummy_cluster}"
-            style: 
-              margin: 0 
-              padding: 0
-              listStyle: 'none'
-              display: 'inline-block'
-              marginBottom: 20
-              marginTop: 6
-              
-
-            NewProposal 
-              cluster_name: dummy_cluster
-              local: @local.key
-              label_style: {}
-
-      if !show_all.show_all && proposals.length > 20 
-        BUTTON
-          style:
-            backgroundColor: '#f9f9f9'
-            width: HOMEPAGE_WIDTH()
-            #position: 'absolute'
-            #bottom: 0
-            textDecoration: 'underline'
-            cursor: 'pointer'
-            paddingTop: 10
-            paddingBottom: 10
-            fontWeight: 600
-            textAlign: 'center'
-            marginTop: 40
-            border: 'none'
-            fontSize: 22
-
-          onMouseDown: => 
-            show_all.show_all = true
-            save(show_all)
-
-          translator "engage.show_hidden_proposals", 'Show all proposals'
+    List
+      key: aggregate_list_key
+      aggregates: get_all_lists()
+      list: 
+        key: "list/#{aggregate_list_key}"
+        name: aggregate_list_key
+        proposals: proposals
 
 
 #############
 # SimpleHomepage
 #
 # Two column layout, with proposal name and mini histogram. 
-# Divided into clusters. 
+# Divided into lists. 
 
 window.SimpleHomepage = ReactiveComponent
   displayName: 'SimpleHomepage'
 
   render : ->
-    subdomain = fetch('/subdomain')
-
+    current_user = fetch('/current_user')
+    lists = clustered_proposals_with_tabs()
     homepage_tabs = fetch 'homepage_tabs'
 
-    if customization('homepage_tab_views')?[homepage_tabs.filter]
-      view = customization('homepage_tab_views')[homepage_tabs.filter]()
-      if typeof(view) == 'function'
-        view = view()
-      return view
+    DIV null, 
+      for list, index in lists or []
+        List
+          key: "list/#{list.name}"
+          list: list 
 
-    proposals = fetch '/proposals'
-    current_user = fetch('/current_user')
-
-    if !proposals.proposals 
-      return ProposalsLoading()   
-
-    clusters = clustered_proposals_with_tabs()
-
-    collapsed = fetch 'collapsed_clusters'
-    for cluster in clusters
-      if !collapsed[cluster.key]?
-        collapsed[cluster.key] = customization('list_is_archived', cluster.key)
-        save collapsed
-
-    DIV
-      id: 'homepagetab'
-      role: if customization('homepage_tabs') then "tabpanel"
-      style: 
-        margin: '45px auto'
-        width: HOMEPAGE_WIDTH()
-        position: 'relative'
-
-      if customization('homepage_tabs') && customization('homepage_tab_headers')?[homepage_tabs.filter]
-        customization('homepage_tab_headers')[homepage_tabs.filter]()
-
-      if customization('auth_callout') && homepage_tabs.filter not in ['About', 'FAQ']
-        AuthCallout()
-
-
-      
-      DIV null, 
-        # List all clusters
-        for cluster, index in clusters or []
-          List
-            key: "list/#{cluster.name}"
-            list: cluster 
-            index: index
-
-        if current_user.is_admin && homepage_tabs.filter not in ['About', 'FAQ']
-
-          NewList()
+      if current_user.is_admin && homepage_tabs.filter not in ['About', 'FAQ']
+        NewList()
           
-
-  typeset : -> 
-    subdomain = fetch('/subdomain')
-    if subdomain.name == 'RANDOM2015' && $('.MathJax').length == 0
-      MathJax.Hub.Queue(["Typeset", MathJax.Hub, ".proposal_homepage_name"])
-
-  componentDidMount : -> @typeset()
-  componentDidUpdate : -> @typeset()
-
 
 
 window.HomepageTabTransition = ReactiveComponent

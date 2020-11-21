@@ -145,7 +145,7 @@ EditList = ReactiveComponent
       customizations[list_key] ?= {}
       list_config = customizations[list_key]
 
-      fields = ['list_title', 'list_description', 'list_permit_new_items', 'slider_pole_labels']
+      fields = ['list_title', 'list_description', 'list_permit_new_items', 'list_category', 'slider_pole_labels', 'list_opinions_title']
 
       for f in fields
         val = edit_list[f]
@@ -153,20 +153,16 @@ EditList = ReactiveComponent
           list_config[f] = val
 
 
-      # error case where title is blank
-      if !list_config.list_title 
-        edit_list.missing_title = true 
-        save edit_list
-        return
-
-
       description = fetch("#{list_key}-description").html
       if description == "<p><br></p>"
-        description = null
+        description = ""
+
+
+
       list_config.list_description = description
 
       if @props.fresh
-        new_key = "list/#{slugify(edit_list.list_title or list.title)}-#{Math.round(Math.random() * 100)}"
+        new_key = "list/#{slugify(list_config.list_title or list_config.list_category or 'Proposals')}-#{Math.round(Math.random() * 100)}"
         customizations[new_key] = customizations[list_key]
         _.defaults customizations[new_key], 
           created_by: current_user.user 
@@ -350,14 +346,6 @@ EditList = ReactiveComponent
           translator 'engage.cancel_button', 'cancel'
 
 
-        if edit_list.missing_title
-          DIV 
-            style: 
-              color: 'red'
-
-            'Title field is required.'
-
-
 
 
 window.ListHeader = ReactiveComponent
@@ -422,6 +410,53 @@ window.ListHeader = ReactiveComponent
                   list: @props.list
                   fresh: @props.fresh
 
+          if !is_collapsed
+            DIV 
+              style: 
+                position: 'relative'
+                marginTop: 18
+
+              # H2 
+              #   style: 
+              #     width: column_sizes().first
+              #     whiteSpace: 'nowrap'
+              #     fontWeight: 400 # heading_style.fontWeight
+              #     color: 'black' # heading_style.color
+              #     fontSize: 36 #heading_style.fontSize
+              #   customization('list_items_title')
+
+              EditableListCategory
+                list: @props.list
+                fresh: @props.fresh
+
+              # if true || widthWhenRendered(heading_text, heading_style) <= column_sizes().first + column_sizes().gutter
+
+              EditableOpinionLabel
+                list: @props.list
+                fresh: @props.fresh
+
+              # H2
+              #   style: 
+              #     width: column_sizes().second
+              #     display: 'inline-block'
+              #     verticalAlign: 'top'
+              #     marginLeft: column_sizes().margin
+              #     whiteSpace: 'nowrap'
+              #     position: 'absolute'
+              #     top: 0
+              #     right: 0
+              #     textAlign: 'right'
+              #     fontWeight: 400 # heading_style.fontWeight
+              #     color: 'black' # heading_style.color
+              #     fontSize: 36 #heading_style.fontSize
+
+              #   TRANSLATE
+              #     id: "engage.list_opinions_title.#{histo_title}"
+              #     key: if histo_title == customizations.default.list_opinions_title then '/translations' else "/translations/#{subdomain.name}"
+              #     histo_title
+
+
+
 
         if edit_list.editing
 
@@ -431,19 +466,32 @@ window.ListHeader = ReactiveComponent
             marginTop: 8
             marginBottom: 4
 
+          list_config_label_style = 
+            fontSize: 14
+            marginBottom: 12
+            fontWeight: 400
+
           option_block = 
-            marginLeft: 8
+            # marginLeft: 8
             marginTop: 8
 
-          if !@props.aggregates
-            DIV null, 
+          DIV null, 
+
+            if !@props.aggregates
               DIV 
                 style: 
                   padding: '12px 0'
+                  width: column_sizes().first
+                  display: 'inline-block'
 
                 LABEL
                   style: list_config_label_style
                   htmlFor: 'list_permit_new_items'
+
+                  SPAN 
+                    style: 
+                      fontWeight: 700
+                    'Permissions. '
 
                   translator "engage.list-config-who-can-add", "Who can add items to this list?"
 
@@ -490,25 +538,36 @@ window.ListHeader = ReactiveComponent
               DIV 
                 style: 
                   padding: '12px 0'
+                  width: column_sizes().second
+                  display: 'inline-block'
+                  float: 'right'
 
-                LABEL
-                  style: list_config_label_style
+                DIV 
+                  style: 
+                    textAlign: 'right'
+                  LABEL
+                    style: list_config_label_style
 
-                  translator "engage.list-config-spectrum", "On what spectrum is each item evaluated?"
+                    SPAN
+                      style: 
+                        fontWeight: 700
+                      'Slider. '
+
+                    translator "engage.list-config-spectrum", "On what spectrum is each item evaluated?"
 
 
 
                 DIV 
                   ref: 'slider_config'
                   style: 
-                    padding: '24px 48px 32px 48px'
+                    padding: '24px 24px 32px 24px'
                     position: 'relative'
-                    width: column_sizes().second + 48 * 2 + 50
-                    color: focus_color() #'inherit'
-                    border: "1px solid #ddd"
-                    backgroundColor: 'white'
+                    width: column_sizes().second + 24 * 2
+                    # color: focus_color() #'inherit'
+                    # border: "1px solid #ddd"
+                    # backgroundColor: 'white'
                     marginTop: 8
-                    left: -12
+                    left: -24 - 1
 
                   DIV 
                     style: 
@@ -531,8 +590,9 @@ window.ListHeader = ReactiveComponent
                         border: '1px solid'
                         borderColor: if edit_list.slider_pole_labels && edit_list.slider_pole_labels.oppose == '' then '#eee' else 'transparent'
                         outline: 'none'
-                        color: '#999'
-                        fontSize: 16
+                        color: '#444'
+                        fontSize: 12
+                        textAlign: 'left'
                       ref: 'oppose_slider'
                       defaultValue: customization('slider_pole_labels', list_key).oppose 
                       placeholder: translator 'engage.slider_config.negative-pole-placeholder', 'Negative pole'
@@ -547,10 +607,10 @@ window.ListHeader = ReactiveComponent
                         position: 'absolute'
                         right: 0
                         border: '1px solid'
-                        borderColor: if edit_list.slider_pole_labels && edit_list.slider_pole_labels.support == '' then 'eee' else 'transparent'
+                        borderColor: if edit_list.slider_pole_labels && edit_list.slider_pole_labels.support == '' then '#eee' else 'transparent'
                         outline: 'none'
-                        color: '#999'
-                        fontSize: 16
+                        color: '#444'
+                        fontSize: 12
                         textAlign: 'right'
 
                       ref: 'support_slider'
@@ -562,42 +622,50 @@ window.ListHeader = ReactiveComponent
                       placeholder: translator 'engage.slider_config.positive-pole-placeholder', 'Positive pole'
 
 
+                DIV 
+                  style: 
+                    position: 'relative'
+                    right: 0
 
                   DropMenu
                     options: [{support: '', oppose: ''}].concat (v for k,v of slider_labels)
                     open_menu_on: 'activation'
 
-                    wrapper_style: 
-                      display: 'inline-block'
-                      position: 'absolute'
-                      right: 50
-                      top: 0
-                      height: '100%'
-                      padding: '18px 4px'
-                      borderLeft: "1px solid #eee"
+                    wrapper_style:
+                      textAlign: 'right'
+                      # display: 'inline-block'
+                      # position: 'absolute'
+                      # right: 50
+                      # top: 0
+                      # height: '100%'
+                      # padding: '18px 4px'
+                      # borderLeft: "1px solid #eee"
 
                     anchor_style: 
                       color: 'inherit' #focus_color() #'inherit'
                       height: '100%'
-                      padding: '18px 4px'
-                      position: 'absolute'
-                      top: 0
-                      left: 0
-                      width: 58
+                      padding: '4px 4px'
+                      position: 'relative'
+                      right: 0
+                      cursor: 'pointer'
+                      # position: 'absolute'
+                      # top: 0
+                      # right: 0
 
                     menu_style: 
-                      width: column_sizes().second + 48 * 2 + 50
+                      width: column_sizes().second + 24 * 2
                       backgroundColor: '#fff'
                       border: "1px solid #aaa"
                       right: -99999
                       left: 'auto'
-                      top: 51
+                      top: 24
                       fontWeight: 400
                       overflow: 'hidden'
                       boxShadow: '0 1px 2px rgba(0,0,0,.3)'
+                      textAlign: 'left'
 
                     menu_when_open_style: 
-                      right: -50
+                      right: -24
 
                     option_style: 
                       padding: '6px 0px'
@@ -623,14 +691,23 @@ window.ListHeader = ReactiveComponent
 
 
                     render_anchor: ->
-                      SPAN style: _.extend cssTriangle 'bottom', focus_color(), 15, 9,
-                        display: 'inline-block'
+                      SPAN null, 
+                        LABEL 
+                          style: 
+                            color: focus_color()
+                            fontSize: 14
+                            marginRight: 12
+                            cursor: 'pointer'
+                          'change spectrum'
+
+                        SPAN style: _.extend cssTriangle 'bottom', focus_color(), 15, 9,
+                          display: 'inline-block'
 
                     render_option: (option, is_active) ->
                       if option.oppose == ''
                         return  DIV 
                                   style: 
-                                    fontSize: 18
+                                    fontSize: 16
                                     borderBottom: '1px dashed #ccc'
                                     textAlign: 'center'
                                     padding: '12px 0'
@@ -639,9 +716,9 @@ window.ListHeader = ReactiveComponent
 
                       DIV 
                         style: 
-                          margin: "12px #{48+28}px 12px 48px"
+                          margin: "12px 24px"
                           position: 'relative'
-                          fontSize: 16
+                          fontSize: 12
 
                         SPAN 
                           style: 
@@ -663,44 +740,6 @@ window.ListHeader = ReactiveComponent
                             position: 'absolute'
                             right: 0
                           option.support
-
-        if !is_collapsed
-          DIV 
-            style: 
-              position: 'relative'
-
-            H2 
-              style: 
-                width: column_sizes().first
-                whiteSpace: 'nowrap'
-                fontWeight: 400 # heading_style.fontWeight
-                color: 'black' # heading_style.color
-                fontSize: 36 #heading_style.fontSize
-              customization('list_items_title')
-
-            # if true || widthWhenRendered(heading_text, heading_style) <= column_sizes().first + column_sizes().gutter
-
-            
-
-            H2
-              style: 
-                width: column_sizes().second
-                display: 'inline-block'
-                verticalAlign: 'top'
-                marginLeft: column_sizes().margin
-                whiteSpace: 'nowrap'
-                position: 'absolute'
-                top: 0
-                right: 0
-                textAlign: 'right'
-                fontWeight: 400 # heading_style.fontWeight
-                color: 'black' # heading_style.color
-                fontSize: 36 #heading_style.fontSize
-
-              TRANSLATE
-                id: "engage.list_opinions_title.#{histo_title}"
-                key: if histo_title == customizations.default.list_opinions_title then '/translations' else "/translations/#{subdomain.name}"
-                histo_title
 
       if @props.allow_editing
         EditList
@@ -798,13 +837,13 @@ EditableTitle = ReactiveComponent
 
     list_items_title = list.name or 'Proposals'
 
-    title = (edit_list.editing and edit_list.list_title) or customization('list_title', list_key) or list_items_title
+    title = (edit_list.editing and edit_list.list_title) or customization('list_title', list_key) or ""
 
     if title == 'Show all'
       title = translator "engage.all_proposals_list", "All Proposals"
     else if title == "Proposals"
       title = translator "engage.default_proposals_list", "Proposals"
-    else 
+    else if title?.length > 0
       title = translator 
                 id: "proposal_list.#{title}"
                 key: "/translations/#{subdomain.name}"
@@ -815,7 +854,7 @@ EditableTitle = ReactiveComponent
       fontWeight: 700
       textAlign: 'left'
 
-    if title.replace(/^\s+|\s+$/g, '').length == 0 # trim whitespace
+    if !edit_list.editing && title.replace(/^\s+|\s+$/g, '').length == 0 # trim whitespace
       heading_style.fontSize = 0 
 
     list_uncollapseable = customization 'list_uncollapseable', list_key
@@ -843,23 +882,24 @@ EditableTitle = ReactiveComponent
       fontStyle: heading_style.fontStyle
       textDecoration: heading_style.textDecoration
 
-    
+    label_style = 
+      fontSize: 14
+      marginBottom: 12
+
     DIV null, 
       if @props.fresh && edit_list.editing 
         DIV 
-          style: 
-            fontSize: 14
-            marginBottom: 12
-            color: '#444'
+          style: label_style
 
           SPAN 
             style: 
               fontWeight: 700
-            'Title.'
+            'Title [optional].'
           SPAN 
             style:
               fontWeight: 400
-            ' Can be a category title like "Ideas", or an open-ended question like "What are our values?"'
+            #' Can be a category title like "Ideas", or an open-ended question like "What are our values?"'
+            ' Usually an open-ended question like "What are your ideas?" or a list label like "Recommended actions for mitigation"'
 
       H1
         style: heading_style
@@ -883,15 +923,10 @@ EditableTitle = ReactiveComponent
               border: '1px solid #eaeaea'
               borderRadius: 8
               outlineColor: '#ccc'
-              borderColor: if edit_list.missing_title then 'red'
-              outlineColor: if edit_list.missing_title then 'red'
 
             defaultValue: if !@props.fresh then title
             onChange: (e) ->
               edit_list.list_title = e.target.value 
-              if edit_list.missing_title && (!edit_list.list_title || edit_list.list_title.length == 0)
-                edit_list.missing_title = false 
-                save edit_list  
               save edit_list
             placeholder: if !@props.fresh then translator('engage.list_title_input-open.placeholder', 'Ask an open-ended question or set a list title')
 
@@ -932,6 +967,172 @@ EditableTitle = ReactiveComponent
                   outline: 'none'
 
 
+EditableListCategory = ReactiveComponent
+  displayName: 'EditableListCategory'
+  render: -> 
+    subdomain = fetch '/subdomain'
+    current_user = fetch '/current_user'
+
+    list = @props.list
+    list_key = "list/#{list.name}"
+    list_state = fetch list_key
+    edit_list = fetch "edit-#{list_key}"
+
+    category = (edit_list.editing and edit_list.list_category) or customization('list_category', list_key) or 'Proposals'
+
+    has_banner = customization('list_description', list_key)?.length > 0 || customization('list_title', list_key)?.length > 0
+    heading_style = _.defaults {}, customization('list_label_style', list_key),
+      fontSize: if !has_banner then 44 else 36
+      fontWeight: if !has_banner then 700 else 500
+      textAlign: 'left'
+
+    title_style = 
+      padding: 0 
+      margin: 0 
+      border: 'none'
+      backgroundColor: 'transparent'
+      color: heading_style.color
+      fontWeight: heading_style.fontWeight
+      fontFamily: heading_style.fontFamily
+      fontStyle: heading_style.fontStyle
+      textDecoration: heading_style.textDecoration
+
+    label_style = 
+      fontSize: 14
+      marginBottom: 12
+
+    DIV 
+      style: 
+        width: column_sizes().first
+        display: 'inline-block'
+
+      if @props.fresh && edit_list.editing 
+        DIV 
+          style: label_style
+
+          SPAN 
+            style: 
+              fontWeight: 700
+            'Category. '
+          SPAN 
+            style:
+              fontWeight: 400
+            #' Can be a category title like "Ideas", or an open-ended question like "What are our values?"'
+            'e.g. "Ideas", "Policies", "Questions", "Strategies"'
+
+      H1
+        style: heading_style
+        if edit_list.editing
+          AutoGrowTextArea
+            id: "category-#{list_key}"
+            ref: 'input'
+            style: _.extend {}, title_style, 
+              fontFamily: header_font()
+              fontSize: heading_style.fontSize
+              width: column_sizes().first + 24
+              lineHeight: 1.4
+              padding: '8px 12px'
+              marginTop: -8 - 1
+              marginLeft: -12 - 1
+              backgroundColor: 'white'
+              border: '1px solid #eaeaea'
+              borderRadius: 8
+              outlineColor: '#ccc'
+
+            defaultValue: category
+            onChange: (e) ->
+              edit_list.list_category = e.target.value 
+              save edit_list
+        else 
+          SPAN 
+            style: title_style
+            category
+
+
+EditableOpinionLabel = ReactiveComponent
+  displayName: 'EditableOpinionLabel'
+  render: -> 
+    subdomain = fetch '/subdomain'
+    current_user = fetch '/current_user'
+
+    list = @props.list
+    list_key = "list/#{list.name}"
+    list_state = fetch list_key
+    edit_list = fetch "edit-#{list_key}"
+
+    opinion_title = (edit_list.editing and edit_list.list_opinions_title) or customization('list_opinions_title', list_key) or 'Opinions'
+
+    has_banner = customization('list_description', list_key)?.length > 0 || customization('list_title', list_key)?.length > 0
+    heading_style = _.defaults {}, customization('list_label_style', list_key),
+      fontSize: if !has_banner then 44 else 36
+      fontWeight: if !has_banner then 700 else 500
+      textAlign: 'right'
+
+    title_style = 
+      padding: 0 
+      margin: 0 
+      border: 'none'
+      backgroundColor: 'transparent'
+      color: heading_style.color
+      fontWeight: heading_style.fontWeight
+      fontFamily: heading_style.fontFamily
+      fontStyle: heading_style.fontStyle
+      textDecoration: heading_style.textDecoration
+
+    label_style = 
+      fontSize: 14
+      marginBottom: 12
+      textAlign: 'right'
+
+    DIV 
+      style: 
+        width: column_sizes().second
+        display: 'inline-block'
+        float: 'right'
+
+      if @props.fresh && edit_list.editing 
+        DIV 
+          style: label_style
+
+          SPAN 
+            style: 
+              fontWeight: 700
+            'Opinion title. '
+          SPAN 
+            style:
+              fontWeight: 400
+            'e.g. "Ratings", "Gut checks"'
+
+      H1
+        style: heading_style
+        if edit_list.editing
+          AutoGrowTextArea
+            id: "list_opinions_title-#{list_key}"
+            ref: 'input'
+            style: _.extend {}, title_style, 
+              fontFamily: header_font()
+              fontSize: heading_style.fontSize
+              width: column_sizes().second + 24
+              lineHeight: 1.4
+              padding: '8px 12px'
+              marginTop: -8 - 1
+              marginLeft: -12 - 1
+              backgroundColor: 'white'
+              border: '1px solid #eaeaea'
+              borderRadius: 8
+              outlineColor: '#ccc'
+              textAlign: 'right'
+
+            defaultValue: opinion_title
+            onChange: (e) ->
+              edit_list.list_opinions_title = e.target.value 
+              save edit_list
+
+        else 
+          SPAN 
+            style: title_style
+            opinion_title
+
 
 EditableDescription = ReactiveComponent
   displayName: 'EditableDescription'
@@ -945,6 +1146,10 @@ EditableDescription = ReactiveComponent
     description_style = customization 'list_description_style', list_key
 
     current_user = fetch '/current_user'
+
+    label_style = 
+      fontSize: 14
+      marginBottom: 12
 
     DIV
       style: _.defaults {}, (description_style or {}),
@@ -962,9 +1167,7 @@ EditableDescription = ReactiveComponent
 
             if @props.fresh
               DIV 
-                style: 
-                  fontSize: 14
-                  marginBottom: 12
+                style: label_style
 
                 SPAN 
                   style: 
@@ -973,13 +1176,14 @@ EditableDescription = ReactiveComponent
                 SPAN 
                   style:
                     fontWeight: 400
-                  ' Give any additional information or directions here.'
+                  ' Give any additional information or direction here.'
 
             DIV 
               id: 'edit_description'
               style:
                 marginLeft: -13
                 marginTop: -12
+                width: HOMEPAGE_WIDTH() + 13 * 2
 
               STYLE
                 dangerouslySetInnerHTML: __html: """

@@ -122,6 +122,7 @@ task :migrate_customizations => :environment do
           end 
 
           if val.has_key?('list_items_title')
+            val['list_category'] = val['list_items_title']
             val.delete('list_items_title')
             changed = true
           end

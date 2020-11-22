@@ -162,12 +162,19 @@ EditList = ReactiveComponent
       list_config.list_description = description
 
       if @props.fresh
-        new_key = "list/#{slugify(list_config.list_title or list_config.list_category or 'Proposals')}-#{Math.round(Math.random() * 100)}"
+        new_name = "#{slugify(list_config.list_title or list_config.list_category or 'Proposals')}-#{Math.round(Math.random() * 100)}"
+        new_key = "list/#{new_name}"
         customizations[new_key] = customizations[list_key]
         _.defaults customizations[new_key], 
           created_by: current_user.user 
           created_at: Date.now()
         delete customizations[list_key]
+
+        # if tabs are enabled, add it to the current tab
+        if customizations['homepage_tabs']
+          tabs = fetch('homepage_tabs')
+          current_tab = customizations['homepage_tabs'][tabs.filter]
+          current_tab.push new_name
 
       subdomain.customizations = JSON.stringify customizations, null, 2
 
@@ -222,10 +229,16 @@ EditList = ReactiveComponent
               @refs.input?.getDOMNode().focus()
               @refs.input?.getDOMNode().setSelectionRange(-1, -1) # put cursor at end
           else if option.action == 'delete'
-            # TODO: what to do if there are proposals?
             remove_list = -> 
               customizations = JSON.parse subdomain.customizations
               delete customizations[list_key] 
+
+              # if tabs are enabled, remove it from the current tab
+              if customizations['homepage_tabs']
+                tabs = fetch('homepage_tabs')
+                current_tab = customizations['homepage_tabs'][tabs.filter]
+                current_tab.splice current_tab.indexOf(list.name, 1)
+
               subdomain.customizations = JSON.stringify customizations, null, 2
               save subdomain
 

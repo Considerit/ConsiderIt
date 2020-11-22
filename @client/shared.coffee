@@ -291,11 +291,7 @@ window.clustered_proposals_with_tabs = (current_filter) ->
     current_filter = homepage_tabs.filter
     clusters = homepage_tabs.clusters
   else 
-    filters = ([k,v] for k,v of customization('homepage_tabs'))
-    for [filter, cclusters] in filters 
-      if filter == current_filter
-        clusters = cclusters
-        break 
+    clusters = customization('homepage_tabs')[current_filter]
 
   if !clusters 
     console.error "No clusters found for #{current_filter}"

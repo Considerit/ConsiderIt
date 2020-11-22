@@ -172,8 +172,8 @@ window.SimpleHomepage = ReactiveComponent
 
   render : ->
     current_user = fetch('/current_user')
-    lists = clustered_proposals_with_tabs()
     homepage_tabs = fetch 'homepage_tabs'
+    lists = clustered_proposals_with_tabs(homepage_tabs.filter)
 
     DIV null, 
       for list, index in lists or []

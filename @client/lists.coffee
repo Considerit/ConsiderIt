@@ -21,14 +21,14 @@ window.List = ReactiveComponent
 
     list_state = fetch list_key
     list_state.show_first_num_items ?= @props.show_first_num_items or 20
-    list_state.collapsed ?= !!customization('list_is_archived', list_key)
+    list_state.collapsed ?= customization('list_is_archived', list_key)
 
     is_collapsed = list_state.collapsed
 
     edit_list = fetch "edit-#{list_key}"
 
     wrapper_style = 
-      marginBottom: if !is_collapsed then 28
+      marginBottom: if !is_collapsed then 40
       position: 'relative'
 
 
@@ -104,6 +104,7 @@ window.List = ReactiveComponent
                 fontWeight: 600
                 textAlign: 'center'
                 marginTop: 40
+                marginBottom: 20
                 border: 'none'
                 fontSize: 22
 
@@ -149,9 +150,9 @@ EditList = ReactiveComponent
 
       for f in fields
         val = edit_list[f]
+
         if val?
           list_config[f] = val
-
 
       description = fetch("#{list_key}-description").html
       if description == "<p><br></p>"
@@ -379,8 +380,6 @@ window.ListHeader = ReactiveComponent
 
     DIVIDER = customization 'list_divider', list_key
 
-    histo_title = customization('list_opinions_title', list_key)
-
     wrapper_style = 
       width: HOMEPAGE_WIDTH()
       marginBottom: 16 #24
@@ -428,6 +427,7 @@ window.ListHeader = ReactiveComponent
               style: 
                 position: 'relative'
                 marginTop: 18
+                display: if !edit_list.editing && category_value(list_key).length + histo_title(list_key).length == 0 then 'none'
 
               # H2 
               #   style: 
@@ -441,8 +441,6 @@ window.ListHeader = ReactiveComponent
               EditableListCategory
                 list: @props.list
                 fresh: @props.fresh
-
-              # if true || widthWhenRendered(heading_text, heading_style) <= column_sizes().first + column_sizes().gutter
 
               EditableOpinionLabel
                 list: @props.list
@@ -845,17 +843,19 @@ EditableTitle = ReactiveComponent
     list_key = "list/#{list.name}"    
 
     list_state = fetch list_key
+    is_collapsed = list_state.collapsed
 
     edit_list = fetch "edit-#{list_key}"
 
     list_items_title = list.name or 'Proposals'
 
-    title = (edit_list.editing and edit_list.list_title) or customization('list_title', list_key) or ""
+    title = (edit_list.editing and edit_list.list_title) or customization('list_title', list_key) 
+    if is_collapsed 
+      title ?= category_value list_key
+    title ?= ""
 
     if title == 'Show all'
       title = translator "engage.all_proposals_list", "All Proposals"
-    else if title == "Proposals"
-      title = translator "engage.default_proposals_list", "Proposals"
     else if title?.length > 0
       title = translator 
                 id: "proposal_list.#{title}"
@@ -873,7 +873,6 @@ EditableTitle = ReactiveComponent
     list_uncollapseable = customization 'list_uncollapseable', list_key
     TITLE_WRAPPER = if list_uncollapseable then DIV else BUTTON
 
-    is_collapsed = list_state.collapsed
 
     tw = if is_collapsed then 15 else 20
     th = if is_collapsed then 20 else 15    
@@ -980,6 +979,15 @@ EditableTitle = ReactiveComponent
                   outline: 'none'
 
 
+category_value = (list_key) -> 
+  edit_list = fetch "edit-#{list_key}"
+  category = if edit_list.editing then edit_list.list_category
+  category ?= customization('list_category', list_key)
+  if !category && !customization(list_key) # if we haven't customized this list, take the proposal category
+    category ?= list_key.substring(5)
+  category ?= translator 'engage.default_proposals_list', 'Proposals'
+  category
+
 EditableListCategory = ReactiveComponent
   displayName: 'EditableListCategory'
   render: -> 
@@ -991,7 +999,7 @@ EditableListCategory = ReactiveComponent
     list_state = fetch list_key
     edit_list = fetch "edit-#{list_key}"
 
-    category = (edit_list.editing and edit_list.list_category) or customization('list_category', list_key) or 'Proposals'
+    category = category_value list_key
 
     has_banner = customization('list_description', list_key)?.length > 0 || customization('list_title', list_key)?.length > 0
     heading_style = _.defaults {}, customization('list_label_style', list_key),
@@ -1014,9 +1022,11 @@ EditableListCategory = ReactiveComponent
       fontSize: 14
       marginBottom: 12
 
+    show_opinion_header = edit_list.editing || widthWhenRendered(category, heading_style) <= column_sizes().first + column_sizes().gutter
+
     DIV 
       style: 
-        width: column_sizes().first
+        width: if show_opinion_header then column_sizes().first else '100%'
         display: 'inline-block'
 
       if @props.fresh && edit_list.editing 
@@ -1061,6 +1071,14 @@ EditableListCategory = ReactiveComponent
             style: title_style
             category
 
+histo_title = (list_key) -> 
+  edit_list = fetch "edit-#{list_key}"
+  opinion_title = if edit_list.editing then edit_list.list_opinions_title
+  if !opinion_title? 
+    opinion_title = customization('list_opinions_title', list_key)
+  if !opinion_title?
+    opinion_title = translator 'engage.header.Opinions', 'Opinions'
+  opinion_title
 
 EditableOpinionLabel = ReactiveComponent
   displayName: 'EditableOpinionLabel'
@@ -1073,7 +1091,7 @@ EditableOpinionLabel = ReactiveComponent
     list_state = fetch list_key
     edit_list = fetch "edit-#{list_key}"
 
-    opinion_title = (edit_list.editing and edit_list.list_opinions_title) or customization('list_opinions_title', list_key) or 'Opinions'
+    opinion_title = histo_title list_key
 
     has_banner = customization('list_description', list_key)?.length > 0 || customization('list_title', list_key)?.length > 0
     heading_style = _.defaults {}, customization('list_label_style', list_key),
@@ -1097,11 +1115,14 @@ EditableOpinionLabel = ReactiveComponent
       marginBottom: 12
       textAlign: 'right'
 
+    show = edit_list.editing || widthWhenRendered(category_value(list_key), heading_style) <= column_sizes().first + column_sizes().gutter
+    
     DIV 
       style: 
         width: column_sizes().second
-        display: 'inline-block'
-        float: 'right'
+        display: if show then 'inline-block' else 'none'
+        marginLeft: column_sizes().gutter
+        textAlign: 'right'
 
       if @props.fresh && edit_list.editing 
         DIV 

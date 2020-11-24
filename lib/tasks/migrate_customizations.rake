@@ -100,6 +100,7 @@ task :migrate_customizations => :environment do
 
       customizations.each do |key, val|
         if key.match 'list/'
+
           if val.has_key?("list_one_line_desc")
             val['list_description'] = val['list_one_line_desc']
             val.delete('list_one_line_desc')
@@ -126,6 +127,7 @@ task :migrate_customizations => :environment do
             val.delete('list_items_title')
             changed = true
           end
+
         end         
       end
       
@@ -159,5 +161,55 @@ task :migrate_customizations => :environment do
   end
 
 
+  pp '\n************\n'
+
+  pp 'Assign proposal cluster value where appropriate'
+  Subdomain.all.each do |s|
+    lists = {}
+
+    changed = false
+
+    s.proposals.all.each do |p|
+      if p.cluster && p.cluster != "Test question"
+        lists[p.cluster] = 1
+      end 
+    end 
+
+    customizations = JSON.load(s.customizations || "{}")
+
+    lists.each do |k,v|
+      list_key = "list/#{k}"
+      if customizations.has_key?(list_key) 
+        cust = customizations[list_key]
+        if cust.has_key?('list_title') && cust['list_title'].strip.length > 0
+          
+          if k != cust['list_title'] && !k.match('-')
+
+            if !cust.has_key?('list_description')
+              cust['list_category'] = cust['list_title']
+              cust.delete('list_title')
+              changed = true
+            else 
+              cust['list_category'] = cust['list_opinions_title']  = ""             
+              changed = true
+            end
+          end
+
+        elsif cust.has_key?('list_description')
+          cust['list_title'] = k
+          changed = true
+        else 
+          cust['list_category'] = k
+          changed = true
+        end
+      end
+    end 
+
+    if changed 
+      s.customizations = JSON.dump(customizations)
+      s.save  
+    end
+
+  end
 
 end

@@ -31,9 +31,9 @@ window.loadPage = (url, query_params) ->
   # if the url has query parameters, parse and merge them into params
 
   for k,v of url_parts.searchObject when k.length > 0
-    loc.query_params[k] = v
+    loc.query_params[decodeURIComponent(k)] = decodeURIComponent(v)
 
-  loc.query_params = url_parts.searchObject
+  # loc.query_params = url_parts.searchObject
   delete loc.query_params.u if loc.query_params.u
   delete loc.query_params.t if loc.query_params.t
 

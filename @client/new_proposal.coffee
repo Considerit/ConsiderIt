@@ -3,34 +3,33 @@ window.NewProposal = ReactiveComponent
   displayName: 'NewProposal'
 
   render : -> 
-    list_name = @props.list_name or 'Proposals'
-    list_key = "list/#{list_name}"
+    list_key = @props.list_key
+    list_name = list_key.substring(5)
 
-    list_state = fetch(@props.local)
+    list_state = fetch list_key
     loc = fetch 'location'
 
     current_user = fetch '/current_user'
 
-    if list_state.adding_new_proposal != list_name && \
-       loc.query_params.new_proposal == encodeURIComponent(list_name)
-      list_state.adding_new_proposal = list_name
+    if list_state.adding_new_proposal != list_key && \
+       loc.query_params.new_proposal == list_key
+      list_state.adding_new_proposal = list_key
       save list_state
 
-    adding = list_state.adding_new_proposal == list_name 
-    list_slug = slugify(list_name)
+    adding = list_state.adding_new_proposal == list_key 
 
     if @props.aggregates
-      available_lists = (lst for lst in lists_current_user_can_add_to(@props.aggregates) when lst != list_name)
+      available_lists = (lst for lst in lists_current_user_can_add_to(@props.aggregates) when lst != list_key)
       permitted = available_lists.length
     else 
-      permitted = permit('create proposal', list_name)
+      permitted = permit('create proposal', list_key)
 
     needs_to_login = permitted == Permission.NOT_LOGGED_IN
     permitted = permitted > 0
 
     return SPAN null if !permitted && !needs_to_login
 
-    proposal_fields = customization('new_proposal_fields', list_name)()
+    proposal_fields = customization('new_proposal_fields', list_key)()
 
     label_style = 
       fontWeight: 400
@@ -53,19 +52,6 @@ window.NewProposal = ReactiveComponent
           borderRadius: 0
           backgroundColor: '#ddd'
 
-    # else if !adding
-
-    #   bullet =  SVG 
-    #               viewBox: "0 0 5 5"
-    #               width: 20
-    #               style: 
-    #                 marginRight: 7
-    #                 verticalAlign: 'top'
-    #                 paddingTop: 6
-
-    #               PATH 
-    #                 fill: '#000000'
-    #                 d: "M2 1 h1 v1 h1 v1 h-1 v1 h-1 v-1 h-1 v-1 h1 z"
     else
       bullet =  SVG 
                   width: 8
@@ -80,9 +66,9 @@ window.NewProposal = ReactiveComponent
 
     if !adding 
       BUTTON  
-        name: "add_new_#{list_name}"
+        name: "new_#{list_name}"
         className: 'add_new_proposal'
-        style: _.defaults (@props.label_style or {}),
+        style: 
           cursor: 'pointer'
           backgroundColor: '#e7e7e7'
           border: 'none'
@@ -94,13 +80,13 @@ window.NewProposal = ReactiveComponent
           marginLeft: -44
         
         onClick: (e) => 
-          loc.query_params.new_proposal = encodeURIComponent list_name
+          loc.query_params.new_proposal = list_key
           save loc
 
           if permitted
-            list_state.adding_new_proposal = list_name; save(list_state)
+            list_state.adding_new_proposal = list_key; save(list_state)
             setTimeout =>
-              $("##{list_slug}-name").focus()
+              $("##{list_name}-name").focus()
             , 0
           else 
             e.stopPropagation()
@@ -141,14 +127,14 @@ window.NewProposal = ReactiveComponent
               position: 'absolute'
               left: 8
               top: -18
-            htmlFor: "#{list_slug}-name"
+            htmlFor: "#{list_name}-name"
 
             proposal_fields.name
 
 
 
           CharacterCountTextInput 
-            id: "#{list_slug}-name"
+            id: "#{list_name}-name"
             maxLength: 240
             name:'name'
             pattern: '^.{3,}'
@@ -188,13 +174,13 @@ window.NewProposal = ReactiveComponent
               style: _.extend {}, label_style,
                 marginLeft: 8
 
-              htmlFor: "#{list_slug}-details"
+              htmlFor: "#{list_name}-details"
 
               proposal_fields.description
 
             WysiwygEditor
-              id: "#{list_slug}-details"
-              key:"description-new-proposal-#{list_slug}"
+              id: "#{list_name}-details"
+              key:"description-new-proposal-#{list_name}"
               #placeholder: translator("engage.edit_proposal.description.placeholder", 'Add details here')  
               'aria-label': translator("engage.edit_proposal.description.placeholder", 'Add details here')  
               container_style: 
@@ -215,13 +201,13 @@ window.NewProposal = ReactiveComponent
                 style: _.extend {}, label_style,
                   marginLeft: 8
 
-                htmlFor: "#{list_slug}-#{additional_field}"
+                htmlFor: "#{list_name}-#{additional_field}"
 
                 proposal_fields[additional_field]
 
               WysiwygEditor
-                id: "#{list_slug}-#{additional_field}"
-                key:"#{additional_field}-new-proposal-#{list_slug}"
+                id: "#{list_name}-#{additional_field}"
+                key:"#{additional_field}-new-proposal-#{list_name}"
                 'aria-label': proposal_fields[additional_field]
                 container_style: 
                   padding: '6px 8px'
@@ -240,7 +226,6 @@ window.NewProposal = ReactiveComponent
 
               LABEL 
                 htmlFor: 'category'
-                style: {} #label_style
                 translator('category')
               
 
@@ -253,11 +238,10 @@ window.NewProposal = ReactiveComponent
                   display: 'block'
                 defaultValue: available_lists[0]
 
-                for list_name in available_lists
+                for list_key in available_lists
                   OPTION  
-                    value: list_name
-                    customization('list_title', "list/#{list_name}") or list_name
-
+                    value: list_key
+                    get_list_title(list_key, true)
 
 
           if @local.errors?.length > 0
@@ -288,32 +272,31 @@ window.NewProposal = ReactiveComponent
                 backgroundColor: focus_color()
                 color: 'white'
                 cursor: 'pointer'
-                # borderRadius: 16
                 padding: '4px 16px'
                 display: 'inline-block'
                 marginRight: 12
                 border: 'none'
                 boxShadow: '0 1px 1px rgba(0,0,0,.9)'
                 fontWeight: 600
-                # fontSize: 'inherit'
 
               onClick: => 
-                name = $(@getDOMNode()).find("##{list_slug}-name").val()
+                name = document.getElementById("#{list_name}-name").value
 
                 fields = 
-                  description: fetch("description-new-proposal-#{list_slug}").html
+                  description: fetch("description-new-proposal-#{list_name}").html
 
                 for field in proposal_fields.additional_fields
-                  fields[field] = fetch("#{field}-new-proposal-#{list_slug}").html
+                  fields[field] = fetch("#{field}-new-proposal-#{list_name}").html
 
                 description = proposal_fields.create_description(fields)
                 active = true 
                 hide_on_homepage = false
-                category = list_name
+
                 if @props.aggregates && @refs.category
                   category = @refs.category.getDOMNode().value
                 else 
-                  category = list_name
+                  category = list_key 
+                category = category.substring(5)
 
                 proposal =
                   key : '/new/proposal'
@@ -350,7 +333,7 @@ window.NewProposal = ReactiveComponent
                 padding: 0
                 fontSize: 'inherit'                  
               onClick: => 
-                list_state.adding_new_proposal = null; 
+                list_state.adding_new_proposal = null
                 save(list_state)
                 delete loc.query_params.new_proposal
                 save loc
@@ -365,9 +348,8 @@ window.NewProposal = ReactiveComponent
 
   ensureIsInViewPort : -> 
     loc = fetch 'location'
-    local = fetch @props.local
 
-    is_selected = loc.query_params.new_proposal == encodeURIComponent((@props.list_name or 'Proposals'))
+    is_selected = loc.query_params.new_proposal == @props.list_key
 
     if is_selected
       if browser.is_mobile

@@ -291,10 +291,10 @@ window.EditProposal = ReactiveComponent
                     '--------'
                 ]
 
-              for list_name in available_lists
+              for list_key in available_lists
                 OPTION  
-                  value: list_name
-                  customization('list_title', "list/#{list_name}") or list_name
+                  value: list_key
+                  get_list_title list_key, true 
 
             ]
 
@@ -474,9 +474,8 @@ window.EditProposal = ReactiveComponent
 
   saveProposal : -> 
     current_user = fetch '/current_user'
-    $el = $(@getDOMNode())
     
-    name = $el.find('#name').val()
+    name = document.getElementById("name").value 
     description = fetch("description-#{@data().key}").html
 
     list = @refs.list.getDOMNode().value
@@ -484,8 +483,8 @@ window.EditProposal = ReactiveComponent
       list = @refs.new_list.getDOMNode().value or list_name    
     list = null if list == ''
 
-    active = $el.find('#open_for_discussion:checked').length > 0
-    hide_on_homepage = $el.find('#listed_on_homepage:checked').length == 0
+    active = document.getElementById('open_for_discussion').checked
+    hide_on_homepage = document.getElementById('listed_on_homepage').checked
 
     if @props.fresh
       proposal =

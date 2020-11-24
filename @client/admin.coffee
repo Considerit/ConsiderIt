@@ -1099,10 +1099,10 @@ ModerateItem = ReactiveComponent
               proposal.cluster = e.target.value
               save proposal
 
-            for clust in get_all_lists()
+            for list_key in get_all_lists()
               OPTION  
-                value: clust
-                clust
+                value: list_key
+                get_list_title list_key, true
 
       if selected 
 

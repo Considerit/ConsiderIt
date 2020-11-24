@@ -176,6 +176,11 @@ task :migrate_customizations => :environment do
     end 
 
     customizations = JSON.load(s.customizations || "{}")
+    customizations.each do |key, val|
+      if key.match 'list/'
+        lists[key[5..-1].strip] = 1
+      end
+    end
 
     lists.each do |k,v|
       list_key = "list/#{k}"
@@ -198,6 +203,7 @@ task :migrate_customizations => :environment do
         elsif cust.has_key?('list_description')
           cust['list_title'] = k
           changed = true
+
         else 
           cust['list_category'] = k
           changed = true

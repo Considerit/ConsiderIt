@@ -17,7 +17,7 @@ window.List = ReactiveComponent
 
     proposals = if !@props.fresh then sorted_proposals(list.proposals, @local.key, true) or [] else []
 
-    list_key = "list/#{list.name}"
+    list_key = list.key
 
     list_state = fetch list_key
     list_state.show_first_num_items ?= @props.show_first_num_items or 20
@@ -40,11 +40,11 @@ window.List = ReactiveComponent
 
 
     ARTICLE
-      key: list.name
-      id: if list.name && list.name then list.name.toLowerCase()
+      key: list_key
+      id: list_key.substring(5).toLowerCase()
       style: wrapper_style
 
-      A name: if list.name && list.name then list.name.toLowerCase().replace(/ /g, '_')
+      A name: list_key.substring(5).toLowerCase().replace(/ /g, '_')
 
       if !@props.fresh
         ManualProposalResort sort_key: @local.key
@@ -70,7 +70,7 @@ window.List = ReactiveComponent
                 key: "collapsed#{proposal.key}"
                 proposal: proposal
                 show_category: !!@props.aggregates
-                category_color: if !!@props.aggregates then hsv2rgb(colors[(proposal.cluster or 'Proposals')], .9, .8)
+                category_color: if !!@props.aggregates then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], .9, .8)
 
             if  (list_state.show_all_proposals || proposals.length <= list_state.show_first_num_items) && \
                ((@props.aggregates && lists_current_user_can_add_to(@props.aggregates).length > 0) || customization('list_permit_new_items', list_key)) && \
@@ -87,9 +87,7 @@ window.List = ReactiveComponent
                   marginTop: 6
                   
                 NewProposal 
-                  list_name: list.name
-                  local: @local.key
-                  label_style: {}
+                  list_key: list_key
                   aggregates: @props.aggregates
 
           if !list_state.show_all_proposals && proposals.length > list_state.show_first_num_items 
@@ -127,7 +125,7 @@ EditList = ReactiveComponent
 
   render: ->     
     list = @props.list 
-    list_key = "list/#{list.name}"    
+    list_key = list.key
 
     current_user = fetch '/current_user'
     edit_list = fetch "edit-#{list_key}"
@@ -238,7 +236,7 @@ EditList = ReactiveComponent
               if customizations['homepage_tabs']
                 tabs = fetch('homepage_tabs')
                 current_tab = customizations['homepage_tabs'][tabs.filter]
-                current_tab.splice current_tab.indexOf(list.name, 1)
+                current_tab.splice current_tab.indexOf(list_key.substring(5), 1)
 
               subdomain.customizations = JSON.stringify customizations, null, 2
               save subdomain
@@ -367,7 +365,7 @@ window.ListHeader = ReactiveComponent
 
   render: -> 
     list = @props.list 
-    list_key = "list/#{list.name}"    
+    list_key = list.key
     list_state = fetch list_key
 
     edit_list = fetch "edit-#{list_key}"
@@ -429,15 +427,6 @@ window.ListHeader = ReactiveComponent
                 marginTop: 18
                 display: if !edit_list.editing && category_value(list_key).length + histo_title(list_key).length == 0 then 'none'
 
-              # H2 
-              #   style: 
-              #     width: column_sizes().first
-              #     whiteSpace: 'nowrap'
-              #     fontWeight: 400 # heading_style.fontWeight
-              #     color: 'black' # heading_style.color
-              #     fontSize: 36 #heading_style.fontSize
-              #   customization('list_items_title')
-
               EditableListCategory
                 list: @props.list
                 fresh: @props.fresh
@@ -445,29 +434,6 @@ window.ListHeader = ReactiveComponent
               EditableOpinionLabel
                 list: @props.list
                 fresh: @props.fresh
-
-              # H2
-              #   style: 
-              #     width: column_sizes().second
-              #     display: 'inline-block'
-              #     verticalAlign: 'top'
-              #     marginLeft: column_sizes().margin
-              #     whiteSpace: 'nowrap'
-              #     position: 'absolute'
-              #     top: 0
-              #     right: 0
-              #     textAlign: 'right'
-              #     fontWeight: 400 # heading_style.fontWeight
-              #     color: 'black' # heading_style.color
-              #     fontSize: 36 #heading_style.fontSize
-
-              #   TRANSLATE
-              #     id: "engage.list_opinions_title.#{histo_title}"
-              #     key: if histo_title == customizations.default.list_opinions_title then '/translations' else "/translations/#{subdomain.name}"
-              #     histo_title
-
-
-
 
         if edit_list.editing
 
@@ -775,12 +741,12 @@ window.NewList = ReactiveComponent
     subdomain = fetch '/subdomain'
 
     if !@local.edit_key
-      @local.edit_key = "new-list-#{Math.round(Math.random() * 1000)}"
+      @local.edit_key = "list/new-list-#{Math.round(Math.random() * 1000)}"
     
     list = 
-      name: @local.edit_key 
+      key: @local.edit_key 
 
-    list_key = "list/#{list.name}"    
+    list_key = list.key
     edit_list = fetch "edit-#{list_key}"
 
     @local.hovering ?= false
@@ -832,6 +798,25 @@ window.NewList = ReactiveComponent
           translator 'engage.create_new_list_button', "Create new list"
 
 
+
+window.get_list_title = (list_key, include_category_value) -> 
+  edit_list = fetch "edit-#{list_key}"
+
+  title = (edit_list.editing and edit_list.list_title) or customization('list_title', list_key) 
+  if include_category_value
+    title ?= category_value list_key
+  title ?= ""
+
+  if title == 'Show all'
+    title = translator "engage.all_proposals_list", "All Proposals"
+  # else if title?.length > 0
+  #   title = translator 
+  #             id: "proposal_list.#{title}"
+  #             key: "/translations/#{subdomain.name}"
+  #             title 
+  title 
+
+
 EditableTitle = ReactiveComponent
   displayName: 'EditableTitle'
 
@@ -840,27 +825,14 @@ EditableTitle = ReactiveComponent
     current_user = fetch '/current_user'
 
     list = @props.list 
-    list_key = "list/#{list.name}"    
+    list_key = list.key
 
     list_state = fetch list_key
     is_collapsed = list_state.collapsed
 
     edit_list = fetch "edit-#{list_key}"
 
-    list_items_title = list.name or 'Proposals'
-
-    title = (edit_list.editing and edit_list.list_title) or customization('list_title', list_key) 
-    if is_collapsed 
-      title ?= category_value list_key
-    title ?= ""
-
-    if title == 'Show all'
-      title = translator "engage.all_proposals_list", "All Proposals"
-    else if title?.length > 0
-      title = translator 
-                id: "proposal_list.#{title}"
-                key: "/translations/#{subdomain.name}"
-                title 
+    title = get_list_title list_key, is_collapsed
 
     heading_style = _.defaults {}, customization('list_label_style', list_key),
       fontSize: 44
@@ -995,7 +967,7 @@ EditableListCategory = ReactiveComponent
     current_user = fetch '/current_user'
 
     list = @props.list
-    list_key = "list/#{list.name}"
+    list_key = list.key
     list_state = fetch list_key
     edit_list = fetch "edit-#{list_key}"
 
@@ -1087,7 +1059,7 @@ EditableOpinionLabel = ReactiveComponent
     current_user = fetch '/current_user'
 
     list = @props.list
-    list_key = "list/#{list.name}"
+    list_key = list.key
     list_state = fetch list_key
     edit_list = fetch "edit-#{list_key}"
 
@@ -1173,7 +1145,7 @@ EditableDescription = ReactiveComponent
   render: -> 
     list = @props.list 
 
-    list_key = "list/#{list.name}"    
+    list_key = list.key
     edit_list = fetch "edit-#{list_key}"
 
     description = edit_list.list_description or customization('list_description', list_key)
@@ -1255,7 +1227,7 @@ EditableDescription = ReactiveComponent
 
 
 window.list_actions = (props) -> 
-  list_key = "list/#{props.list.name}"
+  list_key = props.list.key
 
   add_new = props.add_new
   if add_new 
@@ -1284,7 +1256,7 @@ window.list_actions = (props) ->
             e.stopPropagation()
 
             wait_for = ->
-              add_new_button = $("[name='add_new_#{props.list.name}']")
+              add_new_button = $("[name='new_#{props.list.key.substring(5)}']")
               if add_new_button.length > 0 
                 add_new_button.ensureInView()
                 add_new_button.click()

@@ -79,8 +79,7 @@ window.back_to_homepage_button = (style, text) ->
       if text 
         SPAN 
           style: 
-            textDecoration: 'underline'
-            paddingLeft: 4
+            paddingLeft: 20
           text 
 
 
@@ -215,7 +214,7 @@ window.opinionsForProposal = (proposal) ->
 
 window.get_all_lists = ->
   proposals = fetch '/proposals'
-  all_clusters = ((p.cluster or 'Proposals').trim() for p in proposals.proposals)
+  all_clusters = ("list/#{(p.cluster or 'Proposals').trim()}" for p in proposals.proposals)
 
   # clusters might also just be defined as a customization, without any proposals in them yet
   subdomain = fetch('/subdomain')
@@ -223,7 +222,7 @@ window.get_all_lists = ->
   config = customizations[subdomain_name]
   for k,v of config 
     if k.match( /list\// )
-      all_clusters.push k.substring(5)
+      all_clusters.push k
 
 
 
@@ -248,29 +247,27 @@ window.clustered_proposals = (keep_as_map) ->
   # around when someone adds a new proposal.
   if Object.keys(newest_in_cluster_on_load).length == 0
     for proposal in proposals.proposals 
-      cluster = (proposal.cluster or 'Proposals').trim()
+      list_key = "list/#{(proposal.cluster or 'Proposals').trim()}"
       time = (new Date(proposal.created_at).getTime())
-      if !newest_in_cluster_on_load[cluster] || time > newest_in_cluster_on_load[cluster]
-        newest_in_cluster_on_load[cluster] = time 
+      if !newest_in_cluster_on_load[list_key] || time > newest_in_cluster_on_load[list_key]
+        newest_in_cluster_on_load[list_key] = time 
 
-  for cluster in all_clusters
-    sort = homepage_list_order.indexOf cluster
+  for list_key in all_clusters
+    sort = homepage_list_order.indexOf list_key.substring(5)
     if sort < 0 
-      if newest_in_cluster_on_load[cluster]
-        sort = homepage_list_order.length + ((new Date()).getTime() - newest_in_cluster_on_load[cluster])
+      if newest_in_cluster_on_load[list_key]
+        sort = homepage_list_order.length + ((new Date()).getTime() - newest_in_cluster_on_load[list_key])
       else 
         sort = 9999999999999
 
-    clusters[cluster] = 
-      key: "list/#{cluster}"
-      name: cluster
+    clusters[list_key] = 
+      key: list_key
       proposals: []
-      list_is_archived: customization('list_is_archived', "list/#{cluster}")
       sort_order: sort
 
   for proposal in proposals.proposals 
-    cluster = (proposal.cluster or 'Proposals').trim()
-    clusters[cluster].proposals.push proposal
+    list_key = "list/#{(proposal.cluster or 'Proposals').trim()}"
+    clusters[list_key].proposals.push proposal
 
   if keep_as_map
     return clusters 
@@ -280,47 +277,44 @@ window.clustered_proposals = (keep_as_map) ->
   ordered_clusters.sort (a,b) -> a.sort_order - b.sort_order
   ordered_clusters 
 
-window.clustered_proposals_with_tabs = (current_filter) -> 
-
-
-  all_clusters = clustered_proposals()
+window.clustered_proposals_with_tabs = (current_tab) -> 
+  all_lists = clustered_proposals()
   homepage_tabs = fetch 'homepage_tabs'
 
-  clusters = null
-  if !current_filter || !customization('homepage_tabs')
-    current_filter = homepage_tabs.filter
-    clusters = homepage_tabs.clusters
+  eligible_lists = null
+  if !current_tab || !customization('homepage_tabs')
+    current_tab = homepage_tabs.filter
+    eligible_lists = homepage_tabs.clusters
   else 
-    clusters = customization('homepage_tabs')[current_filter]
+    eligible_lists = customization('homepage_tabs')[current_tab]
 
-  if !clusters 
-    console.error "No clusters found for #{current_filter}"
+  if !eligible_lists && current_tab != 'Show all'
+    console.error "No eligible lists found for #{current_tab}"
 
-  if current_filter && current_filter != 'Show all'
-    to_remove = []
-    for cluster, index in all_clusters or []
-      cluster_key = "list/#{cluster.name}"
+  if current_tab == 'Show all' || !current_tab
+    lists_in_tab = all_lists
 
-      fails_filter = current_filter && (clusters != '*' && !(cluster.name in (clusters or [])) )
-      if fails_filter && ('*' in (clusters or []))
+  else
+    lists_in_tab = []
+    for list, index in all_lists or []
+      ineligible = current_tab && (eligible_lists != '*' && !(list.key.substring(5) in (eligible_lists or [])) )
+
+      if ineligible && ('*' in (eligible_lists or []))
         in_others = []
         for filter, cclusters of customization('homepage_tabs')
           in_others = in_others.concat cclusters 
+        ineligible &&= list.key.substring(5) in in_others
+      if !ineligible
+        lists_in_tab.push list 
 
-        fails_filter &&= cluster.name in in_others
-      if fails_filter
-        to_remove.push cluster 
-
-    all_clusters = _.difference all_clusters, to_remove
-
-  all_clusters
+  lists_in_tab
 
 
 window.lists_current_user_can_add_to = (lists) -> 
   appendable = []
-  for list in lists 
-    if permit('create proposal', "list/#{list}") > 0
-      appendable.push list 
+  for list_key in lists 
+    if permit('create proposal', list_key) > 0
+      appendable.push list_key 
   appendable
 
 
@@ -663,6 +657,7 @@ window.parseURL = (url) ->
   if pathname[0] != '/'
     pathname = "/#{pathname}"
   searchObject = {}
+
   queries = parser.search.replace(/^\?/, '').split('&')
   i = 0
   while i < queries.length

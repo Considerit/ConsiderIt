@@ -178,7 +178,7 @@ window.SimpleHomepage = ReactiveComponent
     DIV null, 
       for list, index in lists or []
         List
-          key: "list/#{list.name}"
+          key: list.key
           list: list 
 
       if current_user.is_admin && homepage_tabs.filter not in ['About', 'FAQ']

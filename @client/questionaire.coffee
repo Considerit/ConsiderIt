@@ -15,18 +15,16 @@ window.Questionaire = ReactiveComponent
     current_user = fetch '/current_user'
 
     if !@local.top_response? && customization('select_top', cluster_key)
-      for group in groups
-        list_name = group.split('/')[1]
-        for response in (clusters[list_name]?.proposals or [])
+      for list_key in groups
+        for response in (clusters[list_key]?.proposals or [])
           if response.your_opinion.published && response.your_opinion.stance == 1.0
             @local.top_response = response.key
 
     selection_limit = 5
     if !@local.total_selected?
       @local.total_selected = 0
-      for group in groups
-        list_name = group.split('/')[1]
-        for response in (clusters[list_name]?.proposals or [])
+      for list_key in groups
+        for response in (clusters[list_key]?.proposals or [])
           if response.your_opinion.published
             @local.total_selected += 1
 
@@ -82,8 +80,7 @@ window.Questionaire = ReactiveComponent
         style: 
           opacity: if !current_user.logged_in then .7
 
-        for group in groups
-          list_name = group.split('/')[1]
+        for list_key in groups
 
           DIV 
             style: 
@@ -96,13 +93,13 @@ window.Questionaire = ReactiveComponent
                 marginBottom: 8
                 fontStyle: 'italic'
 
-              customization 'list_title', group
+              customization 'list_title', list_key
 
             UL 
               style: 
                 listStyle: 'none'
 
-              for response in (clusters[list_name]?.proposals or [])
+              for response in (clusters[list_key]?.proposals or [])
                 fetch(response.your_opinion) # register a dependency
                 do (response) =>
                   disabled = !current_user.logged_in || (!response.your_opinion.published && selection_limit && selection_limit <= @local.total_selected)
@@ -169,10 +166,9 @@ window.Questionaire = ReactiveComponent
               style: 
                 listStyle: 'none'
 
-              for group in groups
-                list_name = group.split('/')[1]
+              for list_key in groups
 
-                for response in (clusters[list_name]?.proposals or [])
+                for response in (clusters[list_key]?.proposals or [])
                   continue if !response.your_opinion.published
 
                   do (response) =>
@@ -188,9 +184,8 @@ window.Questionaire = ReactiveComponent
 
                         checked: response.key == @local.top_response
                         onChange: => 
-                          for group in groups
-                            list_name = group.split('/')[1]
-                            for r in (clusters[list_name]?.proposals or [])
+                          for list_key in groups
+                            for r in (clusters[list_key]?.proposals or [])
                               if r.your_opinion.published && r.id != response.id
                                 r.your_opinion.stance = 0.25
                                 save r.your_opinion
@@ -284,9 +279,8 @@ window.Questionaire = ReactiveComponent
 
       if current_user.is_admin
         all_proposals = []
-        for group in groups
-          list_name = group.split('/')[1]
-          all_proposals = all_proposals.concat (clusters[list_name]?.proposals or [])
+        for list_key in groups
+          all_proposals = all_proposals.concat (clusters[list_key]?.proposals or [])
         
         DIV 
           style: 

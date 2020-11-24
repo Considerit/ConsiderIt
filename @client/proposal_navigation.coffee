@@ -18,17 +18,15 @@ window.GroupedProposalNavigation = (args) ->
   if !sections or sections.length == 0
     sections = [['all', _.keys(proposals_by_list)]] # TODO: check if this is correct default
   
-  active_list = args.proposal.cluster or 'Proposals'
-
-
+  active_list = "list/#{args.proposal.cluster or 'Proposals'}"
 
   local = fetch 'popnav'
   if !local.show?
     local.show = {}
-    local.show[(args.proposal.cluster or 'Proposals')] = true 
+    local.show[active_list] = true 
 
-  toggle_list = (category) ->
-    local.show[category] = !local.show[category]
+  toggle_list = (lst) ->
+    local.show[lst] = !local.show[lst]
     save local 
 
   loc = fetch 'location'
@@ -64,7 +62,7 @@ window.GroupedProposalNavigation = (args) ->
 
           total_proposals = 0
           for list in lists
-            if active_list == list.name
+            if active_list == list.key
               active_section = true 
               current_section = name
             total_proposals += (list.proposals or []).length            
@@ -105,13 +103,11 @@ window.GroupedProposalNavigation = (args) ->
                   marginTop: 14
 
                 for list in lists 
-                  is_collapsed = !local.show[list.name] 
+                  is_collapsed = !local.show[list.key] 
                   tw = if is_collapsed then 15 else 20
                   th = if is_collapsed then 20 else 15
 
-                  cluster_key = list.key    
-                  list_items_title = list.name or 'Proposals'
-                  heading_text = customization('list_title', cluster_key) or list_items_title
+                  heading_text = get_list_title(list.key, true)
 
                   continue if (list.proposals or []).length == 0 
 
@@ -129,10 +125,10 @@ window.GroupedProposalNavigation = (args) ->
 
                           onKeyDown: (e) -> 
                             if e.which == 13 || e.which == 32 # ENTER or SPACE
-                              toggle_list(list.name)
+                              toggle_list list.key
                               e.preventDefault()
                           onClick: -> 
-                            toggle_list(list.name)
+                            toggle_list list.key
                             document.activeElement.blur()
 
                           if lists.length > 1
@@ -154,7 +150,7 @@ window.GroupedProposalNavigation = (args) ->
                             heading_text    
 
 
-                      if local.show[list.name]
+                      if local.show[list.key]
 
 
                         UL 

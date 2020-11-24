@@ -892,23 +892,15 @@ window.PhotoBanner = (opts) ->
     return  DIV
               style: 
                 backgroundColor: 'white'
+
               DIV
                 style:
                   margin: 'auto'
                   fontSize: 43
                   padding: '10px 20px' 
 
-                A
-                  href: '/' 
+                back_to_homepage_button {fontSize: 32}, translator 'engage.back_to_homepage', 'Homepage'
 
-                  '< '
-
-                  SPAN
-                    style:
-                      fontSize: 32
-                      position: 'relative'
-                      left: 5
-                    'Homepage'
 
   has_image_background = edit_banner.masthead_preview != '*delete*' && (edit_banner.masthead_preview || customization('banner')?.background_image_url || opts.backgroundImage)
   if has_image_background

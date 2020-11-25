@@ -7,7 +7,7 @@ require './filter'
 require './browser_location'
 require './collapsed_proposal'
 require './new_proposal'
-require './lists'
+require './list'
 
 
 window.AuthCallout = ReactiveComponent

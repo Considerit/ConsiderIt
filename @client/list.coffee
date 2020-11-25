@@ -424,7 +424,7 @@ window.ListHeader = ReactiveComponent
             DIV 
               style: 
                 position: 'relative'
-                marginTop: 18
+                marginTop: if get_list_title()?.length > 0 then  18
                 display: if !edit_list.editing && category_value(list_key).length + histo_title(list_key).length == 0 then 'none'
 
               EditableListCategory
@@ -930,6 +930,7 @@ EditableTitle = ReactiveComponent
               cursor: if !list_uncollapseable then 'pointer'
               position: 'relative'
               textAlign: 'left'
+              outline: 'none'
 
             onKeyDown: if !list_uncollapseable then (e) -> 
               if e.which == 13 || e.which == 32 # ENTER or SPACE
@@ -944,14 +945,23 @@ EditableTitle = ReactiveComponent
             if !list_uncollapseable
               SPAN 
                 'aria-hidden': true
-                style: cssTriangle (if is_collapsed then 'right' else 'bottom'), (heading_style.color or 'black'), tw, th,
+                style: 
                   position: 'absolute'
                   left: -tw - 20
-                  top: 16
-                  width: tw
-                  height: th
-                  display: if @local.hover_label or is_collapsed then 'inline-block' else 'none'
-                  outline: 'none'
+                  top: 12
+                  paddingRight: 20
+                  paddingTop: 12
+                  display: 'inline-block'
+
+                SPAN 
+                  
+                  style: cssTriangle (if is_collapsed then 'right' else 'bottom'), (heading_style.color or 'black'), tw, th,
+                    width: tw
+                    height: th
+                    opacity: if @local.hover_label or is_collapsed then 1 else .1
+                    outline: 'none'
+                    display: 'inline-block'
+                    verticalAlign: 'top'
 
 
 category_value = (list_key) -> 

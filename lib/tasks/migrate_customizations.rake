@@ -246,4 +246,41 @@ task :migrate_customizations => :environment do
 
   end
 
+
+
+
+  pp 'Migrate informational lists'
+  Subdomain.all.each do |s|
+    if s.customizations 
+      changed = false
+
+      customizations = JSON.load(s.customizations || "{}")
+
+      customizations.each do |key, val|
+        if key.match 'list/'
+          matcher = if val.has_key?("list_permit_new_items")
+                      val 
+                    else 
+                      val
+                    end
+
+          if (matcher.has_key?("list_permit_new_items") && !matcher["list_permit_new_items"]) && val.has_key?('list_description')
+            proposals = s.proposals.where(:cluster => key[5..-1])
+            has_proposals = proposals.count > 0 
+            if !has_proposals
+              val['list_category'] = ""
+              val['list_opinions_title'] = ""
+              changed = true 
+            end
+          end
+        end
+      end
+      if changed
+        s.customizations = JSON.dump(customizations)
+        s.save  
+      end
+    end
+  end
+
+
 end

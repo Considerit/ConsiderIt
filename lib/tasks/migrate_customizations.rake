@@ -85,7 +85,7 @@ task :migrate_customizations => :environment do
 
   pp '\n************\n'
 
-  pp 'Migrate lists'
+  pp 'Migrate lists & references to lists'
   Subdomain.all.each do |s|
     if s.customizations 
       changed = false
@@ -97,6 +97,11 @@ task :migrate_customizations => :environment do
       end 
 
       customizations = JSON.load(s.customizations || "{}")
+
+      if customizations.has_key?('homepage_lists_to_always_show')
+        customizations.delete('homepage_lists_to_always_show')
+        changed = true
+      end
 
       customizations.each do |key, val|
         if key.match 'list/'
@@ -127,8 +132,31 @@ task :migrate_customizations => :environment do
             val.delete('list_items_title')
             changed = true
           end
+        elsif key == 'homepage_tabs'
+          new_tabs = {}
+          migrated_tabs = false
+          val.each do |tab, lists|
+            if lists.length > 0 && !lists[0].start_with?("list/")
+              new_tabs[tab] = lists.map.each do |list_name|
+                if list_name == 'list/*' || list_name == '*'
+                  '*'
+                else 
+                  "list/#{list_name}"
+                end 
+              end
+              changed = migrated_tabs = true
+            end
+          end
+          if migrated_tabs
+            customizations[key] = new_tabs
+          end
+        elsif key == 'homepage_list_order'
+          if val.length > 0 && !val[0].start_with?("list/")
+            customizations[key] = val.map {|list_name| "list/#{list_name}"}
+            changed = true 
+          end
+        end  
 
-        end         
       end
       
       if changed 

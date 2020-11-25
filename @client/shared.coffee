@@ -253,7 +253,7 @@ window.clustered_proposals = (keep_as_map) ->
         newest_in_cluster_on_load[list_key] = time 
 
   for list_key in all_clusters
-    sort = homepage_list_order.indexOf list_key.substring(5)
+    sort = homepage_list_order.indexOf list_key
     if sort < 0 
       if newest_in_cluster_on_load[list_key]
         sort = homepage_list_order.length + ((new Date()).getTime() - newest_in_cluster_on_load[list_key])
@@ -297,13 +297,13 @@ window.clustered_proposals_with_tabs = (current_tab) ->
   else
     lists_in_tab = []
     for list, index in all_lists or []
-      ineligible = current_tab && (eligible_lists != '*' && !(list.key.substring(5) in (eligible_lists or [])) )
+      ineligible = current_tab && (eligible_lists != '*' && !(list.key in (eligible_lists or [])) )
 
       if ineligible && ('*' in (eligible_lists or []))
         in_others = []
-        for filter, cclusters of customization('homepage_tabs')
-          in_others = in_others.concat cclusters 
-        ineligible &&= list.key.substring(5) in in_others
+        for filter, llists of customization('homepage_tabs')
+          in_others = in_others.concat llists 
+        ineligible &&= list.key in in_others
       if !ineligible
         lists_in_tab.push list 
 

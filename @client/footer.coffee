@@ -173,7 +173,7 @@ window.DefaultFooter = ReactiveComponent
                     args: 
                       style: 
                         textDecoration: 'underline'                    
-                      href: 'mailto:hello@consider.it'
+                      href: 'mailto:help@consider.it'
 
                   "Report bugs to <link>help@consider.it</link>"
 

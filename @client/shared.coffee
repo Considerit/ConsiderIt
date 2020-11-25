@@ -214,94 +214,88 @@ window.opinionsForProposal = (proposal) ->
 
 window.get_all_lists = ->
   proposals = fetch '/proposals'
-  all_clusters = ("list/#{(p.cluster or 'Proposals').trim()}" for p in proposals.proposals)
+  all_lists = ("list/#{(p.cluster or 'Proposals').trim()}" for p in proposals.proposals)
 
-  # clusters might also just be defined as a customization, without any proposals in them yet
+  # lists might also just be defined as a customization, without any proposals in them yet
   subdomain = fetch('/subdomain')
   subdomain_name = subdomain.name?.toLowerCase()
   config = customizations[subdomain_name]
   for k,v of config 
     if k.match( /list\// )
-      all_clusters.push k
+      all_lists.push k
+
+  all_lists = _.uniq all_lists
+  all_lists
 
 
 
-  all_clusters = _.uniq all_clusters
-  all_clusters
+lists_ordered_by_most_recent_update = {}
 
-
-
-newest_in_cluster_on_load = {}
-
-window.clustered_proposals = (keep_as_map) -> 
+window.proposals_in_lists = -> 
   proposals = fetch '/proposals'
   homepage_list_order = customization 'homepage_list_order'
-
-  # create clusters
-  clusters = {}
-
-  all_clusters = get_all_lists()
 
   # By default sort proposals by the newest of the proposals.
   # But we'll only do this on page load, so that clusters don't move
   # around when someone adds a new proposal.
-  if Object.keys(newest_in_cluster_on_load).length == 0
+  if Object.keys(lists_ordered_by_most_recent_update).length == 0
     for proposal in proposals.proposals 
       list_key = "list/#{(proposal.cluster or 'Proposals').trim()}"
       time = (new Date(proposal.created_at).getTime())
-      if !newest_in_cluster_on_load[list_key] || time > newest_in_cluster_on_load[list_key]
-        newest_in_cluster_on_load[list_key] = time 
+      if !lists_ordered_by_most_recent_update[list_key] || time > lists_ordered_by_most_recent_update[list_key]
+        lists_ordered_by_most_recent_update[list_key] = time 
 
-  for list_key in all_clusters
+  lists = {}
+  sort_order = {}
+
+  for list_key in get_all_lists()
     sort = homepage_list_order.indexOf list_key
     if sort < 0 
-      if newest_in_cluster_on_load[list_key]
-        sort = homepage_list_order.length + ((new Date()).getTime() - newest_in_cluster_on_load[list_key])
+      if lists_ordered_by_most_recent_update[list_key]
+        sort = homepage_list_order.length + ((new Date()).getTime() - lists_ordered_by_most_recent_update[list_key])
       else 
         sort = 9999999999999
 
-    clusters[list_key] = 
+    sort_order[list_key] = sort
+
+    lists[list_key] = 
       key: list_key
       proposals: []
-      sort_order: sort
 
   for proposal in proposals.proposals 
     list_key = "list/#{(proposal.cluster or 'Proposals').trim()}"
-    clusters[list_key].proposals.push proposal
-
-  if keep_as_map
-    return clusters 
+    lists[list_key].proposals.push proposal
 
   # order
-  ordered_clusters = _.values clusters 
-  ordered_clusters.sort (a,b) -> a.sort_order - b.sort_order
-  ordered_clusters 
+  ordered_lists = _.values lists 
+  ordered_lists.sort (a,b) -> sort_order[a.key] - sort_order[b.key]
+  ordered_lists 
 
-window.clustered_proposals_with_tabs = (current_tab) -> 
-  all_lists = clustered_proposals()
+window.lists_for_tab = (tab) -> 
+  all_lists = proposals_in_lists()
   homepage_tabs = fetch 'homepage_tabs'
 
   eligible_lists = null
-  if !current_tab || !customization('homepage_tabs')
-    current_tab = homepage_tabs.filter
+  if !tab || !customization('homepage_tabs')
+    tab = homepage_tabs.filter
     eligible_lists = homepage_tabs.clusters
   else 
-    eligible_lists = customization('homepage_tabs')[current_tab]
+    eligible_lists = customization('homepage_tabs')[tab]
 
-  if !eligible_lists && current_tab != 'Show all'
-    console.error "No eligible lists found for #{current_tab}"
+  if !eligible_lists && tab != 'Show all'
+    console.error "No eligible lists found for #{tab}"
 
-  if current_tab == 'Show all' || !current_tab
+  if tab == 'Show all' || !tab
     lists_in_tab = all_lists
 
   else
     lists_in_tab = []
     for list, index in all_lists or []
-      ineligible = current_tab && (eligible_lists != '*' && !(list.key in (eligible_lists or [])) )
+      ineligible = tab && (eligible_lists != '*' && !(list.key in (eligible_lists or [])) )
 
       if ineligible && ('*' in (eligible_lists or []))
         in_others = []
-        for filter, llists of customization('homepage_tabs')
+        for ___, llists of customization('homepage_tabs')
           in_others = in_others.concat llists 
         ineligible &&= list.key in in_others
       if !ineligible

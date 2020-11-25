@@ -116,12 +116,12 @@ window.customization = (field, object_or_key) ->
       if subdomain_config[key]?
         chain_of_configs.push subdomain_config[key]
 
-      # cluster-level config for proposals
+      # list-level config for proposals
       if key.match(/\/proposal\//)
         proposal = obj
-        cluster_key = "list/#{proposal.cluster}"
-        if subdomain_config[cluster_key]?
-          chain_of_configs.push subdomain_config[cluster_key]
+        list_key = "list/#{proposal.cluster}"
+        if subdomain_config[list_key]?
+          chain_of_configs.push subdomain_config[list_key]
 
     # subdomain config
     chain_of_configs.push subdomain_config
@@ -191,7 +191,7 @@ customizations.default =
   show_proposer_icon: true
   collapse_proposal_description_at: 300
 
-  # default cluster options
+  # default list options
   list_is_archived: false
   list_uncollapseable: false
 

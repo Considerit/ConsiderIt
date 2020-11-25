@@ -11,12 +11,9 @@ window.GroupedProposalNavigation = (args) ->
     textAlign: 'center'
     marginBottom: 18
 
-  proposals_by_list = clustered_proposals(true)
-
-
   sections = ([k,v] for k,v of customization('homepage_tabs'))
   if !sections or sections.length == 0
-    sections = [['all', _.keys(proposals_by_list)]] # TODO: check if this is correct default
+    sections = [['all', get_all_lists()]]
   
   active_list = "list/#{args.proposal.cluster or 'Proposals'}"
 
@@ -31,7 +28,6 @@ window.GroupedProposalNavigation = (args) ->
 
   loc = fetch 'location'
   hash = loc.url.split('/')[1].replace('-', '_')
-
 
   current_section = null
 
@@ -58,7 +54,7 @@ window.GroupedProposalNavigation = (args) ->
         for [name, lists] in sections 
           active_section = false 
 
-          lists = clustered_proposals_with_tabs(name)
+          lists = lists_for_tab(name)
 
           total_proposals = 0
           for list in lists
@@ -158,11 +154,7 @@ window.GroupedProposalNavigation = (args) ->
                             marginLeft: 0 #48
 
                           for proposal in list.proposals
-
-
-                            cluster = proposal.cluster or 'Proposals'
                             active = proposal.slug == args.proposal.slug
-
 
                             [
 

@@ -62,9 +62,9 @@ window.EditProposal = ReactiveComponent
 
     if @props.fresh 
       loc = fetch 'location'
-      list = loc.query_params.category or ''
+      category = loc.query_params.category or ''
     else 
-      list = proposal.cluster 
+      category = proposal.cluster 
 
     if !@local.description_fields && (@props.fresh || proposal.slug)
       @local.description_fields = if proposal.description_fields 
@@ -260,20 +260,20 @@ window.EditProposal = ReactiveComponent
           style: block_style
 
           LABEL 
-            htmlFor:'list'
+            htmlFor:'category'
             style: label_style
             translator('category') + ' [' + translator('optional') + ']:'
           
 
           SELECT
-            ref: 'list'
-            id: "list"
-            name: "list"
+            ref: 'category'
+            id: "category"
+            name: "category"
             style: 
               fontSize: 18
-            defaultValue: list
+            defaultValue: category
             onChange: (e) => 
-              @local.list = e.target.value
+              @local.category = e.target.value
               save @local
 
             [
@@ -283,7 +283,7 @@ window.EditProposal = ReactiveComponent
                   OPTION 
                     style: 
                       fontStyle: 'italic'
-                    value: 'new list'
+                    value: 'new category'
                     'Create new category'
 
                   OPTION 
@@ -293,15 +293,15 @@ window.EditProposal = ReactiveComponent
 
               for list_key in available_lists
                 OPTION  
-                  value: list_key
+                  value: list_key.substring(5)
                   get_list_title list_key, true 
 
             ]
 
-          if current_user.is_admin && @local.list == 'new list'
+          if current_user.is_admin && @local.category == 'new category'
             INPUT 
               type: 'text'
-              ref: 'new_list'
+              ref: 'new_category'
               style: 
                 fontSize: 16
                 padding: '4px 6px'
@@ -478,10 +478,10 @@ window.EditProposal = ReactiveComponent
     name = document.getElementById("name").value 
     description = fetch("description-#{@data().key}").html
 
-    list = @refs.list.getDOMNode().value
-    if current_user.is_admin && list == 'new list'
-      list = @refs.new_list.getDOMNode().value or list_name    
-    list = null if list == ''
+    category = @refs.category.getDOMNode().value
+    if current_user.is_admin && category == 'new category'
+      category = @refs.new_category.getDOMNode().value    
+    category = null if category == ''
 
     active = document.getElementById('open_for_discussion').checked
     hide_on_homepage = document.getElementById('listed_on_homepage').checked
@@ -491,14 +491,14 @@ window.EditProposal = ReactiveComponent
         key : '/new/proposal'
         name : name
         description : description
-        cluster : list
+        cluster: category
         active: active
         hide_on_homepage: hide_on_homepage
 
     else 
       proposal = @data()
       _.extend proposal, 
-        cluster: list
+        cluster: category
         name: name
         description: description
         active: active

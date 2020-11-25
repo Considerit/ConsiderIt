@@ -154,7 +154,7 @@ window.TagHomepage = ReactiveComponent
 
     List
       key: aggregate_list_key
-      aggregates: get_all_lists()
+      combines_these_lists: get_all_lists()
       list: 
         key: "list/#{aggregate_list_key}"
         name: aggregate_list_key
@@ -173,7 +173,7 @@ window.SimpleHomepage = ReactiveComponent
   render : ->
     current_user = fetch('/current_user')
     homepage_tabs = fetch 'homepage_tabs'
-    lists = clustered_proposals_with_tabs(homepage_tabs.filter)
+    lists = lists_for_tab(homepage_tabs.filter)
 
     DIV null, 
       for list, index in lists or []
@@ -192,29 +192,31 @@ window.HomepageTabTransition = ReactiveComponent
   render: -> 
     if customization('homepage_tabs')
       loc = fetch 'location'
-      homepage_tab = fetch('homepage_tabs')
-      filters = ([k,v] for k,v of customization('homepage_tabs'))
+      tab_state = fetch 'homepage_tabs'
+      tab_config = customization('homepage_tabs')
+      default_tab = customization('homepage_default_tab') or 'Show all'
 
-      if !customization('homepage_tabs_no_show_all') && !customization('homepage_tabs')['Show all']
-        filters.unshift ["Show all", '*']
+      tabs = ([k,v] for k,v of tab_config)
 
-      homepage_tabs = fetch 'homepage_tabs'
-      if !homepage_tabs.filter? || (loc.query_params.tab && loc.query_params.tab != homepage_tabs.filter)
+      if !customization('homepage_tabs_no_show_all') && !tab_config['Show all']
+        tabs.unshift ["Show all", '*']
+
+      if !tab_state.filter? || (loc.query_params.tab && loc.query_params.tab != tab_state.filter)
         if loc.query_params.tab
-          homepage_tab.filter = decodeURI loc.query_params.tab
+          tab_state.filter = decodeURI loc.query_params.tab
         else 
-          homepage_tabs.filter = customization('homepage_default_tab') or 'Show all'
-        for [filter, clusters] in filters 
-          if filter == homepage_tabs.filter
-            homepage_tabs.clusters = clusters
+          tab_state.filter = default_tab
+        for [tab, lists] in tabs 
+          if tab == tab_state.filter
+            tab_state.clusters = lists
             break 
-        save homepage_tabs
+        save tab_state
 
       if loc.url != '/' && loc.query_params.tab
         delete loc.query_params.tab
         save loc
-      else if loc.url == '/' && loc.query_params.tab != homepage_tab.filter 
-        loc.query_params.tab = homepage_tab.filter
+      else if loc.url == '/' && loc.query_params.tab != tab_state.filter 
+        loc.query_params.tab = tab_state.filter
         save loc
 
     SPAN null

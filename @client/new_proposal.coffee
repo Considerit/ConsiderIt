@@ -18,8 +18,8 @@ window.NewProposal = ReactiveComponent
 
     adding = list_state.adding_new_proposal == list_key 
 
-    if @props.aggregates
-      available_lists = (lst for lst in lists_current_user_can_add_to(@props.aggregates) when lst != list_key)
+    if @props.combines_these_lists
+      available_lists = (lst for lst in lists_current_user_can_add_to(@props.combines_these_lists) when lst != list_key)
       permitted = available_lists.length
     else 
       permitted = permit('create proposal', list_key)
@@ -219,7 +219,7 @@ window.NewProposal = ReactiveComponent
                   marginBottom: 8
                   minHeight: 120
 
-          if @props.aggregates && available_lists.length > 0 
+          if @props.combines_these_lists && available_lists.length > 0 
             DIV
               style: 
                 marginTop: 12
@@ -292,7 +292,7 @@ window.NewProposal = ReactiveComponent
                 active = true 
                 hide_on_homepage = false
 
-                if @props.aggregates && @refs.category
+                if @props.combines_these_lists && @refs.category
                   category = @refs.category.getDOMNode().value
                 else 
                   category = list_key 

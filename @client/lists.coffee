@@ -20,7 +20,7 @@ window.List = ReactiveComponent
     list_key = list.key
 
     list_state = fetch list_key
-    list_state.show_first_num_items ?= @props.show_first_num_items or 20
+    list_state.show_first_num_items ?= @props.show_first_num_items or 12
     list_state.collapsed ?= customization('list_is_archived', list_key)
 
     is_collapsed = list_state.collapsed
@@ -32,10 +32,10 @@ window.List = ReactiveComponent
       position: 'relative'
 
 
-    if @props.aggregates 
-      hues = getNiceRandomHues @props.aggregates.length
+    if @props.combines_these_lists 
+      hues = getNiceRandomHues @props.combines_these_lists.length
       colors = {}
-      for aggregated_list, idx in @props.aggregates
+      for aggregated_list, idx in @props.combines_these_lists
         colors[aggregated_list] = hues[idx]
 
 
@@ -51,7 +51,7 @@ window.List = ReactiveComponent
 
       ListHeader 
         list: list
-        aggregates: @props.aggregates 
+        combines_these_lists: @props.combines_these_lists 
         proposals_count: proposals.length
         fresh: @props.fresh
         allow_editing: !@props.allow_editing? || @props.allow_editing
@@ -69,11 +69,11 @@ window.List = ReactiveComponent
               CollapsedProposal 
                 key: "collapsed#{proposal.key}"
                 proposal: proposal
-                show_category: !!@props.aggregates
-                category_color: if !!@props.aggregates then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], .9, .8)
+                show_category: !!@props.combines_these_lists
+                category_color: if !!@props.combines_these_lists then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], .9, .8)
 
             if  (list_state.show_all_proposals || proposals.length <= list_state.show_first_num_items) && \
-               ((@props.aggregates && lists_current_user_can_add_to(@props.aggregates).length > 0) || customization('list_permit_new_items', list_key)) && \
+               ((@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || customization('list_permit_new_items', list_key)) && \
                 !edit_list.editing
 
               LI 
@@ -88,7 +88,7 @@ window.List = ReactiveComponent
                   
                 NewProposal 
                   list_key: list_key
-                  aggregates: @props.aggregates
+                  combines_these_lists: @props.combines_these_lists
 
           if !list_state.show_all_proposals && proposals.length > list_state.show_first_num_items 
             BUTTON
@@ -101,8 +101,8 @@ window.List = ReactiveComponent
                 paddingBottom: 10
                 fontWeight: 600
                 textAlign: 'center'
-                marginTop: 40
-                marginBottom: 20
+                marginTop: 12
+                marginBottom: 28
                 border: 'none'
                 fontSize: 22
 
@@ -236,7 +236,7 @@ EditList = ReactiveComponent
               if customizations['homepage_tabs']
                 tabs = fetch('homepage_tabs')
                 current_tab = customizations['homepage_tabs'][tabs.filter]
-                current_tab.splice current_tab.indexOf(list_key.substring(5), 1)
+                current_tab.splice current_tab.indexOf(list_key, 1)
 
               subdomain.customizations = JSON.stringify customizations, null, 2
               save subdomain
@@ -454,7 +454,7 @@ window.ListHeader = ReactiveComponent
 
           DIV null, 
 
-            if !@props.aggregates
+            if !@props.combines_these_lists
               DIV 
                 style: 
                   padding: '12px 0'
@@ -510,7 +510,7 @@ window.ListHeader = ReactiveComponent
 
                     translator "engage.list-config-who-can-add-only-hosts", "Only forum hosts"
 
-            if !@props.aggregates
+            if !@props.combines_these_lists
 
               DIV 
                 style: 
@@ -729,7 +729,7 @@ window.ListHeader = ReactiveComponent
       if !edit_list.editing && @props.proposals_count > 0 && !customization('questionaire', list_key) && !is_collapsed && !customization('list_no_filters', list_key)
         list_actions
           list: @props.list
-          add_new: !@props.aggregates && customization('list_permit_new_items', list_key) && !is_collapsed && @props.proposals_count > 4
+          add_new: !@props.combines_these_lists && customization('list_permit_new_items', list_key) && !is_collapsed && @props.proposals_count > 4
           can_sort: customization('homepage_show_search_and_sort') && @props.proposals_count > 8 
 
 
@@ -809,6 +809,9 @@ window.get_list_title = (list_key, include_category_value) ->
 
   if title == 'Show all'
     title = translator "engage.all_proposals_list", "All Proposals"
+  else if title == 'Proposals'
+    title = translator "engage.default_proposals_list", "Proposals"
+    
   # else if title?.length > 0
   #   title = translator 
   #             id: "proposal_list.#{title}"

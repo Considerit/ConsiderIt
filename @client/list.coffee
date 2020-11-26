@@ -483,12 +483,16 @@ window.ListHeader = ReactiveComponent
                   className: 'LIST-field-edit-label'
                   htmlFor: 'list_permit_new_items'
 
-                  SPAN 
-                    style: 
-                      fontWeight: 700
-                    'Permissions. '
 
-                  translator "engage.list-config-who-can-add", "Who can add items to this list?"
+                  TRANSLATE
+                    id: "engage.list-config-who-can-add"
+                    span: 
+                      component: SPAN 
+                      args: 
+                        style: 
+                          fontWeight: 700
+
+                    "<span>Permissions.</span> Who can add items to this list?"
 
                 DIV 
                   style: option_block
@@ -550,13 +554,16 @@ window.ListHeader = ReactiveComponent
                   LABEL
                     className: 'LIST-field-edit-label'
 
-                    SPAN
-                      style: 
-                        fontWeight: 700
-                      'Slider. '
 
-                    translator "engage.list-config-spectrum", "On what spectrum is each item evaluated?"
+                    TRANSLATE
+                      id: "engage.list-config-spectrum"
+                      span: 
+                        component: SPAN 
+                        args: 
+                          style: 
+                            fontWeight: 700
 
+                      "<span>Slider.</span> On what spectrum is each item evaluated?"
 
 
                 DIV 
@@ -676,7 +683,7 @@ window.ListHeader = ReactiveComponent
                             fontSize: 14
                             marginRight: 12
                             cursor: 'pointer'
-                          'change spectrum'
+                          translator 'engage.list-config-spectrum-select', 'change spectrum'
 
                         SPAN style: _.extend cssTriangle 'bottom', focus_color(), 15, 9,
                           display: 'inline-block'
@@ -829,15 +836,15 @@ EditableTitle = ReactiveComponent
         DIV 
           className: 'LIST-field-edit-label'
 
-          SPAN 
-            style: 
-              fontWeight: 700
-            'Title [optional].'
-          SPAN 
-            style:
-              fontWeight: 400
-            #' Can be a category title like "Ideas", or an open-ended question like "What are our values?"'
-            ' Usually an open-ended question like "What are your ideas?" or a list label like "Recommended actions for mitigation"'
+          TRANSLATE
+            id: "engage.list-config-title"
+            span: 
+              component: SPAN 
+              args: 
+                style: 
+                  fontWeight: 700
+
+            "<span>Title [optional].</span> Usually an open-ended question like \"What are your ideas?\" or a list label like \"Recommended actions for mitigation\""
 
       H1 
         className: 'LIST-header'
@@ -937,14 +944,15 @@ EditableListCategory = ReactiveComponent
         DIV 
           className: 'LIST-field-edit-label'
 
-          SPAN 
-            style: 
-              fontWeight: 700
-            'Category. '
-          SPAN 
-            style:
-              fontWeight: 400
-            'e.g. "Ideas", "Policies", "Questions", "Strategies"'
+          TRANSLATE
+            id: "engage.list-config-category"
+            span: 
+              component: SPAN 
+              args: 
+                style: 
+                  fontWeight: 700
+
+            "<span>Category.</span> e.g. \"Ideas\", \"Policies\", \"Questions\", \"Strategies\""
 
       H1 null,
 
@@ -1002,14 +1010,16 @@ EditableOpinionLabel = ReactiveComponent
           style: 
             textAlign: 'right'
 
-          SPAN 
-            style: 
-              fontWeight: 700
-            'Opinion title. '
-          SPAN 
-            style:
-              fontWeight: 400
-            'e.g. "Ratings", "Gut checks"'
+          TRANSLATE
+            id: "engage.list-config-opinion-title"
+            span: 
+              component: SPAN 
+              args: 
+                style: 
+                  fontWeight: 700
+
+            "<span>Opinion title.</span> e.g. \"Ratings\", \"Gut checks\""
+
 
       H1 null,
         if edit_list.editing
@@ -1064,14 +1074,15 @@ EditableDescription = ReactiveComponent
             DIV 
               className: 'LIST-field-edit-label'
 
-              SPAN 
-                style: 
-                  fontWeight: 700
-                'Description [optional].'
-              SPAN 
-                style:
-                  fontWeight: 400
-                ' Give any additional information or direction here.'
+              TRANSLATE
+                id: "engage.list-config-description"
+                span: 
+                  component: SPAN 
+                  args: 
+                    style: 
+                      fontWeight: 700
+
+                "<span>Description [optional].</span> Give any additional information or direction here."
 
             DIV 
               id: 'edit_description'

@@ -240,7 +240,7 @@ EditList = ReactiveComponent
 
         wrapper_style: 
           position: 'absolute'
-          right: -28
+          right: -42
           top: 16
 
         anchor_style: {}
@@ -1244,3 +1244,102 @@ GearIcon = (opts) ->
     viewBox: "0 0 100 100"  
     dangerouslySetInnerHTML: __html: '<path d="M95.784,59.057c1.867,0,3.604-1.514,3.858-3.364c0,0,0.357-2.6,0.357-5.692c0-3.092-0.357-5.692-0.357-5.692  c-0.255-1.851-1.991-3.364-3.858-3.364h-9.648c-1.868,0-3.808-1.191-4.31-2.646s-1.193-6.123,0.128-7.443l6.82-6.82  c1.32-1.321,1.422-3.575,0.226-5.01L80.976,11c-1.435-1.197-3.688-1.095-5.01,0.226l-6.82,6.82c-1.32,1.321-3.521,1.853-4.888,1.183  c-1.368-0.67-5.201-3.496-5.201-5.364V4.217c0-1.868-1.514-3.604-3.364-3.859c0,0-2.6-0.358-5.692-0.358s-5.692,0.358-5.692,0.358  c-1.851,0.254-3.365,1.991-3.365,3.859v9.648c0,1.868-1.19,3.807-2.646,4.31c-1.456,0.502-6.123,1.193-7.444-0.128l-6.82-6.82  C22.713,9.906,20.459,9.804,19.025,11L11,19.025c-1.197,1.435-1.095,3.689,0.226,5.01l6.819,6.82  c1.321,1.321,1.854,3.521,1.183,4.888s-3.496,5.201-5.364,5.201H4.217c-1.868,0-3.604,1.514-3.859,3.364c0,0-0.358,2.6-0.358,5.692  c0,3.093,0.358,5.692,0.358,5.692c0.254,1.851,1.991,3.364,3.859,3.364h9.648c1.868,0,3.807,1.19,4.309,2.646  c0.502,1.455,1.193,6.122-0.128,7.443l-6.819,6.819c-1.321,1.321-1.423,3.575-0.226,5.01L19.025,89  c1.435,1.196,3.688,1.095,5.009-0.226l6.82-6.82c1.321-1.32,3.521-1.853,4.889-1.183c1.368,0.67,5.201,3.496,5.201,5.364v9.648  c0,1.867,1.514,3.604,3.365,3.858c0,0,2.599,0.357,5.692,0.357s5.692-0.357,5.692-0.357c1.851-0.255,3.364-1.991,3.364-3.858v-9.648  c0-1.868,1.19-3.808,2.646-4.31s6.123-1.192,7.444,0.128l6.819,6.82c1.321,1.32,3.575,1.422,5.01,0.226L89,80.976  c1.196-1.435,1.095-3.688-0.227-5.01l-6.819-6.819c-1.321-1.321-1.854-3.521-1.183-4.889c0.67-1.368,3.496-5.201,5.364-5.201H95.784  z M50,68.302c-10.108,0-18.302-8.193-18.302-18.302c0-10.107,8.194-18.302,18.302-18.302c10.108,0,18.302,8.194,18.302,18.302  C68.302,60.108,60.108,68.302,50,68.302z"></path>'
 
+
+window.get_all_lists = ->
+  proposals = fetch '/proposals'
+  all_lists = ("list/#{(p.cluster or 'Proposals').trim()}" for p in proposals.proposals)
+
+  # lists might also just be defined as a customization, without any proposals in them yet
+  subdomain = fetch('/subdomain')
+  subdomain_name = subdomain.name?.toLowerCase()
+  config = customizations[subdomain_name]
+  for k,v of config 
+    if k.match( /list\// )
+      all_lists.push k
+
+  all_lists = _.uniq all_lists
+  all_lists
+
+
+
+lists_ordered_by_most_recent_update = {}
+
+window.proposals_in_lists = -> 
+  proposals = fetch '/proposals'
+  homepage_list_order = customization 'homepage_list_order'
+
+  # By default sort proposals by the newest of the proposals.
+  # But we'll only do this on page load, so that clusters don't move
+  # around when someone adds a new proposal.
+  if Object.keys(lists_ordered_by_most_recent_update).length == 0
+    for proposal in proposals.proposals 
+      list_key = "list/#{(proposal.cluster or 'Proposals').trim()}"
+      time = (new Date(proposal.created_at).getTime())
+      if !lists_ordered_by_most_recent_update[list_key] || time > lists_ordered_by_most_recent_update[list_key]
+        lists_ordered_by_most_recent_update[list_key] = time 
+
+  lists = {}
+  sort_order = {}
+
+  for list_key in get_all_lists()
+    sort = homepage_list_order.indexOf list_key
+    if sort < 0 
+      if lists_ordered_by_most_recent_update[list_key]
+        sort = homepage_list_order.length + ((new Date()).getTime() - lists_ordered_by_most_recent_update[list_key])
+      else 
+        sort = 9999999999999
+
+    sort_order[list_key] = sort
+
+    lists[list_key] = 
+      key: list_key
+      proposals: []
+
+  for proposal in proposals.proposals 
+    list_key = "list/#{(proposal.cluster or 'Proposals').trim()}"
+    lists[list_key].proposals.push proposal
+
+  # order
+  ordered_lists = _.values lists 
+  ordered_lists.sort (a,b) -> sort_order[a.key] - sort_order[b.key]
+  ordered_lists 
+
+window.lists_for_tab = (tab) -> 
+  all_lists = proposals_in_lists()
+  homepage_tabs = fetch 'homepage_tabs'
+
+  eligible_lists = null
+  if !tab || !customization('homepage_tabs')
+    tab = homepage_tabs.filter
+    eligible_lists = homepage_tabs.clusters
+  else 
+    eligible_lists = customization('homepage_tabs')[tab]
+
+  if !eligible_lists && tab != 'Show all'
+    console.error "No eligible lists found for #{tab}"
+
+  if tab == 'Show all' || !tab
+    lists_in_tab = all_lists
+
+  else
+    lists_in_tab = []
+    for list, index in all_lists or []
+      ineligible = tab && (eligible_lists != '*' && !(list.key in (eligible_lists or [])) )
+
+      if ineligible && ('*' in (eligible_lists or []))
+        in_others = []
+        for ___, llists of customization('homepage_tabs')
+          in_others = in_others.concat llists 
+        ineligible &&= list.key in in_others
+      if !ineligible
+        lists_in_tab.push list 
+
+  lists_in_tab
+
+
+window.lists_current_user_can_add_to = (lists) -> 
+  appendable = []
+  for list_key in lists 
+    if permit('create proposal', list_key) > 0
+      appendable.push list_key 
+  appendable

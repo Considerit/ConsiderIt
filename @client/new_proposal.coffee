@@ -44,8 +44,6 @@ window.NewProposal = ReactiveComponent
         user: editor
         img_size: 'large'
         style:
-          #position: 'absolute'
-          #left: -18 - 50
           height: 50
           width: 50
           marginRight: 8

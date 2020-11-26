@@ -28,6 +28,14 @@ window.Button = (props, text, callback) ->
   BUTTON props, text
 
 
+
+
+window.styles += """
+  .AUTOGROWTEXTAREA-input {
+    padding: 4px 8px;
+  }
+"""
+
 window.AutoGrowTextArea = ReactiveComponent
   displayName: 'AutoGrowTextArea'  
 
@@ -63,9 +71,10 @@ window.AutoGrowTextArea = ReactiveComponent
       @local.height = @props.min_height
 
     @transferPropsTo TEXTAREA
+      className: 'AUTOGROWTEXTAREA-input'
       onChange: @onChange
       rows: 1
-      style: _.extend( {padding: '4px 8px'}, (@props.style || {}), {height: @local.height} )
+      style: _.extend {}, (@props.style or {}), {height: @local.height}
       ref: 'input'
 
 

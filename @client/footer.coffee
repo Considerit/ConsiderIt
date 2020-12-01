@@ -141,7 +141,7 @@ window.DefaultFooter = ReactiveComponent
               DIV 
                 style: 
                   display: 'inline-block'
-                '© 2019 Consider.it. All rights reserved. '
+                '© Consider.it LLC. All rights reserved. '
 
                 TRANSLATE
                   id: 'footer.policies'

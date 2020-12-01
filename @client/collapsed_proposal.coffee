@@ -171,7 +171,6 @@ window.CollapsedProposal = ReactiveComponent
         DIV
           style:
             display: 'inline-block'
-            fontWeight: 400
             paddingBottom: if !can_edit then 20 else 4
             width: col_sizes.first
 
@@ -265,28 +264,13 @@ window.CollapsedProposal = ReactiveComponent
 
 
             if @props.show_category && proposal.cluster
-              cluster = proposal.cluster 
-              if fetch('/subdomain').name == 'dao' && proposal.cluster == 'Proposals'
-                cluster = 'Ideas'
-
-              if cluster == "Proposals"
-                cluster = translator "engage.default_proposals_list", "Proposals"
-              else 
-                cluster = translator 
-                             id: "proposal_list.#{cluster}"
-                             key: "/translations/#{fetch('/subdomain').name}"
-                             cluster 
-
               SPAN 
                 style: 
-                  #border: "1px solid #{@props.category_color}"
-                  #backgroundColor: @props.category_color
                   padding: '1px 2px'
-                  #color: 'white' #@props.category_color
-                  fontStyle: 'italic'
-                  #fontSize: 12
+                  color: @props.category_color or 'black'
+                  fontWeight: 500
 
-                cluster
+                get_list_title "list/#{proposal.cluster}", true
 
             if !proposal.active
               SPAN 

@@ -79,8 +79,7 @@ window.back_to_homepage_button = (style, text) ->
       if text 
         SPAN 
           style: 
-            textDecoration: 'underline'
-            paddingLeft: 4
+            paddingLeft: 20
           text 
 
 
@@ -213,111 +212,9 @@ window.opinionsForProposal = (proposal) ->
   opinions = fetch(proposal).opinions || []
   opinions
 
-window.get_all_clusters = ->
-  proposals = fetch '/proposals'
-  all_clusters = ((p.cluster or 'Proposals').trim() for p in proposals.proposals)
-
-  # clusters might also just be defined as a customization, without any proposals in them yet
-  subdomain = fetch('/subdomain')
-  subdomain_name = subdomain.name?.toLowerCase()
-  config = customizations[subdomain_name]
-  for k,v of config 
-    if k.match( /list\// )
-      all_clusters.push k.substring(5)
 
 
 
-  all_clusters = _.uniq all_clusters
-  all_clusters
-
-
-
-newest_in_cluster_on_load = {}
-
-window.clustered_proposals = (keep_as_map) -> 
-  proposals = fetch '/proposals'
-  homepage_list_order = customization 'homepage_list_order'
-
-  # create clusters
-  clusters = {}
-
-  all_clusters = get_all_clusters()
-
-  # By default sort proposals by the newest of the proposals.
-  # But we'll only do this on page load, so that clusters don't move
-  # around when someone adds a new proposal.
-  if Object.keys(newest_in_cluster_on_load).length == 0
-    for proposal in proposals.proposals 
-      cluster = (proposal.cluster or 'Proposals').trim()
-      time = (new Date(proposal.created_at).getTime())
-      if !newest_in_cluster_on_load[cluster] || time > newest_in_cluster_on_load[cluster]
-        newest_in_cluster_on_load[cluster] = time 
-
-  for cluster in all_clusters
-    sort = homepage_list_order.indexOf cluster
-    if sort < 0 
-      if newest_in_cluster_on_load[cluster]
-        sort = homepage_list_order.length + ((new Date()).getTime() - newest_in_cluster_on_load[cluster])
-      else 
-        sort = 9999999999999
-
-    clusters[cluster] = 
-      key: "list/#{cluster}"
-      name: cluster
-      proposals: []
-      list_is_archived: customization('list_is_archived', "list/#{cluster}")
-      sort_order: sort
-
-  for proposal in proposals.proposals 
-    cluster = (proposal.cluster or 'Proposals').trim()
-    clusters[cluster].proposals.push proposal
-
-  if keep_as_map
-    return clusters 
-
-  # order
-  ordered_clusters = _.values clusters 
-  ordered_clusters.sort (a,b) -> a.sort_order - b.sort_order
-  ordered_clusters 
-
-window.clustered_proposals_with_tabs = (current_filter) -> 
-
-
-  all_clusters = clustered_proposals()
-  homepage_tabs = fetch 'homepage_tabs'
-
-  clusters = null
-  if !current_filter || !customization('homepage_tabs')
-    current_filter = homepage_tabs.filter
-    clusters = homepage_tabs.clusters
-  else 
-    filters = ([k,v] for k,v of customization('homepage_tabs'))
-    for [filter, cclusters] in filters 
-      if filter == current_filter
-        clusters = cclusters
-        break 
-
-  if !clusters 
-    console.error "No clusters found for #{current_filter}"
-
-  if current_filter && current_filter != 'Show all'
-    to_remove = []
-    for cluster, index in all_clusters or []
-      cluster_key = "list/#{cluster.name}"
-
-      fails_filter = current_filter && (clusters != '*' && !(cluster.name in (clusters or [])) )
-      if fails_filter && ('*' in (clusters or []))
-        in_others = []
-        for filter, cclusters of customization('homepage_tabs')
-          in_others = in_others.concat cclusters 
-
-        fails_filter &&= cluster.name in in_others
-      if fails_filter
-        to_remove.push cluster 
-
-    all_clusters = _.difference all_clusters, to_remove
-
-  all_clusters
 
 
 ######
@@ -657,6 +554,7 @@ window.parseURL = (url) ->
   if pathname[0] != '/'
     pathname = "/#{pathname}"
   searchObject = {}
+
   queries = parser.search.replace(/^\?/, '').split('&')
   i = 0
   while i < queries.length
@@ -783,6 +681,9 @@ window.cssTriangle = (direction, color, width, height, style) ->
     borderColor: border_color
 
   style
+
+window.header_font = ->
+  customization('header_font') or customization('font')
 
 
 # from https://gist.github.com/mathewbyrne/1280286
@@ -960,7 +861,9 @@ a.skip:hover {
   position: relative;
   font-size: 16px;
   color: black;
-  min-height: 100%; }
+  min-height: 100%; 
+  font-weight: 300;
+}
 
 
 .flipped {

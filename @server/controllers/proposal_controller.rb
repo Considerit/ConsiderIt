@@ -99,6 +99,13 @@ class ProposalController < ApplicationController
 
     if permit('update proposal', proposal) > 0
       fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage', 'description_fields']
+
+      if params.has_key?('cluster') && params['cluster'] != proposal.cluster 
+        if permit('set category', params['cluster']) <= 0 
+          params.delete('cluster')
+        end 
+      end
+
       updated_fields = params.select{|k,v| fields.include?(k) && v != proposal[k]}
 
       if updated_fields.include?('cluster') && updated_fields['cluster'] && updated_fields['cluster'].length > 0

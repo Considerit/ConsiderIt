@@ -7,16 +7,15 @@ namespace :customizations do
     # edit this before running if necessary: 
 
     list_defaults = {
-      # list_show_new_button: true,
+      # list_permit_new_items: true,
       # hide_category_for_new: true,
       # list_is_archived: false,
       # list_opinions_title: 'Opinions',
       # slider_pole_labels: slider_labels.important_unimportant,
-      # list_label_style: {}, 
+      # list_title_style: {}, 
       # list_items_title: '',
       # list_no_filters: false,
       # list_uncollapseable,
-      # list_label_style
     }
 
     file_path = args[:fpath] || 'lib/tasks/client_data/lists.csv'
@@ -47,7 +46,7 @@ namespace :customizations do
         list[k] = v
       end
 
-      list[:list_label] = header
+      list[:list_title] = header
 
       if desc 
         list[:list_description] = desc 
@@ -55,9 +54,9 @@ namespace :customizations do
 
       if show_new
         if show_new.downcase == 'no' || show_new.downcase == 'false'
-          list[:list_show_new_button] = false 
+          list[:list_permit_new_items] = false 
         else 
-          list[:list_show_new_button] = true 
+          list[:list_permit_new_items] = true 
         end 
       end 
 

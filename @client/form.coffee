@@ -28,6 +28,14 @@ window.Button = (props, text, callback) ->
   BUTTON props, text
 
 
+
+
+window.styles += """
+  .AUTOGROWTEXTAREA-input {
+    padding: 4px 8px;
+  }
+"""
+
 window.AutoGrowTextArea = ReactiveComponent
   displayName: 'AutoGrowTextArea'  
 
@@ -37,7 +45,11 @@ window.AutoGrowTextArea = ReactiveComponent
     @props.onChange?(e)
     @checkAndSetHeight()
 
-  componentDidMount : -> @checkAndSetHeight()
+  componentDidMount : -> 
+    @checkAndSetHeight()
+    if @props.focus_on_mount 
+      @refs.input.getDOMNode().focus()
+
   componentDidUpdate : -> @checkAndSetHeight()
 
   checkAndSetHeight : ->
@@ -59,9 +71,11 @@ window.AutoGrowTextArea = ReactiveComponent
       @local.height = @props.min_height
 
     @transferPropsTo TEXTAREA
+      className: 'AUTOGROWTEXTAREA-input'
       onChange: @onChange
       rows: 1
-      style: _.extend( {padding: '4px 8px'}, (@props.style || {}), {height: @local.height} )
+      style: _.extend {}, (@props.style or {}), {height: @local.height}
+      ref: 'input'
 
 
 window.CharacterCountTextInput = ReactiveComponent
@@ -193,11 +207,11 @@ window.WysiwygEditor = ReactiveComponent
               'aria-orientation': if toolbar_horizontal then 'horizontal' else 'vertical'
               id: 'toolbar'
               tabIndex: 0
-              style: 
+              style: _.defaults {}, @props.toolbar_style, 
                 position: 'absolute'
                 width: if !toolbar_horizontal then 30
                 left: if !toolbar_horizontal then -32
-                top: if toolbar_horizontal then -23 else 0
+                top: if toolbar_horizontal then -25 else 0
                 display: 'block'
                 visibility: if wysiwyg_editor.showing != @props.key then 'hidden'
 
@@ -243,7 +257,7 @@ window.WysiwygEditor = ReactiveComponent
                       padding: 2
                       border: '1px solid #aaa'
                       borderRadius: 3
-                      backgroundColor: 'transparent'
+                      backgroundColor: 'white'
                       display: if toolbar_horizontal then 'inline-block' else 'block'
                       marginBottom: 4
                     title: button.title

@@ -62,9 +62,9 @@ window.EditProposal = ReactiveComponent
 
     if @props.fresh 
       loc = fetch 'location'
-      cluster = loc.query_params.category or ''
+      category = loc.query_params.category or ''
     else 
-      cluster = proposal.cluster 
+      category = proposal.cluster 
 
     if !@local.description_fields && (@props.fresh || proposal.slug)
       @local.description_fields = if proposal.description_fields 
@@ -95,6 +95,8 @@ window.EditProposal = ReactiveComponent
         @local.open_fields.push field.id
       save @local
 
+    available_lists = lists_current_user_can_add_to get_all_lists()
+    
     DIV null, 
       DIV 
         style: 
@@ -117,22 +119,6 @@ window.EditProposal = ReactiveComponent
               translator 'engage.add_new_proposal_button', "Create new proposal"
             else 
               "#{capitalize(translator('engage.edit_button', 'edit'))} '#{proposal.name}'"
-
-          # DIV 
-          #   style: 
-          #     fontSize: 18
-
-          #   t('make_it') + ' ' 
-          #   SPAN 
-          #     style: 
-          #       fontWeight: 600
-          #     t("unambiguous")
-          #   ' ' + t('and') + ' '
-          #   SPAN 
-          #     style: 
-          #       fontWeight: 600
-          #     t('error_free')
-          #   '.'
 
         DIV style: block_style,
           LABEL 
@@ -274,18 +260,57 @@ window.EditProposal = ReactiveComponent
           style: block_style
 
           LABEL 
-            htmlFor:'cluster'
+            htmlFor:'category'
             style: label_style
-            translator('category') + ' (' + translator('optional') + '):'
-
-          INPUT 
-            id: 'cluster'
-            name: 'cluster'
-            pattern: '^.{3,}'
-            placeholder: translator("engage.proposal_cluster_placeholder", 'The proposal will be shown on the homepage under this category. (Default="Proposals")')
-            defaultValue: cluster 
-            style: input_style
+            translator('category') + ' [' + translator('optional') + ']:'
           
+
+          SELECT
+            ref: 'category'
+            id: "category"
+            name: "category"
+            style: 
+              fontSize: 18
+            defaultValue: category
+            onChange: (e) => 
+              @local.category = e.target.value
+              save @local
+
+            [
+              if current_user.is_admin
+
+                [
+                  OPTION 
+                    style: 
+                      fontStyle: 'italic'
+                    value: 'new category'
+                    'Create new category'
+
+                  OPTION 
+                    disabled: "disabled"
+                    '--------'
+                ]
+
+              for list_key in available_lists
+                OPTION  
+                  value: list_key.substring(5)
+                  get_list_title list_key, true 
+
+            ]
+
+          if current_user.is_admin && @local.category == 'new category'
+            INPUT 
+              type: 'text'
+              ref: 'new_category'
+              style: 
+                fontSize: 16
+                padding: '4px 6px'
+                #marginLeft: 4
+                marginTop: 4
+                display: 'block'
+
+
+
         DIV 
           style: _.extend {}, block_style,
             display: if !current_user.is_admin then 'none'
@@ -448,32 +473,32 @@ window.EditProposal = ReactiveComponent
 
 
   saveProposal : -> 
-
-    $el = $(@getDOMNode())
+    current_user = fetch '/current_user'
     
-    name = $el.find('#name').val()
+    name = document.getElementById("name").value 
     description = fetch("description-#{@data().key}").html
 
+    category = @refs.category.getDOMNode().value
+    if current_user.is_admin && category == 'new category'
+      category = @refs.new_category.getDOMNode().value    
+    category = null if category == ''
 
-    cluster = $el.find('#cluster').val()
-    cluster = null if cluster == ""
-
-    active = $el.find('#open_for_discussion:checked').length > 0
-    hide_on_homepage = $el.find('#listed_on_homepage:checked').length == 0
+    active = document.getElementById('open_for_discussion').checked
+    hide_on_homepage = document.getElementById('listed_on_homepage').checked
 
     if @props.fresh
       proposal =
         key : '/new/proposal'
         name : name
         description : description
-        cluster : cluster
+        cluster: category
         active: active
         hide_on_homepage: hide_on_homepage
 
     else 
       proposal = @data()
       _.extend proposal, 
-        cluster: cluster
+        cluster: category
         name: name
         description: description
         active: active

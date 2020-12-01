@@ -141,7 +141,7 @@ window.DefaultFooter = ReactiveComponent
               DIV 
                 style: 
                   display: 'inline-block'
-                '© 2019 Consider.it. All rights reserved. '
+                '© Consider.it LLC. All rights reserved. '
 
                 TRANSLATE
                   id: 'footer.policies'
@@ -173,7 +173,7 @@ window.DefaultFooter = ReactiveComponent
                     args: 
                       style: 
                         textDecoration: 'underline'                    
-                      href: 'mailto:hello@consider.it'
+                      href: 'mailto:help@consider.it'
 
                   "Report bugs to <link>help@consider.it</link>"
 

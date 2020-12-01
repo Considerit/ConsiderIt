@@ -52,7 +52,16 @@ permit = (action) ->
     when 'create proposal'
       subdomain = fetch '/subdomain'
 
-      if !current_user.is_admin && !matchEmail(subdomain.roles.proposer)
+      if arguments[1]
+        list_key = arguments[1]
+        list_key = list_key.key or list_key
+        if !list_key.startsWith 'list/'
+          list_key = "list/#{list_key}"
+        can_add_to_list = customization('list_permit_new_items', list_key)
+      else 
+        can_add_to_list = true
+
+      if !current_user.is_admin && (!matchEmail(subdomain.roles.proposer) || !can_add_to_list)
         return Permission.INSUFFICIENT_PRIVILEGES 
       return Permission.NOT_LOGGED_IN if !current_user.logged_in
 

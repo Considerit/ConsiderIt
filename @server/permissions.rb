@@ -82,7 +82,11 @@ def permit(action, object = nil, user = nil)
   when 'create subdomain'
     return Permission::NOT_LOGGED_IN if !user.registered
 
-  when 'update subdomain', 'delete subdomain'
+  when 'update subdomain'
+    return Permission::NOT_LOGGED_IN if !user.registered
+    return Permission::INSUFFICIENT_PRIVILEGES if !user.is_admin?(subdomain)
+
+  when 'delete subdomain'
     return Permission::NOT_LOGGED_IN if !user.registered
     return Permission::INSUFFICIENT_PRIVILEGES if !user.is_admin?(subdomain)
     return Permission::UNVERIFIED_EMAIL if !user.verified  
@@ -117,6 +121,19 @@ def permit(action, object = nil, user = nil)
     return Permission::NOT_LOGGED_IN if !user.registered
 
     if !user.is_admin?(subdomain) && !Permitted::matchEmail(proposal.user_roles['editor'], user)
+      return Permission::INSUFFICIENT_PRIVILEGES
+    end
+
+  when 'set category'
+    list_key = "list/#{object}"
+    customizations = subdomain.customization_json()
+    if customizations.has_key?(list_key) && customizations[list_key].has_key?("list_permit_new_items")
+      allowed = customizations[list_key]["list_permit_new_items"]
+    else
+      allowed = permit('create proposal')
+    end
+
+    if !allowed 
       return Permission::INSUFFICIENT_PRIVILEGES
     end
 

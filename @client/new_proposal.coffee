@@ -3,40 +3,40 @@ window.NewProposal = ReactiveComponent
   displayName: 'NewProposal'
 
   render : -> 
-    cluster_name = @props.cluster_name or 'Proposals'
-    cluster_key = "list/#{cluster_name}"
+    list_key = @props.list_key
+    list_name = list_key.substring(5)
 
-    cluster_state = fetch(@props.local)
+    list_state = fetch list_key
     loc = fetch 'location'
-
-    return SPAN null if cluster_name == 'Blocksize Survey'
 
     current_user = fetch '/current_user'
 
-    if cluster_state.adding_new_proposal != cluster_name && \
-       loc.query_params.new_proposal == encodeURIComponent(cluster_name)
-      cluster_state.adding_new_proposal = cluster_name
-      save cluster_state
+    if list_state.adding_new_proposal != list_key && \
+       loc.query_params.new_proposal == list_key
+      list_state.adding_new_proposal = list_key
+      save list_state
 
-    adding = cluster_state.adding_new_proposal == cluster_name 
-    cluster_slug = slugify(cluster_name)
+    adding = list_state.adding_new_proposal == list_key 
 
-    permitted = permit('create proposal')
+    if @props.combines_these_lists
+      available_lists = (lst for lst in lists_current_user_can_add_to(@props.combines_these_lists) when lst != list_key)
+      permitted = available_lists.length
+    else 
+      permitted = permit('create proposal', list_key)
+
     needs_to_login = permitted == Permission.NOT_LOGGED_IN
     permitted = permitted > 0
 
-    @local.category ||= cluster_name
-
     return SPAN null if !permitted && !needs_to_login
 
-    proposal_fields = customization('new_proposal_fields', cluster_name)()
+    proposal_fields = customization('new_proposal_fields', list_key)()
 
     label_style = 
       fontWeight: 400
       fontSize: 14
       display: 'block'
 
-    if customization('show_proposer_icon', cluster_key) && adding 
+    if customization('show_proposer_icon', list_key) && adding 
       editor = current_user.user
       # Person's icon
       bullet = Avatar
@@ -44,27 +44,12 @@ window.NewProposal = ReactiveComponent
         user: editor
         img_size: 'large'
         style:
-          #position: 'absolute'
-          #left: -18 - 50
           height: 50
           width: 50
           marginRight: 8
           borderRadius: 0
           backgroundColor: '#ddd'
 
-    # else if !adding
-
-    #   bullet =  SVG 
-    #               viewBox: "0 0 5 5"
-    #               width: 20
-    #               style: 
-    #                 marginRight: 7
-    #                 verticalAlign: 'top'
-    #                 paddingTop: 6
-
-    #               PATH 
-    #                 fill: '#000000'
-    #                 d: "M2 1 h1 v1 h1 v1 h-1 v1 h-1 v-1 h-1 v-1 h1 z"
     else
       bullet =  SVG 
                   width: 8
@@ -79,9 +64,9 @@ window.NewProposal = ReactiveComponent
 
     if !adding 
       BUTTON  
-        name: "add_new_#{cluster_name}"
+        name: "new_#{list_name}"
         className: 'add_new_proposal'
-        style: _.defaults (@props.label_style or {}),
+        style: 
           cursor: 'pointer'
           backgroundColor: '#e7e7e7'
           border: 'none'
@@ -93,19 +78,19 @@ window.NewProposal = ReactiveComponent
           marginLeft: -44
         
         onClick: (e) => 
-          loc.query_params.new_proposal = encodeURIComponent cluster_name
+          loc.query_params.new_proposal = list_key
           save loc
 
           if permitted
-            cluster_state.adding_new_proposal = cluster_name; save(cluster_state)
+            list_state.adding_new_proposal = list_key; save(list_state)
             setTimeout =>
-              $("##{cluster_slug}-name").focus()
+              $("##{list_name}-name").focus()
             , 0
           else 
             e.stopPropagation()
             reset_key 'auth', {form: 'login', goal: 'add a new proposal', ask_questions: true}
         
-        A name: "new_#{cluster_name}"
+        A name: "new_#{list_name}"
         bullet 
 
         if permitted
@@ -121,12 +106,12 @@ window.NewProposal = ReactiveComponent
         style:
           position: 'relative'
           padding: '6px 8px'
-          marginLeft: if customization('show_proposer_icon', cluster_key) then -76 else -36
+          marginLeft: if customization('show_proposer_icon', list_key) then -76 else -36
 
-        A name: "new_#{cluster_name}"
+        A name: "new_#{list_name}"
 
-        if customization('new_proposal_tips', cluster_key)
-          @drawTips customization('new_proposal_tips', cluster_key)
+        if customization('new_proposal_tips', list_key)
+          @drawTips customization('new_proposal_tips', list_key)
 
         bullet
 
@@ -140,14 +125,14 @@ window.NewProposal = ReactiveComponent
               position: 'absolute'
               left: 8
               top: -18
-            htmlFor: "#{cluster_slug}-name"
+            htmlFor: "#{list_name}-name"
 
             proposal_fields.name
 
 
 
           CharacterCountTextInput 
-            id: "#{cluster_slug}-name"
+            id: "#{list_name}-name"
             maxLength: 240
             name:'name'
             pattern: '^.{3,}'
@@ -177,7 +162,7 @@ window.NewProposal = ReactiveComponent
         DIV 
           style: 
             position: 'relative'
-            marginLeft: if customization('show_proposer_icon', cluster_key) then 58 else 21
+            marginLeft: if customization('show_proposer_icon', list_key) then 58 else 21
 
 
           # details 
@@ -187,13 +172,13 @@ window.NewProposal = ReactiveComponent
               style: _.extend {}, label_style,
                 marginLeft: 8
 
-              htmlFor: "#{cluster_slug}-details"
+              htmlFor: "#{list_name}-details"
 
               proposal_fields.description
 
             WysiwygEditor
-              id: "#{cluster_slug}-details"
-              key:"description-new-proposal-#{cluster_slug}"
+              id: "#{list_name}-details"
+              key:"description-new-proposal-#{list_name}"
               #placeholder: translator("engage.edit_proposal.description.placeholder", 'Add details here')  
               'aria-label': translator("engage.edit_proposal.description.placeholder", 'Add details here')  
               container_style: 
@@ -214,13 +199,13 @@ window.NewProposal = ReactiveComponent
                 style: _.extend {}, label_style,
                   marginLeft: 8
 
-                htmlFor: "#{cluster_slug}-#{additional_field}"
+                htmlFor: "#{list_name}-#{additional_field}"
 
                 proposal_fields[additional_field]
 
               WysiwygEditor
-                id: "#{cluster_slug}-#{additional_field}"
-                key:"#{additional_field}-new-proposal-#{cluster_slug}"
+                id: "#{list_name}-#{additional_field}"
+                key:"#{additional_field}-new-proposal-#{list_name}"
                 'aria-label': proposal_fields[additional_field]
                 container_style: 
                   padding: '6px 8px'
@@ -232,79 +217,29 @@ window.NewProposal = ReactiveComponent
                   marginBottom: 8
                   minHeight: 120
 
+          if @props.combines_these_lists && available_lists.length > 0 
+            DIV
+              style: 
+                marginTop: 12
 
-          # Category
+              LABEL 
+                htmlFor: 'category'
+                translator('category')
+              
 
-          do =>
-            available_clusters = (clust for clust in get_all_clusters() when customization('list_show_new_button', "list/#{clust}"))
-
-            if (!current_user.is_admin && available_clusters.length <= 1) || customization('hide_category_for_new', cluster_key)
-              INPUT
-                type: 'hidden'
-                value: cluster_name
+              SELECT
                 ref: 'category'
+                id: "category"
+                name: "category"
+                style: 
+                  fontSize: 18
+                  display: 'block'
+                defaultValue: available_lists[0]
 
-            else 
-              DIV null,
-                DIV 
-                  style: 
-                    marginTop: 8
-
-                                  
-                  LABEL               
-                    style: _.extend {}, label_style,
-                      marginLeft: 8
-
-
-                    htmlFor: "#{cluster_slug}-category"
-
-                    TRANSLATE "engage.edit_proposal.category_select_label", 'Category'
-                  
-                  SELECT
-                    id: "#{cluster_slug}-category"
-                    style: 
-                      fontSize: 18
-                      width: w
-                    value: @local.category
-                    ref: 'category'
-                    onChange: (e) =>
-                      @local.category = e.target.value
-                      save @local
-
-                    [
-                      if current_user.is_admin
-
-                        [
-                          OPTION 
-                            style: 
-                              fontStyle: 'italic'
-                            value: 'new category'
-                            'Create new category'
-
-                          OPTION 
-                            disabled: "disabled"
-                            '--------'
-                        ]
-
-                      for clust in available_clusters
-                        OPTION  
-                          value: clust
-                          clust
-
-                    ]
-
-                if current_user.is_admin && @local.category == 'new category'
-                  INPUT 
-                    type: 'text'
-                    ref: 'new_category'
-                    placeholder: 'category name'
-                    style: 
-                      fontSize: 16
-                      padding: '4px 6px'
-                      #marginLeft: 4
-                      marginTop: 4
-                      display: 'block'
-
+                for list_key in available_lists
+                  OPTION  
+                    value: list_key
+                    get_list_title(list_key, true)
 
 
           if @local.errors?.length > 0
@@ -335,31 +270,31 @@ window.NewProposal = ReactiveComponent
                 backgroundColor: focus_color()
                 color: 'white'
                 cursor: 'pointer'
-                # borderRadius: 16
                 padding: '4px 16px'
                 display: 'inline-block'
                 marginRight: 12
                 border: 'none'
                 boxShadow: '0 1px 1px rgba(0,0,0,.9)'
                 fontWeight: 600
-                # fontSize: 'inherit'
 
               onClick: => 
-                name = $(@getDOMNode()).find("##{cluster_slug}-name").val()
+                name = document.getElementById("#{list_name}-name").value
 
                 fields = 
-                  description: fetch("description-new-proposal-#{cluster_slug}").html
+                  description: fetch("description-new-proposal-#{list_name}").html
 
                 for field in proposal_fields.additional_fields
-                  fields[field] = fetch("#{field}-new-proposal-#{cluster_slug}").html
+                  fields[field] = fetch("#{field}-new-proposal-#{list_name}").html
 
                 description = proposal_fields.create_description(fields)
                 active = true 
                 hide_on_homepage = false
-                category = @refs.category.getDOMNode().value
 
-                if current_user.is_admin && @local.category == 'new category'
-                  category = @refs.new_category.getDOMNode().value or cluster_name
+                if @props.combines_these_lists && @refs.category
+                  category = @refs.category.getDOMNode().value
+                else 
+                  category = list_key 
+                category = category.substring(5)
 
                 proposal =
                   key : '/new/proposal'
@@ -377,8 +312,8 @@ window.NewProposal = ReactiveComponent
 
                 save proposal, => 
                   if proposal.errors?.length == 0
-                    cluster_state.adding_new_proposal = null 
-                    save cluster_state
+                    list_state.adding_new_proposal = null 
+                    save list_state
                     delete loc.query_params.new_proposal
                     save loc                      
                   else
@@ -396,8 +331,8 @@ window.NewProposal = ReactiveComponent
                 padding: 0
                 fontSize: 'inherit'                  
               onClick: => 
-                cluster_state.adding_new_proposal = null; 
-                save(cluster_state)
+                list_state.adding_new_proposal = null
+                save(list_state)
                 delete loc.query_params.new_proposal
                 save loc
 
@@ -411,9 +346,8 @@ window.NewProposal = ReactiveComponent
 
   ensureIsInViewPort : -> 
     loc = fetch 'location'
-    local = fetch @props.local
 
-    is_selected = loc.query_params.new_proposal == encodeURIComponent((@props.cluster_name or 'Proposals'))
+    is_selected = loc.query_params.new_proposal == @props.list_key
 
     if is_selected
       if browser.is_mobile

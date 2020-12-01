@@ -72,7 +72,7 @@ module Notifier
   #####
   # aggregate
   #
-  # Aggregates the Notifications into a data structure that can be consumed
+  # Organizes the Notifications into a data structure that can be consumed
   # by notification subsystems. 
   # 
   # The aggregation is a deeply nested hash. In order:

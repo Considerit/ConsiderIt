@@ -476,6 +476,7 @@ CustomizeBackground = ReactiveComponent
         right: 50
         backgroundColor: if is_light then 'rgba(255,255,255,.4)' else 'rgba(0,0,0,.4)'
         padding: '12px 24px'
+        zIndex: 99
 
       DIV null,
         DIV
@@ -886,29 +887,21 @@ window.PhotoBanner = (opts) ->
   edit_banner = fetch 'edit_banner'
 
   opts ?= {}
-  opts.tab_background_color ?= '#666'
+  opts.tab_background_color ?= (if edit_banner.editing then edit_banner.text_background_css) or customization('banner')?.text_background_css or '#666'
 
   if !homepage
     return  DIV
               style: 
                 backgroundColor: 'white'
+
               DIV
                 style:
                   margin: 'auto'
                   fontSize: 43
                   padding: '10px 20px' 
 
-                A
-                  href: '/' 
+                back_to_homepage_button {fontSize: 32}, translator 'engage.back_to_homepage', 'Homepage'
 
-                  '< '
-
-                  SPAN
-                    style:
-                      fontSize: 32
-                      position: 'relative'
-                      left: 5
-                    'Homepage'
 
   has_image_background = edit_banner.masthead_preview != '*delete*' && (edit_banner.masthead_preview || customization('banner')?.background_image_url || opts.backgroundImage)
   if has_image_background
@@ -986,7 +979,7 @@ window.PhotoBanner = (opts) ->
           style: _.defaults {}, opts.header_text_style or {},
             fontSize: 56
             fontWeight: 800
-            fontStyle: 'oblique'
+            fontFamily: header_font()
             textAlign: 'center'
             marginBottom: if has_description || edit_banner.editing then 28
 
@@ -1003,7 +996,7 @@ window.PhotoBanner = (opts) ->
         HomepageTabs
           tab_style: _.defaults {}, opts.tab_style or {},
             textTransform: 'uppercase'
-            fontStyle: 'oblique'
+            fontFamily: header_font()
             fontWeight: 600
             fontSize: 20
             padding: '10px 16px 4px'

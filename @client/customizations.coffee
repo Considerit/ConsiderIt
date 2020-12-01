@@ -116,12 +116,12 @@ window.customization = (field, object_or_key) ->
       if subdomain_config[key]?
         chain_of_configs.push subdomain_config[key]
 
-      # cluster-level config for proposals
+      # list-level config for proposals
       if key.match(/\/proposal\//)
         proposal = obj
-        cluster_key = "list/#{proposal.cluster}"
-        if subdomain_config[cluster_key]?
-          chain_of_configs.push subdomain_config[cluster_key]
+        list_key = "list/#{proposal.cluster}"
+        if subdomain_config[list_key]?
+          chain_of_configs.push subdomain_config[list_key]
 
     # subdomain config
     chain_of_configs.push subdomain_config
@@ -165,13 +165,14 @@ customizations.default =
   point_labels : point_labels.pro_con
   slider_pole_labels : slider_labels.agree_disagree
   list_opinions_title: 'Opinions'
+  list_items_title: 'Proposals'
 
   # Proposal options
   discussion_enabled: true
 
   homepage_show_search_and_sort: true
 
-  list_show_new_button: true
+  list_permit_new_items: true
 
   homepage_show_new_proposal_button: true
   homepage_default_sort_order: 'trending'
@@ -190,7 +191,7 @@ customizations.default =
   show_proposer_icon: true
   collapse_proposal_description_at: 300
 
-  # default cluster options
+  # default list options
   list_is_archived: false
   list_uncollapseable: false
 
@@ -201,8 +202,8 @@ customizations.default =
 
   homepage_list_order: []
 
-  font: "'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
-
+  font: "'Open Sans', 'Open Sans', 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
+  header_font: "'Fira Sans Condensed', 'Avenir Next Condensed', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
   auth_questions: []
 
   SiteHeader : PhotoBanner

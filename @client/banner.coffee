@@ -476,6 +476,7 @@ CustomizeBackground = ReactiveComponent
         right: 50
         backgroundColor: if is_light then 'rgba(255,255,255,.4)' else 'rgba(0,0,0,.4)'
         padding: '12px 24px'
+        zIndex: 99
 
       DIV null,
         DIV
@@ -886,7 +887,7 @@ window.PhotoBanner = (opts) ->
   edit_banner = fetch 'edit_banner'
 
   opts ?= {}
-  opts.tab_background_color ?= '#666'
+  opts.tab_background_color ?= (if edit_banner.editing then edit_banner.text_background_css) or customization('banner')?.text_background_css or '#666'
 
   if !homepage
     return  DIV

@@ -249,7 +249,7 @@ window.HomepageTabs = ReactiveComponent
         style: _.defaults {}, (@props.list_style or {}),
           width: @props.width or 900 #HOMEPAGE_WIDTH()
           margin: 'auto'
-          textAlign: if subdomain.name == 'HALA' then 'left' else 'center'
+          textAlign: 'center'
           listStyle: 'none'
 
         for [tab_name, clusters], idx in filters 

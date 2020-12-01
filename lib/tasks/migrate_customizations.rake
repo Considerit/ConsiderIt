@@ -229,8 +229,13 @@ task :migrate_customizations => :environment do
           end
 
         elsif cust.has_key?('list_description')
-          cust['list_title'] = k
-          changed = true
+          if cust.has_key?('list_title') && cust['list_title'].length > 0
+            # no op; 
+            a = 1
+          else 
+            cust['list_title'] = k
+            changed = true
+          end
 
         else 
           cust['list_category'] = k
@@ -238,6 +243,38 @@ task :migrate_customizations => :environment do
         end
       end
     end 
+
+    if changed 
+      s.customizations = JSON.dump(customizations)
+      s.save  
+    end
+
+  end
+
+
+  pp '\n************\n'
+
+  pp 'Finalizing list configs'
+  Subdomain.all.each do |s|
+    lists = {}
+
+    changed = false
+
+    s.proposals.all.each do |p|
+      if p.cluster && p.cluster != "Test question"
+        lists[p.cluster] = 1
+      end 
+    end 
+
+    customizations = JSON.load(s.customizations || "{}")
+    customizations.each do |key, val|
+      if key.match 'list/'
+        if val.has_key?('list_title') && !val.has_key?('list_description') && (!val.has_key?('list_category') && !val.has_key?('list_opinions_title'))
+          val['list_category'] = val['list_opinions_title']  = ""
+          changed = true
+        end
+      end
+    end
 
     if changed 
       s.customizations = JSON.dump(customizations)

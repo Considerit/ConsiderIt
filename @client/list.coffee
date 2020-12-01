@@ -844,7 +844,7 @@ EditableTitle = ReactiveComponent
                 style: 
                   fontWeight: 700
 
-            "<span>Title [optional].</span> Usually an open-ended question like \"What are your ideas?\" or a list label like \"Recommended actions for mitigation\""
+            "<span>Title [optional].</span> Usually an open-ended question like \"What are your ideas?\" or a list label like \"Recommended actions for mitigation\"."
 
       H1 
         className: 'LIST-header'
@@ -925,7 +925,7 @@ EditableListCategory = ReactiveComponent
     list_state = fetch list_key
     edit_list = fetch "edit-#{list_key}"
 
-    category = category_value list_key
+    category = category_value list_key, @props.fresh
 
     has_title = customization('list_description', list_key)?.length > 0 || customization('list_title', list_key)?.length > 0
     heading_style = _.defaults {}, customization('list_label_style', list_key),
@@ -952,7 +952,7 @@ EditableListCategory = ReactiveComponent
                 style: 
                   fontWeight: 700
 
-            "<span>Category.</span> e.g. \"Ideas\", \"Policies\", \"Questions\", \"Strategies\""
+            "<span>Category.</span> e.g. \"Ideas\", \"Policies\", \"Questions\", \"Strategies\"."
 
       H1 null,
 
@@ -1018,7 +1018,7 @@ EditableOpinionLabel = ReactiveComponent
                 style: 
                   fontWeight: 700
 
-            "<span>Opinion title.</span> e.g. \"Ratings\", \"Gut checks\""
+            "<span>Opinion title.</span> e.g. \"Ratings\", \"Gut checks\"."
 
 
       H1 null,
@@ -1060,7 +1060,7 @@ EditableDescription = ReactiveComponent
     DIV
       style: _.defaults {}, (description_style or {}),
         fontSize: 18
-        fontWeight: 300 
+        fontWeight: 400 
         color: '#222'
         marginTop: 6
 
@@ -1214,11 +1214,11 @@ window.get_list_title = (list_key, include_category_value) ->
   title 
 
 
-category_value = (list_key) -> 
+category_value = (list_key, fresh) -> 
   edit_list = fetch "edit-#{list_key}"
   category = if edit_list.editing then edit_list.list_category
   category ?= customization('list_category', list_key)
-  if !category && !customization(list_key) # if we haven't customized this list, take the proposal category
+  if !category && !customization(list_key) && !fresh # if we haven't customized this list, take the proposal category
     category ?= list_key.substring(5)
   category ?= translator 'engage.default_proposals_list', 'Proposals'
   category
@@ -1264,6 +1264,7 @@ window.get_all_lists = ->
 
 lists_ordered_by_most_recent_update = {}
 
+
 window.proposals_in_lists = -> 
   proposals = fetch '/proposals'
   homepage_list_order = customization 'homepage_list_order'
@@ -1304,16 +1305,18 @@ window.proposals_in_lists = ->
   ordered_lists.sort (a,b) -> sort_order[a.key] - sort_order[b.key]
   ordered_lists 
 
+
 window.lists_for_tab = (tab) -> 
   all_lists = proposals_in_lists()
   homepage_tabs = fetch 'homepage_tabs'
+  tabs_config = customization('homepage_tabs')
 
   eligible_lists = null
-  if !tab || !customization('homepage_tabs')
+  if !tab || !tabs_config
     tab = homepage_tabs.filter
     eligible_lists = homepage_tabs.clusters
   else 
-    eligible_lists = customization('homepage_tabs')[tab]
+    eligible_lists = tabs_config[tab]
 
   if !eligible_lists && tab != 'Show all'
     console.error "No eligible lists found for #{tab}"
@@ -1323,12 +1326,12 @@ window.lists_for_tab = (tab) ->
 
   else
     lists_in_tab = []
-    for list, index in all_lists or []
+    for list in all_lists or []
       ineligible = tab && (eligible_lists != '*' && !(list.key in (eligible_lists or [])) )
 
       if ineligible && ('*' in (eligible_lists or []))
         in_others = []
-        for ___, llists of customization('homepage_tabs')
+        for ___, llists of tabs_config
           in_others = in_others.concat llists 
         ineligible &&= list.key in in_others
       if !ineligible

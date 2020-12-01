@@ -1,17 +1,17 @@
 require './shared'
 
-window.GodMode = ReactiveComponent
-  displayName: 'GodMode'
+window.SU = ReactiveComponent
+  displayName: 'SU'
 
   render : -> 
-    godmode = fetch 'godmode'
+    su = fetch 'su'
 
-    return SPAN null if !godmode.enabled
+    return SPAN null if !su.enabled
 
     users = fetch '/users'
 
-    if !@local.switch_user?
-      @local.switch_user = true
+    if !@local.showing?
+      @local.showing = true
       save @local
 
     DIV 
@@ -26,29 +26,10 @@ window.GodMode = ReactiveComponent
         padding: 10
 
       onMouseLeave: => 
-        @local.switch_user = false
+        @local.showing = false
         save @local
 
-      SPAN 
-        style: 
-          fontWeight: 300
-          color: 'cyan'
-          display: 'inline-block'
-          fontSize: 28
-          marginRight: 20
-        'GODMODE'
-
-
-      A
-        style:
-          fontWeight: 'bold'
-        onMouseEnter: => 
-          @local.switch_user = true
-          save @local
-
-        'Switch user'
-
-      if @local.switch_user
+      if @local.showing
         UL 
           style: 
             width: '100%'
@@ -68,10 +49,10 @@ window.GodMode = ReactiveComponent
                 save current_user, -> 
                   location.reload()
 
-                @local.switch_user = false
+                @local.showing = false
                 save @local
-                godmode.enabled = false
-                save godmode
+                su.enabled = false
+                save su
 
               Avatar 
                 key: user
@@ -95,6 +76,6 @@ window.GodMode = ReactiveComponent
 
       key = (e and e.keyCode) or e.keyCode
       if key==85 && e.ctrlKey # cntrl-U       
-        godmode = fetch 'godmode'
-        godmode.enabled = !godmode.enabled
-        save godmode 
+        su = fetch 'su'
+        su.enabled = !su.enabled
+        save su 

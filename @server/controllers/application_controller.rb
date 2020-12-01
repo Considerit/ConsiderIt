@@ -239,7 +239,7 @@ protected
           key: '/application',
           dev: (Rails.env.development? || request.host.end_with?('chlk.it')),
           asset_host: "#{Rails.application.config.action_controller.asset_host}",
-          godmode: session[:godmode]
+          su: session[:su]
         })
         
       elsif key == '/subdomain'

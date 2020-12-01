@@ -580,6 +580,8 @@ window.parseURL = (url) ->
 ## Styles
 ############
 
+window.focus_color = -> focus_blue
+
 ## CSS functions
 
 # Mixin for mediaquery for retina screens. 

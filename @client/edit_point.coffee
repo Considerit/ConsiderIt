@@ -341,9 +341,3 @@ window.EditPoint = ReactiveComponent
       else
         @local.errors = point.errors
         save @local
-
-    # # This is a kludge cause activerest sucks for pre-rendering
-    # # changes before the server returns them
-    # fetch(@proposal.your_opinion).point_inclusions.push(point.key)
-    # re_render([@proposal.your_opinion])
-

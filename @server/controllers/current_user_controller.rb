@@ -217,12 +217,12 @@ class CurrentUserController < ApplicationController
 
       when 'switch_users'
         # Only enable god mode for 3 hours since the last time 
-        # the super admin invoked godmode
+        # the super admin invoked su
         if current_user.super_admin
-          session[:godmode] = Time.now.to_i 
+          session[:su] = Time.now.to_i 
         end
 
-        if session[:godmode] && Time.now.to_i - session[:godmode] < 60 * 60 * 3
+        if session[:su] && Time.now.to_i - session[:su] < 60 * 60 * 3
 
           user = User.find key_id(params[:switch_to])
           if user

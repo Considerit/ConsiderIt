@@ -1,6 +1,3 @@
-# require './element_viewport_positioning'
-
-# require './vendor/iframe-resizer-inner.min'
 require './activerest-m'
 require './avatar'
 require './browser_hacks'
@@ -10,7 +7,7 @@ require './histogram'
 require './shared'
 require './tooltip'
 require './translations'
-# require './opinion_slider'
+require './proposal'
 
 
 window.focus_color = -> focus_blue
@@ -298,5 +295,5 @@ TechnologyByConsiderit = ReactiveComponent
 # exports...
 window.ProposalEmbed = Proposal
 
-require './bootstrap_loader'
+require './app_loader'
 

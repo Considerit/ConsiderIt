@@ -38,8 +38,8 @@ var fs = require('fs')
 // compiled. All required files starting from the entry point will be compiled
 // into the respective build. 
 entry_points = {
-  franklin: './@client/franklin.coffee',
-  proposal_embed: './@client/proposal_embed.coffee'
+  franklin: './@client/app.coffee',
+  proposal_embed: './@client/app_proposal_embed.coffee'
 }
 
 ////////////////////////////////////////

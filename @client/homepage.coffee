@@ -252,13 +252,11 @@ window.HomepageTabs = ReactiveComponent
           textAlign: if subdomain.name == 'HALA' then 'left' else 'center'
           listStyle: 'none'
 
-        for [filter, clusters], idx in filters 
-          do (filter, clusters) =>
-            current = homepage_tabs.filter == filter 
-            hovering = @local.hovering == filter
-            featured = @props.featured == filter
-
-            tab_name = customization('homepage_tab_render')?[filter]?() or filter
+        for [tab_name, clusters], idx in filters 
+          do (tab_name, clusters) =>
+            current = homepage_tabs.filter == tab_name 
+            hovering = @local.hovering == tab_name
+            featured = @props.featured == tab_name
 
             tab_style = _.defaults {}, (@props.tab_style or {}),
               cursor: 'pointer'
@@ -289,8 +287,8 @@ window.HomepageTabs = ReactiveComponent
               'aria-selected': current
 
               onMouseEnter: => 
-                if homepage_tabs.filter != filter 
-                  @local.hovering = filter 
+                if homepage_tabs.filter != tab_name 
+                  @local.hovering = tab_name 
                   save @local 
               onMouseLeave: => 
                 @local.hovering = null 
@@ -301,7 +299,7 @@ window.HomepageTabs = ReactiveComponent
                   e.preventDefault()
               onClick: =>
                 loc = fetch 'location'
-                loc.query_params.tab = filter 
+                loc.query_params.tab = tab_name 
                 save loc  
                 document.activeElement.blur()
 

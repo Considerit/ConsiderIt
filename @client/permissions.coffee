@@ -34,7 +34,6 @@ Permission =
   INSUFFICIENT_INFORMATION : -5 # this user hasn't divulged enough 
                                 # information to take this action
   INSUFFICIENT_PRIVILEGES: -4 # we know this user can't do this
-  FORUM_FROZEN: -6
 
 
 #######################

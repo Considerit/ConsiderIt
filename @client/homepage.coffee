@@ -90,6 +90,14 @@ window.Homepage = ReactiveComponent
       doc.title = title
       save doc
 
+    messages = []
+    if customization('frozen')
+      messages.push "The forum host has frozen this forum so no changes can be made."
+    if customization('anonymize_everything')
+      messages.push "The forum host has participation set to anonymous."
+    if customization('hide_opinions')
+      messages.push "The forum host has hidden the opinions of other participants."
+
     DIV 
       key: "homepage_#{subdomain.name}"      
 
@@ -103,6 +111,14 @@ window.Homepage = ReactiveComponent
 
         if customization('auth_callout')
           AuthCallout()
+
+        for message in messages
+          DIV 
+            style: 
+              marginBottom: 24 
+              fontStyle: 'italic'
+            message
+
 
         if !fetch('/proposals').proposals
           ProposalsLoading()   

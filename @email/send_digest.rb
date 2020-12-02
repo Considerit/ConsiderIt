@@ -8,8 +8,7 @@ def send_digest(subdomain, user, notifications, subscription_settings, deliver =
   return if !send_emails || \
             (!force && !due_for_notification(user, subdomain)) || \
             !valid_triggering_event(notifications, subscription_settings) || \
-            subdomain.customization_json['email_notifications_disabled'] || \
-            ['galacticfederation', 'ainaalohafutures', 'denverclimateaction'].include?(subdomain.name)
+            subdomain.customization_json['email_notifications_disabled']
 
   # Hack!! this notification system is terrible, so I'm going to add even more entropy.
   # I'm going to get all the data across the subdomain since the last time a digest 

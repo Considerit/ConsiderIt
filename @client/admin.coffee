@@ -206,29 +206,38 @@ AppSettingsDash = ReactiveComponent
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 
-    DIV className: 'app_settings_dash',
+    lang = @local.language or subdomain.lang
+    not_english = lang? && lang != 'en'
+
+    DIV className: 'forum_settings_dash',
 
       STYLE dangerouslySetInnerHTML: __html: #dangerously set html is so that the type="text" doesn't get escaped
         """
-        .app_settings_dash { font-size: 18px }
-        .app_settings_dash input[type="text"], .app_settings_dash textarea { border: 1px solid #aaa; display: block; width: #{HOMEPAGE_WIDTH()}px; font-size: 18px; padding: 4px 8px; } 
-        .app_settings_dash .input_group { margin-bottom: 12px; }
+        .forum_settings_dash { font-size: 18px }
+        .forum_settings_dash input[type="text"], .forum_settings_dash textarea { border: 1px solid #aaa; display: block; width: #{HOMEPAGE_WIDTH()}px; font-size: 18px; padding: 4px 8px; } 
+        .forum_settings_dash .input_group { 
+          margin-bottom: 24px; 
+          position: relative;
+        }
+        .forum_settings_dash .input_group.checkbox input {
+          left: -28px;
+          top: 3px;
+          position: absolute;
+        }
+        .forum_settings_dash .input_group.checkbox label {
+        }        
+        .forum_settings_dash .input_group.checkbox label b {
+          font-weight: 700;
+        }
         """
 
-      DashHeader name: 'Application Settings'
+      DashHeader name: 'Forum Settings'
 
       if subdomain.name
         DIV style: {width: HOMEPAGE_WIDTH(), margin: '20px auto'}, 
 
-          DIV className: 'input_group',
-            LABEL htmlFor: 'external_project_url', 'Project url'
-            INPUT 
-              id: 'external_project_url'
-              type: 'text'
-              name: 'external_project_url'
-              defaultValue: subdomain.external_project_url
-              placeholder: 'A link to the main project\'s homepage, if any.'
-
+          ##################
+          # LANGUAGE
           DIV className: 'input_group',
             LABEL htmlFor: 'lang', 'Primary Language'
             SELECT 
@@ -236,6 +245,9 @@ AppSettingsDash = ReactiveComponent
               type: 'text'
               name: 'lang'
               defaultValue: subdomain.lang
+              onChange: (ev) =>
+                @local.language = ev.target.value 
+                save @local
               style: 
                 fontSize: 18
                 marginLeft: 12
@@ -253,15 +265,15 @@ AppSettingsDash = ReactiveComponent
                     value: abbrev
                     label 
 
-            if subdomain.lang? && subdomain.lang != 'en'
+            if not_english
               DIV 
                 style: 
-                  fontSize: 12
+                  fontSize: 16
 
                 TRANSLATE
                   id: "translations.link"
-                  percent_complete: Math.round(translation_progress(subdomain.lang) * 100)
-                  language: (fetch('/translations').available_languages or {})[subdomain.lang]
+                  percent_complete: Math.round(translation_progress(lang) * 100)
+                  language: (fetch('/translations').available_languages or {})[lang]
                   link: 
                     component: A 
                     args: 
@@ -275,12 +287,21 @@ AppSettingsDash = ReactiveComponent
 
             DIV 
               style: 
-                fontSize: 12
-              "Is your preferred language not available? Email us at hello@consider.it to help us create a translation."
+                fontSize: 16
+                color: '#888'
+              "Is your preferred language not available? Email us at "
+              A
+                href: "mailto:hello@consider.it?subject=New language request"
+                style: 
+                  textDecoration: 'underline'
+                  fontWeight: 600
+                "hello@consider.it" 
+              " to help us create a translation."
 
 
 
-
+          #######################
+          # Google Analytics code
           if subdomain.plan || current_user.is_super_admin
             DIV className: 'input_group',
               
@@ -303,41 +324,95 @@ AppSettingsDash = ReactiveComponent
                   'hello@consider.it'
                 ' to inquire further.'
 
+          ########################
+          # Plan
           if current_user.is_super_admin
 
-            DIV null,
-
-              DIV className: 'input_group',
-                LABEL htmlFor: 'plan', 'Account Plan (0,1,2)'
-                INPUT 
-                  id: 'plan'
-                  type: 'text'
-                  name: 'plan'
-                  defaultValue: subdomain.plan
-                  placeholder: '0 for free plan, 1 for custom, 2 for consulting.'
-
-
-          FORM id: 'subdomain_files', action: '/update_images_hack',
-            if current_user.is_super_admin
-              DIV className: 'input_group',
-                DIV null, LABEL htmlFor: 'masthead', 'Masthead background image. Should be pretty large.'
-                INPUT 
-                  id: 'masthead'
-                  type: 'file'
-                  name: 'masthead'
-                  onChange: (ev) =>
-                    @submit_masthead = true
-
             DIV className: 'input_group',
-              DIV null, LABEL htmlFor: 'logo', 'Logo'
+              LABEL htmlFor: 'plan', 'Account Plan (0,1,2)'
               INPUT 
-                id: 'logo'
-                type: 'file'
-                name: 'logo'
-                onChange: (ev) =>
-                  @submit_logo = true
+                id: 'plan'
+                type: 'text'
+                name: 'plan'
+                defaultValue: subdomain.plan
+                placeholder: '0 for free plan, 1 for custom, 2 for consulting.'
 
 
+          ########################
+          # ANONYMIZE EVERYTHING
+          DIV className: 'input_group checkbox',
+            
+            INPUT 
+              id: 'anonymize_everything'
+              type: 'checkbox'
+              name: 'anonymize_everything'
+              defaultChecked: customization('anonymize_everything')
+
+            LABEL 
+              htmlFor: 'anonymize_everything'
+              B null,
+                'Anonymize everything.'
+              SPAN null, 
+                " The authors of opinions, points, proposals, and comments will be hidden. Participants still need to be registered. The real identity of authors will still be accessible via the data export."
+
+          ########################
+          # HIDE OPINIONS OF EVERYONE
+          DIV className: 'input_group checkbox',
+            
+            INPUT 
+              id: 'hide_opinions'
+              type: 'checkbox'
+              name: 'hide_opinions'
+              defaultChecked: customization('hide_opinions')
+
+            LABEL 
+              htmlFor: 'hide_opinions'
+              B null, 
+                'Hide the opinions of others.'
+              SPAN null,
+                ' The authors of proposals, points, and comments are still shown, but opinions of others are hidden. Hosts, like you, however, will be able to see the opinions of everyone.'
+
+          ########################
+          # FREEZE FORUM
+          DIV className: 'input_group checkbox',
+            
+            INPUT 
+              id: 'frozen'
+              type: 'checkbox'
+              name: 'frozen'
+              defaultChecked: customization('frozen')
+
+            LABEL 
+              htmlFor: 'frozen'
+              
+              B null,
+                'Freeze forum'
+
+              SPAN null,
+                " so that no one can add or change opinions, points, proposals, or comments."
+
+
+          ########################
+          # DISABLE EMAIL NOTIFICATIONS
+          DIV className: 'input_group checkbox',
+            
+            INPUT 
+              id: 'email_notifications_disabled'
+              type: 'checkbox'
+              name: 'email_notifications_disabled'
+              defaultChecked: customization('email_notifications_disabled')
+
+            LABEL 
+              htmlFor: 'email_notifications_disabled'
+              B null,
+                'Disable email notifications.'
+
+              SPAN null,
+                " Participants will not be notified via email about activity on this forum."
+
+
+          ########################
+          # SAVE Button
           DIV 
             className: 'input_group'
             BUTTON 
@@ -377,16 +452,21 @@ AppSettingsDash = ReactiveComponent
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 
-    fields = ['external_project_url', 'plan', 'google_analytics_code', 'lang']
+    fields = ['plan', 'google_analytics_code', 'lang']
 
     for f in fields
-      subdomain[f] = $(@getDOMNode()).find("##{f}").val()
+      el = document.getElementById(f)
+      if el 
+        subdomain[f] = el.value
 
-    # if current_user.is_super_admin
-    #   subdomain.branding =
-    #     primary_color: $('#primary_color').val()
-    #     masthead_header_text: $('#masthead_header_text').val()
-    #     # homepage_text: $('#homepage_text').val()
+    customization_fields = ['frozen', 'email_notifications_disabled', 'hide_opinions', 'anonymize_everything']
+    customizations = JSON.parse subdomain.customizations
+    for f in customization_fields
+      el = document.getElementById(f)
+      if el 
+        customizations[f] = el.checked
+
+    subdomain.customizations = JSON.stringify customizations, null, 2
 
     @local.save_complete = @local.file_errors = false
     save @local
@@ -397,6 +477,8 @@ AppSettingsDash = ReactiveComponent
 
       @local.save_complete = true if !submitting_files
       save @local
+
+      arest.serverFetch('/users') # anonymity may have changed, so force a refetch
 
       if submitting_files
         current_user = fetch '/current_user'

@@ -558,7 +558,7 @@ OpinionFilter = ReactiveComponent
     users = fetch '/users' # fetched here so its ready for toggle_filter func
 
     return DIV null if !users.users
-    filters_for_admin = customization('opinion_filters_admin_only') 
+    filters_only_for_hosts = customization('opinion_filters_admin_only') 
     custom_filters = customization 'opinion_filters'
     if typeof(custom_filters) == 'function'
       custom_filters = custom_filters()
@@ -566,10 +566,6 @@ OpinionFilter = ReactiveComponent
     is_admin = fetch('/current_user').is_admin
     
     filters = [{
-                label: 'everyone'
-                tooltip: null 
-                pass: (u) -> true 
-              }, {
                 label: 'just you'
                 tooltip: null 
                 pass: (u) -> 
@@ -577,7 +573,15 @@ OpinionFilter = ReactiveComponent
                   user.key == fetch('/current_user').user
               }]
 
-    if custom_filters && (!filters_for_admin || is_admin)
+    if !customization('hide_opinions') || is_admin
+      filters.unshift {
+        label: 'everyone'
+        tooltip: null 
+        pass: (u) -> true 
+      }
+
+
+    if custom_filters && ( (!customization('hide_opinions') && !filters_only_for_hosts) || is_admin)
       for filter in custom_filters
         if !filter.admin_only || is_admin
           filters.push filter
@@ -699,7 +703,7 @@ OpinionFilter = ReactiveComponent
               color: 'white'
               backgroundColor: focus_color()
 
-          if current_filter.label != 'everyone'
+          if current_filter.label != 'everyone' && (is_admin || !customization('hide_opinions'))
             DIV 
               style: @props.enable_comparison_wrapper_style or {}
 

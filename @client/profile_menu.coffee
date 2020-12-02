@@ -15,7 +15,7 @@ window.ProfileMenu = ReactiveComponent
       {href: '/edit_profile', label: 'Edit Profile'},
       {href: '/dashboard/email_notifications', label: 'Email Settings'},
       if is_admin then {href: '/dashboard/data_import_export', label: 'Import / Export Data'} else null,
-      if is_admin then {href: '/dashboard/application', label: 'App Settings'} else null,
+      if is_admin then {href: '/dashboard/application', label: 'Forum Settings'} else null,
       if is_super then {href: '/dashboard/customizations', label: 'Customizations'} else null,      
       if is_admin then {href: '/dashboard/roles', label: 'Permissions & Roles'} else null,
       if is_super then {href: '/dashboard/tags', label: 'User Tags'} else null,      

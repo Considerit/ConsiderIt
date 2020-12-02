@@ -12,6 +12,10 @@ class DigestMailer < Mailer
     @subdomain_notifications = (notifications['Subdomain'] || {})[subdomain.id]
     # @proposal_notifications = notifications['Proposal'] || {}
 
+
+    @anonymize_everything = subdomain.customization_json['anonymize_everything']
+    @hide_opinions = subdomain.customization_json['hide_opinions']
+
     @subdomain = subdomain
     @user = user
 

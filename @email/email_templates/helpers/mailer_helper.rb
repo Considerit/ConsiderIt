@@ -84,7 +84,8 @@ module MailerHelper
     opinions = proposal.opinions.published
     has_relationship = proposal_info.key?(:relationship) && proposal_info[:relationship]
 
-    author_text = translator({id: 'email.digest.proposal_author', author: proposal.user.name}, "by {author}")
+
+    author_text = translator({id: 'email.digest.proposal_author', author: @anonymize_everything ? 'Anonymous' : proposal.user.name}, "by {author}")
     points_count = translator({id: 'email.digest.points_count', cnt: points.count}, "{ cnt, plural,
                     =0 {no points}
                     one {# point}
@@ -242,8 +243,15 @@ module MailerHelper
   end
 
   def people_list(users)
-    if users.length > 1
-      translator({id: "email.digest.people_list", name: users[0].name, cnt: users.length}, 
+    if @anonymize_everything
+      translator({id: "email.digest.anonymized_people_list", cnt: users.length}, 
+                "{ cnt, plural,
+                  one {One participant}
+                  other {# participants}
+                 }")        
+
+    elsif users.length > 1
+      translator({id: "email.digest.people_list", name: users[0].name, cnt: users.length - 1}, 
                 "{name} and { cnt, plural,
                   one {one other}
                   other {# others}

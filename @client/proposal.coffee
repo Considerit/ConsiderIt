@@ -988,44 +988,45 @@ DecisionBoard = ReactiveComponent
           else 
             translator 'engage.save_opinion_button', 'Save your opinion'
 
-        if !your_opinion.published
+        if permit('update opinion', @proposal, your_opinion) > -1
+          if !your_opinion.published
 
-          DIV 
-            className: 'below_save'
-            style: 
-              display: 'none'
-                      
-            BUTTON 
-              className:'cancel_opinion_button primary_cancel_button'
-              onClick: => updateProposalMode('results', 'cancel_button')
-              onKeyDown: (e) => 
-                if e.which == 13 || e.which == 32 # ENTER or SPACE
-                  updateProposalMode('results', 'cancel_button')
-                  e.preventDefault()
-
-              translator 'engage.see_results_first_button', 'or just skip to the results'
-
-        else 
-
-          DIV 
-            className: 'below_save'
-            style: 
-              display: 'none'
-                      
-            BUTTON 
+            DIV 
+              className: 'below_save'
               style: 
-                textDecoration: 'underline'
-              className:'cancel_opinion_button primary_cancel_button'
-              onClick: => 
-                your_opinion.published = false 
-                save your_opinion
-              onKeyDown: (e) => 
-                if e.which == 13 || e.which == 32 # ENTER or SPACE
+                display: 'none'
+                        
+              BUTTON 
+                className:'cancel_opinion_button primary_cancel_button'
+                onClick: => updateProposalMode('results', 'cancel_button')
+                onKeyDown: (e) => 
+                  if e.which == 13 || e.which == 32 # ENTER or SPACE
+                    updateProposalMode('results', 'cancel_button')
+                    e.preventDefault()
+
+                translator 'engage.see_results_first_button', 'or just skip to the results'
+
+          else
+
+            DIV 
+              className: 'below_save'
+              style: 
+                display: 'none'
+                        
+              BUTTON 
+                style: 
+                  textDecoration: 'underline'
+                className:'cancel_opinion_button primary_cancel_button'
+                onClick: => 
                   your_opinion.published = false 
                   save your_opinion
-                  e.preventDefault()
+                onKeyDown: (e) => 
+                  if e.which == 13 || e.which == 32 # ENTER or SPACE
+                    your_opinion.published = false 
+                    save your_opinion
+                    e.preventDefault()
 
-              translator "engage.remove_my_opinion", 'Remove my opinion'
+                translator "engage.remove_my_opinion", 'Remove my opinion'
 
 
 
@@ -1139,14 +1140,17 @@ window.saveOpinion = (proposal) ->
     your_opinion.published = true
     save your_opinion
     updateProposalMode('results', 'save_button')
+  else if can_opine == Permission.DISABLED
+    updateProposalMode('results', 'save_button') 
   else
+    # trigger authentication
     if can_opine == Permission.UNVERIFIED_EMAIL
       auth_form = 'verify email'
       current_user.trying_to = 'send_verification_token'
       save current_user
     else if can_opine == Permission.INSUFFICIENT_INFORMATION
       auth_form = 'user questions'
-    else
+    else 
       auth_form = 'create account'
 
     reset_key 'auth',
@@ -1473,10 +1477,10 @@ PointsList = ReactiveComponent
                 enable_dragging: @props.points_draggable
 
 
-      if @props.drop_target
+      if @props.drop_target && permit('publish opinion', @proposal) > 0
         @drawDropTarget()
 
-      if @props.points_editable
+      if @props.points_editable && permit('create point', @proposal) > 0 
         @drawAddNewPoint()
       ] 
 

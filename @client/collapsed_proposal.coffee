@@ -232,7 +232,7 @@ window.CollapsedProposal = ReactiveComponent
 
 
 
-                if customization('discussion_enabled',proposal)
+                if customization('discussion_enabled', proposal)
                     A 
                       href: proposal_url(proposal, true)
                       style: 
@@ -245,7 +245,7 @@ window.CollapsedProposal = ReactiveComponent
 
                         "{cnt, plural, one {# consideration} other {# considerations}}"
 
-                      if proposal.active 
+                      if proposal.active && permit('create point', proposal) > 0
                         [
                           SPAN 
                             style: 

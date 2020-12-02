@@ -36,7 +36,6 @@ Permission =
   INSUFFICIENT_PRIVILEGES: -4 # we know this user can't do this
 
 
-
 #######################
 ## Permission Definitions
 
@@ -47,6 +46,9 @@ Permission =
 # permission check.
 permit = (action) ->
   current_user = fetch '/current_user'
+
+  if customization('frozen')
+    return Permission.DISABLED
 
   switch action
     when 'create proposal'

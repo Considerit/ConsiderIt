@@ -4,6 +4,21 @@
   *** #{translator({id: "email.digest.text_header"}, "Recent activity")} ***
   ***********************
 
+- if @anonymize_everything || @hide_opinions
+
+  = section('Forum settings')
+
+  - if @anonymize_everything
+    %div
+      = translator "email.anonymize_message", "The forum host has participation set to anonymous, so you won't be able to see the identity of others at this time."
+
+  - if @hide_opinions
+    %div
+      = translator "email.hide_opinions", "The forum host has hidden the opinions of other participants, so you won't be able to see their specific opinions at this time."
+
+  = end_section()
+
+
 - if @new_stuff && @new_stuff.key?(:your_proposals) && @new_stuff[:your_proposals].length > 0 
   
   = section('Your proposals')

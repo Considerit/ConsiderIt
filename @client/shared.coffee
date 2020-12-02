@@ -864,7 +864,7 @@ a.skip:hover {
   font-size: 16px;
   color: black;
   min-height: 100%; 
-  font-weight: 300;
+  font-weight: 400;
 }
 
 

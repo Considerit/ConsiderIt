@@ -100,7 +100,14 @@ class User < ActiveRecord::Base
     end
     users = ActiveRecord::Base.connection.exec_query( "SELECT #{fields} FROM users WHERE registered=1 AND active_in like '%\"#{current_subdomain.id}\"%'")
 
-    users.each{|u| u['tags']=Oj.load(u['tags']||'{}')}
+    anonymize_everything = current_subdomain.customization_json['anonymize_everything']
+    users.each do |u| 
+      u['tags']=Oj.load(u['tags']||'{}')
+      if current_user.key != u['key'] && anonymize_everything
+        u['name'] = 'Anonymous'
+        u['avatar_file_name'] = nil
+      end 
+    end 
     
     # if current_user.super_admin
     #   users.each{|u| u['tags']=Oj.load(u['tags']||'{}')}
@@ -125,6 +132,13 @@ class User < ActiveRecord::Base
                'avatar_file_name' => avatar_file_name,
                'tags' => Oj.load(tags || '{}')  }
                   # TODO: filter private tags
+
+    anonymize_everything = current_subdomain.customization_json['anonymize_everything']
+    if anonymize_everything
+      result['name'] = 'Anonymous'
+      result['avatar_file_name'] = nil
+    end 
+
     if current_user.is_admin?
       result['email'] = email
     end

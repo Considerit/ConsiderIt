@@ -9,7 +9,6 @@ def send_digest(subdomain, user, notifications, subscription_settings, deliver =
             (!force && !due_for_notification(user, subdomain)) || \
             !valid_triggering_event(notifications, subscription_settings) || \
             subdomain.customization_json['email_notifications_disabled'] || \
-            subdomain.customization_json['frozen'] || \
             ['galacticfederation', 'ainaalohafutures', 'denverclimateaction'].include?(subdomain.name)
 
   # Hack!! this notification system is terrible, so I'm going to add even more entropy.

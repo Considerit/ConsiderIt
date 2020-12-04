@@ -1016,6 +1016,137 @@ window.PhotoBanner = (opts) ->
           list_style: opts.tabs_list_style or {}
 
 
+
+
+
+
+
+
+
+
+
+window.MediaBanner = (opts) -> 
+  homepage = fetch('location').url == '/'
+  subdomain = fetch '/subdomain'
+  edit_banner = fetch 'edit_banner'
+
+  opts ?= {}
+  opts.tab_background_color ?= (if edit_banner.editing then edit_banner.text_background_css) or customization('banner')?.text_background_css or '#666'
+
+  if !homepage
+    return  DIV
+              style: 
+                backgroundColor: 'white'
+
+              DIV
+                style:
+                  margin: 'auto'
+                  fontSize: 43
+                  padding: '10px 20px' 
+
+                back_to_homepage_button {fontSize: 32}, translator 'engage.back_to_homepage', 'Homepage'
+
+
+  has_image_background = edit_banner.masthead_preview != '*delete*' && (edit_banner.masthead_preview || customization('banner')?.background_image_url || opts.backgroundImage)
+  if has_image_background
+    bg = edit_banner.masthead_preview or customization('banner')?.background_image_url or opts.backgroundImage
+
+  convert_opacity = (value) ->
+    if !value
+      '00'
+    else 
+      parseInt(value).toString(16)
+
+  is_dark_theme = !is_light_background()
+    
+  DIV 
+    id: 'banner'
+    className: if is_dark_theme then 'dark'
+    style: 
+      position: 'relative'
+      color: if is_dark_theme then 'white' else 'black'
+      backgroundColor: '#eee'
+      padding: '0px 2px'
+      borderBottom: '1px solid black'
+
+    DIV 
+      style: 
+        paddingTop: 28
+        backgroundColor: 'white'
+
+      EditBanner()
+
+      CustomizeLogo() 
+
+      CustomizeBackground()
+
+
+      CustomizeTitle
+        title: opts.header
+        style: _.defaults {}, opts.header_text_style or {},
+          fontSize: 60
+          fontWeight: 800
+          fontFamily: header_font()
+          textAlign: 'left'
+          marginLeft: 36
+          marginBottom: 22
+
+      if customization('homepage_tabs')
+        HomepageTabs
+          tab_style: _.defaults {}, opts.tab_style or {},
+            textTransform: 'uppercase'
+            fontFamily: customization('font')
+            fontWeight: 600
+            fontSize: 16
+            padding: '16px 8px 24px'
+            color: if is_dark_theme then 'white' else 'black'
+            # borderBottom: '1px solid'
+            # borderColor: 'transparent'
+
+          tab_wrapper_style: _.defaults {}, opts.tab_wrapper_style or {},
+            backgroundColor: 'transparent' #opts.tab_background_color # '#005596'
+            margin: '0 6px'
+          active_style: _.defaults {}, opts.tab_active_style or {},
+            backgroundColor: 'white'
+            color: if is_dark_theme then 'white' else 'black'
+            # borderColor: if is_dark_theme then 'white' else 'black'
+            textDecoration: 'underline'
+          active_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
+            backgroundColor: opts.tab_background_color
+          hovering_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
+            backgroundColor: opts.tab_background_color
+          wrapper_style: _.defaults {}, opts.tabs_wrapper_style or {},
+            marginTop: 0
+            top: 0
+            borderTop: '1px solid #ccc'
+            boxShadow: '0 1px 3px rgba(0,0,0,.15)'
+
+          list_style: _.defaults {}, opts.tabs_list_style or {}, 
+            textAlign: 'left'            
+            width: '100%'
+            paddingLeft: 36 - 16
+
+
+    if has_image_background
+      DIV 
+        style:
+          padding: '20px 36px'
+
+        IMG
+          src: bg
+          style: 
+            objectFit: 'cover' #'contain' 'cover'
+            display: 'block'
+            height: 260
+            width: '100%'
+
+
+
+
+
+
+
+
 # A small header with text and optionally a logo
 window.ShortHeader = (opts) ->
   subdomain = fetch '/subdomain'   

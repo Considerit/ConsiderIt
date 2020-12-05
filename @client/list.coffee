@@ -66,6 +66,8 @@ window.List = ReactiveComponent
       for aggregated_list, idx in @props.combines_these_lists
         colors[aggregated_list] = hues[idx]
 
+    RenderListItem = customization('RenderListItem') or CollapsedProposal
+
     ARTICLE
       key: list_key
       id: list_key.substring(5).toLowerCase()
@@ -95,7 +97,7 @@ window.List = ReactiveComponent
             for proposal,idx in proposals
               continue if idx > list_state.show_first_num_items - 1 && !list_state.show_all_proposals
 
-              CollapsedProposal 
+              RenderListItem 
                 key: "collapsed#{proposal.key}"
                 proposal: proposal
                 show_category: !!@props.combines_these_lists
@@ -419,7 +421,6 @@ window.ListHeader = ReactiveComponent
         marginTop: -36
         padding: "36px 36px"
         width: HOMEPAGE_WIDTH() + 36 * 2
-
 
     DIV 
       style: wrapper_style 
@@ -1134,7 +1135,8 @@ window.list_actions = (props) ->
     permitted = permit('create proposal', list_key)
     add_new &&= permitted > 0 || permitted == Permission.NOT_LOGGED_IN
 
-  DIV 
+  DIV   
+    className: 'list_actions'
     style: 
       marginBottom: 50
 
@@ -1346,3 +1348,4 @@ window.lists_current_user_can_add_to = (lists) ->
     if permit('create proposal', list_key) > 0
       appendable.push list_key 
   appendable
+

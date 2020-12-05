@@ -459,3 +459,290 @@ window.CollapsedProposal = ReactiveComponent
               "{num_opinions, plural, =0 {<small>no opinions</small>} one {# <small>opinion</small>} other {# <small>opinions</small>} }"
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+window.MediaCollapsedProposal = ReactiveComponent
+  displayName: 'MediaCollapsedProposal'
+
+  render : ->
+    proposal = fetch @props.proposal
+    options = @props.options
+
+    @max_description_height = 48
+
+    col_sizes = column_sizes
+                  width: @props.width
+
+    current_user = fetch '/current_user'
+
+    watching = current_user.subscriptions[proposal.key] == 'watched'
+
+    return if !watching && fetch('homepage_filter').watched
+
+    your_opinion = fetch proposal.your_opinion
+    if your_opinion?.published
+      can_opine = permit 'update opinion', proposal, your_opinion
+    else
+      can_opine = permit 'publish opinion', proposal
+
+    draw_slider = can_opine > 0 || your_opinion?.published
+
+    icons = customization('show_proposer_icon', proposal) && !@props.hide_icons
+    slider_regions = customization('slider_regions', proposal)
+    show_proposal_scores = !@props.hide_scores && customization('show_proposal_scores', proposal)
+
+    opinions = opinionsForProposal(proposal)
+
+    if draw_slider
+      slider = fetch "homepage_slider#{proposal.key}"
+    else 
+      slider = null 
+
+    if slider && your_opinion && slider.value != your_opinion.stance && !slider.has_moved 
+      # Update the slider value when the server gets back to us
+      slider.value = your_opinion.stance
+      if your_opinion.stance
+        slider.has_moved = true
+      save slider
+
+    can_edit = permit('update proposal', proposal) > 0
+
+    just_you = fetch('filtered').current_filter?.label == 'just you'
+    everyone = fetch('filtered').current_filter?.label == 'everyone'
+
+    slider_interpretation = (value) => 
+      if value > .03
+        "#{(value * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.support", proposal)}"
+      else if value < -.03 
+        "#{-1 * (value * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.oppose", proposal)}"
+      else 
+        translator "engage.slider_feedback.neutral", "Neutral"
+
+    LI
+      key: proposal.key
+      id: 'p' + (proposal.slug or "#{proposal.id}").replace('-', '_')  # Initial 'p' is because all ids must begin 
+                                           # with letter. seeking to hash was failing 
+                                           # on proposals whose name began with number.
+      style: _.defaults {}, (@props.wrapper_style or {}),
+
+        position: 'relative'
+        margin: "0 0 68px 0"
+        padding: 0
+        listStyle: 'none'
+
+      onMouseEnter: => 
+        if draw_slider
+          @local.hover_proposal = proposal.key; save @local
+      onMouseLeave: => 
+        if draw_slider && !slider.is_moving
+          @local.hover_proposal = null; save @local
+      onFocus: => 
+        if draw_slider
+          @local.hover_proposal = proposal.key; save @local
+      onBlur: => 
+        if draw_slider && !slider.is_moving
+          @local.hover_proposal = null; save @local
+
+
+
+      DIV 
+        style: 
+          position: 'relative'
+
+
+        DIV 
+          style: 
+            color: 'black'
+            textTransform: 'uppercase'
+            marginBottom: 4
+
+          get_list_title "list/#{proposal.cluster}", true
+
+        # Name of Proposal
+        DIV
+          style:
+            display: 'inline-block'
+            paddingBottom: if !can_edit then 20 else 4
+
+          A
+            className: 'proposal proposal_homepage_name'
+            style: _.defaults {}, (@props.name_style or {}),
+              color: '#000'            
+              fontSize: 28
+              fontFamily: header_font()
+              textDecoration:'underline'
+
+            href: proposal_url(proposal, just_you)
+
+            proposal.name
+
+          # short description
+          if proposal.description
+            DIV 
+              ref: 'shortened_description'
+              style: 
+                color: '#666'
+                maxHeight: if @local.description_collapsed then @max_description_height
+                overflow: if @local.description_collapsed then 'hidden'
+              dangerouslySetInnerHTML: __html: proposal.description 
+          
+          if @local.description_collapsed
+            BUTTON
+              id: 'expand_full_text'
+              style:
+                cursor: 'pointer'
+                padding: '12px 0 10px 0'
+                textAlign: 'left'
+                border: 'none'
+                backgroundColor: 'transparent'
+
+              onMouseDown: => 
+                @local.description_collapsed = false
+                save(@local)
+
+              onKeyDown: (e) =>
+                if e.which == 13 || e.which == 32 # ENTER or SPACE
+                  @local.description_collapsed = false
+                  e.preventDefault()
+                  document.activeElement.blur()
+                  save(@local)
+
+              '(more)'
+
+
+          if can_edit
+            DIV
+              style: 
+                visibility: if !@local.hover_proposal then 'hidden'
+                position: 'relative'
+                top: -2
+
+              A 
+                href: "#{proposal.key}/edit"
+                style:
+                  marginRight: 10
+                  color: focus_color()
+                  backgroundColor: 'transparent'
+                  padding: 0
+                  fontSize: 12
+                TRANSLATE 'engage.edit_button', 'edit'
+
+              if permit('delete proposal', proposal) > 0
+                BUTTON
+                  style:
+                    marginRight: 10
+                    color: focus_color()
+                    backgroundColor: 'transparent'
+                    border: 'none'
+                    padding: 0
+                    fontSize: 12
+
+                  onClick: => 
+                    if confirm('Delete this proposal forever?')
+                      destroy(proposal.key)
+                      loadPage('/')
+                  TRANSLATE 'engage.delete_button', 'delete'
+
+
+
+      # Histogram for Proposal
+      DIV 
+        style: 
+          position: 'relative'
+                
+
+        Histogram
+          key: "histogram-#{proposal.slug}"
+          proposal: proposal
+          opinions: opinions
+          width: HOMEPAGE_WIDTH()
+          height: 136
+          enable_individual_selection: !browser.is_mobile
+          enable_range_selection: everyone && !browser.is_mobile
+          draw_base: true
+          draw_base_labels: !slider_regions
+          selection_state: 'filtered'
+
+        Slider 
+          base_height: 0
+          draw_handle: !!draw_slider
+          key: "homepage_slider#{proposal.key}"
+          width: HOMEPAGE_WIDTH()
+          polarized: true
+          regions: slider_regions
+          respond_to_click: false
+          base_color: 'transparent'
+          handle: slider_handle.triangley
+          handle_height: 18
+          handle_width: 21
+          handle_style: 
+            opacity: if fetch('filtered').current_filter?.label != "just you" && !browser.is_mobile && @local.hover_proposal != proposal.key && !@local.slider_has_focus then 0 else 1             
+          offset: true
+          handle_props:
+            use_face: false
+          label: translator
+                    id: "sliders.instructions"
+                    negative_pole: get_slider_label("slider_pole_labels.oppose", proposal)
+                    positive_pole: get_slider_label("slider_pole_labels.support", proposal)
+                    "Express your opinion on a slider from {negative_pole} to {positive_pole}"
+          onBlur: (e) => @local.slider_has_focus = false; save @local
+          onFocus: (e) => @local.slider_has_focus = true; save @local 
+
+          readable_text: slider_interpretation
+          onMouseUpCallback: (e) =>
+            # We save the slider's position to the server only on mouse-up.
+            # This way you can drag it with good performance.
+            if your_opinion.stance != slider.value
+
+              # save distance from top that the proposal is at, so we can 
+              # maintain that position after the save potentially triggers 
+              # a re-sort. 
+              prev_offset = @getDOMNode().offsetTop
+              prev_scroll = window.scrollY
+
+              your_opinion.stance = slider.value
+              your_opinion.published = true
+              save your_opinion
+              window.writeToLog 
+                what: 'move slider'
+                details: {proposal: proposal.key, stance: slider.value}
+              @local.slid = 1000
+
+              update = fetch('homepage_you_updated_proposal')
+              update.dummy = !update.dummy
+              save update
+
+            mouse_over_element = closest e.target, (node) => 
+              node == @getDOMNode()
+
+            if @local.hover_proposal == proposal.key && !mouse_over_element
+              @local.hover_proposal = null 
+              save @local
+
+  componentDidMount : ->
+    proposal = fetch @props.proposal
+    if (proposal.description && @max_description_height && @local.description_collapsed == undefined \
+        && $(@refs.shortened_description.getDOMNode()).height() > @max_description_height)
+      @local.description_collapsed = true; save(@local)
+
+  componentDidUpdate : ->
+    proposal = fetch @props.proposal
+    if (proposal.description && @max_description_height && @local.description_collapsed == undefined \
+        && $(@refs.shortened_description.getDOMNode()).height() > @max_description_height)
+      @local.description_collapsed = true; save(@local)
+

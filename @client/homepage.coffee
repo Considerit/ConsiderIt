@@ -101,13 +101,18 @@ window.Homepage = ReactiveComponent
     DIV 
       key: "homepage_#{subdomain.name}"      
 
+      STYLE 
+        dangerouslySetInnerHTML: __html: """
+            #homepagetab {
+              margin: 45px auto;
+              width: #{HOMEPAGE_WIDTH()}px;
+              position: relative;       
+            }
+          """
+
       DIV
         id: 'homepagetab'
         role: if customization('homepage_tabs') then "tabpanel"
-        style: 
-          margin: '45px auto'
-          width: HOMEPAGE_WIDTH()
-          position: 'relative'
 
         if customization('auth_callout')
           AuthCallout()

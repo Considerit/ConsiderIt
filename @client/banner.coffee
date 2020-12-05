@@ -1137,7 +1137,7 @@ window.MediaBanner = ->
 
       EditBanner()
 
-      CustomizeLogo() 
+      # CustomizeLogo() 
 
       CustomizeBackground()
 

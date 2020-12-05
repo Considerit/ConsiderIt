@@ -266,6 +266,9 @@ Page = ReactiveComponent
     access_granted = @accessGranted()
 
     DIV null,
+      STYLE 
+        dangerouslySetInnerHTML: __html: customization('style')
+        
       Header(key: 'page_header') if access_granted
 
       MAIN 
@@ -363,7 +366,6 @@ Root = ReactiveComponent
     fonts = customization('font')
     header_fonts = customization('header_font') or fonts
     DIV 
-
       # Track whether the user is currently swipping. Used to determine whether
       # a touchend event should trigger a click on a link.
       # TODO: I'd like to have this defined at a higher level  
@@ -390,10 +392,10 @@ Root = ReactiveComponent
 
       STYLE 
         dangerouslySetInnerHTML: __html: """
-          #content, #content input, #content button, #content textarea {
+          .content, .content input, .content button, .content textarea {
             font-family: #{fonts}; 
           }
-          #content h1, #content h2, #content h3, #content h4, #content h1 button, #content h2 button, #content h3 button, #content h4 button {
+          .content h1, .content h2, .content h3, .content h4, .content h1 button, .content h2 button, .content h3 button, .content h4 button {
             font-family: #{header_fonts};
           }
         """

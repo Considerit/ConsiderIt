@@ -16,7 +16,9 @@ window.Header = ReactiveComponent
     is_homepage = fetch('location').url == '/'
     editing_banner = fetch('edit_banner').editing
 
-    HEADER null, 
+    HEADER 
+      className: if !is_light_background() then 'dark'
+
       # DIV 
       #   id: 'upgrade-message'
       #   style: 

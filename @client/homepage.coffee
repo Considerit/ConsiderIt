@@ -238,6 +238,44 @@ window.HomepageTabTransition = ReactiveComponent
     SPAN null
 
 
+
+
+styles += """
+  #tabs {
+    width: 100%;
+    z-index: 2;
+    position: relative;
+    top: 2px;
+    margin-top: 20px;
+  }
+  #tabs > ul {
+    margin: auto;
+    text-align: center;
+    list-style: none;
+    width: 900px;
+  }
+  #tabs > ul > li {
+    display: inline-block;
+    position: relative;
+    outline: none;
+  }          
+  #tabs > ul > li > h4 {
+    cursor: pointer;
+    position: relative;
+    font-size: 16px;
+    font-weight: 600;        
+    color: white;
+    padding: 10px 20px 4px 20px;
+  }
+  #tabs > ul > li.selected > h4 {
+    background-color: rgba(255,255,255,.2);
+    opacity: 1;
+  }
+  #tabs > ul > li.hovering > h4 {
+    opacity: 1;
+  }
+"""
+
 window.HomepageTabs = ReactiveComponent
   displayName: 'HomepageTabs'
 
@@ -250,23 +288,17 @@ window.HomepageTabs = ReactiveComponent
     subdomain = fetch('/subdomain')
 
     DIV 
-      style: _.defaults {}, (@props.wrapper_style or {}),
-        width: '100%'
-        zIndex: 2
-        position: 'relative'
-        top: 2
-        marginTop: 20
+      id: 'tabs'
+      style: @props.wrapper_style
 
       A 
         name: 'active_tab'
 
       UL 
         role: 'tablist'
-        style: _.defaults {}, (@props.list_style or {}),
-          width: @props.width or 900 #HOMEPAGE_WIDTH()
-          margin: 'auto'
-          textAlign: 'center'
-          listStyle: 'none'
+        style: _.defaults {}, @props.list_style,
+          width: @props.width
+
 
         for [tab_name, clusters], idx in filters 
           do (tab_name, clusters) =>
@@ -274,28 +306,19 @@ window.HomepageTabs = ReactiveComponent
             hovering = @local.hovering == tab_name
             featured = @props.featured == tab_name
 
-            tab_style = _.defaults {}, (@props.tab_style or {}),
-              cursor: 'pointer'
-              position: 'relative'
-              fontSize: 16
-              fontWeight: 600        
-              color: 'white'
-              padding: '10px 20px 4px 20px'
-
-            tab_wrapper_style = _.defaults {}, (@props.tab_wrapper_style or {}),
-              display: 'inline-block'
-              position: 'relative'
+            tab_style = _.extend {}, @props.tab_style
+            tab_wrapper_style = _.extend {}, @props.tab_wrapper_style
 
             if current
-              _.extend tab_style, {backgroundColor: 'rgba(255,255,255,.2)', opacity: 1}, (@props.active_style or {})
-              _.extend tab_wrapper_style, @props.active_tab_wrapper_style or {}
+              _.extend tab_style, @props.active_style
+              _.extend tab_wrapper_style, @props.active_tab_wrapper_style
             
             if hovering
-              _.extend tab_style, {opacity: 1}, (@props.hover_style or @props.active_style or {})
-              _.extend tab_wrapper_style, @props.hovering_tab_wrapper_style or {}
-
+              _.extend tab_style, @props.hover_style or @props.active_style
+              _.extend tab_wrapper_style, @props.hovering_tab_wrapper_style
 
             LI 
+              className: if current then 'selected' else if hovering then 'hovered'
               tabIndex: 0
               role: 'tab'
               style: tab_wrapper_style

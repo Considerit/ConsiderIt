@@ -7,32 +7,34 @@ CustomizeTitle = ReactiveComponent
   render : ->
     subdomain = fetch '/subdomain'
     edit_banner = fetch 'edit_banner'
-    title = edit_banner.title or customization('banner')?.title or @props.title
+    title = edit_banner.title or customization('banner')?.title
     is_admin = fetch('/current_user').is_admin
     is_light = is_light_background()
 
-    DIV null, 
+    DIV 
+      className: 'CustomizeTitle'
 
       STYLE
         dangerouslySetInnerHTML: __html: """
-          input#description::placeholder {
+          .CustomizeTitle > .banner_title {
+            display: block;
+            border: none;
+            background-color: transparent;
+            color: inherit;
+            width: 100%;
+            padding: 0px;
+            line-height: 1.4;
+          }
+          .CustomizeTitle > .banner_title::placeholder {
             color: #{if is_light then 'rgba(0,0,0,.4)' else 'rgb(255,255,255,.6)'};
           }
         """
 
       if is_admin && edit_banner.editing
 
-        INPUT 
-          id: 'description'
+        AutoGrowTextArea 
           ref: 'primary_input'
-          style: _.defaults {}, @props.style or {}, 
-            display: 'block'
-            border: 'none'
-            backgroundColor: 'transparent'
-            color: 'inherit'
-            width: '100%'
-            padding: 0
-            lineHeight: 1.4
+          className: 'banner_title'
           defaultValue: title
           onChange: (e) ->
             edit_banner.title = e.target.value 
@@ -41,7 +43,7 @@ CustomizeTitle = ReactiveComponent
 
       else 
         DIV
-          style: @props.style or {}
+          className: 'banner_title'
           dangerouslySetInnerHTML: __html: title
           onDoubleClick: if is_admin then => 
             edit_banner.editing = true 
@@ -69,13 +71,13 @@ CustomizeDescription = ReactiveComponent
     if is_admin && edit_banner.editing
       DIV 
         id: 'edit_banner'
+
         STYLE
           dangerouslySetInnerHTML: __html: """
             #edit_banner .ql-editor {
               min-height: 48px;
             }
           """
-
         WysiwygEditor
           key: "forum-description"
           style: @props.style
@@ -101,9 +103,6 @@ CustomizeDescription = ReactiveComponent
               setTimeout => 
                 @refs.primary_input?.getDOMNode().focus()
                 @refs.primary_input?.getDOMNode().setSelectionRange(-1, -1) # put cursor at end
-
-        else if @props.opts.supporting_text
-          @props.opts.supporting_text()
 
 
 UploadFileSVG = (opts) ->
@@ -413,8 +412,11 @@ CustomizeTextBlock = ReactiveComponent
     return SPAN null if !edit_banner.editing || !has_masthead
 
     DIV 
-      style: _.defaults {}, @props.wrapper_style or {},
+      style: 
         width: 80 
+        position: 'absolute'
+        right: 5
+        bottom: 0
 
       INPUT 
         id: 'text_background_css'
@@ -881,13 +883,12 @@ window.EditBanner = ReactiveComponent
         submit_next()
 
 
-window.PhotoBanner = (opts) -> 
+window.PhotoBanner = -> 
   homepage = fetch('location').url == '/'
   subdomain = fetch '/subdomain'
   edit_banner = fetch 'edit_banner'
 
-  opts ?= {}
-  opts.tab_background_color ?= (if edit_banner.editing then edit_banner.text_background_css) or customization('banner')?.text_background_css or '#666'
+  tab_background_color = (if edit_banner.editing then edit_banner.text_background_css) or customization('banner')?.text_background_css or '#666'
 
   if !homepage
     return  DIV
@@ -903,22 +904,7 @@ window.PhotoBanner = (opts) ->
                 back_to_homepage_button {fontSize: 32}, translator 'engage.back_to_homepage', 'Homepage'
 
 
-  has_image_background = edit_banner.masthead_preview != '*delete*' && (edit_banner.masthead_preview || customization('banner')?.background_image_url || opts.backgroundImage)
-  if has_image_background
-    if edit_banner.masthead_preview
-      bg = "url(#{edit_banner.masthead_preview})"
-    else if customization('banner')?.background_image_url
-      bg = "url(#{customization('banner')?.background_image_url})"
-    else
-      bg = opts.backgroundImage
-    wrapper_style = 
-      backgroundImage: bg
-      backgroundSize: 'cover'
-      backgroundPosition: 'center'
-      paddingTop: 140 
-  else 
-    wrapper_style = 
-      background: edit_banner.background_css or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
+  has_image_background = edit_banner.masthead_preview != '*delete*' && (edit_banner.masthead_preview || customization('banner')?.background_image_url)
 
   convert_opacity = (value) ->
     if !value
@@ -926,9 +912,8 @@ window.PhotoBanner = (opts) ->
     else 
       parseInt(value).toString(16)
 
-
-  description = fetch("forum-description").html or customization('banner')?.description or opts.supporting_text
-  has_description = opts.supporting_text || (description?.trim().length > 0 && description.trim() != '<p><br></p>')
+  description = fetch("forum-description").html or customization('banner')?.description
+  has_description = description?.trim().length > 0 && description.trim() != '<p><br></p>'
 
   is_dark_theme = !is_light_background()
   text_block_color = edit_banner.text_background_css or customization('banner')?.text_background_css or DEFAULT_TEXT_BLOCK_COLOR
@@ -942,14 +927,82 @@ window.PhotoBanner = (opts) ->
   
   DIV 
     id: 'banner'
-    className: if is_dark_theme then 'dark'
-    style: 
-      position: 'relative'
-      color: if is_dark_theme then 'white' else 'black'
+    className: "PhotoBanner"
 
+    STYLE
+      dangerouslySetInnerHTML: __html: """
+        .PhotoBanner {
+          position: relative;
+          color: black;
+        }
+        .dark .PhotoBanner {
+          color: white;
+        }
+        .PhotoBanner > .wrapper.with-image {
+          background-image: url(#{edit_banner.masthead_preview or customization('banner')?.background_image_url});
+          background-size: cover;
+          background-position: center;
+          padding-top: 140px;           
+        }
+        .PhotoBanner > .wrapper.no-image {
+          background: #{edit_banner.background_css or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR};
+        }
+
+        .PhotoBanner > .wrapper > .text_block {
+          padding: 48px 48px 48px 48px;
+          width: #{HOMEPAGE_WIDTH()}px;
+          max-width: 720px;
+          margin: auto;
+          background-color: #{text_block_background};
+          color: white;
+          position: relative;
+          top: 0;          
+        } .dark .PhotoBanner > .wrapper > .text_block {
+          color: black;
+        }
+
+        .PhotoBanner > .wrapper .CustomizeTitle .banner_title {
+          font-size: 56px;
+          font-weight: 800;
+          font-family: #{header_font()};
+          text-align: center;
+          margin-bottom: #{if has_description || edit_banner.editing then 28 else 0}px;
+        }
+
+        .PhotoBanner #tabs {
+          margin-top: 80px;
+          top: 0;
+        }
+        .PhotoBanner #tabs > ul {
+        }
+        .PhotoBanner #tabs > ul > li {
+          background-color: #{tab_background_color};
+          margin: 0 6px;
+        }          
+        .PhotoBanner #tabs > ul > li > h4 {
+          text-transform: uppercase;
+          font-family: #{header_font()};
+          font-weight: 600;
+          font-size: 20px;
+          padding: 10px 16px 4px;
+        }
+        .dark .PhotoBanner #tabs > ul > li > h4 {
+        }
+        .PhotoBanner #tabs > ul > li.selected > h4, .PhotoBanner #tabs > ul > li.hovered > h4 {
+          background-color: white;
+          color: black;        
+        }
+        .dark .PhotoBanner #tabs > ul > li.selected > h4, .dark .PhotoBanner #tabs > ul > li.hovered > h4 {
+          background-color: black;
+          color: white;
+        }
+        .PhotoBanner #tabs > ul > li.selected, .PhotoBanner #tabs > ul > li.hovered {
+          background-color: #{tab_background_color};
+        }
+        """
 
     DIV 
-      style: wrapper_style
+      className: "wrapper #{if has_image_background then 'with-image' else 'no-image'}"
 
       EditBanner()
 
@@ -958,34 +1011,14 @@ window.PhotoBanner = (opts) ->
       CustomizeBackground()
 
       DIV
-        style: _.defaults {}, opts.header_style or {},
-          padding: '48px 48px 48px 48px'
-          width: HOMEPAGE_WIDTH()
-          maxWidth: 720
-          margin: 'auto'
-          backgroundColor: text_block_background
-          color: if text_block_is_dark then 'white' else 'black'
-          position: 'relative'
-          top: 0 
+        className: 'text_block'
 
-        CustomizeTextBlock
-          wrapper_style:
-            position: 'absolute'
-            right: 5
-            bottom: 0
+        CustomizeTextBlock()
 
-        CustomizeTitle
-          title: opts.header
-          style: _.defaults {}, opts.header_text_style or {},
-            fontSize: 56
-            fontWeight: 800
-            fontFamily: header_font()
-            textAlign: 'center'
-            marginBottom: if has_description || edit_banner.editing then 28
+        CustomizeTitle()
 
         CustomizeDescription
           key: 'editable_description'
-          opts: opts
           style: 
             border: if !has_description then (if is_dark_theme then '1px solid rgba(255,255,255,.5)' else '1px solid rgba(0,0,0,.5)')
             padding: "6px 8px"
@@ -993,45 +1026,14 @@ window.PhotoBanner = (opts) ->
             fontSize: 18
 
       if customization('homepage_tabs')
-        HomepageTabs
-          tab_style: _.defaults {}, opts.tab_style or {},
-            textTransform: 'uppercase'
-            fontFamily: header_font()
-            fontWeight: 600
-            fontSize: 20
-            padding: '10px 16px 4px'
-          tab_wrapper_style: _.defaults {}, opts.tab_wrapper_style or {},
-            backgroundColor: opts.tab_background_color # '#005596'
-            margin: '0 6px'
-          active_style: _.defaults {}, opts.tab_active_style or {},
-            backgroundColor: 'white'
-            color: 'black'
-          active_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
-            backgroundColor: opts.tab_background_color
-          hovering_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
-            backgroundColor: opts.tab_background_color
-          wrapper_style: _.defaults {}, opts.tabs_wrapper_style or {},
-            marginTop: 80
-            top: 0
-          list_style: opts.tabs_list_style or {}
+        HomepageTabs()
 
 
 
-
-
-
-
-
-
-
-
-window.MediaBanner = (opts) -> 
+window.MediaBanner = -> 
   homepage = fetch('location').url == '/'
   subdomain = fetch '/subdomain'
   edit_banner = fetch 'edit_banner'
-
-  opts ?= {}
-  opts.tab_background_color ?= (if edit_banner.editing then edit_banner.text_background_css) or customization('banner')?.text_background_css or '#666'
 
   if !homepage
     return  DIV
@@ -1046,33 +1048,92 @@ window.MediaBanner = (opts) ->
 
                 back_to_homepage_button {fontSize: 32}, translator 'engage.back_to_homepage', 'Homepage'
 
-
-  has_image_background = edit_banner.masthead_preview != '*delete*' && (edit_banner.masthead_preview || customization('banner')?.background_image_url || opts.backgroundImage)
+  has_image_background = edit_banner.masthead_preview != '*delete*' && (edit_banner.masthead_preview || customization('banner')?.background_image_url)
   if has_image_background
-    bg = edit_banner.masthead_preview or customization('banner')?.background_image_url or opts.backgroundImage
+    bg = edit_banner.masthead_preview or customization('banner')?.background_image_url
 
   convert_opacity = (value) ->
     if !value
       '00'
     else 
       parseInt(value).toString(16)
-
-  is_dark_theme = !is_light_background()
     
   DIV 
     id: 'banner'
-    className: if is_dark_theme then 'dark'
-    style: 
-      position: 'relative'
-      color: if is_dark_theme then 'white' else 'black'
-      backgroundColor: '#eee'
-      padding: '0px 2px'
-      borderBottom: '1px solid black'
+    className: "MediaBanner"
+
+    STYLE
+      dangerouslySetInnerHTML: __html: """
+
+        .MediaBanner {
+          position: relative;
+          color: black;
+          background-color: #eee;
+          padding: 0px 2px;
+          border-bottom: 1px solid black;
+        } .dark .MediaBanner {
+          color: white;
+        }
+        .MediaBanner > .upper_wrapper {
+          padding-top: 28px;
+          background-color: white;
+        }
+
+        .MediaBanner > .upper_wrapper .CustomizeTitle .banner_title {
+          font-size: 60px;
+          font-weight: 800;
+          font-family: #{header_font()};
+          text-align: left;
+          margin-left: 36px;
+          margin-bottom: 22px;
+        }
+        .MediaBanner > .image_wrapper {
+          padding: 20px 36px;
+        } 
+        .MediaBanner > .image_wrapper > img {
+          object-fit: cover;
+          display: block;
+          height: 260px;
+          width: 100%;
+        }
+        .MediaBanner #tabs {
+          margin-top: 0;
+          top: 0;
+          border-top: 1px solid #ccc;
+          box-shadow: 0 1px 3px rgba(0,0,0,.15);
+        }
+        .MediaBanner #tabs > ul {
+          text-align: left;
+          width: 100%;
+          padding-left: 20px;          
+        }
+        .MediaBanner #tabs > ul > li {
+          background-color: transparent;
+          margin: 0px 6px;          
+        }          
+        .MediaBanner #tabs > ul > li > h4 {
+          text-transform: uppercase;
+          font-family: #{customization('font')};
+          font-weight: 600;
+          font-size: 16px;
+          padding: 16px 8px 24px;
+          color: black;
+        }
+        .dark .MediaBanner #tabs > ul > li > h4 {
+          color: white;
+        }
+        .MediaBanner #tabs > ul > li.selected > h4, .MediaBanner #tabs > ul > li.hovered > h4 {
+          background-color: white;
+          color: black;
+          text-decoration: underline;
+        }
+        .dark .MediaBanner #tabs > ul > li.selected > h4, .dark .MediaBanner #tabs > ul > li.hovered > h4 {
+          color: white;
+        }
+      """
 
     DIV 
-      style: 
-        paddingTop: 28
-        backgroundColor: 'white'
+      className: 'upper_wrapper'
 
       EditBanner()
 
@@ -1080,69 +1141,17 @@ window.MediaBanner = (opts) ->
 
       CustomizeBackground()
 
-
-      CustomizeTitle
-        title: opts.header
-        style: _.defaults {}, opts.header_text_style or {},
-          fontSize: 60
-          fontWeight: 800
-          fontFamily: header_font()
-          textAlign: 'left'
-          marginLeft: 36
-          marginBottom: 22
+      CustomizeTitle()
 
       if customization('homepage_tabs')
-        HomepageTabs
-          tab_style: _.defaults {}, opts.tab_style or {},
-            textTransform: 'uppercase'
-            fontFamily: customization('font')
-            fontWeight: 600
-            fontSize: 16
-            padding: '16px 8px 24px'
-            color: if is_dark_theme then 'white' else 'black'
-            # borderBottom: '1px solid'
-            # borderColor: 'transparent'
-
-          tab_wrapper_style: _.defaults {}, opts.tab_wrapper_style or {},
-            backgroundColor: 'transparent' #opts.tab_background_color # '#005596'
-            margin: '0 6px'
-          active_style: _.defaults {}, opts.tab_active_style or {},
-            backgroundColor: 'white'
-            color: if is_dark_theme then 'white' else 'black'
-            # borderColor: if is_dark_theme then 'white' else 'black'
-            textDecoration: 'underline'
-          active_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
-            backgroundColor: opts.tab_background_color
-          hovering_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
-            backgroundColor: opts.tab_background_color
-          wrapper_style: _.defaults {}, opts.tabs_wrapper_style or {},
-            marginTop: 0
-            top: 0
-            borderTop: '1px solid #ccc'
-            boxShadow: '0 1px 3px rgba(0,0,0,.15)'
-
-          list_style: _.defaults {}, opts.tabs_list_style or {}, 
-            textAlign: 'left'            
-            width: '100%'
-            paddingLeft: 36 - 16
-
+        HomepageTabs()
 
     if has_image_background
       DIV 
-        style:
-          padding: '20px 36px'
+        className: 'image_wrapper'
 
         IMG
           src: bg
-          style: 
-            objectFit: 'cover' #'contain' 'cover'
-            display: 'block'
-            height: 260
-            width: '100%'
-
-
-
-
 
 
 

@@ -31,7 +31,7 @@ window.Button = (props, text, callback) ->
 
 
 window.styles += """
-  .AUTOGROWTEXTAREA-input {
+  .AutoGrowTextArea {
     padding: 4px 8px;
   }
 """
@@ -71,7 +71,7 @@ window.AutoGrowTextArea = ReactiveComponent
       @local.height = @props.min_height
 
     @transferPropsTo TEXTAREA
-      className: 'AUTOGROWTEXTAREA-input'
+      className: 'AutoGrowTextArea'
       onChange: @onChange
       rows: 1
       style: _.extend {}, (@props.style or {}), {height: @local.height}
@@ -359,50 +359,6 @@ window.WysiwygEditor = ReactiveComponent
       @editor.focus()
 
 
-# TODO: Refactor the below and make sure that the styles applied to the 
-#       user generated fields are in sync with the styling below in the 
-#       wysiwyg editor. 
-styles += """
-.wysiwyg_text code, .wysiwyg_text pre {
-  font-family: "Courier New",Courier,"Lucida Sans Typewriter","Lucida Typewriter",monospace;
-},.wysiwyg_text br, .description_field br {
-  padding-bottom: 0.5em; }
-.wysiwyg_text p, 
-.wysiwyg_text ul, 
-.description_field ul, 
-.wysiwyg_text ol, 
-.description_field ol, 
-.wysiwyg_text table, 
-.description_field p, 
-.description_field table {
-  margin-bottom: 0.5em; }
-.wysiwyg_text td, .description_field td {
-  padding: 0 3px; }
-.wysiwyg_text li, .description_field li {
-  list-style: outside; padding-bottom: 8px;}
-.wysiwyg_text ol li {
-  list-style-type: decimal; }  
-.wysiwyg_text ul, .description_field ul,
-.wysiwyg_text ol, .description_field ol {
-  padding-left: 20px;
-  margin-left: 20px; }
-.wysiwyg_text a, .description_field a {
-  text-decoration: underline; }
-.wysiwyg_text blockquote, .description_field blockquote {
-  opacity: 0.7;
-  padding: 10px 20px; }
-.wysiwyg_text table, .description_field table {
-  padding: 20px 0px; font-size: 11px; 
-}
-.wysiwyg_text .ql-editor li, .description_field .ql-editor li {
-  list-style: inside;
-}
-.wysiwyg_text .ql-editor ul, .description_field .ql-editor ol{
-  margin-left: 0;
-}
-.wysiwyg_text .ql-editor ol li {
-  list-style-type: none; }  
-"""
 
 
 # Some overrides to Quill base styles
@@ -786,3 +742,47 @@ html .ql-container{
 }
 """
 
+# TODO: Refactor the below and make sure that the styles applied to the 
+#       user generated fields are in sync with the styling below in the 
+#       wysiwyg editor. 
+styles += """
+.wysiwyg_text code, .wysiwyg_text pre {
+  font-family: "Courier New",Courier,"Lucida Sans Typewriter","Lucida Typewriter",monospace;
+},.wysiwyg_text br, .description_field br {
+  padding-bottom: 0.5em; }
+.wysiwyg_text p, 
+.wysiwyg_text ul, 
+.description_field ul, 
+.wysiwyg_text ol, 
+.description_field ol, 
+.wysiwyg_text table, 
+.description_field p, 
+.description_field table {
+  margin-bottom: 0.5em; }
+.wysiwyg_text td, .description_field td {
+  padding: 0 3px; }
+.wysiwyg_text li, .description_field li {
+  list-style: outside; padding-bottom: 8px;}
+.wysiwyg_text ol li {
+  list-style-type: decimal; }  
+.wysiwyg_text ul, .description_field ul,
+.wysiwyg_text ol, .description_field ol {
+  padding-left: 20px;
+  margin-left: 20px; }
+.wysiwyg_text a, .description_field a {
+  text-decoration: underline; }
+.wysiwyg_text blockquote, .description_field blockquote {
+  opacity: 0.7;
+  padding: 10px 20px; }
+.wysiwyg_text table, .description_field table {
+  padding: 20px 0px; font-size: 11px; 
+}
+.wysiwyg_text .ql-editor li, .description_field .ql-editor li {
+  list-style: inside;
+}
+.wysiwyg_text .ql-editor ul, .description_field .ql-editor ol{
+  margin-left: 0;
+}
+.wysiwyg_text .ql-editor ol li {
+  list-style-type: none; }  
+"""

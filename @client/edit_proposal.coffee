@@ -484,7 +484,7 @@ window.EditProposal = ReactiveComponent
     category = null if category == ''
 
     active = document.getElementById('open_for_discussion').checked
-    hide_on_homepage = document.getElementById('listed_on_homepage').checked
+    hide_on_homepage = !document.getElementById('listed_on_homepage').checked
 
     if @props.fresh
       proposal =

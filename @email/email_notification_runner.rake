@@ -5,6 +5,10 @@ require Rails.root.join("@email", "send_digest")
 
 task :send_email_notifications => :environment do
 
+  if APP_CONFIG.has_key?(:disable_email_notifications) && APP_CONFIG[:disable_email_notifications]
+    return
+  end
+
   # make sure that an email notification task isn't already running   
   f = Rails.root.join('tmp', 'email_notification_runner')
   if File.exist?(f)

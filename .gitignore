@@ -46,7 +46,8 @@ test/data/test.sql
 
 node_modules
 
-client_secret.json
+google.json
+token.yml
 
 Vagrantfile
 public/images

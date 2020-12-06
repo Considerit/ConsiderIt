@@ -1,6 +1,9 @@
 require 'csv'
 require 'json'
 
+require Rails.root.join("lib/services/google_sheet")
+
+
 namespace :customizations do 
   task :generate_lists, [:fpath] => :environment do |t, args|
 
@@ -20,7 +23,38 @@ namespace :customizations do
 
     file_path = args[:fpath] || 'lib/tasks/client_data/lists.csv'
 
-    data = CSV.parse(File.read(file_path), headers: true)
+
+    if file_path.index('google.com')
+      sheet_id = /\/d\/(.+?)\//.match(file_path)[1]
+      sheet = Services::GoogleSheet.new
+      sheets = sheet.getSheets(sheet_id)
+
+      structure_sheet = sheets[1]
+      sheets.each do |sh|
+        if sh.index('structure')
+          structure_sheet = sh
+        end
+      end
+
+      data = []
+      headers = nil      
+      sheet.getData(sheet_id, structure_sheet).values.each_with_index do |row, idx|
+        if idx == 0 
+          headers = row
+        else
+          vals = {}
+          row.each_with_index do |cell, col|
+            if cell && cell.length > 0 
+              vals[headers[col]] = cell
+            end
+          end
+          data.push vals
+        end 
+
+      end 
+    else 
+      data = CSV.parse(File.read(file_path), headers: true)
+    end
 
     sections = {}
 
@@ -33,8 +67,11 @@ namespace :customizations do
 
     data.each do |row|
       name = row['name']
-      header = row['header'] || name
       desc = row['description']
+      header = row['title'] || row['header']
+      if desc && !header 
+        header = name
+      end
 
       show_new = row['community can add to list']
       starts_closed = row['starts closed']
@@ -46,7 +83,13 @@ namespace :customizations do
         list[k] = v
       end
 
-      list[:list_title] = header
+      list[:key] = "list/#{name}"
+
+      if header 
+        list[:list_title] = header
+      else 
+        list[:list_category] = name
+      end
 
       if desc 
         list[:list_description] = desc 
@@ -101,14 +144,14 @@ namespace :customizations do
       end 
 
 
-      # out.puts "  \"list/#{name}\": {\n"
-      # list.each do |k,v|
-      #   # if false && v.is_a? String
-      #   #   out.puts "    #{k}: \"#{JSON.dump(v)}\"\n"
-      #   # else 
-      #   out.puts "    #{JSON.dump(k)}: #{JSON.dump(v)},\n"
-      #   # end
-      # end
+      out.puts "  \"list/#{name}\": {\n"
+      list.each do |k,v|
+        # if false && v.is_a? String
+        #   out.puts "    #{k}: \"#{JSON.dump(v)}\"\n"
+        # else 
+        out.puts "    #{JSON.dump(k)}: #{JSON.dump(v)},\n"
+        # end
+      end
 
       # out.puts "  }\n"
 
@@ -119,7 +162,7 @@ namespace :customizations do
         if !sections.has_key? section 
           sections[section] = []
         end
-        sections[section].push name 
+        sections[section].push "list/#{name}"
       end 
     end
 

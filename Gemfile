@@ -39,7 +39,6 @@ gem 'mailgun-ruby'
 # i18n
 gem 'message_format'
 
-
 ############
 # PURE PERFORMANCE
 # Rails JSON encoding is super slow, oj makes it faster
@@ -49,6 +48,9 @@ gem 'oj_mimic_json' # we need this for Rails 4.1.x
 
 # Just because I need to set a version for using ruby 2.4...remove when upgrade to >= 2.5 
 gem 'sprockets', '~>3.7'
+
+# for importing from google sheets
+gem 'google-api-client'
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators

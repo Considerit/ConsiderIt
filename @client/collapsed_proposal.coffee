@@ -187,6 +187,14 @@ window.CollapsedProposal = ReactiveComponent
 
             proposal.name
 
+          if customization('proposal_show_description_on_homepage')
+            DIV 
+              style: 
+                fontSize: 14
+                color: '#444'
+                marginBottom: 4
+              dangerouslySetInnerHTML: __html: proposal.description  
+
           DIV 
             style: 
               fontSize: 12

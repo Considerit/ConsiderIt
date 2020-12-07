@@ -920,7 +920,7 @@ window.PhotoBanner = (opts) ->
 
   description = fetch("forum-description").html or customization('banner')?.description or opts.supporting_text
   has_description = opts.supporting_text || (description?.trim().length > 0 && description.trim() != '<p><br></p>')
-  
+
   is_dark_theme = !is_light_background()
   text_block_color = edit_banner.text_background_css or customization('banner')?.text_background_css or DEFAULT_TEXT_BLOCK_COLOR
   text_block_opacity = parseInt(edit_banner.text_background_css_opacity or customization('banner')?.text_background_css_opacity or DEFAULT_TEXT_BLOCK_OPACITY)
@@ -957,7 +957,7 @@ window.PhotoBanner = (opts) ->
         .PhotoBanner > .wrapper > .text_block {
           padding: 48px 48px 48px 48px;
           width: #{HOMEPAGE_WIDTH()}px;
-          max-width: 720px;
+          max-width: #{720 + 48 * 2}px;
           margin: auto;
           background-color: #{text_block_background};
           color: white;

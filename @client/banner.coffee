@@ -888,6 +888,8 @@ window.EditBanner = ReactiveComponent
 
 
 window.PhotoBanner = (opts) -> 
+  opts ?= {}
+  
   homepage = fetch('location').url == '/'
   subdomain = fetch '/subdomain'
   edit_banner = fetch 'edit_banner'

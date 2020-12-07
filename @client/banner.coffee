@@ -7,7 +7,7 @@ CustomizeTitle = ReactiveComponent
   render : ->
     subdomain = fetch '/subdomain'
     edit_banner = fetch 'edit_banner'
-    title = edit_banner.title or customization('banner')?.title
+    title = edit_banner.title or customization('banner')?.title or @props.title
     is_admin = fetch('/current_user').is_admin
     is_light = is_light_background()
 
@@ -36,6 +36,7 @@ CustomizeTitle = ReactiveComponent
           ref: 'primary_input'
           className: 'banner_title'
           defaultValue: title
+          style: @props.style
           onChange: (e) ->
             edit_banner.title = e.target.value 
             save edit_banner
@@ -44,6 +45,7 @@ CustomizeTitle = ReactiveComponent
       else 
         DIV
           className: 'banner_title'
+          style: @props.style
           dangerouslySetInnerHTML: __html: title
           onDoubleClick: if is_admin then => 
             edit_banner.editing = true 
@@ -103,6 +105,8 @@ CustomizeDescription = ReactiveComponent
               setTimeout => 
                 @refs.primary_input?.getDOMNode().focus()
                 @refs.primary_input?.getDOMNode().setSelectionRange(-1, -1) # put cursor at end
+        else if @props.opts.supporting_text
+          @props.opts.supporting_text()
 
 
 UploadFileSVG = (opts) ->
@@ -883,7 +887,7 @@ window.EditBanner = ReactiveComponent
         submit_next()
 
 
-window.PhotoBanner = -> 
+window.PhotoBanner = (opts) -> 
   homepage = fetch('location').url == '/'
   subdomain = fetch '/subdomain'
   edit_banner = fetch 'edit_banner'
@@ -912,9 +916,9 @@ window.PhotoBanner = ->
     else 
       parseInt(value).toString(16)
 
-  description = fetch("forum-description").html or customization('banner')?.description
-  has_description = description?.trim().length > 0 && description.trim() != '<p><br></p>'
-
+  description = fetch("forum-description").html or customization('banner')?.description or opts.supporting_text
+  has_description = opts.supporting_text || (description?.trim().length > 0 && description.trim() != '<p><br></p>')
+  
   is_dark_theme = !is_light_background()
   text_block_color = edit_banner.text_background_css or customization('banner')?.text_background_css or DEFAULT_TEXT_BLOCK_COLOR
   text_block_opacity = parseInt(edit_banner.text_background_css_opacity or customization('banner')?.text_background_css_opacity or DEFAULT_TEXT_BLOCK_OPACITY)
@@ -1012,13 +1016,17 @@ window.PhotoBanner = ->
 
       DIV
         className: 'text_block'
+        style: opts.header_style
 
         CustomizeTextBlock()
 
-        CustomizeTitle()
+        CustomizeTitle
+          title: opts.header
+          style: opts.header_text_style
 
         CustomizeDescription
           key: 'editable_description'
+          opts: opts
           style: 
             border: if !has_description then (if is_dark_theme then '1px solid rgba(255,255,255,.5)' else '1px solid rgba(0,0,0,.5)')
             padding: "6px 8px"
@@ -1026,7 +1034,7 @@ window.PhotoBanner = ->
             fontSize: 18
 
       if customization('homepage_tabs')
-        HomepageTabs()
+        HomepageTabs(opts)
 
 
 

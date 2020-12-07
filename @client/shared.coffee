@@ -296,13 +296,14 @@ window.prettyDate = (time) ->
   subdomain = fetch('/subdomain')
 
   date = new Date(time) #new Date((time || "").replace(/-/g, "/").replace(/[TZ]/g, " "))
+  
   diff = (((new Date()).getTime() - date.getTime()) / 1000)
   day_diff = Math.floor(diff / 86400)
 
   return if isNaN(day_diff) || day_diff < 0
 
   if subdomain.lang != 'en'
-    return "#{date.getMonth() + 1}/#{date.getDay() + 1}/#{date.getFullYear()}" 
+    return "#{date.getMonth() + 1}/#{date.getDate() + 1}/#{date.getFullYear()}" 
 
   r = day_diff == 0 && (
     diff < 60 && "just now" || 
@@ -313,7 +314,7 @@ window.prettyDate = (time) ->
                               day_diff == 1 && "Yesterday" || 
                               day_diff < 7 && day_diff + " days ago" || 
                               day_diff < 31 && Math.ceil(day_diff / 7) + " weeks ago" ||
-                              "#{date.getMonth() + 1}/#{date.getDay() + 1}/#{date.getFullYear()}"
+                              "#{date.getMonth() + 1}/#{date.getDate() + 1}/#{date.getFullYear()}"
 
   r = r.replace('1 days ago', '1 day ago').replace('1 weeks ago', '1 week ago').replace('1 years ago', '1 year ago')
   r

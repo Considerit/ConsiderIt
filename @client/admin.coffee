@@ -47,6 +47,23 @@ DataDash = ReactiveComponent
 
     DIV null, 
 
+      if current_user.is_super_admin
+        DIV style: {width: HOMEPAGE_WIDTH(), margin: '15px auto'},
+          DashHeader name: 'Manage Data'
+
+          BUTTON 
+            onClick: => 
+              if confirm("Are you sure you want to delete everything on this forum?")
+                
+                $.ajax
+                  url: "/nuke_everything",
+                  type: "PUT"
+                  data: 
+                    authenticity_token: current_user.csrf
+                  success: =>
+                    location.reload()
+
+            "Delete all data on this forum"
       
       DashHeader name: 'Export Data'
 
@@ -833,7 +850,7 @@ CodeMirrorTextArea = ReactiveComponent
 
 
 
-        
+
 ModerationDash = ReactiveComponent
   displayName: 'ModerationDash'
 

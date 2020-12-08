@@ -196,6 +196,18 @@ class SubdomainController < ApplicationController
     end
   end
 
+  def nuke_everything
+    current_subdomain.proposals.destroy_all
+    current_subdomain.opinions.destroy_all
+    current_subdomain.points.destroy_all
+    current_subdomain.comments.destroy_all
+
+    dirty_key '/subdomain'
+    dirty_key '/proposals'
+
+    render :json => []
+  end
+
   def update_images_hack
     attrs = {}
     if masthead = params['masthead']

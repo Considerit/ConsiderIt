@@ -1273,6 +1273,10 @@ lists_ordered_by_most_recent_update = {}
 window.proposals_in_lists = -> 
   proposals = fetch '/proposals'
   homepage_list_order = customization 'homepage_list_order'
+  if homepage_list_order.length == 0 && customization('homepage_tabs')
+    homepage_list_order = []
+    for k,v of customization('homepage_tabs')
+      homepage_list_order = homepage_list_order.concat v
 
   # By default sort proposals by the newest of the proposals.
   # But we'll only do this on page load, so that clusters don't move

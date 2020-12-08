@@ -365,7 +365,8 @@ Auth = ReactiveComponent
                 LABEL
                   htmlFor: field_id
                   style: subsection_heading_style
-                  label
+                  dangerouslySetInnerHTML: __html: label 
+
 
                 render
 

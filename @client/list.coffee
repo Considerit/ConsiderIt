@@ -201,10 +201,13 @@ EditList = ReactiveComponent
         delete customizations[list_key]
 
         # if tabs are enabled, add it to the current tab
-        if customizations['homepage_tabs']
+        if customizations['homepage_tabs'] 
           tabs = fetch('homepage_tabs')
           current_tab = customizations['homepage_tabs'][tabs.filter]
-          current_tab.push new_name
+          if current_tab
+            current_tab.push new_key
+          else 
+            console.error "Cannot add the list to the current tab #{current_tab}"
 
       subdomain.customizations = JSON.stringify customizations, null, 2
 

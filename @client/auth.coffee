@@ -67,7 +67,7 @@ Auth = ReactiveComponent
 
     DIV 
       style: 
-        background: if auth.form != 'edit profile' && !@props.naked then (customization('background') or focus_color())
+        background: if auth.form != 'edit profile' && !@props.naked then 'linear-gradient(180deg, rgba(223,98,100,1) 250px, rgba(238,238,238,1) 250px)'
 
       if auth.form != 'edit profile' && !@props.naked
         A 
@@ -254,7 +254,7 @@ Auth = ReactiveComponent
       DIV
         className: if @local.submitting then ' waiting' else ''
         style:
-          padding: '2.5em 80px 1.5em 80px'
+          padding: '2em 50px 1.5em 50px'
           fontSize: 18
           boxShadow: if auth.form != 'edit profile' then '0 2px 4px rgba(0,0,0,.4)'
           backgroundColor: 'white'
@@ -303,8 +303,6 @@ Auth = ReactiveComponent
       display: 'block'
       fontWeight: 700
 
-    subsection_heading_style = 
-      display: 'block'
 
 
     render_field = (label, render, label_style) -> 
@@ -334,13 +332,16 @@ Auth = ReactiveComponent
 
         DIV
           style: 
-            padding: "24px 24px"
+            padding: "24px 33px"
             backgroundColor: "#eee"
             marginTop: 18
+            width: AUTH_WIDTH() - 18 * 2
+            marginLeft: -50 + 18
           
           H4
             style: _.extend {}, section_heading_style, 
               marginBottom: 18
+              fontFamily: customization('font')
             translator('auth.host_questions.heading', 'Questions from the forum host') 
 
           if host_framing 
@@ -360,11 +361,14 @@ Auth = ReactiveComponent
               field_id = render?.props?.id or render?[0]?.props?.id
               LI 
                 style: 
-                  marginBottom: 8
+                  marginBottom: 16
 
                 LABEL
                   htmlFor: field_id
-                  style: subsection_heading_style
+                  style:
+                    display: 'block'
+                    fontWeight: 600
+
                   dangerouslySetInnerHTML: __html: label 
 
 
@@ -422,12 +426,16 @@ Auth = ReactiveComponent
             
               DIV
                 style: 
-                  marginTop: 18
-                  padding: "24px 24px"
+                  padding: "24px 33px"
                   backgroundColor: "#eee"
+                  marginTop: 18
+                  width: AUTH_WIDTH() - 18 * 2
+                  marginLeft: -50 + 18
+
                 H4
                   style: _.extend {}, section_heading_style, 
                     marginBottom: 18
+                    fontFamily: customization('font')
                   translator('auth.create.pledge_heading', 'Participation Pledge') 
 
                 UL 
@@ -448,7 +456,7 @@ Auth = ReactiveComponent
                         name:"pledge-#{idx}"
                         style: 
                           fontSize: 24
-                          verticalAlign: 'top'
+                          verticalAlign: 'baseline'
                           marginLeft: 0
 
                       LABEL 
@@ -538,7 +546,8 @@ Auth = ReactiveComponent
             type:'checkbox'
             style: 
               fontSize: 24
-              verticalAlign: 'top'
+              verticalAlign: 'baseline'
+              marginLeft: 1
             checked: @local.tags['considerit_terms.editable']
             onChange: (event) =>
               @local.tags = @local.tags or {}
@@ -630,7 +639,7 @@ Auth = ReactiveComponent
 
           SPAN 
             style: 
-              color: 'white'
+              color: 'black'
               fontWeight: 300
               fontSize: 24
 
@@ -644,7 +653,7 @@ Auth = ReactiveComponent
             className: 'toggle_auth'
             style:
               display: 'inline-block'
-              color: 'white'
+              color: 'black'
               textDecoration: 'underline'
               fontWeight: 600
               fontSize: 24
@@ -1004,7 +1013,7 @@ Auth = ReactiveComponent
                 type:'checkbox'
                 style: 
                   fontSize: 24
-                  verticalAlign: 'top'
+                  verticalAlign: 'baseline'
                   marginLeft: 0
                 checked: @local.tags[question.tag]
                 onChange: do(question) => (event) =>
@@ -1026,7 +1035,7 @@ Auth = ReactiveComponent
         when 'checklist'
           input = DIV 
             style: 
-              marginBottom: 10
+              margin: "10px 18px"
 
             for option in question.options
               key = "#{question.tag.substring(0, question.tag.length - '.editable'.length)}:#{option} .editable"
@@ -1039,7 +1048,7 @@ Auth = ReactiveComponent
                   type:'checkbox'
                   style: 
                     fontSize: 24
-                    verticalAlign: 'top'
+                    verticalAlign: 'baseline'
                     marginLeft: 0
                   checked: @local.tags[key]
                   onChange: do(question, option, key) => (event) =>

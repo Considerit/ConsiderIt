@@ -8,8 +8,8 @@ CustomizeTitle = ReactiveComponent
     subdomain = fetch '/subdomain'
     edit_banner = fetch 'edit_banner'
     title = edit_banner.title or customization('banner')?.title or @props.title
+
     is_admin = fetch('/current_user').is_admin
-    is_light = is_light_background()
 
     DIV 
       className: 'CustomizeTitle'
@@ -26,8 +26,12 @@ CustomizeTitle = ReactiveComponent
             line-height: 1.4;
           }
           .CustomizeTitle > .banner_title::placeholder {
-            color: #{if is_light then 'rgba(0,0,0,.4)' else 'rgb(255,255,255,.6)'};
+            color: rgba(0,0,0,.4);
           }
+          .dark .CustomizeTitle > .banner_title::placeholder, .with-image .CustomizeTitle > .banner_title::placeholder {
+            color: rgb(255,255,255,.6);
+          }
+
         """
 
       if is_admin && edit_banner.editing
@@ -73,12 +77,17 @@ CustomizeDescription = ReactiveComponent
     if is_admin && edit_banner.editing
       DIV 
         id: 'edit_banner'
+        className: 'CustomizeDescription'
 
         STYLE
           dangerouslySetInnerHTML: __html: """
             #edit_banner .ql-editor {
               min-height: 48px;
             }
+            .wrapper.with-image .CustomizeDescription .ql-editor.ql-blank::before {
+              color: rgba(255,255,255,.4);
+            } 
+
           """
         WysiwygEditor
           key: "forum-description"
@@ -482,7 +491,7 @@ CustomizeBackground = ReactiveComponent
         right: 50
         backgroundColor: if is_light then 'rgba(255,255,255,.4)' else 'rgba(0,0,0,.4)'
         padding: '12px 24px'
-        zIndex: 99
+        zIndex: 9
 
       DIV null,
         DIV
@@ -511,8 +520,6 @@ CustomizeBackground = ReactiveComponent
             style: 
               fontSize: 14
               color: color
-              zIndex: 1
-              left: '50%'
               marginBottom: 12
             'Upload background'
 
@@ -527,7 +534,7 @@ CustomizeBackground = ReactiveComponent
               id: 'background_color'
               type: 'checkbox'
               name: 'background_color'
-              defaultChecked: is_light
+              checked: is_light
               onChange: (e) =>
                 edit_banner.background_css = if e.target.checked then "rgb(255,255,255)" else 'rgb(0,0,0)'
                 save edit_banner
@@ -540,7 +547,7 @@ CustomizeBackground = ReactiveComponent
             htmlFor: "background_color"
 
             if has_masthead
-              translator("banner.background_css_is_light.label", "Light theme")
+              translator("banner.background_css_is_light.label", "Background is light colored")
             else 
               translator("banner.background_css.label", "...or set to color") + ':'
 
@@ -740,6 +747,7 @@ window.EditBanner = ReactiveComponent
                     edit_banner.background_css = 'rgb(255,255,255)'
                   else 
                     edit_banner.background_css = 'rgb(0,0,0)'
+
                   save edit_banner
 
                 img.src = fr.result
@@ -963,7 +971,7 @@ window.PhotoBanner = (opts) ->
           color: white;
           position: relative;
           top: 0;          
-        } .dark .PhotoBanner > .wrapper > .text_block {
+        } .dark .PhotoBanner > .wrapper > .text_block, .PhotoBanner > .wrapper.with-image > .text_block {
           color: black;
         }
 
@@ -1030,7 +1038,7 @@ window.PhotoBanner = (opts) ->
           key: 'editable_description'
           opts: opts
           style: 
-            border: if !has_description then (if is_dark_theme then '1px solid rgba(255,255,255,.5)' else '1px solid rgba(0,0,0,.5)')
+            border: if !has_description then (if has_image_background || is_dark_theme then '1px solid rgba(255,255,255,.5)' else '1px solid rgba(0,0,0,.5)')
             padding: "6px 8px"
             minHeight: 20
             fontSize: 18

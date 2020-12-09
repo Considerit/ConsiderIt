@@ -971,9 +971,10 @@ window.PhotoBanner = (opts) ->
           color: white;
           position: relative;
           top: 0;          
-        } .dark .PhotoBanner > .wrapper > .text_block, .PhotoBanner > .wrapper.with-image > .text_block {
-          color: black;
-        }
+        } 
+        // .dark .PhotoBanner > .wrapper > .text_block, .PhotoBanner > .wrapper.with-image > .text_block {
+        //  color: black;
+        // }
 
         .PhotoBanner > .wrapper .CustomizeTitle .banner_title {
           font-size: 56px;

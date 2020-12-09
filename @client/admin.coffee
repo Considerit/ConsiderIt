@@ -1299,7 +1299,10 @@ ModerationOptions = ReactiveComponent
 
   render: -> 
     subdomain = fetch '/subdomain'
-    expanded = subdomain.moderated_classes.length == 0 || @local.edit_settings
+    if subdomain.moderated_classes.length == 0 
+      @local.edit_settings = true 
+
+    expanded = @local.edit_settings
 
     DIV 
       style: 

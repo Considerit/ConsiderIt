@@ -556,7 +556,7 @@ CustomizeBackground = ReactiveComponent
               id: 'background_color'
               type: 'color'
               name: 'background_color'
-              defaultValue: customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
+              value: edit_banner.background_css or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
               onChange: (e) =>
                 edit_banner.background_css = e.target.value
                 save edit_banner
@@ -577,6 +577,8 @@ CustomizeBackground = ReactiveComponent
               textDecoration: 'underline'
 
             onClick: ->
+              edit_banner.background_css = DEFAULT_BACKGROUND_COLOR
+              save edit_banner
               document.querySelector('button#delete_masthead').click()
 
             onKeyDown: (e) => 

@@ -82,6 +82,7 @@ ConsiderIt::Application.routes.draw do
   get '/notifications/:proposal_id' => 'notification#index'
 
 
+  match 'rename_forum' => 'subdomain#rename_forum', :via => [:post]
   match 'nuke_everything' => 'subdomain#nuke_everything', :via => [:put]
   match 'update_images_hack' => 'subdomain#update_images_hack', :via => [:put]
   match 'update_proposal_pic_hack' => 'proposal#update_images_hack', :via => [:put]

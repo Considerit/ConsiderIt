@@ -463,6 +463,40 @@ AppSettingsDash = ReactiveComponent
                       marginTop: 10
                     error
 
+
+          if current_user.is_super_admin
+            FORM 
+              id: 'rename_forum'
+              action: '/rename_forum'
+              method: 'post'
+              style: 
+                marginTop: 40
+
+              LABEL
+                htmlFor: 'name'
+                'Rename forum to: '
+
+              INPUT 
+                id: 'name'
+                name: 'name'
+                type: 'text'
+                style: 
+                  width: 300
+
+              INPUT 
+                type: 'hidden'
+                name: 'authenticity_token'
+                value: current_user.csrf
+
+
+              INPUT
+                type: 'submit' 
+
+                onSubmit: => 
+                  confirm("Are you sure you want to rename this forum?")
+            
+
+
   submit : -> 
     submitting_files = @submit_logo || @submit_masthead
 

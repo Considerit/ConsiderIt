@@ -208,6 +208,22 @@ class SubdomainController < ApplicationController
     render :json => []
   end
 
+  def rename_forum
+    old_name = current_subdomain.name
+
+    name = params[:name]
+    name = name.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
+
+    begin 
+      current_subdomain.rename(name)
+    rescue
+      return render :json => [:error => "That subdomain is not available"]
+    end
+    if request.url.index(old_name)
+      redirect_to request.url.sub old_name, name
+    end
+  end
+
   def update_images_hack
     attrs = {}
     if masthead = params['masthead']

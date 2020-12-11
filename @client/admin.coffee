@@ -1234,7 +1234,7 @@ ModerateItem = ReactiveComponent
 
             for list_key in get_all_lists()
               OPTION  
-                value: list_key
+                value: list_key.substring(5)
                 get_list_title list_key, true
 
       if selected 

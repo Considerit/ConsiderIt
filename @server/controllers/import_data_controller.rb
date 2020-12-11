@@ -169,28 +169,30 @@ class ImportDataController < ApplicationController
             user.add_to_active_in
 
           when 'proposals'
-            next if !row.has_key?('topic') || !row['topic']
+
+            title = row.fetch('title', false) || row.fetch('topic', false)
+            list = row.fetch('list', false) || row.fetch('cluster', false)
+
+            next if !title
 
             slug = nil 
             if row.has_key? 'url'
               slug = slugify(row['url'])
               proposal = Proposal.find_by_slug slug 
             else
-              topic = row['topic']
-              if row.has_key?('cluster') || row.has_key?('list')
-                cluster = row['cluster'] || row['list']
-                proposal = Proposal.where(:name => topic, :cluster => cluster).first
+              if list
+                proposal = Proposal.where(:name => title, :cluster => list).first
               else 
-                proposal = Proposal.find_by_name(topic)
+                proposal = Proposal.find_by_name(title)
               end
             end
 
             attrs.update({
               'slug' => slug,
               'user_id' => user.id,
-              'name' => row['topic'],
+              'name' => title,
               'published' => true,
-              'cluster' => row['cluster'] || row['list']
+              'cluster' => list
             })
 
             attrs['roles'] = "{\"editor\":[\"/user/#{user.id}\"], \"writer\":[\"*\"], \"commenter\":[\"*\"], \"opiner\":[\"*\"], \"observer\":[\"*\"]}"

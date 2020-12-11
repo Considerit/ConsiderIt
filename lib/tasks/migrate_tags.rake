@@ -99,6 +99,10 @@ task :migrate_tags => :environment do
 
       if customizations['opinion_filters']
         admin_only = customizations.has_key?("opinion_filters_admin_only") ? customizations["opinion_filters_admin_only"] : false
+        
+        if customizations.has_key?("opinion_filters_admin_only")
+          customizations.delete("opinion_filters_admin_only")
+        end
 
         tag2visibility = {}
 
@@ -134,16 +138,16 @@ task :migrate_tags => :environment do
           end
 
           if filter['pass'].index('.editable')
-            filter['pass'] = filter['pass'].gsub('.editable','')
-
-            if s.customizations.index('checklist')
-              refactor_opinion_filter[s.name] = true 
+            if s.customizations.index('checklist') # this is only for one forum, so hardcoding it a bit
+              matches = filter['pass'].match(/'([a-z\- ]+):' \+ '([a-zA-Z\- ]+)'/)
+              tag = matches[1]
+              option = matches[2]
+              filter['pass'] = "#javascript\nfunction(u) {\n   passes_tag_filter(u, '#{tag}', '#{option}') }"
             end
+
+            filter['pass'] = filter['pass'].gsub('.editable','')
           end
 
-          if s.customizations.index('checklist')
-            refactor_opinion_filter[s.name] = true 
-          end
 
         end 
 
@@ -183,28 +187,6 @@ task :migrate_tags => :environment do
       if changed
         # s.customizations = JSON.dump(customizations)
         # s.save  
-      end
-    end
-  end
-
-
-  # I think that only opinion_filter configs that referenced data of type checklist have to be manually reconfigured
-  # The other ones probably can just have .editable search/replaced with nothing
-  pp "Opinion filters to be refactored: ", refactor_opinion_filter
-
-  Subdomain.all.each do |s|
-
-    if s.customizations 
-      changed = false
-
-      customizations = s.customization_json()
-
-      if customizations['opinion_filters']
-
-      end
-
-      if changed 
-
       end
     end
   end

@@ -145,30 +145,8 @@ module Exports
         user_tags = JSON.parse( user.tags || '{}' )
 
         tag_whitelist.each do |tag|
-
-          if user_tags.has_key?(tag)
-            row.append user_tags[tag]
-          else 
-
-            # deal with multi-select checkboxes...sigh
-            multi_select_value = []
-            ttag = tag.split('.editable')[0]
-            user_tags.each do |utag, uval|
-              if uval && utag.start_with?(ttag) && utag.index(':')
-                val = utag.split(':')[1].split('.editable')[0]
-                multi_select_value.append val.strip
-              end
-            end
-
-            if multi_select_value.length > 0 
-              row.append multi_select_value.join(', ')
-            else 
-              row.append ""
-            end
-          end
-
+          row.append user_tags.has_key?(tag) ? user_tags[tag] : ""
         end 
-
         
       end 
 

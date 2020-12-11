@@ -1038,7 +1038,7 @@ Auth = ReactiveComponent
               margin: "10px 18px"
 
             for option in question.options
-              key = "#{question.tag.substring(0, question.tag.length - '.editable'.length)}:#{option} .editable"
+              key = "#{question.tag}-#{option}"
 
               DIV null,
 
@@ -1050,10 +1050,20 @@ Auth = ReactiveComponent
                     fontSize: 24
                     verticalAlign: 'baseline'
                     marginLeft: 0
-                  checked: @local.tags[key]
-                  onChange: do(question, option, key) => (event) =>
+                  checked: current_user.tags[question.tag]?.split(',').indexOf(option) > -1
+                  onChange: do(question, option) => (event) =>
                     @local.tags = @local.tags or {}
-                    @local.tags[key] = current_user.tags[key] = event.target.checked
+
+                    currently_checked = current_user.tags[question.tag].split(',')
+
+                    if event.target.checked
+                      currently_checked.push option
+                    else 
+                      idx = currently_checked.indexOf(option)
+                      if idx > -1
+                        currently_checked.splice idx, 1
+                    
+                    @local.tags[question.tag] = current_user.tags[question.tag] = currently_checked.join(',')
                     save @local
 
                 LABEL 

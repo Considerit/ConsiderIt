@@ -86,6 +86,11 @@ window.Homepage = ReactiveComponent
 
     title = customization('banner')?.title or "#{subdomain.name} considerit forum"
 
+    if title.indexOf('<') > -1 
+      tmp = document.createElement "DIV"
+      tmp.innerHTML = title
+      title = tmp.textContent or tmp.innerText or title
+
     if doc.title != title
       doc.title = title
       save doc

@@ -3,8 +3,6 @@ task :migrate_proposal_description_fields => :environment do
   # Proposal.where("description_fields is not NULL AND description_fields != '[]'").each do |p|
   Proposal.where("description_fields is not NULL AND description_fields != '[]'").each do |p|
 
-    next if p.subdomain_id != 1
-
     flds = JSON.load(p.description_fields)
     fields = []
     fields_with_group = []

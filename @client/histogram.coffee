@@ -599,12 +599,13 @@ window.Histogram = ReactiveComponent
 
                 save @local
 
-                proposal.histocache[histocache_key] = positions
+                if ENABLE_SERVER_HISTOCACHE
+                  proposal.histocache[histocache_key] = positions
 
-                # save to server
-                save
-                  key: "/histogram/proposal/#{fetch(@props.proposal).id}/#{histocache_key}"
-                  positions: positions
+                  # save to server
+                  save
+                    key: "/histogram/proposal/#{fetch(@props.proposal).id}/#{histocache_key}"
+                    positions: positions
       , 1
 
     @current_request = histocache_key

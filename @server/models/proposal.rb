@@ -23,6 +23,7 @@ class Proposal < ActiveRecord::Base
   include Moderatable, Notifier
   
   class_attribute :my_public_fields
+  # self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :name, :description, :description_fields, :active, :hide_on_homepage, :published, :histocache, :subdomain_id, :json]
   self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :name, :description, :description_fields, :active, :hide_on_homepage, :published, :histocache, :subdomain_id, :json]
 
   scope :active, -> {where( :active => true, :published => true )}

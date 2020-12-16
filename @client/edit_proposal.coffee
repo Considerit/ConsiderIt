@@ -66,34 +66,6 @@ window.EditProposal = ReactiveComponent
     else 
       category = proposal.cluster 
 
-    if !@local.description_fields && (@props.fresh || proposal.slug)
-      @local.description_fields = if proposal.description_fields 
-                                    $.parseJSON(proposal.description_fields) || [] 
-                                  else 
-                                    []
-      @local.open_fields = []
-
-      if @local.description_fields.length > 0
-        if @local.description_fields[0].group
-          # Right now, we just downgrade group syntax to flat description list syntax
-          # TODO: when editing a proposal, support the proposal description groups 
-          # syntax (or get rid of it)
-          @local.description_fields = _.flatten \
-                                         @local.description_fields.map \
-                                            (group) -> group.items
-
-        # Add unique identifiers to each field so we can hide/edit them
-        for field,idx in @local.description_fields
-          field.id = idx
-
-      save @local
-
-    toggleDescriptionFieldOpen = (field, field_open) =>
-      if field_open
-        @local.open_fields = _.without @local.open_fields, field.id
-      else
-        @local.open_fields.push field.id
-      save @local
 
     available_lists = lists_current_user_can_add_to get_all_lists()
     
@@ -145,116 +117,6 @@ window.EditProposal = ReactiveComponent
             style: _.extend {}, input_style,
               minHeight: 20
             html: if @props.fresh then null else proposal.description
-
-          # Expandable description fields
-          if false 
-            DIV 
-              style: 
-                marginBottom: 20
-                marginLeft: 45
-                display: if not current_user.is_admin then 'none'
-
-              for field in @local.description_fields
-                field_open = field.id in @local.open_fields
-                DIV 
-                  key: "field-#{field.id}"
-                  style: _.extend({}, block_style, {width: ''}),
-
-                  BUTTON 
-                    className: "fa fa-#{if field_open then 'minus' else 'plus'}-circle"
-                    style: 
-                      position: 'absolute'
-                      left: -20
-                      top: 18
-                      color: '#414141'
-                      cursor: 'pointer'
-                      padding: 0
-                      border: 'none'
-                      backgroundColor: 'transparent'
-                    onClick: do (field, field_open) => => 
-                      toggleDescriptionFieldOpen(field, field_open)
-
-                  if field_open
-                    [INPUT
-                      style: _.extend {}, description_field_style, \
-                                      {width: description_field_style.width - 45}
-                      type: 'text'
-                      id:"field-#{field.id}-label"
-                      name:"field-#{field.id}-label"
-                      pattern:'^.{3,}'
-                      placeholder: t('Label')
-                      required:'required'
-                      onChange: do(field) => (e) => 
-                        field.label = e.target.value; save(@local)
-                      value: field.label
-
-                    WysiwygEditor
-                      key:"field-#{field.id}-html-#{if @props.fresh then '/new/proposal' else proposal.key}"
-                      name:"field-#{field.id}-html"
-                      placeholder: t('expandable_body_instr')
-                      style: _.extend {}, description_field_style,
-                                width: description_field_style.width - 45
-                      html: field.html]
-
-                  else
-                    DIV 
-                      style: 
-                        fontSize: 18
-                        fontWeight: 600
-                        cursor: 'pointer'
-                        marginTop: 12
-                        marginLeft: 5
-                        width: description_field_style.width - 45
-                      onClick: do (field, field_open) => => 
-                        toggleDescriptionFieldOpen(field, field_open)
-                      field.label
-
-                  DIV 
-                    style: 
-                      position: 'absolute'
-                      right: 150
-                      top: 12
-
-                    BUTTON
-                      style: operation_style
-                      onClick: do (field, field_open) => => 
-                        toggleDescriptionFieldOpen(field, field_open)
-                      if field_open then t('close') else t('edit')
-
-                    BUTTON
-                      style: operation_style
-                      onClick: do (field) => =>
-                        @local.description_fields = \
-                          _.filter @local.description_fields, \
-                                   (fld) -> fld.id != field.id
-                        save @local
-                      t('delete')
-
-              BUTTON
-                style: 
-                  color: '#aaa'
-                  cursor: 'pointer'
-                  fontSize: 18
-                  marginLeft: -18
-                  backgroundColor: 'transparent'
-                  border: 'none'
-
-                onClick: => 
-                  new_id = 0
-                  for field in @local.description_fields
-                    new_id += field.id  
-                  new_id += 1
-                  @local.description_fields.push {label: null, html: null, id: new_id}
-                  @local.open_fields.push new_id
-                  save @local
-
-                "+ "
-                SPAN 
-                  style: 
-                    textDecoration: 'underline'
-                    marginLeft: 7
-                  t('add_expandable')
-
 
         DIV
           style: block_style
@@ -507,12 +369,6 @@ window.EditProposal = ReactiveComponent
     if @local.roles
       proposal.roles = @local.roles
       proposal.invitations = @local.invitations
-
-    if @local.description_fields
-      for field in @local.description_fields
-        edited_html = fetch("field-#{field.id}-html-#{proposal.key}")
-        field.html = edited_html.html if edited_html.html
-      proposal.description_fields = JSON.stringify(@local.description_fields)
 
     proposal.errors = []
     @local.errors = []

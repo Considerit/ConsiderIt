@@ -35,7 +35,7 @@ class ProposalController < ApplicationController
   def create
     authorize! 'create proposal'
 
-    fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage', 'description_fields']
+    fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage']
     attrs = params.select{|k,v| fields.include? k}
 
     errors = validate_input attrs, nil
@@ -98,7 +98,7 @@ class ProposalController < ApplicationController
     errors = []
 
     if permit('update proposal', proposal) > 0
-      fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage', 'description_fields']
+      fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage']
 
       if params.has_key?('cluster') && params['cluster'] != proposal.cluster 
         if permit('set category', params['cluster']) <= 0 
@@ -125,14 +125,6 @@ class ProposalController < ApplicationController
         if updated_fields.has_key?('description') && !current_user.is_admin?
           # Sanitize description
           updated_fields['description'] = sanitize_helper(updated_fields['description'])
-        end 
-        if updated_fields.has_key?('description_fields') && !current_user.is_admin?
-          # Sanitize description_fields[i].html
-          updated_fields['description_fields'] =
-            JSON.dump(JSON.parse(updated_fields['description_fields']).map { |field|
-                        field['html'] = sanitize_helper(field['html'])
-                        field
-                      })
         end 
 
         update_roles(proposal)

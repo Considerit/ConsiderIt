@@ -23,8 +23,7 @@ class Proposal < ActiveRecord::Base
   include Moderatable, Notifier
   
   class_attribute :my_public_fields
-  # self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :name, :description, :description_fields, :active, :hide_on_homepage, :published, :histocache, :subdomain_id, :json]
-  self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :name, :description, :description_fields, :active, :hide_on_homepage, :published, :histocache, :subdomain_id, :json]
+  self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :name, :description, :active, :hide_on_homepage, :published, :subdomain_id, :json]
 
   scope :active, -> {where( :active => true, :published => true )}
 
@@ -215,8 +214,6 @@ class Proposal < ActiveRecord::Base
       json['banner'] = self.banner.url
     end
 
-    #json['description_fields'] = JSON.parse(json['description_fields'] || '[]')
-
     if self.subdomain.moderate_points_mode == 1
       moderation_status_check = 'moderation_status=1'
     else 
@@ -322,18 +319,11 @@ class Proposal < ActiveRecord::Base
     if !defined?(Rails::Console) && current_user && !current_user.is_admin?
       # Initialize fields if empty
       self.description        = self.description || '' 
-      self.description_fields = self.description_fields || '[]' 
     end
 
     if current_user && !current_user.is_admin?
       # Sanitize description
       self.description = sanitize_helper(self.description)
-      # Sanitize description_fields[i].html
-      self.description_fields =
-        JSON.dump(JSON.parse(self.description_fields || '{}').map { |field|
-                    field['html'] = sanitize_helper(field['html'])
-                    field
-                  })    
     end
   end 
 

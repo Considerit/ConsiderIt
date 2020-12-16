@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201006220518) do
+ActiveRecord::Schema.define(version: 20201216224549) do
 
   create_table "comments", force: :cascade do |t|
     t.integer  "commentable_id",    limit: 4,     default: 0
@@ -160,7 +160,7 @@ ActiveRecord::Schema.define(version: 20201006220518) do
 
   create_table "proposals", force: :cascade do |t|
     t.text     "name",                                   limit: 65535
-    t.text     "description",                            limit: 65535
+    t.text     "description",                            limit: 16777215
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "subdomain_id",                           limit: 4

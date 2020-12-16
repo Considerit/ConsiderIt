@@ -980,7 +980,7 @@ window.PhotoBanner = (opts) ->
 
         .PhotoBanner > .wrapper .CustomizeTitle .banner_title {
           font-size: 56px;
-          font-weight: 800;
+          font-weight: 700;
           font-family: #{header_font()};
           text-align: center;
           margin-bottom: #{if has_description || edit_banner.editing then 28 else 0}px;
@@ -1102,7 +1102,7 @@ window.MediaBanner = ->
 
         .MediaBanner > .upper_wrapper .CustomizeTitle .banner_title {
           font-size: 60px;
-          font-weight: 800;
+          font-weight: 700;
           font-family: #{header_font()};
           text-align: left;
           margin-left: 36px;

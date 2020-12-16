@@ -45,7 +45,7 @@ window.AuthCallout = ReactiveComponent
                   style: 
                     backgroundColor: 'transparent'
                     border: 'none'
-                    fontWeight: 800
+                    fontWeight: 700
                     textDecoration: 'underline'
                     #color: 'white'
                     textTransform: 'lowercase'
@@ -66,7 +66,7 @@ window.AuthCallout = ReactiveComponent
                   style: 
                     backgroundColor: 'transparent'
                     border: 'none'
-                    fontWeight: 800
+                    fontWeight: 700
                     textDecoration: 'underline'
                     #color: 'white'
                     textTransform: 'lowercase'

@@ -8,7 +8,7 @@ GoogleDocEmbed = ReactiveComponent
       style: 
         width: '80%'
         margin: 'auto'
-        maxWidth: 800
+        maxWidth: 700
       IFRAME 
         ref: 'iframe'
         width: '100%'

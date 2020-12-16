@@ -520,6 +520,9 @@ toggle_filter = (filter) ->
   users = fetch '/users'
   filter_out = fetch 'filtered'
 
+
+
+
   return if !users.users
   
   filter_out.users = {}
@@ -532,8 +535,9 @@ toggle_filter = (filter) ->
   filter_func = filter_out.current_filter?.pass
 
   if filter_func
-    for user in users.users      
-      if !filter_func(user)
+    for user in users.users   
+      passes_filter = filter_func(user) 
+      if !passes_filter
         filter_out.users[user.key] = 1
 
   invalidate_proposal_sorts()
@@ -558,7 +562,6 @@ OpinionFilter = ReactiveComponent
     users = fetch '/users' # fetched here so its ready for toggle_filter func
 
     return DIV null if !users.users
-    filters_only_for_hosts = customization('opinion_filters_admin_only') 
     custom_filters = customization 'opinion_filters'
 
     is_admin = fetch('/current_user').is_admin
@@ -579,9 +582,9 @@ OpinionFilter = ReactiveComponent
       }
 
 
-    if custom_filters && ( (!customization('hide_opinions') && !filters_only_for_hosts) || is_admin)
+    if custom_filters && !customization('hide_opinions')
       for filter in custom_filters
-        if !filter.admin_only || is_admin
+        if filter.visibility == 'open' || is_admin
           filters.push filter
 
     if !filter_out.current_filter

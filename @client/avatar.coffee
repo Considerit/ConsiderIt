@@ -37,8 +37,8 @@ show_tooltip = (e) ->
     #     updated += "<p>#{part}</p>"
     #   name = updated
       
-    if !anonymous && (filters = customization('opinion_filters')) && (!customization('opinion_filters_admin_only') || current_user.is_admin)
-      for filter in filters when (!filter.admin_only || current_user.is_admin)
+    if !anonymous && (filters = customization('opinion_filters')) 
+      for filter in filters when (filter.visibility == 'open' || current_user.is_admin)
         if filter.icon && filter.pass(user)
           if typeof(filter.icon) != 'string'
             icon = filter.icon(user)

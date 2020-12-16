@@ -25,8 +25,8 @@ task :migrate_tags => :environment do
               end
               vals = matches.join(',')
               tags[question["tag"]] = vals 
-              pp "User #{u.name} has tag #{prefix} with values #{vals}"
-              pp tags
+              # pp "User #{u.name} has tag #{prefix} with values #{vals}"
+              # pp tags
 
               u.tags = JSON.dump(tags)
               u.save
@@ -40,6 +40,8 @@ task :migrate_tags => :environment do
 
   editable = {}
   noneditable = {}
+
+  pp 'Removing .editable tags'
 
   User.where(:registered => true).where("tags is not NULL").each do |u|
     tags = JSON.load(u.tags)
@@ -58,8 +60,8 @@ task :migrate_tags => :environment do
       tags.delete(old_tag)
     end
 
-    # u.tags = JSON.dump(tags)
-    # u.save
+    u.tags = JSON.dump(tags)
+    u.save
 
   end
 
@@ -67,11 +69,11 @@ task :migrate_tags => :environment do
   # pp '         \n\n\n'
   # pp noneditable
 
-
   refactor_opinion_filter = {}
 
   pp 'Create user_tags configuration and add depends_on to opinion_filters'
-  # [Subdomain.find_by_name('denverclimateaction')].each do |s|
+
+  # [Subdomain.find_by_name('fremontclimateaction')].each do |s|
 
   Subdomain.all.each do |s|
 
@@ -98,7 +100,7 @@ task :migrate_tags => :environment do
 
 
       if customizations['opinion_filters']
-        admin_only = customizations.has_key?("opinion_filters_admin_only") ? customizations["opinion_filters_admin_only"] : false
+        admin_only = customizations.fetch("opinion_filters_admin_only", false)
         
         if customizations.has_key?("opinion_filters_admin_only")
           customizations.delete("opinion_filters_admin_only")
@@ -106,10 +108,10 @@ task :migrate_tags => :environment do
 
         tag2visibility = {}
 
-        # pp s.name, customizations['opinion_filters']
-
         for filter in customizations['opinion_filters']
-          visibility = (filter.has_key?("admin_only") ? filter["admin_only"] : admin_only) ? 'host-only' : 'open'
+          visibility = filter.fetch("admin_only", admin_only) ? 'host-only' : 'open'
+
+          filter['visibility'] = visibility 
 
           # figure out which user tags this filter depends on
           tags_used = []
@@ -126,26 +128,29 @@ task :migrate_tags => :environment do
             end
           end
 
+          if filter['pass'].index('.editable')
+            if s.customizations.index('checklist') # this is only for one forum, so hardcoding it a bit
+              matches = filter['pass'].match(/'([a-z\- ]+):' \+ '([a-zA-Z\- ]+)'/)
+              tag = matches[1]
+              option = matches[2]
+              option_map = 
+              filter['pass'] = "#javascript\nfunction(u) {\n  return passes_tag_filter(u, '#{tag}', '#{option}') }"
+              tags_used.append tag
+            end
+
+            filter['pass'] = filter['pass'].gsub('.editable','')
+
+          end
 
           filter['depends_on'] = tags_used
-          # pp "#{s.name}: #{filter['label']} depends on #{tags_used}"
+
+          pp "#{s.name}: #{filter['label']} depends on #{tags_used}"
 
           for tag in tags_used
             # taking the most liberal visibility
             if !tag2visibility.has_key?(tag) || visibility != 'host-only'
               tag2visibility[tag] = visibility
             end
-          end
-
-          if filter['pass'].index('.editable')
-            if s.customizations.index('checklist') # this is only for one forum, so hardcoding it a bit
-              matches = filter['pass'].match(/'([a-z\- ]+):' \+ '([a-zA-Z\- ]+)'/)
-              tag = matches[1]
-              option = matches[2]
-              filter['pass'] = "#javascript\nfunction(u) {\n   passes_tag_filter(u, '#{tag}', '#{option}') }"
-            end
-
-            filter['pass'] = filter['pass'].gsub('.editable','')
           end
 
 
@@ -163,12 +168,10 @@ task :migrate_tags => :environment do
         end
 
         # now we have to go back and update the visiblity given the filters
-        if user_tags.keys.length > 0 
-          user_tags.each do |tag, vals|
-            if tag2visibility.has_key?(tag) && tag2visibility[tag] != 'host-only'
-              vals['visibility'] = tag2visibility[tag]
-              # pp "#{s.name}: Set visibility of #{tag} to #{tag2visibility[tag]}"
-            end
+        user_tags.each do |tag, vals|
+          if tag2visibility.has_key?(tag) && tag2visibility[tag] != 'host-only'
+            vals['visibility'] = tag2visibility[tag]
+            pp "#{s.name}: Set visibility of #{tag} to #{tag2visibility[tag]}"
           end
         end
 
@@ -176,7 +179,6 @@ task :migrate_tags => :environment do
       end
 
       if user_tags.keys.length > 0
-        # pp s.name, user_tags
         if customizations['auth_questions']
           customizations.delete('auth_questions')
         end
@@ -185,8 +187,8 @@ task :migrate_tags => :environment do
       end
 
       if changed
-        # s.customizations = JSON.dump(customizations)
-        # s.save  
+        s.customizations = JSON.dump(customizations)
+        s.save  
       end
     end
   end

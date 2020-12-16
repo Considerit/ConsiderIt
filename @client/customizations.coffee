@@ -202,9 +202,10 @@ customizations.default =
 
   homepage_list_order: []
 
+  user_tags: {}
+
   font: "'Open Sans', 'Open Sans', 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
   header_font: "'Fira Sans Condensed', 'Avenir Next Condensed', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
-  auth_questions: []
 
   SiteHeader : PhotoBanner
   SiteFooter : DefaultFooter

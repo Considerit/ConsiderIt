@@ -516,7 +516,7 @@ Auth = ReactiveComponent
       if auth.form in ['create account', 'create account via invitation'] || (auth.form in ['user questions', 'edit profile'] && !@local.agreed_to_terms)
 
         if !@local.agreed_to_terms?
-          @local.agreed_to_terms = !!current_user.tags['considerit_terms.editable']
+          @local.agreed_to_terms = !!current_user.tags['considerit_terms']
           save @local 
 
         default_terms = TRANSLATE
@@ -541,20 +541,20 @@ Auth = ReactiveComponent
             marginTop: 24
 
           INPUT
-            id: slugify("considerit_terms.editableinputBox")
-            key: "considerit_terms.editable_inputBox"
+            id: slugify("considerit_termsinputBox")
+            key: "considerit_terms_inputBox"
             type:'checkbox'
             style: 
               fontSize: 24
               verticalAlign: 'baseline'
               marginLeft: 1
-            checked: @local.tags['considerit_terms.editable']
+            checked: @local.tags['considerit_terms']
             onChange: (event) =>
               @local.tags = @local.tags or {}
-              @local.tags['considerit_terms.editable'] = @local.agreed_to_terms = event.target.checked
+              @local.tags['considerit_terms'] = @local.agreed_to_terms = event.target.checked
               save @local
           LABEL 
-            htmlFor: slugify("considerit_terms.editableinputBox")
+            htmlFor: slugify("considerit_termsinputBox")
             style: 
               fontSize: 18
               paddingLeft: 8
@@ -957,15 +957,14 @@ Auth = ReactiveComponent
 
     return DIV() if !current_user.tags
 
-
-
     if auth.ask_questions && auth.form in \
           ['edit profile', 'create account', 'create account via invitation', 'user questions']
-      questions = customization('auth_questions').slice()
+      questions = []
+      for tag, vals of (customization('user_tags') or {})
+        if vals.self_report
+          questions.push _.extend {}, vals.self_report, {tag}
     else 
       questions = []
-
-
 
     if @local.tags != current_user.tags
       @local.tags = current_user.tags
@@ -1054,7 +1053,7 @@ Auth = ReactiveComponent
                   onChange: do(question, option) => (event) =>
                     @local.tags = @local.tags or {}
 
-                    currently_checked = current_user.tags[question.tag].split(',')
+                    currently_checked = current_user.tags[question.tag]?.split(',') or []
 
                     if event.target.checked
                       currently_checked.push option
@@ -1082,7 +1081,7 @@ Auth = ReactiveComponent
               fontSize: 18
               marginTop: 4
               maxWidth: '100%'
-            value: @local.tags[question.tag]
+            value: @local.tags[question.tag] or ''
             onChange: do(question) => (event) =>
               @local.tags = @local.tags or {}
               @local.tags[question.tag] = current_user.tags[question.tag] = event.target.value
@@ -1090,7 +1089,6 @@ Auth = ReactiveComponent
             [
               OPTION 
                 value: ''
-                selected: true 
                 disabled: true 
                 hidden: true
               for value in question.options
@@ -1135,25 +1133,28 @@ Auth = ReactiveComponent
     @local.errors = []    
     if auth.ask_questions && auth.form not in ['login', 'reset password', 'verify email']
       questions = customization('auth_questions')
-      for question in questions
+      for tag, vals of (customization('user_tags') or {})
+        continue if !vals.self_report
+        question = vals.self_report
         if question.required
-          has_response = question.input in ['boolean', 'checklist'] || !!current_user.tags[question.tag]
+          has_response = question.input in ['boolean', 'checklist'] || !!current_user.tags[tag]
 
-          if !has_response || (question.require_checked && !current_user.tags[question.tag])
+          if !has_response || (question.require_checked && !current_user.tags[tag])
             @local.errors.push translator 
                                  id: 'auth.validation.missing_answer'
                                  question: question.question
-                                 "{question} required!" 
+                                 "\"{question}\" is required!" 
 
           is_valid_input = true
           if question.validation
-            is_valid_input = question.validation(current_user.tags[question.tag])
+            is_valid_input = question.validation(current_user.tags[tag])
           if !is_valid_input && has_response
+            console.log question.question
             @local.errors.push translator 
                                  id: 'auth.validation.invalid_answer'
-                                 response: current_user.tags[question.tag]
+                                 response: current_user.tags[tag]
                                  question: question.question  
-                                 "{response} isn't a valid answer to #{question}!" 
+                                 "{response} isn't a valid answer to \"{question}\"!" 
 
       save @local
 

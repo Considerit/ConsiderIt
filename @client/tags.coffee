@@ -7,40 +7,59 @@ UserTags = ReactiveComponent
     subdomain = fetch '/subdomain'
     users = fetch '/users'
 
-    current_user = if @local.current_user then fetch(@local.current_user)
+    selected_user = if @local.selected_user then fetch(@local.selected_user)
 
-    change_current_user = (new_user) => 
+    change_selected_user = (new_user) => 
       @local.new_tags = {}
-      @local.current_user = new_user
+      @local.selected_user = new_user
 
-      current_user = if @local.current_user then fetch(@local.current_user)
-      if current_user
+      selected_user = if @local.selected_user then fetch(@local.selected_user)
+      if selected_user
         for k,v of all_tags when k != 'no tags'
-          if !current_user.tags[k]?
+          if !selected_user.tags[k]?
             @local.new_tags[k] = ""
       save @local
 
-
+    tags_config = customization('user_tags')
     all_tags = {}
-    for user in users.users
-      if user.tags? && Object.keys(user.tags).length > 0
-        for tag,val of user.tags 
-          console.log user.tags
-          all_tags[tag] ||= {yes: [], no: []}
-          if val && ( (typeof val != 'string' && !(val instanceof String)) || val.toLowerCase() not in ["no", 'false'])
-            all_tags[tag].yes.push user 
-          else 
-            all_tags[tag].no.push user 
 
-        if Object.keys(user.tags).length == 1 && Object.keys(user.tags)[0] == 'considerit_terms.editable'
-          all_tags['no tags'] ||= {yes: [], no: []}
-          all_tags['no tags'].yes.push user          
-      else 
-        all_tags['no tags'] ||= {yes: [], no: []}
-        all_tags['no tags'].yes.push user
+    for tag,vals of tags_config
+      all_tags[tag] = {
+        not_answered: []
+      }
 
-    if all_tags['considerit_terms.editable']
-      delete all_tags['considerit_terms.editable']
+      if vals.self_report
+        if vals.self_report.options
+          for option in vals.self_report.options
+            all_tags[tag][option] = []
+        else if vals.self_report.input == 'boolean'
+            all_tags[tag][true] = []
+            all_tags[tag][false] = []
+
+    for user in users.users 
+
+      for tag,vals of tags_config 
+        if tag not of user.tags || user.tags[tag] == "" || user.tags[tag] == 'undefined'
+          all_tags[tag].not_answered.push user
+
+      for tag, val of user.tags 
+        if vals.self_report?.input == 'checklist'
+          my_vals = val.split(',')
+        else if vals.self_report?.input == 'boolean' && (typeof val == 'string') && val.toLowerCase() in ["no", "false", "yes", "true"]
+          if val.toLowerCase() in ["no", "false"]
+            my_vals = [false]
+          else
+            my_vals = [true]
+
+        else
+          my_vals = [val] 
+
+        for v in my_vals
+          all_tags[tag][v] ?= []
+          all_tags[tag][v].push user 
+
+    if all_tags['considerit_terms']
+      delete all_tags['considerit_terms']
 
     DIV 
       style: 
@@ -52,11 +71,11 @@ UserTags = ReactiveComponent
         style: 
           marginBottom: 12
 
-        H1 style: {fontSize: 28}, 
-          "User tags"
+        H1 style: {fontSize: 48}, 
+          "Custom Participant Data"
 
 
-      # Text input for adding new people to a role
+      # Text input for selecting a participant to edit tags
       DIV null,
         INPUT 
           id: 'filter'
@@ -65,16 +84,16 @@ UserTags = ReactiveComponent
           autoComplete: 'off'
           'aria-label': "Name or email..."
           placeholder: "Name or email..."
-          value: if current_user then current_user.name
+          value: if selected_user then selected_user.name
           onChange: => 
             @local.filtered = $(@getDOMNode()).find('#filter').val()?.toLowerCase()
-            change_current_user null 
+            change_selected_user null 
             save(@local)
           onKeyPress: (e) => 
             # enter key pressed...
             if e.which == 13 || e.which == 32 # ENTER or SPACE
               e.preventDefault()
-              change_current_user @local.hovered_user
+              change_selected_user @local.hovered_user
               save @local
           onFocus: (e) => 
             @local.selecting = true
@@ -90,7 +109,7 @@ UserTags = ReactiveComponent
       # Dropdown, autocomplete menu for adding existing users
       if @local.selecting
         available_users = _.filter users.users, (u) => 
-            u.key != @local.current_user &&
+            u.key != @local.selected_user &&
              (!@local.filtered || 
               "#{u.name} <#{u.email}>".toLowerCase().indexOf(@local.filtered) > -1)
 
@@ -121,22 +140,20 @@ UserTags = ReactiveComponent
                   onMouseLeave: (e) => @local.hovered_user = null; save @local 
 
                   onClick: (e) => 
-                    change_current_user @local.hovered_user
+                    change_selected_user @local.hovered_user
                     e.stopPropagation()
 
                   "#{user.name} <#{user.email}>"
 
       # the tags...
-      if current_user
-        
+      if selected_user
         DIV 
           style: 
             marginTop: 20
 
-          for tags in [current_user.tags, @local.new_tags]
+          for tags in [selected_user.tags, @local.new_tags]
             for k,v of tags
               do (k,v, tags) => 
-                #k = k.split('.')[0]
                 editing = @local.editing == k
                 DIV 
                   key: "#{k}-#{v}"
@@ -146,6 +163,7 @@ UserTags = ReactiveComponent
 
                   INPUT
                     ref: k
+
                     style: 
                       fontWeight: 600
                       padding: '5px 10px'
@@ -201,16 +219,16 @@ UserTags = ReactiveComponent
                 fontSize: 18
               onClick: => 
                 update = {}
-                for tags in [current_user.tags, @local.new_tags]
+                for tags in [selected_user.tags, @local.new_tags]
 
                   for k,v of tags
                     new_k = @refs[k].getDOMNode().value
                     new_v = @refs["#{k}-val"].getDOMNode().value
-                    if new_k?.length > 0 && new_v?.length > 0
+                    if new_k?.length > 0 # && new_v?.length > 0
                       update[new_k] = new_v
 
-                current_user.tags = update 
-                save current_user
+                selected_user.tags = update 
+                save selected_user
                 @local.new_tags = {}
                 save @local
 
@@ -222,60 +240,93 @@ UserTags = ReactiveComponent
         style: 
           marginTop: 12
 
-        for tag_group, tag_users of all_tags 
-          DIV
-            style:
-              width: 300
-              display: 'inline-block'
-              verticalAlign: 'top'
-              padding: 10
-              backgroundColor: '#eaeaea'
-              borderRadius: 16
-              marginRight: 10
-              marginBottom: 10
 
-            DIV 
-              style:
-                fontWeight: 600
-                marginBottom: 4
-                color: "#666"
+        for tag, vals of all_tags 
+          show_all = Object.keys(vals).length < 15 || !!@local.show_all?[tag]
 
-              tag_group
-
-            UL
+          DIV null, 
+            H2
               style: 
-                listStyle: 'none'
-                display: 'inline'
-                fontSize: 0
-                lineHeight: 0
+                fontSize: 36
+                marginTop: 36
 
-              for user in tag_users.yes
-                do (user) => 
-                  Avatar 
-                    key: user.key
+              dangerouslySetInnerHTML: __html: tags_config[tag]?.self_report?.question or tag
+
+            if !show_all
+
+              DIV null, 
+
+                DIV null, 
+                  SPAN
                     style: 
-                      width: 40
-                      height: 40
-                      cursor: 'pointer'
-                    onClick: => change_current_user user.key      
-
-
-              for user in tag_users.no
-                do (user) => 
-                  Avatar 
-                    key: user.key
+                      fontStyle: 'italic'
+                    "Lots of values."
+                  BUTTON
                     style: 
-                      width: 40
-                      height: 40
-                      cursor: 'pointer'
-                      opacity: .2
-                    onClick: => change_current_user user.key      
+                      backgroundColor: 'none'
+                      border: 'none'
+                      padding: 0
+                      color: focus_color()
+                      textDecoration: 'underline'
+                      marginLeft: 12
+                    onClick: do (tag) => =>
+                      @local.show_all ?= {}
+                      @local.show_all[tag] = true 
+                      save @local 
+
+                    "Break out by value"
 
 
+                for v,users of vals
+                  UL
+                    style: 
+                      listStyle: 'none'
+                      display: 'inline'
+                      fontSize: 0
+                      lineHeight: 0
+  
+                    for user in users
+                      do (user) => 
+                        Avatar 
+                          key: user.key
+                          style: 
+                            width: 40
+                            height: 40
+                            cursor: 'pointer'
+                          alt: "<user>: #{v}"
+                          onClick: => change_selected_user user.key      
 
+            else 
+              for v,users of vals 
 
+                DIV 
+                  style: 
+                    marginBottom: 18
 
+                  DIV
+                    style:
+                      fontWeight: 700
+                      marginRight: 8
 
+                    v
+
+                  UL
+                    style: 
+                      listStyle: 'none'
+                      display: 'inline'
+                      fontSize: 0
+                      lineHeight: 0
+
+                    for user in users
+                      do (user) => 
+                        Avatar 
+                          key: user.key
+                          style: 
+                            width: 40
+                            height: 40
+                            cursor: 'pointer'
+                          alt: "<user>: #{v}"
+                          onClick: => change_selected_user user.key      
 
 
 

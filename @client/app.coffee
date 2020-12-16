@@ -177,13 +177,6 @@ AuthTransition = ReactiveComponent
   render : ->
     current_user = fetch('/current_user')
 
-    questions_all_answered = true
-    questions = customization('auth_questions')
-    for question in (questions or [])
-      if question.required
-        questions_all_answered &&= question.input in ['boolean', 'checklist'] || !!current_user.tags[question.tag]
-
-
     if current_user.csrf
       arest.csrf(current_user.csrf)
 
@@ -227,7 +220,7 @@ AuthTransition = ReactiveComponent
         loadPage '/edit_profile'
         
     # there's a required question this user has yet to answer
-    else if current_user.logged_in && !questions_all_answered && !fetch('auth').form
+    else if current_user.logged_in && !current_user.completed_host_questions && !fetch('auth').form
       reset_key 'auth',
         form: 'user questions'
         goal: 'To start participating'

@@ -827,6 +827,8 @@ positionAvatars = (opts) ->
   collide = (p1, alpha) ->
 
     return (quad, x1, y1, x2, y2) ->
+      collisions += 1
+
       p2 = quad.point
       if quad.leaf && p2 && p2 != p1
         dx = Math.abs (p1.x - p2.x)
@@ -859,6 +861,8 @@ positionAvatars = (opts) ->
             p2.y -= offset_y / 2
             p1.y += offset_y / 2
 
+
+
       # Visit subregions if we could possibly have a collision there
       neighborhood_radius = p1.radius
       nx1 = p1.x - neighborhood_radius
@@ -871,7 +875,13 @@ positionAvatars = (opts) ->
               y1 > ny2 ||
               y2 < ny1
 
+  write_positions = -> 
+    positions = {}
+    for o, i in nodes
+      positions[parseInt(opinions[i].user.substring(6))] = \
+        [Math.round((o.x - o.radius) * 10) / 10, Math.round((o.y - o.radius) * 10) / 10]
 
+    opts.done?(positions)
 
   ##############
   # Initialize positions of each node
@@ -913,27 +923,46 @@ positionAvatars = (opts) ->
   y_force_mult = 2
 
   total_ticks = 0
+  collisions = 0 
 
-  while true
-    stable = tick alpha
-    alpha *= decay
-    total_ticks += 1
+  loc = fetch 'location'
+  if loc.query_params.show_histogram_physics
+    iterate = => 
+      stable = tick alpha
+      alpha *= decay
+      total_ticks += 1
 
-    stable ||= alpha <= min_alpha
+      console.log "Tick: #{total_ticks} Collisions: #{collisions}"
+      collisions = 0
 
-    aborted = opts.abort?()
-    break if stable || aborted
+      stable ||= alpha <= min_alpha
+
+      if !aborted
+        write_positions()
+
+      aborted = opts.abort?()
+      if stable || aborted
+        histo_run_next_job(opts)
+      else 
+        setTimeout iterate, loc.query_params.show_histogram_physics or 100
+    iterate()
+
+  else 
+    while true
+      stable = tick alpha
+      alpha *= decay
+      total_ticks += 1
+
+      stable ||= alpha <= min_alpha
+
+      aborted = opts.abort?()
+      break if stable || aborted
 
 
-  if !aborted
-    positions = {}
-    for o, i in nodes
-      positions[parseInt(opinions[i].user.substring(6))] = \
-        [Math.round((o.x - o.radius) * 10) / 10, Math.round((o.y - o.radius) * 10) / 10]
+    if !aborted
+      write_positions()
 
-    opts.done?(positions)
-
-  histo_run_next_job(opts)
+    histo_run_next_job(opts)
 
 
 

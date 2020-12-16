@@ -71,11 +71,9 @@ DataDash = ReactiveComponent
 
       if subdomain.plan || current_user.is_super_admin
         query = ''
-        auth_questions = customization 'auth_questions'
-        if auth_questions
-          auth_questions = (a.tag for a in auth_questions)
-
-          query = "?#{auth_questions.join('&')}" 
+        user_tags = customization 'user_tags'
+        if user_tags
+          query = "?#{Object.keys(user_tags).join('&')}" 
 
         DIV null, 
           "Export data from Considerit. A download will begin in a couple seconds after hitting export. The zip file contains four spreadsheets: opinions, points, proposals, and users."

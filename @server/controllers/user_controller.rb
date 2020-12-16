@@ -23,21 +23,23 @@ class UserController < ApplicationController
 
   def update 
     user = User.find(params[:id])
-    if permit('update user', user) > 0
-      fields = ["tags"]
-      updates = params.select{|k,v| fields.include? k}
 
-      fields.each do |f|
-        if !updates.has_key?(f)
-          updates[f] = user[f]
+    if permit('update user', user) > 0 && params.has_key?("tags")
+
+      new_tags = params["tags"]
+      old_tags = Oj.load(user.tags || '{}')
+
+      tags_config = current_subdomain.customization_json.fetch('user_tags', {})
+
+      tags_config.each do |tag, vals|
+        if new_tags.has_key?(tag)
+          old_tags[tag] = new_tags[tag]
+        elsif old_tags.has_key?(tag)
+          old_tags.delete(tag)
         end
       end
 
-      if updates.has_key? :tags
-        updates[:tags] = JSON.dump updates[:tags]
-      end
-
-      user.update_attributes! updates
+      user.update_attributes! tags: JSON.dump(old_tags)
     end
 
     dirty_key "/user/#{params[:id]}"

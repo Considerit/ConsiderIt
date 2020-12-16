@@ -79,12 +79,10 @@ window.GroupedProposalNavigation = (args) ->
                   href: "/?tab=#{encodeURIComponent(name)}#active_tab"
                   style: 
                     fontSize: 28
-                    fontWeight: 700
                     backgroundColor: '#ddd'
-                    # textDecoration: 'underline'
                     cursor: 'pointer'
                     color: "#888"
-                    fontWeight: 800
+                    fontWeight: 700
                     display: 'block'
                     marginLeft: -34
                     padding: '0 34px'

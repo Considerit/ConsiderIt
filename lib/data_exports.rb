@@ -120,7 +120,7 @@ module Exports
 
     if tag_whitelist
       tag_whitelist.each do |tag|
-        heading.append tag.split('.')[0]
+        heading.append tag
       end
 
     end
@@ -145,30 +145,8 @@ module Exports
         user_tags = JSON.parse( user.tags || '{}' )
 
         tag_whitelist.each do |tag|
-
-          if user_tags.has_key?(tag)
-            row.append user_tags[tag]
-          else 
-
-            # deal with multi-select checkboxes...sigh
-            multi_select_value = []
-            ttag = tag.split('.editable')[0]
-            user_tags.each do |utag, uval|
-              if uval && utag.start_with?(ttag) && utag.index(':')
-                val = utag.split(':')[1].split('.editable')[0]
-                multi_select_value.append val.strip
-              end
-            end
-
-            if multi_select_value.length > 0 
-              row.append multi_select_value.join(', ')
-            else 
-              row.append ""
-            end
-          end
-
+          row.append user_tags.fetch(tag, "")
         end 
-
         
       end 
 
@@ -279,40 +257,40 @@ SPECIAL_GROUPS = {
     },
     {
       label: "racethnicity",
-      tag: 'denverclimateaction-racethnicity.editable',
+      tag: 'denverclimateaction-racethnicity',
       vals: ['White',"Hispanic or Latinx","Black or African American","Asian or Asian American","American Indian or Alaska Native","Native Hawaiian or other Pacific Islander","Multiple Races","Prefer not to answer"]
     }, 
     {
       label: "income",
-      tag: 'denverclimateaction-income.editable',
+      tag: 'denverclimateaction-income',
       vals: ['Less than $10,000', '$10,000-$49,999', '$50,000 - $99,999', '$100,000 - $149,999', '$150,000+', 'Prefer not to answer'] 
     }
   ],
 
   'newblueplan' => [{
       label: 'Elected Dem. Leader',
-      tag: 'elected_wa-dems.editable'
+      tag: 'elected_wa-dems'
     }, {
       label: 'Precinct Committee Officer',
-      tag: 'pco_wa-dems.editable'
+      tag: 'pco_wa-dems'
     }, {
       label: 'Dem. Volunteer',
-      tag: 'volunteer_wa-dems.editable'
+      tag: 'volunteer_wa-dems'
     }, {
       label: 'Dem. Donor',
-      tag: 'donor_wa-dems.editable'
+      tag: 'donor_wa-dems'
     }, {
       label: 'Civic Org. Leader',
-      tag: 'ledcivic_wa-dems.editable'
+      tag: 'ledcivic_wa-dems'
     }, {
       label: 'Civic Org. Volunteer',
-      tag: 'volcivic_wa-dems.editable'
+      tag: 'volcivic_wa-dems'
     }, {
       label: 'Civic Org. Staff',
-      tag: 'civic_staff_wa-dems.editable'
+      tag: 'civic_staff_wa-dems'
     }, {
       label: 'Dem. Party Staff',
-      tag: 'staff_wa-dems.editable'
+      tag: 'staff_wa-dems'
     }]
 
 }

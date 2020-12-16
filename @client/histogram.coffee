@@ -599,12 +599,13 @@ window.Histogram = ReactiveComponent
 
                 save @local
 
-                proposal.histocache[histocache_key] = positions
+                if ENABLE_SERVER_HISTOCACHE
+                  proposal.histocache[histocache_key] = positions
 
-                # save to server
-                save
-                  key: "/histogram/proposal/#{fetch(@props.proposal).id}/#{histocache_key}"
-                  positions: positions
+                  # save to server
+                  save
+                    key: "/histogram/proposal/#{fetch(@props.proposal).id}/#{histocache_key}"
+                    positions: positions
       , 1
 
     @current_request = histocache_key
@@ -702,7 +703,7 @@ HistoAvatars = ReactiveComponent
         else
           avatar_style = regular_avatar_style
 
-        pos = @props.histocache?.positions?[(user.key or user).split('/user/')[1]]
+        pos = @props.histocache?.positions?[(user.key or user).substring(6)]
         # Avatar 
         #   key: user
         #   user: user
@@ -927,7 +928,7 @@ positionAvatars = (opts) ->
   if !aborted
     positions = {}
     for o, i in nodes
-      positions[parseInt(opinions[i].user.split('/user/')[1])] = \
+      positions[parseInt(opinions[i].user.substring(6))] = \
         [Math.round((o.x - o.radius) * 10) / 10, Math.round((o.y - o.radius) * 10) / 10]
 
     opts.done?(positions)

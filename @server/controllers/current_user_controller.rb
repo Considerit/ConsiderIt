@@ -295,7 +295,7 @@ class CurrentUserController < ApplicationController
     # puts("------------------------------")
 
   end
-
+  
   #####
   # See @submit_avatar_form in franklin.coffee
   def user_avatar_hack
@@ -316,7 +316,6 @@ class CurrentUserController < ApplicationController
       :email => String
     }
 
-
     types.each do |field, type| 
       value = params[field]
       error = "Field #{field} is wrong type #{value.class}"
@@ -332,16 +331,24 @@ class CurrentUserController < ApplicationController
     new_params[:name] = '' if !new_params[:name] #TODO: Do we really want to allow blank names?...
 
     if new_params.has_key? :tags
-      # strip out non-editable tags...
-      new_tags = new_params[:tags].reject {|k,v| !k.include?('.editable') } 
+      user_tags = current_subdomain.customization_json.fetch('user_tags', {})
+      current_tags = JSON.parse(current_user.tags || '{}')
+      new_tags = {}
 
-      # make sure non-editable tags weren't removed entirely...
-      non_editable_old_tags = JSON.parse(current_user.tags || '{}').reject {|k,v| k.include?('.editable') } 
-      new_tags.update non_editable_old_tags
+      new_params[:tags].each do |tag, val|
+        if user_tags.has_key?(tag) && user_tags[tag].has_key?('self_report') 
+          new_tags[tag] = new_params[:tags].fetch(tag, nil)
+        end
+      end
+
+      # make sure we capture unmodifiable tags and tags from other forums
+      current_tags.each do |tag, val|
+        if !(user_tags.has_key?(tag) && user_tags[tag].has_key?('self_report')) 
+          new_tags[tag] = val
+        end
+      end
 
       new_params[:tags] = JSON.dump new_tags
-
-      dirty_key '/proposals' # might have access to more proposals if user tags have been changed (only for LVG / zipcodes)
     end
 
     if new_params.has_key? :subscriptions

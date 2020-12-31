@@ -137,7 +137,10 @@ window.avatar = (user, props) ->
   else
     current_user = fetch('/current_user')
     if current_user.user == user.key
-      thumbnail = current_user.b64_thumbnail or avatarUrl(user,'small')
+      thumbnail = current_user.b64_thumbnail
+      if !thumbnail && user.avatar_file_name
+         thumbnail = avatarUrl(user,'small')
+      
       if thumbnail? && img_size == 'small' 
         props.src = thumbnail
     else

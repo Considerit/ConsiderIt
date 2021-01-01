@@ -891,8 +891,6 @@ GEM
     dalli (2.7.10)
     declarative (0.0.10)
     declarative-option (0.1.0)
-    deep_cloneable (3.0.0)
-      activerecord (>= 3.1.0, < 7)
     delayed_paperclip (3.0.1)
       activejob (>= 4.2)
       paperclip (>= 3.3)
@@ -1008,9 +1006,6 @@ GEM
       uber (< 0.2.0)
     request_store (1.4.1)
       rack (>= 1.4)
-    responders (2.4.1)
-      actionpack (>= 4.2.0, < 6.0)
-      railties (>= 4.2.0, < 6.0)
     rest-client (2.0.2)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
@@ -1069,7 +1064,6 @@ DEPENDENCIES
   bcrypt
   daemons
   dalli
-  deep_cloneable
   delayed_job!
   delayed_job_active_record!
   delayed_paperclip
@@ -1086,12 +1080,10 @@ DEPENDENCIES
   paperclip-compression
   prerender_rails
   rails (~> 4)
-  responders (~> 2.0)
   ruby-prof
   ruby-saml (~> 1.11)
   rubyzip
   sitemap_generator
-  sprockets (~> 3.7)
   thin
   whenever
 

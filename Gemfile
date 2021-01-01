@@ -15,6 +15,8 @@ gem 'ruby-saml', '~> 1.11'
 gem "mysql2"
 gem 'acts_as_tenant', :git => 'https://github.com/ErwinM/acts_as_tenant'
 gem 'activerecord-import' # bulk imports for performance
+                          # Used for Opinion.import. Remove after eliminating the 
+                          # need to create an unpublished opinion per proposal per user 
 
 #############
 # VIEWS / FORMS / CLIENT
@@ -29,7 +31,7 @@ gem 'font-awesome-rails'
 gem 'whenever' # https://github.com/javan/whenever
 gem 'delayed_job', :git => 'git://github.com/collectiveidea/delayed_job.git' 
 gem 'delayed_job_active_record', :git => 'git://github.com/collectiveidea/delayed_job_active_record.git'
-gem "daemons"
+gem "daemons" # for the daemonize method used in bin/delayed_job
 gem 'rubyzip'
 gem 'mailgun-ruby'
 
@@ -43,9 +45,6 @@ gem 'message_format'
 gem 'oj'
 gem 'oj_mimic_json' # we need this for Rails 4.1.x
 
-
-# Just because I need to set a version for using ruby 2.4...remove when upgrade to >= 2.5 
-gem 'sprockets', '~>3.7'
 
 # for importing from google sheets
 gem 'google-api-client'

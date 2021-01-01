@@ -903,8 +903,6 @@ GEM
       activesupport (>= 4.0, < 7)
     faraday (1.0.1)
       multipart-post (>= 1.2, < 3)
-    font-awesome-rails (4.7.0.5)
-      railties (>= 3.2, < 6.1)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
     google-api-client (0.50.0)
@@ -1068,7 +1066,6 @@ DEPENDENCIES
   delayed_job_active_record!
   delayed_paperclip
   exception_notification
-  font-awesome-rails
   google-api-client
   haml
   mailgun-ruby

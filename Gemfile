@@ -14,7 +14,6 @@ gem 'ruby-saml', '~> 1.11'
 # DATABASE & DATABASE MIDDLEWARE
 gem "mysql2"
 gem 'acts_as_tenant', :git => 'https://github.com/ErwinM/acts_as_tenant'
-gem 'deep_cloneable'
 gem 'activerecord-import' # bulk imports for performance
 
 #############

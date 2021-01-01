@@ -182,52 +182,6 @@ class ProposalController < ApplicationController
     render :json => []
   end
 
-  def copy_to_subdomain
-
-    proposal = Proposal.find(params[:id])
-    dest = Subdomain.find(params[:subdomain_id])
-
-    deep_clone = proposal.deep_clone :include => [:opinions, {:points => [:comments, :inclusions]}], :validate => false
-    deep_clone.save
-
-    # copy to different subdomain
-    
-    qry = "UPDATE {TABLE} SET subdomain_id=#{dest.id} WHERE {SELECT_ID}={ID}"
-    def copy_to(table, select_id, id, qry)
-      if id
-        my_query = qry.gsub('{TABLE}', table)
-                      .gsub('{SELECT_ID}', select_id)
-                      .gsub('{ID}', "#{id}")
-        ActiveRecord::Base.connection.execute(my_query)
-      else
-        pp "OOPS, couldn't update something in #{table}"
-      end
-    end
-
-    for point in deep_clone.points
-      for comment in point.comments
-        copy_to 'comments', 'point_id', point.id, qry
-        comment.user.add_to_active_in(dest)
-      end
-
-      for inclusion in point.inclusions
-        copy_to 'inclusions', 'point_id', point.id, qry
-      end
-
-      copy_to 'points', 'proposal_id', deep_clone.id, qry
-      point.user.add_to_active_in(dest)
-    end
-
-    for opinion in deep_clone.opinions
-      copy_to 'opinions', 'proposal_id', deep_clone.id, qry
-      opinion.user.add_to_active_in(dest)
-    end
-
-    copy_to 'proposals', 'id', deep_clone.id, qry
-    deep_clone.user.add_to_active_in(dest)
-
-    redirect_to "/#{proposal.slug}"
-  end
 
 end
 

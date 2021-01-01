@@ -26,7 +26,6 @@ ConsiderIt::Application.routes.draw do
   get '/change_subdomain/:id' => 'developer#change_subdomain'
 
 
-  get '/proposal/:id/copy_to/:subdomain_id' => 'proposal#copy_to_subdomain'
   get '/oembed(.:format)' => 'oembed#show'
   get '/embed/proposal/:slug' => 'oembed#proposal_embed', :constraints => NotJSON.new
 

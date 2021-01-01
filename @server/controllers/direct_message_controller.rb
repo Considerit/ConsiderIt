@@ -1,5 +1,4 @@
 class DirectMessageController < ApplicationController
-  respond_to :json
 
   def create
     fields = ['recipient', 'body', 'subject', 'sender_mask']

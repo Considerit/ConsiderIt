@@ -1,5 +1,4 @@
 class DeveloperController < ApplicationController  
-  respond_to :html
 
   def change_subdomain
 

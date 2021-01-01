@@ -1,5 +1,4 @@
 class PointController < ApplicationController
-  respond_to :json
 
   def show
     point = Point.find params[:id]

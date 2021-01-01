@@ -1,5 +1,4 @@
 class HistogramController < ApplicationController
-  respond_to :json
 
   def update
     proposal = Proposal.find params[:id]

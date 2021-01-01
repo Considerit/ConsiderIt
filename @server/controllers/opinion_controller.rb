@@ -1,7 +1,5 @@
 class OpinionController < ApplicationController
 
-  respond_to :json
-
   def show
     opinion = Opinion.find(params[:id])
     authorize! 'read opinion', opinion

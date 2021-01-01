@@ -1,7 +1,6 @@
 require 'uri'
 
 class OembedController < ApplicationController
-  respond_to :html
   
   def show
     url = params[:url]

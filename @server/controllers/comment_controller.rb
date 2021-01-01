@@ -1,6 +1,5 @@
 
 class CommentController < ApplicationController
-  respond_to :json
 
   def all_for_subdomain
 

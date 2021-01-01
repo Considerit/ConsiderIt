@@ -2,7 +2,7 @@
 require Rails.root.join('@server', 'translations')
 
 class TranslationsController < ApplicationController
-  respond_to :json
+
   include PSEUDOLOCALIZATION
 
 

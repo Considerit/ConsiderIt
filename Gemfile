@@ -3,7 +3,6 @@ source 'http://rubygems.org'
 #############
 # CORE
 gem 'rails', '~>4'
-gem 'responders', '~> 2.0' #for respond_to, removed from core Rails 4.2
 gem 'activerecord-session_store'  # Because CookieStore has race conditions w/ concurrent ajax requests
 
 #############

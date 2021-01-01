@@ -3,8 +3,6 @@ class ProposalController < ApplicationController
 
   include SubdomainController::Invitations
 
-  respond_to :json
-
   def index
     dirty_key '/proposals'
     render :json => []

@@ -1,5 +1,4 @@
 class UserController < ApplicationController
-  respond_to :json
 
   def index
     dirty_key "/users"

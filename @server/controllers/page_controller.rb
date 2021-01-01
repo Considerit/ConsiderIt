@@ -1,5 +1,4 @@
 class PageController < ApplicationController
-  respond_to :json
 
   def show
     page = params[:id] ? params[:id] : 'homepage'

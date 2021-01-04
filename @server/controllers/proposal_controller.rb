@@ -1,7 +1,7 @@
 class ProposalController < ApplicationController
   skip_before_action :verify_authenticity_token, :only => :update_images_hack
 
-  include SubdomainController::Invitations
+  include Invitations
 
   def index
     dirty_key '/proposals'

@@ -3,6 +3,7 @@ require 'digest/md5'
 require 'exception_notifier'
 require Rails.root.join('@server', 'permissions')
 require Rails.root.join('@server', 'translations')
+require Rails.root.join('@server', 'invitations')
 
 class ApplicationController < ActionController::Base
 

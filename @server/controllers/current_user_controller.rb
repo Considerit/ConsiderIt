@@ -3,7 +3,7 @@ require 'securerandom'
 
 
 class CurrentUserController < ApplicationController
-  skip_before_action :verify_authenticity_token, :only => [:update_user_avatar_hack, :acs]
+  skip_before_action :verify_authenticity_token, :only => [:acs]
 
   # minimum password length
   MIN_PASS = 4
@@ -46,6 +46,7 @@ class CurrentUserController < ApplicationController
     # puts("")
 
     case trying_to
+
 
       when 'create account', 'create account via invitation'
 
@@ -262,6 +263,9 @@ class CurrentUserController < ApplicationController
         UserMailer.verification(current_user, current_subdomain).deliver_now
         log('verification token sent')
 
+      when 'update_avatar_hack'
+        current_user.update_attributes({:avatar => params['avatar']})
+
     end
 
     # Wrap everything up
@@ -295,18 +299,6 @@ class CurrentUserController < ApplicationController
     # puts("------------------------------")
 
   end
-  
-  #####
-  # See @submit_avatar_form in franklin.coffee
-  def user_avatar_hack
-    render :json => { :b64_thumbnail => current_user.b64_thumbnail }
-  end
-  def update_user_avatar_hack
-    current_user.update_attributes({:avatar => params['avatar']})
-    render :json => []
-  end
-  #######
-
 
   def update_user_attrs(trying_to, errors)
     types = { 

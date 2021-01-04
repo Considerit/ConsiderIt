@@ -793,7 +793,7 @@ Auth = ReactiveComponent
         if event.which == 13
           @submitAuth(event)
       pattern: pattern
-      autoComplete: if name == 'verification_code' then 'off'
+      autoComplete: if name == 'verification_code' || auth.form in ['edit profile'] then 'off'
 
   ####
   # avatarInput
@@ -807,18 +807,23 @@ Auth = ReactiveComponent
       # hack for submitting file data in ActiveREST for now
       # we'll just submit the file form after user is signed in
 
-
       current_user = fetch '/current_user'
       user = fetch(fetch('/current_user').user)
       @local.preview ?= user.avatar_file_name || current_user.b64_thumbnail || current_user.avatar_remote_url
 
+      img_preview_src =  if @local.newly_uploaded
+                            @local.newly_uploaded
+                         else if user.avatar_file_name
+                            avatarUrl user, 'large'
+                         else if current_user.b64_thumbnail 
+                            current_user.b64_thumbnail 
+                         else if current_user.avatar_remote_url
+                            current_user.avatar_remote_url 
+                         else 
+                            null
       FORM 
         id: 'user_avatar_form'
-        action: '/update_user_avatar_hack', 
-
-        HEARTBEAT
-          public_key: 'preview_refresher' # sometimes we request an image before it is uploaded to AWS
-                                          # so we'll just refresh to be safe
+        action: '/current_user'
 
         DIV 
           style: 
@@ -832,22 +837,12 @@ Auth = ReactiveComponent
             marginTop: 3
 
           IMG 
-            key: fetch('preview_refresher').beat
             alt: ''
             id: 'avatar_preview'
             style: 
               width: 60
               display: if !@local.preview then 'none'
-            src: if @local.newly_uploaded
-                    @local.newly_uploaded
-                 else if user.avatar_file_name
-                    avatarUrl user, 'large'
-                 else if current_user.b64_thumbnail 
-                    current_user.b64_thumbnail 
-                 else if current_user.avatar_remote_url
-                    current_user.avatar_remote_url 
-                 else 
-                    null
+            src: img_preview_src
 
           if !@local.preview  
             SVG 
@@ -879,8 +874,6 @@ Auth = ReactiveComponent
                 save @local
                 $("#avatar_preview").attr 'src', e.target.result
               reader.readAsDataURL input.files[0]
-
-              #current_user.avatar = input.files[0]
             else
               $("#avatar_preview").attr('src', asset('no_image_preview.png'))
     else 
@@ -1149,7 +1142,6 @@ Auth = ReactiveComponent
           if question.validation
             is_valid_input = question.validation(current_user.tags[tag])
           if !is_valid_input && has_response
-            console.log question.question
             @local.errors.push translator 
                                  id: 'auth.validation.invalid_answer'
                                  response: current_user.tags[tag]
@@ -1206,20 +1198,14 @@ Auth = ReactiveComponent
 # are cached on the server and the image is processed in a background task. 
 # Therefore, we'll wait until the image is available and then make it available
 # in the avatar cache.  
-ensureCurrentUserAvatar = (attempts = 0) ->
-  
-  $.getJSON '/user_avatar_hack', (response) =>
-    current_user = fetch '/current_user'
-
-    if response?[0]?.b64_thumbnail && current_user.b64_thumbnail != response[0].b64_thumbnail
-      $('head').append("<style type=\"text/css\">#avatar-#{current_user.id} { background-image: url('#{response[0].b64_thumbnail}');}</style>")
-      current_user.b64_thumbnail = response[0].b64_thumbnail 
-      save current_user
-    else if attempts < 20
-      # Ugly: wait a little while for offline avatar processing to complete, then refetch
-      _.delay -> 
-        ensureCurrentUserAvatar(attempts + 1)
-      , 1000
+ensureCurrentUserAvatar = ->
+  time_between = 1000
+  update_user = -> 
+    arest.serverFetch '/current_user'
+    time_between *= 2
+    if time_between < 100000
+      setTimeout update_user, time_between 
+  update_user()
 
 
 

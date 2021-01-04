@@ -8,9 +8,6 @@ ConsiderIt::Application.configure do
 
   config.eager_load = false
 
-  # Expands the lines which load the assets
-  config.assets.debug = true
-
   # Show full error reports and disable caching
   config.consider_all_requests_local       = true
   # config.action_view.debug_rjs             = true
@@ -35,7 +32,7 @@ ConsiderIt::Application.configure do
   # Automatically inject JavaScript needed for LiveReload
   # config.middleware.insert_after(ActionDispatch::Static, Rack::LiveReload)
   
-  #Paperclip.options[:command_path] = "/opt/local/bin/"
+  #Paperclip.options[:command_path] = "/usr/local/bin/"
 
 
 end  

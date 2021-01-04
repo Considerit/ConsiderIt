@@ -1,19 +1,19 @@
 # coding: utf-8
 
-class Proposal < ActiveRecord::Base
+class Proposal < ApplicationRecord
   has_many :points, :dependent => :destroy
   has_many :opinions, :dependent => :destroy
   has_many :inclusions, :dependent => :destroy
 
   has_attached_file :pic, 
-    :processors => [:thumbnail, :compression],
+    :processors => [:thumbnail],
     :styles => { 
         :square => "250x250#"
     }
 
   validates_attachment_content_type :pic, :content_type => %w(image/jpeg image/jpg image/png image/gif)
 
-  has_attached_file :banner, :processors => [:thumbnail, :compression]
+  has_attached_file :banner, :processors => [:thumbnail]
   validates_attachment_content_type :banner, :content_type => %w(image/jpeg image/jpg image/png image/gif)
 
   belongs_to :user

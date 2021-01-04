@@ -1,12 +1,12 @@
-class Subdomain < ActiveRecord::Base
+class Subdomain < ApplicationRecord
   has_many :proposals, :dependent => :destroy
   has_many :points, :dependent => :destroy
   has_many :opinions, :dependent => :destroy
   has_many :comments, :dependent => :destroy
   has_many :logs
 
-  has_attached_file :logo, :processors => [:thumbnail, :compression]
-  has_attached_file :masthead, :processors => [:thumbnail, :compression]
+  has_attached_file :logo, :processors => [:thumbnail]
+  has_attached_file :masthead, :processors => [:thumbnail]
 
   validates_attachment_content_type :masthead, :content_type => %w(image/jpeg image/jpg image/png image/gif)
   validates_attachment_content_type :logo, :content_type => %w(image/jpeg image/jpg image/png image/gif)

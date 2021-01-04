@@ -1,7 +1,7 @@
 require 'open-uri'
 require 'onelogin/ruby-saml'
 
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   has_secure_password validations: false
   alias_attribute :password_digest, :encrypted_password
 
@@ -22,7 +22,6 @@ class User < ActiveRecord::Base
     self.bio = sanitize_helper self.bio if self.bio
   end
 
-  #validates_presence_of :avatar_remote_url, :if => :avatar_url_provided?, :message => 'is invalid or inaccessible'
   after_create :add_token
 
   has_attached_file :avatar, 
@@ -30,9 +29,9 @@ class User < ActiveRecord::Base
         :large => "250x250#",
         :small => "50x50#"
       },
-      :processors => [:thumbnail, :compression]
+      :processors => [:thumbnail]
 
-  process_in_background :avatar
+  # process_in_background :avatar
 
   after_post_process do 
     if self.avatar.queued_for_write[:small]
@@ -263,6 +262,7 @@ class User < ActiveRecord::Base
   def subscription_settings(subdomain)
 
     notifier_config = Notifier::config(subdomain)
+
     my_subs = Oj.load(subscriptions || "{}")[subdomain.id.to_s] || {}
 
     for event, config in notifier_config
@@ -344,7 +344,7 @@ class User < ActiveRecord::Base
 
     subs.delete_if &clean
 
-    JSON.dump subs
+    Oj.dump subs
   end
 
   def avatar_url_provided?

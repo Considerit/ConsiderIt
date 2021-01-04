@@ -2,7 +2,7 @@ source 'http://rubygems.org'
 
 #############
 # CORE
-gem 'rails', '~>4'
+gem 'rails', '~>5.2'
 gem 'activerecord-session_store'  # Because CookieStore has race conditions w/ concurrent ajax requests
 
 #############
@@ -12,8 +12,8 @@ gem 'ruby-saml', '~> 1.11'
 
 #############
 # DATABASE & DATABASE MIDDLEWARE
-gem "mysql2"
-gem 'acts_as_tenant', :git => 'https://github.com/ErwinM/acts_as_tenant'
+gem "mysql2" 
+gem 'acts_as_tenant'
 gem 'activerecord-import' # bulk imports for performance
                           # Used for Opinion.import. Remove after eliminating the 
                           # need to create an unpublished opinion per proposal per user 
@@ -21,9 +21,9 @@ gem 'activerecord-import' # bulk imports for performance
 #############
 # VIEWS / FORMS / CLIENT
 gem "haml"
-gem 'paperclip', '~>5.0.0' # https://github.com/thoughtbot/paperclip
-gem 'paperclip-compression'
-gem 'delayed_paperclip'
+gem 'kt-paperclip'
+# gem 'paperclip-compression'
+# gem 'delayed_paperclip'
 
 #############
 # BACKGROUND PROCESSING / EMAIL
@@ -43,6 +43,7 @@ gem 'message_format'
 # Rails JSON encoding is super slow, oj makes it faster
 gem 'oj'
 gem 'oj_mimic_json' # we need this for Rails 4.1.x
+gem 'bootsnap', require: false
 
 
 # for importing from google sheets
@@ -53,7 +54,7 @@ gem 'google-api-client'
 # and rake tasks are available in development mode:
 group :development, :test do
   gem 'thin'
-  gem 'ruby-prof'
+  gem 'ruby-prof', '~> 1.0.0'
   # gem 'rack-mini-profiler'
   # gem 'google-api-client'
 end
@@ -61,7 +62,7 @@ end
 group :production do
   # gem 'backup' #https://github.com/meskyanichi/backup
   gem 'exception_notification'
-  gem "aws-ses", "~> 0.6.0", :require => 'aws/ses', :git => 'git://github.com/drewblas/aws-ses.git'
+  gem "aws-ses"  #, "~> 0.6.0", :require => 'aws/ses', :git => 'git://github.com/drewblas/aws-ses.git'
   gem 'aws-sdk' #, "~> 1.60"
   gem 'dalli' # memcaching: https://github.com/mperham/dalli/
 

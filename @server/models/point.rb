@@ -1,5 +1,5 @@
 # coding: utf-8
-class Point < ActiveRecord::Base
+class Point < ApplicationRecord
   
   include Moderatable, Notifier
     

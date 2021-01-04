@@ -5,7 +5,7 @@
 # :when # when it happened
 # :details # additional information
 
-class Log < ActiveRecord::Base
+class Log < ApplicationRecord
   belongs_to :subdomain
   belongs_to :user, :foreign_key => 'who', :class_name => 'User'
 end

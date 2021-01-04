@@ -1,4 +1,4 @@
-class Notification < ActiveRecord::Base
+class Notification < ApplicationRecord
 
   belongs_to :digest_object, :polymorphic=>true
   belongs_to :event_object, :polymorphic=>true  

@@ -1,4 +1,4 @@
-class Opinion < ActiveRecord::Base
+class Opinion < ApplicationRecord
   belongs_to :user
   belongs_to :proposal, :touch => true 
   

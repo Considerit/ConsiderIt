@@ -177,8 +177,6 @@ AddRolesAndInvite = ReactiveComponent
     target = fetch @props.target
     users = fetch '/users'
 
-    console.log {roles: @props.roles}
-
     if !@local.role
       @local.added = []
       @local.role = @props.roles[0]
@@ -405,9 +403,8 @@ UsersWithRole = ReactiveComponent
 
               if role.name == 'proposer'
                 subdomain = fetch '/subdomain'
-                customizations = JSON.parse subdomain.customizations
+                customizations = subdomain.customizations
                 customizations.list_permit_new_items = e.target.checked
-                subdomain.customizations = JSON.stringify customizations, null, 2
                 save subdomain 
 
           LABEL htmlFor: "wildcard-#{role.name}", role.wildcard.label

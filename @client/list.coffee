@@ -170,7 +170,7 @@ EditList = ReactiveComponent
     submit = =>
 
 
-      customizations = JSON.parse subdomain.customizations
+      customizations = subdomain.customizations
 
       customizations[list_key] ?= {}
       list_config = customizations[list_key]
@@ -209,8 +209,6 @@ EditList = ReactiveComponent
           else 
             console.error "Cannot add the list to the current tab #{current_tab}"
 
-      subdomain.customizations = JSON.stringify customizations, null, 2
-
       save subdomain, => 
         if subdomain.errors
           console.error "Failed to save list changes", subdomain.errors
@@ -218,11 +216,10 @@ EditList = ReactiveComponent
         exit_edit()
 
     cancel_edit = => 
-      customizations = JSON.parse subdomain.customizations
+      customizations = subdomain.customizations
 
       if @props.fresh && list_key of customizations
         delete customizations[list_key] 
-        subdomain.customizations = JSON.stringify customizations, null, 2
         save subdomain
       else 
         exit_edit()
@@ -295,7 +292,7 @@ EditList = ReactiveComponent
 
           else if option.action == 'delete'
             remove_list = -> 
-              customizations = JSON.parse subdomain.customizations
+              customizations = subdomain.customizations
               delete customizations[list_key] 
 
               # if tabs are enabled, remove it from the current tab
@@ -304,7 +301,6 @@ EditList = ReactiveComponent
                 current_tab = customizations['homepage_tabs'][tabs.filter]
                 current_tab.splice current_tab.indexOf(list_key, 1)
 
-              subdomain.customizations = JSON.stringify customizations, null, 2
               save subdomain
 
             if list.proposals?.length > 0 
@@ -336,7 +332,7 @@ EditList = ReactiveComponent
                     proposal.active = false 
                     save proposal 
 
-              customizations = JSON.parse subdomain.customizations
+              customizations = subdomain.customizations
 
               # don't show a new button for this list anymore
               customizations[list_key].list_permit_new_items = false 
@@ -347,7 +343,6 @@ EditList = ReactiveComponent
                 customizations[list_key].list_description += "<br>" 
               customizations[list_key].list_description += "<DIV style='font-style:italic'>Participation was closed by the host on #{new Date().toDateString()}</div>" 
 
-              subdomain.customizations = JSON.stringify customizations, null, 2
               save subdomain
             
     else 

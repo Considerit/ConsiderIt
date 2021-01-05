@@ -51,7 +51,7 @@ class Point < ApplicationRecord
       result['user_id'] = -1
     end
 
-    result['includers'] = JSON.parse (result['includers'] || '[]')
+    result['includers'] = result['includers'] || []
     result['includers'].map! {|u| hide_name && u == user_id ? -1 : u}
     result['includers'].map! {|u| "/user/#{u}"}
         

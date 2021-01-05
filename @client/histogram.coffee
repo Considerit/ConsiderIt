@@ -560,7 +560,6 @@ window.Histogram = ReactiveComponent
   physicsSimulation: ->
     filter_out = fetch 'filtered'
     proposal = fetch @props.proposal
-    return if !proposal.histocache?
 
     # We only need to rerun the sim if the distribution of stances has changed, 
     # or the width/height of the histogram has changed. We round the stance to two 

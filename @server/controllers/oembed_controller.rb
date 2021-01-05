@@ -117,7 +117,6 @@ class OembedController < ApplicationController
       @js = "/#{manifest['proposal_embed']}"
     end
 
-    dirty_key '/asset_manifest'
     #response.headers["Strict Transport Security"] = 'max-age=0'
 
     render "layouts/proposal_embed", :layout => false

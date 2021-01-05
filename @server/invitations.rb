@@ -30,7 +30,7 @@ module Invitations
               :password => SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] #temp password
             })
 
-            # replace email address with the user's key in the roles object
+            # replace email address with the user's key in the roles hash
 
             users_with_role[users_with_role.index(user_or_email)] = "/user/#{invitee.id}" 
           end

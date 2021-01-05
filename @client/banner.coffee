@@ -822,7 +822,7 @@ window.EditBanner = ReactiveComponent
 
     fields = ['title', 'background_css', 'text_background_css', 'text_background_css_opacity']
     logo_fields = ['logo_height', 'logo_left', 'logo_top']
-    customizations = JSON.parse subdomain.customizations
+    customizations = subdomain.customizations
     customizations.banner ?= {}
     customizations.banner.logo ?= {}
     for f in fields.concat(logo_fields)
@@ -835,7 +835,6 @@ window.EditBanner = ReactiveComponent
     
     description = fetch("forum-description").html
     customizations.banner.description = description
-    subdomain.customizations = JSON.stringify customizations, null, 2
 
     @local.file_errors = false
     save @local

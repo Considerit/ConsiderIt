@@ -147,16 +147,17 @@ class ProposalController < ApplicationController
 
   def update_roles(proposal)
     if params.has_key?('roles')
+      roles = params['roles']
       # need to update these attributes later on after proposal is created
       if params.has_key?('invitations') && params['invitations']
-        params['roles'] = process_and_send_invitations(params['roles'], params['invitations'], proposal)
+        roles = process_and_send_invitations(roles, params['invitations'], proposal)
       end
 
       # rails replaces [] with nil in params for some reason...
-      params['roles'].each do |k,v|
-        params['roles'][k] = [] if !v
+      roles.each do |k,v|
+        roles[k] = [] if !v
       end
-      proposal.roles = JSON.dump params['roles']
+      proposal.roles = roles
     end
   end
 

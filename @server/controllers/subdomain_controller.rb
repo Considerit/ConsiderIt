@@ -66,7 +66,7 @@ class SubdomainController < ApplicationController
       roles = new_subdomain.user_roles
       roles['admin'].push "/user/#{current_user.id}"
       roles['visitor'].push "*"
-      new_subdomain.roles = JSON.dump roles
+      new_subdomain.roles = roles
 
       new_subdomain.host = "#{new_subdomain.name}.#{request.host}"
       new_subdomain.host_with_port = "#{new_subdomain.name}.#{request.host_with_port}"
@@ -76,7 +76,7 @@ class SubdomainController < ApplicationController
       end
       new_subdomain.save
 
-      set_current_tenant(new_subdomain)
+      set_current_tenant new_subdomain
 
       # Seed a new proposal
       proposal = Proposal.new({
@@ -91,7 +91,13 @@ class SubdomainController < ApplicationController
         active: true,
         published: true, 
         moderation_status: 1,
-        roles: "{\"editor\":[\"/user/#{current_user.id}\"],\"writer\":[\"*\"],\"commenter\":[\"*\"],\"opiner\":[\"*\"],\"observer\":[\"*\",\"*\"]}"
+        roles: {
+          "editor": ["/user/#{current_user.id}"],
+          "writer":["*"],
+          "commenter":["*"],
+          "opiner":["*"],
+          "observer":["*"]
+        }
       })
       proposal.save
 
@@ -102,7 +108,7 @@ class SubdomainController < ApplicationController
         proposal: proposal,
         stance: 0.0
       })
-      current_user.add_to_active_in(new_subdomain)
+      current_user.add_to_active_in new_subdomain
 
       set_current_tenant(Subdomain.find_by_name('homepage'))
 
@@ -143,31 +149,18 @@ class SubdomainController < ApplicationController
     subdomain = Subdomain.find(params[:id])
     authorize! 'update subdomain', subdomain
 
-    if subdomain.id != current_subdomain.id #&& !current_user.super_admin
-      # for now, don't allow modifying non-current subdomain
+    if subdomain.id != current_subdomain.id
       raise PermissionDenied.new Permission::DISABLED
     end
 
-    fields = ['lang', 'moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'external_project_url', 'google_analytics_code']
+    update_roles    
+
+    fields = ['roles', 'customizations', 'lang', 'moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'external_project_url', 'google_analytics_code']
     attrs = params.select{|k,v| fields.include? k}
-
-    update_roles
-
-    serialized_fields = ['roles']
-    for field in serialized_fields
-      if params.has_key? field
-        attrs[field] = JSON.dump params[field]
-      end
-    end
 
     if current_user.super_admin && params.has_key?('plan')
       attrs['plan'] = params['plan'].to_i
     end 
-
-    if current_user.is_admin? && params.has_key?('customizations')
-      attrs['customizations'] = params['customizations']
-    end 
-
 
     current_user.add_to_active_in
     current_subdomain.update_attributes! attrs
@@ -182,15 +175,17 @@ class SubdomainController < ApplicationController
 
   def update_roles
     if params.has_key?('roles')
+      roles = params['roles']
+
       if params.has_key?('invitations') && params['invitations']
-        params['roles'] = process_and_send_invitations(params['roles'], params['invitations'], current_subdomain)
+        roles = process_and_send_invitations(roles, params['invitations'], current_subdomain)
       end
       # rails replaces [] with nil in params for some reason...
-      params['roles'].each do |k,v|
-        params['roles'][k] = [] if !v
+      roles.each do |k,v|
+        roles[k] = [] if !v
       end
 
-      current_subdomain.roles = Oj.dump params['roles']
+      current_subdomain.roles = roles
     end
   end
 

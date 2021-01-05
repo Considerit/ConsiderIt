@@ -26,7 +26,7 @@ class UserController < ApplicationController
     if permit('update user', user) > 0 && params.has_key?("tags")
 
       new_tags = params["tags"]
-      old_tags = Oj.load(user.tags || '{}')
+      old_tags = user.tags || {}
 
       tags_config = current_subdomain.customization_json.fetch('user_tags', {})
 
@@ -38,7 +38,7 @@ class UserController < ApplicationController
         end
       end
 
-      user.update_attributes! tags: JSON.dump(old_tags)
+      user.save 
     end
 
     dirty_key "/user/#{params[:id]}"

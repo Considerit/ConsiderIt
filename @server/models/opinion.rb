@@ -20,7 +20,7 @@ class Opinion < ApplicationRecord
     make_key(result, 'opinion')
     stubify_field(result, 'user')
     stubify_field(result, 'proposal')
-    result['point_inclusions'] = JSON.parse (result['point_inclusions'] || '[]')
+    result['point_inclusions'] = result['point_inclusions'] || []
     result['point_inclusions'].map! {|p| "/point/#{p}"}
 
     if self.explanation

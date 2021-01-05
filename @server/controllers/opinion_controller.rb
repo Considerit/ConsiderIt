@@ -24,7 +24,7 @@ class OpinionController < ApplicationController
 
     incs = incs.map! {|p| key_id(p)}
     opinion.update_inclusions incs
-    updates['point_inclusions'] = JSON.dump(incs)
+    updates['point_inclusions'] = incs
 
     # Grab the proposal
     proposal = Proposal.find(updates['proposal_id'])
@@ -53,9 +53,9 @@ class OpinionController < ApplicationController
     end
 
     # clear the histogram cache because we got a new opinion
-    if opinion.published
-      proposal.histocache = nil
-      proposal.save
+    # if opinion.published
+    #   proposal.histocache = nil
+    #   proposal.save
 
       dirty_key "/proposal/#{proposal.id}"
     end

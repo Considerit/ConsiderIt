@@ -324,7 +324,7 @@ class CurrentUserController < ApplicationController
 
     if new_params.has_key? :tags
       user_tags = current_subdomain.customization_json.fetch('user_tags', {})
-      current_tags = JSON.parse(current_user.tags || '{}')
+      current_tags = current_user.tags || {}
       new_tags = {}
 
       new_params[:tags].each do |tag, val|
@@ -340,11 +340,13 @@ class CurrentUserController < ApplicationController
         end
       end
 
-      new_params[:tags] = JSON.dump new_tags
+      new_params[:tags] = new_tags
     end
 
     if new_params.has_key? :subscriptions
-      new_params[:subscriptions] = current_user.update_subscriptions(new_params[:subscriptions])
+      pp "#####################"
+      pp new_params[:subscriptions].to_h
+      new_params[:subscriptions] = current_user.update_subscriptions(new_params[:subscriptions].to_h)
     end
 
     if current_user.update_attributes(new_params)

@@ -187,10 +187,10 @@ class Proposal < ApplicationRecord
 
 
     # The JSON.parse is expensive...
-    json['histocache'] = Oj.load(json['histocache'] || '{}')
+    # json['histocache'] = Oj.load(json['histocache'] || '{}')
 
 
-    json['json'] = Oj.load(json['json'] || '{}')
+    json['json'] = json['json'] || {}
 
     make_key(json, 'proposal')
     stubify_field(json, 'user')
@@ -251,18 +251,18 @@ class Proposal < ApplicationRecord
   #
   # TODO: consolidate with subdomain.user_roles
   def user_roles(filter = false)
-    result = Oj.load(roles || "{}")
+    roles = roles || {}
 
 
     ['editor', 'writer', 'commenter', 'opiner', 'observer'].each do |role|
 
       # Initialize empty role
-      if !result[role]
+      if !roles[role]
         if role == 'observer' && current_subdomain
           # default to subdomain setting
-          result[role] = current_subdomain.user_roles['visitor']
+          roles[role] = current_subdomain.user_roles['visitor']
         else
-          result[role] = [] 
+          roles[role] = [] 
         end
       end
 
@@ -271,12 +271,12 @@ class Proposal < ApplicationRecord
         # Remove all specific email address for privacy.
         # Is used by client permissions system to determining whether 
         # to show action buttons for unauthenticated users. 
-        result[role] = result[role].map{|email_or_key|
+        roles[role] = roles[role].map{|email_or_key|
           email_or_key.index('*') || email_or_key == "/user/#{current_user.id}" || email_or_key.index('@') == nil ? email_or_key : '-'
         }.uniq
       end
     end
-    result
+    roles
   end
 
   

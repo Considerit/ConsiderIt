@@ -73,7 +73,7 @@ class User < ApplicationRecord
       lang: lang,
       reset_password_token: nil,
       b64_thumbnail: b64_thumbnail,
-      tags: Oj.load(tags || '{}'),
+      tags: tags || {},
       is_super_admin: self.super_admin,
       is_admin: is_admin?,
       is_moderator: permit('moderate content', nil) > 0,
@@ -96,7 +96,7 @@ class User < ApplicationRecord
     has_filled_required_fields = true
     customizations = (subdomain or current_subdomain).customization_json
     user_tags = customizations.fetch("user_tags", {})
-    my_tags = Oj.load(self.tags || '{}')
+    my_tags = self.tags || {}
     user_tags.each do |tag, vals|
       if vals.has_key?('self_report') && vals['self_report'].fetch('required', false) && !(['boolean', 'checklist'].index(vals['self_report']['input']))
         has_filled_required_fields = has_filled_required_fields && !!my_tags.fetch(tag, false)
@@ -153,11 +153,11 @@ class User < ApplicationRecord
     end
 
     tags_config = customizations.fetch('user_tags', {})
-    u_tags = Oj.load(self.tags || '{}')
+    tags = tags || {}
     data['tags'] = {}
     tags_config.each do |tag, vals|
-      if u_tags.has_key?(tag) && (current_user.is_admin? || vals.fetch('visibility', 'host-only') == 'open')
-        data['tags'][tag] = u_tags[tag]
+      if tags.has_key?(tag) && (current_user.is_admin? || vals.fetch('visibility', 'host-only') == 'open')
+        data['tags'][tag] = tags[tag]
       end
     end
 
@@ -176,7 +176,7 @@ class User < ApplicationRecord
       return self.super_admin
     else
       subdomain ||= current_subdomain
-      roles = subdomain.roles ? Oj.load(subdomain.roles) : {}
+      roles = subdomain.roles ? subdomain.roles : {}
       return roles.key?(role) && roles[role] && roles[role].include?("/user/#{id}")
     end
   end
@@ -202,11 +202,8 @@ class User < ApplicationRecord
       self.save
     end 
 
-    active_subdomains = Oj.load(self.active_in)
-
-    if !active_subdomains.include?("#{subdomain.id}")
-      active_subdomains.push "#{subdomain.id}"
-      self.active_in = JSON.dump active_subdomains
+    if !self.active_in.include?("#{subdomain.id}")
+      self.active_in.push "#{subdomain.id}"
       self.save
       return "added"
     end
@@ -246,14 +243,14 @@ class User < ApplicationRecord
   end
 
   def emails_received
-    Oj.load(self.emails || "{}")
+    self.emails || {}
   end
 
   def sent_email_about(key, time=nil)
     time ||= Time.now().to_s
     settings = emails_received
     settings[key] = time
-    self.emails = JSON.dump settings
+    self.emails = settings
     self.save
   end
 
@@ -263,7 +260,7 @@ class User < ApplicationRecord
 
     notifier_config = Notifier::config(subdomain)
 
-    my_subs = Oj.load(subscriptions || "{}")[subdomain.id.to_s] || {}
+    my_subs = (subscriptions || {})[subdomain.id.to_s] || {}
 
     for event, config in notifier_config
       if config.key? 'allowed'
@@ -282,7 +279,7 @@ class User < ApplicationRecord
 
     end
 
-    my_subs['default_subscription'] = Notifier.default_subscription(subdomain)
+    my_subs['default_subscription'] = Notifier.default_subscription
     if !my_subs.key?('send_emails')
       my_subs['send_emails'] = my_subs['default_subscription']
     end
@@ -290,12 +287,6 @@ class User < ApplicationRecord
     my_subs
   end
 
-  def subscribe_to_all(subdomain=nil)
-    subdomain ||= current_subdomain
-    subdomain.proposals.each do |p|
-      self.update_subscription_key(p.key,'watched',false)
-    end  
-  end 
 
   def update_subscription_key(key, value, hash={})
     if hash.has_key?(:subdomain)
@@ -315,36 +306,31 @@ class User < ApplicationRecord
   def update_subscriptions(new_settings, subdomain = nil)
     subdomain ||= current_subdomain
 
-    subs = Oj.load(subscriptions || "{}")
-    subs[subdomain.id.to_s] = new_settings
+    subs = subscriptions || {}
 
-    # Strip out unnecessary items that we can reconstruct from the 
-    # notification configuration 
-    clean = proc do |k, v|        
+    notifier_config = Notifier::config(subdomain)
 
-      if v.respond_to?(:key?)
-        if v.key?('default_subscription') && 
-            v['default_subscription'] == v['subscription']
-          v.delete('subscription')
-        elsif v.key?('default_email_trigger') && 
-            v['default_email_trigger'] == v['email_trigger']
-          v.delete('email_trigger')
+    settings_for_subdomain = {}
+    new_settings.each do |k, v|
+      if notifier_config.has_key?(k)
+        if v.has_key?('email_trigger') && notifier_config[k]['email_trigger_default'] != v['email_trigger']
+          settings_for_subdomain[k] = {
+            "email_trigger" => v['email_trigger']
+          }
         end
-
-        v.delete_if(&clean) # recurse if v is a hash
+      elsif k == 'default_subscription'
+        if k == 'send_emails' && Notifier.default_subscription != v
+          settings_for_subdomain[k] = v 
+        end
+      elsif k != 'default_subscription' 
+        settings_for_subdomain[k] = v
       end
-
-      # 'proposal' and 'subdomain' in the list below is temporary for some migrations...
-      # feel free to remove junish
-      v.respond_to?(:key) && v.keys().length == 0 || \
-      ['proposal', 'subdomain', 'subscription_options', 'ui_label', \
-       'default_subscription', 'default_email_trigger'].include?(k)
 
     end
 
-    subs.delete_if &clean
+    subs[subdomain.id.to_s] = settings_for_subdomain
 
-    Oj.dump subs
+    subs
   end
 
   def avatar_url_provided?
@@ -511,8 +497,8 @@ class User < ApplicationRecord
     # log table, which doesn't use user_id
     Log.where(:who => newer_user).update_all(who: older_user)
 
-    subs = Oj.load(self.active_in || '[]').concat(Oj.load(user.active_in || '[]')).uniq
-    self.active_in = JSON.dump subs
+    subs = (self.active_in || []).concat(user.active_in || []).uniq
+    self.active_in = subs
     save 
 
     # 3. Delete the old user

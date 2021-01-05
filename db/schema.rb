@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_16_224549) do
+ActiveRecord::Schema.define(version: 2021_01_04_195958) do
 
   create_table "comments", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "commentable_id", default: 0
@@ -31,7 +31,7 @@ ActiveRecord::Schema.define(version: 2020_12_16_224549) do
 
   create_table "datastore", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "k", null: false
-    t.text "v", limit: 16777215
+    t.json "v"
     t.index ["k"], name: "index_datastore_on_k", unique: true
   end
 
@@ -113,7 +113,7 @@ ActiveRecord::Schema.define(version: 2020_12_16_224549) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer "subdomain_id"
-    t.text "point_inclusions", collation: "utf8_unicode_ci"
+    t.json "point_inclusions"
     t.index ["proposal_id"], name: "index_positions_on_option_id"
     t.index ["published"], name: "index_opinions_on_published"
     t.index ["subdomain_id", "proposal_id", "published"], name: "index_opinions_on_subdomain_id_and_proposal_id_and_published"
@@ -137,7 +137,7 @@ ActiveRecord::Schema.define(version: 2020_12_16_224549) do
     t.boolean "hide_name", default: false
     t.integer "subdomain_id"
     t.integer "comment_count", default: 0
-    t.text "includers", collation: "utf8_general_ci"
+    t.json "includers"
     t.integer "moderation_status"
     t.integer "last_inclusion", default: 0
     t.index ["is_pro"], name: "index_points_on_is_pro"
@@ -183,9 +183,9 @@ ActiveRecord::Schema.define(version: 2020_12_16_224549) do
     t.text "description_fields", limit: 16777215, collation: "utf8mb4_general_ci"
     t.string "cluster", collation: "utf8_unicode_ci"
     t.text "zips", collation: "utf8_unicode_ci"
-    t.text "roles", collation: "utf8_unicode_ci"
+    t.json "roles"
     t.json "histocache"
-    t.text "json", limit: 16777215, collation: "utf8mb4_general_ci"
+    t.json "json"
     t.string "pic_file_name"
     t.string "pic_content_type"
     t.integer "pic_file_size"
@@ -225,7 +225,7 @@ ActiveRecord::Schema.define(version: 2020_12_16_224549) do
     t.integer "moderate_proposals_mode", default: 0
     t.string "external_project_url", collation: "utf8_general_ci"
     t.string "about_page_url", collation: "utf8_general_ci"
-    t.text "roles", limit: 16777215, collation: "utf8_general_ci"
+    t.json "roles"
     t.string "masthead_file_name", collation: "utf8_general_ci"
     t.string "masthead_content_type", collation: "utf8_general_ci"
     t.integer "masthead_file_size"
@@ -238,7 +238,7 @@ ActiveRecord::Schema.define(version: 2020_12_16_224549) do
     t.string "logo_remote_url", collation: "utf8_general_ci"
     t.text "branding", limit: 16777215, collation: "utf8mb4_general_ci"
     t.integer "plan", default: 0
-    t.text "customizations", limit: 16777215, collation: "utf8mb4_general_ci"
+    t.json "customizations"
     t.string "lang", collation: "utf8mb4_general_ci"
     t.string "SSO_domain", collation: "utf8_general_ci"
     t.index ["name"], name: "by_identifier", length: 10
@@ -267,14 +267,14 @@ ActiveRecord::Schema.define(version: 2020_12_16_224549) do
     t.boolean "registered", default: false
     t.datetime "reset_password_sent_at"
     t.text "b64_thumbnail", collation: "utf8_unicode_ci"
-    t.text "tags", collation: "utf8mb4_general_ci"
-    t.text "active_in", collation: "utf8_unicode_ci"
+    t.json "tags"
+    t.json "active_in"
     t.boolean "super_admin", default: false
     t.boolean "no_email_notifications", default: false
     t.boolean "verified", default: false
     t.text "groups", collation: "utf8_unicode_ci"
-    t.text "subscriptions", collation: "utf8_unicode_ci"
-    t.text "emails", collation: "utf8_unicode_ci"
+    t.json "subscriptions"
+    t.json "emails"
     t.boolean "complete_profile", default: false
     t.string "lang"
     t.index ["avatar_file_name"], name: "index_users_on_avatar_file_name"

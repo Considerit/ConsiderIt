@@ -56,9 +56,8 @@ class OpinionController < ApplicationController
     # if opinion.published
     #   proposal.histocache = nil
     #   proposal.save
-
-      dirty_key "/proposal/#{proposal.id}"
-    end
+    #   dirty_key "/proposal/#{proposal.id}"
+    # end
 
     #proposal.delay.update_metrics()
     

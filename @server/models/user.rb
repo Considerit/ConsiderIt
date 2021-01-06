@@ -198,7 +198,7 @@ class User < ApplicationRecord
     subdomain ||= current_subdomain
     
     if !self.active_in 
-      self.active_in = "[]"
+      self.active_in = []
       self.save
     end 
 

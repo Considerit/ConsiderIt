@@ -23,7 +23,7 @@ class TranslationsController < ApplicationController
 
     key = params[:key]
     exclude = {'authenticity_token' => 1, 'subdomain' => 1, 'action' => 1, 'controller' => 1}
-    updated = params.select{|k,v| !exclude.has_key?(k)}
+    updated = params.select{|k,v| !exclude.has_key?(k)}.to_h
 
     if permit('update all translations') > 0
       update_translations(key, updated)

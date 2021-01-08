@@ -74,7 +74,7 @@ class Proposal < ApplicationRecord
             :user => current_user ? current_user : nil,
             :subdomain_id => current_subdomain.id,
             :stance => 0,
-            :point_inclusions => '[]',
+            :point_inclusions => [],
           })
         end 
       end 
@@ -251,18 +251,18 @@ class Proposal < ApplicationRecord
   #
   # TODO: consolidate with subdomain.user_roles
   def user_roles(filter = false)
-    roles = roles || {}
+    rolez = roles ? roles.deep_dup : {}
 
 
     ['editor', 'writer', 'commenter', 'opiner', 'observer'].each do |role|
 
       # Initialize empty role
-      if !roles[role]
+      if !rolez[role]
         if role == 'observer' && current_subdomain
           # default to subdomain setting
-          roles[role] = current_subdomain.user_roles['visitor']
+          rolez[role] = current_subdomain.user_roles['visitor']
         else
-          roles[role] = [] 
+          rolez[role] = [] 
         end
       end
 
@@ -271,12 +271,12 @@ class Proposal < ApplicationRecord
         # Remove all specific email address for privacy.
         # Is used by client permissions system to determining whether 
         # to show action buttons for unauthenticated users. 
-        roles[role] = roles[role].map{|email_or_key|
+        rolez[role] = rolez[role].map{|email_or_key|
           email_or_key.index('*') || email_or_key == "/user/#{current_user.id}" || email_or_key.index('@') == nil ? email_or_key : '-'
         }.uniq
       end
     end
-    roles
+    rolez
   end
 
   

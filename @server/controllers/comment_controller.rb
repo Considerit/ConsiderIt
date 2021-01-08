@@ -33,7 +33,7 @@ class CommentController < ApplicationController
 
   def create
     fields = ['body']
-    comment = params.select{|k,v| fields.include? k}
+    comment = params.select{|k,v| fields.include? k}.to_h
 
     comment['user_id'] = current_user && current_user.id || nil
     comment['subdomain_id'] = current_subdomain.id
@@ -77,7 +77,7 @@ class CommentController < ApplicationController
     authorize! 'update comment', comment
 
     fields = ['body']
-    comment_vals = params.select{|k,v| fields.include? k}
+    comment_vals = params.select{|k,v| fields.include? k}.to_h
 
     comment.update_attributes! comment_vals
 

@@ -27,7 +27,7 @@ class PointController < ApplicationController
     # Validate by filtering out unwanted fields
     # todo: validate data types too
     fields = ['nutshell', 'text', 'is_pro', 'hide_name', 'proposal']
-    point = params.select{|k,v| fields.include? k}
+    point = params.select{|k,v| fields.include? k}.to_h
 
     # Set private values
     point['proposal'] = proposal = Proposal.find(key_id(point['proposal']))
@@ -91,7 +91,7 @@ class PointController < ApplicationController
     if permit('update point', point) > 0
 
       fields = ["nutshell", "text", "hide_name"]
-      updates = params.select{|k,v| fields.include? k}
+      updates = params.select{|k,v| fields.include? k}.to_h
 
       fields.each do |f|
         if !updates.has_key?(f)

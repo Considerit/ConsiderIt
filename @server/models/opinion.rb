@@ -50,7 +50,7 @@ class Opinion < ApplicationRecord
                                       :user => user,
                                       :subdomain_id => proposal.subdomain_id,
                                       :stance => 0,
-                                      :point_inclusions => '[]',
+                                      :point_inclusions => []
                                      )
       end 
     end
@@ -225,7 +225,7 @@ class Opinion < ApplicationRecord
   end
 
   def recache
-    self.point_inclusions = inclusions.select(:point_id).map {|x| x.point_id }.uniq.compact.to_s
+    self.point_inclusions = inclusions.select(:point_id).map {|x| x.point_id }.uniq.compact
     self.save
   end
 

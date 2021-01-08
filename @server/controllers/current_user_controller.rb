@@ -319,7 +319,7 @@ class CurrentUserController < ApplicationController
     end
 
     fields = ['avatar', 'bio', 'name', 'tags', 'subscriptions']
-    new_params = params.select{|k,v| fields.include? k}
+    new_params = params.select{|k,v| fields.include? k}.to_h
     new_params[:name] = '' if !new_params[:name] #TODO: Do we really want to allow blank names?...
 
     if new_params.has_key? :tags
@@ -344,8 +344,6 @@ class CurrentUserController < ApplicationController
     end
 
     if new_params.has_key? :subscriptions
-      pp "#####################"
-      pp new_params[:subscriptions].to_h
       new_params[:subscriptions] = current_user.update_subscriptions(new_params[:subscriptions].to_h)
     end
 

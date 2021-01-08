@@ -34,7 +34,7 @@ class ProposalController < ApplicationController
     authorize! 'create proposal'
 
     fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage']
-    attrs = params.select{|k,v| fields.include? k}
+    attrs = params.select{|k,v| fields.include? k}.to_h
 
     errors = validate_input attrs, nil
 
@@ -44,15 +44,12 @@ class ProposalController < ApplicationController
     end
 
     if errors.length == 0
-
-      attrs.update({
-            :published => true,
-            :user_id => current_user.id,
-            :subdomain_id => current_subdomain.id, 
-            :active => true
-          })
-
       proposal = Proposal.new attrs
+
+      proposal.published = true
+      proposal.user_id = current_user.id
+      proposal.subdomain_id = current_subdomain.id 
+      proposal.active = true
 
       proposal.save
 
@@ -104,7 +101,7 @@ class ProposalController < ApplicationController
         end 
       end
 
-      updated_fields = params.select{|k,v| fields.include?(k) && v != proposal[k]}
+      updated_fields = params.select{|k,v| fields.include?(k) && v != proposal[k]}.to_h
 
       if updated_fields.include?('cluster') && updated_fields['cluster'] && updated_fields['cluster'].length > 0
         updated_fields['cluster'] = updated_fields['cluster'].strip

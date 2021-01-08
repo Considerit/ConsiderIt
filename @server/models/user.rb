@@ -458,7 +458,7 @@ class User < ApplicationRecord
       # or included a point
       # ATTENTION!! This will delete someone's opinion if they vote exactly neutral and 
       #             didn't include any points (and they're logging in)
-      if new_op.stance == 0 && (new_op.point_inclusions == '[]' || new_op.point_inclusions.length == 0)
+      if new_op.stance == 0 && (new_op.point_inclusions || []).length == 0
         new_op.destroy
         next 
       end

@@ -110,7 +110,7 @@ class Point < ApplicationRecord
       self.score = updated_includers.length + standard_deviation * updated_includers.length
     end
 
-    self.includers = updated_includers.to_s
+    self.includers = updated_includers
     self.last_inclusion = updated_includers.length > 0 ? self.inclusions.where("user_id IN (?)", updated_includers).order(:created_at).last.created_at.to_i : -1
 
     if changed?

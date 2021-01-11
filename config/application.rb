@@ -56,7 +56,6 @@ module ConsiderIt
     config.paths["app/views"] << "@server/views"
 
     config.paths["lib/tasks"] << "test"
-    config.paths["lib/tasks"] << "lib/screencasts"
 
     config.paths["lib/tasks"] << "@email"
     config.paths["app/views"] << "@email/email_templates"    
@@ -64,12 +63,6 @@ module ConsiderIt
     config.paths["app/helpers"] << "@email/email_templates/helpers"
 
     config.action_mailer.preview_path = "#{Rails.root}/@email/mailers/previews"
-
-    asset_paths = ["@client"]
-    for asset_path in asset_paths
-        config.paths["app/assets"] << asset_path
-        # config.assets.paths << Rails.root.join(asset_path)
-    end
 
     ########################################
 

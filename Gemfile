@@ -22,8 +22,6 @@ gem 'activerecord-import' # bulk imports for performance
 # VIEWS / FORMS / CLIENT
 gem "haml"
 gem 'kt-paperclip'
-# gem 'paperclip-compression'
-# gem 'delayed_paperclip'
 
 #############
 # BACKGROUND PROCESSING / EMAIL
@@ -45,7 +43,6 @@ gem 'oj'
 gem 'oj_mimic_json' # we need this for Rails 4.1.x
 gem 'bootsnap', require: false
 
-
 # for importing from google sheets
 gem 'google-api-client'
 
@@ -56,7 +53,6 @@ group :development, :test do
   gem 'thin'
   gem 'ruby-prof', '~> 1.0.0'
   # gem 'rack-mini-profiler'
-  # gem 'google-api-client'
 end
 
 group :production do

@@ -1,5 +1,5 @@
 
-require Rails.root.join('@server', 'translations')
+require Rails.root.join('@server', 'extras', 'translations')
 
 class TranslationsController < ApplicationController
 

@@ -43,9 +43,9 @@ UserTags = ReactiveComponent
           all_tags[tag].not_answered.push user
 
       for tag, val of user.tags 
-        if vals.self_report?.input == 'checklist'
+        if val.self_report?.input == 'checklist'
           my_vals = val.split(',')
-        else if vals.self_report?.input == 'boolean' && (typeof val == 'string') && val.toLowerCase() in ["no", "false", "yes", "true"]
+        else if val.self_report?.input == 'boolean' && (typeof val == 'string') && val.toLowerCase() in ["no", "false", "yes", "true"]
           if val.toLowerCase() in ["no", "false"]
             my_vals = [false]
           else
@@ -186,23 +186,25 @@ UserTags = ReactiveComponent
 
                     defaultValue: v
 
-          DIV 
-            style: 
-              marginTop: 12
+          # Can't create a new tag at the moment. Needs to be updated to add the new tag to the user_tags config, and probably 
+          # namespace it to this forum to prevent conflicts or hacks
+          # DIV 
+          #   style: 
+          #     marginTop: 12
 
-            INPUT 
-              type: 'submit'
-              style: 
-                padding: '5px 10px'
-                fontSize: 18
+          #   INPUT 
+          #     type: 'submit'
+          #     style: 
+          #       padding: '5px 10px'
+          #       fontSize: 18
 
-              value: 'new tag'
-              onClick: => 
-                i = 0
-                while @local.new_tags["tag-#{i}"]
-                  i++
-                @local.new_tags["tag-#{i}"] = ""
-                save @local
+          #     value: 'new tag'
+          #     onClick: => 
+          #       i = 0
+          #       while @local.new_tags["tag-#{i}"]
+          #         i++
+          #       @local.new_tags["tag-#{i}"] = ""
+          #       save @local
 
           DIV 
             style: 

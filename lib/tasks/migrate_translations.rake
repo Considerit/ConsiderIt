@@ -1,4 +1,4 @@
-require Rails.root.join('@server', 'translations')
+require Rails.root.join('@server', 'extras', 'translations')
 
 
 task :migrate_translations => :environment do 

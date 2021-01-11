@@ -15,7 +15,7 @@
 #      Notifications subsystem. (e.g. email notifications or on-site messages)
 #
 
-require Rails.root.join('@server', 'permissions')
+require Rails.root.join('@server', 'extras', 'permissions')
 
 
 DEBUG = false

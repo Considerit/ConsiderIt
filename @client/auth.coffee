@@ -513,7 +513,7 @@ Auth = ReactiveComponent
 
 
       # Considerit terms
-      if auth.form in ['create account', 'create account via invitation'] || (auth.form in ['user questions', 'edit profile'] && !@local.agreed_to_terms)
+      if auth.form in ['create account', 'create account via invitation'] || (auth.form in ['user questions'] && !@local.agreed_to_terms)
 
         if !@local.agreed_to_terms?
           @local.agreed_to_terms = !!current_user.tags['considerit_terms']
@@ -1150,7 +1150,7 @@ Auth = ReactiveComponent
 
       save @local
 
-    if auth.ask_questions && auth.form not in ['login', 'reset password', 'verify email'] && !@local.agreed_to_terms
+    if auth.ask_questions && auth.form not in ['login', 'reset password', 'verify email', 'edit profile'] && !@local.agreed_to_terms
       @local.errors.push translator('auth.validation.agree_to_terms', "To proceed, you must agree to the terms") 
 
     if @local.errors.length == 0

@@ -379,6 +379,7 @@ Root = ReactiveComponent
       
       # state transition components
       AuthTransition()
+      CustomizationTransition()      
       LocationTransition()
       HomepageTabTransition()
       BrowserLocation()

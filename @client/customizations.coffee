@@ -6,7 +6,6 @@
 
 window.customizations = {}
 customizations_by_file = {}
-window.db_customization_loaded = {}
 
 window._ = _
 
@@ -69,8 +68,6 @@ window.load_customization = (subdomain) ->
 
     customizations[subdomain_name] = _.extend {}, (customizations_by_file[subdomain_name] or {}), convert_customization(subdomain.customizations)
 
-    db_customization_loaded[subdomain_name] = {"#{subdomain.customizations}": true}
-
   catch error 
     console.error error
 
@@ -89,8 +86,11 @@ window.customization = (field, object_or_key) ->
 
   subdomain_name = subdomain.name?.toLowerCase()
   
-  if !db_customization_loaded[subdomain_name]?[subdomain.customizations]
+  customizations_signature = fetch('customizations_signature')
+  if customizations_signature.dirty || !customizations_signature.signature
     load_customization subdomain
+    customizations_signature.dirty = false 
+    save customizations_signature
 
   key = if obj 
           if obj.key then obj.key else obj
@@ -138,6 +138,26 @@ window.customization = (field, object_or_key) ->
   #   console.error "Could not find a value for #{field} #{if key then key else ''}"
 
   value
+
+
+
+window.CustomizationTransition = ReactiveComponent
+  displayName: 'CustomizationTransition'
+  # This doesn't actually render anything.  It just notices when the customizations
+  # field of subdomain has changed and marks it dirty.
+
+  render: -> 
+    subdomain = fetch('/subdomain')
+    customizations_signature = fetch('customizations_signature')
+
+    signature = JSON.stringify(subdomain.customizations)
+
+    if customizations_signature.signature != signature 
+      customizations_signature.signature = signature
+      customizations_signature.dirty = true 
+      save customizations_signature
+
+    SPAN null
 
 
 

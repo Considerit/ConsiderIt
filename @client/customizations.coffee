@@ -66,9 +66,8 @@ window.load_customization = (subdomain) ->
       console.log "#{subdomain_name} config for import: \n", JSON.stringify(convert_customization(customizations_by_file[subdomain_name]), null, 2)
 
     subdomain = fetch '/subdomain'
-    stringified = JSON.parse subdomain.customizations 
 
-    customizations[subdomain_name] = _.extend {}, (customizations_by_file[subdomain_name] or {}), convert_customization(stringified)
+    customizations[subdomain_name] = _.extend {}, (customizations_by_file[subdomain_name] or {}), convert_customization(subdomain.customizations)
 
     db_customization_loaded[subdomain_name] = {"#{subdomain.customizations}": true}
 

@@ -142,7 +142,7 @@ module Exports
       row = [user.email, user.name, user.created_at]
 
       if tag_whitelist
-        user_tags = JSON.parse( user.tags || '{}' )
+        user_tags = user.tags || {}
 
         tag_whitelist.each do |tag|
           row.append user_tags.fetch(tag, "")
@@ -234,7 +234,7 @@ end
 USER_TAGS = {}
 def passes_val(user, tag, val)
   if !USER_TAGS.has_key?(user.id)
-    USER_TAGS[user.id] = Oj.load(user.tags || '{}')
+    USER_TAGS[user.id] = user.tags || {}
   end
 
   tags = USER_TAGS[user.id]

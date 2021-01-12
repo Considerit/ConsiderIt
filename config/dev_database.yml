@@ -4,4 +4,4 @@ development:
   username: root
   password: root
   host: localhost
-  encoding: utf8
+  encoding: utf8mb4

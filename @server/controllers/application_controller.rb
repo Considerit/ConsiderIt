@@ -1,8 +1,11 @@
 
 require 'digest/md5'
 require 'exception_notifier'
-require Rails.root.join('@server', 'permissions')
-require Rails.root.join('@server', 'translations')
+require Rails.root.join('@server', 'extras', 'permissions')
+require Rails.root.join('@server', 'extras', 'translations')
+require Rails.root.join('@server', 'extras', 'invitations')
+require Rails.root.join('@server', 'extras', 'data_exports')
+
 
 class ApplicationController < ActionController::Base
 
@@ -283,11 +286,6 @@ protected
         rescue => e
           ExceptionNotifier.notify_exception(e, data: {slug: slug, key: key})
         end
-
-      elsif key == '/asset_manifest'
-        manifest = JSON.parse(File.open("public/assets/rev-manifest.json", "rb") {|io| io.read})
-        manifest.key = '/asset_manifest'
-        response.append manifest
 
       elsif key.match "/translations"
         translations = get_translations(key)

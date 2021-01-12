@@ -1,5 +1,5 @@
 # coding: utf-8
-class Point < ActiveRecord::Base
+class Point < ApplicationRecord
   
   include Moderatable, Notifier
     
@@ -51,7 +51,7 @@ class Point < ActiveRecord::Base
       result['user_id'] = -1
     end
 
-    result['includers'] = JSON.parse (result['includers'] || '[]')
+    result['includers'] = result['includers'] || []
     result['includers'].map! {|u| hide_name && u == user_id ? -1 : u}
     result['includers'].map! {|u| "/user/#{u}"}
         
@@ -110,7 +110,7 @@ class Point < ActiveRecord::Base
       self.score = updated_includers.length + standard_deviation * updated_includers.length
     end
 
-    self.includers = updated_includers.to_s
+    self.includers = updated_includers
     self.last_inclusion = updated_includers.length > 0 ? self.inclusions.where("user_id IN (?)", updated_includers).order(:created_at).last.created_at.to_i : -1
 
     if changed?

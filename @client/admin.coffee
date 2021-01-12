@@ -509,13 +509,11 @@ AppSettingsDash = ReactiveComponent
         subdomain[f] = el.value
 
     customization_fields = ['frozen', 'email_notifications_disabled', 'hide_opinions', 'anonymize_everything']
-    customizations = JSON.parse subdomain.customizations
+    customizations = subdomain.customizations
     for f in customization_fields
       el = document.getElementById(f)
       if el 
         customizations[f] = el.checked
-
-    subdomain.customizations = JSON.stringify customizations, null, 2
 
     @local.save_complete = @local.file_errors = false
     save @local
@@ -550,7 +548,7 @@ CustomizationsDash = ReactiveComponent
 
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
-    subdomains = fetch('/subdomains')
+    subdomains = fetch '/subdomains'
 
     if !@local.compare_to?
       @local.compare_to = ''
@@ -560,7 +558,7 @@ CustomizationsDash = ReactiveComponent
     for sub in subdomains.subs when sub.customizations?.length > 0 && sub.name != subdomain.name
       other_subs.push [sub.name.toLowerCase(), sub.customizations]
       if sub.name.toLowerCase() == @local.compare_to
-        compare_to = sub.customizations
+        compare_to = JSON.stringify(sub.customizations or "\n\n\n\n\n\n\n", null, 2)
 
     other_subs.sort (a,b) -> 
       if a[0] < b[0]
@@ -576,12 +574,12 @@ CustomizationsDash = ReactiveComponent
       location.reload()
       return SPAN null
 
-    @local.current_value ?= subdomain.customizations
+    @local.stringified_current_value ?= JSON.stringify(subdomain.customizations or "\n\n\n\n\n\n\n", null, 2)
     @local.customization_filter ?= ''
     @local.property_changes ?= {}
 
     try
-      code_properties = ( [k,v] for k,v of JSON.parse(subdomain.customizations) when typeof(v) == 'string' && v.startsWith(FUNCTION_IDENTIFIER) )
+      code_properties = ( [k,v] for k,v of subdomain.customizations when typeof(v) == 'string' && v.startsWith(FUNCTION_IDENTIFIER) )
     catch error 
       code_properties = []
       console.error error
@@ -624,9 +622,9 @@ CustomizationsDash = ReactiveComponent
             CodeMirrorTextArea 
               id: 'customizations'
               key: md5(subdomain.customizations) # update text area if subdomain.customizations changes elsewhere
-              default_value: subdomain.customizations or "\n\n\n\n\n\n\n"
+              default_value: JSON.stringify(subdomain.customizations or "\n\n\n\n\n\n\n", null, 2)
               onChange: (val) => 
-                @local.current_value = val
+                @local.stringified_current_value = val
 
           DIV 
             className: 'input_group'
@@ -710,7 +708,7 @@ CustomizationsDash = ReactiveComponent
 
             "Easier code-editing sections"
 
-          for k,v of JSON.parse(subdomain.customizations)
+          for k,v of subdomain.customizations
             if typeof(v) == 'string' && v.startsWith(FUNCTION_IDENTIFIER)
               js = v.substring(FUNCTION_IDENTIFIER.length)
 
@@ -809,24 +807,24 @@ CustomizationsDash = ReactiveComponent
 
 
 
+
+
   submit_change : (property, value, is_javascript) -> 
     subdomain = fetch '/subdomain'
-
     if is_javascript 
       value = "#{FUNCTION_IDENTIFIER}#{value}"
 
-    customizations = JSON.parse subdomain.customizations 
-    customizations[property] = value     
-
-    new_json = JSON.stringify customizations, null, 2
-    @submit new_json
+    subdomain.customizations[property] = value
+    @_save_changes()
 
 
-  submit : (value) -> 
-    value ?= @local.current_value
-
+  submit : -> 
     subdomain = fetch '/subdomain'
-    subdomain.customizations = value
+    subdomain.customizations = JSON.parse @local.stringified_current_value
+    @_save_changes()
+
+  _save_changes : ->
+    subdomain = fetch '/subdomain'
 
     @local.save_complete = false
     save @local
@@ -839,6 +837,7 @@ CustomizationsDash = ReactiveComponent
       save @local
 
       db_customization_loaded[subdomain.name] = false
+
 
 
 

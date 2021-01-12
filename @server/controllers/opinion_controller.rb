@@ -12,7 +12,7 @@ class OpinionController < ApplicationController
     authorize! 'update opinion', opinion
 
     fields = ['proposal', 'stance', 'point_inclusions', 'explanation']
-    updates = params.select{|k,v| fields.include? k}
+    updates = params.select{|k,v| fields.include? k}.to_h
 
     # Convert proposal key to id
     updates['proposal_id'] = key_id(updates['proposal'])
@@ -24,7 +24,7 @@ class OpinionController < ApplicationController
 
     incs = incs.map! {|p| key_id(p)}
     opinion.update_inclusions incs
-    updates['point_inclusions'] = JSON.dump(incs)
+    updates['point_inclusions'] = incs
 
     # Grab the proposal
     proposal = Proposal.find(updates['proposal_id'])
@@ -52,15 +52,7 @@ class OpinionController < ApplicationController
 
     end
 
-    # clear the histogram cache because we got a new opinion
-    if opinion.published
-      proposal.histocache = nil
-      proposal.save
-
-      dirty_key "/proposal/#{proposal.id}"
-    end
-
-    #proposal.delay.update_metrics()
+    dirty_key "/proposal/#{proposal.id}"
     
     dirty_key "/opinion/#{opinion.id}"
 

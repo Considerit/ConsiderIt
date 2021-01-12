@@ -15,7 +15,7 @@
 #      Notifications subsystem. (e.g. email notifications or on-site messages)
 #
 
-require Rails.root.join('@server', 'permissions')
+require Rails.root.join('@server', 'extras', 'permissions')
 
 
 DEBUG = false
@@ -169,18 +169,13 @@ module Notifier
   #
   # This is where you come to configure new events, digests, defaults, etc. 
 
-  def self.default_subscription(subdomain)
-    if ['galacticfederation', 'ainaalohafutures'].include?(subdomain.name)
-      nil
-    else 
-      '1_day'
-    end
+  def self.default_subscription
+    '1_day'
   end
 
   def self.config(subdomain)
 
     {
-
       'new_proposal' => {
         'ui_label' => 'If someone adds a new proposal',
         'email_trigger_default' => subdomain.name != 'consider'

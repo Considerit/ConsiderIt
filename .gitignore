@@ -37,10 +37,6 @@ public/system/banners
 
 lib/tasks/client_data/*
 
-lib/screencasts/exports/*.mov
-lib/screencasts/exports/*.mp4
-lib/screencasts/exports/*.webm
-
 test/data/test.sql.bz2
 test/data/test.sql
 

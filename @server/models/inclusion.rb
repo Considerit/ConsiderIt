@@ -1,4 +1,4 @@
-class Inclusion < ActiveRecord::Base
+class Inclusion < ApplicationRecord
   belongs_to :point, :touch => true
   belongs_to :user
   belongs_to :proposal

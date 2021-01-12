@@ -1,12 +1,12 @@
-class Subdomain < ActiveRecord::Base
+class Subdomain < ApplicationRecord
   has_many :proposals, :dependent => :destroy
   has_many :points, :dependent => :destroy
   has_many :opinions, :dependent => :destroy
   has_many :comments, :dependent => :destroy
   has_many :logs
 
-  has_attached_file :logo, :processors => [:thumbnail, :compression]
-  has_attached_file :masthead, :processors => [:thumbnail, :compression]
+  has_attached_file :logo, :processors => [:thumbnail]
+  has_attached_file :masthead, :processors => [:thumbnail]
 
   validates_attachment_content_type :masthead, :content_type => %w(image/jpeg image/jpg image/png image/gif)
   validates_attachment_content_type :logo, :content_type => %w(image/jpeg image/jpg image/png image/gif)
@@ -44,7 +44,7 @@ class Subdomain < ActiveRecord::Base
       json['shared_code'] = shared
     end
 
-    json['customizations'] = JSON.pretty_generate(self.customization_json)
+    json['customizations'] = self.customization_json
     json
   end
 
@@ -66,9 +66,9 @@ class Subdomain < ActiveRecord::Base
 
   def customization_json
     begin
-      config = Oj.load (self.customizations || "{}")
+      config = self.customizations || {}
     rescue => e
-      config = Oj.load "{}"
+      config = {}
       ExceptionNotifier.notify_exception e
     end 
 
@@ -102,34 +102,29 @@ class Subdomain < ActiveRecord::Base
   #
   # TODO: consolidate with proposal.user_roles
   def user_roles(filter = false)
-    result = Oj.load(roles || "{}")
+    rolez = roles ? roles.deep_dup : {}
     ['admin', 'moderator', 'proposer', 'visitor'].each do |role|
 
       # default roles if they haven't been set
       default_role = ['visitor', 'proposer'].include?(role) ? ['*'] : []
-      result[role] = default_role if !result.has_key?(role) || !result[role]
+      rolez[role] = default_role if !rolez.has_key?(role) || !rolez[role]
 
       # Filter role if the client isn't supposed to see it
       if filter # && role != 'proposer'
         # Remove all specific email address for privacy. Leave wildcards.
         # Is used by client permissions system to determining whether 
         # to show action buttons for unauthenticated users. 
-        result[role] = result[role].map{|email_or_key|
+        rolez[role] = rolez[role].map{|email_or_key|
           email_or_key.index('*') || email_or_key.match("/user/") ? email_or_key : '-'
         }.uniq
       end
     end
 
-    result
+    rolez
   end
 
   def title 
     self.name
-  end
-
-  def set_roles(new_roles)
-    self.roles = JSON.dump(new_roles)
-    self.save
   end
 
   def classes_to_moderate

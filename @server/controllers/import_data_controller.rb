@@ -371,7 +371,7 @@ class ImportDataController < ApplicationController
               end
 
               opinion.update_inclusions inclusions
-              opinion.point_inclusions = JSON.dump(inclusions)
+              opinion.point_inclusions = inclusions
               opinion.save
             end
             modified['opinions'].push "Created Opinion by #{user.name} on '#{proposal.name}'"

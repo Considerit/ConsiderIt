@@ -1,7 +1,7 @@
 class ProposalController < ApplicationController
   skip_before_action :verify_authenticity_token, :only => :update_images_hack
 
-  include SubdomainController::Invitations
+  include Invitations
 
   def index
     dirty_key '/proposals'
@@ -34,7 +34,7 @@ class ProposalController < ApplicationController
     authorize! 'create proposal'
 
     fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage']
-    attrs = params.select{|k,v| fields.include? k}
+    attrs = params.select{|k,v| fields.include? k}.to_h
 
     errors = validate_input attrs, nil
 
@@ -44,15 +44,12 @@ class ProposalController < ApplicationController
     end
 
     if errors.length == 0
-
-      attrs.update({
-            :published => true,
-            :user_id => current_user.id,
-            :subdomain_id => current_subdomain.id, 
-            :active => true
-          })
-
       proposal = Proposal.new attrs
+
+      proposal.published = true
+      proposal.user_id = current_user.id
+      proposal.subdomain_id = current_subdomain.id 
+      proposal.active = true
 
       proposal.save
 
@@ -104,7 +101,7 @@ class ProposalController < ApplicationController
         end 
       end
 
-      updated_fields = params.select{|k,v| fields.include?(k) && v != proposal[k]}
+      updated_fields = params.select{|k,v| fields.include?(k) && v != proposal[k]}.to_h
 
       if updated_fields.include?('cluster') && updated_fields['cluster'] && updated_fields['cluster'].length > 0
         updated_fields['cluster'] = updated_fields['cluster'].strip
@@ -147,16 +144,17 @@ class ProposalController < ApplicationController
 
   def update_roles(proposal)
     if params.has_key?('roles')
+      roles = params['roles']
       # need to update these attributes later on after proposal is created
       if params.has_key?('invitations') && params['invitations']
-        params['roles'] = process_and_send_invitations(params['roles'], params['invitations'], proposal)
+        roles = process_and_send_invitations(roles, params['invitations'], proposal)
       end
 
       # rails replaces [] with nil in params for some reason...
-      params['roles'].each do |k,v|
-        params['roles'][k] = [] if !v
+      roles.each do |k,v|
+        roles[k] = [] if !v
       end
-      proposal.roles = JSON.dump params['roles']
+      proposal.roles = roles
     end
   end
 

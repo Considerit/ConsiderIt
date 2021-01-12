@@ -22,8 +22,8 @@ end
 def key_id(object_or_key)
   # puts("Key_id called for #{object_or_key}")
 
-  # Make it into a key
-  key = object_or_key.is_a?(Hash) ? object_or_key['key'] : object_or_key
+  # Make it into a key  
+  key = object_or_key.is_a?(String) ? object_or_key : object_or_key['key']
   
   # Grab the id out
   result = key.split('/')[-1].to_i
@@ -58,8 +58,6 @@ def slugify(str)
     .gsub(/\-\-+/, '-')         # Replace multiple - with single -
     .gsub(/^-+/, '')             # Trim - from start of text
     .gsub(/-+$/, '')             # Trim - from end of text
-
-
 
   if str.length > 0 && (!slug || slug.length == 0)
     return nil 

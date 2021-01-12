@@ -1,2 +1,2 @@
-class ClientError < ActiveRecord::Base
+class ClientError < ApplicationRecord
 end

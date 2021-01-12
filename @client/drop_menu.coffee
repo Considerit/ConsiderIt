@@ -81,8 +81,8 @@ window.DropMenu = ReactiveComponent
       @local.active_option = idx 
       save @local 
       if idx != -1
-        setTimeout => 
-          @refs["menuitem-#{idx}"].getDOMNode().focus()
+        setTimeout =>
+          @refs["menuitem-#{idx}"]?.getDOMNode()?.focus()           
         , 0
 
 

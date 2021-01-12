@@ -1,4 +1,4 @@
-class Opinion < ActiveRecord::Base
+class Opinion < ApplicationRecord
   belongs_to :user
   belongs_to :proposal, :touch => true 
   
@@ -20,7 +20,7 @@ class Opinion < ActiveRecord::Base
     make_key(result, 'opinion')
     stubify_field(result, 'user')
     stubify_field(result, 'proposal')
-    result['point_inclusions'] = JSON.parse (result['point_inclusions'] || '[]')
+    result['point_inclusions'] = result['point_inclusions'] || []
     result['point_inclusions'].map! {|p| "/point/#{p}"}
 
     if self.explanation
@@ -50,7 +50,7 @@ class Opinion < ActiveRecord::Base
                                       :user => user,
                                       :subdomain_id => proposal.subdomain_id,
                                       :stance => 0,
-                                      :point_inclusions => '[]',
+                                      :point_inclusions => []
                                      )
       end 
     end
@@ -225,7 +225,7 @@ class Opinion < ActiveRecord::Base
   end
 
   def recache
-    self.point_inclusions = inclusions.select(:point_id).map {|x| x.point_id }.uniq.compact.to_s
+    self.point_inclusions = inclusions.select(:point_id).map {|x| x.point_id }.uniq.compact
     self.save
   end
 

@@ -1,19 +1,19 @@
 # coding: utf-8
 
-class Proposal < ActiveRecord::Base
+class Proposal < ApplicationRecord
   has_many :points, :dependent => :destroy
   has_many :opinions, :dependent => :destroy
   has_many :inclusions, :dependent => :destroy
 
   has_attached_file :pic, 
-    :processors => [:thumbnail, :compression],
+    :processors => [:thumbnail],
     :styles => { 
         :square => "250x250#"
     }
 
   validates_attachment_content_type :pic, :content_type => %w(image/jpeg image/jpg image/png image/gif)
 
-  has_attached_file :banner, :processors => [:thumbnail, :compression]
+  has_attached_file :banner, :processors => [:thumbnail]
   validates_attachment_content_type :banner, :content_type => %w(image/jpeg image/jpg image/png image/gif)
 
   belongs_to :user
@@ -74,7 +74,7 @@ class Proposal < ActiveRecord::Base
             :user => current_user ? current_user : nil,
             :subdomain_id => current_subdomain.id,
             :stance => 0,
-            :point_inclusions => '[]',
+            :point_inclusions => [],
           })
         end 
       end 
@@ -187,10 +187,10 @@ class Proposal < ActiveRecord::Base
 
 
     # The JSON.parse is expensive...
-    json['histocache'] = Oj.load(json['histocache'] || '{}')
+    # json['histocache'] = Oj.load(json['histocache'] || '{}')
 
 
-    json['json'] = Oj.load(json['json'] || '{}')
+    json['json'] = json['json'] || {}
 
     make_key(json, 'proposal')
     stubify_field(json, 'user')
@@ -251,18 +251,18 @@ class Proposal < ActiveRecord::Base
   #
   # TODO: consolidate with subdomain.user_roles
   def user_roles(filter = false)
-    result = Oj.load(roles || "{}")
+    rolez = roles ? roles.deep_dup : {}
 
 
     ['editor', 'writer', 'commenter', 'opiner', 'observer'].each do |role|
 
       # Initialize empty role
-      if !result[role]
+      if !rolez[role]
         if role == 'observer' && current_subdomain
           # default to subdomain setting
-          result[role] = current_subdomain.user_roles['visitor']
+          rolez[role] = current_subdomain.user_roles['visitor']
         else
-          result[role] = [] 
+          rolez[role] = [] 
         end
       end
 
@@ -271,12 +271,12 @@ class Proposal < ActiveRecord::Base
         # Remove all specific email address for privacy.
         # Is used by client permissions system to determining whether 
         # to show action buttons for unauthenticated users. 
-        result[role] = result[role].map{|email_or_key|
+        rolez[role] = rolez[role].map{|email_or_key|
           email_or_key.index('*') || email_or_key == "/user/#{current_user.id}" || email_or_key.index('@') == nil ? email_or_key : '-'
         }.uniq
       end
     end
-    result
+    rolez
   end
 
   

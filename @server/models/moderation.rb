@@ -1,4 +1,4 @@
-class Moderation < ActiveRecord::Base
+class Moderation < ApplicationRecord
 
   class_attribute :STATUSES
   self.STATUSES = %w(fails passes)

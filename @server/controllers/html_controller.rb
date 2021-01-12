@@ -65,8 +65,6 @@ class HtmlController < ApplicationController
       @vendor = 'https:' + Rails.application.config.action_controller.asset_host
     end
 
-    dirty_key '/asset_manifest'
-
     # CSP policy if we ever want to implement in future
     # protocol = request.protocol == 'https:' ? 'https' : 'http:' 
     # csp = "default-src 'self'; connect-src 'self' #{protocol}//translate.googleapis.com; font-src 'self' #{protocol}//d2rtgkroh5y135.cloudfront.net #{protocol}//fonts.gstatic.com #{protocol}//maxcdn.bootstrapcdn.com; media-src *; object-src 'self' *; frame-src *; img-src 'self' data: * #{protocol}//d2rtgkroh5y135.cloudfront.net #{protocol}//translate.googleapis.com #{protocol}//www.google-analytics.com #{protocol}//www.google.com #{protocol}//www.gstatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' #{protocol}//cdnjs.cloudflare.com/ #{protocol}//d2rtgkroh5y135.cloudfront.net/ #{protocol}//translate.google.com/ #{protocol}//translate.googleapis.com/ #{protocol}//www.google-analytics.com/; style-src 'self' 'unsafe-inline' * #{protocol}//fonts.googleapis.com/ #{protocol}//maxcdn.bootstrapcdn.com/ #{protocol}//translate.googleapis.com/"

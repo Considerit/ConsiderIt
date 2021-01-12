@@ -1,6 +1,6 @@
 # wait at least 5 min before sending any notification
 BUFFER = 5 * 60 
-require Rails.root.join('@server', 'translations')
+require Rails.root.join('@server', 'extras', 'translations')
 
 def send_digest(subdomain, user, notifications, subscription_settings, deliver = true, since = nil, force = false)
   send_emails = subscription_settings['send_emails']

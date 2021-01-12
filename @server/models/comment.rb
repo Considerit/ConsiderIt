@@ -1,4 +1,4 @@
-class Comment < ActiveRecord::Base
+class Comment < ApplicationRecord
   include Moderatable, Notifier
 
   class_attribute :my_public_fields

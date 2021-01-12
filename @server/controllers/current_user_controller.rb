@@ -3,7 +3,7 @@ require 'securerandom'
 
 
 class CurrentUserController < ApplicationController
-  skip_before_action :verify_authenticity_token, :only => [:update_user_avatar_hack, :acs]
+  skip_before_action :verify_authenticity_token, :only => [:acs]
 
   # minimum password length
   MIN_PASS = 4
@@ -46,6 +46,7 @@ class CurrentUserController < ApplicationController
     # puts("")
 
     case trying_to
+
 
       when 'create account', 'create account via invitation'
 
@@ -262,6 +263,9 @@ class CurrentUserController < ApplicationController
         UserMailer.verification(current_user, current_subdomain).deliver_now
         log('verification token sent')
 
+      when 'update_avatar_hack'
+        current_user.update_attributes({:avatar => params['avatar']})
+
     end
 
     # Wrap everything up
@@ -295,18 +299,6 @@ class CurrentUserController < ApplicationController
     # puts("------------------------------")
 
   end
-  
-  #####
-  # See @submit_avatar_form in franklin.coffee
-  def user_avatar_hack
-    render :json => { :b64_thumbnail => current_user.b64_thumbnail }
-  end
-  def update_user_avatar_hack
-    current_user.update_attributes({:avatar => params['avatar']})
-    render :json => []
-  end
-  #######
-
 
   def update_user_attrs(trying_to, errors)
     types = { 
@@ -327,12 +319,12 @@ class CurrentUserController < ApplicationController
     end
 
     fields = ['avatar', 'bio', 'name', 'tags', 'subscriptions']
-    new_params = params.select{|k,v| fields.include? k}
+    new_params = params.select{|k,v| fields.include? k}.to_h
     new_params[:name] = '' if !new_params[:name] #TODO: Do we really want to allow blank names?...
 
     if new_params.has_key? :tags
       user_tags = current_subdomain.customization_json.fetch('user_tags', {})
-      current_tags = JSON.parse(current_user.tags || '{}')
+      current_tags = current_user.tags || {}
       new_tags = {}
 
       new_params[:tags].each do |tag, val|
@@ -348,11 +340,11 @@ class CurrentUserController < ApplicationController
         end
       end
 
-      new_params[:tags] = JSON.dump new_tags
+      new_params[:tags] = new_tags
     end
 
     if new_params.has_key? :subscriptions
-      new_params[:subscriptions] = current_user.update_subscriptions(new_params[:subscriptions])
+      new_params[:subscriptions] = current_user.update_subscriptions(new_params[:subscriptions].to_h)
     end
 
     if current_user.update_attributes(new_params)

@@ -259,7 +259,7 @@ AppSettingsDash = ReactiveComponent
               id: 'lang'
               type: 'text'
               name: 'lang'
-              defaultValue: subdomain.lang
+              value: lang
               onChange: (ev) =>
                 @local.language = ev.target.value 
                 save @local
@@ -275,7 +275,6 @@ AppSettingsDash = ReactiveComponent
                   available_languages['pseudo-en'] = "Pseudo English (for testing)"
                   
                 for abbrev, label of available_languages
-
                   OPTION
                     value: abbrev
                     label 

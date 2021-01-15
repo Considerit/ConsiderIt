@@ -411,9 +411,14 @@ class User < ApplicationRecord
                                          # this is case insensitive
 
         for obj in objs_with_user_in_role
-          pp "UPDATING ROLES, replacing #{self.email} with #{self.id} for #{obj.name}"
-          obj.roles = obj.roles.gsub /\"#{self.email}\"/i, "\"/user/#{self.id}\""
-          obj.save
+          for role, users in obj.roles 
+            if users.include?(self.email)  
+              pp "UPDATING ROLES, replacing #{self.email} with #{self.id} for #{obj.name}"
+              users.delete self.email
+              users.append "/user/#{self.id}"
+            end
+          end 
+          obj.save 
         end
       end
     end

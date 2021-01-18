@@ -1167,6 +1167,7 @@ GEM
     i18n (1.8.7)
       concurrent-ruby (~> 1.0)
     jmespath (1.4.0)
+    json (2.5.1)
     jwt (2.2.2)
     kt-paperclip (6.4.0)
       activemodel (>= 4.2.0)
@@ -1179,6 +1180,16 @@ GEM
       nokogiri (>= 1.5.9)
     mail (2.7.1)
       mini_mime (>= 0.1.1)
+    mailcatcher (0.2.4)
+      eventmachine
+      haml
+      i18n
+      json
+      mail
+      sinatra
+      skinny (>= 0.1.2)
+      sqlite3-ruby
+      thin
     mailgun-ruby (1.2.0)
       rest-client (~> 2.0.2)
     marcel (0.3.3)
@@ -1197,6 +1208,8 @@ GEM
     msgpack (1.3.3)
     multi_json (1.15.0)
     multipart-post (2.1.1)
+    mustermann (1.1.1)
+      ruby2_keywords (~> 0.0.1)
     mysql2 (0.5.3)
     netrc (0.11.0)
     nio4r (2.5.4)
@@ -1212,6 +1225,8 @@ GEM
     public_suffix (4.0.6)
     racc (1.5.2)
     rack (2.2.3)
+    rack-protection (2.1.0)
+      rack
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
     rails (5.2.4.4)
@@ -1261,8 +1276,16 @@ GEM
       faraday (>= 0.17.3, < 2.0)
       jwt (>= 1.5, < 3.0)
       multi_json (~> 1.10)
+    sinatra (2.1.0)
+      mustermann (~> 1.0)
+      rack (~> 2.2)
+      rack-protection (= 2.1.0)
+      tilt (~> 2.0)
     sitemap_generator (6.1.2)
       builder (~> 3.0)
+    skinny (0.2.2)
+      eventmachine (~> 1.0)
+      thin
     sprockets (4.0.2)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
@@ -1270,6 +1293,9 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
+    sqlite3 (1.4.2)
+    sqlite3-ruby (1.3.3)
+      sqlite3 (>= 1.3.3)
     temple (0.8.2)
     terrapin (0.6.0)
       climate_control (>= 0.0.3, < 1.0)
@@ -1316,6 +1342,7 @@ DEPENDENCIES
   google-api-client
   haml
   kt-paperclip
+  mailcatcher
   mailgun-ruby
   message_format
   mysql2

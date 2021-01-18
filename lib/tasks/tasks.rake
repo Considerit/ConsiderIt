@@ -29,6 +29,45 @@ task :migrate_roles => :environment do
 end
 
 
+task :subscription_changes_from_default => :environment do 
+
+  results = {'send_emails': {}, 'subscriptions': 0}
+
+  User.where(:registered => true).each do |u|
+    u.active_in.each do |sub|
+      begin
+        s = Subdomain.find(sub)
+      rescue
+        next
+      end
+      settings = u.subscription_settings(s)
+
+      defaults = Notifier::config(s)
+
+      for event, config in defaults
+        if settings.has_key?(event) && config['email_trigger_default'] != settings[event]['email_trigger']
+          # pp "#{u.name} changed #{event} from #{config['email_trigger_default']} to #{settings[event]['email_trigger']} for #{s.name}"
+          if !results.has_key?(event)
+            results[event] = {}
+          end
+          cnt = results[event].fetch(settings[event]['email_trigger'], 0)
+          results[event][settings[event]['email_trigger']] = cnt + 1
+        end
+      end
+
+      if settings['send_emails'] != settings['default_subscription']
+        cnt = results[:send_emails].fetch(settings['send_emails'], 0) 
+        results[:send_emails][settings['send_emails']] = cnt + 1
+      end 
+
+      results[:subscriptions] += 1
+    end
+  end
+  pp results
+end
+
+
+
 
 task :migrate_proposal_roles => :environment do 
   subs = {}

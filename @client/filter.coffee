@@ -164,6 +164,9 @@ basic_proposal_scoring = (proposal, opinion_value) ->
   {sum, avg, std_dev, opinions}
 
 
+
+rnd_order = {}
+
 sort_options = [
 
   { 
@@ -221,6 +224,7 @@ sort_options = [
     name: 'Difference'
     description: "Responses where the community is most split are shown highest."
     comp: (a,b) -> 
+
       ov = (o) -> o.stance
       val = (proposal) ->
         stats = basic_proposal_scoring(proposal, ov)
@@ -238,6 +242,14 @@ sort_options = [
       ov = (o) -> 1 + (o.point_inclusions or []).length
       basic_proposal_scoring(b, ov).sum - basic_proposal_scoring(a, ov).sum
 
+  }, {
+    name: 'Random'
+    description: "Order will be randomized on every page load."
+
+    comp: (a,b) ->
+      rnd_order[a.key] ||= Math.round(Math.random() * 99999) + 1
+      rnd_order[b.key] ||= Math.round(Math.random() * 99999) + 1
+      rnd_order[a.key] - rnd_order[b.key]
   }
 
 

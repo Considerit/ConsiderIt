@@ -200,6 +200,10 @@ sort_options = [
     comp: (a,b) -> new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     name: 'Newest'
     description: "The responses submitted most recently are shown first."
+  }, {
+    comp: (a,b) -> new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    name: 'Earliest'
+    description: "The responses submitted first are shown first."
   }, { 
     name: 'Unity'
     description: "Responses where the community is most united for or against are shown highest."
@@ -422,7 +426,7 @@ SortProposalsMenu = ReactiveComponent
             DIV 
               style: 
                 fontWeight: 600
-                fontSize: 20
+                fontSize: 18
 
               translator "engage.sort_order.#{option.name}", option.name 
 

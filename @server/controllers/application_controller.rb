@@ -185,9 +185,8 @@ protected
     Thread.current[:current_user_id] = user.id
     Thread.current[:current_user]    = user
 
-    # I think the following is redundant with dirty_if_any_private_proposals
     if user.registered
-      dirty_key '/proposals' # your_opinion
+      dirty_if_any_private_proposals current_user
     end 
   end
 

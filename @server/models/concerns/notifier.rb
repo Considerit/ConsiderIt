@@ -178,8 +178,7 @@ module Notifier
     {
       'new_proposal' => {
         'ui_label' => 'If someone adds a new proposal',
-        'email_trigger_default' => subdomain.name != 'consider'
-        
+        'email_trigger_default' => true
       },
 
       'content_to_moderate' => {

@@ -113,7 +113,7 @@ SubdomainRoles = ReactiveComponent
         name: 'proposer', 
         label: 'Proposers', 
         description: 'Can add new proposals.', 
-        wildcard: {label: 'By default, any registered user can post new proposals. Can be overridden on a list-by-list basis.', default: true}},
+        wildcard: {label: 'Any registered user can post new proposals. Can be overridden on a list-by-list basis.', default: true}},
       {
         name: 'visitor', 
         label: 'People who can access forum', 

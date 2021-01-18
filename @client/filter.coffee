@@ -201,7 +201,7 @@ sort_options = [
     name: 'Newest'
     description: "The responses submitted most recently are shown first."
   }, {
-    comp: (a,b) -> new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    comp: (a,b) -> new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     name: 'Earliest'
     description: "The responses submitted first are shown first."
   }, { 

@@ -1,8 +1,16 @@
-require './admin'
+require '../form'
+require '../shared'
+
+
+require './edit_profile'
 require './notifications'
 require './roles'
 require './tags'
 require './translations'
+require './import_export'
+require './moderation'
+require './forum_settings'
+require './customize'
 
 
 window.styles += """
@@ -68,6 +76,9 @@ window.Dashboard = ReactiveComponent
     loc = fetch 'location'
 
     switch loc.url
+      when '/dashboard/edit_profile'
+        title = 'Your Profile'
+        Widget = EditProfile
       when '/dashboard/email_notifications'
         title = 'Notifications'
         Widget = Notifications
@@ -124,7 +135,7 @@ window.Dashboard = ReactiveComponent
 
         draw_menu_separator 'settings'
 
-        draw_menu_option {href: '/edit_profile', label: 'Edit Profile', icon: 'avatar'}
+        draw_menu_option {href: '/dashboard/edit_profile', label: 'Edit Profile', icon: 'avatar'}
         draw_menu_option {href: '/dashboard/email_notifications', label: 'Email Settings', icon: 'bell'}
 
         if is_admin 

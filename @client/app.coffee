@@ -151,9 +151,7 @@ LocationTransition = ReactiveComponent
       # between routes. TODO: more elegant approach
       auth = fetch('auth')
 
-      if loc.url == '/edit_profile' && auth.form != 'edit profile'
-        reset_key auth, {form: 'edit profile', ask_questions: true}
-      else if auth.form
+      if auth.form
         reset_key auth
 
       #######
@@ -213,7 +211,7 @@ AuthTransition = ReactiveComponent
         ask_questions: true
 
       if subdomain.SSO_domain
-        loadPage '/edit_profile'
+        loadPage '/dashboard/edit_profile'
         
     # there's a required question this user has yet to answer
     else if current_user.logged_in && !current_user.completed_host_questions && !fetch('auth').form
@@ -260,6 +258,7 @@ Page = ReactiveComponent
         
       Header(key: 'page_header') if access_granted
 
+
       MAIN 
         role: 'main'
         style: 
@@ -273,13 +272,14 @@ Page = ReactiveComponent
         else if !access_granted
           AccessDenied()
 
+        else if loc.url.startsWith('/dashboard')
+          Dashboard()
+
         else if loc.url.match(/(.+)\/edit/)
           EditProposal 
             key: loc.url.match(/(.+)\/edit/)[1]
             fresh: false
 
-        else if loc.url.startsWith('/dashboard')
-          Dashboard()
 
         else
           switch loc.url

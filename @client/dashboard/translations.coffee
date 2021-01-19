@@ -1,4 +1,4 @@
-require './customizations'
+require '../customizations'
 
 
 window.translation_progress = (lang, key_prefix) -> 
@@ -233,151 +233,147 @@ TranslationsDash = ReactiveComponent
 
     DIV null, 
 
-      DashHeader name: 'Translations'
+      DIV style: {},
+        "ConsiderIt's native development language is English (en). Please help us translate it to your language!"
 
-      DIV style: {width: HOMEPAGE_WIDTH(), margin: '0px auto'},
+      DIV 
+        style: 
+          marginTop: 24
 
-        DIV style: {},
-          "ConsiderIt's native development language is English (en). Please help us translate it to your language!"
+        "Which language do you wish to translate for?"
 
+
+        SELECT 
+          value: local.translating_lang
+          style: 
+            fontSize: 20
+            marginLeft: 14
+            display: 'inline-block'
+          onChange: (ev) => 
+            local.translating_lang = ev.target.value
+            save local
+
+          for [k,v] in all_langs
+            OPTION 
+              value: k
+              "#{v} (#{k})"
+
+        DIV 
+          style: 
+            fontSize: 12
+          "Is your language not available? Email us at hello@consider.it to get your language added."
+
+
+      DIV 
+        style: 
+          marginTop: 24
+
+        LABEL 
+          htmlFor: 'insitutranslations'
+          "Enable in-situ translations?"
+
+        INPUT 
+          id: 'insitutranslations'
+          type: 'checkbox' 
+          checked: fetch('translations').in_situ_translations
+          style: 
+            fontSize: 36
+          onChange: => 
+            tr = fetch 'translations'
+            tr.in_situ_translations = !tr.in_situ_translations
+            save tr 
+
+
+        DIV 
+          style: 
+            fontSize: 12
+          "In-situ mode lets you browse the rest of the site and add some translations in context."
+
+
+      if current_user.is_super_admin
         DIV 
           style: 
             marginTop: 24
 
-          "Which language do you wish to translate for?"
+          "Add a new language"
 
+          DIV null,
 
-          SELECT 
-            value: local.translating_lang
-            style: 
-              fontSize: 20
-              marginLeft: 14
-              display: 'inline-block'
-            onChange: (ev) => 
-              local.translating_lang = ev.target.value
-              save local
-
-            for [k,v] in all_langs
-              OPTION 
-                value: k
-                "#{v} (#{k})"
-
-          DIV 
-            style: 
-              fontSize: 12
-            "Is your language not available? Email us at hello@consider.it to get your language added."
-
-
-        DIV 
-          style: 
-            marginTop: 24
-
-          LABEL 
-            htmlFor: 'insitutranslations'
-            "Enable in-situ translations?"
-
-          INPUT 
-            id: 'insitutranslations'
-            type: 'checkbox' 
-            checked: fetch('translations').in_situ_translations
-            style: 
-              fontSize: 36
-            onChange: => 
-              tr = fetch 'translations'
-              tr.in_situ_translations = !tr.in_situ_translations
-              save tr 
-
-
-          DIV 
-            style: 
-              fontSize: 12
-            "In-situ mode lets you browse the rest of the site and add some translations in context."
-
-
-        if current_user.is_super_admin
-          DIV 
-            style: 
-              marginTop: 24
-
-            "Add a new language"
-
-            DIV null,
-
-              INPUT 
-                style: 
-                  fontSize: 18
-                type: 'text'
-                ref: 'newlang_abbrev'
-                placeholder: 'Abbreviation'
-
-              INPUT               
-                type: 'text'
-                ref: 'newlang_label'
-                placeholder: 'Full Name'
-                style: 
-                  margin: '0 8px'
-                  fontSize: 18
-
-              BUTTON
-                onClick: => 
-                  abbrev = @refs.newlang_abbrev.getDOMNode().value
-                  label = @refs.newlang_label.getDOMNode().value
-
-                  if abbrev not of translations.available_languages
-                    translations.available_languages[abbrev] = label 
-                    save translations
-
-                    @refs.newlang_abbrev.getDOMNode().value = ""
-                    @refs.newlang_label.getDOMNode().value = ""
-
-                "Add"
-
-
-        if local.translating_lang
-          DIV null, 
-
-            TranslationsForLang
-              key: "translations_for_#{local.translating_lang}"
-              translation_key_prefix: "/translations"
-              lang: local.translating_lang
-
-            # if current_user.is_admin 
-            TranslationsForLang
-              key: "forum_translations_for_#{local.translating_lang}"            
-              translation_key_prefix: "/translations/#{subdomain.name}"
-              lang: local.translating_lang
-              forum_specific: true
-
-
-            DIV
+            INPUT 
               style: 
-                position: 'fixed'
-                bottom: 0
-                left: 0
-                width: WINDOW_WIDTH()
-                zIndex: 999
-                backgroundColor: 'rgba(220,220,220,.8)'
-                textAlign: 'center'
-                padding: '8px'
+                fontSize: 18
+              type: 'text'
+              ref: 'newlang_abbrev'
+              placeholder: 'Abbreviation'
 
-              BUTTON 
-                className: 'primary_button'
+            INPUT               
+              type: 'text'
+              ref: 'newlang_label'
+              placeholder: 'Full Name'
+              style: 
+                margin: '0 8px'
+                fontSize: 18
+
+            BUTTON
+              onClick: => 
+                abbrev = @refs.newlang_abbrev.getDOMNode().value
+                label = @refs.newlang_label.getDOMNode().value
+
+                if abbrev not of translations.available_languages
+                  translations.available_languages[abbrev] = label 
+                  save translations
+
+                  @refs.newlang_abbrev.getDOMNode().value = ""
+                  @refs.newlang_label.getDOMNode().value = ""
+
+              "Add"
+
+
+      if local.translating_lang
+        DIV null, 
+
+          TranslationsForLang
+            key: "translations_for_#{local.translating_lang}"
+            translation_key_prefix: "/translations"
+            lang: local.translating_lang
+
+          # if current_user.is_admin 
+          TranslationsForLang
+            key: "forum_translations_for_#{local.translating_lang}"            
+            translation_key_prefix: "/translations/#{subdomain.name}"
+            lang: local.translating_lang
+            forum_specific: true
+
+
+          DIV
+            style: 
+              position: 'fixed'
+              bottom: 0
+              left: 0
+              width: WINDOW_WIDTH()
+              zIndex: 999
+              backgroundColor: 'rgba(220,220,220,.8)'
+              textAlign: 'center'
+              padding: '8px'
+
+            BUTTON 
+              className: 'primary_button'
+              style: 
+                backgroundColor: focus_color()
+                marginTop: 0
+                fontSize: 22
+              onClick: => 
+                promote_temporary_translations(local.translating_lang, "/translations")                  
+                promote_temporary_translations(local.translating_lang, "/translations/#{subdomain.name}")
+              
+              "Save Changes"
+
+            if fetch('translations_interface').saved_successfully
+              DIV
                 style: 
-                  backgroundColor: focus_color()
-                  marginTop: 0
-                  fontSize: 22
-                onClick: => 
-                  promote_temporary_translations(local.translating_lang, "/translations")                  
-                  promote_temporary_translations(local.translating_lang, "/translations/#{subdomain.name}")
-                
-                "Save Changes"
-
-              if fetch('translations_interface').saved_successfully
-                DIV
-                  style: 
-                    color: 'green'
-                    marginTop: 10
-                  "Successfully saved"
+                  color: 'green'
+                  marginTop: 10
+                "Successfully saved"
 
 
 

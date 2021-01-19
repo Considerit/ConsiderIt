@@ -3,7 +3,6 @@ require './customizations'
 require './histogram'
 require './slider'
 require './permissions'
-require './watch_star'
 require './bubblemouth'
 
 

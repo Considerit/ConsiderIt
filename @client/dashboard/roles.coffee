@@ -1,6 +1,6 @@
-require './customizations'
-require './form'
-require './shared'
+require '../customizations'
+require '../form'
+require '../shared'
 
 
 
@@ -127,9 +127,7 @@ SubdomainRoles = ReactiveComponent
     # at subdomain_controller#create
 
     DIV null, 
-      DashHeader name: 'Permissions & Roles'
-      DIV style: {width: HOMEPAGE_WIDTH(), margin: 'auto'},
-        SpecifyRoles subdomain, roles
+      SpecifyRoles subdomain, roles
 
 
 SpecifyRoles = (target, roles) ->  

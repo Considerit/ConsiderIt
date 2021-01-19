@@ -6,8 +6,8 @@
 
 require './element_viewport_positioning'
 require './activerest-m'
+require 'dashboard/dashboard'
 require './dock'
-require './admin'
 require './auth'
 require './avatar'
 require './browser_hacks'
@@ -18,9 +18,7 @@ require './edit_proposal'
 require './customizations'
 require './form'
 require './histogram'
-require './roles'
 require './filter'
-require './tags'
 require './homepage'
 require './shared'
 require './opinion_slider'
@@ -28,11 +26,9 @@ require './state_dash'
 require './tooltip'
 require './development'
 require './su'
-require './notifications'
 require './edit_point'
 require './edit_comment'
 require './point'
-require './translations'
 require './legal'
 require './statement'
 require './proposal'
@@ -281,7 +277,10 @@ Page = ReactiveComponent
           EditProposal 
             key: loc.url.match(/(.+)\/edit/)[1]
             fresh: false
-            
+
+        else if loc.url.startsWith('/dashboard')
+          Dashboard()
+
         else
           switch loc.url
             when '/'
@@ -295,24 +294,7 @@ Page = ReactiveComponent
             when '/proposal/new'
               EditProposal key: "new_proposal", fresh: true      
             when '/accessibility_support'
-              AccessibilitySupport()        
-            when '/dashboard/email_notifications'
-              Notifications 
-                key: '/page/dashboard/email_notifications'
-            when '/dashboard/data_import_export'
-              DataDash key: "/page/dashboard/data_import_export"
-            when '/dashboard/moderate'
-              ModerationDash key: "/page/dashboard/moderate"
-            when '/dashboard/application'
-              AppSettingsDash key: "/page/dashboard/application"
-            when '/dashboard/customizations'
-              CustomizationsDash key: "/page/dashboard/customizations"
-            when '/dashboard/roles'
-              SubdomainRoles key: "/page/dashboard/roles"
-            when '/dashboard/tags'
-              UserTags key: "/page/dashboard/tags"
-            when '/dashboard/translations'
-              TranslationsDash key: "/page/dashboard/translations"
+              AccessibilitySupport()
 
             else
               if @page?.result == 'Not found'

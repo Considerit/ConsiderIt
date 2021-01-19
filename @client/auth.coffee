@@ -323,56 +323,6 @@ Auth = ReactiveComponent
 
         render
 
-    render_host_questions = =>
-      host_questions = @userQuestionInputs()
-
-      if host_questions.length > 0 
-
-        host_framing = customization 'host_questions_framing'
-
-        DIV
-          style: 
-            padding: "24px 33px"
-            backgroundColor: "#eee"
-            marginTop: 18
-            width: AUTH_WIDTH() - 18 * 2
-            marginLeft: -50 + 18
-          
-          H4
-            style: _.extend {}, section_heading_style, 
-              marginBottom: 18
-              fontFamily: customization('font')
-            translator('auth.host_questions.heading', 'Questions from the forum host') 
-
-          if host_framing 
-            DIV 
-              style: 
-                fontSize: 14
-                marginBottom: 12
-              dangerouslySetInnerHTML: __html: host_framing
-
-
-          UL 
-            style: 
-              padding: "6px 0px"
-              listStyle: 'none'
-
-            for [label, render] in host_questions
-              field_id = render?.props?.id or render?[0]?.props?.id
-              LI 
-                style: 
-                  marginBottom: 16
-
-                LABEL
-                  htmlFor: field_id
-                  style:
-                    display: 'block'
-                    fontWeight: 600
-
-                  dangerouslySetInnerHTML: __html: label 
-
-
-                render
 
 
     DIV null,
@@ -400,7 +350,7 @@ Auth = ReactiveComponent
         #      switch to log in.
         when 'create account', 'create account via invitation'
           
-          if avatar_field = @avatarInput()
+          if avatar_field = AvatarInput()
             avatar_field = [pic_prompt, avatar_field]
 
 
@@ -420,7 +370,8 @@ Auth = ReactiveComponent
             render_field avatar_field[0], avatar_field[1]
 
 
-            render_host_questions()
+            ShowHostQuestions
+              show_questions: auth.ask_questions
 
             if pledges.length > 0 
             
@@ -472,7 +423,7 @@ Auth = ReactiveComponent
 
         # The EDIT PROFILE form
         when 'edit profile'
-          avatar_field = @avatarInput()
+          avatar_field = AvatarInput()
           if avatar_field
             avatar_field = [pic_prompt, avatar_field]
 
@@ -487,7 +438,8 @@ Auth = ReactiveComponent
             render_field name_label, @inputBox('name', full_name_placeholder)
             render_field avatar_field[0], avatar_field[1]
 
-            render_host_questions()
+            ShowHostQuestions
+              show_questions: auth.ask_questions
 
         # The RESET PASSWORD form
         when 'reset password'
@@ -505,7 +457,8 @@ Auth = ReactiveComponent
           render_field "#{code_label}:", @inputBox('verification_code', code_placeholder)
 
         when 'user questions'
-          render_host_questions()
+          ShowHostQuestions
+            show_questions: auth.ask_questions
 
         else
           throw "Unrecognized authentication form #{auth.form}"
@@ -795,89 +748,7 @@ Auth = ReactiveComponent
       pattern: pattern
       autoComplete: if name == 'verification_code' || auth.form in ['edit profile'] then 'off'
 
-  ####
-  # avatarInput
-  #
-  # Outputs a file input for uploading (and previewing) an avatar.
-  # Returns null for non-FormData compliant browsers (IE9)...
-  #
-  avatarInput : ->
-    # We're not going to bother with letting IE9 users set a profile picture. Too much hassle. 
-    if window.FormData
-      # hack for submitting file data in ActiveREST for now
-      # we'll just submit the file form after user is signed in
 
-      current_user = fetch '/current_user'
-      user = fetch(fetch('/current_user').user)
-      @local.preview ?= user.avatar_file_name || current_user.b64_thumbnail || current_user.avatar_remote_url
-
-      img_preview_src =  if @local.newly_uploaded
-                            @local.newly_uploaded
-                         else if user.avatar_file_name
-                            avatarUrl user, 'large'
-                         else if current_user.b64_thumbnail 
-                            current_user.b64_thumbnail 
-                         else if current_user.avatar_remote_url
-                            current_user.avatar_remote_url 
-                         else 
-                            null
-      FORM 
-        id: 'user_avatar_form'
-        action: '/current_user'
-
-        DIV 
-          style: 
-            height: 60
-            width: 60
-            borderRadius: '50%'
-            backgroundColor: '#e6e6e6'
-            overflow: 'hidden'
-            display: 'inline-block'
-            marginRight: 18
-            marginTop: 3
-
-          IMG 
-            alt: ''
-            id: 'avatar_preview'
-            style: 
-              width: 60
-              display: if !@local.preview then 'none'
-            src: img_preview_src
-
-          if !@local.preview  
-            SVG 
-              width: 60
-              viewBox: "0 0 100 100" 
-              style:
-                position: 'relative'
-                top: 8
-
-              PATH 
-                fill: "#ccc" 
-                d: "M64.134,50.642c-0.938-0.75-1.93-1.43-2.977-2.023c8.734-6.078,10.867-18.086,4.797-26.805  c-6.086-8.727-18.086-10.875-26.82-4.797c-8.719,6.086-10.867,18.086-4.781,26.812c1.297,1.867,2.922,3.484,4.781,4.789  c-1.039,0.594-2.039,1.273-2.977,2.023c-6.242,5.031-11.352,11.312-15.023,18.438c-0.906,1.75-1.75,3.539-2.555,5.344  c17.883,16.328,45.266,16.328,63.133,0c-0.789-1.805-1.641-3.594-2.547-5.344C75.509,61.954,70.384,55.673,64.134,50.642z"
-
-
-
-        INPUT 
-          id: 'user_avatar'
-          name: "avatar"
-          type: "file"
-          style: {marginTop: 24, verticalAlign: 'top'}
-          onChange: (ev) => 
-            @submit_avatar_form = true
-            input = $('#user_avatar')[0]
-            if input.files && input.files[0]
-              reader = new FileReader()
-              reader.onload = (e) =>
-                @local.preview = true 
-                @local.newly_uploaded = e.target.result
-                save @local
-                $("#avatar_preview").attr 'src', e.target.result
-              reader.readAsDataURL input.files[0]
-            else
-              $("#avatar_preview").attr('src', asset('no_image_preview.png'))
-    else 
-      null
 
   ####
   # pledgeInput
@@ -939,19 +810,170 @@ Auth = ReactiveComponent
 
         translator('auth.forgot_password.link', 'Help! I forgot my password') 
 
+
+  ####
+  # submitAuth
+  #
+  # Carries out auth form submission. Called from clicking the 
+  # submit button or hitting enter. 
+  submitAuth : (ev) -> 
+    ev.preventDefault()
+    $el = $(@getDOMNode())
+    subdomain = fetch '/subdomain'
+    auth = fetch('auth')
+
+    current_user = fetch('/current_user')
+
+    # Client side validation of user questions
+    # Note that we don't have server side validation because
+    # the questions are all defined on the client. 
+    @local.errors = []    
+    if auth.ask_questions && auth.form not in ['login', 'reset password', 'verify email']
+      questions = customization('auth_questions')
+      for tag, vals of (customization('user_tags') or {})
+        continue if !vals.self_report
+        question = vals.self_report
+        if question.required
+          has_response = question.input in ['boolean', 'checklist'] || !!current_user.tags[tag]
+
+          if !has_response || (question.require_checked && !current_user.tags[tag])
+            @local.errors.push translator 
+                                 id: 'auth.validation.missing_answer'
+                                 question: question.question
+                                 "\"{question}\" is required!" 
+
+          is_valid_input = true
+          if question.validation
+            is_valid_input = question.validation(current_user.tags[tag])
+          if !is_valid_input && has_response
+            @local.errors.push translator 
+                                 id: 'auth.validation.invalid_answer'
+                                 response: current_user.tags[tag]
+                                 question: question.question  
+                                 "{response} isn't a valid answer to \"{question}\"!" 
+
+      save @local
+
+    if auth.ask_questions && auth.form not in ['login', 'reset password', 'verify email', 'edit profile'] && !@local.agreed_to_terms
+      @local.errors.push translator('auth.validation.agree_to_terms', "To proceed, you must agree to the terms") 
+
+    if @local.errors.length == 0
+      @local.submitting = true
+      save @local
+
+      current_user.signed_pledge = $el.find('.pledge-input').length == $el.find('.pledge-input:checked').length
+      current_user.trying_to = auth.form
+
+      save current_user, => 
+        if auth.form in ['create account', 'edit profile']
+          ensureCurrentUserAvatar()
+
+        if auth.form in ['edit profile']
+          @local.saved_successfully = current_user.errors.length + @local.errors.length == 0
+
+        # Once the user logs in, we will stop showing the log-in screen
+        else if current_user.logged_in
+          if auth.goal == 'Save your Opinion'
+            setTimeout((() -> updateProposalMode('results', 'after_save')), 700)
+          reset_key auth
+
+        @local.submitting = false
+        save @local
+
+      # hack for submitting file data in ActiveREST for now
+      # we'll just submit the file form after user is signed in
+      # TODO: investigate alternatives for submitting form data
+      if @submit_avatar_form
+
+        $('#user_avatar_form').ajaxSubmit
+          type: 'PUT'
+          data: 
+            authenticity_token: current_user.csrf
+            trying_to: 'update_avatar_hack'
+    else 
+      save @local
+
+  componentDidMount : -> 
+    writeToLog {what: 'accessed authentication'}
+
+
+
+
+# merge this with other definition when code gets refactored with styles 
+# declared with window.styles
+section_heading_style =             
+  color: '#222'
+  fontSize: 18
+  display: 'block'
+  fontWeight: 700
+
+window.ShowHostQuestions = ReactiveComponent
+  displayName: 'ShowHostQuestions'
+
+  render: ->
+
+    host_questions = @userQuestionInputs @props.show_questions
+    return SPAN null if host_questions.length == 0
+
+
+    host_framing = customization 'host_questions_framing'
+
+    DIV
+      style: 
+        padding: "24px 33px"
+        backgroundColor: "#eee"
+        marginTop: 18
+        width: AUTH_WIDTH() - 18 * 2
+        marginLeft: -50 + 18
+      
+      H4
+        style: _.extend {}, section_heading_style, 
+          marginBottom: 18
+          fontFamily: customization('font')
+        translator('auth.host_questions.heading', 'Questions from the forum host') 
+
+      if host_framing 
+        DIV 
+          style: 
+            fontSize: 14
+            marginBottom: 12
+          dangerouslySetInnerHTML: __html: host_framing
+
+
+      UL 
+        style: 
+          padding: "6px 0px"
+          listStyle: 'none'
+
+        for [label, render] in host_questions
+          field_id = render?.props?.id or render?[0]?.props?.id
+          LI 
+            style: 
+              marginBottom: 16
+
+            LABEL
+              htmlFor: field_id
+              style:
+                display: 'block'
+                fontWeight: 600
+
+              dangerouslySetInnerHTML: __html: label 
+
+
+            render
+
   ####
   # userQuestionInputs
   #
   # Creates the ui inputs for answering user questions for this subdomain
-  userQuestionInputs : -> 
+  userQuestionInputs : (ask_questions) -> 
     subdomain = fetch('/subdomain')
     current_user = fetch('/current_user')
     auth = fetch('auth')
 
     return DIV() if !current_user.tags
 
-    if auth.ask_questions && auth.form in \
-          ['edit profile', 'create account', 'create account via invitation', 'user questions']
+    if ask_questions
       questions = []
       for tag, vals of (customization('user_tags') or {})
         if vals.self_report
@@ -1107,91 +1129,92 @@ Auth = ReactiveComponent
 
 
 
-  ####
-  # submitAuth
-  #
-  # Carries out auth form submission. Called from clicking the 
-  # submit button or hitting enter. 
-  submitAuth : (ev) -> 
-    ev.preventDefault()
-    $el = $(@getDOMNode())
-    subdomain = fetch '/subdomain'
-    auth = fetch('auth')
+####
+# avatarInput
+#
+# Outputs a file input for uploading (and previewing) an avatar.
+# Returns null for non-FormData compliant browsers (IE9)...
+#
+window.AvatarInput = ReactiveComponent
+  displayName: 'AvatarInput'
 
-    current_user = fetch('/current_user')
+  render: -> 
+    # We're not going to bother with letting IE9 users set a profile picture. Too much hassle. 
+    return SPAN(null) if !window.FormData
 
-    # Client side validation of user questions
-    # Note that we don't have server side validation because
-    # the questions are all defined on the client. 
-    @local.errors = []    
-    if auth.ask_questions && auth.form not in ['login', 'reset password', 'verify email']
-      questions = customization('auth_questions')
-      for tag, vals of (customization('user_tags') or {})
-        continue if !vals.self_report
-        question = vals.self_report
-        if question.required
-          has_response = question.input in ['boolean', 'checklist'] || !!current_user.tags[tag]
+    # hack for submitting file data in ActiveREST for now
+    # we'll just submit the file form after user is signed in
 
-          if !has_response || (question.require_checked && !current_user.tags[tag])
-            @local.errors.push translator 
-                                 id: 'auth.validation.missing_answer'
-                                 question: question.question
-                                 "\"{question}\" is required!" 
+    current_user = fetch '/current_user'
+    user = fetch(fetch('/current_user').user)
+    @local.preview ?= user.avatar_file_name || current_user.b64_thumbnail || current_user.avatar_remote_url
 
-          is_valid_input = true
-          if question.validation
-            is_valid_input = question.validation(current_user.tags[tag])
-          if !is_valid_input && has_response
-            @local.errors.push translator 
-                                 id: 'auth.validation.invalid_answer'
-                                 response: current_user.tags[tag]
-                                 question: question.question  
-                                 "{response} isn't a valid answer to \"{question}\"!" 
+    img_preview_src =  if @local.newly_uploaded
+                          @local.newly_uploaded
+                       else if user.avatar_file_name
+                          avatarUrl user, 'large'
+                       else if current_user.b64_thumbnail 
+                          current_user.b64_thumbnail 
+                       else if current_user.avatar_remote_url
+                          current_user.avatar_remote_url 
+                       else 
+                          null
+    FORM 
+      id: 'user_avatar_form'
+      action: '/current_user'
 
-      save @local
+      DIV 
+        style: 
+          height: 60
+          width: 60
+          borderRadius: '50%'
+          backgroundColor: '#e6e6e6'
+          overflow: 'hidden'
+          display: 'inline-block'
+          marginRight: 18
+          marginTop: 3
 
-    if auth.ask_questions && auth.form not in ['login', 'reset password', 'verify email', 'edit profile'] && !@local.agreed_to_terms
-      @local.errors.push translator('auth.validation.agree_to_terms', "To proceed, you must agree to the terms") 
+        IMG 
+          alt: ''
+          id: 'avatar_preview'
+          style: 
+            width: 60
+            display: if !@local.preview then 'none'
+          src: img_preview_src
 
-    if @local.errors.length == 0
-      @local.submitting = true
-      save @local
+        if !@local.preview  
+          SVG 
+            width: 60
+            viewBox: "0 0 100 100" 
+            style:
+              position: 'relative'
+              top: 8
 
-      current_user.signed_pledge = $el.find('.pledge-input').length == $el.find('.pledge-input:checked').length
-      current_user.trying_to = auth.form
+            PATH 
+              fill: "#ccc" 
+              d: "M64.134,50.642c-0.938-0.75-1.93-1.43-2.977-2.023c8.734-6.078,10.867-18.086,4.797-26.805  c-6.086-8.727-18.086-10.875-26.82-4.797c-8.719,6.086-10.867,18.086-4.781,26.812c1.297,1.867,2.922,3.484,4.781,4.789  c-1.039,0.594-2.039,1.273-2.977,2.023c-6.242,5.031-11.352,11.312-15.023,18.438c-0.906,1.75-1.75,3.539-2.555,5.344  c17.883,16.328,45.266,16.328,63.133,0c-0.789-1.805-1.641-3.594-2.547-5.344C75.509,61.954,70.384,55.673,64.134,50.642z"
 
-      save current_user, => 
-        if auth.form in ['create account', 'edit profile']
-          ensureCurrentUserAvatar()
 
-        if auth.form in ['edit profile']
-          @local.saved_successfully = current_user.errors.length + @local.errors.length == 0
 
-        # Once the user logs in, we will stop showing the log-in screen
-        else if current_user.logged_in
-          if auth.goal == 'Save your Opinion'
-            setTimeout((() -> updateProposalMode('results', 'after_save')), 700)
-          reset_key auth
-
-        @local.submitting = false
-        save @local
-
-      # hack for submitting file data in ActiveREST for now
-      # we'll just submit the file form after user is signed in
-      # TODO: investigate alternatives for submitting form data
-      if @submit_avatar_form
-
-        $('#user_avatar_form').ajaxSubmit
-          type: 'PUT'
-          data: 
-            authenticity_token: current_user.csrf
-            trying_to: 'update_avatar_hack'
-    else 
-      save @local
-
-  componentDidMount : -> 
-    writeToLog {what: 'accessed authentication'}
-
+      INPUT 
+        id: 'user_avatar'
+        name: "avatar"
+        type: "file"
+        style: {marginTop: 24, verticalAlign: 'top'}
+        onChange: (ev) => 
+          @submit_avatar_form = true
+          input = $('#user_avatar')[0]
+          if input.files && input.files[0]
+            reader = new FileReader()
+            reader.onload = (e) =>
+              @local.preview = true 
+              @local.newly_uploaded = e.target.result
+              save @local
+              $("#avatar_preview").attr 'src', e.target.result
+            reader.readAsDataURL input.files[0]
+          else
+            $("#avatar_preview").attr('src', asset('no_image_preview.png'))
+    
 
 # It is important that a user that just submitted a user picture see the picture
 # on the results and in the header. However, this is a bit tricky because the avatars

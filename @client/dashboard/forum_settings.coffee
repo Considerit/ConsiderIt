@@ -279,7 +279,6 @@ window.AppSettingsDash = ReactiveComponent
 
 
   submit : -> 
-    submitting_files = @submit_logo || @submit_masthead
 
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
@@ -305,19 +304,7 @@ window.AppSettingsDash = ReactiveComponent
       if subdomain.errors
         @local.errors = subdomain.errors
 
-      @local.save_complete = true if !submitting_files
+      @local.save_complete = true
       save @local
 
       arest.serverFetch('/users') # anonymity may have changed, so force a refetch
-
-      if submitting_files
-        current_user = fetch '/current_user'
-        $('#subdomain_files').ajaxSubmit
-          type: 'PUT'
-          data: 
-            authenticity_token: current_user.csrf
-          success: =>
-            location.reload()
-          error: => 
-            @local.file_errors = true
-            save @local

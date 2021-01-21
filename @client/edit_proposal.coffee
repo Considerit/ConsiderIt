@@ -384,12 +384,13 @@ window.EditProposal = ReactiveComponent
 
 
     save proposal, => 
-
       if @submit_pic
         current_user = fetch '/current_user'
-        $('#proposal_pic_files').ajaxSubmit
+        form_to_upload = document.getElementById('proposal_pic_files')
+        ajax_submit_files_in_form
+          form: '#proposal_pic_files'
           type: 'PUT'
-          data: 
+          additional_data: 
             authenticity_token: current_user.csrf
             id: proposal.id
           success: after_save

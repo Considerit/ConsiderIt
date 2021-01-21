@@ -713,10 +713,20 @@ window.EditBanner = ReactiveComponent
 
 
       FORM 
-        id: 'masthead_file'
+        id: 'banner_files'
         action: '/update_images_hack'
         style: 
           display: 'none'
+
+        INPUT 
+          id: 'logo'
+          type: 'file'
+          name: 'logo'
+          ref: 'logo_file_input'
+          onChange: (ev) =>
+            edit_banner.logo_preview = URL.createObjectURL ev.target.files[0]
+            @delete_logo = false 
+            save edit_banner
 
         INPUT 
           id: 'masthead'
@@ -769,21 +779,6 @@ window.EditBanner = ReactiveComponent
             delete_masthead(e)  
             e.preventDefault()
 
-      FORM 
-        id: 'logo_file'
-        action: '/update_images_hack'
-        style: 
-          display: 'none'
-        INPUT 
-          id: 'logo'
-          type: 'file'
-          name: 'logo'
-          ref: 'logo_file_input'
-          onChange: (ev) =>
-            edit_banner.logo_preview = URL.createObjectURL ev.target.files[0]
-            @delete_logo = false 
-            save edit_banner
-
       if edit_banner.logo_preview != '*delete*' && (edit_banner.logo_preview || customization('banner').logo?.url)
 
         BUTTON 
@@ -810,10 +805,9 @@ window.EditBanner = ReactiveComponent
     save edit_banner
 
   submit : -> 
-    submit_masthead = @refs.masthead_file_input.getDOMNode().value && @refs.masthead_file_input.getDOMNode().value != ''
-    submit_logo = @refs.logo_file_input.getDOMNode().value && @refs.logo_file_input.getDOMNode().value != ''
-
-    file_uploads = submit_logo || submit_masthead || @delete_logo || @delete_masthead
+    submit_masthead = @refs.masthead_file_input.getDOMNode().files?.length > 0
+    submit_logo =     @refs.logo_file_input.getDOMNode().files?.length > 0
+    file_uploads = submit_masthead || submit_logo || @delete_logo || @delete_masthead
 
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
@@ -847,53 +841,22 @@ window.EditBanner = ReactiveComponent
       if !file_uploads
         @exit_edit()
       else 
-        to_submit = []
-        if submit_masthead
-          to_submit.push '#masthead_file'
-        if submit_logo
-          to_submit.push '#logo_file'
-        if @delete_logo || @delete_masthead
-          to_submit.push 'delete_file'
+        data = 
+          authenticity_token: current_user.csrf
+        if @delete_logo
+          data.logo = '*delete*'
+        if @delete_masthead
+          data.masthead = '*delete*'
 
-        submit_next = =>
-          file_input = to_submit.pop()
-          if file_input in ['#masthead_file', '#logo_file']
-            input_to_upload = $(file_input)
-            input_to_upload.ajaxSubmit
-              type: 'PUT'
-              data: 
-                authenticity_token: current_user.csrf
-              success: =>
-                if to_submit.length > 0 
-                  submit_next()
-                else 
-                  location.reload()
-
-              error: => 
-                @local.file_errors = true
-                save @local
-          else 
-            url = '/update_images_hack'
-            data = 
-              authenticity_token: current_user.csrf
-            if @delete_logo
-              data.logo = '*delete*'
-            if @delete_masthead
-              data.masthead = '*delete*'
-
-            xhr = new XMLHttpRequest()
-            xhr.open "PUT", url, true
-            xhr.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
-            xhr.onreadystatechange = -> 
-              if @readyState == XMLHttpRequest.DONE && @status == 200
-                if to_submit.length > 0 
-                  submit_next()
-                else 
-                  location.reload()
-
-            xhr.send new URLSearchParams(data).toString()
-
-        submit_next()
+        ajax_submit_files_in_form
+          form: '#banner_files' 
+          type: 'PUT'
+          additional_data: data
+          success: =>
+            location.reload()
+          error: => 
+            @local.file_errors = true
+            save @local
 
 
 window.PhotoBanner = (opts) -> 

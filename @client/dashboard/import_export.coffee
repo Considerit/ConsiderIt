@@ -69,7 +69,11 @@ window.DataDash = ReactiveComponent
           P style: {marginBottom: 6}, 
             "You do not have to upload every file, just what you need to. Importing the same spreadsheet multiple times is ok."
 
-        FORM action: '/dashboard/data_import_export',
+        FORM 
+          id: 'import_data'
+          action: '/dashboard/data_import_export'
+
+
           TABLE null, TBODY null,
             for table in tables
               TR null,
@@ -126,12 +130,16 @@ window.DataDash = ReactiveComponent
                   onClick: (e) => 
                     e.preventDefault()
                     $('html, #submit_import').css('cursor', 'wait')
-                    $(@getDOMNode()).find('form').ajaxSubmit
+
+                    ajax_submit_files_in_form
+                      form: '#import_data'
                       type: 'POST'
-                      data: 
+                      additional_data: 
                         authenticity_token: current_user.csrf
                         trying_to: 'update_avatar_hack'   
                       success: (data) => 
+                        
+                        data = JSON.parse data
                         if data[0].errors
                           @local.successes = null
                           @local.errors = data[0].errors

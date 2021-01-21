@@ -2,6 +2,37 @@ require './responsive_vars'
 require './color'
 
 
+#############
+# ajax_submit_files_in_form: uploads a file using ajax, using HTML5 file API
+# opts is hash with: 
+#    form: css selector for the form element
+#    type: the action type (default = POST)
+#    additional_data: hash of more data to include when uploading
+#    uri: the location to upload to (defaults to form's action attribute) 
+#    success: callback when upload successful (optional)
+#    error: callback when upload fails (optional)
+window.ajax_submit_files_in_form = (opts) -> 
+  opts ?= {}
+
+  cb = (evt) ->
+    if xhr.readyState == XMLHttpRequest.DONE
+      status = xhr.status
+      if status == 0 || (status >= 200 && status < 400)
+        opts.success? xhr.responseText
+      else
+        opts.error? {response: xhr.responseText, status: status}
+
+  form = document.querySelector(opts.form)
+  frm = new FormData form
+  for k,v of (opts.additional_data or {})
+    frm.append k, v
+
+  xhr = new XMLHttpRequest
+  xhr.addEventListener 'readystatechange', cb, false
+  xhr.open (opts.type or 'POST'), opts.uri or form.getAttribute('action'), true
+  xhr.send frm
+
+
 # Unfortunately, google makes it so there can only be one Google Translate Widget 
 # rendered into a page. So we have to move around the same element, rather than 
 # embed it nicely where we want. 

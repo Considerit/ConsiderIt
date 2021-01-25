@@ -212,6 +212,7 @@ window.SimpleHomepage = ReactiveComponent
           
 
 
+# handles tab query parameter based on tabs state
 window.HomepageTabTransition = ReactiveComponent
   displayName: "HomepageTabTransition"
 
@@ -219,22 +220,16 @@ window.HomepageTabTransition = ReactiveComponent
     if customization('homepage_tabs')
       loc = fetch 'location'
       tab_state = fetch 'homepage_tabs'
-      tab_config = customization('homepage_tabs')
       default_tab = customization('homepage_default_tab') or 'Show all'
-
-      tabs = ([k,v] for k,v of tab_config)
-
-      if !customization('homepage_tabs_no_show_all') && !tab_config['Show all']
-        tabs.unshift ["Show all", '*']
 
       if !tab_state.filter? || (loc.query_params.tab && loc.query_params.tab != tab_state.filter)
         if loc.query_params.tab
           tab_state.filter = decodeURI loc.query_params.tab
         else 
           tab_state.filter = default_tab
-        for [tab, lists] in tabs 
-          if tab == tab_state.filter
-            tab_state.clusters = lists
+        for tab in get_tabs() 
+          if tab.name == tab_state.filter
+            tab_state.clusters = tab.lists
             break 
         save tab_state
 
@@ -286,15 +281,16 @@ styles += """
   }
 """
 
+
+window.get_tabs = -> customization('homepage_tabs')
+
+
+
 window.HomepageTabs = ReactiveComponent
   displayName: 'HomepageTabs'
 
   render: -> 
     homepage_tabs = fetch 'homepage_tabs'
-    filters = ([k,v] for k,v of customization('homepage_tabs'))
-    if !customization('homepage_tabs_no_show_all') && !customization('homepage_tabs')['Show all']
-      filters.unshift ["Show all", '*']
-
     subdomain = fetch('/subdomain')
 
     DIV 
@@ -310,8 +306,9 @@ window.HomepageTabs = ReactiveComponent
           width: @props.width
 
 
-        for [tab_name, clusters], idx in filters 
-          do (tab_name, clusters) =>
+        for tab, idx in get_tabs() 
+          do (tab) =>
+            tab_name = tab.name
             current = homepage_tabs.filter == tab_name 
             hovering = @local.hovering == tab_name
             featured = @props.featured == tab_name

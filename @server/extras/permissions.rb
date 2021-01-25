@@ -105,9 +105,7 @@ def permit(action, object = nil, user = nil)
         return Permission::INSUFFICIENT_PRIVILEGES 
       end
     elsif !subdomain.user_roles['visitor'].index('*')
-      if !user.registered
-        return Permission::NOT_LOGGED_IN 
-      elsif !user.verified
+      if !user.verified
         return Permission::UNVERIFIED_EMAIL
       end
     end

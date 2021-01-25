@@ -51,6 +51,18 @@ permit = (action) ->
     return Permission.DISABLED
 
   switch action
+
+    when 'read proposal', 'access forum'
+      subdomain = fetch '/subdomain'
+      if !current_user.is_admin && !matchSomeRole(subdomain.roles, ['visitor', 'proposer']) 
+        if !current_user.logged_in
+          return Permission.NOT_LOGGED_IN 
+        else
+          return Permission.INSUFFICIENT_PRIVILEGES 
+
+      else if !subdomain.roles.visitor.indexOf('*') && !current_user.verified
+        return Permission.UNVERIFIED_EMAIL
+
     when 'create proposal'
       subdomain = fetch '/subdomain'
 
@@ -141,8 +153,10 @@ permit = (action) ->
 
 matchEmail = (permission_list) -> 
   user = fetch '/current_user'
+  
   return true if '*' in permission_list
   return true if user.user in permission_list
+
   for email_or_key in permission_list
     if email_or_key.indexOf('*') > -1
       if user.email
@@ -168,7 +182,7 @@ window.recourse = (permission, goal) ->
 
     when Permission.NOT_LOGGED_IN
       if !auth.form
-        reset_key 'auth', {form: 'login', goal: goal, ask_questions: true}
+        reset_key 'auth', {form: 'login', goal: goal}
 
     when Permission.UNVERIFIED_EMAIL
       if auth.form != 'verify email'

@@ -88,7 +88,9 @@ window.NewProposal = ReactiveComponent
             , 0
           else 
             e.stopPropagation()
-            reset_key 'auth', {form: 'login', goal: 'add a new proposal', ask_questions: true}
+            reset_key 'auth', 
+              form: 'login'
+              goal: 'add a new proposal'
         
         A name: "new_#{list_name}"
         bullet 

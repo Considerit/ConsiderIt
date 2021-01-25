@@ -922,7 +922,7 @@ a.skip:hover {
   border: none;
   padding: 8px 36px; }
 
-.primary_button.disabled {
+button.disabled {
   background-color: #eeeeee;
   color: #cccccc;
   box-shadow: none;

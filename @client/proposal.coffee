@@ -1059,7 +1059,6 @@ window.saveOpinion = (proposal) ->
     reset_key 'auth',
       form: auth_form
       goal: 'Save your opinion'
-      ask_questions: true
 
     # We'll need to publish this opinion after auth is completed
     root.opinions_to_publish.push(proposal.your_opinion)
@@ -1477,13 +1476,11 @@ PointsList = ReactiveComponent
                 reset_key 'auth', 
                   form: 'create account'
                   goal: 'Write a point'
-                  ask_questions: true
 
               else if can_add_new_point == Permission.UNVERIFIED_EMAIL
                 reset_key 'auth', 
                   form: 'verify email'
                   goal: 'Write a point'
-                  ask_questions: true
 
                 save auth
                 current_user.trying_to = 'send_verification_token'

@@ -62,7 +62,6 @@ window.AuthCallout = ReactiveComponent
                   onClick: (e) =>
                     reset_key 'auth',
                       form: 'create account'
-                      ask_questions: true
                   style: 
                     backgroundColor: 'transparent'
                     border: 'none'

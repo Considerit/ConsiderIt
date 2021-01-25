@@ -1270,8 +1270,8 @@ window.proposals_in_lists = ->
   homepage_list_order = customization 'homepage_list_order'
   if homepage_list_order.length == 0 && customization('homepage_tabs')
     homepage_list_order = []
-    for k,v of customization('homepage_tabs')
-      homepage_list_order = homepage_list_order.concat v
+    for tab in get_tabs()
+      homepage_list_order = homepage_list_order.concat tab.lists
 
   # By default sort proposals by the newest of the proposals.
   # But we'll only do this on page load, so that clusters don't move
@@ -1313,14 +1313,16 @@ window.proposals_in_lists = ->
 window.lists_for_tab = (tab) -> 
   all_lists = proposals_in_lists()
   homepage_tabs = fetch 'homepage_tabs'
-  tabs_config = customization('homepage_tabs')
+  tabs_config = get_tabs()
 
   eligible_lists = null
   if !tab || !tabs_config
     tab = homepage_tabs.filter
     eligible_lists = homepage_tabs.clusters
   else 
-    eligible_lists = tabs_config[tab]
+    for a_tab in tabs_config
+      if a_tab.name == tab  
+        eligible_lists = a_tab.lists
 
   if !eligible_lists && tab != 'Show all'
     console.error "No eligible lists found for #{tab}"
@@ -1335,8 +1337,8 @@ window.lists_for_tab = (tab) ->
 
       if ineligible && ('*' in (eligible_lists or []))
         in_others = []
-        for ___, llists of tabs_config
-          in_others = in_others.concat llists 
+        for a_tab in tabs_config
+          in_others = in_others.concat a_tab.lists
         ineligible &&= list.key in in_others
       if !ineligible
         lists_in_tab.push list 

@@ -38,6 +38,7 @@ end
 
 def prepare_production_database(sql_url)
 
+
   puts "Downloading database dump..."
 
   # Download and extract target production database backup
@@ -74,8 +75,11 @@ def prepare_production_database(sql_url)
 
   # Drop existing database
   
-  Rake::Task["db:drop"].invoke  
-  Rake::Task["db:create"].invoke
+
+  # Rake::Task["db:drop"].invoke('DISABLE_DATABASE_ENVIRONMENT_CHECK'=>1)
+  system("rake db:drop DISABLE_DATABASE_ENVIRONMENT_CHECK=1")
+  Rake::Task["db:create"].invoke('DISABLE_DATABASE_ENVIRONMENT_CHECK'=>1)
+
   db = Rails.configuration.database_configuration[Rails.env]
   puts "...dropped and recreated database #{db['database']}"
 

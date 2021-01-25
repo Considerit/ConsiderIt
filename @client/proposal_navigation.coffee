@@ -11,10 +11,13 @@ window.GroupedProposalNavigation = (args) ->
     textAlign: 'center'
     marginBottom: 18
 
-  sections = ([k,v] for k,v of customization('homepage_tabs'))
+  sections = get_tabs() 
   if !sections or sections.length == 0
-    sections = [['all', get_all_lists()]]
-  
+    sections = [{
+      name: 'all' 
+      lists: get_all_lists()
+    }]
+
   active_list = "list/#{args.proposal.cluster or 'Proposals'}"
 
   local = fetch 'popnav'
@@ -51,7 +54,9 @@ window.GroupedProposalNavigation = (args) ->
           listStyle: 'none'
           padding: 0
 
-        for [name, lists] in sections 
+        for section in sections 
+          name = section.name
+          lists = section.lists
           active_section = false 
 
           lists = lists_for_tab(name)

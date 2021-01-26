@@ -22,7 +22,7 @@ window.EditProposal = ReactiveComponent
                   permit('update proposal', proposal)
 
     if permitted < 0
-      recourse permitted, 'create a proposal'
+      recourse permitted, 'To participate,'
       return DIV null
 
     block_style = 

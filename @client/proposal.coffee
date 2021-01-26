@@ -1058,7 +1058,8 @@ window.saveOpinion = (proposal) ->
 
     reset_key 'auth',
       form: auth_form
-      goal: 'Save your opinion'
+      goal: 'To participate, please introduce yourself below.'
+      after: 'transition to proposal results'
 
     # We'll need to publish this opinion after auth is completed
     root.opinions_to_publish.push(proposal.your_opinion)
@@ -1475,12 +1476,12 @@ PointsList = ReactiveComponent
               if can_add_new_point == Permission.NOT_LOGGED_IN
                 reset_key 'auth', 
                   form: 'create account'
-                  goal: 'Write a point'
+                  goal: 'To access this forum, please introduce yourself below.'
 
               else if can_add_new_point == Permission.UNVERIFIED_EMAIL
                 reset_key 'auth', 
                   form: 'verify email'
-                  goal: 'Write a point'
+                  goal: 'To participate, please demonstrate you control this email.'
 
                 save auth
                 current_user.trying_to = 'send_verification_token'

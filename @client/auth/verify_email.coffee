@@ -14,6 +14,7 @@ window.VerifyEmail = ReactiveComponent
 
     form.Draw 
       task: translator 'auth.verify_email.heading', 'Verify Your Email'
+      goal: if auth.goal then translator "auth.login_goal.#{auth.goal.toLowerCase()}", auth.goal
       before_cancel: ->
         loadPage '/'
         setTimeout logout, 1

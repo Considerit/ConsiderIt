@@ -199,7 +199,7 @@ Page = ReactiveComponent
         if auth.form
           Auth()
 
-        else if !access_granted
+        if !access_granted
           AccessDenied()
 
         else if loc.url.startsWith('/dashboard')

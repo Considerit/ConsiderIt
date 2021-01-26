@@ -58,9 +58,14 @@ window.EditComment = ReactiveComponent
             e.stopPropagation()
 
             if permitted == Permission.NOT_LOGGED_IN
-              reset_key 'auth', {form: 'login', goal: 'Write a comment'}
+              reset_key 'auth', 
+                form: 'login'
+                goal: 'To participate, please introduce yourself below.'
             else if permitted == Permission.UNVERIFIED_EMAIL
-              reset_key 'auth', {form: 'verify email', goal: 'Write a comment'}
+              reset_key 'auth', 
+                form: 'verify email'
+                goal: 'To participate, please demonstrate you control this email.'
+                
               current_user.trying_to = 'send_verification_token'
               save current_user
 

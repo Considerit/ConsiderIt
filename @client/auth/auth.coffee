@@ -45,7 +45,7 @@ window.AuthTransition = ReactiveComponent
     # Once the user logs in, we will stop showing the log-in screen 
     # and transition if needed
     if !@local.logged_in_last_render && current_user.logged_in
-      if auth.goal == 'Save your opinion'
+      if auth.after == 'transition to proposal results'
         setTimeout -> 
           updateProposalMode('results', 'after_save')
         , 700
@@ -84,7 +84,7 @@ window.AuthTransition = ReactiveComponent
       reset_key 'auth',
         key: 'auth'
         form: if subdomain.SSO_domain then 'edit profile' else 'create account via invitation'
-        goal: 'Complete registration'
+        goal: 'To participate, please introduce yourself below.'
 
       if subdomain.SSO_domain
         loadPage '/dashboard/edit_profile'
@@ -93,7 +93,7 @@ window.AuthTransition = ReactiveComponent
     else if current_user.logged_in && !current_user.completed_host_questions && !auth.form
       reset_key 'auth',
         form: 'user questions'
-        goal: 'To start participating'
+        goal: 'To participate, please answer these questions from the forum host.'
 
 
     else if current_user.needs_to_verify && !window.send_verification_token
@@ -105,7 +105,7 @@ window.AuthTransition = ReactiveComponent
       reset_key 'auth',
         key: 'auth'
         form: 'verify email'
-        goal: 'confirm you control this email'
+        goal: 'To participate, please demonstrate you control this email.'
 
     @local.logged_in_last_render = current_user.logged_in
 
@@ -122,7 +122,6 @@ window.Auth = ReactiveComponent
     current_user = fetch('/current_user')
     auth = fetch('auth')
 
-
     if auth.form == 'reset password'
       return ResetPassword()
     else if auth.form == 'verify email'
@@ -130,7 +129,7 @@ window.Auth = ReactiveComponent
     else if auth.form == 'login'
       return Login()
     else if auth.form == 'create account'
-      return CreateAccount
+      return CreateAccount()
     else if auth.form == 'create account via invitation'
       return CreateAccount by_invitation: true
     else if auth.form == 'user questions'
@@ -172,6 +171,7 @@ window.auth_text_gray = '#444'    # the gray color for solid text
 window.styles += """
   .AUTH {
     background: linear-gradient(180deg, rgba(223,98,100,1) 250px, rgba(238,238,238,1) 250px);
+    min-height: 100vh;
   }
 
   .AUTH_wrapper {
@@ -183,21 +183,25 @@ window.styles += """
 
   .AUTH_header {
     text-align: center;
+    margin-bottom: 24px;
   }
 
   .AUTH_goal {
-    font-size: 18px;
+    font-size: 16px;
+    text-align: center;
     color: white;
+    margin-bottom: 8px;
+    font-style: italic;
   }
 
   .AUTH_task {
-    font-size: 48px;
+    font-size: 44px;
+    font-weight: 400;
     white-space: nowrap;
-    color: white;
   }
 
   .AUTH_body_wrapper {
-    padding: 2em 50px 1.5em 50px;
+    padding: 1.5em 50px 2.5em 50px;
     font-size: 18px;
     box-shadow: 0 2px 4px rgba(0,0,0,.4);
     background-color: white;
@@ -259,7 +263,6 @@ window.AuthForm = (action, bind_to) ->
   current_user = fetch '/current_user'
 
   Draw = (options, children) -> 
-
     DIV 
       className: 'AUTH'
 
@@ -286,24 +289,26 @@ window.AuthForm = (action, bind_to) ->
 
             translator 'engage.cancel_button', 'cancel'
 
-        # The auth form's header
-        DIV
-          className: 'AUTH_header'
+        if options.goal
+          DIV
+            className: 'AUTH_goal'
+            options.goal
 
-          if options.goal
-            DIV
-              className: 'AUTH_goal'
-              options.goal
-              
-          H1
-            className: 'AUTH_task'
-
-            options.task
-
-          options.render_below_title?()
 
         DIV
           className: "AUTH_body_wrapper"
+
+          # The auth form's header
+          DIV
+            className: 'AUTH_header'
+                
+            H1
+              className: 'AUTH_task'
+
+              options.task
+
+            options.render_below_title?()
+
 
           children 
 

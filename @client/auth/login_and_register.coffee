@@ -1,10 +1,10 @@
 require './auth'
 
 window.styles += """
-
 """
 
 window.disallow_cancel = ->
+  console.log permit('access forum')
   permit('access forum') < 0
 
 toggle_modes = ->
@@ -26,7 +26,7 @@ toggle_modes = ->
 
       SPAN 
         style: 
-          color: 'white'
+          # color: 'white'
           fontWeight: 300
           fontSize: 16
 
@@ -40,7 +40,7 @@ toggle_modes = ->
         className: 'toggle_auth'
         style:
           display: 'inline-block'
-          color: 'white'
+          # color: 'white'
           textDecoration: 'underline'
           fontWeight: 600
           fontSize: 16
@@ -74,7 +74,7 @@ window.Login = ReactiveComponent
     form = AuthForm 'login', @
 
     form.Draw 
-      task: translator "auth.login.heading", 'Log in'
+      task: translator "auth.login.heading", 'Participant Login'
       goal: if auth.goal then translator "auth.login_goal.#{auth.goal.toLowerCase()}", auth.goal
       disallow_cancel: disallow_cancel()
       render_below_title: toggle_modes
@@ -154,7 +154,7 @@ window.Login = ReactiveComponent
 window.CreateAccount = ReactiveComponent
   displayName: 'CreateAccount'
 
-  render: -> 
+  render: ->     
     i18n = auth_translations()
     current_user = fetch '/current_user'
     auth = fetch 'auth'

@@ -60,7 +60,7 @@ permit = (action) ->
         else
           return Permission.INSUFFICIENT_PRIVILEGES 
 
-      else if !subdomain.roles.visitor.indexOf('*') && !current_user.verified
+      else if subdomain.roles.visitor.indexOf('*') == -1 && !current_user.verified
         return Permission.UNVERIFIED_EMAIL
 
     when 'create proposal'
@@ -173,7 +173,7 @@ window.recourse = (permission, goal) ->
   loc = fetch 'location'
   auth = fetch 'auth'
 
-  goal = goal || "access this #{if loc.url == '/' then 'private forum' else 'page'}"
+  goal ?= "To access this #{if loc.url == '/' then 'forum' else 'page'},"
   
   switch permission
 
@@ -182,11 +182,15 @@ window.recourse = (permission, goal) ->
 
     when Permission.NOT_LOGGED_IN
       if !auth.form
-        reset_key 'auth', {form: 'login', goal: goal}
+        reset_key 'auth', 
+          form: 'login'
+          goal: "#{goal} please introduce yourself below"
 
     when Permission.UNVERIFIED_EMAIL
       if auth.form != 'verify email'
-        reset_key 'auth', {form: 'verify email', goal: goal}
+        reset_key 'auth',
+          form: 'verify email'
+          goal: "#{goal} please demonstrate you control this email."
 
         current_user = fetch '/current_user'
         current_user.trying_to = 'send_verification_token'

@@ -10,8 +10,8 @@ window.Header = ReactiveComponent
     current_user = fetch('/current_user')
     subdomain = fetch('/subdomain')
 
-    auth = fetch('auth')
-    return SPAN null if auth.form && auth.form not in ['edit profile']
+    # auth = fetch('auth')
+    # return SPAN null if auth.form && auth.form not in ['edit profile']
 
     is_homepage = fetch('location').url == '/'
     editing_banner = fetch('edit_banner').editing

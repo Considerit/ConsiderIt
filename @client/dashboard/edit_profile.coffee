@@ -22,6 +22,7 @@ window.styles += """
 
 window.EditProfile = ReactiveComponent
   displayName: 'EditProfile'
+  mixins: [AuthForm]
 
   render: -> 
 
@@ -32,10 +33,9 @@ window.EditProfile = ReactiveComponent
     if @local.saved_successfully && is_SSO
       loadPage '/'
 
-    form = AuthForm 'edit profile', @
-
-    submit_data = (ev) ->
-      form.Submit ev, 
+    on_submit = (ev) =>
+      @Submit ev, 
+        action: 'edit profile'
         has_host_questions: true
         has_avatar_upload: true
 
@@ -45,22 +45,22 @@ window.EditProfile = ReactiveComponent
       # Single Sign On users can't change email or password
       if !is_SSO 
         [
-          form.RenderInput 
+          @RenderInput 
             type: 'email'
             name: 'email'
             label: i18n.email_label
-            submit_data: submit_data
-          form.RenderInput 
+            on_submit: on_submit
+          @RenderInput 
             type: 'password'
             name: 'password'
             label: i18n.password_label
-            submit_data: submit_data      
+            on_submit: on_submit      
         ]
 
-      form.RenderInput
+      @RenderInput
         name: 'name' 
         label: i18n.name_label
-        submit_data: submit_data
+        on_submit: on_submit
 
       DIV 
         className: 'AUTH_field_wrapper'
@@ -80,8 +80,8 @@ window.EditProfile = ReactiveComponent
         onKeyPress: (event) =>
           # submit on enter
           if event.which == 13 # enter
-            submit_data(event)
-        onClick: submit_data
+            on_submit(event)
+        onClick: on_submit
 
         #TODO: translate
         'Save changes'
@@ -93,7 +93,7 @@ window.EditProfile = ReactiveComponent
             color: '#888'
           i18n.successful_update
 
-      form.ShowErrors()
+      @ShowErrors()
 
 
 

@@ -31,8 +31,7 @@ class CurrentUserController < ApplicationController
     @min_pass = MIN_PASS 
 
 
-    if !params.has_key?(:trying_to) || !params[:trying_to] ||
-          params[:trying_to] == 'update_avatar_hack' 
+    if !params.has_key?(:trying_to) || !params[:trying_to]
       trying_to = 'edit profile'    
     else
       trying_to = params[:trying_to]

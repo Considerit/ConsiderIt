@@ -206,7 +206,7 @@ window.Dock = ReactiveComponent
 # they know if they're docked and where they should position.
 
 # For console output: 
-debug = false
+debug = true
 
 dockingStation =
 

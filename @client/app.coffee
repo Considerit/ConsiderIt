@@ -182,9 +182,12 @@ Page = ReactiveComponent
 
     access_granted = @accessGranted()
 
-    DIV null,
+    DIV
+      'aria-hidden': if auth.form then true
+      
       STYLE 
         dangerouslySetInnerHTML: __html: customization('style')
+
         
       Header(key: 'page_header') if access_granted
 
@@ -196,8 +199,7 @@ Page = ReactiveComponent
           zIndex: 1
           margin: 'auto'
 
-        if auth.form
-          Auth()
+
 
         if !access_granted
           AccessDenied()
@@ -257,7 +259,7 @@ Page = ReactiveComponent
                 result or LOADING_INDICATOR
                 
 
-      Footer(key: 'page_footer') if access_granted && !auth.form
+      Footer(key: 'page_footer') if access_granted
     
 
 Root = ReactiveComponent
@@ -296,6 +298,7 @@ Root = ReactiveComponent
       HomepageTabTransition()
       BrowserLocation()
 
+
       STYLE 
         dangerouslySetInnerHTML: __html: """
           .content, .content input, .content button, .content textarea {
@@ -317,7 +320,8 @@ Root = ReactiveComponent
             backgroundColor: 'white'
             overflowX: 'hidden'
 
-          # Avatars()
+          if fetch('auth').form
+            Auth()
           
           BrowserHacks()
 

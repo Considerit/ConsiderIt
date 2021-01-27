@@ -3,19 +3,20 @@ require './auth'
 # TODO: this form should also show the community pledge
 window.HostQuestions = ReactiveComponent
   displayName: 'CreateAccount'
+  mixins: [AuthForm, Modal]
 
   render: -> 
     i18n = auth_translations()
 
-    form = AuthForm 'user questions', @
     current_user = fetch '/current_user'
 
-    form.Draw
+    @Draw
       task: translator 'auth.host_questions.heading', 'Your hosts request more info'
       disallow_cancel: disallow_cancel()
       goal: if auth.goal then translator "auth.login_goal.#{auth.goal.toLowerCase()}", auth.goal
-      on_submit: (ev) ->
-        form.Submit ev, 
+      on_submit: (ev) =>
+        @Submit ev, 
+          action: 'user questions'
           has_host_questions: true
           check_considerit_terms: true
 
@@ -29,7 +30,7 @@ window.HostQuestions = ReactiveComponent
             padding: '16px 0'
           dangerouslySetInnerHTML: {__html: customization('auth_footer')}
 
-      form.ShowErrors()
+      @ShowErrors()
 
 
 window.errors_in_host_questions = (responses) -> 
@@ -178,7 +179,8 @@ window.ShowHostQuestions = ReactiveComponent
                 type:'checkbox'
                 style: 
                   fontSize: 24
-                  verticalAlign: 'baseline'
+                  verticalAlign: 'top'
+                  marginTop: 7
                   marginLeft: 0
                 checked: @local.tags[question.tag]
                 onChange: do(question) => (event) =>

@@ -476,6 +476,9 @@ ProposalDescription = ReactiveComponent
         background: "url(#{@proposal.banner}) no-repeat center top fixed"
         backgroundSize: 'cover'
         paddingTop: 240
+    else 
+      wrapper_style = 
+        paddingTop: 36
 
     DIV 
       style: wrapper_style
@@ -484,7 +487,7 @@ ProposalDescription = ReactiveComponent
         style: 
           width: HOMEPAGE_WIDTH()
           position: 'relative'
-          margin: '36px auto 12px auto'
+          margin: '0px auto 12px auto'
           fontSize: 18
           marginBottom: 18      
 

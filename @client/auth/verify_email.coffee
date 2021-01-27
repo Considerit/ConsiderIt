@@ -6,15 +6,19 @@ window.styles += """
 
 window.VerifyEmail = ReactiveComponent
   displayName: 'VerifyEmail'
+  mixins: [AuthForm, Modal]
 
   render: -> 
     i18n = auth_translations()
 
-    form = AuthForm 'verify email', @
+    on_submit = (ev) =>
+      @Submit ev,
+        action: 'verify email'
 
-    form.Draw 
+    @Draw 
       task: translator 'auth.verify_email.heading', 'Verify Your Email'
       goal: if auth.goal then translator "auth.login_goal.#{auth.goal.toLowerCase()}", auth.goal
+      on_submit: on_submit
       before_cancel: ->
         loadPage '/'
         setTimeout logout, 1
@@ -27,11 +31,12 @@ window.VerifyEmail = ReactiveComponent
             marginBottom: 18
           i18n.verification_sent_message
 
-        form.RenderInput
+        @RenderInput
           label: i18n.code_label
           name: 'verification_code'
+          on_submit: on_submit
 
-        form.ShowErrors()
+        @ShowErrors()
 
 
 

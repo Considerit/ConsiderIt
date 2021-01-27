@@ -6,14 +6,18 @@ window.styles += """
 
 window.ResetPassword = ReactiveComponent
   displayName: 'ResetPassword'
+  mixins: [AuthForm, Modal]
 
   render: -> 
     i18n = auth_translations()
 
-    form = AuthForm 'reset password', @
+    on_submit = (ev) =>
+      @Submit ev,
+        action: 'reset password'
 
-    form.Draw 
+    @Draw 
       task: translator("auth.reset_password.heading", 'Reset Your Password')
+      on_submit: on_submit
 
       DIV null, 
 
@@ -25,15 +29,17 @@ window.ResetPassword = ReactiveComponent
 
         INPUT({name: 'user[verification_code]', disabled: true, style: {display: 'none'}} ) # prevent autofill of code with email address
         INPUT({type: 'password', name: 'user[password]', disabled: true, style: {display: 'none'}} ) # prevent autofill of code with password
-        form.RenderInput 
+        @RenderInput 
           label: i18n.code_label
           name: 'verification_code'
-        form.RenderInput 
+          on_submit: on_submit  
+        @RenderInput 
           label: translator('auth.reset_password.new_pass', 'New password')
           type: 'password'
           name: 'password'
+          on_submit: on_submit
 
-        form.ShowErrors()
+        @ShowErrors()
 
         DIV 
           style: 

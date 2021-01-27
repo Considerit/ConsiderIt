@@ -4,7 +4,6 @@ window.styles += """
 """
 
 window.disallow_cancel = ->
-  console.log permit('access forum')
   permit('access forum') < 0
 
 toggle_modes = ->
@@ -66,35 +65,41 @@ toggle_modes = ->
 
 window.Login = ReactiveComponent
   displayName: 'Login'
+  mixins: [AuthForm, Modal]
 
   render: -> 
     i18n = auth_translations()
     auth = fetch 'auth'
 
-    form = AuthForm 'login', @
+    on_submit = (ev) =>
+      @Submit ev,
+        action: 'login'
 
-    form.Draw 
-      task: translator "auth.login.heading", 'Participant Login'
+    @Draw 
+      task: translator "auth.login.heading", 'Login to Participate'
       goal: if auth.goal then translator "auth.login_goal.#{auth.goal.toLowerCase()}", auth.goal
       disallow_cancel: disallow_cancel()
       render_below_title: toggle_modes
+      on_submit: on_submit
 
 
       DIV null,
 
-        form.RenderInput
+        @RenderInput
           name: 'email'
           type: 'email'
           label: i18n.email_label
+          on_submit: on_submit
 
-        form.RenderInput
+        @RenderInput
           name: 'password' 
           type: 'password'
           label: i18n.password_label
+          on_submit: on_submit
 
         @resetPasswordLink()
 
-        form.ShowErrors()
+        @ShowErrors()
 
         if customization('login_footer')
           auth = fetch('auth')
@@ -132,12 +137,11 @@ window.Login = ReactiveComponent
       BUTTON
         style: 
           textDecoration: 'underline'
-          color: '#737373'
+          color: '#333'
           backgroundColor: 'transparent'
           border: 'none'
-          fontSize: 12
+          fontSize: 13
           padding: 0
-          fontWeight: 300
           position: 'relative'
           top: -8
 
@@ -153,6 +157,7 @@ window.Login = ReactiveComponent
 
 window.CreateAccount = ReactiveComponent
   displayName: 'CreateAccount'
+  mixins: [AuthForm, Modal]
 
   render: ->     
     i18n = auth_translations()
@@ -162,43 +167,48 @@ window.CreateAccount = ReactiveComponent
                   'create account via invitation'
                 else 
                   'create account'
-    form = AuthForm form_name, @
 
     avatar_field = AvatarInput()
     pledges = @getPledges()
 
-    form.Draw
+    on_submit = (ev) =>
+      current_user.signed_pledge = document.querySelectorAll('.pledge-input').length == document.querySelectorAll('.pledge-input:checked').length
+
+      @Submit ev, 
+        action: form_name
+        has_host_questions: true
+        has_avatar_upload: true
+        check_considerit_terms: true
+
+    @Draw
       task: if @props.by_invitation 
               translator 'auth.create-by-invitation.heading', 'Complete registration'
             else 
               translator 'auth.create.heading', 'Create an account'
       disallow_cancel: disallow_cancel()
       goal: if auth.goal then translator "auth.login_goal.#{auth.goal.toLowerCase()}", auth.goal
-      on_submit: (ev) ->
-        current_user.signed_pledge = document.querySelectorAll('.pledge-input').length == document.querySelectorAll('.pledge-input:checked').length
-
-        form.Submit ev, 
-          has_host_questions: true
-          has_avatar_upload: true
-          check_considerit_terms: true
+      on_submit: on_submit
       render_below_title: if !@props.by_invitation then toggle_modes
 
 
       DIV null,
-        form.RenderInput
+        @RenderInput
           name: 'email'
           type: 'email'
           label: i18n.email_label
           disabled: if @props.by_invitation then true
+          on_submit: on_submit
 
-        form.RenderInput
+        @RenderInput
           name: 'password' 
           type: 'password'
           label: i18n.password_label
+          on_submit: on_submit
 
-        form.RenderInput
+        @RenderInput
           name: 'name'
           label: i18n.name_label
+          on_submit: on_submit
 
         if avatar_field
           DIV 
@@ -246,8 +256,9 @@ window.CreateAccount = ReactiveComponent
                     name:"pledge-#{idx}"
                     style: 
                       fontSize: 24
-                      verticalAlign: 'baseline'
+                      verticalAlign: 'top'
                       marginLeft: 0
+                      marginTop: 7
 
                   LABEL 
                     style: 
@@ -259,7 +270,7 @@ window.CreateAccount = ReactiveComponent
 
         @ConsideritTerms()
 
-        form.ShowErrors()
+        @ShowErrors()
 
         if customization('auth_footer')
           DIV 

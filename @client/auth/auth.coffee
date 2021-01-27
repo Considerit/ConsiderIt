@@ -15,11 +15,6 @@ require '../bubblemouth'
 require '../customizations'
 require '../shared'
 
-require './upload_avatar'
-require './reset_password'
-require './verify_email'
-require './host_questions'
-require './login_and_register'
 
 
 # AuthTransition doesn't actually render anything.  It just handles state
@@ -123,17 +118,17 @@ window.Auth = ReactiveComponent
     auth = fetch('auth')
 
     if auth.form == 'reset password'
-      return ResetPassword()
+      ResetPassword()
     else if auth.form == 'verify email'
-      return VerifyEmail()
+      VerifyEmail()
     else if auth.form == 'login'
-      return Login()
+      Login()
     else if auth.form == 'create account'
-      return CreateAccount()
+      CreateAccount()
     else if auth.form == 'create account via invitation'
-      return CreateAccount by_invitation: true
+      CreateAccount by_invitation: true
     else if auth.form == 'user questions'
-      return HostQuestions()
+      HostQuestions()
     else 
       SPAN null 
 
@@ -170,15 +165,21 @@ window.auth_text_gray = '#444'    # the gray color for solid text
 # default styles for auth forms
 window.styles += """
   .AUTH {
-    background: linear-gradient(180deg, rgba(223,98,100,1) 250px, rgba(238,238,238,1) 250px);
+    // background: linear-gradient(180deg, rgba(223,98,100,1) 250px, rgba(238,238,238,1) 250px);
+    background: rgba(50,50,50,.9);
     min-height: 100vh;
+    height: 100%;
+    min-width: 100vw;
+    position: absolute;
+    z-index: 99999;
   }
 
-  .AUTH_wrapper {
+  #AUTH_wrapper {
     margin: 0 auto;
-    padding: 4em 0;
+    // padding: 4em 0;
     position: relative;
     z-index: 0;
+    padding: 3em 0;
   }
 
   .AUTH_header {
@@ -186,7 +187,7 @@ window.styles += """
     margin-bottom: 24px;
   }
 
-  .AUTH_goal {
+  #AUTH_goal {
     font-size: 16px;
     text-align: center;
     color: white;
@@ -194,7 +195,7 @@ window.styles += """
     font-style: italic;
   }
 
-  .AUTH_task {
+  #AUTH_task {
     font-size: 44px;
     font-weight: 400;
     white-space: nowrap;
@@ -209,16 +210,24 @@ window.styles += """
   }
 
   .AUTH_cancel {
-    color: white;
-    position: absolute;
-    cursor: pointer;
-    right: -100px;
-    top: 40px;
-    padding: 10px;
-    font-size: 24px;
     background-color: transparent;
     border: none;
     opacity: .7;
+  }
+
+  .AUTH_cancel.floating {
+    color: white;
+    position: absolute;
+    cursor: pointer;
+    right: -46px;
+    top: 16px;
+    padding: 10px;
+    font-size: 24px;
+  }
+  .AUTH_cancel.embedded {
+    right: 0;
+    float: right;
+    padding: 8px 0 8px 8px;
   }
 
   .AUTH_submit_button {
@@ -259,71 +268,116 @@ window.styles += """
 """
 
 
-window.AuthForm = (action, bind_to) ->
-  current_user = fetch '/current_user'
 
-  Draw = (options, children) -> 
+########
+# AuthForm
+# 
+# Mixin for common methods for auth forms
+window.AuthForm =
+
+  Draw: (options, children) -> 
+    docked_node_height = @refs.dialog?.getDOMNode().offsetHeight
+    if @local.docked_node_height != docked_node_height
+      @local.docked_node_height = docked_node_height
+      save @local 
+
+    cancel_modal = (e) ->
+      options.before_cancel?()
+      if location.pathname == '/proposal/new'
+        loadPage '/'
+      reset_key 'auth'
+
     DIV 
       className: 'AUTH'
+      style: 
+        minHeight: if @local.docked_node_height then @local.docked_node_height + 50
 
-      DIV
-        className: 'AUTH_wrapper'
-        style:
-          width: AUTH_WIDTH()
 
-        if !options.disallow_cancel
-          BUTTON
-            className: 'AUTH_cancel'
-            title: translator 'engage.cancel_button', 'cancel'
+      Dock
+        key: 'auth-doc'
+        docked_key: 'auth-dock-state'
+        dock_on_zoomed_screens: true
+        dummy: fetch('auth').form
+        do =>   
 
-            onKeyDown: (e) => 
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                e.target.click()
-                e.preventDefault()
-
-            onClick: (e) ->
-              options.before_cancel?()
-              if location.pathname == '/proposal/new'
-                loadPage '/'
-              reset_key 'auth'
-
-            translator 'engage.cancel_button', 'cancel'
-
-        if options.goal
           DIV
-            className: 'AUTH_goal'
-            options.goal
+            id: 'AUTH_wrapper'
+            ref: 'dialog'
+            role: 'dialog'
+            'aria-labeledby': 'AUTH_task'
+            'aria-describedby': if options.goal then 'AUTH_goal'
+            style:
+              width: AUTH_WIDTH()
+
+            if !options.disallow_cancel
+
+              BUTTON
+                className: 'AUTH_cancel floating'
+                title: translator 'engage.cancel_button', 'cancel'
+
+                onKeyDown: (e) => 
+                  if e.which == 13 || e.which == 32 # ENTER or SPACE
+                    e.target.click()
+                    e.preventDefault()
+
+                onClick: cancel_modal
+
+                DIV 
+                  dangerouslySetInnerHTML: __html: '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" fill="white" viewBox="0 0 64 80" enable-background="new 0 0 64 64" xml:space="preserve"><g><path d="M17.586,46.414C17.977,46.805,18.488,47,19,47s1.023-0.195,1.414-0.586L32,34.828l11.586,11.586   C43.977,46.805,44.488,47,45,47s1.023-0.195,1.414-0.586c0.781-0.781,0.781-2.047,0-2.828L34.828,32l11.586-11.586   c0.781-0.781,0.781-2.047,0-2.828c-0.781-0.781-2.047-0.781-2.828,0L32,29.172L20.414,17.586c-0.781-0.781-2.047-0.781-2.828,0   c-0.781,0.781-0.781,2.047,0,2.828L29.172,32L17.586,43.586C16.805,44.367,16.805,45.633,17.586,46.414z"/><path d="M32,64c8.547,0,16.583-3.329,22.626-9.373C60.671,48.583,64,40.547,64,32s-3.329-16.583-9.374-22.626   C48.583,3.329,40.547,0,32,0S15.417,3.329,9.374,9.373C3.329,15.417,0,23.453,0,32s3.329,16.583,9.374,22.626   C15.417,60.671,23.453,64,32,64z M12.202,12.202C17.49,6.913,24.521,4,32,4s14.51,2.913,19.798,8.202C57.087,17.49,60,24.521,60,32   s-2.913,14.51-8.202,19.798C46.51,57.087,39.479,60,32,60s-14.51-2.913-19.798-8.202C6.913,46.51,4,39.479,4,32   S6.913,17.49,12.202,12.202z"/></g></svg>'
+                  style: 
+                    width: 30
+
+            if options.goal
+              DIV
+                id: 'AUTH_goal'
+                options.goal
 
 
-        DIV
-          className: "AUTH_body_wrapper"
+            DIV
+              className: "AUTH_body_wrapper"
 
-          # The auth form's header
-          DIV
-            className: 'AUTH_header'
+              # The auth form's header
+              DIV
+                className: 'AUTH_header'
+                    
+                H1
+                  id: 'AUTH_task'
+
+                  options.task
+
+                options.render_below_title?()
+
+
+              children 
+
+              BUTTON
+                className: "AUTH_submit_button #{if @local.submitting then 'disabled'}"
+                onClick: options.on_submit
+                onKeyDown: (e) => 
+                  if e.which == 13 || e.which == 32 # ENTER or SPACE
+                    e.target.click()
+                    e.preventDefault()
                 
-            H1
-              className: 'AUTH_task'
+                options.submit_button or auth_translations().submit_button      
 
-              options.task
+              if !options.disallow_cancel
+                BUTTON
+                  ref: 'cancel_dialog'
+                  className: 'AUTH_cancel embedded'
+                  title: translator 'engage.cancel_button', 'cancel'
 
-            options.render_below_title?()
+                  onKeyDown: (e) => 
+                    if e.which == 13 || e.which == 32 # ENTER or SPACE
+                      e.target.click()
+                      e.preventDefault()
 
+                  onClick: cancel_modal
 
-          children 
-
-          BUTTON
-            className: "AUTH_submit_button #{if @local.submitting then 'disabled'}"
-            onClick: options.on_submit or Submit
-            onKeyDown: (e) => 
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                e.target.click()
-                e.preventDefault()
-            
-            options.submit_button or auth_translations().submit_button      
+                  translator 'engage.cancel_button', 'cancel'
 
 
-  RenderInput = (opts) -> 
+  RenderInput: (opts) -> 
+    current_user = fetch '/current_user'
     type = opts.type or 'text'
     name = opts.name
 
@@ -364,9 +418,10 @@ window.AuthForm = (action, bind_to) ->
 
           onKeyPress: (event) =>
             if event.which == 13 # enter key
-              (opts.submit_data or @submitAuth)?(event)
+              opts.on_submit(event)
 
-  Submit = (ev, opts) -> 
+  Submit: (ev, opts) -> 
+    current_user = fetch '/current_user'
     ev.preventDefault()
     opts ?= {}
 
@@ -379,16 +434,15 @@ window.AuthForm = (action, bind_to) ->
     if opts.check_considerit_terms && !current_user.tags?['considerit_terms']
       @local.errors.push translator('auth.validation.agree_to_terms', "To proceed, you must agree to the terms") 
 
-
     if @local.errors.length == 0
-      current_user.trying_to = action
+      current_user.trying_to = opts.action
 
       if @local.updates
         _.extend current_user, @local.updates
 
       @local.submitting = true
 
-      save current_user, => 
+      save current_user, =>
         @local.saved_successfully = current_user.errors.length + @local.errors.length == 0
         @local.submitting = false
         save @local
@@ -398,7 +452,8 @@ window.AuthForm = (action, bind_to) ->
 
     save @local
 
-  ShowErrors = (errors) -> 
+  ShowErrors: (errors) ->  
+    current_user = fetch '/current_user'
     errors = (current_user.errors or []).concat(@local.errors or [])
     return SPAN null if !errors || errors.length == 0
 
@@ -419,13 +474,70 @@ window.AuthForm = (action, bind_to) ->
           SPAN null, error
 
 
+######
+# Modal
+#
+# Mixin for handling some aspects of accessible modal forms
+# Currently makes the first element with role=dialog exclusively focusable, unless there exists an @refs.dialog
+# Will cancel on ESC if there exists a cancel button with @ref=cancel_dialog
+# Code influenced by: 
+#    - https://uxdesign.cc/how-to-trap-focus-inside-modal-to-make-it-ada-compliant-6a50f9a70700
+#    - https://bitsofco.de/accessible-modal-dialog/
+window.Modal =
 
-  Draw = Draw.bind bind_to
-  Submit = Submit.bind bind_to
-  RenderInput = RenderInput.bind bind_to
-  ShowErrors = ShowErrors.bind bind_to
+  accessibility_on_keydown: (e) ->
 
-  {Draw, Submit, RenderInput, ShowErrors}
+    # cancel on ESC if a cancel button has been defined
+    if e.key == 'Escape' || e.keyCode == 27
+      @refs.cancel_dialog?.getDOMNode().click()
+
+    # trap focus
+    is_tab_pressed = e.key == 'Tab' or e.keyCode == 9
+    if !is_tab_pressed
+      return
+    if e.shiftKey
+      # if shift key pressed for shift + tab combination
+      if document.activeElement == @first_focusable_element
+        @last_focusable_element.focus()
+        # add focus for the last focusable element
+        e.preventDefault()
+    else
+      # if tab key is pressed
+      if document.activeElement == @last_focusable_element
+        # if focused has reached to last focusable element then focus first focusable element after pressing tab
+        @first_focusable_element.focus()
+        # add focus for the first focusable element
+        e.preventDefault()
+
+
+    return
+
+  componentDidMount: ->
+    @focused_element_before_opening = document.activeElement
+
+    ######################################
+    # For capturing focus inside the modal
+    # add all the elements inside modal which you want to make focusable
+    focusable_elements = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    modal = @refs?.dialog?.getDOMNode() or document.querySelector '[role=dialog]'
+
+    # select the modal by it's id
+    @first_focusable_element = modal.querySelectorAll(focusable_elements)[0]
+    # get first element to be focused inside modal
+    focusable_content = modal.querySelectorAll(focusable_elements)
+    @last_focusable_element = focusable_content[focusable_content.length - 1]
+
+    # get last element to be focused inside modal
+    document.addEventListener 'keydown', @accessibility_on_keydown
+
+    modal.querySelector('input').focus()
+  
+  componentWillUnmount: -> 
+    # return the focus to the element that had focus when the modal was launched
+    if @focused_element_before_opening && document.body.contains(@focused_element_before_opening)
+      @focused_element_before_opening.focus()
+    document.removeEventListener 'keydown', @accessibility_on_keydown
+
 
 
 
@@ -440,3 +552,10 @@ window.auth_translations = ->
   verification_sent_message: translator('auth.verification_sent', 'We just emailed you a verification code. Copy / paste it below.')
   submit_button: translator("auth.submit", 'Submit')
 
+
+
+require './upload_avatar'
+require './reset_password'
+require './verify_email'
+require './host_questions'
+require './login_and_register'

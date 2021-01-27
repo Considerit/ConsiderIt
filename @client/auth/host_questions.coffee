@@ -7,7 +7,7 @@ window.HostQuestions = ReactiveComponent
 
   render: -> 
     i18n = auth_translations()
-
+    auth = fetch 'auth'
     current_user = fetch '/current_user'
 
     @Draw

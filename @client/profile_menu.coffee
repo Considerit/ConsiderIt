@@ -56,6 +56,15 @@ window.ProfileMenu = ReactiveComponent
                   width: 35
                   marginRight: 7
                   marginTop: 1
+
+              SPAN 
+                style: 
+                  fontSize: 18
+                  position: 'relative'
+                  top: -4
+                  paddingRight: 7
+                  visibility: if menu_showing then 'hidden'
+                current_user.name
               I 
                 className: 'fa fa-caret-down'
                 style: 
@@ -71,13 +80,14 @@ window.ProfileMenu = ReactiveComponent
             color: if !light_background then 'white'
             zIndex: 9999999999
             backgroundColor: 'rgba(255,255,255, .1)'
-            boxShadow: '0px 1px 1px rgba(0,0,0,.1)'
+            # boxShadow: '0px 1px 1px rgba(0,0,0,.1)'
             borderRadius: 8
             padding: '3px 4px'
           
           anchor_when_open_style: 
             backgroundColor: 'transparent'
             boxShadow: 'none'
+            color: '#666'
           
           menu_style: 
             left: 'auto'
@@ -117,19 +127,43 @@ window.ProfileMenu = ReactiveComponent
 
             translator "auth.log_in", "Log in"
         else 
-          BUTTON
-            className: 'profile_anchor login'
-            'data-action': 'login'
-            onClick: (e) =>
-              reset_key 'auth',
-                form: 'login'
-
+          DIV 
             style: 
-              color: if !light_background then 'white'
-              backgroundColor: 'transparent'
-              border: 'none'
+              fontSize: 22  
 
-            translator "auth.log_in", "Log in"
+            BUTTON
+              className: 'profile_anchor create_account'
+              'data-action': 'create_account'
+              onClick: (e) =>
+                reset_key 'auth',
+                  form: 'create account'
+
+              style: 
+                color: if !light_background then 'white'
+                backgroundColor: 'transparent'
+                border: 'none'
+
+              translator "auth.sign_up", "Sign up"
+
+            SPAN 
+              style: 
+                color: '#888'
+                padding: '0 6px'
+              "|"
+
+            BUTTON
+              className: 'profile_anchor login'
+              'data-action': 'login'
+              onClick: (e) =>
+                reset_key 'auth',
+                  form: 'login'
+
+              style: 
+                color: if !light_background then 'white'
+                backgroundColor: 'transparent'
+                border: 'none'
+
+              translator "auth.log_in", "Log in"
     
   bitcoinVerification: -> 
     current_user = fetch('/current_user')

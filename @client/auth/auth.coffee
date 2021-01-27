@@ -39,7 +39,9 @@ window.AuthTransition = ReactiveComponent
 
     # Once the user logs in, we will stop showing the log-in screen 
     # and transition if needed
-    if !@local.logged_in_last_render && current_user.logged_in
+    if (!@local.logged_in_last_render && current_user.logged_in) || \
+       (auth.form == 'verify email' && current_user.verified) || \
+       (auth.form == 'user questions' && !current_user.needs_to_complete_profile)
       if auth.after == 'transition to proposal results'
         setTimeout -> 
           updateProposalMode('results', 'after_save')

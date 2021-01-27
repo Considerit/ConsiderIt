@@ -10,6 +10,7 @@ window.VerifyEmail = ReactiveComponent
 
   render: -> 
     i18n = auth_translations()
+    auth = fetch 'auth'
 
     on_submit = (ev) =>
       @Submit ev,

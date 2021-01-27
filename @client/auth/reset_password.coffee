@@ -9,7 +9,7 @@ window.ResetPassword = ReactiveComponent
   mixins: [AuthForm, Modal]
 
   render: -> 
-    i18n = auth_translations()
+    i18n = @i18n()
 
     on_submit = (ev) =>
       @Submit ev,

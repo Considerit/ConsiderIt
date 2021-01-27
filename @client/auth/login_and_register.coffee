@@ -68,7 +68,7 @@ window.Login = ReactiveComponent
   mixins: [AuthForm, Modal]
 
   render: -> 
-    i18n = auth_translations()
+    i18n = @i18n()
     auth = fetch 'auth'
 
     on_submit = (ev) =>
@@ -160,7 +160,7 @@ window.CreateAccount = ReactiveComponent
   mixins: [AuthForm, Modal]
 
   render: ->     
-    i18n = auth_translations()
+    i18n = @i18n()
     current_user = fetch '/current_user'
     auth = fetch 'auth'
     form_name = if @props.by_invitation

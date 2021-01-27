@@ -138,9 +138,6 @@ window.Auth = ReactiveComponent
     writeToLog {what: 'accessed authentication'}
 
 
-
-
-
 window.logout = -> 
   current_user = fetch('/current_user')
   current_user.logged_in = false
@@ -159,9 +156,7 @@ window.logout = ->
     location.reload()
 
 
-
 window.auth_text_gray = '#444'    # the gray color for solid text
-
 
 
 # default styles for auth forms
@@ -360,7 +355,7 @@ window.AuthForm =
                     e.target.click()
                     e.preventDefault()
                 
-                options.submit_button or auth_translations().submit_button      
+                options.submit_button or @i18n.submit_button      
 
               if !options.disallow_cancel
                 BUTTON
@@ -476,6 +471,17 @@ window.AuthForm =
           SPAN null, error
 
 
+  i18n: ->
+    name_label: translator('auth.create.name_label', 'Your name')
+    email_label: translator('auth.login.email_label', 'Your email')
+    password_label: translator('auth.login.password_label', 'Your password')
+    pic_prompt: translator('auth.create.pic_prompt', 'Your picture')
+    code_label: translator('auth.code_entry', 'Code')
+    successful_update: translator("auth.successful_update", "Updated successfully")
+    verification_sent_message: translator('auth.verification_sent', 'We just emailed you a verification code. Copy / paste it below.')
+    submit_button: translator("auth.submit", 'Submit')
+
+
 ######
 # Modal
 #
@@ -511,7 +517,6 @@ window.Modal =
         # add focus for the first focusable element
         e.preventDefault()
 
-
     return
 
   componentDidMount: ->
@@ -543,16 +548,6 @@ window.Modal =
 
 
 
-window.auth_translations = ->
-  name_label: translator('auth.create.name_label', 'Your name')
-  email_label: translator('auth.login.email_label', 'Your email')
-  password_label: translator('auth.login.password_label', 'Your password')
-  pic_prompt: translator('auth.create.pic_prompt', 'Your picture')
-  code_label: translator('auth.code_entry', 'Code')
-  code_placeholder: translator('auth.code_entry.placeholder', 'verification code from email')
-  successful_update: translator("auth.successful_update", "Updated successfully")
-  verification_sent_message: translator('auth.verification_sent', 'We just emailed you a verification code. Copy / paste it below.')
-  submit_button: translator("auth.submit", 'Submit')
 
 
 

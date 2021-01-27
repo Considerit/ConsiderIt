@@ -9,7 +9,7 @@ window.VerifyEmail = ReactiveComponent
   mixins: [AuthForm, Modal]
 
   render: -> 
-    i18n = auth_translations()
+    i18n = @i18n()
     auth = fetch 'auth'
 
     on_submit = (ev) =>

@@ -26,7 +26,7 @@ window.EditProfile = ReactiveComponent
 
   render: -> 
 
-    i18n = auth_translations()
+    i18n = @i18n()
 
     is_SSO = fetch('/subdomain').SSO_domain  
 

@@ -6,7 +6,7 @@ window.HostQuestions = ReactiveComponent
   mixins: [AuthForm, Modal]
 
   render: -> 
-    i18n = auth_translations()
+    i18n = @i18n()
     auth = fetch 'auth'
     current_user = fetch '/current_user'
 

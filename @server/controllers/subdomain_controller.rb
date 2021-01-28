@@ -93,9 +93,7 @@ class SubdomainController < ApplicationController
         moderation_status: 1,
         roles: {
           "editor": ["/user/#{current_user.id}"],
-          "writer":["*"],
-          "commenter":["*"],
-          "opiner":["*"],
+          "participant":["*"],
           "observer":["*"]
         }
       })
@@ -184,6 +182,8 @@ class SubdomainController < ApplicationController
       roles.each do |k,v|
         roles[k] = [] if !v
       end
+
+      dirty_key '/proposals' # proposals inherit roles from subdomain
 
       current_subdomain.roles = roles
     end

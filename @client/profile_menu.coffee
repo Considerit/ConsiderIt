@@ -60,11 +60,11 @@ window.ProfileMenu = ReactiveComponent
 
               SPAN 
                 style: 
+                  color: if menu_showing then '#777'
                   fontSize: 18
                   position: 'relative'
                   top: -4
                   paddingRight: 7
-                  visibility: if menu_showing then 'hidden'
                 current_user.name
               I 
                 className: 'fa fa-caret-down'

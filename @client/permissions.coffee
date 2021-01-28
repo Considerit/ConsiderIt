@@ -93,7 +93,7 @@ permit = (action) ->
       return Permission.DISABLED if !proposal.active
       return Permission.NOT_LOGGED_IN if !current_user.logged_in
 
-      if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'writer', 'opiner'])
+      if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'participant'])
         return Permission.INSUFFICIENT_PRIVILEGES 
 
       if !current_user.completed_host_questions
@@ -109,7 +109,7 @@ permit = (action) ->
     when 'create point'
       proposal = fetch arguments[1]
       return Permission.DISABLED if !proposal.active
-      if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'writer'])
+      if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'participant'])
         if !current_user.logged_in
           return Permission.NOT_LOGGED_IN  
         else 
@@ -138,7 +138,7 @@ permit = (action) ->
       return Permission.DISABLED if !proposal.active
       return Permission.NOT_LOGGED_IN if !current_user.logged_in 
 
-      if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'writer', 'commenter'])
+      if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'participant'])
         return Permission.INSUFFICIENT_PRIVILEGES 
 
     when 'update comment'

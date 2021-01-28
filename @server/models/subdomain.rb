@@ -103,14 +103,14 @@ class Subdomain < ApplicationRecord
   # TODO: consolidate with proposal.user_roles
   def user_roles(filter = false)
     rolez = roles ? roles.deep_dup : {}
-    ['admin', 'moderator', 'proposer', 'visitor'].each do |role|
+    ['admin', 'proposer', 'visitor', 'participant'].each do |role|
 
       # default roles if they haven't been set
-      default_role = ['visitor', 'proposer'].include?(role) ? ['*'] : []
+      default_role = ['visitor', 'proposer', 'participant'].include?(role) ? ['*'] : []
       rolez[role] = default_role if !rolez.has_key?(role) || !rolez[role]
 
       # Filter role if the client isn't supposed to see it
-      if filter # && role != 'proposer'
+      if filter
         # Remove all specific email address for privacy. Leave wildcards.
         # Is used by client permissions system to determining whether 
         # to show action buttons for unauthenticated users. 

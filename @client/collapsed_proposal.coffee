@@ -279,13 +279,19 @@ window.CollapsedProposal = ReactiveComponent
 
                 get_list_title "list/#{proposal.cluster}", true
 
-            if !proposal.active
+            if permit('publish opinion', proposal) == Permission.DISABLED
               SPAN 
                 style: 
                   padding: '0 16px'
 
                 TRANSLATE "engage.proposal_closed.short", 'closed'
 
+            else if permit('publish opinion', proposal) == Permission.INSUFFICIENT_PRIVILEGES
+              SPAN 
+                style: 
+                  padding: '0 16px'
+
+                TRANSLATE "engage.proposal_read_only.short", 'read only'
 
           if can_edit
             DIV

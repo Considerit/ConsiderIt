@@ -186,7 +186,7 @@ module Notifier
          #   * Returning nil means that this event will not show up as a
          #     preference
         'email_trigger_default' => true,
-        'allowed' => lambda {|user, subdomain| user.has_any_role?([:admin, :moderator], subdomain)}
+        'allowed' => lambda {|user, subdomain| user.has_any_role?([:admin], subdomain)}
         },
 
 

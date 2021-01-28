@@ -196,11 +196,7 @@ class ImportDataController < ApplicationController
             })
 
             attrs['roles'] = {
-              "editor": ["/user/#{user.id}"], 
-              "writer": ["*"], 
-              "commenter": ["*"], 
-              "opiner": ["*"], 
-              "observer":["*"]
+              "editor": ["/user/#{user.id}"]
             }
 
             if !proposal

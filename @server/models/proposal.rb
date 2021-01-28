@@ -254,13 +254,15 @@ class Proposal < ApplicationRecord
     rolez = roles ? roles.deep_dup : {}
 
 
-    ['editor', 'writer', 'commenter', 'opiner', 'observer'].each do |role|
+    ['editor', 'participant', 'observer'].each do |role|
 
       # Initialize empty role
       if !rolez[role]
         if role == 'observer' && current_subdomain
           # default to subdomain setting
           rolez[role] = current_subdomain.user_roles['visitor']
+        elsif role == 'participant' && current_subdomain
+          rolez[role] = current_subdomain.user_roles['participant']
         else
           rolez[role] = [] 
         end

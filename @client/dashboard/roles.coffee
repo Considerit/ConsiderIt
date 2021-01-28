@@ -17,33 +17,16 @@ proposal_roles = ->
       wildcard: 
         label: 'Any registered user can edit'
         default: false
+    },{
+      hide: true,
+      name: 'participant', 
+      label: 'Participants', 
+      description: "", 
+      wildcard: 
+        label: 'Any registered user who can observe can participate'
+        default: true
     },
     {
-      hide: true,
-      name: 'writer', 
-      label: 'Writers', 
-      description: "Can write #{pro_label} and #{con_label} points that are " + \
-                   "shared with others. Any writer can comment and opine.", 
-      wildcard: 
-        label: 'Any registered user who can observe can write'
-        default: true
-    },{
-      hide: true,
-      name: 'commenter', 
-      label: 'Commenters', 
-      description: "Can comment on #{pro_label} and #{con_label} points.", 
-      wildcard: 
-        label: 'Any registered user who can observe can comment'
-        default: true
-    },{
-      hide: true,
-      name: 'opiner', 
-      label: 'Opiners', 
-      description: 'Can drag the slider and build a list of other people\'s Pros/Cons, but can\'t write new Pros, Cons or Comments.'
-      wildcard: 
-        label: 'Any registered user who can observe can opine'
-        default: true
-    },{
       hide: true,
       name: 'observer', 
       label: 'Observers', 
@@ -102,18 +85,18 @@ SubdomainRoles = ReactiveComponent
         name: 'admin', 
         label: 'Forum Hosts', 
         description: 'Can configure everything related to this forum.', 
-      }, 
-      {
-        hide: true,
-        name: 'moderator', 
-        label: 'Moderators', 
-        description: 'Can moderate user content. Will receive emails for content needing moderation.', 
       },{
         hide: false,
         name: 'proposer', 
         label: 'Proposers', 
         description: 'Can add new proposals.', 
         wildcard: {label: 'Any registered user can post new proposals. Can be overridden on a list-by-list basis.', default: true}},
+      {
+        hide: false,
+        name: 'participant', 
+        label: 'Participants', 
+        description: 'Can participate by dragging opinion sliders and adding pro / con comments to proposals.', 
+        wildcard: {label: 'Any registered user can participate.', default: true}},
       {
         name: 'visitor', 
         label: 'People who can access forum', 

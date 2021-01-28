@@ -97,7 +97,7 @@ def permit(action, object = nil, user = nil)
       return Permission::INSUFFICIENT_PRIVILEGES 
     end
 
-  when 'read proposal', 'access forum'
+  when 'read proposal', 'access forum', 'read opinion'
     if !user.is_admin?(subdomain) && !Permitted::matchSomeRole(subdomain.user_roles, ['visitor', 'proposer'], user) 
       if !user.registered
         return Permission::NOT_LOGGED_IN 
@@ -135,15 +135,11 @@ def permit(action, object = nil, user = nil)
       return Permission::INSUFFICIENT_PRIVILEGES
     end
 
-  when 'read opinion'
-    opinion = object
-    return permit 'read proposal', opinion.proposal
-
   when 'publish opinion'
     proposal = object
     return Permission::DISABLED if !proposal.active
     return Permission::NOT_LOGGED_IN if !user.registered
-    if !user.is_admin?(subdomain) && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'writer', 'opiner'], user)
+    if !user.is_admin?(subdomain) && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'participant'], user)
       return Permission::INSUFFICIENT_PRIVILEGES
     end
 
@@ -165,7 +161,7 @@ def permit(action, object = nil, user = nil)
     proposal = object
     return Permission::DISABLED if !proposal.active
 
-    if !user.is_admin?(subdomain) && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'writer'], user)
+    if !user.is_admin?(subdomain) && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'participant'], user)
       if !user.registered
         return Permission::NOT_LOGGED_IN  
       else 
@@ -198,7 +194,7 @@ def permit(action, object = nil, user = nil)
     return Permission.DISABLED if !proposal.active
     return Permission::NOT_LOGGED_IN if !user.registered
   
-    if !user.is_admin?(subdomain) && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'writer', 'commenter'], user)
+    if !user.is_admin?(subdomain) && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'participant'], user)
       return Permission::INSUFFICIENT_PRIVILEGES
     end
 
@@ -218,7 +214,7 @@ def permit(action, object = nil, user = nil)
 
   when 'moderate content'
     return Permission::NOT_LOGGED_IN if !user.registered
-    return Permission::INSUFFICIENT_PRIVILEGES if !user.has_any_role?([:admin, :superadmin, :moderator])
+    return Permission::INSUFFICIENT_PRIVILEGES if !user.has_any_role?([:admin, :superadmin])
     return Permission::UNVERIFIED_EMAIL if !user.verified  
 
   when 'update all translations'

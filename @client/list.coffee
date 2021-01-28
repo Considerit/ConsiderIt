@@ -337,11 +337,11 @@ EditList = ReactiveComponent
               # don't show a new button for this list anymore
               customizations[list_key].list_permit_new_items = false 
 
-              # add a note in the description that the list was closed to participation
-              customizations[list_key].list_description ?= ''
-              if customizations[list_key].list_description?.length > 0 
-                customizations[list_key].list_description += "<br>" 
-              customizations[list_key].list_description += "<DIV style='font-style:italic'>Participation was closed by the host on #{new Date().toDateString()}</div>" 
+              # # add a note in the description that the list was closed to participation
+              # customizations[list_key].list_description ?= ''
+              # if customizations[list_key].list_description?.length > 0 
+              #   customizations[list_key].list_description += "<br>" 
+              # customizations[list_key].list_description += "<DIV style='font-style:italic'>Participation was closed by the host on #{new Date().toDateString()}</div>" 
 
               save subdomain
             
@@ -1054,6 +1054,9 @@ EditableDescription = ReactiveComponent
     edit_list = fetch "edit-#{list_key}"
 
     description = edit_list.list_description or customization('list_description', list_key)
+    if Array.isArray(description)
+      description = description.join('\n')
+
     description_style = customization 'list_description_style', list_key
 
     DIV
@@ -1063,8 +1066,8 @@ EditableDescription = ReactiveComponent
         color: '#222'
         marginTop: 6
 
-      if _.isFunction description
-        description()
+      if typeof description == 'function'
+        description()        
       else 
 
         if current_user.is_admin && edit_list.editing

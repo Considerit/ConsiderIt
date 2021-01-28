@@ -245,10 +245,10 @@ window.styles += """
   }
 
   .AUTH_field_label {
-    color: #222;
-    font-size: 18px;
+    color: #666;
+    font-size: 16px;
     display: block;
-    font-weight: bold;
+    text-transform: uppercase;
   }
 
   .AUTH_text_input {
@@ -287,7 +287,7 @@ window.AuthForm =
     DIV 
       className: 'AUTH'
       style: 
-        minHeight: if @local.docked_node_height then @local.docked_node_height + 50
+        minHeight: if @local.docked_node_height then @local.docked_node_height + 100
 
 
       Dock
@@ -355,7 +355,7 @@ window.AuthForm =
                     e.target.click()
                     e.preventDefault()
                 
-                options.submit_button or @i18n.submit_button      
+                options.submit_button or @i18n().submit_button      
 
               if !options.disallow_cancel
                 BUTTON

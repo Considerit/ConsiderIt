@@ -228,13 +228,9 @@ window.CreateAccount = ReactiveComponent
         
           DIV
             style: 
-              padding: "24px 33px"
-              backgroundColor: "#eee"
               marginTop: 18
-              width: AUTH_WIDTH() - 18 * 2
-              marginLeft: -50 + 18
 
-            H4
+            LABEL
               className: 'AUTH_field_label'
               translator('auth.create.pledge_heading', 'Participation Pledge') 
 
@@ -280,6 +276,16 @@ window.CreateAccount = ReactiveComponent
               padding: '16px 0'
             dangerouslySetInnerHTML: {__html: customization('auth_footer')}
 
+        if customization('login_footer')
+          auth = fetch('auth')
+          if auth.form == 'login'
+            DIV 
+              style:
+                fontSize: 13
+                color: auth_text_gray
+                padding: '16px 0'
+              dangerouslySetInnerHTML: {__html: customization('login_footer')}
+
 
   getPledges: ->
     if !customization('auth_require_pledge')
@@ -310,7 +316,7 @@ window.CreateAccount = ReactiveComponent
 
     DIV 
       style: 
-        marginTop: 24
+        margin: '18px 0'
 
       INPUT
         id: slugify("considerit_termsinputBox")

@@ -5,8 +5,9 @@ window.ProfileMenu = ReactiveComponent
   displayName: 'ProfileMenu'
 
   render : -> 
-    current_user = fetch('/current_user')
-    subdomain = fetch('/subdomain')
+    current_user = fetch '/current_user'
+    subdomain = fetch '/subdomain'
+    loc = fetch 'location'
 
     is_admin = current_user.is_admin
     is_moderator = current_user.is_moderator
@@ -26,7 +27,7 @@ window.ProfileMenu = ReactiveComponent
 
     menu_options = _.compact menu_options
 
-    light_background = is_light_background() 
+    light_background = loc.url.match('/dashboard/') or is_light_background() 
 
     DIV
       id: 'user_nav'
@@ -147,8 +148,9 @@ window.ProfileMenu = ReactiveComponent
 
             SPAN 
               style: 
-                color: '#888'
+                color: if !light_background then 'white' else 'black'
                 padding: '0 6px'
+                opacity: .3
               "|"
 
             BUTTON

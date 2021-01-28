@@ -80,17 +80,19 @@ window.ShowHostQuestions = ReactiveComponent
         marginTop: 18
         width: AUTH_WIDTH() - 18 * 2
         marginLeft: -50 + 18
-      
-      H4
-        className: 'AUTH_field_label' 
-        translator('auth.host_questions.heading', 'Questions from the forum host') 
 
-      if host_framing 
-        DIV 
-          style: 
-            fontSize: 14
-            marginBottom: 12
-          dangerouslySetInnerHTML: __html: host_framing
+      DIV 
+        style: 
+          marginBottom: 12      
+        LABEL
+          className: 'AUTH_field_label' 
+          translator('auth.host_questions.heading', 'Questions from the forum host') 
+
+        if host_framing 
+          DIV 
+            style: 
+              fontSize: 14
+            dangerouslySetInnerHTML: __html: host_framing
 
 
       UL 

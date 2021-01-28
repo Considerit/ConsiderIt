@@ -55,7 +55,7 @@ window.ProfileMenu = ReactiveComponent
                 style: 
                   height: 35
                   width: 35
-                  marginRight: 7
+                  marginRight: 12
                   marginTop: 1
 
               SPAN 
@@ -64,7 +64,7 @@ window.ProfileMenu = ReactiveComponent
                   fontSize: 18
                   position: 'relative'
                   top: -4
-                  paddingRight: 7
+                  paddingRight: 12
                 current_user.name
               I 
                 className: 'fa fa-caret-down'
@@ -84,6 +84,7 @@ window.ProfileMenu = ReactiveComponent
             # boxShadow: '0px 1px 1px rgba(0,0,0,.1)'
             borderRadius: 8
             padding: '3px 4px'
+            fontWeight: 600
           
           anchor_when_open_style: 
             backgroundColor: 'transparent'
@@ -97,6 +98,7 @@ window.ProfileMenu = ReactiveComponent
             padding: "56px 14px 8px 8px"
             backgroundColor: '#eee'
             textAlign: 'right'
+            minWidth: '100%'
           
           menu_when_open_style: 
             right: 0

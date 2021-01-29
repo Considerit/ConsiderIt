@@ -840,6 +840,12 @@ a {
 } .button:active:focus, button:active:focus, input[type='submit']:active:focus{
 }
 
+button.like_link {
+  background: none;
+  border: none;
+  text-decoration: underline;
+}
+
 
 table {
   border-collapse: separate; }

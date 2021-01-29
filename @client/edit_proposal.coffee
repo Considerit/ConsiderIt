@@ -243,42 +243,6 @@ window.EditProposal = ReactiveComponent
                 name: 'banner'
                 onChange: (ev) =>
                   @submit_pic = true
-          
-
-        DIV 
-          style: 
-            display: if !current_user.is_admin then 'none'
-
-          SPAN 
-            style: _.extend {}, label_style,
-              textDecoration: 'underline'
-              cursor: 'pointer'
-              width: 400
-              position: 'relative'
-            onClick: => 
-              @local.edit_roles = !@local.edit_roles
-              save @local
-            I 
-              className: 'fa-child fa'
-              style: 
-                position: 'absolute'
-                left: -25
-                top: 5
-
-            translator 'engage.edit_proposal.permissions', 'Permissions'
-
-          DIV 
-            style: 
-              width: CONTENT_WIDTH()
-              backgroundColor: '#fafafa'
-              padding: '10px 60px'
-              display: if @local.edit_roles then 'block' else 'none' 
-                  # roles has to be rendered so that default roles 
-                  # are set on the proposal
-
-            ProposalRoles 
-              key: if @props.fresh then @local.key else proposal.key
-
 
         if @local.errors?.length > 0
           

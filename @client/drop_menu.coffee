@@ -78,12 +78,14 @@ window.DropMenu = ReactiveComponent
 
     set_active = (idx) => 
       idx = -1 if !idx?
-      @local.active_option = idx 
-      save @local 
-      if idx != -1
-        setTimeout =>
-          @refs["menuitem-#{idx}"]?.getDOMNode()?.focus()           
-        , 0
+      if @local.active_option != idx 
+        @local.active_option = idx 
+        save @local 
+        if idx != -1
+          setTimeout =>
+            if idx == @local.active_option
+              @refs["menuitem-#{idx}"]?.getDOMNode()?.focus()           
+          , 0
 
 
     trigger = (e) => 
@@ -103,6 +105,7 @@ window.DropMenu = ReactiveComponent
       document.activeElement.blur()
       @local.show_menu = false
       save @local
+      @props.close_callback?()
 
     # wrapper
     DIV 
@@ -125,6 +128,7 @@ window.DropMenu = ReactiveComponent
         , 0
 
       onKeyDown: (e) => 
+        @props.onKeyDown?(e)
         if e.which == 13 || e.which == 32 || e.which == 27 # ENTER or ESC
           close_menu()
           e.preventDefault()            
@@ -181,8 +185,6 @@ window.DropMenu = ReactiveComponent
         hidden: !@local.show_menu
         style: if @local.show_menu then menu_when_open_style else menu_style
 
-
-
         for option, idx in options
           do (option, idx) =>
             LI 
@@ -219,12 +221,13 @@ window.DropMenu = ReactiveComponent
                   e.stopPropagation()
 
                 onMouseEnter: => 
-                  if @local.active_option != idx                         
+                  if @local.active_option != idx   
                     set_active idx
 
                 onBlur: (e) => 
-                  @local.active_option = -1 
-                  save @local  
+                  if @local.active_option == idx 
+                    @local.active_option = -1 
+                    save @local  
 
                 onMouseExit: (e) => 
                   @local.active_option = -1 

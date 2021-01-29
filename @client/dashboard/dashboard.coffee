@@ -32,6 +32,7 @@ window.styles += """
     padding: 22px 24px 0 24px;
     display: block;
     font-weight: 600;
+    white-space: nowrap;
   } #DASHBOARD-menu a:hover, #DASHBOARD-menu a.active {
     opacity: 1;
   }
@@ -59,6 +60,7 @@ window.styles += """
     font-weight: 400;
     font-size: 36px;
     color: #898989;
+    margin-bottom: 36px;
   }
 
 """

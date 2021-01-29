@@ -40,22 +40,6 @@ proposal_roles = ->
   all = _.compact all
   all
 
-ProposalRoles = ReactiveComponent
-  displayName: 'ProposalRoles'
-
-  render : -> 
-
-    subdomain = fetch '/subdomain'
-    current_user = fetch '/current_user'
-
-    proposal = fetch @props.key
-
-
-    # initialize default roles for a new proposal
-    if !proposal.roles
-      InitializeProposalRoles(proposal)
-
-    SpecifyRoles proposal, proposal_roles()
 
 window.InitializeProposalRoles = (proposal) -> 
   current_user = fetch '/current_user'
@@ -68,11 +52,25 @@ window.InitializeProposalRoles = (proposal) ->
       if role.name == 'observer' 
         # by default, proposals can be accessed by the same folks as the subdomain
         proposal.roles[role.name] = subdomain.roles['visitor'].slice()
+      else if role.name == 'participant'
+        proposal.roles[role.name] = subdomain.roles['participant'].slice()
       else
         proposal.roles[role.name].push '*'
 
   proposal.roles['editor'].push "/user/#{current_user.id}" 
                         #default proposal author as editor
+
+
+
+
+window.styles += """
+  .ROLES_label {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    display: block;
+  }
+"""
 
 SubdomainRoles = ReactiveComponent
   displayName: 'SubdomainRoles'
@@ -80,74 +78,199 @@ SubdomainRoles = ReactiveComponent
   render : -> 
     subdomain = fetch '/subdomain'
 
-    roles = [ 
-      {
-        name: 'admin', 
-        label: 'Forum Hosts', 
-        description: 'Can configure everything related to this forum.', 
-      },{
-        hide: false,
-        name: 'proposer', 
-        label: 'Proposers', 
-        description: 'Can add new proposals.', 
-        wildcard: {label: 'Any registered user can post new proposals. Can be overridden on a list-by-list basis.', default: true}},
-      {
-        hide: false,
-        name: 'participant', 
-        label: 'Participants', 
-        description: 'Can participate by dragging opinion sliders and adding pro / con comments to proposals.', 
-        wildcard: {label: 'Any registered user can participate.', default: true}},
-      {
-        name: 'visitor', 
-        label: 'People who can access forum', 
-        description: 'If unchecked, you have a private forum. Invite specific people to join below.', 
-        wildcard: {label: 'Public forum. Anyone with a link can see all proposals.', default: true}} 
-    ]
-
-    roles = _.compact roles
+    roles =  
+      admin:
+        name: 'admin'
+        label: 'Forum Hosts'
+        description: 'Can configure everything related to this forum.'
+      proposer:
+        hide: false
+        name: 'proposer'
+        label: 'Proposers' 
+        description: 'Can add new proposals.'
+        wildcard: 
+          label: 'Any registered user can post new proposals. Can be overridden on a list-by-list basis.'
+          default: true
+      participant:
+        hide: false
+        name: 'participant'
+        label: 'Participants'
+        description: 'Can participate by dragging opinion sliders and adding pro / con comments to proposals.'
+        wildcard: 
+          label: 'Any registered user can participate.'
+          default: true
+      visitor:
+        name: 'visitor'
+        label: 'People who can access forum'
+        description: 'If unchecked, you have a private forum. Invite specific people to join below.'
+        wildcard: 
+          label: 'Public forum. Anyone with a link can see all proposals.'
+          default: true
 
     # Default roles for a new subdomain are currently hardcoded on the server
     # at subdomain_controller#create
 
-    DIV null, 
-      SpecifyRoles subdomain, roles
+    DIV 
+      id: 'ROLES'
+      style: 
+        maxWidth: HOMEPAGE_WIDTH()
 
-
-SpecifyRoles = (target, roles) ->  
-  DIV null,
-    for role in roles when !role.hide
       DIV 
-        key: role.name
-        style: 
-          marginTop: 24
+        className: 'ROLES_section'
 
-        H2 style: {fontSize: 18, position: 'relative'}, 
-          I 
-            className: "fa #{role.icon}"
-            style: 
-              position: 'absolute'
-              top: 2
-              left: -35
-              fontSize: 24
-          role.label
-        
-        SPAN style: {fontSize: 14}, role.description
+        LABEL
+          className: 'ROLES_label'
+
+          'Who are the hosts of this forum?'
+
+        DIV 
+          className: 'ROLES_text'
+          style: 
+            marginBottom: 24
+
+          'Hosts can configure everything related to this forum, and moderate content.'
 
         UsersWithRole 
-          key: role.name
-          target: target
-          role: role
-    
+          key: 'admin'
+          target: subdomain
+          role: roles.admin
+
+        AddRolesAndInvite 
+          key: 'admin_roles_and_invite'
+          target: subdomain
+          role: roles.admin
+          add_button: 'Add new hosts'
+
+      RadioWildcardRolesSection
+        role: roles.proposer
+        section_label: 'Who can create new proposals for others to consider?'
+        open_label: 'Anyone who registers an account can add new proposals.'
+        restricted_label: 'This is a <b>framed forum</b> where only some people can create new proposals, but anyone else can drag opinion sliders and comment on those proposals. Hosts can override this limitation on a list-by-list basis to allow open ideation in specific places.'
+        add_button: 'Add new proposers'
+
+      RadioWildcardRolesSection
+        role: roles.participant
+        section_label: 'Who can participate by dragging opinion sliders and adding pro / con comments to proposals?'
+        open_label: 'Anyone who registers an account can give their opinion about the proposals.'
+        restricted_label: 'This is a <b>read-only forum</b> where only some people can participate but everyone can see the conversation.'
+        add_button: 'Add new participants'
+
+      RadioWildcardRolesSection
+        role: roles.visitor
+        section_label: 'Who can access this forum?'
+        open_label: 'This is an <b>open forum</b> where anyone with the link can access the forum.'
+        restricted_label: 'This is a <b>private forum</b> for invited participants only.'
+        add_button: 'Add new visitors'
+        
+window.styles += """
+  
+  .ROLES_section {
+    margin-bottom: 44px;
+    position: relative;
+  }
+
+  .ROLES_section .ROLES_label {
+    margin-bottom: 18px;
+    display: block;
+  }
+
+
+  #ROLES input[type='radio']{
+    -webkit-appearance:button;
+    -moz-appearance:button;
+    appearance:button;
+    border:4px solid #ccc;
+    border-top-color:#bbb;
+    border-left-color:#bbb;
+    background:#fff;
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    position: absolute;
+    left: -36px;
+  }
+  #ROLES input[type='radio']:checked{
+    border:20px solid #4099ff;
+  }
+  
+  .ROLES_radio_group {
+    position: relative;
+    margin-bottom: 30px;
+    margin-left: 36px;    
+  }
+
+  .ROLES_radio_label b {
+    font-style: italic;
+  }
+
+  .ROLES_add_button {
+    background-color: #EDEDED;
+    border: 1px solid #D7D7D7;
+    padding: 6px 18px;
+  }
+"""
+
+RadioWildcardRolesSection = (opts) ->
+  role = opts.role
+  subdomain = fetch '/subdomain'
+
+  DIV 
+    className: 'ROLES_section'
+
+    LABEL
+      className: 'ROLES_label'
+
+      opts.section_label
+
     DIV 
-      style: 
-        marginLeft: -35
-        marginTop: 12
+      className: 'ROLES_text'
+      onChange: (e) =>
+        if e.target.id == "forum_open_#{role.name}"
+          subdomain.roles[role.name] = ['*']
+        else 
+          subdomain.roles[role.name] = []
+        save subdomain
 
-      AddRolesAndInvite 
-        key: 'roles_and_invite'
-        roles: roles
-        target: target
+      DIV 
+        className: 'ROLES_radio_group'
 
+        INPUT 
+          id: "forum_open_#{role.name}"
+          type: 'radio'
+          name: "radio_#{role.name}"
+          checked: subdomain.roles[role.name].indexOf('*') > -1
+        
+        LABEL
+          className: 'ROLES_radio_label'
+          htmlFor: "forum_open_#{role.name}"
+          dangerouslySetInnerHTML: __html: opts.open_label
+
+      DIV 
+        className: 'ROLES_radio_group'      
+        INPUT 
+          id: "forum_restricted_#{role.name}"
+          type: 'radio'
+          name: "radio_#{role.name}"
+          checked: subdomain.roles[role.name].indexOf('*') == -1
+
+        LABEL
+          className: 'ROLES_radio_label'        
+          htmlFor: "forum_restricted_#{role.name}"
+          dangerouslySetInnerHTML: __html: opts.restricted_label
+
+    if subdomain.roles[role.name].indexOf('*') == -1
+      [
+        UsersWithRole 
+          key: 'admin'
+          target: subdomain
+          role: role
+
+        AddRolesAndInvite 
+          key: 'admin_roles_and_invite'
+          target: subdomain
+          role: role
+          add_button: opts.add_button
+      ]
 
 # AddRolesAndInvite is the block at the bottom of roles editing that controls
 # adding new roles and sending out invites
@@ -158,16 +281,11 @@ AddRolesAndInvite = ReactiveComponent
     target = fetch @props.target
     users = fetch '/users'
 
-    if !@local.role
-      @local.added = []
-      @local.role = @props.roles[0]
-      save @local
-
+    @local.added ?= []
 
     processNewFolks = =>
-      $filter = $(@getDOMNode()).find('#filter')
-      candidates = $filter.val()
-      $filter.val('')
+      $filter = document.getElementById('filter')
+      candidates = $filter.value
       if candidates
         candidates = candidates.split(',')
         for candidate_email in candidates
@@ -177,140 +295,133 @@ AddRolesAndInvite = ReactiveComponent
               candidate_email.indexOf('.') > 0
             @local.added.push candidate_email
         save @local
+      $filter.value = ''
 
 
-    other_roles = @props.roles
+    filtered_users = _.filter users.users, (u) => 
+                        target.roles[@props.role.name].indexOf(u.key) < 0 && 
+                        @local.added.indexOf(u.key) < 0 &&
+                         (!@local.filtered || 
+                          "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1)
+
+
     DIV 
       style: 
         position: 'relative'
-        backgroundColor: '#f2f2f2'
-        padding: '18px 24px'
+        padding: if @local.expanded then '18px 24px'
+        border: if @local.expanded then '1px solid #ccc' else '1px solid transparent'
 
 
-      SELECT 
-        id: 'select_role'
-        type: 'text'
-        name: 'select_role'
-        defaultValue: 0
-        onChange: (event) =>
-          role = other_roles[event.target.value]
-          @local.role = role 
-          save @local
 
-        style: 
-          fontSize: 18
-          marginBottom: 18
-          display: 'inline-block'
+      if !@local.expanded 
+        BUTTON 
+          className: 'ROLES_add_button'
+          onClick: => 
+            @local.expanded = true 
+            save @local 
+
+          @props.add_button
+
+      else
 
 
-        for role,idx in other_roles 
-          if !role.hide
-            do (role, idx) => 
-              OPTION
-                value: idx
-                "Add #{role.label}"
+
+        DropMenu
+          options: filtered_users
+          open_menu_on: 'activation'
+
+          selection_made_callback: (user) =>
+            @local.added.push user.key
+            processNewFolks()
+            @local.filtered = null
+            save @local
+            $(document).off('click.roles')
+
+          render_anchor: (menu_showing) =>
+            INPUT 
+              id: 'filter'
+              type: 'text'
+              style: {fontSize: 18, width: 350, padding: '3px 6px'}
+              autoComplete: 'off'
+              placeholder: "Name or email..."
+              onChange: => 
+                @local.filtered = document.getElementById('filter').value
+                save @local
+              onKeyDown: (e) =>
+                # enter key pressed...
+                if e.which == 13
+                  e.preventDefault()
+                  processNewFolks()
+
+          render_option: (user) ->
+            [
+              SPAN 
+                style: 
+                  fontWeight: 600
+                user.name 
+
+              SPAN
+                style: 
+                  opacity: .7
+                  paddingLeft: 8
+
+                user.email  
+            ]
+ 
+          menu_style: 
+            backgroundColor: '#ddd'
+            border: '1px solid #ddd'
+
+          option_style: 
+            padding: '4px 12px'
+            fontSize: 18
+            cursor: 'pointer'
+            display: 'block'
+
+          active_option_style:
+            backgroundColor: '#eee'
+
+
+
 
 
       # Show everyone queued for being added/invited to a role
-      if @local.added.length > 0
-        DIV null,
+      if @local.added.length > 0 && @local.expanded
+        DIV 
+          style:
+            marginTop: 18
+
           for user_key, idx in @local.added
 
             UserWithRole user_key, (user_key) => 
               @local.added = _.without @local.added, user_key
               save @local
 
-      # Text input for adding new people to a role
-      DIV 
-        ref: 'autocomplete'
-        onKeyDown: (e) => 
-          if e.which == 27 && @local.selecting # ESC
-            @local.selecting = false 
-            save @local
-
-        INPUT 
-          id: 'filter'
-          type: 'text'
-          style: {fontSize: 18, width: 350, padding: '3px 6px'}
-          autoComplete: 'off'
-          placeholder: "Name or email..."
-          onChange: => 
-            @local.filtered = $(@getDOMNode()).find('#filter').val()
-            save(@local)
-          onKeyPress: (e) => 
-            # enter key pressed...
-            if e.which == 13
-              e.preventDefault()
-              processNewFolks()
-
-          onFocus: (e) => 
-            @local.selecting = true
-            save(@local)
-            e.stopPropagation()
-            $(document).on 'click.roles', (e) =>
-              if e.target.id != 'filter'
-                processNewFolks()                
-                @local.selecting = false
-                @local.filtered = null
-                save @local
-                $(document).off('click.roles')
-            return false
-
-        # Dropdown, autocomplete menu for adding existing users
-        if @local.selecting
-          available_users = _.filter users.users, (u) => 
-              target.roles[@local.role.name].indexOf(u.key) < 0 && 
-              @local.added.indexOf(u.key) < 0 &&
-               (!@local.filtered || 
-                "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1)
-          if available_users.length > 0
-            UL 
-              style: 
-                width: 500
-                position: 'absolute'
-                zIndex: 99
-                listStyle: 'none'
-                backgroundColor: '#fff'
-                border: '1px solid #eee'
-
-              for user,idx in available_users
-                LI 
-                  className: 'invite_menu_item'
-                  style: 
-                    padding: '2px 12px'
-                    fontSize: 18
-                    cursor: 'pointer'
-                    borderBottom: '1px solid #fafafa'
-                  key: idx
-
-                  onClick: do(user) => (e) => 
-                    @local.added.push user.key
-                    save @local
-                    e.stopPropagation()
-                  onTouchEnd: do(user) => (e) => 
-                    @local.added.push user.key
-                    save @local
-                    e.stopPropagation()
-                  onKeyDown: do(user) => (e) => 
-                    if e.which == 13 # ENTER
-                      @local.added.push user.key
-                      save @local
-                      e.stopPropagation()
-                      e.preventDefault()
-
-                  "#{user.name} <#{user.email}>"
 
       # Email invite area
-      DIV style: {marginTop: 20},
+      DIV 
+        style: 
+          marginTop: 20
+          display: if !@local.expanded then 'none'
         INPUT 
           type: 'checkbox'
           id: 'send_email_invite'
           name: 'send_email_invite'
+          style: 
+            position: 'relative'
+            top: 1
+            marginRight: 8
           onClick: =>
             @local.send_email_invite = !@local.send_email_invite
             save @local
+          onKeyDown: (e) => 
+            if e.which == 13 || e.which == 32 # ENTER or SPACE
+              e.target.click()
+              e.preventDefault()
 
-        LABEL htmlFor: 'send_email_invite', 'Send email invitation'
+        LABEL 
+          htmlFor: 'send_email_invite'
+          'Send email invitation'
 
         if @local.send_email_invite
           DIV style: {marginLeft: 20, marginTop: 10},
@@ -321,37 +432,64 @@ AddRolesAndInvite = ReactiveComponent
               style: {width: '90%', fontSize: 18, padding: '8px 14px'}
 
       # Submit button
-      BUTTON
+      DIV 
         style: 
-          backgroundColor: focus_color()
-          color: 'white'
-          padding: '8px 14px'
-          fontSize: 16
-          display: 'inline-block'
-          cursor: 'pointer'
-          borderRadius: 8
+          display: if !@local.expanded then 'none'
           marginTop: 12
-          border: 'none'
 
-        onClick: (e) => 
+        BUTTON
+          style: 
+            backgroundColor: focus_color()
+            color: 'white'
+            padding: '6px 12px'
+            fontSize: 16
+            display: 'inline-block'
+            cursor: 'pointer'
+            # borderRadius: 8
+            fontWeight: 600
+            marginTop: 12
+            border: 'none'
 
-          if @local.added.length > 0
+          onKeyDown: (e) => 
+            if e.which == 13 || e.which == 32 # ENTER or SPACE
+              e.target.click()
+              e.preventDefault()
 
-            target.roles[@local.role.name] = target.roles[@local.role.name].concat @local.added
+          onClick: (e) => 
 
-            if @local.send_email_invite
-              if !target.invitations
-                target.invitations = []
+            if @local.added.length > 0
+              role = @props.role.name 
+              target.roles[role] = target.roles[role].concat @local.added
 
-              invitation = {role: @local.role.name, keys_or_emails: @local.added}
-              invitation.message = $('#custom_email_message').val()              
-              target.invitations.push invitation
-            
-            @local.added = []
-            save target
+              if @local.send_email_invite
+                if !target.invitations
+                  target.invitations = []
+
+                invitation = {role: role, keys_or_emails: @local.added}
+                invitation.message = $('#custom_email_message').val()              
+                target.invitations.push invitation
+              
+              @local.added = []
+              save target
+              save @local
+
+          @props.add_button
+
+
+        BUTTON 
+          className: 'like_link'
+          style: 
+            color: '#888'
+            marginLeft: 12
+
+          onKeyDown: (e) => 
+            if e.which == 13 || e.which == 32 # ENTER or SPACE
+              e.target.click()
+              e.preventDefault()
+          onClick: => 
+            @local.expanded = false
             save @local
-
-        'Done. Add these roles.'
+          'cancel'
 
 
 UsersWithRole = ReactiveComponent
@@ -361,40 +499,11 @@ UsersWithRole = ReactiveComponent
     target = fetch @props.target
     role = @props.role
 
-    DIV style: {marginLeft: -4},
+    DIV 
+      style: 
+        marginLeft: -4
+        marginBottom: 12
       
-      #####
-      # Show the wildcard checkbox, if configured
-      # If no wildcard configured, and no one has 
-      # the role, state that no one has the role
-      if role.wildcard
-        DIV null,
-          INPUT 
-            id: "wildcard-#{role.name}"
-            name: "wildcard-#{role.name}"
-            type: 'checkbox'
-            defaultChecked: target.roles[role.name].indexOf('*') > -1
-            onChange: (e) -> 
-              if e.target.checked 
-                target.roles[role.name].push '*'
-              else
-                target.roles[role.name] = _.without target.roles[role.name], '*'
-
-              save target
-
-              if role.name == 'proposer'
-                subdomain = fetch '/subdomain'
-                customizations = subdomain.customizations
-                customizations.list_permit_new_items = e.target.checked
-                save subdomain 
-
-          LABEL htmlFor: "wildcard-#{role.name}", role.wildcard.label
-
-      else if !target.roles[role.name] || target.roles[role.name].length == 0
-        DIV style: {fontStyle: 'italic', margin: 4}, 'None'
-      #########
-
-
       if target.roles[role.name]
         for user_key in target.roles[role.name]
           if user_key != '*'
@@ -410,18 +519,20 @@ UsersWithRole = ReactiveComponent
 
 UserWithRole = (user_key, on_remove_from_role) ->
 
-  SPAN 
+  DIV 
     key: user_key
     style:
       display: 'inline-block'
-      padding: '6px 12px'
+      padding: '6px 4px 6px 12px'
       fontSize: 13
       backgroundColor: '#ddd' #'rgb(217, 227, 244)'
       color: 'black'
       borderRadius: 8
       margin: 4
 
-    SPAN null, 
+    DIV
+      style: 
+        display: 'inline-block'
       if user_key && user_key[0] == '/'
         user = fetch user_key
         SPAN null,
@@ -430,25 +541,38 @@ UserWithRole = (user_key, on_remove_from_role) ->
               key: user_key
               hide_tooltip: true
               style: 
-                width: 20
-                height: 20
-                marginRight: 5
-          if user.name 
-            user.name 
-          else 
-            user.email
+                width: if user.name then 35 else 20
+                height: if user.name then 35 else 20
+                marginRight: 12
+          DIV 
+            style: 
+              display: 'inline-block'
+            if user.name 
+              DIV 
+                style: 
+                  fontSize: 16
+                user.name 
+            DIV 
+              style: 
+                color: if user.name then '#888'
+              user.email
+
       else
         user_key
 
     BUTTON # remove user from role
       'aria-label': "Remove #{user?.name or user_key} from role"
-      style: {cursor: 'pointer', marginLeft: 8, border: 'none', 'backgroundColor': 'transparent'}
+      style: 
+        cursor: 'pointer'
+        marginLeft: 8
+        border: 'none'
+        backgroundColor: 'transparent'
+        verticalAlign: 'top'
       onClick: -> on_remove_from_role(user_key) if on_remove_from_role
       'x'
 
 
 ## Export...
 window.SubdomainRoles = SubdomainRoles
-window.ProposalRoles = ProposalRoles
 
       

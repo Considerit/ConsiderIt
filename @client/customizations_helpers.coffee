@@ -18,7 +18,7 @@ window.cluster_link = (href, anchor) ->
   anchor ||= href 
   "<a href='#{href}' target='_blank' style='font-weight: 600; text-decoration:underline'>#{anchor}</a>"
 
-window.DEFAULT_BACKGROUND_COLOR = "#df6264"
+window.DEFAULT_BACKGROUND_COLOR = "#f0f0f0"
 
 
 #################

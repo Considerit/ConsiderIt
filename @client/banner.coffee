@@ -930,16 +930,25 @@ window.PhotoBanner = (opts) ->
   description = fetch("forum-description").html or customization('banner')?.description or opts.supporting_text
   has_description = opts.supporting_text || (description?.trim().length > 0 && description.trim() != '<p><br></p>')
 
+  background_color = edit_banner.background_css or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
+
   is_dark_theme = !is_light_background()
-  text_block_color = edit_banner.text_background_css or customization('banner')?.text_background_css or DEFAULT_TEXT_BLOCK_COLOR
-  text_block_opacity = parseInt(edit_banner.text_background_css_opacity or customization('banner')?.text_background_css_opacity or DEFAULT_TEXT_BLOCK_OPACITY)
-  text_block_background = if has_image_background then "#{text_block_color}#{convert_opacity(text_block_opacity)}" or 'rgba(0, 0, 0, .8)'
-  
-  if text_block_color && text_block_opacity > 126
-    text_block_is_dark = !is_light_background(text_block_color)
-  else 
-    text_block_is_dark = is_dark_theme
-  
+
+  if has_image_background
+    text_block_color = edit_banner.text_background_css or customization('banner')?.text_background_css or DEFAULT_TEXT_BLOCK_COLOR 
+    text_block_opacity = parseInt(edit_banner.text_background_css_opacity or customization('banner')?.text_background_css_opacity or DEFAULT_TEXT_BLOCK_OPACITY)
+    text_block_background = "#{text_block_color}#{convert_opacity(text_block_opacity)}" or 'rgba(0, 0, 0, .8)' 
+    
+    if text_block_opacity > 126
+      text_block_is_dark = !is_light_background(text_block_color)
+    else 
+      text_block_is_dark = is_dark_theme
+
+    text_color = if text_block_is_dark then 'white' else 'black'
+
+  else  
+    text_color = if is_light_background(background_color) then 'black' else 'white'
+
   DIV 
     id: 'banner'
     className: "PhotoBanner"
@@ -960,7 +969,7 @@ window.PhotoBanner = (opts) ->
           padding-top: 140px;           
         }
         .PhotoBanner > .wrapper.no-image {
-          background: #{edit_banner.background_css or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR};
+          background: #{background_color};
         }
 
         .PhotoBanner > .wrapper > .text_block {
@@ -968,11 +977,16 @@ window.PhotoBanner = (opts) ->
           width: #{HOMEPAGE_WIDTH()}px;
           max-width: #{720 + 48 * 2}px;
           margin: auto;
-          background-color: #{text_block_background};
-          color: white;
+          color: #{text_color};
           position: relative;
           top: 0;          
         } 
+
+        .PhotoBanner > .wrapper.with-image > .text_block {
+          background-color: #{text_block_background};
+        } 
+
+
         // .dark .PhotoBanner > .wrapper > .text_block, .PhotoBanner > .wrapper.with-image > .text_block {
         //  color: black;
         // }

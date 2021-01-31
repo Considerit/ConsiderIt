@@ -62,7 +62,6 @@ window.styles += """
     color: #898989;
     margin-bottom: 36px;
   }
-
 """
 
 window.Dashboard = ReactiveComponent
@@ -88,11 +87,11 @@ window.Dashboard = ReactiveComponent
         title = 'Data Import & Export'
         Widget = DataDash
       when '/dashboard/moderate'
-        title = 'Moderate Content'
+        title = 'Content Moderation'
         Widget = ModerationDash
       when '/dashboard/application'
         title = 'Forum Settings'
-        Widget = AppSettingsDash
+        Widget = ForumSettingsDash
       when '/dashboard/customizations'
         title = 'Customizations'
         Widget = CustomizationsDash
@@ -188,3 +187,89 @@ icons =
 
 
 
+
+window.styles += """
+  .radio_group input[type='radio']{
+    -webkit-appearance:button;
+    -moz-appearance:button;
+    appearance:button;
+    border:4px solid #ccc;
+    border-top-color:#bbb;
+    border-left-color:#bbb;
+    background:#fff;
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    position: absolute;
+    left: -36px;
+  }
+  .radio_group input[type='radio']:checked{
+    border: 20px solid #4099ff;
+  }
+
+  .radio_group {
+    position: relative;
+    margin-left: 36px;    
+  }
+
+
+
+  /* From https://www.w3schools.com/howto/howto_css_switch.asp */
+  /* The switch - the box around the slider */
+
+  .toggle_switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 26px;
+  }
+
+  /* Hide default HTML checkbox */
+  .toggle_switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  /* The slider */
+  .toggle_switch span {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 34px;
+
+  }
+
+  .toggle_switch .toggle_switch_circle:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 50%;
+  }
+
+  input:checked + .toggle_switch_circle {
+    background-color: #2196F3;
+  }
+
+  input:focus + .toggle_switch_circle {
+    box-shadow: 0 0 1px #2196F3;
+  }
+
+  input:checked + .toggle_switch_circle:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+"""

@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_04_195958) do
+ActiveRecord::Schema.define(version: 2021_01_30_034158) do
 
   create_table "comments", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "commentable_id", default: 0
     t.string "commentable_type", collation: "utf8_general_ci"
-    t.text "body", collation: "utf8mb4_general_ci"
+    t.text "body", collation: "utf8mb4_0900_ai_ci"
     t.integer "user_id", default: 0, null: false
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -29,7 +29,7 @@ ActiveRecord::Schema.define(version: 2021_01_04_195958) do
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
-  create_table "datastore", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "datastore", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "k", null: false
     t.json "v"
     t.index ["k"], name: "index_datastore_on_k", unique: true
@@ -65,10 +65,10 @@ ActiveRecord::Schema.define(version: 2021_01_04_195958) do
   create_table "logs", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "subdomain_id"
     t.integer "who"
-    t.string "what", collation: "utf8mb4_general_ci"
-    t.string "where", collation: "utf8mb4_general_ci"
+    t.string "what", collation: "utf8mb4_0900_ai_ci"
+    t.string "where", collation: "utf8mb4_0900_ai_ci"
     t.datetime "when"
-    t.text "details", collation: "utf8mb4_general_ci"
+    t.text "details", collation: "utf8mb4_0900_ai_ci"
     t.index ["who"], name: "who_index"
   end
 
@@ -107,7 +107,7 @@ ActiveRecord::Schema.define(version: 2021_01_04_195958) do
   create_table "opinions", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "proposal_id"
     t.integer "user_id"
-    t.text "explanation", collation: "utf8mb4_general_ci"
+    t.text "explanation", collation: "utf8mb4_0900_ai_ci"
     t.float "stance"
     t.boolean "published", default: false
     t.datetime "created_at"
@@ -125,8 +125,8 @@ ActiveRecord::Schema.define(version: 2021_01_04_195958) do
   create_table "points", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "proposal_id"
     t.integer "user_id"
-    t.text "nutshell", collation: "utf8mb4_general_ci"
-    t.text "text", collation: "utf8mb4_general_ci"
+    t.text "nutshell", collation: "utf8mb4_0900_ai_ci"
+    t.text "text", collation: "utf8mb4_0900_ai_ci"
     t.boolean "is_pro"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -150,12 +150,12 @@ ActiveRecord::Schema.define(version: 2021_01_04_195958) do
   end
 
   create_table "proposals", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.text "name", collation: "utf8mb4_general_ci"
+    t.text "name", collation: "utf8mb4_0900_ai_ci"
     t.text "description", limit: 16777215
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer "subdomain_id"
-    t.string "slug", collation: "utf8mb4_general_ci"
+    t.string "slug", collation: "utf8mb4_0900_ai_ci"
     t.integer "user_id"
     t.float "trending"
     t.float "activity"
@@ -177,10 +177,10 @@ ActiveRecord::Schema.define(version: 2021_01_04_195958) do
     t.binary "access_list", limit: 16777215
     t.boolean "published", default: false
     t.boolean "hide_on_homepage", default: false
-    t.string "seo_title", collation: "utf8mb4_general_ci"
-    t.string "seo_description", collation: "utf8mb4_general_ci"
-    t.string "seo_keywords", collation: "utf8mb4_general_ci"
-    t.text "description_fields", limit: 16777215, collation: "utf8mb4_general_ci"
+    t.string "seo_title", collation: "utf8mb4_0900_ai_ci"
+    t.string "seo_description", collation: "utf8mb4_0900_ai_ci"
+    t.string "seo_keywords", collation: "utf8mb4_0900_ai_ci"
+    t.text "description_fields", limit: 16777215, collation: "utf8mb4_0900_ai_ci"
     t.string "cluster", collation: "utf8_unicode_ci"
     t.text "zips", collation: "utf8_unicode_ci"
     t.json "roles"
@@ -210,10 +210,10 @@ ActiveRecord::Schema.define(version: 2021_01_04_195958) do
   end
 
   create_table "subdomains", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.string "name", collation: "utf8mb4_general_ci"
+    t.string "name", collation: "utf8mb4_0900_ai_ci"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "app_title", collation: "utf8mb4_general_ci"
+    t.string "app_title", collation: "utf8mb4_0900_ai_ci"
     t.string "notifications_sender_email", collation: "utf8_general_ci"
     t.string "google_analytics_code", collation: "utf8_general_ci"
     t.boolean "has_civility_pledge", default: false
@@ -236,17 +236,18 @@ ActiveRecord::Schema.define(version: 2021_01_04_195958) do
     t.integer "logo_file_size"
     t.datetime "logo_updated_at"
     t.string "logo_remote_url", collation: "utf8_general_ci"
-    t.text "branding", limit: 16777215, collation: "utf8mb4_general_ci"
+    t.text "branding", limit: 16777215, collation: "utf8mb4_0900_ai_ci"
     t.integer "plan", default: 0
     t.json "customizations"
-    t.string "lang", collation: "utf8mb4_general_ci"
+    t.string "lang", collation: "utf8mb4_0900_ai_ci"
     t.string "SSO_domain", collation: "utf8_general_ci"
+    t.integer "moderation_policy", default: 0
     t.index ["name"], name: "by_identifier", length: 10
   end
 
   create_table "users", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "unique_token", collation: "utf8_unicode_ci"
-    t.string "email", collation: "utf8mb4_general_ci"
+    t.string "email", collation: "utf8mb4_0900_ai_ci"
     t.string "encrypted_password", limit: 128, default: "", collation: "utf8_unicode_ci"
     t.string "reset_password_token", collation: "utf8_unicode_ci"
     t.datetime "created_at"
@@ -256,9 +257,9 @@ ActiveRecord::Schema.define(version: 2021_01_04_195958) do
     t.integer "avatar_file_size"
     t.datetime "avatar_updated_at"
     t.string "avatar_remote_url", collation: "utf8_unicode_ci"
-    t.string "name", collation: "utf8mb4_general_ci"
-    t.text "bio", collation: "utf8mb4_general_ci"
-    t.string "url", collation: "utf8mb4_general_ci"
+    t.string "name", collation: "utf8mb4_0900_ai_ci"
+    t.text "bio", collation: "utf8mb4_0900_ai_ci"
+    t.string "url", collation: "utf8mb4_0900_ai_ci"
     t.string "facebook_uid", collation: "utf8_unicode_ci"
     t.string "google_uid", collation: "utf8_unicode_ci"
     t.string "openid_uid", collation: "utf8_unicode_ci"

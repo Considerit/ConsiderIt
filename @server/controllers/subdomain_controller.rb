@@ -153,7 +153,7 @@ class SubdomainController < ApplicationController
 
     update_roles    
 
-    fields = ['roles', 'customizations', 'lang', 'moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'external_project_url', 'google_analytics_code']
+    fields = ['roles', 'customizations', 'lang', 'moderation_policy', 'about_page_url', 'external_project_url', 'google_analytics_code']
     attrs = params.select{|k,v| fields.include? k}.to_h
 
     if current_user.super_admin && params.has_key?('plan')

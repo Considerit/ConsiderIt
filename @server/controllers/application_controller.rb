@@ -222,7 +222,11 @@ protected
       # Grab dirtied points, opinions, and users
       for type in [Point, Opinion, User, Comment, Moderation]
         if key.match "/#{type.name.downcase}/"
-          response.append type.find(key_id(key)).as_json
+          begin 
+            response.append type.find(key_id(key)).as_json
+          rescue
+            Rails.logger.error "Could not find #{type.name} #{key}"
+          end
           next
         end
       end

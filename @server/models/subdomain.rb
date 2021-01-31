@@ -12,7 +12,7 @@ class Subdomain < ApplicationRecord
   validates_attachment_content_type :logo, :content_type => %w(image/jpeg image/jpg image/png image/gif)
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:id, :lang, :name, :created_at, :about_page_url, :external_project_url, :moderate_points_mode, :moderate_comments_mode, :moderate_proposals_mode, :host_with_port, :plan, :SSO_domain]
+  self.my_public_fields = [:id, :lang, :name, :created_at, :about_page_url, :external_project_url, :moderation_policy, :host_with_port, :plan, :SSO_domain]
 
   scope :public_fields, -> { select(self.my_public_fields) }
 
@@ -28,7 +28,6 @@ class Subdomain < ApplicationRecord
   def as_json(options={})
     options[:only] ||= Subdomain.my_public_fields
     json = super(options)
-    json['moderated_classes'] = classes_to_moderate().map {|c| c.name}
     json['key'] = !options[:include_id] ? '/subdomain' : "/subdomain/#{self.id}"
     if current_user.is_admin?
       json['roles'] = self.user_roles
@@ -128,23 +127,13 @@ class Subdomain < ApplicationRecord
   end
 
   def classes_to_moderate
-
-    classes = []
-
-    if moderate_points_mode > 0
-      classes << Point
+    if moderation_policy > 0
+      [Proposal, Point, Comment]
+    else
+      []
     end
-    if moderate_comments_mode > 0
-      classes << Comment
-    end
-    if moderate_proposals_mode > 0
-      classes << Proposal
-    end
-
-    classes
 
   end
-
 
 
 

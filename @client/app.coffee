@@ -304,7 +304,7 @@ Root = ReactiveComponent
           .content, .content input, .content button, .content textarea {
             font-family: #{fonts}; 
           }
-          .content h1, .content h2, .content h3, .content h4, .content h1 button, .content h2 button, .content h3 button, .content h4 button {
+          .content h1, .content h2, .content h3, .content h1 button, .content h2 button, .content h3 button, .content h4 button {
             font-family: #{header_fonts};
           }
         """

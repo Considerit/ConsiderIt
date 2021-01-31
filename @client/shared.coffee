@@ -844,6 +844,7 @@ button.like_link {
   background: none;
   border: none;
   text-decoration: underline;
+  padding: 0px;
 }
 
 

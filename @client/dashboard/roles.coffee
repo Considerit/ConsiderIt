@@ -174,40 +174,20 @@ window.styles += """
     display: block;
   }
 
-
-  #ROLES input[type='radio']{
-    -webkit-appearance:button;
-    -moz-appearance:button;
-    appearance:button;
-    border:4px solid #ccc;
-    border-top-color:#bbb;
-    border-left-color:#bbb;
-    background:#fff;
-    width:20px;
-    height:20px;
-    border-radius:50%;
-    position: absolute;
-    left: -36px;
-  }
-  #ROLES input[type='radio']:checked{
-    border:20px solid #4099ff;
-  }
-  
-  .ROLES_radio_group {
-    position: relative;
-    margin-bottom: 30px;
-    margin-left: 36px;    
-  }
-
-  .ROLES_radio_label b {
-    font-style: italic;
-  }
-
   .ROLES_add_button {
     background-color: #EDEDED;
     border: 1px solid #D7D7D7;
     padding: 6px 18px;
   }
+
+  .ROLES_section .radio_group {
+    margin-bottom: 30px;    
+  }
+  .ROLES_section .radio_group label b {
+    font-style: italic;
+  }
+
+
 """
 
 RadioWildcardRolesSection = (opts) ->
@@ -232,7 +212,7 @@ RadioWildcardRolesSection = (opts) ->
         save subdomain
 
       DIV 
-        className: 'ROLES_radio_group'
+        className: 'radio_group'
 
         INPUT 
           id: "forum_open_#{role.name}"
@@ -241,12 +221,11 @@ RadioWildcardRolesSection = (opts) ->
           checked: subdomain.roles[role.name].indexOf('*') > -1
         
         LABEL
-          className: 'ROLES_radio_label'
           htmlFor: "forum_open_#{role.name}"
           dangerouslySetInnerHTML: __html: opts.open_label
 
       DIV 
-        className: 'ROLES_radio_group'      
+        className: 'radio_group'      
         INPUT 
           id: "forum_restricted_#{role.name}"
           type: 'radio'
@@ -254,7 +233,6 @@ RadioWildcardRolesSection = (opts) ->
           checked: subdomain.roles[role.name].indexOf('*') == -1
 
         LABEL
-          className: 'ROLES_radio_label'        
           htmlFor: "forum_restricted_#{role.name}"
           dangerouslySetInnerHTML: __html: opts.restricted_label
 

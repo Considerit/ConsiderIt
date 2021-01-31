@@ -1,18 +1,60 @@
+window.moderation_options = [
+    {
+      label: "No content moderation."
+      value: 0
+    }
+    
+    {
+      label: "Do not publicly post content until after approval."
+      value: 1
+      explanation: "Suggested only for extremely adversarial or sensitive forums. Hosts will receive email notifications when there is content to review. To keep the conversation flowing, hosts should be extremely responsive to reviewing new posts."
+    } 
+    
+    {
+      label: "Post content immediately, but withhold email notifications until after approval."
+      value: 2
+      explanation: "Suggested for most public engagement. All content is posted immediately, but won’t trigger email notifications, nor will the new posts be present in any email summary of recent activity. After review, they will be part of recent activity summaries. This policy will avoid the worst consequence of detrimental content: an enthusiastic participant getting an email linking them to a nasty attack on them, while at the same time lessening the pressure on moderators to review content promptly."
+    } 
+    
+    {
+      label: "Post content immediately, review later.", 
+      value: 3
+      explanation: "Use this if you’re not very concerned about detrimental posts and/or you don’t have capacity to review new content in a timely fashion. Hosts will receive email notifications when there is content to review. Suggested for most engagement amongst people who have formal or communal ties."
+    }
+  ]
+
+
 window.ModerationDash = ReactiveComponent
   displayName: 'ModerationDash'
 
   render : -> 
     moderations = @data().moderations
     subdomain = fetch '/subdomain'
-
-    # todo: choose default more intelligently
-    @local.model ||= 'Proposal'
-
     dash = fetch 'moderation_dash'
 
+    @local.model ?= 'Proposal'
+
+    models = ['Point', 'Comment', 'Proposal']
     all_items = {}
 
-    for model in ['Point', 'Comment', 'Proposal']
+    moderation_enabled = subdomain.moderation_policy > 0 
+
+    if !moderation_enabled
+      DIV null, 
+        "Moderation is disabled. You can turn on content moderation in the "
+        A 
+          href: '/dashboard/application'
+          style: 
+            textDecoration: 'underline'
+            fontWeight: 700
+          "forum settings"
+        "."
+    else 
+      for option in moderation_options
+        if option.value == subdomain.moderation_policy 
+          moderation_policy = option 
+
+    for model in models
       
       # Separate moderations by status
       passed = []
@@ -39,7 +81,20 @@ window.ModerationDash = ReactiveComponent
         else if i.status == 2
           quarantined.push i
 
-      all_items[model] = [['Pending', reviewable, true], ['Quarantined', quarantined, true], ['Failed', failed, true], ['Passed', passed, false]]
+      all_items[model] = 
+        pending: 
+          name: 'pending'
+          items: reviewable
+        quarantined: 
+          name: 'quarantined'
+          items: quarantined
+        failed: 
+          name: 'failed'
+          items: failed
+        passed: 
+          name: 'passed'
+          items: passed
+
     
     items = all_items[@local.model]
     @items = items 
@@ -48,182 +103,153 @@ window.ModerationDash = ReactiveComponent
     # We assume an ordering of the task categories where the earlier
     # categories are more urgent & shown higher up in the list than later categories.
 
-    if !dash.selected_task && items.length > 0
-      # Prefer to select a higher urgency task by default
+    @local.show_category ?= items.pending.name
 
-      for [category, itms] in items
-        if itms.length > 0
-          dash.selected_task = itms[0].key
-          save dash
-          break
+    DIV null, 
+      DIV 
+        style: 
+          marginBottom: 24 
+        "Your moderation policy: "
+        SPAN 
+          style: 
+            fontStyle: 'italic'
+            padding: 2
+          moderation_policy.label
+        BR null
+        " Visit the "
+        A 
+          href: '/dashboard/application'
+          style: 
+            textDecoration: 'underline'
+            fontWeight: 700
+          "forum settings"
+        " to change it."
 
-    # After a moderation is saved, that item will alert the dash
-    # that we should move to the next moderation.
-    # Need state history to handle this more elegantly
-    if dash.transition
-      @selectNext()
 
-    DIV null,
-      DIV null, 
+      UL 
+        style: 
+          listStyle: 'none'
+          marginTop: 48
 
-        ModerationOptions()
+        for model in ['Proposal', 'Point', 'Comment']
+          select_class = (model) => @local.model = model; save @local
+
+          do (model) => 
+            active = @local.model == model
+            LI 
+              style: 
+                display: 'inline-block'
+
+              BUTTON 
+                style: 
+                  backgroundColor: if active then 'white' else '#f0f0f0'
+                  color: 'black'
+                  fontSize: 20
+                  marginLeft: 32
+                  border: '1px solid #bbb'
+                  borderBottom: 'none'
+                  borderRadius: '4px 4px 0 0px'
+                  fontWeight: 700
+                  padding: '6px 14px 2px 14px'
+                  paddingBottom: if active then 3
+                  marginBottom: if active then -1
+
+                onClick: => select_class(model)
+                onKeyPress: (e) => 
+                  if e.which in [13, 32]
+                    select_class(model); e.preventDefault()
+                "Review #{model}s"
+
+                SPAN 
+                  style: 
+                    fontSize: 12
+                    verticalAlign: 'top'
+                    paddingLeft: 8
+                  "[#{all_items[model].pending?.items?.length or 0}]"
+
+
+
+      DIV 
+        style: 
+          borderTop: '1px solid #bbb'
+
 
         UL 
           style: 
             listStyle: 'none'
-            margin: '20px auto'
-            textAlign: 'center'
+            margin: '12px 0 12px 24px'
 
-          for model in ['Point', 'Comment', 'Proposal']
-            select_class = (model) => @local.model = model; save @local
+          for category, definition of items
+            do (definition) =>
+              active = category == @local.show_category
+              LI  
+                key: category
+                style:
+                  display: 'inline'
+                  marginLeft: 18
 
-            do (model) => 
-              LI 
-                style: 
-                  display: 'inline-block'
-
-                BUTTON 
+                BUTTON
+                  className: 'like_link'
                   style: 
-                    backgroundColor: if @local.model == model then '#444' else 'transparent'
-                    color: if @local.model == model then 'white' else '#aaa'
-                    fontSize: 28
-                    marginRight: 32
-                    border: 'none'
-                    borderRadius: 4
-                    fontWeight: 700
+                    fontSize: 14
+                    fontWeight: if active then 700
+                    color: if active then 'black' else '#666'
 
-                  onClick: => select_class(model)
                   onKeyPress: (e) => 
                     if e.which in [13, 32]
-                      select_class(model); e.preventDefault()
-                  "Review #{model}s"
+                      e.target.click()
+                      e.preventDefault()
 
-                  " (#{all_items[model][0][1].length})"
-
-
-
-        DIV null, 
-
-          for [category, itms, default_show] in items
-
-            if itms.length > 0
-              show_category = (if @local["show_#{category}"]? then @local["show_#{category}"] else default_show)
-              toggle_show = do (category, show_category) => =>
-                @local["show_#{category}"] = !show_category
-                save @local 
-
-              DIV 
-                style: 
-                  marginTop: 20
-                  key: category
-
-
-
-                H1 
-                  style: 
-                    fontSize: 24
-                    fontWeight: 700
-                    textAlign: 'center'
-                    backgroundColor: '#e0e0e0'
-                    margin: '20px 0'
-                    cursor: 'pointer'
-                  onClick: toggle_show
+                  onClick: => 
+                    @local.show_category = definition.name 
+                    save @local 
 
                   category
 
-                  " (#{itms.length})"
+                SPAN
+                  style: 
+                    fontSize: 10
+                    paddingLeft: 4
+                    color: '#666'
+                  "[#{definition.items?.length or 0}]"
 
 
-                  A 
-                    style: 
-                      #float: 'right'
-                      color: '#aaa'
-                      fontWeight: 400
-                      verticalAlign: 'middle'
-                      paddingRight: 10
-                      paddingLeft: 40
-                      textDecoration: 'underline'
-                      
-                    
-
-                    if show_category
-                      'Hide'
-
-                    else 
-                      'Show'
-
-
-                if show_category
-                  UL 
-                    style: {}
-                    for item in itms
-                      LI 
-                        'data-id': item.key
-                        key: item.key
-                        style: 
-                          position: 'relative'
-                          listStyle: 'none'
-
-                        onClick: do (item) => => 
-                          dash.selected_task = item.key
-                          save dash
-                          setTimeout => 
-                            $("[data-id='#{item.key}']").ensureInView()
-                          , 1
-
-
-                        ModerateItem 
-                          key: item.key
-                          selected: dash.selected_task == item.key
-
-
-
-  # select a different task in the list relative to data.selected_task
-  selectNext: -> @_select(false)
-  selectPrev: -> @_select(true)
-  _select: (reverse) -> 
-    dash = fetch 'moderation_dash'
-    get_next = false
-    all_items = if !reverse then @items else @items.slice().reverse()
-
-    for [category, items, default_show] in all_items
-      tasks = if !reverse then items else items.slice().reverse()
-      show_category = (if @local["show_#{category}"]? then @local["show_#{category}"] else default_show)
-      continue if !show_category
-
-      for item in tasks
-        if get_next
-          dash.selected_task = item.key
-          dash.transition = null
-          save dash
-          setTimeout => 
-            $("[data-id='#{item.key}']").ensureInView()
-          , 1
-          return
-        else if item.key == dash.selected_task
-          get_next = true
-
-  componentDidMount: ->
-    $(document).on 'keyup.dash', (e) =>
-      @selectNext() if e.keyCode == 40 # down
-      @selectPrev() if e.keyCode == 38 # up
-  componentWillUnmount: ->
-    $(document).off 'keyup.dash'
+        UL null,
+          for item in items[@local.show_category].items
+            ModerateItem 
+              key: item.key
 
 
 
 
-
+styles += """
+  .moderation { 
+    font-weight: 600; 
+    border-radius: 8px;  
+    display: inline-block; 
+    margin-right: 10px; 
+    box-shadow: 0px 1px 2px rgba(0,0,0,.4);
+  }
+  .moderation label {
+    display: inline-block;
+    padding: 10px 14px;    
+  }
+  .moderation label, .moderation input { 
+    font-size: 22px; 
+    cursor: pointer;            
+  }
+"""
 
 ModerateItem = ReactiveComponent
   displayName: 'ModerateItem'
 
   render : ->
-    item = @data()
+    item = fetch @props.key
 
     class_name = item.moderatable_type
     moderatable = fetch(item.moderatable)
-    author = fetch(moderatable.user)
+    author = if moderatable.user then fetch(moderatable.user) else null
+
     if class_name == 'Point'
       point = moderatable
       proposal = fetch(moderatable.proposal)
@@ -249,60 +275,62 @@ ModerateItem = ReactiveComponent
 
     current_user = fetch('/current_user')
     
-    selected = @props.selected 
+    judge = (e) => 
+      item.status = e.target.value
+      save item
 
-    item_header = 
-      fontWeight: 700
-      fontSize: 22
-
-    DIV 
+    LI 
+      'data-id': item.key
+      key: item.key
       style: 
-        cursor: if selected then 'auto' else 'pointer'
-        margin: 'auto'
-        borderLeft:  "4px solid #{if selected then focus_color() else 'transparent'}"
-        padding: '8px 14px'
-        maxWidth: 700
-        marginBottom: if selected then 40 else 12
-
-
+        position: 'relative'
+        listStyle: 'none'
 
       DIV 
         style: 
-          marginLeft: 70
-          position: 'relative'
-
-        DIV null, 
-
-          if class_name == 'Comment' && selected #@local.show_conversation && selected
-            DIV 
-              style: 
-                opacity: .5
-              BUBBLE_WRAP 
-                title: point.nutshell 
-                anon: point.hide_name
-                user: point.user
-                body: point.text
-                width: '100%'
+          cursor: 'auto'
+          padding: '8px 14px'
+          maxWidth: 700
+          marginBottom: 20
 
 
-              for comment in _.uniq( _.map(comments.comments, (c) -> c.key).concat(moderatable.key)) when comment != moderatable.key
+
+        DIV 
+          style: 
+            marginLeft: 70
+            position: 'relative'
+
+          DIV null, 
+
+            if class_name == 'Comment'
+              DIV 
+                style: 
+                  opacity: .5
                 BUBBLE_WRAP 
-                  title: fetch(comment).body
-                  user: fetch(comment).user
+                  title: point.nutshell 
+                  anon: point.hide_name
+                  user: point.user
+                  body: point.text
                   width: '100%'
 
-          BUBBLE_WRAP
-            title: if selected then header else tease
-            body: if selected then moderatable.description else ''
-            anon: !!moderatable.hide_name
-            user: moderatable.user
-            width: '100%'
 
-          DIV null,
-            "by #{author.name}"
+                for comment in _.uniq( _.map(comments.comments, (c) -> c.key).concat(moderatable.key)) when comment != moderatable.key
+                  BUBBLE_WRAP 
+                    title: fetch(comment).body
+                    user: fetch(comment).user
+                    width: '100%'
+
+            BUBBLE_WRAP
+              title: header
+              body: moderatable.description
+              anon: !!moderatable.hide_name
+              user: moderatable.user
+              width: '100%'
+
+            DIV null,
+              "by #{author?.name or 'Anonymous'}"
 
 
-            if selected 
               A 
                 style: 
                   textDecoration: 'underline'
@@ -314,55 +342,50 @@ ModerateItem = ReactiveComponent
 
                 "View #{class_name}"
 
-            if selected && !moderatable.hide_name && !@local.messaging
-              BUTTON
-                style: 
-                  marginLeft: 8
-                  textDecoration: 'underline'
-                  backgroundColor: 'transparent'
-                  border: 'none'
-                onClick: => @local.messaging = moderatable; save(@local)
-                'Message author'
+              if !moderatable.hide_name && !@local.messaging
+                BUTTON
+                  style: 
+                    marginLeft: 8
+                    textDecoration: 'underline'
+                    backgroundColor: 'transparent'
+                    border: 'none'
+                  onClick: => 
+                    @local.messaging = moderatable
+                    save(@local)
+                    console.log moderatable
+
+                  'Message author'
 
 
 
-        if selected && @local.messaging
-          DirectMessage to: @local.messaging.user, parent: @local, sender_mask: 'Moderator'
+          if @local.messaging
+            DirectMessage 
+              to: @local.messaging.user
+              parent: @local
+              sender_mask: 'Moderator'
 
-      if selected && class_name == 'Proposal'
-        # Category
-        DIV 
-          style: 
-            marginTop: 8
-            marginLeft: 63
-                  
-          SELECT
+        if class_name == 'Proposal'
+          # Category
+          DIV 
             style: 
-              fontSize: 18
-            value: proposal.cluster
-            ref: 'category'
-            onChange: (e) =>
-              proposal.cluster = e.target.value
-              save proposal
+              marginTop: 8
+              marginLeft: 63
+                    
+            SELECT
+              style: 
+                fontSize: 18
+              value: proposal.cluster
+              ref: 'category'
+              onChange: (e) =>
+                proposal.cluster = e.target.value
+                save proposal
 
-            for list_key in get_all_lists()
-              OPTION  
-                value: list_key.substring(5)
-                get_list_title list_key, true
+              for list_key in get_all_lists()
+                OPTION  
+                  value: list_key.substring(5)
+                  get_list_title list_key, true
 
-      if selected 
 
-        judge = (judgement) => 
-          # this has to happen first otherwise the dash won't 
-          # know what the next item is when it transitions
-          dash = fetch 'moderation_dash'
-          dash.transition = item.key #need state transitions 
-          save dash
-
-          setTimeout => 
-            item.status = judgement
-            save item
-          , 1
 
         # moderation area
         DIV 
@@ -370,55 +393,59 @@ ModerateItem = ReactiveComponent
             margin: '10px 0px 20px 63px'
             position: 'relative'
 
-          STYLE null, 
-            """
-            .moderation { font-weight: 600; border-radius: 8px; padding: 6px 12px; display: inline-block; margin-right: 10px; box-shadow: 0px 1px 2px rgba(0,0,0,.4)}
-            .moderation label, .moderation input { font-size: 22px; cursor: pointer }
-            """
-
-          DIV 
-            className: 'moderation',
+          SPAN 
+            className: 'moderation'
             style: 
               backgroundColor: '#81c765'
-            onClick: -> judge(1)
 
-            INPUT 
-              name: 'moderation'
-              type: 'radio'
-              id: 'pass'
-              defaultChecked: item.status == 1
 
-            LABEL htmlFor: 'pass', 'Pass'
+            LABEL 
+              htmlFor: "pass-#{@props.key}"
 
-          DIV 
+              INPUT 
+                name: 'moderation'
+                type: 'radio'
+                id: "pass-#{@props.key}"
+                value: 1
+                defaultChecked: item.status == 1
+                onChange: judge
+
+              'Pass'
+
+          SPAN 
             className: 'moderation'
             style: 
               backgroundColor: '#ffc92a'
 
-            onClick: -> judge(2)
+            LABEL 
+              htmlFor: "quar-#{@props.key}"
+              INPUT 
+                name: 'moderation'
+                type: 'radio'
+                id: "quar-#{@props.key}"
+                value: 2
+                defaultChecked: item.status == 2
+                onChange: judge
 
-            INPUT 
-              name: 'moderation'
-              type: 'radio'
-              id: 'quar'
-              defaultChecked: item.status == 2
-            LABEL htmlFor: 'quar', 'Quarantine'
-          DIV 
+              'Quarantine'
+
+          SPAN 
             className: 'moderation'
             style: 
               backgroundColor: '#f94747'
 
-            onClick: -> judge(0)
+            LABEL 
+              htmlFor: "fail-#{@props.key}"
 
-            INPUT 
-              name: 'moderation'
-              type: 'radio'
-              id: 'fail'
-              defaultChecked: item.status == 0
+              INPUT 
+                name: 'moderation'
+                type: 'radio'
+                id: "fail-#{@props.key}"
+                value: 0
+                defaultChecked: item.status == 0
+                onChange: judge
 
-            LABEL htmlFor: 'fail', 'Fail'
-
-      if selected 
+              'Fail'
 
         # status area
         DIV 
@@ -430,126 +457,25 @@ ModerateItem = ReactiveComponent
           if item.updated_since_last_evaluation
             SPAN style: {}, "Updated since last moderation"
           else if item.status == 1
-            SPAN style: {}, "Passed by #{fetch(item.user).name} on #{new Date(item.updated_at).toDateString()}"
+            SPAN style: {}, "Passed by #{if item.user then fetch(item.user).name else 'Unknown'} on #{new Date(item.updated_at).toDateString()}"
           else if item.status == 2
-            SPAN style: {}, "Quarantined by #{fetch(item.user).name} on #{new Date(item.updated_at).toDateString()}"
+            SPAN style: {}, "Quarantined by #{if item.user then fetch(item.user).name else 'Unknown'} on #{new Date(item.updated_at).toDateString()}"
           else if item.status == 0
-            SPAN style: {}, "Failed by #{fetch(item.user).name} on #{new Date(item.updated_at).toDateString()}"
+            SPAN style: {}, "Failed by #{if item.user then fetch(item.user).name else 'Unknown'} on #{new Date(item.updated_at).toDateString()}"
 
 
 
 
-
-ModerationOptions = ReactiveComponent
-  displayName: 'ModerationOptions'
-
-
-  render: -> 
-    subdomain = fetch '/subdomain'
-    if subdomain.moderated_classes.length == 0 
-      @local.edit_settings = true 
-
-    expanded = @local.edit_settings
-
-    DIV 
-      style: 
-        textAlign: if !expanded then 'right'
-        paddingRight: if !expanded then 30
-
-
-      if !expanded 
-        BUTTON 
-          style: 
-            backgroundColor: 'transparent'
-            fontSize: 24
-            border: 'none'
-            textDecoration: 'underline'
-            color: '#aaa'
-          onClick: => 
-            @local.edit_settings = true
-            save @local
-          'Edit moderation settings'    
-
-      else
-        DIV 
-          style: 
-            padding: 50
-                       
-          for model in ['points', 'comments', 'proposals']
-            # The order of the options is important for the database records
-            moderation_options = [
-              "Do not moderate #{model}", 
-              "Do not publicly post #{model} until moderation", 
-              "Post #{model} immediately, but withhold email notifications until moderation", 
-              "Post #{model} immediately, catch bad ones afterwards"]
-
-            FIELDSET style: {marginBottom: 12},
-              LEGEND style: {fontSize: 24},
-                capitalize model
-
-              for field, idx in moderation_options
-                DIV 
-                  style: {marginLeft: 18, fontSize: 18, cursor: 'pointer'}
-                  onClick: do (idx, model) => => 
-                    subdomain["moderate_#{model}_mode"] = idx
-                    save subdomain, -> 
-                      #saving the subdomain shouldn't always dirty moderations 
-                      #(which is expensive), so just doing it manually here
-                      arest.serverFetch('/page/dashboard/moderate')  
-
-                  INPUT 
-                    style: {cursor: 'pointer'}
-                    type: 'radio'
-                    name: "moderate_#{model}_mode"
-                    id: "moderate_#{model}_mode_#{idx}"
-                    defaultChecked: subdomain["moderate_#{model}_mode"] == idx
-
-                  LABEL 
-                    style: {cursor: 'pointer', paddingLeft: 8 } 
-                    htmlFor: "moderate_#{model}_mode_#{idx}"
-                    field
-
-          BUTTON 
-            onClick: => 
-              @local.edit_settings = false
-              save @local
-            'close'
-
-
-# TODO: Refactor the below and make sure that the styles applied to the 
-#       user generated fields are in sync with the styling in the 
-#       wysiwyg editor. 
-styles += """
-.moderatable_item br {
-  padding-bottom: 0.5em; }
-.moderatable_item p, 
-.moderatable_item ul, 
-.moderatable_item ol, 
-.moderatable_item table {
-  margin-bottom: 0.5em; }
-.moderatable_item td {
-  padding: 0 3px; }
-.moderatable_item li {
-  list-style: outside; }
-.moderatable_item ol li {
-  list-style-type: decimal; }  
-.moderatable_item ul,
-.moderatable_item ol, {
-  padding-left: 20px;
-  margin-left: 20px; }
-.moderatable_item a {
-  text-decoration: underline; }
-.moderatable_item blockquote {
-  opacity: 0.7;
-  padding: 10px 20px; }
-.moderatable_item table {
-  padding: 20px 0px; }
-"""
 
 DirectMessage = ReactiveComponent
   displayName: 'DirectMessage'
 
   render : -> 
+    
+    return SPAN null if !@props.to 
+
+    user = fetch(@props.to)
+
     text_style = 
       width: 500
       fontSize: 16
@@ -558,7 +484,7 @@ DirectMessage = ReactiveComponent
 
     DIV style: {margin: '18px 0', padding: '15px 20px', backgroundColor: 'white', width: 550, backgroundColor: considerit_gray, boxShadow: "0 2px 4px rgba(0,0,0,.4)"}, 
       DIV style: {marginBottom: 8},
-        LABEL null, 'To: ', fetch(@props.to).name
+        LABEL null, 'To: ', user.name
 
       DIV style: {marginBottom: 8},
         LABEL htmlFor: 'message_subject', 'Subject'
@@ -578,8 +504,18 @@ DirectMessage = ReactiveComponent
           min_height: 75
           style: text_style
 
-      Button {}, 'Send', @submitMessage
-      BUTTON style: {marginLeft: 8, backgroundColor: 'transparent', border: 'none'}, onClick: (=> @props.parent.messaging = null; save @props.parent), 'cancel'
+      Button {}, 
+        'Send'
+        @submitMessage
+      BUTTON 
+        style: 
+          marginLeft: 8
+          backgroundColor: 'transparent'
+          border: 'none'
+        onClick: => 
+          @props.parent.messaging = null
+          save @props.parent
+        'cancel'
 
   submitMessage : -> 
     # TODO: convert to using arest create method; waiting on full dash porting

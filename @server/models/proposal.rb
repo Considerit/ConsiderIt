@@ -38,7 +38,7 @@ class Proposal < ApplicationRecord
     manual_clusters = nil
     always_shown = [] 
 
-    if subdomain.moderate_proposals_mode == 1
+    if subdomain.moderation_policy == 1
       moderation_status_check = "(moderation_status=1 OR user_id=#{current_user.id})"
     else 
       moderation_status_check = "(moderation_status IS NULL OR moderation_status=1 OR user_id=#{current_user.id})"
@@ -96,7 +96,7 @@ class Proposal < ApplicationRecord
     if all_points 
       points = []
       proposals.each do |proposal|
-        if subdomain.moderate_points_mode == 1
+        if subdomain.moderation_policy == 1
           moderation_status_check = 'moderation_status=1'
         else 
           moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
@@ -113,7 +113,7 @@ class Proposal < ApplicationRecord
 
   def full_data
 
-    if self.subdomain.moderate_points_mode == 1
+    if self.subdomain.moderation_policy == 1
       moderation_status_check = 'moderation_status=1'
     else 
       moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
@@ -202,7 +202,7 @@ class Proposal < ApplicationRecord
       json['roles'] = self.user_roles(filter = true)
     end
 
-    if self.subdomain.moderate_proposals_mode == 1 && self.moderation_status == nil 
+    if self.subdomain.moderation_policy == 1 && self.moderation_status == nil 
       json['under_review'] = true
     end 
 
@@ -214,7 +214,7 @@ class Proposal < ApplicationRecord
       json['banner'] = self.banner.url
     end
 
-    if self.subdomain.moderate_points_mode == 1
+    if self.subdomain.moderation_policy == 1
       moderation_status_check = 'moderation_status=1'
     else 
       moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'

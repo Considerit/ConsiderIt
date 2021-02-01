@@ -2,7 +2,10 @@
 
 
 window.styles += """
-  .FORUM_SETTINGS { font-size: 16px }
+  .FORUM_SETTINGS { 
+    font-size: 16px;
+    max-width: 650px;
+  }
   .FORUM_SETTINGS input[type="text"], .FORUM_SETTINGS textarea { border: 1px solid #aaa; display: block; width: #{HOMEPAGE_WIDTH()}px; font-size: 18px; padding: 4px 8px; } 
   .FORUM_SETTINGS .input_group { 
     margin-bottom: 24px; 
@@ -17,11 +20,6 @@ window.styles += """
     font-weight: 600;
   }
 
-  .FORUM_SETTINGS .explanation {
-    font-size: 14px;
-    margin: 8px 0;
-    color: #444;
-  }
   .FORUM_SETTINGS .radio_group {
     margin-top: 24px;
   }
@@ -35,13 +33,6 @@ window.styles += """
 
   .FORUM_SETTINGS .input_group.checkbox .toggle_switch {
     margin-top: 6px;
-
-  }
-
-  .FORUM_SETTINGS .input_group.checkbox .indented {
-    flex: 1;
-    padding-left: 18px;
-    cursor: pointer;
   }
 
   """
@@ -63,8 +54,6 @@ window.ForumSettingsDash = ReactiveComponent
 
     DIV 
       className: 'FORUM_SETTINGS'
-      style: 
-        maxWidth: 650       
 
       ##################
       # LANGUAGE

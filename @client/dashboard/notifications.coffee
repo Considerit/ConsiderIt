@@ -1,15 +1,15 @@
+require '../collapsed_proposal'
 
 
-# Toggle homepage filter to watched proposals
-document.addEventListener "keypress", (e) -> 
-  key = (e and e.keyCode) or e.keyCode
+window.styles += """
+  #NOTIFICATIONS {
+    font-size: 18px;
+  }
+  #NOTIFICATIONS .toggle_switch {
+    top: -1px;
+  }
 
-  if key==23 # cntrl-W
-    filter = fetch 'homepage_filter'
-    filter.watched = !filter.watched
-    save filter
-
-
+"""
 
 window.Notifications = ReactiveComponent
   displayName: 'Notifications'
@@ -37,7 +37,8 @@ window.Notifications = ReactiveComponent
       delete loc.query_params.unsubscribe
       save loc
 
-    DIV null,
+    DIV 
+      id: 'NOTIFICATIONS'
 
       if @local.unsubscribed && !current_user.subscriptions['send_emails']
         DIV 
@@ -49,65 +50,52 @@ window.Notifications = ReactiveComponent
           TRANSLATE
             id: "email_notifications.unsubscribed_ack"
             subdomain_name: subdomain.name
-            "You are unsubscribed from summary emails from {subdomain_name}.consider.it"
-
-      DIV
-        style: 
-          fontSize: 24
-          marginBottom: 10
-          position: 'relative'
+            "You are now unsubscribed from summary emails from {subdomain_name}.consider.it"
           
-        INPUT 
-          type: 'checkbox'
-          defaultChecked: !!prefs['send_emails']
-          id: 'enable_email'
-          name: 'enable_email'
+
+      DIV 
+        className: 'input_group checkbox'
+        
+        LABEL 
+          className: 'toggle_switch'
+
+          INPUT 
+            id: 'enable_email'
+            type: 'checkbox'
+            name: 'enable_email'
+            defaultChecked: !!prefs['send_emails']
+            onChange: (e) => 
+
+              if prefs['send_emails'] 
+                current_user.subscriptions['send_emails'] = null
+              else
+                current_user.subscriptions['send_emails'] = settings['default_subscription']
+              save current_user
+              e.stopPropagation()
+          
+          SPAN 
+            className: 'toggle_switch_circle'
+
+
+        LABEL 
+          className: 'indented'
+          htmlFor: 'enable_email'
           style: 
-            verticalAlign: 'top'
-            display: 'inline-block'
-            marginTop: 12
-            fontSize: 24
-            position: 'absolute'
-            left: -40
-
-          onChange: (e) => 
-
-            if prefs['send_emails'] 
-              current_user.subscriptions['send_emails'] = null
-            else
-              current_user.subscriptions['send_emails'] = settings['default_subscription']
-            save current_user
-            e.stopPropagation()
-
-        DIV 
-          style: 
-            display: 'inline-block'
-
-          LABEL
-            htmlFor: 'enable_email'              
-
-            SPAN 
-              style: 
-                color: focus_color()
-                fontWeight: 600
-
-              TRANSLATE "email_notifications.send_digests", 'Send me email summaries of activity'
-
-            DIV
-              style: 
-                fontSize: 14
-                color: '#888'
-
-              TRANSLATE 
-                id: "email_notifications.digests_purpose", 
-                project_name: subdomain.name
-                "The emails summarize relevant new activity for you regarding {project_name}"
+            fontSize: 18
+          B null,
+            TRANSLATE "email_notifications.send_digests", 'Send me email summaries of relevant forum activity'
 
 
-      if prefs['send_emails']
-        [@drawEmailSettings()
 
-        @drawWatched()]
+
+        if prefs['send_emails']
+          DIV 
+            style: 
+              marginLeft: 71
+            
+            @drawEmailSettings()
+
+            @drawWatched()
 
 
 
@@ -117,8 +105,7 @@ window.Notifications = ReactiveComponent
 
     DIV 
       style: 
-        #backgroundColor: '#f2f2f2'
-        padding: '10px 10px 10px 30px'
+        marginTop: 20
 
       LABEL
         htmlFor: 'send_digests_at_most' 
@@ -149,17 +136,18 @@ window.Notifications = ReactiveComponent
 
       DIV 
         style: 
-          marginTop: 15
+          marginTop: 20
 
         DIV
           style: 
             marginBottom: 10
 
-          TRANSLATE 'email_notifications.notable_events', "Emails are only sent if a notable event occurred. Which events are notable to you?"
+          TRANSLATE 'email_notifications.notable_events', "When should an email summary be triggered?"
 
         UL
           style: 
             listStyle: 'none'
+            marginLeft: 62
 
           # prefs contains keys of objects being watched, and event trigger
           # preferences for different events
@@ -171,7 +159,7 @@ window.Notifications = ReactiveComponent
             LI 
               style: 
                 display: 'block'
-                padding: '5px 0'
+                padding: '10px 0'
 
               SPAN 
                 style: 
@@ -183,12 +171,12 @@ window.Notifications = ReactiveComponent
                   id: "#{event}_input"
                   name: "#{event}_input"
                   type: 'checkbox'
+                  className: 'bigger'
                   checked: if config.email_trigger then true
                   style: 
-                    fontSize: 24
                     position: 'absolute'
                     left: -30
-                    top: 2
+                    top: 1
                   onChange: do (config) => => 
                     config.email_trigger = !config.email_trigger
                     save current_user
@@ -198,6 +186,7 @@ window.Notifications = ReactiveComponent
                 style: 
                   display: 'inline-block'
                   verticalAlign: 'top'
+                  fontSize: 15
 
                 TRANSLATE "email_notifications.event.#{event}", config.ui_label
 
@@ -214,135 +203,63 @@ window.Notifications = ReactiveComponent
 
       DIV 
         style: 
-          padding: '20px 0'
+          marginTop: 20
 
-        H2
+        H4
           style: 
-            fontSize: 24
-            position: 'relative'
-            paddingBottom: 10
+            fontSize: 18
+            marginBottom: 32
             fontWeight: 400
 
-          TRANSLATE "email_notifications.watched_proposals", 'The proposals you are watching for new activity'
+          TRANSLATE "email_notifications.watched_proposals", 'Proposals you are following'
 
 
-        DIV
+        UL
+          key: 'follows-list'
           style: 
-            width: 550
-            display: 'inline-block'
+            position: 'relative'
+            marginLeft: 62
 
-          UL
-            style: 
-              position: 'relative'
-              paddingLeft: 30
+          for k,v of unsubscribed
+            do (k) => 
+              proposal = fetch(k)
 
-            for k,v of unsubscribed
-              do (k) => 
-                obj = fetch(k)
+              CollapsedProposal 
+                key: "unfollow-#{proposal.key or proposal}"
+                proposal: proposal
+                show_category: true
+                width: 500
+                hide_scores: true
+                hide_icons: true
+                hide_metadata: true
+                show_category: false
+                name_style: 
+                  fontSize: 16
+                icon: =>
+                  LABEL 
+                    key: 'unfollow-area'
+                    htmlFor: "unfollow-#{proposal.name}"
 
-                LI 
-                  style: 
-                    listStyle: 'none'
-                    padding: '5px 0'
-                    position: 'relative'
+                    SPAN 
+                      style: 
+                        display: 'none'
+                      translator "email_notifications.unfollow_proposal", "Unfollow this proposal"
 
-                  WatchStar
-                    proposal: obj
-                    #icon: 'fa-bell-slash'
-                    watch_color: "#777"
-                    label: (watching) -> translator "email_notifications.unfollow_proposal", "Unfollow this proposal"
-                      
-                    style: 
-                      position: 'absolute'
-                      left: -35
-                      top: 3
-                  A 
-                    href: "/#{obj.slug}"
-                    style: 
-                      textDecoration: 'underline'
+                    INPUT 
+                      key: "unfollow-#{k}"
+                      id: "unfollow-#{proposal.name}"
+                      className: 'bigger'
+                      style: 
+                        position: 'absolute'
+                        left: -30
+                        top: 4
+                      type: 'checkbox'
+                      defaultChecked: true
+                      onChange: => 
+                        proposal = fetch(k)
+                        if !current_user.subscriptions[proposal.key]
+                          current_user.subscriptions[proposal.key] = 'watched'
+                        else 
+                          delete current_user.subscriptions[proposal.key]
 
-                    obj.name 
-
-                  # A 
-                  #   style: 
-                  #     cursor: 'pointer'
-                  #     display: 'inline-block'
-                  #     marginLeft: 10
-                  #     fontSize: 14
-                  #   onClick: => 
-                  #     delete current_user.subscriptions[k]
-                  #     save current_user
-
-                  #   'stop watching'   
-
-
-
-
-
-
-require '../tooltip'
-window.WatchStar = ReactiveComponent
-  displayName: 'WatchStar'
-
-  render : -> 
-    current_user = fetch('/current_user')
-    proposal = @props.proposal 
-    size = @props.size || 30
-    icon = @props.icon || 'fa-star'
-    watch_color = @props.watch_color || logo_red
-
-    label = @props.label || (watching) -> 
-      if watching     
-        "Stop getting notifications for this proposal" 
-      else 
-        "Get notifications"
-
-    watching = current_user.subscriptions[proposal.key] == 'watched'
-
-    style = 
-      opacity: if @local.hover_watch != proposal.key && !watching then .35
-      color: if watching then watch_color else "#888"
-      width: size 
-      height: size
-      cursor: 'pointer'
-      backgroundColor: 'transparent'
-      border: 'none'
-      margin: 0
-      padding: 0
-
-    show_tooltip =  => 
-      @local.hover_watch = proposal.key; save @local
-      tooltip = fetch 'tooltip'
-      tooltip.coords = $(@getDOMNode()).offset()
-      tooltip.tip = label(watching)
-      save tooltip
-
-    hide_tooltip = => 
-      @local.hover_watch = null; save @local
-      tooltip = fetch 'tooltip'
-      tooltip.coords = null
-      save tooltip
-
-
-    BUTTON 
-      'aria-hidden': true
-      'aria-label': label(watching)
-      'aria-describedby': if @local.hover_watch then 'tooltip'
-      'aria-pressed': watching
-
-      className: "fa #{if watching then icon else "#{icon}-o"}"
-      style: _.extend {}, style, (@props.style || {})
-
-      onMouseEnter: show_tooltip
-      onFocus: show_tooltip
-      onMouseLeave: hide_tooltip
-      onBlur: hide_tooltip
-
-      onClick: => 
-        if !current_user.subscriptions[proposal.key]
-          current_user.subscriptions[proposal.key] = 'watched'
-        else 
-          delete current_user.subscriptions[proposal.key]
-
-        save current_user
-
+                        save current_user

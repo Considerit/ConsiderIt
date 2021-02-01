@@ -106,11 +106,13 @@ class ImportDataController < ApplicationController
 
           # Find each required relational object
           if config[:required_fields].include? 'user'
-
+            user = nil 
             if row['user']
               user = User.find_by_email(row['user'].downcase)
-            else
-              user = nil
+            end
+
+            if !user
+              user = current_user  # default to person who is importing the data
             end
 
             if !user

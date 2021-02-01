@@ -144,12 +144,12 @@ window.ModerationDash = ReactiveComponent
                 style: 
                   backgroundColor: if active then 'white' else '#f0f0f0'
                   color: 'black'
-                  fontSize: 20
-                  marginLeft: 32
+                  fontSize: 18
+                  marginLeft: 12
+                  marginRight: 12
                   border: '1px solid #bbb'
                   borderBottom: 'none'
                   borderRadius: '4px 4px 0 0px'
-                  fontWeight: 700
                   padding: '6px 14px 2px 14px'
                   paddingBottom: if active then 3
                   marginBottom: if active then -1
@@ -177,7 +177,7 @@ window.ModerationDash = ReactiveComponent
         UL 
           style: 
             listStyle: 'none'
-            margin: '12px 0 12px 24px'
+            margin: '12px 0 12px 10px'
 
           for category, definition of items
             do (definition) =>
@@ -214,7 +214,9 @@ window.ModerationDash = ReactiveComponent
                   "[#{definition.items?.length or 0}]"
 
 
-        UL null,
+        UL 
+          style: 
+            marginLeft: -66
           for item in items[@local.show_category].items
             ModerateItem 
               key: item.key

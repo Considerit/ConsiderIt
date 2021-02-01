@@ -12,7 +12,12 @@ def send_digest(subdomain, user, notifications, subscription_settings, deliver =
 
   # Hack!! this notification system is terrible, so I'm going to add even more entropy.
   # I'm going to get all the data across the subdomain since the last time a digest 
-  # was sent, and not rely on the notification objects. Sorry future Travis!
+  # was sent, and not rely on the notification objects. 
+  #
+  # Basically, the only thing the Notification objects do is to manage when a valid triggering
+  # event has happened.
+  #
+  # Sorry future Travis!
 
   last_digest_sent_at = last_sent_at(user, subdomain)
   if !since 
@@ -26,7 +31,9 @@ def send_digest(subdomain, user, notifications, subscription_settings, deliver =
   send_key = "/subdomain/#{subdomain.id}"
   user.sent_email_about(send_key)
 
-  mail = DigestMailer.digest(subdomain, user, notifications, get_new_activity(subdomain, user, since), last_digest_sent_at, send_emails)
+  new_activity = get_new_activity(subdomain, user, since)
+
+  mail = DigestMailer.digest(subdomain, user, notifications, new_activity, last_digest_sent_at, send_emails)
 
   # record that we've sent these notifications
   Notification.transaction do 
@@ -94,12 +101,8 @@ def get_new_activity(subdomain, user, since)
     end 
   end 
 
-  new_points = subdomain.points.published.named.where("created_at > '#{since}' AND user_id != #{user.id} AND last_inclusion != -1")
-
+  new_points   = subdomain.points.published.named.where("created_at > '#{since}' AND user_id != #{user.id} AND last_inclusion != -1")
   new_opinions = subdomain.opinions.published.where("created_at > '#{since}' AND user_id != #{user.id}")
-  if subdomain.name == 'engage-cprs'
-    new_opinions = new_opinions.where('proposal_id=7382')
-  end
   new_comments = subdomain.comments.where("created_at > '#{since}' AND user_id != #{user.id}")
 
   your_proposals = {}

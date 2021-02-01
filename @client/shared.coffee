@@ -878,6 +878,14 @@ html[lang='cs'] body, html[lang='cs'] input, html[lang='cs'] button, html[lang='
   font-family: Helvetica, Verdana, Arial, 'Lucida Grande', 'Lucida Sans Unicode', sans-serif; }
 
 
+input[type="checkbox"], input[type="radio"], button, a {
+  cursor: pointer;
+}
+
+input[type="checkbox"].bigger, input[type="radio"].bigger {
+  transform: scale(1.5);
+}
+
 .hidden {
   position:absolute;
   left:-10000px;

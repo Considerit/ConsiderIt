@@ -100,7 +100,7 @@ module Exports
 
       s = stats opinions.map{|o| o.stance}
 
-      row = [proposal.slug, "https://#{subdomain.host_with_port}/#{proposal.slug}", proposal.created_at, proposal.user.name, proposal.user.email.gsub('.ghost', ''), proposal.name, (proposal.cluster || 'Proposals'), proposal.description, proposal.points.published.count, opinions.count, s[:total].round(2), s[:avg].round(2), s[:std_dev].round(2)]
+      row = [proposal.slug, "https://#{subdomain.host_with_port}/#{proposal.slug}", proposal.created_at, (proposal.user ? proposal.user.name : "Unknown"), (proposal.user ? proposal.user.email.gsub('.ghost', '') : 'Unknown'), proposal.name, (proposal.cluster || 'Proposals'), proposal.description, proposal.points.published.count, opinions.count, s[:total].round(2), s[:avg].round(2), s[:std_dev].round(2)]
       group_diffs = group_differences proposal 
       group_diffs.each do |diff|
         row.append diff[:ingroup][:count]

@@ -225,6 +225,12 @@ module Notifier
         'email_trigger_default' => true
       },
 
+      'new_point:proposal_authored' => {
+        'ui_label' => 'Someone adds a Pro/Con comment on a proposal you wrote',
+        'email_trigger_default' => true
+      },
+
+
     }
 
   end
@@ -232,7 +238,15 @@ module Notifier
   # ... And how is a user related to a specific event?
   def self.event_relationship_mapper(event_object, user)
 
-    if event_object.class.name == 'Comment'
+    if event_object.class.name == 'Point'
+      proposal = event_object.proposal
+      if proposal.user_id == user.id
+        'proposal_authored'
+      else 
+        'watched'
+      end
+
+    elsif event_object.class.name == 'Comment'
       point = event_object.point
       if point.user_id == user.id
         'point_authored'
@@ -288,6 +302,9 @@ module Notifier
 
       method = user.subscription_settings(subdomain)['send_emails']
 
+      # don't create a notification if they're not receiving email notifications
+      next if method == nil 
+
       # Finally, let's create that Notification for this user!
       notification = Notification.create!({
         subdomain_id: subdomain.id,
@@ -302,7 +319,7 @@ module Notifier
         event_object_relationship: event_object_relationship,
         event_type: event_type,
 
-        sent_email: method == nil ? nil : false,
+        sent_email: false,
       })
 
     end

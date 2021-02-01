@@ -112,8 +112,6 @@ SubdomainRoles = ReactiveComponent
 
     DIV 
       id: 'ROLES'
-      style: 
-        maxWidth: HOMEPAGE_WIDTH()
 
       DIV 
         className: 'ROLES_section'

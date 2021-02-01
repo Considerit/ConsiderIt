@@ -156,6 +156,7 @@ window.CollapsedProposal = ReactiveComponent
                   border: "2px dashed #ddd"
           else
             @props.icon?() or SVG 
+              key: 'bullet'
               style: 
                 position: 'relative'
                 left: -22

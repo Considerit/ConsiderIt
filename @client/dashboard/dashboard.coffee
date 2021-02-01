@@ -55,6 +55,7 @@ window.styles += """
   #DASHBOARD-main {
     flex: 1;
     padding: 30px 56px;
+    max-width: 850px;
   }
   #DASHBOARD-title {
     font-weight: 400;
@@ -62,6 +63,24 @@ window.styles += """
     color: #898989;
     margin-bottom: 36px;
   }
+
+  #DASHBOARD-main .explanation {
+    font-size: 14px;
+    margin: 8px 0;
+    color: #444;
+  }
+
+  #DASHBOARD-main .explanation p {
+    margin-bottom: 6px;
+  }
+
+  #DASHBOARD-main .input_group.checkbox .indented {
+    flex: 1;
+    padding-left: 18px;
+    cursor: pointer;
+  }
+
+
 """
 
 window.Dashboard = ReactiveComponent

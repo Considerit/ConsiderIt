@@ -1176,16 +1176,16 @@ Auth = ReactiveComponent
         @local.submitting = false
         save @local
 
-      # hack for submitting file data in ActiveREST for now
-      # we'll just submit the file form after user is signed in
-      # TODO: investigate alternatives for submitting form data
-      if @submit_avatar_form
+        # hack for submitting file data in ActiveREST for now
+        # we'll just submit the file form after user is signed in
+        # TODO: investigate alternatives for submitting form data
+        if @submit_avatar_form
 
-        $('#user_avatar_form').ajaxSubmit
-          type: 'PUT'
-          data: 
-            authenticity_token: current_user.csrf
-            trying_to: 'update_avatar_hack'
+          $('#user_avatar_form').ajaxSubmit
+            type: 'PUT'
+            data: 
+              authenticity_token: current_user.csrf
+              trying_to: 'update_avatar_hack'
     else 
       save @local
 

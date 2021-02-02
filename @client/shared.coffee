@@ -100,14 +100,12 @@ setInterval ->
   proposals = false 
   for key of arest.components_4_key.hash
     if key[0] == '/' && arest.components_4_key.get(key).length > 0 && \
-       !key.match(/\/(user|opinion|point|subdomain|application|translations)/)
+       !key.match(/\/(current_user|user|opinion|point|subdomain|application|translations)/)
 
       if key.match(/\/proposal\/|\/proposals\//)
         proposals = true 
-
-      else if key != '/current_user' || fetch('/current_user').logged_in
+      else
         arest.serverFetch(key)
-        # console.log "FETCHING #{key}"
 
   if proposals 
     arest.serverFetch('/proposals')

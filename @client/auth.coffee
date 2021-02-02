@@ -759,10 +759,7 @@ Auth = ReactiveComponent
 
         save @local
 
-    if @local[name] != current_user[name]
-      @local[name] = current_user[name]
-      save @local
-      return SPAN null
+    @local[name] ?= current_user[name]
 
     # There is a react bug where input cursor will jump to end for
     # controlled components. http://searler.github.io/react.js/2014/04/11/React-controlled-text.html
@@ -780,7 +777,7 @@ Auth = ReactiveComponent
         fontSize: if browser.is_mobile then 36 else 20
         display: 'inline-block'
         backgroundColor: '#f2f2f2'
-      value: if auth.form in ['edit profile'] then @local[name] else null
+      defaultValue: @local[name]
       name: "user[#{name}]"
       key: "#{name}_inputBox"
       #placeholder: placeholder
@@ -1161,8 +1158,6 @@ Auth = ReactiveComponent
       current_user.trying_to = auth.form
 
       save current_user, => 
-        if auth.form in ['create account', 'edit profile']
-          ensureCurrentUserAvatar()
 
         if auth.form in ['edit profile']
           @local.saved_successfully = current_user.errors.length + @local.errors.length == 0
@@ -1180,12 +1175,16 @@ Auth = ReactiveComponent
         # we'll just submit the file form after user is signed in
         # TODO: investigate alternatives for submitting form data
         if @submit_avatar_form
-
+  
           $('#user_avatar_form').ajaxSubmit
             type: 'PUT'
             data: 
               authenticity_token: current_user.csrf
               trying_to: 'update_avatar_hack'
+
+          if auth.form in ['create account', 'edit profile']
+            ensureCurrentUserAvatar()
+
     else 
       save @local
 

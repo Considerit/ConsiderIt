@@ -166,9 +166,12 @@ window.T = window.t = window.translator = (args, native_text) ->
   # ensure this string is in the translations database for the development language
   if translations_native[id]?.txt != native_text
     console.log 'updating', {id, native_text, saved: translations_native[id]?.txt}, translations_native[id]?.txt == native_text
+
     translations_native[id] ||= {}
     translations_native[id].txt = native_text
-    save translations_native  
+    setTimeout ->
+      save translations_native  
+    , 1000
 
   # which language should we use? ordered by preference. 
   # user = fetch '/current_user'

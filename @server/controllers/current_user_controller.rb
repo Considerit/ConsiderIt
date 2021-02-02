@@ -263,7 +263,7 @@ class CurrentUserController < ApplicationController
         log('verification token sent')
 
       when 'update_avatar_hack'
-        current_user.update_attributes({:avatar => params['avatar']})
+        current_user.update_attribute(:avatar, params['avatar'])
 
     end
 

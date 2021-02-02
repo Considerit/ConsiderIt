@@ -47,7 +47,7 @@ class CommentController < ApplicationController
 
     if comment.save
 
-      Notifier.create_notification('new', comment)
+      Notifier.notify_parties('new', comment)
       comment.notify_moderator
 
       original_id = key_id(params[:key])

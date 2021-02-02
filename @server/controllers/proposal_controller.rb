@@ -68,7 +68,7 @@ class ProposalController < ApplicationController
       current_user.update_subscription_key(proposal.key, 'watched', :force => false)
       dirty_key '/current_user'
 
-      Notifier.create_notification 'new', proposal
+      Notifier.notify_parties 'new', proposal
       proposal.notify_moderator
 
       write_to_log({
@@ -127,8 +127,6 @@ class ProposalController < ApplicationController
         proposal.update_attributes! updated_fields
 
         if text_updated
-          # Perhaps we shouldn't enable this until we have an edit history
-          # Notifier.create_notification 'edited', proposal, protagonist: current_user
           proposal.redo_moderation
         end
       end

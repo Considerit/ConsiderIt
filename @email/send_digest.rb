@@ -1,23 +1,12 @@
-# wait at least 5 min before sending any notification
-BUFFER = 5 * 60 
 require Rails.root.join('@server', 'extras', 'translations')
 
-def send_digest(subdomain, user, notifications, subscription_settings, deliver = true, since = nil, force = false)
+def send_digest(subdomain, user, subscription_settings, deliver = true, since = nil, force = false)
   send_emails = subscription_settings['send_emails']
+
 
   return if !send_emails || \
             (!force && !due_for_notification(user, subdomain)) || \
-            !valid_triggering_event(notifications, subscription_settings) || \
             subdomain.customization_json['email_notifications_disabled']
-
-  # Hack!! this notification system is terrible, so I'm going to add even more entropy.
-  # I'm going to get all the data across the subdomain since the last time a digest 
-  # was sent, and not rely on the notification objects. 
-  #
-  # Basically, the only thing the Notification objects do is to manage when a valid triggering
-  # event has happened.
-  #
-  # Sorry future Travis!
 
   last_digest_sent_at = last_sent_at(user, subdomain)
   if !since 
@@ -28,68 +17,21 @@ def send_digest(subdomain, user, notifications, subscription_settings, deliver =
     end
   end 
 
+  new_activity = get_new_activity(subdomain, user, since)
+  mail = DigestMailer.digest(subdomain, user, new_activity, last_digest_sent_at, send_emails)
+
   send_key = "/subdomain/#{subdomain.id}"
   user.sent_email_about(send_key)
-
-  new_activity = get_new_activity(subdomain, user, since)
-
-  mail = DigestMailer.digest(subdomain, user, notifications, new_activity, last_digest_sent_at, send_emails)
-
-  # record that we've sent these notifications
-  Notification.transaction do 
-    for v in notifications.values
-      for vv in v.values
-        for vvv in vv.values
-          for n in vvv      
-            n.sent_email = true
-            n.save
-          end
-        end
-      end
-    end
-  end
-
+  
+  subdomain.digest_triggered_for ||= {}
+  subdomain.digest_triggered_for[user.id] = false
+  subdomain.save
+  
+  pp "delivering to #{user.name}"
   mail.deliver_now if deliver
 
   mail 
 
-end
-
-####
-# Check notifications to determine if a valid triggering event occurred
-
-def valid_triggering_event(notifications, subscription_settings)
-  for digest_type, digest_types in notifications
-    for digest_id, digest_ids in digest_types
-      for event, ns in digest_ids
-
-        for notification in ns
-
-          event_relation = notification.event_object_relationship 
-
-          if subscription_settings.key? "#{event}:#{event_relation}"
-            key = "#{event}:#{event_relation}"
-          else 
-            key = event
-          end
-
-          if !subscription_settings[key]
-            pp "missing event prefs for #{key}", subscription_settings
-            raise "missing event prefs for #{key}"
-          end
-
-          if subscription_settings[key] && subscription_settings[key]['email_trigger']
-
-            do_send = !notification.read_at && \
-                      Time.now() - notification.created_at > BUFFER
-            return true if do_send
-          end
-
-        end
-      end
-    end
-  end
-  false
 end
 
 def get_new_activity(subdomain, user, since)
@@ -257,6 +199,7 @@ def due_for_notification(user, subdomain)
   can_send = true
 
   last_digest_sent_at = last_sent_at(user, subdomain)
+
   if last_digest_sent_at
     sec_since_last = Time.now() - Time.parse(last_digest_sent_at)
     interval = email_me_no_more_than user.subscription_settings(subdomain)['send_emails']

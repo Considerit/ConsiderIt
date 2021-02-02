@@ -19,8 +19,7 @@ module Moderatable
   end
 
   def notify_moderator
-    Notifier.create_notification 'content_to_moderate', self, 
-                                 :digest_object => self.subdomain
+    Notifier.notify_parties 'content_to_moderate', self, self.subdomain
   end
 
   def redo_moderation

@@ -77,9 +77,6 @@ ConsiderIt::Application.routes.draw do
   match '/translations' => 'translations#update', :via => [:put]
   match '/translations/*subdomain' => 'translations#update', :via => [:put]
 
-  match '/notification/:notification_id' => 'notification#update', :via => [:put]
-  get '/notifications/:proposal_id' => 'notification#index'
-
 
   match 'rename_forum' => 'subdomain#rename_forum', :via => [:post]
   match 'nuke_everything' => 'subdomain#nuke_everything', :via => [:put]

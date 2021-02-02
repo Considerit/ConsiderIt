@@ -3,14 +3,12 @@ require 'mail'
 class DigestMailer < Mailer
   layout 'digest'
 
-  def digest(subdomain, user, notifications, new_stuff, last_sent_at, send_limit)
+  def digest(subdomain, user, new_stuff, last_sent_at, send_limit)
     set_translation_context(user, subdomain)
 
     @send_limit = send_limit
     @last_sent_at = last_sent_at
     @new_stuff = new_stuff
-    @subdomain_notifications = (notifications['Subdomain'] || {})[subdomain.id]
-    # @proposal_notifications = notifications['Proposal'] || {}
 
 
     @anonymize_everything = subdomain.customization_json['anonymize_everything']
@@ -25,6 +23,7 @@ class DigestMailer < Mailer
     subject = subject_line subject, @subdomain
 
     send_mail from: from_field(@subdomain), to: to_field(user), subject: subject
+    
     clear_translation_context()
 
   end

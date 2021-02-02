@@ -68,7 +68,7 @@ class Point < ApplicationRecord
     recache
     self.save if changed?
 
-    Notifier.create_notification 'new', self
+    Notifier.notify_parties 'new', self
     notify_moderator
 
   end

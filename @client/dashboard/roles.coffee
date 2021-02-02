@@ -301,61 +301,77 @@ AddRolesAndInvite = ReactiveComponent
       else
 
 
+        SPAN null, 
+          DropMenu
+            options: filtered_users
+            open_menu_on: 'activation'
 
-        DropMenu
-          options: filtered_users
-          open_menu_on: 'activation'
+            selection_made_callback: (user) =>
+              @local.added.push user.key
+              processNewFolks()
+              @local.filtered = null
+              save @local
 
-          selection_made_callback: (user) =>
-            @local.added.push user.key
-            processNewFolks()
-            @local.filtered = null
-            save @local
-            $(document).off('click.roles')
+            render_anchor: (menu_showing) =>
+              INPUT 
+                id: 'filter'
+                type: 'text'
+                style: {fontSize: 18, width: 350, padding: '3px 6px'}
+                autoComplete: 'off'
+                placeholder: "Name or email..."
+                
+                onChange: => 
+                  @local.filtered = document.getElementById('filter').value
+                  save @local
+                
+                onKeyDown: (e) =>
+                  # enter key pressed...
+                  if e.which == 13
+                    e.preventDefault()
+                    processNewFolks()
 
-          render_anchor: (menu_showing) =>
-            INPUT 
-              id: 'filter'
-              type: 'text'
-              style: {fontSize: 18, width: 350, padding: '3px 6px'}
-              autoComplete: 'off'
-              placeholder: "Name or email..."
-              onChange: => 
-                @local.filtered = document.getElementById('filter').value
-                save @local
-              onKeyDown: (e) =>
-                # enter key pressed...
+            render_option: (user) ->
+              [
+                SPAN 
+                  style: 
+                    fontWeight: 600
+                  user.name 
+
+                SPAN
+                  style: 
+                    opacity: .7
+                    paddingLeft: 8
+
+                  user.email  
+              ]
+   
+            wrapper_style: 
+              display: 'inline-block'
+            menu_style: 
+              backgroundColor: '#ddd'
+              border: '1px solid #ddd'
+
+            option_style: 
+              padding: '4px 12px'
+              fontSize: 18
+              cursor: 'pointer'
+              display: 'block'
+
+            active_option_style:
+              backgroundColor: '#eee'
+
+          if @local.filtered && @local.filtered.length > 0 
+            BUTTON 
+              onClick: => 
+                processNewFolks()
+              onKeyDown: (e) => 
                 if e.which == 13
+                  e.target.click()
                   e.preventDefault()
-                  processNewFolks()
 
-          render_option: (user) ->
-            [
-              SPAN 
-                style: 
-                  fontWeight: 600
-                user.name 
-
-              SPAN
-                style: 
-                  opacity: .7
-                  paddingLeft: 8
-
-                user.email  
-            ]
- 
-          menu_style: 
-            backgroundColor: '#ddd'
-            border: '1px solid #ddd'
-
-          option_style: 
-            padding: '4px 12px'
-            fontSize: 18
-            cursor: 'pointer'
-            display: 'block'
-
-          active_option_style:
-            backgroundColor: '#eee'
+              style: 
+                display: 'inline-block'
+              '+'
 
 
 
@@ -383,10 +399,11 @@ AddRolesAndInvite = ReactiveComponent
           type: 'checkbox'
           id: 'send_email_invite'
           name: 'send_email_invite'
+          className: 'bigger'
           style: 
             position: 'relative'
             top: 1
-            marginRight: 8
+            marginRight: 14
           onClick: =>
             @local.send_email_invite = !@local.send_email_invite
             save @local

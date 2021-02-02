@@ -263,9 +263,7 @@ class User < ApplicationRecord
     my_subs = (subscriptions || {})[subdomain.id.to_s] || {}
 
     for event, config in notifier_config
-      if config.key? 'allowed'
-        next if !config['allowed'].call(self, subdomain)
-      end
+      next if event == 'content_to_moderate' && !self.is_admin?(subdomain)
       
       if my_subs.key?(event)
         my_subs[event].merge! config

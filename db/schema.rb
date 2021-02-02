@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_30_034158) do
+ActiveRecord::Schema.define(version: 2021_02_01_233339) do
 
   create_table "comments", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "commentable_id", default: 0
@@ -82,26 +82,6 @@ ActiveRecord::Schema.define(version: 2021_01_30_034158) do
     t.integer "subdomain_id"
     t.boolean "updated_since_last_evaluation", default: false
     t.boolean "notification_sent", default: false
-  end
-
-  create_table "notifications", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.integer "subdomain_id"
-    t.integer "user_id"
-    t.string "digest_object_type", collation: "utf8_unicode_ci"
-    t.integer "digest_object_id"
-    t.string "event_object_type", collation: "utf8_unicode_ci"
-    t.integer "event_object_id"
-    t.string "event_object_relationship", collation: "utf8_unicode_ci"
-    t.string "event_type", collation: "utf8_unicode_ci"
-    t.boolean "sent_email"
-    t.datetime "read_at"
-    t.datetime "created_at"
-    t.index ["digest_object_id"], name: "index_notifications_on_digest_object_id"
-    t.index ["digest_object_type"], name: "index_notifications_on_digest_object_type"
-    t.index ["event_object_id"], name: "index_notifications_on_event_object_id"
-    t.index ["event_object_type"], name: "index_notifications_on_event_object_type"
-    t.index ["subdomain_id"], name: "index_notifications_on_subdomain_id"
-    t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
   create_table "opinions", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
@@ -242,6 +222,7 @@ ActiveRecord::Schema.define(version: 2021_01_30_034158) do
     t.string "lang", collation: "utf8mb4_0900_ai_ci"
     t.string "SSO_domain", collation: "utf8_general_ci"
     t.integer "moderation_policy", default: 0
+    t.json "digest_triggered_for"
     t.index ["name"], name: "by_identifier", length: 10
   end
 

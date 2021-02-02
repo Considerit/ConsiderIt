@@ -101,6 +101,32 @@ window.Notifications = ReactiveComponent
 
   drawEmailSettings : () -> 
     current_user = fetch('/current_user')
+
+    # make sure events for each trigger are kept up to date with notifier.config
+    email_triggers = [
+      {
+        name: 'new_proposal'
+        label: 'A new proposal is added'
+        events: ['new_proposal']
+      }
+      {
+        name: 'responds_to_you'
+        label: 'Someone responds to something you wrote'
+        events: ['new_comment:point_authored', 'new_point:proposal_authored', 'new_opinion:proposal_authored']
+      }
+      {
+        name: 'followed_proposal_activity'
+        label: 'Activity on a proposal you are following'
+        events: ['new_comment:point_engaged', 'new_comment', 'new_opinion', 'new_point']
+      }
+    ]
+
+    if current_user.is_admin
+      email_triggers.unshift
+        name: 'content_to_moderate'
+        label: 'When there is new content to help moderate'
+        events: ['content_to_moderate']
+
     settings = current_user.subscriptions
 
     DIV 
@@ -149,46 +175,48 @@ window.Notifications = ReactiveComponent
             listStyle: 'none'
             marginLeft: 62
 
-          # prefs contains keys of objects being watched, and event trigger
-          # preferences for different events
-          for event in _.keys(settings).sort()
-            config = settings[event]
+          for trigger in email_triggers
 
-            continue if not config.ui_label
+            do (trigger) =>
 
-            LI 
-              style: 
-                display: 'block'
-                padding: '10px 0'
+              checked = false
+              for evnt in trigger.events
+                checked ||= settings[evnt].email_trigger
 
-              SPAN 
+              LI 
                 style: 
-                  display: 'inline-block'
-                  verticalAlign: 'top'
-                  position: 'relative'
+                  display: 'block'
+                  padding: '10px 0'
 
-                INPUT 
-                  id: "#{event}_input"
-                  name: "#{event}_input"
-                  type: 'checkbox'
-                  className: 'bigger'
-                  checked: if config.email_trigger then true
+                SPAN 
                   style: 
-                    position: 'absolute'
-                    left: -30
-                    top: 1
-                  onChange: do (config) => => 
-                    config.email_trigger = !config.email_trigger
-                    save current_user
+                    display: 'inline-block'
+                    verticalAlign: 'top'
+                    position: 'relative'
 
-              LABEL
-                htmlFor: "#{event}_input"
-                style: 
-                  display: 'inline-block'
-                  verticalAlign: 'top'
-                  fontSize: 15
+                  INPUT 
+                    id: "#{trigger.name}_input"
+                    name: "#{trigger.name}_input"
+                    type: 'checkbox'
+                    className: 'bigger'
+                    checked: checked
+                    style: 
+                      position: 'absolute'
+                      left: -30
+                      top: 1
+                    onChange: => 
+                      for evnt in trigger.events
+                        settings[evnt].email_trigger = !checked
+                      save current_user
 
-                TRANSLATE "email_notifications.event.#{event}", config.ui_label
+                LABEL
+                  htmlFor: "#{trigger.name}_input"
+                  style: 
+                    display: 'inline-block'
+                    verticalAlign: 'top'
+                    fontSize: 15
+
+                  TRANSLATE "email_notifications.event.#{trigger.name}", trigger.label
 
   drawWatched: ->
     current_user = fetch('/current_user')

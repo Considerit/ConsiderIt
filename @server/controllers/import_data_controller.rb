@@ -201,7 +201,9 @@ class ImportDataController < ApplicationController
               'cluster' => list
             })
 
-            attrs['roles'] = "{\"editor\":[\"/user/#{user.id}\"], \"writer\":[\"*\"], \"commenter\":[\"*\"], \"opiner\":[\"*\"], \"observer\":[\"*\"]}"
+            attrs['roles'] = {
+              "editor": ["/user/#{user.id}"]
+            }
 
             if !proposal
               attrs['subdomain_id'] = current_subdomain.id

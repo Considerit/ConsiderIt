@@ -29,8 +29,8 @@ class ImportDataController < ApplicationController
         directly_extractable: ['name', 'email', 'tags']
       },
       'proposals' => {
-        required_fields: ['topic', 'user'],
-        directly_extractable: ['description', 'cluster', 'seo_title', 'seo_description', 'seo_keywords', 'json']
+        required_fields: ['topic|title', 'user'],
+        directly_extractable: ['description', 'list', 'cluster', 'seo_title', 'seo_description', 'seo_keywords', 'json']
       },
       'opinions' => {
         required_fields: ['user', 'proposal', 'stance'],
@@ -79,9 +79,15 @@ class ImportDataController < ApplicationController
           if !checked_required_fields
             missing_fields = []
             config[:required_fields].each do |rq|
-              if !row.has_key?(rq)
+              fields = rq.split('|')
+              has_one = false
+              fields.each do |fld|
+                has_one ||= row.has_key?(fld)
+              end
+              if !has_one
                 missing_fields.append rq
               end 
+
             end
             if missing_fields.length > 0 
               # not worth continuing to parse if required fields are missing in the schema

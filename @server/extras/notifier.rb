@@ -21,7 +21,6 @@ require Rails.root.join('@server', 'extras', 'permissions')
 DEBUG = Rails.env.development?
 
 module Notifier
-  extend ActiveSupport::Concern
 
 
   #######################################

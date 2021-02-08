@@ -10,7 +10,6 @@ class User < ApplicationRecord
   has_many :inclusions, :dependent => :destroy
   has_many :comments, :dependent => :destroy
   has_many :proposals
-  has_many :notifications, :dependent => :destroy
 
   attr_accessor :avatar_url, :downloaded
 

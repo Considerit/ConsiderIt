@@ -225,17 +225,6 @@ class Proposal < ApplicationRecord
     json
   end
 
-  def notifications
-    current_user.notifications
-      .where(
-        digest_object_type: 'Proposal', 
-        digest_object_id: self.id)
-      .order('created_at DESC')
-  end
-
-  def safe_notifications
-    Notifier.filter_unmoderated(notifications)
-  end 
 
   def key
     "/proposal/#{id}"
@@ -260,9 +249,9 @@ class Proposal < ApplicationRecord
       if !rolez[role]
         if role == 'observer' && current_subdomain
           # default to subdomain setting
-          rolez[role] = current_subdomain.user_roles['visitor'] || [*]
+          rolez[role] = current_subdomain.user_roles['visitor'] || ['*']
         elsif role == 'participant' && current_subdomain
-          rolez[role] = current_subdomain.user_roles['participant'] || [*]
+          rolez[role] = current_subdomain.user_roles['participant'] || ['*']
         else
           rolez[role] = [] 
         end

@@ -5,6 +5,7 @@ require Rails.root.join('@server', 'extras', 'permissions')
 require Rails.root.join('@server', 'extras', 'translations')
 require Rails.root.join('@server', 'extras', 'invitations')
 require Rails.root.join('@server', 'extras', 'data_exports')
+require Rails.root.join('@server', 'extras', 'notifier')
 
 
 class ApplicationController < ActionController::Base

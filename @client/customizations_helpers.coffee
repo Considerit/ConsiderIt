@@ -95,6 +95,12 @@ window.get_slider_label = (id, proposal) ->
         label 
 
 
+positive_scale = (value, proposal) ->  
+  value = (value + 1) / 2
+  "#{Math.round(value * 100)}%"
+
+
+
 fully_firmly_slightly_scale = (value, proposal) ->
 
   if Math.abs(value) < 0.02
@@ -139,6 +145,8 @@ window.slider_labels =
     translate: true    
     support: 'High Priority'
     oppose: 'Low Priority'    
+
+    slider_feedback: positive_scale
 
   important_unimportant:
     translate: true    

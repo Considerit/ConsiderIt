@@ -260,9 +260,9 @@ class Proposal < ApplicationRecord
       if !rolez[role]
         if role == 'observer' && current_subdomain
           # default to subdomain setting
-          rolez[role] = current_subdomain.user_roles['visitor']
+          rolez[role] = current_subdomain.user_roles['visitor'] || [*]
         elsif role == 'participant' && current_subdomain
-          rolez[role] = current_subdomain.user_roles['participant']
+          rolez[role] = current_subdomain.user_roles['participant'] || [*]
         else
           rolez[role] = [] 
         end

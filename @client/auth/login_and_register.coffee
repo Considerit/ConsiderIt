@@ -248,6 +248,7 @@ window.CreateAccount = ReactiveComponent
                   INPUT
                     className:"pledge-input"
                     type:'checkbox'
+                    className: 'bigger'
                     id:"pledge-#{idx}"
                     name:"pledge-#{idx}"
                     style: 
@@ -322,6 +323,7 @@ window.CreateAccount = ReactiveComponent
         id: slugify("considerit_termsinputBox")
         key: "considerit_terms_inputBox"
         type:'checkbox'
+        className: 'bigger'
         style: 
           fontSize: 24
           verticalAlign: 'baseline'

@@ -115,7 +115,7 @@ window.ModerationDash = ReactiveComponent
             fontStyle: 'italic'
             padding: 2
           moderation_policy.label
-        BR null
+
         " Visit the "
         A 
           href: '/dashboard/application'
@@ -123,7 +123,7 @@ window.ModerationDash = ReactiveComponent
             textDecoration: 'underline'
             fontWeight: 700
           "forum settings"
-        " to change it."
+        " to change the policy."
 
 
       UL 
@@ -216,7 +216,7 @@ window.ModerationDash = ReactiveComponent
 
         UL 
           style: 
-            marginLeft: -66
+            marginLeft: 0 #-66
           for item in items[@local.show_category].items
             ModerateItem 
               key: item.key

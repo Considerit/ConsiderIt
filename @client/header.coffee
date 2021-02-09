@@ -13,7 +13,9 @@ window.Header = ReactiveComponent
     # auth = fetch('auth')
     # return SPAN null if auth.form && auth.form not in ['edit profile']
 
-    is_homepage = fetch('location').url == '/'
+    loc = fetch('location')
+    is_homepage = loc.url == '/'
+    is_dashboard = loc.url.match 'dashboard/'
     editing_banner = fetch('edit_banner').editing
 
     HEADER 
@@ -53,6 +55,12 @@ window.Header = ReactiveComponent
 
         if is_homepage && customization('HomepageHeader')
           customization('HomepageHeader').apply(@)
+        else if is_dashboard
+          ShortHeader
+            background: 'white'
+            text: ''
+            logo_src: false
+
         else 
           customization('SiteHeader').apply(@)
 

@@ -83,7 +83,8 @@ window.ShowHostQuestions = ReactiveComponent
 
       DIV 
         style: 
-          marginBottom: 12      
+          marginBottom: 12     
+
         LABEL
           className: 'AUTH_field_label' 
           translator('auth.host_questions.heading', 'Questions from the forum host') 
@@ -92,6 +93,7 @@ window.ShowHostQuestions = ReactiveComponent
           DIV 
             style: 
               fontSize: 14
+              marginTop: 8
             dangerouslySetInnerHTML: __html: host_framing
 
 
@@ -179,6 +181,7 @@ window.ShowHostQuestions = ReactiveComponent
                 id: slugify("#{question.tag}inputBox")
                 key: "#{question.tag}_inputBox"
                 type:'checkbox'
+                className: 'bigger'
                 style: 
                   fontSize: 24
                   verticalAlign: 'top'
@@ -215,6 +218,7 @@ window.ShowHostQuestions = ReactiveComponent
                   id: slugify("#{key}-inputBox")
                   key: "#{key}_inputBox"
                   type:'checkbox'
+                  className: 'bigger'
                   style: 
                     fontSize: 24
                     verticalAlign: 'baseline'

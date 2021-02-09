@@ -32,7 +32,7 @@ window.Notifications = ReactiveComponent
       if current_user.subscriptions['send_emails']
         current_user.subscriptions['send_emails'] = null 
         save current_user
-        @local.unsubscribed = true 
+        @local.watched_proposals = true 
         save @local 
       delete loc.query_params.unsubscribe
       save loc
@@ -40,7 +40,7 @@ window.Notifications = ReactiveComponent
     DIV 
       id: 'NOTIFICATIONS'
 
-      if @local.unsubscribed && !current_user.subscriptions['send_emails']
+      if @local.watched_proposals && !current_user.subscriptions['send_emails']
         DIV 
           style: 
             border: "1px solid #{logo_red}" 
@@ -48,9 +48,9 @@ window.Notifications = ReactiveComponent
             padding: '4px 8px'
 
           TRANSLATE
-            id: "email_notifications.unsubscribed_ack"
+            id: "email_notifications.watched_proposals_ack"
             subdomain_name: subdomain.name
-            "You are now unsubscribed from summary emails from {subdomain_name}.consider.it"
+            "You are now watched_proposals from summary emails from {subdomain_name}.consider.it"
           
 
       DIV 
@@ -220,14 +220,15 @@ window.Notifications = ReactiveComponent
 
   drawWatched: ->
     current_user = fetch('/current_user')
-    unsubscribed = {}
+    watched_proposals = []
 
     for k,v of current_user.subscriptions
-      # we only match proposals for now 
       if v == 'watched' && k.match(/\/proposal\//)
-        unsubscribed[k] = v
+        proposal = fetch(k)
+        if proposal.name
+          watched_proposals.push proposal
 
-    if _.keys(unsubscribed).length > 0
+    if watched_proposals.length > 0
 
       DIV 
         style: 
@@ -248,46 +249,45 @@ window.Notifications = ReactiveComponent
             position: 'relative'
             marginLeft: 62
 
-          for k,v of unsubscribed
-            do (k) => 
-              proposal = fetch(k)
+          for proposal in watched_proposals
+            do (proposal) => 
 
-              CollapsedProposal 
-                key: "unfollow-#{proposal.key or proposal}"
-                proposal: proposal
-                show_category: true
-                width: 500
-                hide_scores: true
-                hide_icons: true
-                hide_metadata: true
-                show_category: false
-                name_style: 
-                  fontSize: 16
-                icon: =>
-                  LABEL 
-                    key: 'unfollow-area'
-                    htmlFor: "unfollow-#{proposal.name}"
+              if proposal.name
+                CollapsedProposal 
+                  key: "unfollow-#{proposal.key or proposal}"
+                  proposal: proposal
+                  show_category: true
+                  width: 500
+                  hide_scores: true
+                  hide_icons: true
+                  hide_metadata: true
+                  show_category: false
+                  name_style: 
+                    fontSize: 16
+                  icon: =>
+                    LABEL 
+                      key: 'unfollow-area'
+                      htmlFor: "unfollow-#{proposal.name}"
 
-                    SPAN 
-                      style: 
-                        display: 'none'
-                      translator "email_notifications.unfollow_proposal", "Unfollow this proposal"
+                      SPAN 
+                        style: 
+                          display: 'none'
+                        translator "email_notifications.unfollow_proposal", "Unfollow this proposal"
 
-                    INPUT 
-                      key: "unfollow-#{k}"
-                      id: "unfollow-#{proposal.name}"
-                      className: 'bigger'
-                      style: 
-                        position: 'absolute'
-                        left: -30
-                        top: 4
-                      type: 'checkbox'
-                      defaultChecked: true
-                      onChange: => 
-                        proposal = fetch(k)
-                        if !current_user.subscriptions[proposal.key]
-                          current_user.subscriptions[proposal.key] = 'watched'
-                        else 
-                          delete current_user.subscriptions[proposal.key]
+                      INPUT 
+                        key: "unfollow-#{proposal.key}"
+                        id: "unfollow-#{proposal.name}"
+                        className: 'bigger'
+                        style: 
+                          position: 'absolute'
+                          left: -30
+                          top: 4
+                        type: 'checkbox'
+                        defaultChecked: true
+                        onChange: => 
+                          if !current_user.subscriptions[proposal.key]
+                            current_user.subscriptions[proposal.key] = 'watched'
+                          else 
+                            delete current_user.subscriptions[proposal.key]
 
-                        save current_user
+                          save current_user

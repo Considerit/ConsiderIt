@@ -10,10 +10,6 @@ window.SU = ReactiveComponent
 
     users = fetch '/users'
 
-    if !@local.showing?
-      @local.showing = true
-      save @local
-
     DIV 
       style: 
         position: 'absolute'
@@ -26,49 +22,46 @@ window.SU = ReactiveComponent
         padding: 10
 
       onMouseLeave: => 
-        @local.showing = false
-        save @local
+        su.enabled = false 
+        save su
 
-      if @local.showing
-        UL 
-          style: 
-            width: '100%'
+      UL 
+        style: 
+          width: '100%'
 
-          for user in users.users
-            LI 
+        for user in users.users
+          LI 
+            style: 
+              backgroundColor: 'black'
+              listStyle: 'none'
+              display: 'inline-block'
+              margin: 10
+              cursor: 'pointer'
+            onClick: do(user) => => 
+              current_user = fetch '/current_user'
+              current_user.trying_to = 'switch_users'
+              current_user.switch_to = user
+              save current_user, -> 
+                location.reload()
+
+              su.enabled = false
+              save su
+
+            Avatar 
+              key: user
+              user: user
+              hide_tooltip: true
               style: 
-                backgroundColor: 'black'
-                listStyle: 'none'
+                width: 50
+                height: 50
+
+            SPAN
+              style: 
+                paddingTop: 12
+                paddingLeft: 5
                 display: 'inline-block'
-                margin: 10
-                cursor: 'pointer'
-              onClick: do(user) => => 
-                current_user = fetch '/current_user'
-                current_user.trying_to = 'switch_users'
-                current_user.switch_to = user
-                save current_user, -> 
-                  location.reload()
 
-                @local.showing = false
-                save @local
-                su.enabled = false
-                save su
-
-              Avatar 
-                key: user
-                user: user
-                hide_tooltip: true
-                style: 
-                  width: 50
-                  height: 50
-
-              SPAN
-                style: 
-                  paddingTop: 12
-                  paddingLeft: 5
-                  display: 'inline-block'
-
-                fetch(user).name
+              fetch(user).name
 
 
   componentDidMount : ->

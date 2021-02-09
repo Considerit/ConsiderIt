@@ -241,11 +241,11 @@ window.styles += """
   }
 
   .AUTH_field_wrapper {
-    margin-bottom: 8px;
+    margin-bottom: 12px;
   }
 
   .AUTH_field_label {
-    color: #666;
+    color: #444;
     font-size: 16px;
     display: block;
     text-transform: uppercase;

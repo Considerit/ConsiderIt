@@ -1173,8 +1173,7 @@ window.ShortHeader = (opts) ->
     padding: '8px 0'
     padding_left_icon: 20
 
-  is_light = is_light_background()
-
+  background_is_light = is_light_background(opts.background)
 
   DIV 
     style:
@@ -1228,7 +1227,7 @@ window.ShortHeader = (opts) ->
               
 
             back_to_homepage_button
-              color: if !is_light && !opts.logo_src then 'white'
+              color: if !background_is_light && !opts.logo_src then 'white'
               fontSize: 18
               fontWeight: 600
               display: 'inline'
@@ -1239,7 +1238,7 @@ window.ShortHeader = (opts) ->
       if opts.text
         H2 
           style: 
-            color: if !is_light then 'white'
+            color: if !background_is_light then 'white'
             marginLeft: if opts.logo_src then 35
             paddingRight: 90
             fontSize: 32

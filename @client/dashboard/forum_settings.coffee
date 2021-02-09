@@ -6,7 +6,12 @@ window.styles += """
     font-size: 16px;
     max-width: 650px;
   }
-  .FORUM_SETTINGS input[type="text"], .FORUM_SETTINGS textarea { border: 1px solid #aaa; display: block; width: #{HOMEPAGE_WIDTH()}px; font-size: 18px; padding: 4px 8px; } 
+  .FORUM_SETTINGS input[type="text"], .FORUM_SETTINGS textarea { 
+    border: 1px solid #aaa; 
+    display: block; 
+    font-size: 18px; 
+    padding: 4px 8px; 
+  } 
   .FORUM_SETTINGS .input_group { 
     margin-bottom: 24px; 
     position: relative;
@@ -23,7 +28,7 @@ window.styles += """
   .FORUM_SETTINGS .radio_group {
     margin-top: 24px;
   }
-  .FORUM_SETTINGS .field_explanation {
+  #DASHBOARD-main .FORUM_SETTINGS .field_explanation {
     margin-left: 36px;
   }
  
@@ -120,13 +125,13 @@ window.ForumSettingsDash = ReactiveComponent
       if subdomain.plan || current_user.is_super_admin
         DIV className: 'input_group',
           
-          LABEL htmlFor: 'google_analytics_code', "Google analytics. Add your Google analytics tracking code."
+          LABEL htmlFor: 'google_analytics_code', "Google Analytics tracking code"
           INPUT 
             id: 'google_analytics_code'
             type: 'text'
             name: 'google_analytics_code'
             defaultValue: subdomain.google_analytics_code
-            placeholder: 'Google Analytics tracking code'
+
       else 
         DIV className: 'input_group',
           LABEL htmlFor: 'google_analytics_code', "Google analytics tracking code"

@@ -734,7 +734,7 @@ window.ListHeader = ReactiveComponent
         list_actions
           list: @props.list
           add_new: !@props.combines_these_lists && customization('list_permit_new_items', list_key) && !is_collapsed && @props.proposals_count > 4
-          can_sort: customization('homepage_show_search_and_sort') && @props.proposals_count > 8 
+          can_sort: customization('homepage_show_search_and_sort') && @props.proposals_count > 1 
 
 
 

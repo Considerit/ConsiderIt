@@ -97,32 +97,23 @@ protected
 
   def get_current_subdomain
     rq = request
+    candidate_subdomain = nil 
+
+    if rq.subdomain && rq.subdomain.length > 0 
+      candidate_subdomain = Subdomain.find_by_name(rq.subdomain)
+    end
 
     if params[:domain]
       session[:default_subdomain] = Subdomain.find_by_name(params[:domain]).id
     end 
 
-    def get_subdomain(str)
+    default_subdomain = session.fetch(:default_subdomain, 1)
 
-      # IE doesn't do _ in subdomain, so we migrated away from them. This 
-      # code is migration code for some of former subdomains
-      if str.index '_'
-        redirect_to request.url.sub(str, str.gsub('_', '-'))
-        str = str.gsub('_', '-')
-      end 
 
-      candidate_subdomain = Subdomain.find_by_name(str)
-      candidate_subdomain
-    end 
-
-    default_subdomain = session.has_key?(:default_subdomain) ? session[:default_subdomain] : 1
-
-    if rq.subdomain.nil? || rq.subdomain.length == 0
-      candidate_subdomain = nil 
-
+    if !candidate_subdomain 
 
       if Rails.env.development? && rq.host.split('.').length > 1
-        candidate_subdomain = get_subdomain(rq.host.split('.')[0])
+        candidate_subdomain = Subdomain.find_by_name(rq.host.split('.')[0])
       end 
 
       if !candidate_subdomain 
@@ -137,10 +128,7 @@ protected
           candidate_subdomain = Subdomain.first
         end
       end
-    else
-      candidate_subdomain = get_subdomain(rq.subdomain)
     end
-
 
     set_current_tenant(candidate_subdomain) if candidate_subdomain
     current_subdomain

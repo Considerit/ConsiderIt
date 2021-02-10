@@ -220,7 +220,7 @@ class Proposal < ApplicationRecord
       moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
     end
 
-    json['point_count'] = self.points.where("(published=1 AND #{moderation_status_check}) OR user_id=#{current_user.id}").count
+    json['point_count'] = self.points.where("(published=1 AND #{moderation_status_check} AND json_length(includers) > 0) OR user_id=#{current_user.id}").count
 
     json
   end

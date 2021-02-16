@@ -123,7 +123,8 @@ class Opinion < ApplicationRecord
     points_to_include.select {|p_id| points_already_included.include? p_id }
   end
 
-  def include(point)
+  def include(point, subdomain = nil)
+    subdomain ||= current_subdomain
     if not point.is_a? Point
       point = Point.find point
     end
@@ -136,6 +137,8 @@ class Opinion < ApplicationRecord
     end    
     
     if user.inclusions.where( :point_id => point.id ).count > 0
+      point.recache 
+      self.recache
       Rails.logger.error "Including a point (#{point.id}) for user #{self.user_id} twice!'"
       return
     end
@@ -144,7 +147,7 @@ class Opinion < ApplicationRecord
       :point_id => point.id,
       :user_id => self.user_id,
       :proposal_id => self.proposal_id,
-      :subdomain_id => current_subdomain.id
+      :subdomain_id => subdomain.id
     }
     Inclusion.create! attrs
 

@@ -18,14 +18,82 @@ task :fix_active_in => :environment do
   User.fix_active_in
 end
 
+task :migrate_moderation => :environment do 
+  Subdomain.all.each do |s|
+    moderatable_models = ['points', 'comments', 'proposals']
+
+    policy = 0
+    moderatable_models.each do |model|
+      ppolicy = s["moderate_#{model}_mode"]
+      if !policy && ppolicy > 0
+        policy = ppolicy 
+      elsif policy < ppolicy 
+        policy = ppolicy
+      end
+    end
+
+    if policy > 0 
+      pp "Setting #{s.name} to #{policy} from #{s["moderate_proposals_mode"]} #{s["moderate_points_mode"]} #{s["moderate_comments_mode"]}"
+    end 
+    s.moderation_policy = policy 
+    s.save
+
+  end
+end
 
 task :migrate_roles => :environment do 
-  Subdomain.all.each do |sub|
-    subroles = sub.user_roles
-    next if subroles['moderator'].length == 0 && subroles['proposer'].length == 0 
 
-    pp sub.name, subroles['moderator'], subroles['proposer']
+  Subdomain.all.each do |s|
+    roles = s.roles || {}
+
+    if roles['moderator']
+      s.roles.delete('moderator')
+      s.save
+      pp "removed moderator role from #{s.name}"
+    end 
   end
+
+  Proposal.all.each do |p|
+    subroles = p.roles ? p.roles.deep_dup : {}
+
+    next if subroles['participant']
+
+    begin
+      has_wildcard = subroles['writer'].include?('*') || subroles['opiner'].include?('*') || subroles['commenter'].include?('*')
+    rescue
+      has_wildcard = true
+    end
+
+    modified = false
+
+    if !has_wildcard
+      subroles['participant'] = []
+      modified = true
+    end
+
+    if subroles["observer"] == ["*", "*"]
+      subroles["observer"] = ["*"]
+      modified = true 
+    end
+
+    if subroles['writer'] || subroles['opiner'] || subroles['commenter']
+      subroles.delete('writer')
+      subroles.delete('opiner')
+      subroles.delete('commenter')
+      modified = true 
+    end
+
+    if modified
+      p.roles = subroles
+      p.save
+      pp "migrated roles of #{p.subdomain.name} #{p.id}"
+      pp p.roles
+
+      p.reload
+      pp p.roles
+    end
+  end
+
 end
 
 
@@ -69,50 +137,3 @@ end
 
 
 
-task :migrate_proposal_roles => :environment do 
-  subs = {}
-  Proposal.all.each do |p|
-    next if !p.subdomain
-    v = p.user_roles
-    next if v['observer'].include?('*')
-
-    if !subs.include?(p.subdomain_id)
-      subs[p.subdomain_id] = {}
-    end 
-
-    ['observer', 'opiner', 'commenter', 'writer', 'editor'].each do |role|
-      #next if role == 'editor' && v[role].length == 1
-      v[role].each do |u|
-        if !subs[p.subdomain_id].include?(u)
-          subs[p.subdomain_id][u] = 0
-        end 
-        subs[p.subdomain_id][u] += 1
-      end
-    end
-     
-  end
-
-  subs.each do |sub, v|
-    next if v.keys.length == 0 || (v.has_key?('*') && v.keys.length == 1)
-    s = Subdomain.find(sub)
-    subroles = s.user_roles
-    given_access = {}
-    ['admin', 'moderator', 'proposer', 'visitor'].each do |role|
-      subroles[role].each do |u|
-        given_access[u] = true
-      end      
-    end
-
-    pp ''
-    pp '----------'
-    pp "#{s.name} (#{subroles['visitor'].include?('*') ? 'PUBLIC' : 'PRIVATE'})"
-    v.each do |user, cnt|
-      next if user == '*'
-      if given_access[user]
-        pp "    MENTIONED: #{user} #{cnt}"
-      else 
-        pp "  * EXCLUDED: #{user} #{cnt}"
-      end
-    end
-  end
-end

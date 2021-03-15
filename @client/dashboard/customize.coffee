@@ -1,5 +1,10 @@
 
 
+styles += """
+  [data-name="/dashboard/customizations"] #DASHBOARD-main {
+    max-width: 85vw;
+  }
+"""
 
 window.CustomizationsDash = ReactiveComponent
   displayName: 'CustomizationsDash'
@@ -15,7 +20,7 @@ window.CustomizationsDash = ReactiveComponent
       save @local
 
     other_subs = []
-    for sub in subdomains.subs when sub.customizations?.length > 0 && sub.name != subdomain.name
+    for sub in subdomains.subs when sub.customizations && sub.name != subdomain.name
       other_subs.push [sub.name.toLowerCase(), sub.customizations]
       if sub.name.toLowerCase() == @local.compare_to
         compare_to = JSON.stringify(sub.customizations or "\n\n\n\n\n\n\n", null, 2)
@@ -43,6 +48,8 @@ window.CustomizationsDash = ReactiveComponent
     catch error 
       code_properties = []
       console.error error
+
+
 
 
     DIV 
@@ -134,6 +141,7 @@ window.CustomizationsDash = ReactiveComponent
               onChange: (ev) => 
                 @local.compare_to = ev.target.value 
                 save @local
+                console.log @local
 
               for [sub, id] in other_subs when @local.customization_filter.length == 0 || id.toLowerCase().indexOf(@local.customization_filter.toLowerCase()) > -1
                 OPTION 

@@ -149,6 +149,7 @@ window.Dashboard = ReactiveComponent
 
     DIV 
       id: "DASHBOARD-flex-container"
+      "data-name": loc.url
 
       DIV
         id: "DASHBOARD-menu"

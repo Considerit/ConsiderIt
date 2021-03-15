@@ -110,13 +110,17 @@ window.ModerationDash = ReactiveComponent
         style: 
           marginBottom: 24 
         "Your moderation policy: "
+
         SPAN 
           style: 
             fontStyle: 'italic'
             padding: 2
-          moderation_policy.label
+          if moderation_policy
+            moderation_policy.label
+          else
+            "no moderation"
 
-        " Visit the "
+        ". Visit the "
         A 
           href: '/dashboard/application'
           style: 

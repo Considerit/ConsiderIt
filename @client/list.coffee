@@ -202,11 +202,13 @@ EditList = ReactiveComponent
 
         # if tabs are enabled, add it to the current tab
         if customizations['homepage_tabs'] 
-          tabs = fetch('homepage_tabs')
-          current_tab = customizations['homepage_tabs'][tabs.filter]
-          if current_tab
-            current_tab.push new_key
-          else 
+          current_tab = fetch('homepage_tabs').filter
+          found_tab = false 
+          for tab in customizations['homepage_tabs']
+            if tab.name == current_tab
+              tab.lists.push new_key
+              break
+          if !found_tab 
             console.error "Cannot add the list to the current tab #{current_tab}"
 
       save subdomain, => 
@@ -298,9 +300,13 @@ EditList = ReactiveComponent
               # if tabs are enabled, remove it from the current tab
               if customizations['homepage_tabs']
                 tabs = fetch('homepage_tabs')
-                current_tab = customizations['homepage_tabs'][tabs.filter]
-                current_tab.splice current_tab.indexOf(list_key, 1)
-
+                current_tab = fetch('homepage_tabs').filter
+                tab_idx = null 
+                for tab in customizations['homepage_tabs']
+                  if tab.name == current_tab
+                    tab.lists.splice tab.lists.indexOf(list_key), 1
+                    break                  
+                    
               save subdomain
 
             if list.proposals?.length > 0 

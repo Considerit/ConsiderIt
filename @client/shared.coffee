@@ -882,6 +882,7 @@ input[type="checkbox"], input[type="radio"], button, a {
 
 input[type="checkbox"].bigger, input[type="radio"].bigger {
   transform: scale(1.5);
+  font-size: 24px;
 }
 
 .hidden {

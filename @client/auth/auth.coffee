@@ -161,19 +161,10 @@ window.auth_text_gray = '#444'    # the gray color for solid text
 
 # default styles for auth forms
 window.styles += """
-  .AUTH {
-    // background: linear-gradient(180deg, rgba(223,98,100,1) 250px, rgba(238,238,238,1) 250px);
-    background: rgba(50,50,50,.9);
-    min-height: 100vh;
-    height: 100%;
-    min-width: 100vw;
-    position: absolute;
-    z-index: 99999;
-  }
+  .AUTH {}
 
   #AUTH_wrapper {
     margin: 0 auto;
-    // padding: 4em 0;
     position: relative;
     z-index: 0;
     padding: 3em 0;
@@ -222,9 +213,10 @@ window.styles += """
     font-size: 24px;
   }
   .AUTH_cancel.embedded {
-    right: 0;
-    float: right;
+    margin-top: 8px;
     padding: 8px 0 8px 8px;
+    font-size: 18px;
+    text-decoration: underline;
   }
 
   .AUTH_submit_button {
@@ -256,7 +248,7 @@ window.styles += """
     width: 100%;
     border: 1px solid #ccc;
     padding: 10px 14px;
-    fontSize: #{if browser.is_mobile then 36 else 20}px;
+    font-size: #{if browser.is_mobile then 36 else 20}px;
     display: inline-block;
     background-color: #f2f2f2;
   }
@@ -286,78 +278,78 @@ window.AuthForm =
 
     DIV 
       className: 'AUTH'
-      style: 
-        minHeight: if @local.docked_node_height then @local.docked_node_height + 100
+
+      DIV 
+        id: 'lightbox'
+
+      DIV
+        id: 'modal'
+        ref: 'dialog'
+        role: 'dialog'
+        'aria-labeledby': 'AUTH_task'
+        'aria-describedby': if options.goal then 'AUTH_goal'
 
 
-      Dock
-        key: 'auth-doc'
-        docked_key: 'auth-dock-state'
-        dock_on_zoomed_screens: true
-        dummy: fetch('auth').form
-        do =>   
+        DIV 
+          id: 'AUTH_wrapper'
+          style:
+            width: AUTH_WIDTH()
+
+          if !options.disallow_cancel
+
+            BUTTON
+              className: 'AUTH_cancel floating'
+              title: translator 'engage.cancel_button', 'cancel'
+
+              onKeyDown: (e) => 
+                if e.which == 13 || e.which == 32 # ENTER or SPACE
+                  e.target.click()
+                  e.preventDefault()
+
+              onClick: cancel_modal
+
+              DIV 
+                dangerouslySetInnerHTML: __html: '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" fill="white" viewBox="0 0 64 80" enable-background="new 0 0 64 64" xml:space="preserve"><g><path d="M17.586,46.414C17.977,46.805,18.488,47,19,47s1.023-0.195,1.414-0.586L32,34.828l11.586,11.586   C43.977,46.805,44.488,47,45,47s1.023-0.195,1.414-0.586c0.781-0.781,0.781-2.047,0-2.828L34.828,32l11.586-11.586   c0.781-0.781,0.781-2.047,0-2.828c-0.781-0.781-2.047-0.781-2.828,0L32,29.172L20.414,17.586c-0.781-0.781-2.047-0.781-2.828,0   c-0.781,0.781-0.781,2.047,0,2.828L29.172,32L17.586,43.586C16.805,44.367,16.805,45.633,17.586,46.414z"/><path d="M32,64c8.547,0,16.583-3.329,22.626-9.373C60.671,48.583,64,40.547,64,32s-3.329-16.583-9.374-22.626   C48.583,3.329,40.547,0,32,0S15.417,3.329,9.374,9.373C3.329,15.417,0,23.453,0,32s3.329,16.583,9.374,22.626   C15.417,60.671,23.453,64,32,64z M12.202,12.202C17.49,6.913,24.521,4,32,4s14.51,2.913,19.798,8.202C57.087,17.49,60,24.521,60,32   s-2.913,14.51-8.202,19.798C46.51,57.087,39.479,60,32,60s-14.51-2.913-19.798-8.202C6.913,46.51,4,39.479,4,32   S6.913,17.49,12.202,12.202z"/></g></svg>'
+                style: 
+                  width: 30
+
+          if options.goal
+            DIV
+              id: 'AUTH_goal'
+              options.goal
+
 
           DIV
-            id: 'AUTH_wrapper'
-            ref: 'dialog'
-            role: 'dialog'
-            'aria-labeledby': 'AUTH_task'
-            'aria-describedby': if options.goal then 'AUTH_goal'
-            style:
-              width: AUTH_WIDTH()
+            className: "AUTH_body_wrapper"
+
+            # The auth form's header
+            DIV
+              className: 'AUTH_header'
+                  
+              H1
+                id: 'AUTH_task'
+
+                options.task
+
+              options.render_below_title?()
+
+
+            children 
+
+            BUTTON
+              className: "AUTH_submit_button #{if @local.submitting then 'disabled'}"
+              onClick: options.on_submit
+              onKeyDown: (e) => 
+                if e.which == 13 || e.which == 32 # ENTER or SPACE
+                  e.target.click()
+                  e.preventDefault()
+              
+              options.submit_button or @i18n().submit_button      
 
             if !options.disallow_cancel
-
-              BUTTON
-                className: 'AUTH_cancel floating'
-                title: translator 'engage.cancel_button', 'cancel'
-
-                onKeyDown: (e) => 
-                  if e.which == 13 || e.which == 32 # ENTER or SPACE
-                    e.target.click()
-                    e.preventDefault()
-
-                onClick: cancel_modal
-
-                DIV 
-                  dangerouslySetInnerHTML: __html: '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" fill="white" viewBox="0 0 64 80" enable-background="new 0 0 64 64" xml:space="preserve"><g><path d="M17.586,46.414C17.977,46.805,18.488,47,19,47s1.023-0.195,1.414-0.586L32,34.828l11.586,11.586   C43.977,46.805,44.488,47,45,47s1.023-0.195,1.414-0.586c0.781-0.781,0.781-2.047,0-2.828L34.828,32l11.586-11.586   c0.781-0.781,0.781-2.047,0-2.828c-0.781-0.781-2.047-0.781-2.828,0L32,29.172L20.414,17.586c-0.781-0.781-2.047-0.781-2.828,0   c-0.781,0.781-0.781,2.047,0,2.828L29.172,32L17.586,43.586C16.805,44.367,16.805,45.633,17.586,46.414z"/><path d="M32,64c8.547,0,16.583-3.329,22.626-9.373C60.671,48.583,64,40.547,64,32s-3.329-16.583-9.374-22.626   C48.583,3.329,40.547,0,32,0S15.417,3.329,9.374,9.373C3.329,15.417,0,23.453,0,32s3.329,16.583,9.374,22.626   C15.417,60.671,23.453,64,32,64z M12.202,12.202C17.49,6.913,24.521,4,32,4s14.51,2.913,19.798,8.202C57.087,17.49,60,24.521,60,32   s-2.913,14.51-8.202,19.798C46.51,57.087,39.479,60,32,60s-14.51-2.913-19.798-8.202C6.913,46.51,4,39.479,4,32   S6.913,17.49,12.202,12.202z"/></g></svg>'
-                  style: 
-                    width: 30
-
-            if options.goal
-              DIV
-                id: 'AUTH_goal'
-                options.goal
-
-
-            DIV
-              className: "AUTH_body_wrapper"
-
-              # The auth form's header
-              DIV
-                className: 'AUTH_header'
-                    
-                H1
-                  id: 'AUTH_task'
-
-                  options.task
-
-                options.render_below_title?()
-
-
-              children 
-
-              BUTTON
-                className: "AUTH_submit_button #{if @local.submitting then 'disabled'}"
-                onClick: options.on_submit
-                onKeyDown: (e) => 
-                  if e.which == 13 || e.which == 32 # ENTER or SPACE
-                    e.target.click()
-                    e.preventDefault()
-                
-                options.submit_button or @i18n().submit_button      
-
-              if !options.disallow_cancel
+              DIV 
+                style: 
+                  textAlign: 'right'
                 BUTTON
                   ref: 'cancel_dialog'
                   className: 'AUTH_cancel embedded'
@@ -491,6 +483,18 @@ window.AuthForm =
 # Code influenced by: 
 #    - https://uxdesign.cc/how-to-trap-focus-inside-modal-to-make-it-ada-compliant-6a50f9a70700
 #    - https://bitsofco.de/accessible-modal-dialog/
+window.styles += """
+#lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(0,0,0,.8);
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+}
+"""
+
 window.Modal =
 
   accessibility_on_keydown: (e) ->
@@ -538,12 +542,37 @@ window.Modal =
     document.addEventListener 'keydown', @accessibility_on_keydown
 
     modal.querySelector('input').focus()
+
+
+    #####################
+    # For preventing scroll outside of the modal, and allowing scroll within, 
+    # all while making it seem like the whole page is scrollable. 
+    _.extend modal.style,
+      position: 'fixed'
+      top: 0
+      left: 0
+      width: '100vw'
+      height: '100vh'
+      overflow: 'auto'
+      zIndex: 99999
+      paddingBottom: if browser.is_mobile then "150px"
+
+    scroll_bar_width = window.innerWidth - document.body.offsetWidth
+    _.extend document.body.style,
+      marginRight: scroll_bar_width
+      overflow: 'hidden'
+      position: 'fixed'
   
   componentWillUnmount: -> 
     # return the focus to the element that had focus when the modal was launched
     if @focused_element_before_opening && document.body.contains(@focused_element_before_opening)
       @focused_element_before_opening.focus()
     document.removeEventListener 'keydown', @accessibility_on_keydown
+
+    _.extend document.body.style,
+      marginRight: null
+      overflow: null
+      position: null
 
 
 

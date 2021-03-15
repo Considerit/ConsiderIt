@@ -140,7 +140,7 @@ window.Login = ReactiveComponent
           color: '#333'
           backgroundColor: 'transparent'
           border: 'none'
-          fontSize: 13
+          fontSize: 16
           padding: 0
           position: 'relative'
           top: -8
@@ -252,9 +252,8 @@ window.CreateAccount = ReactiveComponent
                     id:"pledge-#{idx}"
                     name:"pledge-#{idx}"
                     style: 
-                      fontSize: 24
-                      verticalAlign: 'top'
-                      marginLeft: 0
+                      verticalAlign: 'baseline'
+                      marginLeft: 1
                       marginTop: 7
 
                   LABEL 
@@ -325,7 +324,6 @@ window.CreateAccount = ReactiveComponent
         type:'checkbox'
         className: 'bigger'
         style: 
-          fontSize: 24
           verticalAlign: 'baseline'
           marginLeft: 1
         defaultChecked: current_user.tags['considerit_terms']

@@ -31,8 +31,12 @@ class CurrentUserController < ApplicationController
     @min_pass = MIN_PASS 
 
 
-    trying_to = params[:trying_to]
-
+    if !params.has_key?(:trying_to) || !params[:trying_to]
+      trying_to = 'edit profile'    
+    else
+      trying_to = params[:trying_to]
+    end
+    
     # puts("")
     # puts("--------------------------------")
     # puts("----Start UPDATE CURRENT USER---")

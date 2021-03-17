@@ -299,7 +299,7 @@ window.AuthForm =
 
             BUTTON
               className: 'AUTH_cancel floating'
-              title: translator 'engage.cancel_button', 'cancel'
+              title: translator 'shared.cancel_button', 'cancel'
 
               onKeyDown: (e) => 
                 if e.which == 13 || e.which == 32 # ENTER or SPACE
@@ -353,7 +353,7 @@ window.AuthForm =
                 BUTTON
                   ref: 'cancel_dialog'
                   className: 'AUTH_cancel embedded'
-                  title: translator 'engage.cancel_button', 'cancel'
+                  title: translator 'shared.cancel_button', 'cancel'
 
                   onKeyDown: (e) => 
                     if e.which == 13 || e.which == 32 # ENTER or SPACE
@@ -362,7 +362,7 @@ window.AuthForm =
 
                   onClick: cancel_modal
 
-                  translator 'engage.cancel_button', 'cancel'
+                  translator 'shared.cancel_button', 'cancel'
 
 
   RenderInput: (opts) -> 

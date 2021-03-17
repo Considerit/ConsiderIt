@@ -131,6 +131,7 @@ window.EditComment = ReactiveComponent
       if permitted > 0
 
         Button 
+        
           style: 
             marginLeft: 60
             padding: '8px 16px'

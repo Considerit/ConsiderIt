@@ -62,6 +62,15 @@ window.errors_in_host_questions = (responses) ->
 
 
 
+styles += """
+  #SHOWHOSTQUESTIONS {
+    margin-left: -32px;
+    padding: 24px 33px;
+    background-color: #eee;
+    margin-top: 18px;
+  }
+"""
+
 window.ShowHostQuestions = ReactiveComponent
   displayName: 'ShowHostQuestions'
 
@@ -74,12 +83,9 @@ window.ShowHostQuestions = ReactiveComponent
     host_framing = customization 'host_questions_framing'
 
     DIV
+      id: 'SHOWHOSTQUESTIONS'
       style: 
-        padding: "24px 33px"
-        backgroundColor: "#eee"
-        marginTop: 18
         width: AUTH_WIDTH() - 18 * 2
-        marginLeft: -50 + 18
 
       DIV 
         style: 

@@ -172,12 +172,6 @@ window.styles += """
     display: block;
   }
 
-  .ROLES_add_button {
-    background-color: #EDEDED;
-    border: 1px solid #D7D7D7;
-    padding: 6px 18px;
-  }
-
   .ROLES_section .radio_group {
     margin-bottom: 30px;    
   }
@@ -291,7 +285,7 @@ AddRolesAndInvite = ReactiveComponent
 
       if !@local.expanded 
         BUTTON 
-          className: 'ROLES_add_button'
+          className: 'btn'
           onClick: => 
             @local.expanded = true 
             save @local 
@@ -431,17 +425,10 @@ AddRolesAndInvite = ReactiveComponent
           marginTop: 12
 
         BUTTON
+          className: 'btn'
           style: 
             backgroundColor: focus_color()
-            color: 'white'
-            padding: '6px 12px'
-            fontSize: 16
-            display: 'inline-block'
-            cursor: 'pointer'
-            # borderRadius: 8
-            fontWeight: 600
-            marginTop: 12
-            border: 'none'
+
 
           onKeyDown: (e) => 
             if e.which == 13 || e.which == 32 # ENTER or SPACE
@@ -474,6 +461,8 @@ AddRolesAndInvite = ReactiveComponent
           style: 
             color: '#888'
             marginLeft: 12
+            position: 'relative'
+            top: 2
 
           onKeyDown: (e) => 
             if e.which == 13 || e.which == 32 # ENTER or SPACE

@@ -359,14 +359,15 @@ EditList = ReactiveComponent
 
 
         BUTTON 
+          className: 'btn'
           style: 
             backgroundColor: focus_color()
-            fontSize: 18
-            border: 'none'
-            backgroundColor: '#555'
-            color: 'white'
-            fontWeight: 'bold'
-            padding: '8px 32px'
+            # fontSize: 18
+            # border: 'none'
+            # backgroundColor: '#555'
+            # color: 'white'
+            # fontWeight: 'bold'
+            # padding: '8px 32px'
 
 
           onClick: submit
@@ -378,19 +379,20 @@ EditList = ReactiveComponent
           translator 'engage.save_changes_button', 'Save'
 
         BUTTON
+          className: 'like_link'
           style: 
-            backgroundColor: 'transparent'
-            border: 'none'
             color: '#777'
             fontSize: 18
             marginLeft: 12
+            position: 'relative'
+            top: 2
           onClick: cancel_edit
           onKeyDown: (e) =>
             if e.which == 13 || e.which == 32 # ENTER or SPACE
               cancel_edit(e)  
               e.preventDefault()
 
-          translator 'engage.cancel_button', 'cancel'
+          translator 'shared.cancel_button', 'cancel'
 
 
 

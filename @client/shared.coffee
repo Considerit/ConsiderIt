@@ -815,7 +815,8 @@ b, strong { font-weight: bold; }
 * {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
-  box-sizing: border-box; }
+  box-sizing: border-box; 
+}
 
 a {
   color: inherit;
@@ -843,6 +844,25 @@ button.like_link {
   border: none;
   text-decoration: underline;
   padding: 0px;
+}
+
+.btn {
+  color: white;
+  text-transform: uppercase;
+  border: 0;
+  box-shadow: 0 2px 5px 0 rgb(0 0 0 / 20%), 0 2px 10px 0 rgb(0 0 0 / 10%);
+  font-weight: 700;
+  padding: .625rem 1.5rem .5rem;
+  line-height: 1.5;
+  text-align: center;
+  text-decoration: none;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  border-radius: .25rem;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+  margin: 0;
+  background-color: #{focus_blue}; 
 }
 
 
@@ -932,7 +952,6 @@ a.skip:hover {
   color: white;
   font-size: 29px;
   margin-top: 14px;
-  box-shadow: 0px 1px 0px black;
   border: none;
   padding: 8px 36px; }
 

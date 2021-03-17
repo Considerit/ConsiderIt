@@ -265,11 +265,9 @@ window.EditProposal = ReactiveComponent
 
         DIV null,
           BUTTON 
-            className:'button primary_button'
+            className: 'btn'
             style: 
-              width: 400
               marginTop: 35
-              backgroundColor: focus_color()              
             onClick: @saveProposal
 
             if @props.fresh 
@@ -278,13 +276,13 @@ window.EditProposal = ReactiveComponent
               translator 'Update'
 
           BUTTON
+            className: 'like_link'
             style: 
-              marginTop: 10
-              padding: 25
-              marginLeft: 10
-              fontSize: 22
-              border: 'none'
-              backgroundColor: 'transparent'
+              fontSize: 20
+              color: '#777'
+              position: 'relative'
+              top: 20
+              marginLeft: 12
 
             onClick: =>
               if @props.fresh 
@@ -292,7 +290,7 @@ window.EditProposal = ReactiveComponent
               else 
                 loadPage "/#{proposal.slug}"
 
-            translator 'engage.cancel_button', 'cancel'
+            translator 'shared.cancel_button', 'cancel'
 
         if @local.file_errors
           DIV style: {color: 'red'}, 'Error uploading files!'

@@ -50,7 +50,7 @@ window.DataDash = ReactiveComponent
 
           BUTTON
             type: 'submit'
-            class: 'button' 
+            className: 'btn' 
             style: 
               marginTop: 18
               fontSize: 20
@@ -168,6 +168,7 @@ window.DataDash = ReactiveComponent
 
           BUTTON
             id: 'submit_import'
+            className: 'btn'
             style: 
               marginTop: 18
               fontSize: 20

@@ -280,11 +280,11 @@ window.styles += """
   }
 
   input:checked + .toggle_switch_circle {
-    background-color: #2196F3;
+    background-color: #{focus_blue};
   }
 
   input:focus + .toggle_switch_circle {
-    box-shadow: 0 0 1px #2196F3;
+    box-shadow: 0 0 1px #{focus_blue};
   }
 
   input:checked + .toggle_switch_circle:before {

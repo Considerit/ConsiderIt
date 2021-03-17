@@ -5,17 +5,22 @@ require './translations'
 window.styles += """
   #EDITPROFILE label.AUTH_field_label {
     color: #8F8F8F;
-    font-size: 12px; 
     text-transform: uppercase;
+    margin-bottom: 2px;
+    margin-top: 4px;
   }
   #EDITPROFILE input.AUTH_text_input {
     display: block;
     margin-bottom: 6px;
-    width: 350px;
     border: 1px solid #ccc;
     padding: 10px 14px;
     font-size: #{if browser.is_mobile then 36 else 20}px;
     background-color: #f2f2f2;    
+  }
+
+  #EDITPROFILE #SHOWHOSTQUESTIONS {
+    padding: 12px 0 0 33px;
+    background-color: transparent;
   }
 """
 
@@ -76,15 +81,14 @@ window.EditProfile = ReactiveComponent
       ShowHostQuestions()
 
       BUTTON 
-        className: "#{if @local.submitting then 'disabled' else ''}"
+        className: "btn #{if @local.submitting then 'disabled' else ''}"
         onKeyPress: (event) =>
           # submit on enter
           if event.which == 13 # enter
             on_submit(event)
         onClick: on_submit
 
-        #TODO: translate
-        'Save changes'
+        translator 'shared.save_changes_button', 'Save changes'
 
       if @local.saved_successfully
         DIV 

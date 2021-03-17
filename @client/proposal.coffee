@@ -818,7 +818,7 @@ DecisionBoard = ReactiveComponent
       decision_board_style.borderStyle = 'solid'
 
     if get_proposal_mode() == 'results'
-      give_opinion_button_width = 200
+      give_opinion_button_width = 232
       slider = fetch namespaced_key('slider', @proposal)
       gutter = .1 * give_opinion_button_width
 
@@ -833,7 +833,7 @@ DecisionBoard = ReactiveComponent
       _.extend decision_board_style,
         borderStyle: 'solid'
         backgroundColor: focus_color()
-        borderBottom: '1px solid rgba(0,0,0,.6)'
+        # borderBottom: '1px solid rgba(0,0,0,.6)'
         cursor: 'pointer'
         transform: "translate(#{opinion_region_x}px, -10px)"
         minHeight: 32
@@ -855,8 +855,9 @@ DecisionBoard = ReactiveComponent
         padding: '.25em 18px'
         margin: 0
         fontSize: 16
-        boxShadow: 'none'
         width: '100%'
+        borderRadius: 16
+        boxShadow: 'none'
     else 
       give_opinion_style =
         visibility: 'hidden'
@@ -923,7 +924,7 @@ DecisionBoard = ReactiveComponent
 
           # only shown during results, but needs to be present always for animation
           BUTTON
-            className: 'give_opinion_button primary_button'
+            className: 'give_opinion_button btn'
             style: give_opinion_style
 
             if your_opinion.published 
@@ -943,11 +944,14 @@ DecisionBoard = ReactiveComponent
 
         # Big bold button at the bottom of the crafting page
         BUTTON 
-          className:'save_opinion_button primary_button'
+          className:'save_opinion_button btn'
           style:
             display: 'none'
             backgroundColor: focus_color()
             width: '100%'
+            marginTop: 14
+            borderRadius: 16
+            fontSize: 24
           onClick: => saveOpinion(@proposal)
           onKeyDown: (e) => 
             if e.which == 13 || e.which == 32 # ENTER or SPACE
@@ -1649,21 +1653,25 @@ PointsList = ReactiveComponent
           style: 
             fontWeight: if browser.high_density_display then 300 else 400
           "#{t('or')} "
-      SPAN
-        'aria-hidden': true
-        style: 
-          padding: if @props.drop_target then '0 6px' else '0 11px 0 0'
+      # SPAN
+      #   'aria-hidden': true
+      #   style: 
+      #     padding: if @props.drop_target then '0 6px' else '0 11px 0 0'
 
-        dangerouslySetInnerHTML:{__html: '&bull;'}
+      #   dangerouslySetInnerHTML:{__html: '&bull;'}
 
       BUTTON 
-        className: "write_#{@props.valence}"
-        style:
-          textDecoration: 'underline'
-          color: focus_color()
-          padding: 0
-          backgroundColor: 'transparent'
-          border: 'none'
+        className: "write_#{@props.valence} btn"
+        style: 
+          marginLeft: 8
+          backgroundColor: focus_color()
+
+        # style:
+        #   textDecoration: 'underline'
+        #   color: focus_color()
+        #   padding: 0
+        #   backgroundColor: 'transparent'
+        #   border: 'none'
 
         TRANSLATE 
           id: "engage.add_a_point"

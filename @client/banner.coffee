@@ -674,7 +674,7 @@ window.EditBanner = ReactiveComponent
               @submit(e)  
               e.preventDefault()
 
-          translator 'banner.save_changes_button', 'Save changes'
+          translator 'shared.save_changes_button', 'Save changes'
 
         BUTTON
           style: 
@@ -688,7 +688,7 @@ window.EditBanner = ReactiveComponent
               @exit_edit(e)  
               e.preventDefault()
 
-          translator 'banner.cancel_button', 'cancel'
+          translator 'shared.cancel_button', 'cancel'
 
         if @local.file_errors
           DIV style: {color: 'red'}, 'Error uploading files!'

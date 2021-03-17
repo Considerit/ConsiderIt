@@ -256,7 +256,7 @@ window.Questionaire = ReactiveComponent
               visibility: if !current_user.logged_in then 'hidden'
 
             BUTTON 
-              className: 'primary_button'
+              className: 'btn'
               onClick: complete 
               style: 
                 backgroundColor: focus_color()

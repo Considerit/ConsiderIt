@@ -113,9 +113,8 @@ IN_SITU_TRANSLATOR = ReactiveComponent
 
 
           BUTTON 
-            className: "primary_button"
+            className: "btn"
             style: 
-              backgroundColor: focus_color()
               fontSize: 14
             onClick: => 
               promote_temporary_translations(target_lang, key)
@@ -206,7 +205,7 @@ window.T = window.t = window.translator = (args, native_text) ->
     message = translations_native[id]?.txt
 
   if args.return_lang_used # useful for a T wrapper that enables in situ translations
-    {message, lang_used, target_lang: langs[0]}
+    {message, lang_used, target_lang: fetch('translations').translating_lang or langs[0]}
   else 
     message
 
@@ -255,6 +254,7 @@ TranslationsDash = ReactiveComponent
           onChange: (ev) => 
             local.translating_lang = ev.target.value
             save local
+          defaultValue: subdomain.lang or 'en'
 
           for [k,v] in all_langs
             OPTION 
@@ -360,11 +360,7 @@ TranslationsDash = ReactiveComponent
               padding: '8px'
 
             BUTTON 
-              className: 'primary_button'
-              style: 
-                backgroundColor: focus_color()
-                marginTop: 0
-                fontSize: 22
+              className: 'btn'
               onClick: => 
                 promote_temporary_translations(local.translating_lang, "/translations")                  
                 promote_temporary_translations(local.translating_lang, "/translations/#{subdomain.name}")

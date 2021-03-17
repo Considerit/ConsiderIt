@@ -86,10 +86,12 @@ window.CustomizationsDash = ReactiveComponent
           DIV 
             className: 'input_group'
             BUTTON 
-              className: 'primary_button button'
+              className: 'btn'
               onClick: => @submit()
               style: 
                 backgroundColor: focus_color()
+                marginTop: 18
+
               'Save'
 
           if @local.save_complete
@@ -190,7 +192,7 @@ window.CustomizationsDash = ReactiveComponent
                   className: 'input_group'
 
                   BUTTON 
-                    className: 'primary_button button'
+                    className: 'btn'
                     onClick: do (k) => => 
                       if k of @local.property_changes
                         @submit_change(k, @local.property_changes[k], true)
@@ -198,6 +200,7 @@ window.CustomizationsDash = ReactiveComponent
                       backgroundColor: focus_color()
                       opacity: if k not of @local.property_changes then .5
                       cursor: if k not of @local.property_changes then 'default'
+                      marginTop: 18
                     disabled: if k not of @local.property_changes then true
                     'Save'
 

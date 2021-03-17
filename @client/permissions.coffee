@@ -47,7 +47,7 @@ Permission =
 permit = (action) ->
   current_user = fetch '/current_user'
 
-  if customization('frozen')
+  if customization('frozen') && action not in ['read proposal', 'access forum']
     return Permission.DISABLED
 
   switch action

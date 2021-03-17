@@ -81,7 +81,7 @@ window.Login = ReactiveComponent
       disallow_cancel: disallow_cancel()
       render_below_title: toggle_modes
       on_submit: on_submit
-
+      submit_button: translator "auth.log_in", 'Log in'
 
       DIV null,
 
@@ -189,7 +189,7 @@ window.CreateAccount = ReactiveComponent
       goal: if auth.goal then translator "auth.login_goal.#{auth.goal.toLowerCase()}", auth.goal
       on_submit: on_submit
       render_below_title: if !@props.by_invitation then toggle_modes
-
+      submit_button: translator "shared.auth.sign_up", "Sign up"
 
       DIV null,
         @RenderInput

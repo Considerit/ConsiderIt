@@ -220,15 +220,9 @@ window.styles += """
   }
 
   .AUTH_submit_button {
-    color: white;
-    background-color: #676767;
-    font-size: 36px;
+    font-size: 30px;
     display: block;
     width: 100%;
-    font-weight: bold;
-    text-align: center;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,.2);
     margin-top: 20px;
   }
 
@@ -337,7 +331,7 @@ window.AuthForm =
             children 
 
             BUTTON
-              className: "AUTH_submit_button #{if @local.submitting then 'disabled'}"
+              className: "btn AUTH_submit_button #{if @local.submitting then 'disabled'}"
               onClick: options.on_submit
               onKeyDown: (e) => 
                 if e.which == 13 || e.which == 32 # ENTER or SPACE
@@ -498,7 +492,6 @@ window.styles += """
 window.Modal =
 
   accessibility_on_keydown: (e) ->
-
     # cancel on ESC if a cancel button has been defined
     if e.key == 'Escape' || e.keyCode == 27
       @refs.cancel_dialog?.getDOMNode().click()

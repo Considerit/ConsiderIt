@@ -135,28 +135,16 @@ window.ProfileMenu = ReactiveComponent
               fontSize: 22  
 
             BUTTON
-              className: 'profile_anchor create_account'
+              className: 'btn create_account'
               'data-action': 'create_account'
               onClick: (e) =>
                 reset_key 'auth',
                   form: 'create account'
 
-              style: 
-                color: if !light_background then 'white'
-                backgroundColor: 'transparent'
-                border: 'none'
-
-              translator "auth.sign_up", "Sign up"
-
-            SPAN 
-              style: 
-                color: if !light_background then 'white' else 'black'
-                padding: '0 6px'
-                opacity: .3
-              "|"
+              translator "shared.auth.sign_up", "Sign up"
 
             BUTTON
-              className: 'profile_anchor login'
+              className: 'profile_anchor login like_link'
               'data-action': 'login'
               onClick: (e) =>
                 reset_key 'auth',
@@ -164,8 +152,11 @@ window.ProfileMenu = ReactiveComponent
 
               style: 
                 color: if !light_background then 'white'
-                backgroundColor: 'transparent'
-                border: 'none'
+                fontWeight: 700
+                marginLeft: 20
+                position: 'relative'
+                top: 4
+
 
               translator "auth.log_in", "Log in"
     

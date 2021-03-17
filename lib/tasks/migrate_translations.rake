@@ -210,8 +210,8 @@ task :migrate_translations => :environment do
     delete_translation "email_notifications.event.#{event}"
   end
 
-
-
+  rename_translation "banner.save_changes_button", "shared.save_changes_button"
+  rename_translation "engage.cancel_button", "shared.cancel_button"
 
 
   sync_keys_with_english

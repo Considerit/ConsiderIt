@@ -14,7 +14,6 @@ window.styles += """
   } 
   .FORUM_SETTINGS .input_group { 
     margin-bottom: 24px; 
-    position: relative;
   }
 
   .FORUM_SETTINGS_section {
@@ -70,8 +69,9 @@ window.ForumSettingsDash = ReactiveComponent
           name: 'lang'
           value: lang
           onChange: (ev) =>
-            @local.language = ev.target.value 
-            save @local
+            subdomain.lang = ev.target.value
+            save subdomain
+
           style: 
             fontSize: 18
             marginLeft: 12
@@ -131,6 +131,9 @@ window.ForumSettingsDash = ReactiveComponent
             type: 'text'
             name: 'google_analytics_code'
             defaultValue: subdomain.google_analytics_code
+            onChange: (ev) -> 
+              subdomain.google_analytics_code = ev.target.value
+              save subdomain
 
       else 
         DIV className: 'input_group',
@@ -145,18 +148,8 @@ window.ForumSettingsDash = ReactiveComponent
               'hello@consider.it'
             ' to inquire further.'
 
-      ########################
-      # Plan
-      if current_user.is_super_admin
 
-        DIV className: 'input_group',
-          LABEL htmlFor: 'plan', 'Account Plan (0,1,2)'
-          INPUT 
-            id: 'plan'
-            type: 'text'
-            name: 'plan'
-            defaultValue: subdomain.plan
-            placeholder: '0 for free plan, 1 for custom, 2 for consulting.'
+
 
 
       ########################
@@ -172,6 +165,11 @@ window.ForumSettingsDash = ReactiveComponent
             type: 'checkbox'
             name: 'anonymize_everything'
             defaultChecked: customization('anonymize_everything')
+            onChange: (ev) -> 
+              subdomain.customizations ||= {}
+              subdomain.customizations.anonymize_everything = ev.target.checked
+              save subdomain, ->
+                arest.serverFetch('/users') # anonymity may have changed, so force a refetch
           
           SPAN 
             className: 'toggle_switch_circle'
@@ -200,7 +198,12 @@ window.ForumSettingsDash = ReactiveComponent
             type: 'checkbox'
             name: 'hide_opinions'
             defaultChecked: customization('hide_opinions')
-          
+            onChange: (ev) -> 
+              subdomain.customizations ||= {}
+              subdomain.customizations.hide_opinions = ev.target.checked
+              save subdomain, ->
+                arest.serverFetch('/users') # anonymity may have changed, so force a refetch
+
           SPAN 
             className: 'toggle_switch_circle'
         
@@ -230,7 +233,11 @@ window.ForumSettingsDash = ReactiveComponent
             type: 'checkbox'
             name: 'frozen'
             defaultChecked: customization('frozen')
-          
+            onChange: (ev) -> 
+              subdomain.customizations ||= {}              
+              subdomain.customizations.frozen = ev.target.checked
+              save subdomain
+
           SPAN 
             className: 'toggle_switch_circle'
 
@@ -259,7 +266,11 @@ window.ForumSettingsDash = ReactiveComponent
             type: 'checkbox'
             name: 'email_notifications_disabled'
             defaultChecked: customization('email_notifications_disabled')
-          
+            onChange: (ev) -> 
+              subdomain.customizations ||= {}
+              subdomain.customizations.email_notifications_disabled = ev.target.checked
+              save subdomain
+
           SPAN 
             className: 'toggle_switch_circle'
 
@@ -279,42 +290,31 @@ window.ForumSettingsDash = ReactiveComponent
       # MODERATION SETTINGS
       @drawModerationSettings()
 
-
       ########################
-      # SAVE Button
-      DIV 
-        className: 'input_group'
-        BUTTON 
-          className: 'primary_button button'
-          style: 
-            backgroundColor: focus_color()
-          onClick: @submit
+      # Plan
+      if current_user.is_super_admin
 
-          'Save'
-
-      if @local.save_complete
-        DIV style: {color: 'green'}, 'Saved.'
-
-      if @local.file_errors
-        DIV style: {color: 'red'}, 'Error uploading files!'
-
-      if @local.errors
-        if @local.errors && @local.errors.length > 0
-          DIV 
+        DIV 
+          className: 'input_group'
+          LABEL htmlFor: 'plan', 'Account Plan'
+          SELECT 
             style: 
-              borderRadius: 8
-              margin: 20
-              padding: 20
-              backgroundColor: '#FFE2E2'
+              display: 'block'
+            onChange: (ev) -> 
+              console.log ev, ev.target.value
+              subdomain.plan = ev.target.value
+              save subdomain
+            defaultValue: subdomain.plan
 
-            H1 style: {fontSize: 18}, 'Ooops!'
-
-            for error in @local.errors
-              DIV 
-                style: 
-                  marginTop: 10
-                error
-
+            OPTION 
+              value: 0
+              'Free'
+            OPTION
+              value: 1
+              'Customized'
+            OPTION
+              value: 2
+              'Premium'
 
       if current_user.is_super_admin
         FORM 
@@ -352,7 +352,7 @@ window.ForumSettingsDash = ReactiveComponent
     moderatable_models = ['points', 'comments', 'proposals']
 
     DIV 
-      className: 'FORUM_SETTINGS_section'
+      className: 'FORUM_SETTINGS_section input_group'
 
       H4 null, 
 
@@ -410,35 +410,3 @@ window.ForumSettingsDash = ReactiveComponent
               DIV 
                 className: 'explanation field_explanation'
                 option.explanation
-
-
-  submit : -> 
-
-    subdomain = fetch '/subdomain'
-    current_user = fetch '/current_user'
-
-    fields = ['plan', 'google_analytics_code', 'lang']
-
-    for f in fields
-      el = document.getElementById(f)
-      if el 
-        subdomain[f] = el.value
-
-    customization_fields = ['frozen', 'email_notifications_disabled', 'hide_opinions', 'anonymize_everything']
-    customizations = subdomain.customizations
-    for f in customization_fields
-      el = document.getElementById(f)
-      if el 
-        customizations[f] = el.checked
-
-    @local.save_complete = @local.file_errors = false
-    save @local
-
-    save subdomain, => 
-      if subdomain.errors
-        @local.errors = subdomain.errors
-
-      @local.save_complete = true
-      save @local
-
-      arest.serverFetch('/users') # anonymity may have changed, so force a refetch

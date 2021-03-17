@@ -326,9 +326,7 @@ window.CreateAccount = ReactiveComponent
         style: 
           verticalAlign: 'baseline'
           marginLeft: 1
-        defaultChecked: current_user.tags['considerit_terms']
-        onChange: (event) =>        
-          current_user.tags['considerit_terms'] = !current_user.tags['considerit_terms']
+        defaultChecked: false
 
       LABEL
         htmlFor: slugify("considerit_termsinputBox")

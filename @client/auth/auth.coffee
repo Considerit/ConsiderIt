@@ -420,7 +420,7 @@ window.AuthForm =
     else 
       @local.errors = []
 
-    if opts.check_considerit_terms && !current_user.tags?['considerit_terms']
+    if opts.check_considerit_terms && !document.getElementById('considerit_termsinputbox').checked
       @local.errors.push translator('auth.validation.agree_to_terms', "To proceed, you must agree to the terms") 
 
     if @local.errors.length == 0

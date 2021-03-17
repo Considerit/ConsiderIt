@@ -149,7 +149,7 @@ window.NewProposal = ReactiveComponent
               fontSize: 14  
 
             style: 
-              fontSize: 20
+              fontSize: if browser.is_mobile then 36 else 20
               width: w
               border: "1px solid #ccc"
               outline: 'none'
@@ -188,7 +188,7 @@ window.NewProposal = ReactiveComponent
                 border: '1px solid #ccc'
 
               style: 
-                fontSize: 16
+                fontSize: if browser.is_mobile then 36 else 16
                 width: w - 8 * 2
                 marginBottom: 8
                 minHeight: 120

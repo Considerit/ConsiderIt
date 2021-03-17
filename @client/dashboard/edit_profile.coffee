@@ -12,10 +12,6 @@ window.styles += """
   #EDITPROFILE input.AUTH_text_input {
     display: block;
     margin-bottom: 6px;
-    border: 1px solid #ccc;
-    padding: 10px 14px;
-    font-size: #{if browser.is_mobile then 36 else 20}px;
-    background-color: #f2f2f2;    
   }
 
   #EDITPROFILE #SHOWHOSTQUESTIONS {

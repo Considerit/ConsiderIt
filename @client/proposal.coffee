@@ -383,7 +383,7 @@ window.Proposal = ReactiveComponent
             if !show_all_points
               BUTTON 
                 style: 
-                  # backgroundColor: "#eee"
+                  backgroundColor: "#eee"
                   padding: '12px 0'
                   fontSize: 24
                   textAlign: 'center'
@@ -1665,13 +1665,6 @@ PointsList = ReactiveComponent
         style: 
           marginLeft: 8
           backgroundColor: focus_color()
-
-        # style:
-        #   textDecoration: 'underline'
-        #   color: focus_color()
-        #   padding: 0
-        #   backgroundColor: 'transparent'
-        #   border: 'none'
 
         TRANSLATE 
           id: "engage.add_a_point"

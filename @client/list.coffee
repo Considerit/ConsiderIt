@@ -362,13 +362,6 @@ EditList = ReactiveComponent
           className: 'btn'
           style: 
             backgroundColor: focus_color()
-            # fontSize: 18
-            # border: 'none'
-            # backgroundColor: '#555'
-            # color: 'white'
-            # fontWeight: 'bold'
-            # padding: '8px 32px'
-
 
           onClick: submit
           onKeyDown: (e) =>
@@ -546,7 +539,7 @@ window.ListHeader = ReactiveComponent
                 border: 'none'
                 outline: 'none'
                 color: '#444'
-                fontSize: 12
+                fontSize: if browser.is_mobile then 16 else 12
 
               DIV 
                 style: 
@@ -1122,7 +1115,9 @@ EditableDescription = ReactiveComponent
                   right: 0
                 container_style: 
                   borderRadius: 8
-
+                style: 
+                  fontSize: if browser.is_mobile then 32
+                  color: 'red'
         else 
           desc = description
           if typeof desc == 'string'

@@ -209,28 +209,31 @@ icons =
 
 
 window.styles += """
+
+@media only screen and (min-width: 760px) {
   .radio_group input[type='radio']{
-    -webkit-appearance:button;
-    -moz-appearance:button;
-    appearance:button;
-    border:4px solid #ccc;
-    border-top-color:#bbb;
-    border-left-color:#bbb;
-    background:#fff;
-    width:20px;
-    height:20px;
-    border-radius:50%;
+    -webkit-appearance: button;
+    -moz-appearance: button;
+    appearance: button;
+    border: 4px solid #ccc;
+    border-top-color: #bbb;
+    border-left-color: #bbb;
+    background: #fff;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
     position: absolute;
     left: -36px;
   }
   .radio_group input[type='radio']:checked{
-    border: 20px solid #4099ff;
+    border: 20px solid #{focus_blue};
   }
 
   .radio_group {
     position: relative;
     margin-left: 36px;    
   }
+}
 
 
 

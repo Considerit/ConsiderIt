@@ -206,36 +206,33 @@ icons =
   user_data:  '<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" stroke-width="0.501" stroke-linejoin="bevel" fill-rule="evenodd" version="1.1" overflow="visible" viewBox="10 20 80 55" x="0px" y="0px"><g fill="none" stroke="black" transform="scale(1 -1)"><g transform="translate(0 -96)"><g><path d="M 8.625,23.701 L 8.625,72.3 C 8.625,73.334 9.465,74.175 10.5,74.175 L 85.501,74.175 C 86.535,74.175 87.376,73.334 87.376,72.3 L 87.376,23.701 C 87.376,22.666 86.535,21.826 85.501,21.826 L 10.5,21.826 C 9.465,21.826 8.625,22.666 8.625,23.701 Z M 83.626,25.576 L 83.626,70.425 L 12.375,70.425 L 12.375,25.576 L 83.626,25.576 Z M 17.778,33.112 L 17.778,34.987 C 17.778,38.826 19.254,41.73 21.775,43.611 C 24.216,45.432 27.432,46.147 30.721,46.147 C 34.008,46.147 37.224,45.432 39.665,43.611 C 42.187,41.728 43.662,38.829 43.662,34.987 L 43.662,33.112 L 17.778,33.112 Z M 37.422,40.605 C 35.856,41.774 33.539,42.397 30.721,42.397 C 27.901,42.397 25.583,41.774 24.017,40.605 C 22.904,39.774 22.06,38.586 21.707,36.869 L 39.733,36.869 C 39.379,38.587 38.536,39.773 37.422,40.605 Z M 49.433,42.366 C 49.433,43.4 50.273,44.241 51.308,44.241 L 67.636,44.241 C 68.67,44.241 69.511,43.4 69.511,42.366 C 69.511,41.331 68.67,40.491 67.636,40.491 L 51.308,40.491 C 50.273,40.491 49.433,41.331 49.433,42.366 Z M 23.246,55.433 C 23.246,59.558 26.593,62.906 30.719,62.906 C 34.844,62.906 38.192,59.558 38.192,55.433 C 38.192,51.307 34.844,47.96 30.719,47.96 C 26.593,47.96 23.246,51.307 23.246,55.433 Z M 49.433,49.866 C 49.433,50.9 50.273,51.741 51.308,51.741 L 75.886,51.741 C 76.92,51.741 77.761,50.9 77.761,49.866 C 77.761,48.831 76.92,47.991 75.886,47.991 L 51.308,47.991 C 50.273,47.991 49.433,48.831 49.433,49.866 Z M 34.442,55.433 C 34.442,57.487 32.773,59.156 30.719,59.156 C 28.664,59.156 26.996,57.487 26.996,55.433 C 26.996,53.378 28.664,51.71 30.719,51.71 C 32.773,51.71 34.442,53.378 34.442,55.433 Z M 49.433,57.366 C 49.433,58.4 50.273,59.241 51.308,59.241 L 75.886,59.241 C 76.92,59.241 77.761,58.4 77.761,57.366 C 77.761,56.331 76.92,55.491 75.886,55.491 L 51.308,55.491 C 50.273,55.491 49.433,56.331 49.433,57.366 Z" stroke="none" fill="#000000" fill-rule="evenodd" stroke-width="0.5" marker-start="none" marker-end="none" stroke-miterlimit="79.8403193612775"/></g></g></g></svg>'
 
 
+if !browser.is_mobile
+  window.styles += """
+    .radio_group input[type='radio']{
+      -webkit-appearance: button;
+      -moz-appearance: button;
+      appearance: button;
+      border: 4px solid #ccc;
+      border-top-color: #bbb;
+      border-left-color: #bbb;
+      background: #fff;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      position: absolute;
+      left: -36px;
+    }
+    .radio_group input[type='radio']:checked{
+      border: 20px solid #{focus_blue};
+    }
 
+    .radio_group {
+      position: relative;
+      margin-left: 36px;    
+    }
+  """
 
 window.styles += """
-
-@media only screen and (min-width: 760px) {
-  .radio_group input[type='radio']{
-    -webkit-appearance: button;
-    -moz-appearance: button;
-    appearance: button;
-    border: 4px solid #ccc;
-    border-top-color: #bbb;
-    border-left-color: #bbb;
-    background: #fff;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    position: absolute;
-    left: -36px;
-  }
-  .radio_group input[type='radio']:checked{
-    border: 20px solid #{focus_blue};
-  }
-
-  .radio_group {
-    position: relative;
-    margin-left: 36px;    
-  }
-}
-
-
 
   /* From https://www.w3schools.com/howto/howto_css_switch.asp */
   /* The switch - the box around the slider */

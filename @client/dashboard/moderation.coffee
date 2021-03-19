@@ -235,6 +235,7 @@ styles += """
     display: inline-block; 
     margin-right: 10px; 
     box-shadow: 0px 1px 2px rgba(0,0,0,.4);
+    font-size: 22px;
   }
   .moderation label {
     display: inline-block;
@@ -400,7 +401,7 @@ ModerateItem = ReactiveComponent
             position: 'relative'
 
           SPAN 
-            className: 'moderation'
+            className: 'moderation btn'
             style: 
               backgroundColor: '#81c765'
 
@@ -419,7 +420,7 @@ ModerateItem = ReactiveComponent
               'Pass'
 
           SPAN 
-            className: 'moderation'
+            className: 'moderation btn'
             style: 
               backgroundColor: '#ffc92a'
 
@@ -436,7 +437,7 @@ ModerateItem = ReactiveComponent
               'Quarantine'
 
           SPAN 
-            className: 'moderation'
+            className: 'moderation btn'
             style: 
               backgroundColor: '#f94747'
 

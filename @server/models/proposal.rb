@@ -34,10 +34,6 @@ class Proposal < ApplicationRecord
     subdomain ||= current_subdomain
     proposals = nil 
 
-    # if a subdomain wants only specific clusters, ordered in a particular way, specify here
-    manual_clusters = nil
-    always_shown = [] 
-
     if subdomain.moderation_policy == 1
       moderation_status_check = "(moderation_status=1 OR user_id=#{current_user.id})"
     else 

@@ -1,23 +1,23 @@
 window.moderation_options = [
     {
-      label: "No content moderation."
+      label: "No content moderation"
       value: 0
     }
     
     {
-      label: "Do not publicly post content until after approval."
+      label: "Do not publicly post content until after approval"
       value: 1
       explanation: "Suggested only for extremely adversarial or sensitive forums. Hosts will receive email notifications when there is content to review. To keep the conversation flowing, hosts should be extremely responsive to reviewing new posts."
     } 
     
     {
-      label: "Post content immediately, but withhold email notifications until after approval."
+      label: "Post content immediately, but withhold email notifications until after approval"
       value: 2
       explanation: "Suggested for most public engagement. All content is posted immediately, but won’t trigger email notifications, nor will the new posts be present in any email summary of recent activity. After review, they will be part of recent activity summaries. This policy will avoid the worst consequence of detrimental content: an enthusiastic participant getting an email linking them to a nasty attack on them, while at the same time lessening the pressure on moderators to review content promptly."
     } 
     
     {
-      label: "Post content immediately, review later.", 
+      label: "Post content immediately, review later", 
       value: 3
       explanation: "Use this if you’re not very concerned about detrimental posts and/or you don’t have capacity to review new content in a timely fashion. Hosts will receive email notifications when there is content to review. Suggested for most engagement amongst people who have formal or communal ties."
     }
@@ -108,26 +108,36 @@ window.ModerationDash = ReactiveComponent
     DIV null, 
       DIV 
         style: 
-          marginBottom: 24 
+          marginBottom: 12 
+          fontSize: 20
         "Your moderation policy: "
 
-        SPAN 
-          style: 
-            fontStyle: 'italic'
-            padding: 2
-          if moderation_policy
-            moderation_policy.label
-          else
-            "no moderation"
 
-        ". Visit the "
+        SELECT 
+          style: 
+            fontSize: 20
+          onChange: (ev) ->
+            subdomain.moderation_policy = ev.target.value
+            save subdomain, -> 
+              #saving the subdomain shouldn't always dirty moderations 
+              #(which is expensive), so just doing it manually here
+              arest.serverFetch('/page/dashboard/moderate')  
+
+          for option in moderation_options
+            OPTION 
+              value: option.value
+              option.label 
+      DIV 
+        style: 
+          marginBottom: 24           
+        "Visit the "
         A 
           href: '/dashboard/application'
           style: 
             textDecoration: 'underline'
             fontWeight: 700
           "forum settings"
-        " to change the policy."
+        " for more explanation about moderation policy options."
 
 
       UL 

@@ -534,8 +534,10 @@ window.Modal =
     # get last element to be focused inside modal
     document.addEventListener 'keydown', @accessibility_on_keydown
 
-    modal.querySelector('input').focus()
-
+    try 
+      modal.querySelector('input').focus()
+    catch e 
+      console.error e
 
     #####################
     # For preventing scroll outside of the modal, and allowing scroll within, 

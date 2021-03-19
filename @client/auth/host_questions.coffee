@@ -11,14 +11,14 @@ window.HostQuestions = ReactiveComponent
     current_user = fetch '/current_user'
 
     @Draw
-      task: translator 'auth.host_questions.heading', 'Your hosts request more info'
+      task: translator 'auth.additional_info.heading', 'Your host requests more info'
       disallow_cancel: disallow_cancel()
       goal: if auth.goal then translator "auth.login_goal.#{auth.goal.toLowerCase()}", auth.goal
       on_submit: (ev) =>
         @Submit ev, 
           action: 'user questions'
           has_host_questions: true
-          check_considerit_terms: true
+          check_considerit_terms: false
 
       ShowHostQuestions()      
 

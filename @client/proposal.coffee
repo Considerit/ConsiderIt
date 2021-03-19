@@ -701,12 +701,12 @@ ParticipationStatus = ReactiveComponent
 
       DIV
         style: 
-          backgroundColor: focus_color()
+          backgroundColor: attention_orange
           color: 'white'
           margin: 'auto'
           display: 'inline-block'
           padding: '4px 6px'
-          fontWeight: 600
+          fontWeight: 700
 
         if can_opine == Permission.DISABLED
           TRANSLATE

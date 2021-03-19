@@ -229,7 +229,6 @@ styles += """
 .avatar {
   position: relative;
   vertical-align: top;
-  background-color: transparent;
   border: none;
   display: inline-block;
   margin: 0;
@@ -240,8 +239,9 @@ styles += """
   user-select: none; 
   -moz-user-select: none; 
   -webkit-user-select: none;
-  -ms-user-select: none;}
-  .avatar.avatar_anonymous {
+  -ms-user-select: none;
+}
+.avatar.avatar_anonymous {
     cursor: default; 
 }
 /* for styling icon of broken images */

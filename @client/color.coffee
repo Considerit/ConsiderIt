@@ -7,7 +7,8 @@ window.logo_red = "#B03A44"
 window.considerit_red = "#df6264"
 window.default_avatar_in_histogram_color = '#999'
 window.considerit_gray = '#f6f7f9'
-
+window.selected_color = "#f53b89"
+window.attention_orange = "#fb7e26"
 
 window.parseCssRgb = (css_color_str) ->
   test = document.createElement('div')

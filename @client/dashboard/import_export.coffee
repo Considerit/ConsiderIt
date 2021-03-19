@@ -136,7 +136,7 @@ window.DataDash = ReactiveComponent
                   id: "#{table}-file"
                   name: "#{table.toLowerCase()}-file"
                   type:'file'
-                  style: {backgroundColor: focus_color(), color: 'white', fontWeight: 700, borderRadius: 8, padding: 6}
+                  style: {backgroundColor: selected_color, color: 'white', fontWeight: 700, borderRadius: 8, padding: 6}
             
 
           if current_user.is_super_admin

@@ -6,7 +6,10 @@ window.DataDash = ReactiveComponent
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 
-    tables = ['Users', 'Proposals', 'Opinions', 'Points', 'Comments']
+    if current_user.is_super_admin
+      tables = ['Users', 'Proposals', 'Opinions', 'Points', 'Comments']
+    else 
+      tables = ['Proposals']
 
     DIV null, 
 
@@ -87,22 +90,16 @@ window.DataDash = ReactiveComponent
             style: 
               marginBottom: 6
 
-            "You do not have to upload every file, just what you need to. Most of the time, you only care about importing Proposals. Each file should be a spreadsheet in comma separated value format (.csv). Importing the same spreadsheet multiple times is okay."
+            "Your proposal import spreadsheet file should be in CSV format. Importing the same spreadsheet multiple times is okay. Here is an "
+            A 
+              style: 
+                textDecoration: 'underline'
+                fontWeight: 700
+              href: "/example_import_csvs/proposals.csv"
+              'data-nojax': true
+              'example .csv file'
+            "."
 
-          P 
-            style: 
-              marginBottom: 6
-            "To refer to a User, use their email address. For example, if you are uploading points, in the user column, refer to the author via their email address. "
-
-          P 
-            style: 
-              marginBottom: 6
-            "To refer to a Proposal, refer to its url. "
-
-          P 
-            style: 
-              marginBottom: 6
-            "To refer to a Point, make up an id for it and use that."
 
         FORM 
           id: 'import_data'
@@ -113,22 +110,23 @@ window.DataDash = ReactiveComponent
               style: 
                 display: 'flex'
 
-              DIV 
-                style: 
-                  paddingTop: 20
-                  textAlign: 'right'
-                  width: 150
+              if current_user.is_super_admin
+                DIV 
+                  style: 
+                    paddingTop: 20
+                    textAlign: 'right'
+                    width: 150
 
-                LABEL style: {whiteSpace: 'nowrap'}, htmlFor: "#{table}-file", "#{table} (.csv)"
+                  LABEL style: {whiteSpace: 'nowrap'}, htmlFor: "#{table}-file", "#{table} (.csv)"
 
-                DIV null
-                  A 
-                    style: 
-                      textDecoration: 'underline'
-                      fontSize: 12
-                    href: "/example_import_csvs/#{table.toLowerCase()}.csv"
-                    'data-nojax': true
-                    'Example'
+                  DIV null
+                    A 
+                      style: 
+                        textDecoration: 'underline'
+                        fontSize: 12
+                      href: "/example_import_csvs/#{table.toLowerCase()}.csv"
+                      'data-nojax': true
+                      'Example'
 
               DIV 
                 style: 

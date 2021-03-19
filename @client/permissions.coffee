@@ -75,7 +75,7 @@ permit = (action) ->
       else 
         can_add_to_list = true
 
-      if !current_user.is_admin && (!matchEmail(subdomain.roles.proposer) || !can_add_to_list)
+      if !current_user.is_admin && !matchEmail(subdomain.roles.proposer) && !can_add_to_list
         return Permission.INSUFFICIENT_PRIVILEGES 
       return Permission.NOT_LOGGED_IN if !current_user.logged_in
 

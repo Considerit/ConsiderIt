@@ -104,7 +104,7 @@ window.List = ReactiveComponent
                 category_color: if @props.combines_these_lists then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], .9, .8)
 
             if  (list_state.show_all_proposals || proposals.length <= list_state.show_first_num_items) && \
-               ((@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || customization('list_permit_new_items', list_key)) && \
+               ((@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || permit('create proposal', list_key) > 0) && \
                 !edit_list.editing
 
               LI 
@@ -530,7 +530,7 @@ window.ListHeader = ReactiveComponent
                       marginLeft: 4
                     htmlFor: 'host-only'
 
-                    translator "engage.list-config-who-can-add-only-hosts", "Only forum hosts"
+                    translator "engage.list-config-who-can-add-only-hosts", "Only forum hosts or those granted permission"
 
             if !@props.combines_these_lists
               slider_input_style = 
@@ -1117,7 +1117,7 @@ EditableDescription = ReactiveComponent
                   borderRadius: 8
                 style: 
                   fontSize: if browser.is_mobile then 32
-                  color: 'red'
+
         else 
           desc = description
           if typeof desc == 'string'

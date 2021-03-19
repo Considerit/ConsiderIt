@@ -13,7 +13,6 @@ require './forum_settings'
 require './customize'
 
 
-selected_color = "#f53b89"
 window.styles += """
   #DASHBOARD-flex-container {
     display: flex;

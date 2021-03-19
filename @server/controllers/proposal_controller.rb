@@ -31,7 +31,7 @@ class ProposalController < ApplicationController
   end
 
   def create
-    authorize! 'create proposal'
+    authorize! 'create proposal', params.fetch('cluster', nil)
 
     fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage']
     attrs = params.select{|k,v| fields.include? k}.to_h

@@ -389,25 +389,25 @@ AddRolesAndInvite = ReactiveComponent
         style: 
           marginTop: 20
           display: if !@local.expanded then 'none'
-        INPUT 
-          type: 'checkbox'
-          id: 'send_email_invite'
-          name: 'send_email_invite'
-          className: 'bigger'
-          style: 
-            position: 'relative'
-            top: 1
-            marginRight: 14
-          onClick: =>
-            @local.send_email_invite = !@local.send_email_invite
-            save @local
-          onKeyDown: (e) => 
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              e.target.click()
-              e.preventDefault()
 
-        LABEL 
-          htmlFor: 'send_email_invite'
+        LABEL null, 
+
+          INPUT 
+            type: 'checkbox'
+            name: 'send_email_invite'
+            className: 'bigger'
+            style: 
+              position: 'relative'
+              top: 1
+              marginRight: 14
+            onClick: =>
+              @local.send_email_invite = !@local.send_email_invite
+              save @local
+            onKeyDown: (e) => 
+              if e.which == 13 || e.which == 32 # ENTER or SPACE
+                e.target.click()
+                e.preventDefault()
+
           'Send email invitation'
 
         if @local.send_email_invite

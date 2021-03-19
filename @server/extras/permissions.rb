@@ -93,7 +93,17 @@ def permit(action, object = nil, user = nil)
 
   when 'create proposal'
     return Permission::NOT_LOGGED_IN if !user.registered
-    if !user.is_admin?(subdomain) && !Permitted::matchEmail(subdomain.user_roles['proposer'], user)
+
+    allowed_for_this_list = false
+    if object 
+      list_key = "list/#{object}"
+      customizations = subdomain.customization_json()
+      if customizations.has_key?(list_key) && customizations[list_key].has_key?("list_permit_new_items")
+        allowed_for_this_list = customizations[list_key]["list_permit_new_items"]
+      end
+    end
+
+    if !user.is_admin?(subdomain) && !Permitted::matchEmail(subdomain.user_roles['proposer'], user) && !allowed_for_this_list
       return Permission::INSUFFICIENT_PRIVILEGES 
     end
 

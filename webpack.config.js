@@ -166,6 +166,8 @@ if(!is_dev){
             s3Options : {
               accessKeyId: local.aws.access_key_id,
               secretAccessKey: local.aws.secret_access_key,
+              signatureVersion: 'v4', 
+              region: local.aws.region
             }})
 
         // Syncs a directory from this host to s3. 

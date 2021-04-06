@@ -127,7 +127,8 @@ config = {
 // Additional work when we're compiling for production
 if(!is_dev){
 
-  var s3 = require('s3'),
+  // using auth0's s3 because of https://github.com/andrewrk/node-s3-client/issues/175
+  var s3 = require('@auth0/s3'),
       YAML = require('yamljs'),
       CompressionPlugin = require("compression-webpack-plugin")
 

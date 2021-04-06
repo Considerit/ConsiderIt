@@ -1,4 +1,4 @@
-class UpdateProposals < ActiveRecord::Migration
+class UpdateProposals < ActiveRecord::Migration[5.2]
   def change
     change_column :proposals, :name, :text
     remove_column :proposals, :category

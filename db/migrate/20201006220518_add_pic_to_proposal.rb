@@ -1,4 +1,4 @@
-class AddPicToProposal < ActiveRecord::Migration
+class AddPicToProposal < ActiveRecord::Migration[5.2]
   def up
     add_attachment :proposals, :pic
     add_attachment :proposals, :banner

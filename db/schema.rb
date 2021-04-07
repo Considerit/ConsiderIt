@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_01_233339) do
+ActiveRecord::Schema.define(version: 2021_02_10_162418) do
 
   create_table "comments", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "commentable_id", default: 0
@@ -248,7 +248,7 @@ ActiveRecord::Schema.define(version: 2021_02_01_233339) do
     t.string "twitter_handle", collation: "utf8_unicode_ci"
     t.boolean "registered", default: false
     t.datetime "reset_password_sent_at"
-    t.text "b64_thumbnail", collation: "utf8_unicode_ci"
+    t.text "b64_thumbnail", limit: 4294967295
     t.json "tags"
     t.json "active_in"
     t.boolean "super_admin", default: false

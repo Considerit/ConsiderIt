@@ -52,3 +52,5 @@ export.rake
 lib/tasks/lists.csv
 lib/tasks/customizations
 lib/tasks/extract_customizations.rake
+
+package-lock.json

@@ -1,4 +1,4 @@
-class CreateNotifications < ActiveRecord::Migration
+class CreateNotifications < ActiveRecord::Migration[5.2]
   def change
     add_column :users, :subscriptions, :text
     add_column :users, :emails, :text

@@ -1,4 +1,4 @@
-class AddDatastoreTable < ActiveRecord::Migration
+class AddDatastoreTable < ActiveRecord::Migration[5.2]
   def change
 
     create_table :datastore, id: false do |t|

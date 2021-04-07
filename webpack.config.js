@@ -127,7 +127,8 @@ config = {
 // Additional work when we're compiling for production
 if(!is_dev){
 
-  var s3 = require('s3'),
+  // using auth0's s3 because of https://github.com/andrewrk/node-s3-client/issues/175
+  var s3 = require('@auth0/s3'),
       YAML = require('yamljs'),
       CompressionPlugin = require("compression-webpack-plugin")
 
@@ -166,6 +167,8 @@ if(!is_dev){
             s3Options : {
               accessKeyId: local.aws.access_key_id,
               secretAccessKey: local.aws.secret_access_key,
+              signatureVersion: 'v4', 
+              region: local.aws.region
             }})
 
         // Syncs a directory from this host to s3. 

@@ -1,4 +1,4 @@
-class RemoveMoreTables < ActiveRecord::Migration
+class RemoveMoreTables < ActiveRecord::Migration[5.2]
   def change
     drop_table :assessments
     drop_table :claims

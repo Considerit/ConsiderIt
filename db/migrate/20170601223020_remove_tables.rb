@@ -1,4 +1,4 @@
-class RemoveTables < ActiveRecord::Migration
+class RemoveTables < ActiveRecord::Migration[5.2]
   def change
     begin 
       drop_table :emails

@@ -30,7 +30,6 @@ gem 'delayed_job', :git => 'git://github.com/collectiveidea/delayed_job.git'
 gem 'delayed_job_active_record', :git => 'git://github.com/collectiveidea/delayed_job_active_record.git'
 gem "daemons" # for the daemonize method used in bin/delayed_job
 gem 'rubyzip'
-gem 'mailgun-ruby'
 
 #############
 # i18n
@@ -59,8 +58,8 @@ end
 group :production do
   # gem 'backup' #https://github.com/meskyanichi/backup
   gem 'exception_notification'
-  gem "aws-ses"  #, "~> 0.6.0", :require => 'aws/ses', :git => 'git://github.com/drewblas/aws-ses.git'
   gem 'aws-sdk' #, "~> 1.60"
+  gem 'aws-sdk-rails'
   gem 'dalli' # memcaching: https://github.com/mperham/dalli/
 
   ##############

@@ -124,7 +124,7 @@ window.CustomizationsDash = ReactiveComponent
           INPUT 
             style: 
               width: '100%'
-            placeholder: 'Filter to subs with customization containing...'
+            placeholder: 'Filter to forums with customization containing...'
             ref: 'customization_filter'
             type: 'text'
             defaultValue: ''
@@ -143,12 +143,11 @@ window.CustomizationsDash = ReactiveComponent
               onChange: (ev) => 
                 @local.compare_to = ev.target.value 
                 save @local
-                console.log @local
 
-              for [sub, id] in other_subs when @local.customization_filter.length == 0 || id.toLowerCase().indexOf(@local.customization_filter.toLowerCase()) > -1
+              for [forum, cust] in other_subs when @local.customization_filter.length == 0 || JSON.stringify(cust).toLowerCase().indexOf(@local.customization_filter.toLowerCase()) > -1
                 OPTION 
-                  value: sub
-                  sub 
+                  value: forum
+                  forum 
             ".consider.it:"
 
           if !!compare_to

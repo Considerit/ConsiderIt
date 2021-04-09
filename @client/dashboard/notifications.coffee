@@ -50,7 +50,7 @@ window.Notifications = ReactiveComponent
           TRANSLATE
             id: "email_notifications.watched_proposals_ack"
             subdomain_name: subdomain.name
-            "You are now watched_proposals from summary emails from {subdomain_name}.consider.it"
+            "You are unsubscribed from summary emails from this forum"
           
 
       DIV 

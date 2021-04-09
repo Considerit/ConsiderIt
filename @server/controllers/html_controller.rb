@@ -141,7 +141,7 @@ class HtmlController < ApplicationController
       keywords = proposal.seo_keywords if proposal.seo_keywords
 
       @proposal = proposal
-      @host = current_subdomain.host_with_port
+      @host = current_subdomain.url
       @oembed_url = CGI.escape "https://" + @host + "/" + @proposal.slug + "?results=true"
     end
 

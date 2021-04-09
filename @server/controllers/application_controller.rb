@@ -69,8 +69,7 @@ class ApplicationController < ActionController::Base
     else 
       redirect = CGI::escape("#{request.protocol}#{request.host_with_port}#{request.fullpath}")
     end 
-    #redirect_to "#{request.protocol}saml-auth.#{request.domain()}/saml/sso/#{sso_domain}/#{current_subdomain.name}?redirect=#{redirect}"
-    redirect_to "#{request.protocol}saml-auth.consider.it/saml/sso/#{sso_domain}/#{current_subdomain.name}?redirect=#{redirect}"
+    redirect_to "#{request.protocol}saml-auth.#{APP_CONFIG[:domain]}/saml/sso/#{sso_domain}/#{current_subdomain.name}?redirect=#{redirect}"
   end
 
 protected

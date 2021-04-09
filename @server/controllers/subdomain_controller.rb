@@ -31,14 +31,14 @@ class SubdomainController < ApplicationController
 
     # force it to come from consider.it
     if current_subdomain.name != 'homepage'
-      errors.push 'You can only create subdomains from https://consider.it'
+      errors.push "You can only create new forums from https://#{APP_CONFIG[:domain]}"
     end
 
     # make sure this user hasn't been spam-creating subdomains...
     if !current_user.super_admin
       subs_for_user = Subdomain.where("roles like '%\"/user/#{current_user.id}\"%'").where("created_at >= :week", {:week => 1.week.ago})
       if subs_for_user.count > 25
-        errors.push "You have created too many subdomains in the past week."
+        errors.push "You have created too many forums in the past week."
       end
     end 
 
@@ -47,7 +47,7 @@ class SubdomainController < ApplicationController
     subdomain = subdomain.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
 
     if !subdomain
-      errors.push "You must specify a subdomain name"
+      errors.push "You must specify a forum name"
     end 
 
     existing = Subdomain.find_by_name(subdomain)
@@ -67,9 +67,6 @@ class SubdomainController < ApplicationController
       roles['admin'].push "/user/#{current_user.id}"
       roles['visitor'].push "*"
       new_subdomain.roles = roles
-
-      new_subdomain.host = "#{new_subdomain.name}.#{request.host}"
-      new_subdomain.host_with_port = "#{new_subdomain.name}.#{request.host_with_port}"
 
       if params[:sso_domain]
         new_subdomain.SSO_domain = params[:sso_domain]
@@ -117,7 +114,7 @@ class SubdomainController < ApplicationController
         render :json => [{key: 'new_subdomain', name: new_subdomain.name, t: current_user.auth_token(new_subdomain)}]
       else 
         token = current_user.auth_token(new_subdomain)
-        redirect_to "#{request.protocol}#{new_subdomain.host_with_port}?u=#{current_user.email}&t=#{token}"
+        redirect_to "#{request.protocol}#{new_subdomain.url}?u=#{current_user.email}&t=#{token}"
       end
     end
   end

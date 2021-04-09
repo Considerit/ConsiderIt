@@ -1,4 +1,4 @@
-SitemapGenerator::Sitemap.sitemaps_host = "https://consider.it"
+SitemapGenerator::Sitemap.sitemaps_host = "https://#{APP_CONFIG[:domain]}"
 
 Subdomain.find_each do |subdomain|
 
@@ -7,7 +7,7 @@ Subdomain.find_each do |subdomain|
   next if !indexed
 
   # Set the host name for URL creation
-  SitemapGenerator::Sitemap.default_host = "https://#{subdomain.host}"
+  SitemapGenerator::Sitemap.default_host = "https://#{subdomain.url}"
 
   SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/#{subdomain.name}"
 

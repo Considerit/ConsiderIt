@@ -54,7 +54,7 @@ permit = (action) ->
 
     when 'read proposal', 'access forum'
       subdomain = fetch '/subdomain'
-      if !current_user.is_admin && !matchSomeRole(subdomain.roles, ['visitor', 'proposer']) 
+      if !current_user.is_admin && !matchSomeRole(subdomain.roles, ['visitor']) 
         if !current_user.logged_in
           return Permission.NOT_LOGGED_IN 
         else

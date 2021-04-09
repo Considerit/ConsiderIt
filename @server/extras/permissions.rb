@@ -108,7 +108,7 @@ def permit(action, object = nil, user = nil)
     end
 
   when 'read proposal', 'access forum', 'read opinion'
-    if !user.is_admin?(subdomain) && !Permitted::matchSomeRole(subdomain.user_roles, ['visitor', 'proposer'], user) 
+    if !user.is_admin?(subdomain) && !Permitted::matchSomeRole(subdomain.user_roles, ['visitor'], user) 
       if !user.registered
         return Permission::NOT_LOGGED_IN 
       else

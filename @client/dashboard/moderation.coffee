@@ -116,6 +116,7 @@ window.ModerationDash = ReactiveComponent
         SELECT 
           style: 
             fontSize: 20
+          defaultValue: subdomain.moderation_policy
           onChange: (ev) ->
             subdomain.moderation_policy = ev.target.value
             save subdomain, -> 

@@ -51,7 +51,13 @@ window.Notifications = ReactiveComponent
             id: "email_notifications.watched_proposals_ack"
             subdomain_name: subdomain.name
             "You are unsubscribed from summary emails from this forum"
-          
+      
+      if customization('email_notifications_disabled')
+        DIV 
+          style: 
+            margin: "18px 0 36px 0"
+            fontStyle: 'italic'
+          "The forum host has disabled email summaries"
 
       DIV 
         className: 'input_group checkbox'
@@ -84,7 +90,6 @@ window.Notifications = ReactiveComponent
             fontSize: 18
           B null,
             TRANSLATE "email_notifications.send_digests", 'Send me email summaries of relevant forum activity'
-
 
 
 

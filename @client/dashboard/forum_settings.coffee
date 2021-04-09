@@ -301,7 +301,6 @@ window.ForumSettingsDash = ReactiveComponent
             style: 
               display: 'block'
             onChange: (ev) -> 
-              console.log ev, ev.target.value
               subdomain.plan = ev.target.value
               save subdomain
             defaultValue: subdomain.plan

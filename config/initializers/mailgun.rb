@@ -1,4 +1,4 @@
-if APP_CONFIG.has_key?(:mailgun_api_key) && Mailgun
+if APP_CONFIG.has_key?(:mailgun_api_key) && defined?(Mailgun)
   Mailgun.configure do |config|
     config.api_key = APP_CONFIG[:mailgun_api_key]
   end

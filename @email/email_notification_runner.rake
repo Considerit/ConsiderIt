@@ -33,6 +33,8 @@ task :send_email_notifications => :environment do
             next if !triggered
 
             user = User.find user_id
+            next if user.email.match('.ghost')
+            
             prefs = user.subscription_settings(subdomain)
 
             begin 

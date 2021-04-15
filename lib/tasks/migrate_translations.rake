@@ -196,6 +196,25 @@ task :migrate_translations => :environment do
 
   delete_translation "engage.slider_label."
 
+
+  delete_translation "auth.reset_password.new_pass.placeholder"
+  delete_translation "auth.login.password.placeholder"
+  delete_translation "auth.create.full_name.placeholder"
+  delete_translation "auth.code_entry.placeholder"
+  delete_translation "auth.update_profile.heading"
+  delete_translation "engage.permissions.verify_account_to_comment"
+  delete_translation "engage.permissions.login_to_comment"
+  delete_translation "email_notifications.digests_purpose"
+
+  for event in ['new_comment:point_authored', 'new_comment:point_engaged', 'new_comment', 'new_opinion', 'new_point', 'new_point:proposal_authored']
+    delete_translation "email_notifications.event.#{event}"
+  end
+
+  rename_translation "banner.save_changes_button", "shared.save_changes_button"
+  rename_translation "engage.cancel_button", "shared.cancel_button"
+  rename_translation "auth.sign_up", "shared.auth.sign_up"
+  rename_translation "auth.log_in", "shared.auth.log_in"
+
   sync_keys_with_english
   execute_translation_migration
 

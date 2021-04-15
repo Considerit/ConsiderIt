@@ -36,7 +36,7 @@ class CurrentUserController < ApplicationController
     else
       trying_to = params[:trying_to]
     end
-    
+
     # puts("")
     # puts("--------------------------------")
     # puts("----Start UPDATE CURRENT USER---")

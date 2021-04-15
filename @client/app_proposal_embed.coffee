@@ -6,7 +6,7 @@ require './customizations'
 require './histogram'
 require './shared'
 require './tooltip'
-require './translations'
+require 'dashboard/translations'
 require './proposal'
 
 

@@ -68,12 +68,8 @@ class UserMailer < Mailer
     @message = message
 
     case role
-    when 'writer'
-      @action = 'write new points at'
-    when 'commenter'
-      @action = 'comment on points at'
-    when 'opiner'
-      @action = 'give your opinion at'
+    when 'participant'
+      @action = 'participate at'
     when 'proposer'
       @action = 'add new proposals at'
     when 'admin'

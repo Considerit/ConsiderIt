@@ -127,35 +127,27 @@ window.EditPoint = ReactiveComponent
             translator 'engage.no_new_points', 'New points disabled for this proposal'
         else
           BUTTON 
-            className: 'primary_button'
+            className: 'btn'
             'data-action': 'submit-point'
             onClick: @savePoint
             style: 
-              marginTop: 0
-              display: 'inline-block'
-              fontSize: if PORTRAIT_MOBILE() then 50 else if LANDSCAPE_MOBILE() then 36 else 24
-              padding: '4px 25px'
-              float: 'left'
+              fontSize: if PORTRAIT_MOBILE() then 50 else if LANDSCAPE_MOBILE() then 36
               backgroundColor: focus_color() 
             translator 'engage.done_button', 'Done'             
 
         BUTTON
           onTouchEnd: @done
           onClick: @done
+          className: 'like_link'
           style:
-            display: 'inline-block'
             color: '#888888'
-            cursor: 'pointer'
-            zIndex: 1
-            top: if mobile then 0 else 12
+            top: 2 #if mobile then 0 else 2
+            marginLeft: 10
             fontSize: if PORTRAIT_MOBILE() then 50 else if LANDSCAPE_MOBILE() then 36 else 16
-            right: if mobile then -10 else 20
+            # right: if mobile then -10 else 20
             position: 'relative'
-            float: if mobile then 'left' else 'right'
             padding: if mobile then 10 else 0
-            backgroundColor: 'transparent'
-            border: 'none'
-          translator 'engage.cancel_button', 'cancel'
+          translator 'shared.cancel_button', 'cancel'
 
         DIV 
           style: 
@@ -172,6 +164,8 @@ window.EditPoint = ReactiveComponent
             id:        "sign_name-#{@props.valence}"
             name:      "sign_name-#{@props.valence}"
             checked:   @local.sign_name
+            style: 
+              verticalAlign: 'middle'
             onChange: =>
               @local.sign_name = !@local.sign_name
               save(@local)

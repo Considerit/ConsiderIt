@@ -64,7 +64,7 @@ class OembedController < ApplicationController
       :version => '1.0',
       :title => proposal.name,
       :author_name => proposal.user.name,
-      :provider_url => 'https://consider.it',
+      :provider_url => "https://#{APP_CONFIG[:domain]}",
       :provider_name => 'Consider.it',
       :type => 'rich',
       :width => width,

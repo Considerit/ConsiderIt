@@ -21,6 +21,13 @@ require 'zlib'
 #    2) registered your AWS credentials with awscli
 #    3) make sure to set your region in ~/.aws/config
 
+
+# note: if you're running this on a server that is using cloudfront too, 
+#       you might have to manually sync the buckets with production. You
+#       can do that with e.g.: 
+#           aws s3 sync --region us-east-1 s3://considerit s3://chalkboard-it-test
+
+
 BACKUP_PATH = 's3://considerit-backups/xenogear-considerit/xenogear/'
 
 task :sync_with_production, [:sql_url] => :environment do |t, args|

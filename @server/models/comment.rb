@@ -31,7 +31,7 @@ class Comment < ApplicationRecord
 
   # Fetches all comments associated with this Point. 
   def self.comments_for_point(point)
-    if current_subdomain.moderate_comments_mode == 1
+    if current_subdomain.moderation_policy == 1
       moderation_status_check = 'moderation_status=1'
     else 
       moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'

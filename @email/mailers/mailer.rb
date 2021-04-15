@@ -25,6 +25,8 @@ private
     if !title || title == ''
       #raise "huh?? #{subdomain.id} #{subdomain.name}"
       title = 'untitled'
+    elsif title == 'homepage'
+      title = 'Consider.it'
     end
 
     "[#{title}] #{subject}"

@@ -166,11 +166,14 @@ namespace :customizations do
       end 
     end
 
-    config["homepage_tabs"] = {}
+    config["homepage_tabs"] = []
 
     # out.puts "  \"homepage_tabs\": { \n"
     sections.each do |name, section|
-      config["homepage_tabs"][name] = section
+      config["homepage_tabs"].append({
+        :name => name, 
+        :lists => section
+      })
     end 
 
     # out.puts "  }"

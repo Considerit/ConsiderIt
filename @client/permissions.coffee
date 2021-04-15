@@ -47,10 +47,22 @@ Permission =
 permit = (action) ->
   current_user = fetch '/current_user'
 
-  if customization('frozen')
+  if customization('frozen') && action not in ['read proposal', 'access forum']
     return Permission.DISABLED
 
   switch action
+
+    when 'read proposal', 'access forum'
+      subdomain = fetch '/subdomain'
+      if !current_user.is_admin && !matchSomeRole(subdomain.roles, ['visitor']) 
+        if !current_user.logged_in
+          return Permission.NOT_LOGGED_IN 
+        else
+          return Permission.INSUFFICIENT_PRIVILEGES 
+
+      else if subdomain.roles.visitor.indexOf('*') == -1 && !current_user.verified
+        return Permission.UNVERIFIED_EMAIL
+
     when 'create proposal'
       subdomain = fetch '/subdomain'
 
@@ -63,7 +75,7 @@ permit = (action) ->
       else 
         can_add_to_list = true
 
-      if !current_user.is_admin && (!matchEmail(subdomain.roles.proposer) || !can_add_to_list)
+      if !current_user.is_admin && !matchEmail(subdomain.roles.proposer) && !can_add_to_list
         return Permission.INSUFFICIENT_PRIVILEGES 
       return Permission.NOT_LOGGED_IN if !current_user.logged_in
 
@@ -81,7 +93,7 @@ permit = (action) ->
       return Permission.DISABLED if !proposal.active
       return Permission.NOT_LOGGED_IN if !current_user.logged_in
 
-      if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'writer', 'opiner'])
+      if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'participant'])
         return Permission.INSUFFICIENT_PRIVILEGES 
 
       if !current_user.completed_host_questions
@@ -97,7 +109,7 @@ permit = (action) ->
     when 'create point'
       proposal = fetch arguments[1]
       return Permission.DISABLED if !proposal.active
-      if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'writer'])
+      if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'participant'])
         if !current_user.logged_in
           return Permission.NOT_LOGGED_IN  
         else 
@@ -126,7 +138,7 @@ permit = (action) ->
       return Permission.DISABLED if !proposal.active
       return Permission.NOT_LOGGED_IN if !current_user.logged_in 
 
-      if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'writer', 'commenter'])
+      if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'participant'])
         return Permission.INSUFFICIENT_PRIVILEGES 
 
     when 'update comment'
@@ -141,8 +153,10 @@ permit = (action) ->
 
 matchEmail = (permission_list) -> 
   user = fetch '/current_user'
+  
   return true if '*' in permission_list
   return true if user.user in permission_list
+
   for email_or_key in permission_list
     if email_or_key.indexOf('*') > -1
       if user.email
@@ -159,7 +173,7 @@ window.recourse = (permission, goal) ->
   loc = fetch 'location'
   auth = fetch 'auth'
 
-  goal = goal || "access this #{if loc.url == '/' then 'private forum' else 'page'}"
+  goal ?= "To access this #{if loc.url == '/' then 'forum' else 'page'},"
   
   switch permission
 
@@ -168,11 +182,15 @@ window.recourse = (permission, goal) ->
 
     when Permission.NOT_LOGGED_IN
       if !auth.form
-        reset_key 'auth', {form: 'login', goal: goal, ask_questions: true}
+        reset_key 'auth', 
+          form: 'login'
+          goal: "#{goal} please introduce yourself below"
 
     when Permission.UNVERIFIED_EMAIL
       if auth.form != 'verify email'
-        reset_key 'auth', {form: 'verify email', goal: goal}
+        reset_key 'auth',
+          form: 'verify email'
+          goal: "#{goal} please demonstrate you control this email."
 
         current_user = fetch '/current_user'
         current_user.trying_to = 'send_verification_token'

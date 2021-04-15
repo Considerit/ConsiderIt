@@ -128,9 +128,6 @@ window.Proposal = ReactiveComponent
          (can_opine == Permission.DISABLED && your_opinion.published))
       updateProposalMode('results', 'permission not granted for crafting')
     
-    draw_handle = (can_opine not in [Permission.DISABLED, \
-                          Permission.INSUFFICIENT_PRIVILEGES]) || \
-                          your_opinion.published
 
 
     # A number of elements controlled by other components are absolutely 
@@ -165,6 +162,10 @@ window.Proposal = ReactiveComponent
 
     just_you = fetch('filtered').current_filter?.label == 'just you'
 
+    draw_handle = can_opine != Permission.INSUFFICIENT_PRIVILEGES && 
+                    (can_opine != Permission.DISABLED || your_opinion.published ) && 
+                    !(!current_user.logged_in && '*' not in @proposal.roles.participant)
+
     ARTICLE 
       id: "proposal-#{@proposal.id}"
       key: @props.slug
@@ -175,6 +176,8 @@ window.Proposal = ReactiveComponent
       DIV null,
 
         ProposalDescription()
+
+        ParticipationStatus({can_opine})
 
         if (customization('opinion_callout')?[@proposal.cluster] or (customization('opinion_callout') && _.isFunction(customization('opinion_callout'))))
           (customization('opinion_callout')?[@proposal.cluster] or customization('opinion_callout'))()
@@ -193,7 +196,7 @@ window.Proposal = ReactiveComponent
             else 
               TRANSLATE
                   id: "engage.opinion_header_results"
-                  'What do we think?'
+                  'Opinions about this proposal'
 
 
         DIV 
@@ -380,7 +383,7 @@ window.Proposal = ReactiveComponent
             if !show_all_points
               BUTTON 
                 style: 
-                  # backgroundColor: "#eee"
+                  backgroundColor: "#eee"
                   padding: '12px 0'
                   fontSize: 24
                   textAlign: 'center'
@@ -476,6 +479,9 @@ ProposalDescription = ReactiveComponent
         background: "url(#{@proposal.banner}) no-repeat center top fixed"
         backgroundSize: 'cover'
         paddingTop: 240
+    else 
+      wrapper_style = 
+        paddingTop: 36
 
     DIV 
       style: wrapper_style
@@ -484,22 +490,11 @@ ProposalDescription = ReactiveComponent
         style: 
           width: HOMEPAGE_WIDTH()
           position: 'relative'
-          margin: '36px auto 12px auto'
+          margin: '0px auto 12px auto'
           fontSize: 18
-          marginBottom: 18      
+          marginBottom: 18 
 
-        if !@proposal.active
-          SPAN 
-            style: 
-              display: 'inline-block'
-              color: 'rgb(250, 146, 45)'
-              padding: '4px 0px'
-              marginTop: 10
-            I className: 'fa fa-info-circle', style: {paddingRight: 7}
-
-            TRANSLATE
-              id: 'engage.proposal_closed'
-              'Closed to new contributions at this time.'
+             
 
         BUBBLE_WRAP 
           user: if !@proposal.pic then editor
@@ -693,6 +688,82 @@ ProposalDescription = ReactiveComponent
         and $('.wysiwyg_text').height() > @max_description_height)
       @local.description_collapsed = true; save(@local)
 
+ParticipationStatus = ReactiveComponent
+  displayName: 'ParticipationStatus'
+  render: -> 
+    can_opine = @props.can_opine
+
+    return SPAN null if can_opine > 0
+
+    DIV 
+      style: 
+        textAlign: 'center'
+
+      DIV
+        style: 
+          backgroundColor: attention_orange
+          color: 'white'
+          margin: 'auto'
+          display: 'inline-block'
+          padding: '4px 6px'
+          fontWeight: 700
+
+        if can_opine == Permission.DISABLED
+          TRANSLATE
+            id: 'engage.proposal_closed'
+            'Closed to new contributions at this time.'
+
+        else if can_opine == Permission.INSUFFICIENT_PRIVILEGES
+          TRANSLATE
+            id: 'engage.permissions.read_only'
+            "Sorry, this proposal is read-only for you. The forum hosts specify who can participate."
+
+        else if can_opine < 0
+          A
+            style:
+              cursor: 'pointer'
+
+            onTouchEnd: (e) => 
+              e.stopPropagation()
+
+            onClick: (e) =>
+              e.stopPropagation()
+
+              if can_opine == Permission.NOT_LOGGED_IN
+                reset_key 'auth', 
+                  form: 'login'
+                  goal: 'To participate, please introduce yourself below.'
+              else if can_opine == Permission.UNVERIFIED_EMAIL
+                reset_key 'auth', 
+                  form: 'verify email'
+                  goal: 'To participate, please demonstrate you control this email.'
+                  
+                current_user.trying_to = 'send_verification_token'
+                save current_user
+
+            if can_opine == Permission.NOT_LOGGED_IN
+              DIV null, 
+                BUTTON 
+                  style: 
+                    textDecoration: 'underline'
+                    color: 'white'
+                    fontSize: if browser.is_mobile then 18
+                    backgroundColor: 'transparent'
+                    padding: '4px 6px'
+                    border: 'none'
+                    fontWeight: 600
+
+                  translator 'engage.permissions.login_to_participate', 'Login to participate'
+
+                if '*' not in @proposal.roles.participant
+                  DIV 
+                    style: 
+                      fontSize: 12
+                      marginTop: 4
+                    translator 'engage.permissions.only_some_participate', 'Only some accounts are authorized to participate.'
+
+            else if can_opine == Permission.UNVERIFIED_EMAIL
+              translator 'engage.permissions.verify_account_to_participate', "Verify your account to participate"
 
 
 ##
@@ -716,7 +787,8 @@ DecisionBoard = ReactiveComponent
 
     enable_opining = can_opine != Permission.INSUFFICIENT_PRIVILEGES && 
                       (can_opine != Permission.DISABLED || your_opinion.published ) && 
-                      !(hist.selected_opinions || hist.selected_opinion)
+                      !(hist.selected_opinions || hist.selected_opinion) &&
+                      !(!current_user.logged_in && '*' not in @proposal.roles.participant)
 
     return DIV null if !enable_opining
 
@@ -746,7 +818,7 @@ DecisionBoard = ReactiveComponent
       decision_board_style.borderStyle = 'solid'
 
     if get_proposal_mode() == 'results'
-      give_opinion_button_width = 200
+      give_opinion_button_width = 232
       slider = fetch namespaced_key('slider', @proposal)
       gutter = .1 * give_opinion_button_width
 
@@ -761,7 +833,7 @@ DecisionBoard = ReactiveComponent
       _.extend decision_board_style,
         borderStyle: 'solid'
         backgroundColor: focus_color()
-        borderBottom: '1px solid rgba(0,0,0,.6)'
+        # borderBottom: '1px solid rgba(0,0,0,.6)'
         cursor: 'pointer'
         transform: "translate(#{opinion_region_x}px, -10px)"
         minHeight: 32
@@ -783,8 +855,9 @@ DecisionBoard = ReactiveComponent
         padding: '.25em 18px'
         margin: 0
         fontSize: 16
-        boxShadow: 'none'
         width: '100%'
+        borderRadius: 16
+        boxShadow: 'none'
     else 
       give_opinion_style =
         visibility: 'hidden'
@@ -849,9 +922,9 @@ DecisionBoard = ReactiveComponent
 
               DIV style: {clear: 'both'}
 
-          # only shown during crafting, but needs to be present always for animation
+          # only shown during results, but needs to be present always for animation
           BUTTON
-            className: 'give_opinion_button primary_button'
+            className: 'give_opinion_button btn'
             style: give_opinion_style
 
             if your_opinion.published 
@@ -871,11 +944,14 @@ DecisionBoard = ReactiveComponent
 
         # Big bold button at the bottom of the crafting page
         BUTTON 
-          className:'save_opinion_button primary_button'
+          className:'save_opinion_button btn'
           style:
             display: 'none'
             backgroundColor: focus_color()
             width: '100%'
+            marginTop: 14
+            borderRadius: 16
+            fontSize: 24
           onClick: => saveOpinion(@proposal)
           onKeyDown: (e) => 
             if e.which == 13 || e.which == 32 # ENTER or SPACE
@@ -1058,8 +1134,8 @@ window.saveOpinion = (proposal) ->
 
     reset_key 'auth',
       form: auth_form
-      goal: 'Save your opinion'
-      ask_questions: true
+      goal: 'To participate, please introduce yourself below.'
+      after: 'transition to proposal results'
 
     # We'll need to publish this opinion after auth is completed
     root.opinions_to_publish.push(proposal.your_opinion)
@@ -1476,14 +1552,12 @@ PointsList = ReactiveComponent
               if can_add_new_point == Permission.NOT_LOGGED_IN
                 reset_key 'auth', 
                   form: 'create account'
-                  goal: 'Write a point'
-                  ask_questions: true
+                  goal: 'To access this forum, please introduce yourself below.'
 
               else if can_add_new_point == Permission.UNVERIFIED_EMAIL
                 reset_key 'auth', 
                   form: 'verify email'
-                  goal: 'Write a point'
-                  ask_questions: true
+                  goal: 'To participate, please demonstrate you control this email.'
 
                 save auth
                 current_user.trying_to = 'send_verification_token'
@@ -1579,21 +1653,18 @@ PointsList = ReactiveComponent
           style: 
             fontWeight: if browser.high_density_display then 300 else 400
           "#{t('or')} "
-      SPAN
-        'aria-hidden': true
-        style: 
-          padding: if @props.drop_target then '0 6px' else '0 11px 0 0'
+      # SPAN
+      #   'aria-hidden': true
+      #   style: 
+      #     padding: if @props.drop_target then '0 6px' else '0 11px 0 0'
 
-        dangerouslySetInnerHTML:{__html: '&bull;'}
+      #   dangerouslySetInnerHTML:{__html: '&bull;'}
 
       BUTTON 
-        className: "write_#{@props.valence}"
-        style:
-          textDecoration: 'underline'
-          color: focus_color()
-          padding: 0
-          backgroundColor: 'transparent'
-          border: 'none'
+        className: "write_#{@props.valence} btn"
+        style: 
+          marginLeft: 8
+          backgroundColor: focus_color()
 
         TRANSLATE 
           id: "engage.add_a_point"

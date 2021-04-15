@@ -5,6 +5,7 @@ require Rails.root.join('@server', 'extras', 'permissions')
 require Rails.root.join('@server', 'extras', 'translations')
 require Rails.root.join('@server', 'extras', 'invitations')
 require Rails.root.join('@server', 'extras', 'data_exports')
+require Rails.root.join('@server', 'extras', 'notifier')
 
 
 class ApplicationController < ActionController::Base
@@ -68,8 +69,7 @@ class ApplicationController < ActionController::Base
     else 
       redirect = CGI::escape("#{request.protocol}#{request.host_with_port}#{request.fullpath}")
     end 
-    #redirect_to "#{request.protocol}saml-auth.#{request.domain()}/saml/sso/#{sso_domain}/#{current_subdomain.name}?redirect=#{redirect}"
-    redirect_to "#{request.protocol}saml-auth.consider.it/saml/sso/#{sso_domain}/#{current_subdomain.name}?redirect=#{redirect}"
+    redirect_to "#{request.protocol}saml-auth.#{APP_CONFIG[:domain]}/saml/sso/#{sso_domain}/#{current_subdomain.name}?redirect=#{redirect}"
   end
 
 protected
@@ -96,32 +96,23 @@ protected
 
   def get_current_subdomain
     rq = request
+    candidate_subdomain = nil 
+
+    if rq.subdomain && rq.subdomain.length > 0 
+      candidate_subdomain = Subdomain.find_by_name(rq.subdomain)
+    end
 
     if params[:domain]
       session[:default_subdomain] = Subdomain.find_by_name(params[:domain]).id
     end 
 
-    def get_subdomain(str)
+    default_subdomain = session.fetch(:default_subdomain, 1)
 
-      # IE doesn't do _ in subdomain, so we migrated away from them. This 
-      # code is migration code for some of former subdomains
-      if str.index '_'
-        redirect_to request.url.sub(str, str.gsub('_', '-'))
-        str = str.gsub('_', '-')
-      end 
 
-      candidate_subdomain = Subdomain.find_by_name(str)
-      candidate_subdomain
-    end 
-
-    default_subdomain = session.has_key?(:default_subdomain) ? session[:default_subdomain] : 1
-
-    if rq.subdomain.nil? || rq.subdomain.length == 0
-      candidate_subdomain = nil 
-
+    if !candidate_subdomain 
 
       if Rails.env.development? && rq.host.split('.').length > 1
-        candidate_subdomain = get_subdomain(rq.host.split('.')[0])
+        candidate_subdomain = Subdomain.find_by_name(rq.host.split('.')[0])
       end 
 
       if !candidate_subdomain 
@@ -136,10 +127,7 @@ protected
           candidate_subdomain = Subdomain.first
         end
       end
-    else
-      candidate_subdomain = get_subdomain(rq.subdomain)
     end
-
 
     set_current_tenant(candidate_subdomain) if candidate_subdomain
     current_subdomain
@@ -222,7 +210,11 @@ protected
       # Grab dirtied points, opinions, and users
       for type in [Point, Opinion, User, Comment, Moderation]
         if key.match "/#{type.name.downcase}/"
-          response.append type.find(key_id(key)).as_json
+          begin 
+            response.append type.find(key_id(key)).as_json
+          rescue
+            Rails.logger.error "Could not find #{type.name} #{key}"
+          end
           next
         end
       end

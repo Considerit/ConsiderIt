@@ -127,7 +127,9 @@ def translator(args, native_text = nil)
 
   # which language should we use? ordered by preference. 
   begin 
-    if user 
+    if !subdomain 
+      langs = [DEVELOPMENT_LANGUAGE]
+    elsif user 
       langs = [user[:lang], subdomain[:lang], DEVELOPMENT_LANGUAGE].uniq
     else 
       langs = [subdomain[:lang], DEVELOPMENT_LANGUAGE].uniq

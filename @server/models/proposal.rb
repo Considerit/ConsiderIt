@@ -34,11 +34,7 @@ class Proposal < ApplicationRecord
     subdomain ||= current_subdomain
     proposals = nil 
 
-    # if a subdomain wants only specific clusters, ordered in a particular way, specify here
-    manual_clusters = nil
-    always_shown = [] 
-
-    if subdomain.moderate_proposals_mode == 1
+    if subdomain.moderation_policy == 1
       moderation_status_check = "(moderation_status=1 OR user_id=#{current_user.id})"
     else 
       moderation_status_check = "(moderation_status IS NULL OR moderation_status=1 OR user_id=#{current_user.id})"
@@ -96,7 +92,7 @@ class Proposal < ApplicationRecord
     if all_points 
       points = []
       proposals.each do |proposal|
-        if subdomain.moderate_points_mode == 1
+        if subdomain.moderation_policy == 1
           moderation_status_check = 'moderation_status=1'
         else 
           moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
@@ -113,7 +109,7 @@ class Proposal < ApplicationRecord
 
   def full_data
 
-    if self.subdomain.moderate_points_mode == 1
+    if self.subdomain.moderation_policy == 1
       moderation_status_check = 'moderation_status=1'
     else 
       moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
@@ -202,7 +198,7 @@ class Proposal < ApplicationRecord
       json['roles'] = self.user_roles(filter = true)
     end
 
-    if self.subdomain.moderate_proposals_mode == 1 && self.moderation_status == nil 
+    if self.subdomain.moderation_policy == 1 && self.moderation_status == nil 
       json['under_review'] = true
     end 
 
@@ -214,7 +210,7 @@ class Proposal < ApplicationRecord
       json['banner'] = self.banner.url
     end
 
-    if self.subdomain.moderate_points_mode == 1
+    if self.subdomain.moderation_policy == 1
       moderation_status_check = 'moderation_status=1'
     else 
       moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
@@ -225,17 +221,6 @@ class Proposal < ApplicationRecord
     json
   end
 
-  def notifications
-    current_user.notifications
-      .where(
-        digest_object_type: 'Proposal', 
-        digest_object_id: self.id)
-      .order('created_at DESC')
-  end
-
-  def safe_notifications
-    Notifier.filter_unmoderated(notifications)
-  end 
 
   def key
     "/proposal/#{id}"
@@ -254,19 +239,15 @@ class Proposal < ApplicationRecord
     rolez = roles ? roles.deep_dup : {}
 
 
-    ['editor', 'writer', 'commenter', 'opiner', 'observer'].each do |role|
+    ['editor', 'participant', 'observer'].each do |role|
 
       # Initialize empty role
       if !rolez[role]
         if role == 'observer' && current_subdomain
           # default to subdomain setting
           rolez[role] = current_subdomain.user_roles['visitor'] || ['*']
-        elsif role == 'opiner'
+        elsif role == 'participant' && current_subdomain
           rolez[role] = current_subdomain.user_roles['participant'] || ['*']
-        elsif role == 'writer'
-          rolez[role] = current_subdomain.user_roles['participant'] || ['*']      
-        elsif role == 'participant'
-          rolez[role] = current_subdomain.user_roles['participant'] || ['*']                        
         else
           rolez[role] = [] 
         end

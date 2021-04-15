@@ -23,6 +23,8 @@ class PageController < ApplicationController
       when 'dashboard/application', 'dashboard/roles', 'dashboard/data_import_export', 'dashboard/tags', 'dashboard/customizations'
         authorize_action = "update subdomain"
 
+      when 'dashboard/edit_profile', 'dashboard/notifications'
+        authorize_action = 'access forum'
       else
         authorize_action = nil
       end

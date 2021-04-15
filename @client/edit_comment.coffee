@@ -40,7 +40,7 @@ window.EditComment = ReactiveComponent
       else if permitted == Permission.INSUFFICIENT_PRIVILEGES
         SPAN 
           style: {position: 'absolute', margin: '14px 0 0 70px'}
-          translator 'engage.permissions.no_comment', 'Sorry, you do not have permission to comment'
+          translator 'engage.permissions.read_only', 'This proposal is read-only for you'
           
 
       else if permitted < 0
@@ -58,9 +58,14 @@ window.EditComment = ReactiveComponent
             e.stopPropagation()
 
             if permitted == Permission.NOT_LOGGED_IN
-              reset_key 'auth', {form: 'login', goal: 'Write a comment'}
+              reset_key 'auth', 
+                form: 'login'
+                goal: 'To participate, please introduce yourself below.'
             else if permitted == Permission.UNVERIFIED_EMAIL
-              reset_key 'auth', {form: 'verify email', goal: 'Write a comment'}
+              reset_key 'auth', 
+                form: 'verify email'
+                goal: 'To participate, please demonstrate you control this email.'
+                
               current_user.trying_to = 'send_verification_token'
               save current_user
 
@@ -74,15 +79,15 @@ window.EditComment = ReactiveComponent
                   backgroundColor: 'transparent'
                   padding: 0
                   border: 'none'
-                translator 'engage.permissions.login_to_comment', 'Log in to write a comment'
+                translator 'engage.permissions.login_to_participate', 'Login to participate'
 
-              if '*' not in @proposal.roles.commenter
+              if '*' not in @proposal.roles.participant
                 DIV style: {fontSize: 11},
-                  'Only some email addresses are authorized to comment.'
+                  translator 'engage.permissions.only_some_participate', 'Only some accounts are authorized to participate.'
 
           else if permitted == Permission.UNVERIFIED_EMAIL
             DIV null,
-              translator 'engage.permissions.verify_account_to_comment', "Verify your account to write a comment"
+              translator 'engage.permissions.verify_account_to_participate', "Verify your account to participate"
 
       DIV 
         style: 
@@ -126,6 +131,7 @@ window.EditComment = ReactiveComponent
       if permitted > 0
 
         Button 
+        
           style: 
             marginLeft: 60
             padding: '8px 16px'

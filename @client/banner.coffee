@@ -674,7 +674,7 @@ window.EditBanner = ReactiveComponent
               @submit(e)  
               e.preventDefault()
 
-          translator 'banner.save_changes_button', 'Save changes'
+          translator 'shared.save_changes_button', 'Save changes'
 
         BUTTON
           style: 
@@ -688,7 +688,7 @@ window.EditBanner = ReactiveComponent
               @exit_edit(e)  
               e.preventDefault()
 
-          translator 'banner.cancel_button', 'cancel'
+          translator 'shared.cancel_button', 'cancel'
 
         if @local.file_errors
           DIV style: {color: 'red'}, 'Error uploading files!'
@@ -713,10 +713,20 @@ window.EditBanner = ReactiveComponent
 
 
       FORM 
-        id: 'masthead_file'
+        id: 'banner_files'
         action: '/update_images_hack'
         style: 
           display: 'none'
+
+        INPUT 
+          id: 'logo'
+          type: 'file'
+          name: 'logo'
+          ref: 'logo_file_input'
+          onChange: (ev) =>
+            edit_banner.logo_preview = URL.createObjectURL ev.target.files[0]
+            @delete_logo = false 
+            save edit_banner
 
         INPUT 
           id: 'masthead'
@@ -769,21 +779,6 @@ window.EditBanner = ReactiveComponent
             delete_masthead(e)  
             e.preventDefault()
 
-      FORM 
-        id: 'logo_file'
-        action: '/update_images_hack'
-        style: 
-          display: 'none'
-        INPUT 
-          id: 'logo'
-          type: 'file'
-          name: 'logo'
-          ref: 'logo_file_input'
-          onChange: (ev) =>
-            edit_banner.logo_preview = URL.createObjectURL ev.target.files[0]
-            @delete_logo = false 
-            save edit_banner
-
       if edit_banner.logo_preview != '*delete*' && (edit_banner.logo_preview || customization('banner').logo?.url)
 
         BUTTON 
@@ -810,10 +805,9 @@ window.EditBanner = ReactiveComponent
     save edit_banner
 
   submit : -> 
-    submit_masthead = @refs.masthead_file_input.getDOMNode().value && @refs.masthead_file_input.getDOMNode().value != ''
-    submit_logo = @refs.logo_file_input.getDOMNode().value && @refs.logo_file_input.getDOMNode().value != ''
-
-    file_uploads = submit_logo || submit_masthead || @delete_logo || @delete_masthead
+    submit_masthead = @refs.masthead_file_input.getDOMNode().files?.length > 0
+    submit_logo =     @refs.logo_file_input.getDOMNode().files?.length > 0
+    file_uploads = submit_masthead || submit_logo || @delete_logo || @delete_masthead
 
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
@@ -847,53 +841,22 @@ window.EditBanner = ReactiveComponent
       if !file_uploads
         @exit_edit()
       else 
-        to_submit = []
-        if submit_masthead
-          to_submit.push '#masthead_file'
-        if submit_logo
-          to_submit.push '#logo_file'
-        if @delete_logo || @delete_masthead
-          to_submit.push 'delete_file'
+        data = 
+          authenticity_token: current_user.csrf
+        if @delete_logo
+          data.logo = '*delete*'
+        if @delete_masthead
+          data.masthead = '*delete*'
 
-        submit_next = =>
-          file_input = to_submit.pop()
-          if file_input in ['#masthead_file', '#logo_file']
-            input_to_upload = $(file_input)
-            input_to_upload.ajaxSubmit
-              type: 'PUT'
-              data: 
-                authenticity_token: current_user.csrf
-              success: =>
-                if to_submit.length > 0 
-                  submit_next()
-                else 
-                  location.reload()
-
-              error: => 
-                @local.file_errors = true
-                save @local
-          else 
-            url = '/update_images_hack'
-            data = 
-              authenticity_token: current_user.csrf
-            if @delete_logo
-              data.logo = '*delete*'
-            if @delete_masthead
-              data.masthead = '*delete*'
-
-            xhr = new XMLHttpRequest()
-            xhr.open "PUT", url, true
-            xhr.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
-            xhr.onreadystatechange = -> 
-              if @readyState == XMLHttpRequest.DONE && @status == 200
-                if to_submit.length > 0 
-                  submit_next()
-                else 
-                  location.reload()
-
-            xhr.send new URLSearchParams(data).toString()
-
-        submit_next()
+        ajax_submit_files_in_form
+          form: '#banner_files' 
+          type: 'PUT'
+          additional_data: data
+          success: =>
+            location.reload()
+          error: => 
+            @local.file_errors = true
+            save @local
 
 
 window.PhotoBanner = (opts) -> 
@@ -1210,8 +1173,7 @@ window.ShortHeader = (opts) ->
     padding: '8px 0'
     padding_left_icon: 20
 
-  is_light = is_light_background()
-
+  background_is_light = is_light_background(opts.background)
 
   DIV 
     style:
@@ -1265,7 +1227,7 @@ window.ShortHeader = (opts) ->
               
 
             back_to_homepage_button
-              color: if !is_light && !opts.logo_src then 'white'
+              color: if !background_is_light && !opts.logo_src then 'white'
               fontSize: 18
               fontWeight: 600
               display: 'inline'
@@ -1276,7 +1238,7 @@ window.ShortHeader = (opts) ->
       if opts.text
         H2 
           style: 
-            color: if !is_light then 'white'
+            color: if !background_is_light then 'white'
             marginLeft: if opts.logo_src then 35
             paddingRight: 90
             fontSize: 32

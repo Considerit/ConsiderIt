@@ -80,7 +80,7 @@ class Opinion < ApplicationRecord
     end
 
     if !previously_published
-      Notifier.create_notification 'new', self
+      Notifier.notify_parties 'new', self
     end
 
     current_user.update_subscription_key(proposal.key, 'watched', :force => false)

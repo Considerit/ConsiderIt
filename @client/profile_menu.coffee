@@ -5,14 +5,15 @@ window.ProfileMenu = ReactiveComponent
   displayName: 'ProfileMenu'
 
   render : -> 
-    current_user = fetch('/current_user')
-    subdomain = fetch('/subdomain')
+    current_user = fetch '/current_user'
+    subdomain = fetch '/subdomain'
+    loc = fetch 'location'
 
     is_admin = current_user.is_admin
     is_moderator = current_user.is_moderator
     is_super = current_user.is_super_admin
     menu_options = [
-      {href: '/edit_profile', label: 'Edit Profile'},
+      {href: '/dashboard/edit_profile', label: 'Edit Profile'},
       {href: '/dashboard/email_notifications', label: 'Email Settings'},
       if is_admin then {href: '/dashboard/data_import_export', label: 'Import / Export Data'} else null,
       if is_admin then {href: '/dashboard/application', label: 'Forum Settings'} else null,
@@ -26,7 +27,7 @@ window.ProfileMenu = ReactiveComponent
 
     menu_options = _.compact menu_options
 
-    light_background = is_light_background() 
+    light_background = loc.url.match('/dashboard/') or is_light_background() 
 
     DIV
       id: 'user_nav'
@@ -54,8 +55,17 @@ window.ProfileMenu = ReactiveComponent
                 style: 
                   height: 35
                   width: 35
-                  marginRight: 7
+                  marginRight: 12
                   marginTop: 1
+
+              SPAN 
+                style: 
+                  color: if menu_showing then '#777'
+                  fontSize: 18
+                  position: 'relative'
+                  top: -4
+                  paddingRight: 12
+                current_user.name
               I 
                 className: 'fa fa-caret-down'
                 style: 
@@ -71,13 +81,15 @@ window.ProfileMenu = ReactiveComponent
             color: if !light_background then 'white'
             zIndex: 9999999999
             backgroundColor: 'rgba(255,255,255, .1)'
-            boxShadow: '0px 1px 1px rgba(0,0,0,.1)'
+            # boxShadow: '0px 1px 1px rgba(0,0,0,.1)'
             borderRadius: 8
             padding: '3px 4px'
+            fontWeight: 600
           
           anchor_when_open_style: 
             backgroundColor: 'transparent'
             boxShadow: 'none'
+            color: '#666'
           
           menu_style: 
             left: 'auto'
@@ -86,6 +98,7 @@ window.ProfileMenu = ReactiveComponent
             padding: "56px 14px 8px 8px"
             backgroundColor: '#eee'
             textAlign: 'right'
+            minWidth: '100%'
           
           menu_when_open_style: 
             right: 0
@@ -117,20 +130,35 @@ window.ProfileMenu = ReactiveComponent
 
             translator "auth.log_in", "Log in"
         else 
-          BUTTON
-            className: 'profile_anchor login'
-            'data-action': 'login'
-            onClick: (e) =>
-              reset_key 'auth',
-                form: 'login'
-                ask_questions: true
-
+          DIV 
             style: 
-              color: if !light_background then 'white'
-              backgroundColor: 'transparent'
-              border: 'none'
+              fontSize: 22  
 
-            translator "auth.log_in", "Log in"
+            BUTTON
+              className: 'btn create_account'
+              'data-action': 'create_account'
+              onClick: (e) =>
+                reset_key 'auth',
+                  form: 'create account'
+
+              translator "shared.auth.sign_up", "Sign up"
+
+            BUTTON
+              className: 'profile_anchor login like_link'
+              'data-action': 'login'
+              onClick: (e) =>
+                reset_key 'auth',
+                  form: 'login'
+
+              style: 
+                color: if !light_background then 'white'
+                fontWeight: 700
+                marginLeft: 20
+                position: 'relative'
+                top: 4
+
+
+              translator "auth.log_in", "Log in"
     
   bitcoinVerification: -> 
     current_user = fetch('/current_user')

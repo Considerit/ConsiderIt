@@ -49,7 +49,6 @@ window.Questionaire = ReactiveComponent
             onClick: (e) =>
               reset_key 'auth',
                 form: 'create account'
-                ask_questions: true
             style: 
               backgroundColor: 'transparent'
               border: 'none'
@@ -65,7 +64,6 @@ window.Questionaire = ReactiveComponent
             onClick: (e) =>
               reset_key 'auth',
                 form: 'login'
-                ask_questions: true
             style: 
               backgroundColor: 'transparent'
               border: 'none'
@@ -258,7 +256,7 @@ window.Questionaire = ReactiveComponent
               visibility: if !current_user.logged_in then 'hidden'
 
             BUTTON 
-              className: 'primary_button'
+              className: 'btn'
               onClick: complete 
               style: 
                 backgroundColor: focus_color()

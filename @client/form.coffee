@@ -7,17 +7,7 @@ require './shared'
 require './dock'
 
 window.Button = (props, text, callback) ->
-  style =
-    backgroundColor: focus_color()
-    borderRadius: 8
-    color: 'white'
-    padding: '3px 10px'
-    display: 'inline-block'
-    fontWeight: 600
-    textAlign: 'center'
-    cursor: 'pointer'
-    border: 'none'
-  props.style = _.extend(style, (props.style or {}))
+  props.className = 'btn'
   props.onClick = callback
   props.onKeyDown = (e) -> 
     if e.which == 13 || e.which == 32 # ENTER or SPACE

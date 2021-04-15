@@ -24,8 +24,8 @@ class UserPreview < ActionMailer::Preview
     UserMailer.invitation(User.where('registered').first, User.where('registered').last, Subdomain.first, 'proposer', Subdomain.first, "Add your own proposals")
   end
 
-  def invitation_opine
-    UserMailer.invitation(User.where('registered').first, User.where('registered').last, Proposal.active.first, 'opiner', Subdomain.first, "Hey man, come check this out, I think it's a good idea!")
+  def invitation_participant
+    UserMailer.invitation(User.where('registered').first, User.where('registered').last, Proposal.active.first, 'participant', Subdomain.first, "Hey man, come check this out, I think it's a good idea!")
   end
 
   def invitation_editor
@@ -34,14 +34,6 @@ class UserPreview < ActionMailer::Preview
 
   def invitation_observer
     UserMailer.invitation(User.where('registered').first, User.where('registered').last, Proposal.active.first, 'observer', Subdomain.first, "We're trying to be transparent here...")
-  end
-
-  def invitation_commenter
-    UserMailer.invitation(User.where('registered').first, User.where('registered').last, Proposal.active.first, 'commenter', Subdomain.first, "leave some comments on the points!")
-  end
-
-  def invitation_writer
-    UserMailer.invitation(User.where('registered').first, User.where('registered').last, Proposal.active.first, 'writer', Subdomain.first, "write some points!")
   end
 
 end

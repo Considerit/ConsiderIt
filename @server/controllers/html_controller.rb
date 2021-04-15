@@ -5,6 +5,14 @@ class HtmlController < ApplicationController
 
   def index
 
+    if Rails.env.development? || request.host.end_with?('chlk.it')
+      if params[:domain]
+        session[:default_subdomain] = Subdomain.find_by_name(params[:domain]).id
+        redirect_to request.path    
+        return
+      end
+    end
+
     # if someone has accessed a non-existent subdomain or the mime type isn't HTML (must be accessing a nonexistent file)
     # Note: The text/html constraint creates problems oneboxing from discourse. I'm adding it back in, but mess around 
     # with that if we ever need the oneboxing and it is not working.
@@ -18,16 +26,6 @@ class HtmlController < ApplicationController
       initiate_saml_auth
       return
     end
-
-    if Rails.env.development? || request.host.end_with?('chlk.it')
-      if params[:domain]
-        session[:default_subdomain] = Subdomain.find_by_name(params[:domain]).id
-        redirect_to request.path    
-        return
-      end
-    end
-
-
 
     if !session.has_key?(:search_bot)
       session[:search_bot] = !!request.fullpath.match('_escaped_fragment_')  \
@@ -143,7 +141,7 @@ class HtmlController < ApplicationController
       keywords = proposal.seo_keywords if proposal.seo_keywords
 
       @proposal = proposal
-      @host = current_subdomain.host_with_port
+      @host = current_subdomain.url
       @oembed_url = CGI.escape "https://" + @host + "/" + @proposal.slug + "?results=true"
     end
 

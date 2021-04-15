@@ -2,6 +2,37 @@ require './responsive_vars'
 require './color'
 
 
+#############
+# ajax_submit_files_in_form: uploads a file using ajax, using HTML5 file API
+# opts is hash with: 
+#    form: css selector for the form element
+#    type: the action type (default = POST)
+#    additional_data: hash of more data to include when uploading
+#    uri: the location to upload to (defaults to form's action attribute) 
+#    success: callback when upload successful (optional)
+#    error: callback when upload fails (optional)
+window.ajax_submit_files_in_form = (opts) -> 
+  opts ?= {}
+
+  cb = (evt) ->
+    if xhr.readyState == XMLHttpRequest.DONE
+      status = xhr.status
+      if status == 0 || (status >= 200 && status < 400)
+        opts.success? xhr.responseText
+      else
+        opts.error? {response: xhr.responseText, status: status}
+
+  form = document.querySelector(opts.form)
+  frm = new FormData form
+  for k,v of (opts.additional_data or {})
+    frm.append k, v
+
+  xhr = new XMLHttpRequest
+  xhr.addEventListener 'readystatechange', cb, false
+  xhr.open (opts.type or 'POST'), opts.uri or form.getAttribute('action'), true
+  xhr.send frm
+
+
 # Unfortunately, google makes it so there can only be one Google Translate Widget 
 # rendered into a page. So we have to move around the same element, rather than 
 # embed it nicely where we want. 
@@ -784,7 +815,8 @@ b, strong { font-weight: bold; }
 * {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
-  box-sizing: border-box; }
+  box-sizing: border-box; 
+}
 
 a {
   color: inherit;
@@ -805,6 +837,32 @@ a {
   font-size: inherit;
 } .button:focus, button:focus, input[type='submit']:focus {
 } .button:active:focus, button:active:focus, input[type='submit']:active:focus{
+}
+
+button.like_link {
+  background: none;
+  border: none;
+  text-decoration: underline;
+  padding: 0px;
+}
+
+.btn {
+  color: white;
+  text-transform: uppercase;
+  border: 0;
+  box-shadow: 0 2px 5px 0 rgb(0 0 0 / 20%), 0 2px 10px 0 rgb(0 0 0 / 10%);
+  font-weight: 700;
+  padding: .625rem 1.5rem .5rem;
+  line-height: 1.5;
+  text-align: center;
+  text-decoration: none;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  border-radius: .25rem;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+  margin: 0;
+  background-color: #{focus_blue}; 
 }
 
 
@@ -837,6 +895,15 @@ body, h1, h2, h3, h4, h5, h6 {
 html[lang='cs'] body, html[lang='cs'] input, html[lang='cs'] button, html[lang='cs'] textarea {
   font-family: Helvetica, Verdana, Arial, 'Lucida Grande', 'Lucida Sans Unicode', sans-serif; }
 
+
+input[type="checkbox"], input[type="radio"], button, a {
+  cursor: pointer;
+}
+
+input[type="checkbox"].bigger, input[type="radio"].bigger {
+  transform: scale(1.5);
+  font-size: 24px;
+}
 
 .hidden {
   position:absolute;
@@ -885,11 +952,10 @@ a.skip:hover {
   color: white;
   font-size: 29px;
   margin-top: 14px;
-  box-shadow: 0px 1px 0px black;
   border: none;
   padding: 8px 36px; }
 
-.primary_button.disabled {
+button.disabled {
   background-color: #eeeeee;
   color: #cccccc;
   box-shadow: none;

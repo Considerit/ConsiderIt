@@ -104,7 +104,7 @@ window.List = ReactiveComponent
                 category_color: if @props.combines_these_lists then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], .9, .8)
 
             if  (list_state.show_all_proposals || proposals.length <= list_state.show_first_num_items) && \
-               ((@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || customization('list_permit_new_items', list_key)) && \
+               ((@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || permit('create proposal', list_key) > 0) && \
                 !edit_list.editing
 
               LI 
@@ -343,11 +343,11 @@ EditList = ReactiveComponent
               # don't show a new button for this list anymore
               customizations[list_key].list_permit_new_items = false 
 
-              # add a note in the description that the list was closed to participation
-              customizations[list_key].list_description ?= ''
-              if customizations[list_key].list_description?.length > 0 
-                customizations[list_key].list_description += "<br>" 
-              customizations[list_key].list_description += "<DIV style='font-style:italic'>Participation was closed by the host on #{new Date().toDateString()}</div>" 
+              # # add a note in the description that the list was closed to participation
+              # customizations[list_key].list_description ?= ''
+              # if customizations[list_key].list_description?.length > 0 
+              #   customizations[list_key].list_description += "<br>" 
+              # customizations[list_key].list_description += "<DIV style='font-style:italic'>Participation was closed by the host on #{new Date().toDateString()}</div>" 
 
               save subdomain
             
@@ -359,15 +359,9 @@ EditList = ReactiveComponent
 
 
         BUTTON 
+          className: 'btn'
           style: 
             backgroundColor: focus_color()
-            fontSize: 18
-            border: 'none'
-            backgroundColor: '#555'
-            color: 'white'
-            fontWeight: 'bold'
-            padding: '8px 32px'
-
 
           onClick: submit
           onKeyDown: (e) =>
@@ -378,19 +372,20 @@ EditList = ReactiveComponent
           translator 'engage.save_changes_button', 'Save'
 
         BUTTON
+          className: 'like_link'
           style: 
-            backgroundColor: 'transparent'
-            border: 'none'
             color: '#777'
             fontSize: 18
             marginLeft: 12
+            position: 'relative'
+            top: 2
           onClick: cancel_edit
           onKeyDown: (e) =>
             if e.which == 13 || e.which == 32 # ENTER or SPACE
               cancel_edit(e)  
               e.preventDefault()
 
-          translator 'engage.cancel_button', 'cancel'
+          translator 'shared.cancel_button', 'cancel'
 
 
 
@@ -535,7 +530,7 @@ window.ListHeader = ReactiveComponent
                       marginLeft: 4
                     htmlFor: 'host-only'
 
-                    translator "engage.list-config-who-can-add-only-hosts", "Only forum hosts"
+                    translator "engage.list-config-who-can-add-only-hosts", "Only forum hosts or those granted permission"
 
             if !@props.combines_these_lists
               slider_input_style = 
@@ -544,7 +539,7 @@ window.ListHeader = ReactiveComponent
                 border: 'none'
                 outline: 'none'
                 color: '#444'
-                fontSize: 12
+                fontSize: if browser.is_mobile then 16 else 12
 
               DIV 
                 style: 
@@ -1060,6 +1055,9 @@ EditableDescription = ReactiveComponent
     edit_list = fetch "edit-#{list_key}"
 
     description = edit_list.list_description or customization('list_description', list_key)
+    if Array.isArray(description)
+      description = description.join('\n')
+
     description_style = customization 'list_description_style', list_key
 
     DIV
@@ -1069,8 +1067,8 @@ EditableDescription = ReactiveComponent
         color: '#222'
         marginTop: 6
 
-      if _.isFunction description
-        description()
+      if typeof description == 'function'
+        description()        
       else 
 
         if current_user.is_admin && edit_list.editing
@@ -1117,6 +1115,8 @@ EditableDescription = ReactiveComponent
                   right: 0
                 container_style: 
                   borderRadius: 8
+                style: 
+                  fontSize: if browser.is_mobile then 32
 
         else 
           desc = description

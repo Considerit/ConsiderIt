@@ -22,7 +22,7 @@ window.EditProposal = ReactiveComponent
                   permit('update proposal', proposal)
 
     if permitted < 0
-      recourse permitted, 'create a proposal'
+      recourse permitted, 'To participate,'
       return DIV null
 
     block_style = 
@@ -243,42 +243,6 @@ window.EditProposal = ReactiveComponent
                 name: 'banner'
                 onChange: (ev) =>
                   @submit_pic = true
-          
-
-        DIV 
-          style: 
-            display: if !current_user.is_admin then 'none'
-
-          SPAN 
-            style: _.extend {}, label_style,
-              textDecoration: 'underline'
-              cursor: 'pointer'
-              width: 400
-              position: 'relative'
-            onClick: => 
-              @local.edit_roles = !@local.edit_roles
-              save @local
-            I 
-              className: 'fa-child fa'
-              style: 
-                position: 'absolute'
-                left: -25
-                top: 5
-
-            translator 'engage.edit_proposal.permissions', 'Permissions'
-
-          DIV 
-            style: 
-              width: CONTENT_WIDTH()
-              backgroundColor: '#fafafa'
-              padding: '10px 60px'
-              display: if @local.edit_roles then 'block' else 'none' 
-                  # roles has to be rendered so that default roles 
-                  # are set on the proposal
-
-            ProposalRoles 
-              key: if @props.fresh then @local.key else proposal.key
-
 
         if @local.errors?.length > 0
           
@@ -301,11 +265,9 @@ window.EditProposal = ReactiveComponent
 
         DIV null,
           BUTTON 
-            className:'button primary_button'
+            className: 'btn'
             style: 
-              width: 400
               marginTop: 35
-              backgroundColor: focus_color()              
             onClick: @saveProposal
 
             if @props.fresh 
@@ -314,13 +276,13 @@ window.EditProposal = ReactiveComponent
               translator 'Update'
 
           BUTTON
+            className: 'like_link'
             style: 
-              marginTop: 10
-              padding: 25
-              marginLeft: 10
-              fontSize: 22
-              border: 'none'
-              backgroundColor: 'transparent'
+              fontSize: 20
+              color: '#777'
+              position: 'relative'
+              top: 20
+              marginLeft: 12
 
             onClick: =>
               if @props.fresh 
@@ -328,7 +290,7 @@ window.EditProposal = ReactiveComponent
               else 
                 loadPage "/#{proposal.slug}"
 
-            translator 'engage.cancel_button', 'cancel'
+            translator 'shared.cancel_button', 'cancel'
 
         if @local.file_errors
           DIV style: {color: 'red'}, 'Error uploading files!'
@@ -384,12 +346,13 @@ window.EditProposal = ReactiveComponent
 
 
     save proposal, => 
-
       if @submit_pic
         current_user = fetch '/current_user'
-        $('#proposal_pic_files').ajaxSubmit
+        form_to_upload = document.getElementById('proposal_pic_files')
+        ajax_submit_files_in_form
+          form: '#proposal_pic_files'
           type: 'PUT'
-          data: 
+          additional_data: 
             authenticity_token: current_user.csrf
             id: proposal.id
           success: after_save

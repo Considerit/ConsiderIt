@@ -12,7 +12,7 @@ class Subdomain < ApplicationRecord
   validates_attachment_content_type :logo, :content_type => %w(image/jpeg image/jpg image/png image/gif)
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:id, :lang, :name, :created_at, :about_page_url, :external_project_url, :moderate_points_mode, :moderate_comments_mode, :moderate_proposals_mode, :host_with_port, :plan, :SSO_domain]
+  self.my_public_fields = [:id, :lang, :name, :created_at, :about_page_url, :external_project_url, :moderation_policy, :plan, :SSO_domain]
 
   scope :public_fields, -> { select(self.my_public_fields) }
 
@@ -28,7 +28,6 @@ class Subdomain < ApplicationRecord
   def as_json(options={})
     options[:only] ||= Subdomain.my_public_fields
     json = super(options)
-    json['moderated_classes'] = classes_to_moderate().map {|c| c.name}
     json['key'] = !options[:include_id] ? '/subdomain' : "/subdomain/#{self.id}"
     if current_user.is_admin?
       json['roles'] = self.user_roles
@@ -48,18 +47,17 @@ class Subdomain < ApplicationRecord
     json
   end
 
-  def host_without_subdomain
-    host_with_port.split('.')[-2, 2].join('.')
+  def url
+    "#{self.name}.#{APP_CONFIG[:domain]}"
   end
+
 
   def rename(new_name)
     existing = Subdomain.where(:name => new_name).first
     if existing
-      raise "Sorry, #{new_name}.consider.it is already taken"
+      raise "Sorry, #{new_name}.#{APP_CONFIG[:domain]} is already taken"
     end
 
-    self.host = self.host.gsub(self.name, new_name)
-    self.host_with_port = self.host_with_port.gsub(self.name, new_name)
     self.name = new_name
     self.save
   end
@@ -103,14 +101,14 @@ class Subdomain < ApplicationRecord
   # TODO: consolidate with proposal.user_roles
   def user_roles(filter = false)
     rolez = roles ? roles.deep_dup : {}
-    ['admin', 'moderator', 'proposer', 'visitor'].each do |role|
+    ['admin', 'proposer', 'visitor', 'participant'].each do |role|
 
       # default roles if they haven't been set
-      default_role = ['visitor', 'proposer'].include?(role) ? ['*'] : []
+      default_role = ['visitor', 'proposer', 'participant'].include?(role) ? ['*'] : []
       rolez[role] = default_role if !rolez.has_key?(role) || !rolez[role]
 
       # Filter role if the client isn't supposed to see it
-      if filter # && role != 'proposer'
+      if filter
         # Remove all specific email address for privacy. Leave wildcards.
         # Is used by client permissions system to determining whether 
         # to show action buttons for unauthenticated users. 
@@ -128,23 +126,13 @@ class Subdomain < ApplicationRecord
   end
 
   def classes_to_moderate
-
-    classes = []
-
-    if moderate_points_mode > 0
-      classes << Point
+    if moderation_policy > 0
+      [Proposal, Point, Comment]
+    else
+      []
     end
-    if moderate_comments_mode > 0
-      classes << Comment
-    end
-    if moderate_proposals_mode > 0
-      classes << Proposal
-    end
-
-    classes
 
   end
-
 
 
 

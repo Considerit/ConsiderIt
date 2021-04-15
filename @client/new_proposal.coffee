@@ -88,7 +88,9 @@ window.NewProposal = ReactiveComponent
             , 0
           else 
             e.stopPropagation()
-            reset_key 'auth', {form: 'login', goal: 'add a new proposal', ask_questions: true}
+            reset_key 'auth', 
+              form: 'login'
+              goal: 'add a new proposal'
         
         A name: "new_#{list_name}"
         bullet 
@@ -147,7 +149,7 @@ window.NewProposal = ReactiveComponent
               fontSize: 14  
 
             style: 
-              fontSize: 20
+              fontSize: if browser.is_mobile then 36 else 20
               width: w
               border: "1px solid #ccc"
               outline: 'none'
@@ -186,7 +188,7 @@ window.NewProposal = ReactiveComponent
                 border: '1px solid #ccc'
 
               style: 
-                fontSize: 16
+                fontSize: if browser.is_mobile then 36 else 16
                 width: w - 8 * 2
                 marginBottom: 8
                 minHeight: 120
@@ -265,17 +267,9 @@ window.NewProposal = ReactiveComponent
               marginTop: 14
 
             BUTTON 
-              className: 'submit_new_proposal'
+              className: 'btn'
               style: 
                 backgroundColor: focus_color()
-                color: 'white'
-                cursor: 'pointer'
-                padding: '4px 16px'
-                display: 'inline-block'
-                marginRight: 12
-                border: 'none'
-                boxShadow: '0 1px 1px rgba(0,0,0,.9)'
-                fontWeight: 600
 
               onClick: => 
                 name = document.getElementById("#{list_name}-name").value
@@ -323,20 +317,19 @@ window.NewProposal = ReactiveComponent
               translator 'engage.done_button', 'Done'
 
             BUTTON 
+              className: 'like_link'
               style: 
-                color: '#888'
-                cursor: 'pointer'
-                backgroundColor: 'transparent'
-                border: 'none'
-                padding: 0
-                fontSize: 'inherit'                  
+                color: '#777'
+                position: 'relative'
+                top: 2
+                marginLeft: 12
               onClick: => 
                 list_state.adding_new_proposal = null
                 save(list_state)
                 delete loc.query_params.new_proposal
                 save loc
 
-              translator 'engage.cancel_button', 'cancel'
+              translator 'shared.cancel_button', 'cancel'
 
   componentDidMount : ->    
     @ensureIsInViewPort()

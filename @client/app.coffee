@@ -6,9 +6,9 @@
 
 require './element_viewport_positioning'
 require './activerest-m'
+require 'dashboard/dashboard'
 require './dock'
-require './admin'
-require './auth'
+require './auth/auth'
 require './avatar'
 require './browser_hacks'
 require './browser_location'
@@ -18,9 +18,7 @@ require './edit_proposal'
 require './customizations'
 require './form'
 require './histogram'
-require './roles'
 require './filter'
-require './tags'
 require './homepage'
 require './shared'
 require './opinion_slider'
@@ -28,11 +26,9 @@ require './state_dash'
 require './tooltip'
 require './development'
 require './su'
-require './notifications'
 require './edit_point'
 require './edit_comment'
 require './point'
-require './translations'
 require './legal'
 require './statement'
 require './proposal'
@@ -155,9 +151,7 @@ LocationTransition = ReactiveComponent
       # between routes. TODO: more elegant approach
       auth = fetch('auth')
 
-      if loc.url == '/edit_profile' && auth.form != 'edit profile'
-        reset_key auth, {form: 'edit profile', ask_questions: true}
-      else if auth.form
+      if auth.form
         reset_key auth
 
       #######
@@ -170,76 +164,6 @@ LocationTransition = ReactiveComponent
     SPAN null
 
 
-AuthTransition = ReactiveComponent
-  # This doesn't actually render anything.  It just processes state
-  # changes to current_user for CSRF and logging in and out.
-  displayName: 'Computer'
-  render : ->
-    current_user = fetch('/current_user')
-
-    if current_user.csrf
-      arest.csrf(current_user.csrf)
-
-    # Publish pending opinions if we can
-    if @root.opinions_to_publish.length > 0
-
-      remaining_opinions = []
-
-      for opinion_key in @root.opinions_to_publish
-        opinion = fetch(opinion_key)
-        can_opine = permit('publish opinion', opinion.proposal)
-
-        if can_opine > 0 && !opinion.published
-          opinion.published = true
-          save opinion
-        else 
-          remaining_opinions.push opinion_key
-
-          # TODO: show some kind of prompt to user indicating that despite 
-          #       creating an account, they still aren't permitted to publish 
-          #       their opinion.
-          # if can_opine == Permission.INSUFFICIENT_PRIVILEGES
-          #   ...
-
-      if remaining_opinions.length != @root.opinions_to_publish.length
-        @root.opinions_to_publish = remaining_opinions
-        save @root
-
-    # users following an email invitation need to complete 
-    # registration (name + password)
-    if current_user.needs_to_complete_profile
-      subdomain = fetch('/subdomain')
-
-      reset_key 'auth',
-        key: 'auth'
-        form: if subdomain.SSO_domain then 'edit profile' else 'create account via invitation'
-        goal: 'Complete registration'
-        ask_questions: true
-
-      if subdomain.SSO_domain
-        loadPage '/edit_profile'
-        
-    # there's a required question this user has yet to answer
-    else if current_user.logged_in && !current_user.completed_host_questions && !fetch('auth').form
-      reset_key 'auth',
-        form: 'user questions'
-        goal: 'To start participating'
-        ask_questions: true
-
-
-    else if current_user.needs_to_verify && !window.send_verification_token
-      current_user.trying_to = 'send_verification_token'
-      save current_user
-
-      window.send_verification_token = true 
-
-      reset_key 'auth',
-        key: 'auth'
-        form: 'verify email'
-        goal: 'confirm you control this email'
-        ask_questions: false
-
-    SPAN null
 
 
 ######
@@ -258,11 +182,15 @@ Page = ReactiveComponent
 
     access_granted = @accessGranted()
 
-    DIV null,
+    DIV
+      'aria-hidden': if auth.form then true
+      
       STYLE 
         dangerouslySetInnerHTML: __html: customization('style')
+
         
       Header(key: 'page_header') if access_granted
+
 
       MAIN 
         role: 'main'
@@ -271,17 +199,20 @@ Page = ReactiveComponent
           zIndex: 1
           margin: 'auto'
 
-        if auth.form
-          Auth()
 
-        else if !access_granted
+
+        if !access_granted
           AccessDenied()
+
+        else if loc.url.startsWith('/dashboard')
+          Dashboard()
 
         else if loc.url.match(/(.+)\/edit/)
           EditProposal 
             key: loc.url.match(/(.+)\/edit/)[1]
             fresh: false
-            
+
+
         else
           switch loc.url
             when '/'
@@ -295,24 +226,7 @@ Page = ReactiveComponent
             when '/proposal/new'
               EditProposal key: "new_proposal", fresh: true      
             when '/accessibility_support'
-              AccessibilitySupport()        
-            when '/dashboard/email_notifications'
-              Notifications 
-                key: '/page/dashboard/email_notifications'
-            when '/dashboard/data_import_export'
-              DataDash key: "/page/dashboard/data_import_export"
-            when '/dashboard/moderate'
-              ModerationDash key: "/page/dashboard/moderate"
-            when '/dashboard/application'
-              AppSettingsDash key: "/page/dashboard/application"
-            when '/dashboard/customizations'
-              CustomizationsDash key: "/page/dashboard/customizations"
-            when '/dashboard/roles'
-              SubdomainRoles key: "/page/dashboard/roles"
-            when '/dashboard/tags'
-              UserTags key: "/page/dashboard/tags"
-            when '/dashboard/translations'
-              TranslationsDash key: "/page/dashboard/translations"
+              AccessibilitySupport()
 
             else
               if @page?.result == 'Not found'
@@ -345,7 +259,7 @@ Page = ReactiveComponent
                 result or LOADING_INDICATOR
                 
 
-      Footer(key: 'page_footer') if access_granted && !auth.form
+      Footer(key: 'page_footer') if access_granted
     
 
 Root = ReactiveComponent
@@ -384,12 +298,13 @@ Root = ReactiveComponent
       HomepageTabTransition()
       BrowserLocation()
 
+
       STYLE 
         dangerouslySetInnerHTML: __html: """
           .content, .content input, .content button, .content textarea {
             font-family: #{fonts}; 
           }
-          .content h1, .content h2, .content h3, .content h4, .content h1 button, .content h2 button, .content h3 button, .content h4 button {
+          .content h1, .content h2, .content h3, .content h1 button, .content h2 button, .content h3 button, .content h4 button {
             font-family: #{header_fonts};
           }
         """
@@ -405,7 +320,8 @@ Root = ReactiveComponent
             backgroundColor: 'white'
             overflowX: 'hidden'
 
-          # Avatars()
+          if fetch('auth').form
+            Auth()
           
           BrowserHacks()
 

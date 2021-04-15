@@ -20,8 +20,14 @@ class ModerationController < ApplicationController
     moderation.update_attributes! updates
     
     moderatable = moderation.root_object
-    moderatable.moderation_status = moderation.status
-    moderatable.save
+    if moderatable.moderation_status != moderation.status
+      moderatable.moderation_status = moderation.status
+      moderatable.save
+
+      if moderatable.moderation_status == 1 && [1,2].include?(current_subdomain.moderation_policy)
+        Notifier.notify_parties 'new', moderatable
+      end
+    end
 
     if moderation.moderatable_type.downcase == 'proposal'
       dirty_key '/proposals'

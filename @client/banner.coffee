@@ -366,7 +366,7 @@ CustomizeLogo = ReactiveComponent
             textAlign: 'center'
 
           if !has_logo
-            'Logo (optional)'
+            translator 'banner.logo_label', 'Logo (optional)'
           else 
             BUTTON 
               style: 
@@ -384,7 +384,7 @@ CustomizeLogo = ReactiveComponent
                   e.target.click()
                   e.preventDefault()
 
-              'change'
+              translator 'banner.change_logo', 'change'
 
 
       if edit_banner.editing
@@ -521,7 +521,7 @@ CustomizeBackground = ReactiveComponent
               fontSize: 14
               color: color
               marginBottom: 12
-            'Upload background'
+            translator 'banner.upload_background_label', 'Upload background'
 
         DIV 
           style: 
@@ -547,7 +547,7 @@ CustomizeBackground = ReactiveComponent
             htmlFor: "background_color"
 
             if has_masthead
-              translator("banner.background_css_is_light.label", "Background is light colored")
+              translator "banner.background_css_is_light.label", "Background is light colored"
             else 
               translator("banner.background_css.label", "...or set to color") + ':'
 

@@ -153,7 +153,7 @@ window.Dashboard = ReactiveComponent
 
     draw_menu_separator = (title) -> 
       DIV null,
-        title
+        translator "dashboard.section_title.#{title}", title
 
     DIV 
       id: "DASHBOARD-flex-container"

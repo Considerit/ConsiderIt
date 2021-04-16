@@ -15,14 +15,12 @@ window.AvatarInput = ReactiveComponent
 
     current_user = fetch '/current_user'
     user = fetch(fetch('/current_user').user)
-    @local.preview ?= user.avatar_file_name || current_user.b64_thumbnail || current_user.avatar_remote_url
+    @local.preview ?= user.avatar_file_name || current_user.avatar_remote_url
 
     img_preview_src =  if @local.newly_uploaded
                           @local.newly_uploaded
                        else if user.avatar_file_name
                           avatarUrl user, 'large'
-                       else if current_user.b64_thumbnail 
-                          current_user.b64_thumbnail 
                        else if current_user.avatar_remote_url
                           current_user.avatar_remote_url 
                        else 

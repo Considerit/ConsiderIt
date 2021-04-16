@@ -81,7 +81,6 @@ AccessibilitySupport = ReactiveComponent
 
 
 
-# I don't think this component is used anymore
 About = ReactiveComponent
   displayName: 'About'
 

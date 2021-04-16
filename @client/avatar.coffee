@@ -136,13 +136,8 @@ window.avatar = (user, props) ->
     props.src = avatarUrl user, img_size
   else
     current_user = fetch('/current_user')
-    if current_user.user == user.key
-      thumbnail = current_user.b64_thumbnail
-      if !thumbnail && user.avatar_file_name
-         thumbnail = avatarUrl(user,'small')
-      
-      if thumbnail? && img_size == 'small' 
-        props.src = thumbnail
+    if current_user.user == user.key && user.avatar_file_name && img_size == 'small'
+       props.src = avatarUrl user, 'small'
     else
       # prevents a weird webkit outlining issue
       # http://stackoverflow.com/questions/4743127

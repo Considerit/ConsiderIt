@@ -182,18 +182,6 @@ def download_files_from_production
       next
     end
 
-    b64_encoding = Base64.encode64 f.read
-    thumbnail = "data:image/jpeg;base64,#{b64_encoding.gsub(/\n/,' ')}"
-
-    if user.b64_thumbnail != thumbnail
-      begin
-        user.b64_thumbnail = thumbnail
-        user.save
-        puts "Set thumbnail for user #{user.name}"
-      rescue
-        puts "Failed to set thumbnail for user #{user.name}"
-      end
-    end
 
     f.close()
   end

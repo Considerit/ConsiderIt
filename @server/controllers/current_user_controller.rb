@@ -198,7 +198,6 @@ class CurrentUserController < ApplicationController
           # Now we'll store an encoded version of the token on the user table
           encoded_token = OpenSSL::HMAC.hexdigest('SHA256', 'reset_password_token', raw_token)
           user.reset_password_token   = encoded_token
-          user.reset_password_sent_at = Time.now.utc
           user.save(:validate => false)
           
           UserMailer.reset_password_instructions(user, raw_token, current_subdomain).deliver_now

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_10_162418) do
+ActiveRecord::Schema.define(version: 2021_04_15_232919) do
 
   create_table "comments", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "commentable_id", default: 0
@@ -137,32 +137,14 @@ ActiveRecord::Schema.define(version: 2021_02_10_162418) do
     t.integer "subdomain_id"
     t.string "slug", collation: "utf8mb4_0900_ai_ci"
     t.integer "user_id"
-    t.float "trending"
-    t.float "activity"
-    t.float "provocative"
-    t.float "contested"
-    t.integer "num_points"
-    t.integer "num_pros"
-    t.integer "num_cons"
-    t.integer "num_comments"
-    t.integer "num_inclusions"
-    t.integer "num_perspectives"
-    t.integer "num_supporters"
-    t.integer "num_opposers"
-    t.integer "followable_last_notification_milestone"
-    t.datetime "followable_last_notification"
     t.boolean "active", default: true
     t.integer "moderation_status"
-    t.integer "publicity", default: 2
-    t.binary "access_list", limit: 16777215
     t.boolean "published", default: false
     t.boolean "hide_on_homepage", default: false
     t.string "seo_title", collation: "utf8mb4_0900_ai_ci"
     t.string "seo_description", collation: "utf8mb4_0900_ai_ci"
     t.string "seo_keywords", collation: "utf8mb4_0900_ai_ci"
-    t.text "description_fields", limit: 16777215, collation: "utf8mb4_0900_ai_ci"
     t.string "cluster", collation: "utf8_unicode_ci"
-    t.text "zips", collation: "utf8_unicode_ci"
     t.json "roles"
     t.json "histocache"
     t.json "json"
@@ -193,16 +175,7 @@ ActiveRecord::Schema.define(version: 2021_02_10_162418) do
     t.string "name", collation: "utf8mb4_0900_ai_ci"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "app_title", collation: "utf8mb4_0900_ai_ci"
-    t.string "notifications_sender_email", collation: "utf8_general_ci"
     t.string "google_analytics_code", collation: "utf8_general_ci"
-    t.boolean "has_civility_pledge", default: false
-    t.string "host", collation: "utf8_general_ci"
-    t.string "host_with_port", collation: "utf8_general_ci"
-    t.boolean "assessment_enabled", default: false
-    t.integer "moderate_points_mode", default: 0
-    t.integer "moderate_comments_mode", default: 0
-    t.integer "moderate_proposals_mode", default: 0
     t.string "external_project_url", collation: "utf8_general_ci"
     t.string "about_page_url", collation: "utf8_general_ci"
     t.json "roles"
@@ -216,7 +189,6 @@ ActiveRecord::Schema.define(version: 2021_02_10_162418) do
     t.integer "logo_file_size"
     t.datetime "logo_updated_at"
     t.string "logo_remote_url", collation: "utf8_general_ci"
-    t.text "branding", limit: 16777215, collation: "utf8mb4_0900_ai_ci"
     t.integer "plan", default: 0
     t.json "customizations"
     t.string "lang", collation: "utf8mb4_0900_ai_ci"
@@ -247,14 +219,11 @@ ActiveRecord::Schema.define(version: 2021_02_10_162418) do
     t.string "twitter_uid", collation: "utf8_unicode_ci"
     t.string "twitter_handle", collation: "utf8_unicode_ci"
     t.boolean "registered", default: false
-    t.datetime "reset_password_sent_at"
     t.text "b64_thumbnail", limit: 4294967295
     t.json "tags"
     t.json "active_in"
     t.boolean "super_admin", default: false
-    t.boolean "no_email_notifications", default: false
     t.boolean "verified", default: false
-    t.text "groups", collation: "utf8_unicode_ci"
     t.json "subscriptions"
     t.json "emails"
     t.boolean "complete_profile", default: false

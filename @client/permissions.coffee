@@ -47,7 +47,9 @@ Permission =
 permit = (action) ->
   current_user = fetch '/current_user'
 
-  if customization('frozen') && action not in ['read proposal', 'access forum']
+  phase = customization('contribution_phase')
+
+  if phase == 'frozen' && action not in ['read proposal', 'access forum']
     return Permission.DISABLED
 
   switch action
@@ -75,6 +77,9 @@ permit = (action) ->
       else 
         can_add_to_list = true
 
+      if phase == 'opinions-only'
+        can_add_to_list = false
+
       if !current_user.is_admin && !matchEmail(subdomain.roles.proposer) && !can_add_to_list
         return Permission.INSUFFICIENT_PRIVILEGES 
       return Permission.NOT_LOGGED_IN if !current_user.logged_in
@@ -89,6 +94,8 @@ permit = (action) ->
     when 'publish opinion'
       proposal = fetch arguments[1]
       subdomain = fetch '/subdomain'
+
+      return Permission.DISABLED if phase == 'ideas-only'
 
       return Permission.DISABLED if !proposal.active
       return Permission.NOT_LOGGED_IN if !current_user.logged_in
@@ -108,6 +115,9 @@ permit = (action) ->
 
     when 'create point'
       proposal = fetch arguments[1]
+
+      return Permission.DISABLED if phase == 'ideas-only'
+
       return Permission.DISABLED if !proposal.active
       if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'participant'])
         if !current_user.logged_in
@@ -135,6 +145,8 @@ permit = (action) ->
 
     when 'create comment'
       proposal = fetch arguments[1]
+
+      return Permission.DISABLED if phase == 'ideas-only'      
       return Permission.DISABLED if !proposal.active
       return Permission.NOT_LOGGED_IN if !current_user.logged_in 
 

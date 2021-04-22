@@ -152,6 +152,43 @@ window.ForumSettingsDash = ReactiveComponent
 
 
 
+
+
+
+      ########################
+      # DISABLE EMAIL NOTIFICATIONS
+      DIV className: 'input_group checkbox',
+        
+        LABEL 
+          className: 'toggle_switch'
+
+          INPUT 
+            id: 'email_notifications_disabled'
+            type: 'checkbox'
+            name: 'email_notifications_disabled'
+            defaultChecked: customization('email_notifications_disabled')
+            onChange: (ev) -> 
+              subdomain.customizations ||= {}
+              subdomain.customizations.email_notifications_disabled = ev.target.checked
+              save subdomain
+
+          SPAN 
+            className: 'toggle_switch_circle'
+
+
+        LABEL 
+          className: 'indented'        
+          htmlFor: 'email_notifications_disabled'
+          B null,
+            'Disable email notifications.'
+
+          DIV 
+            className: 'explanation'
+            " Participants will not be notified via email about activity on this forum."
+
+
+
+
       ########################
       # ANONYMIZE EVERYTHING
       DIV 
@@ -220,70 +257,10 @@ window.ForumSettingsDash = ReactiveComponent
 
 
 
-      ########################
-      # FREEZE FORUM
-      DIV className: 'input_group checkbox',
-        
+      #####################
+      # CONTRIBUTION PHASE
+      @drawContributionPhaseSettings()
 
-        LABEL 
-          className: 'toggle_switch'
-
-          INPUT 
-            id: 'frozen'
-            type: 'checkbox'
-            name: 'frozen'
-            defaultChecked: customization('frozen')
-            onChange: (ev) -> 
-              subdomain.customizations ||= {}              
-              subdomain.customizations.frozen = ev.target.checked
-              save subdomain
-
-          SPAN 
-            className: 'toggle_switch_circle'
-
-
-        LABEL 
-          className: 'indented'        
-          htmlFor: 'frozen'
-          
-          B null,
-            'Freeze forum.'
-
-          DIV 
-            className: 'explanation'
-            "No one can add or change opinions, proposals, or comments while the forum is frozen."
-
-
-      ########################
-      # DISABLE EMAIL NOTIFICATIONS
-      DIV className: 'input_group checkbox',
-        
-        LABEL 
-          className: 'toggle_switch'
-
-          INPUT 
-            id: 'email_notifications_disabled'
-            type: 'checkbox'
-            name: 'email_notifications_disabled'
-            defaultChecked: customization('email_notifications_disabled')
-            onChange: (ev) -> 
-              subdomain.customizations ||= {}
-              subdomain.customizations.email_notifications_disabled = ev.target.checked
-              save subdomain
-
-          SPAN 
-            className: 'toggle_switch_circle'
-
-
-        LABEL 
-          className: 'indented'        
-          htmlFor: 'email_notifications_disabled'
-          B null,
-            'Disable email notifications.'
-
-          DIV 
-            className: 'explanation'
-            " Participants will not be notified via email about activity on this forum."
 
 
       ########################
@@ -345,7 +322,109 @@ window.ForumSettingsDash = ReactiveComponent
 
             onSubmit: => 
               confirm("Are you sure you want to rename this forum?")
-            
+         
+  drawContributionPhaseSettings : -> 
+    subdomain = fetch '/subdomain'
+
+    phases = [
+        {
+          label: "Default"
+          value: 0
+          explanation: "People can contribute as you have configured elsewhere."
+        }
+
+        {
+          label: "Frozen forum", 
+          value: 'frozen'
+          explanation: "No one can add or change opinions, proposals, or comments while the forum is frozen."
+        }
+        
+        {
+          label: "Ideas only"
+          value: "ideas-only"
+          explanation: "People can only contribute new proposals at this time (and only to the lists in which you've enabled ideation). Opinion slider drags or pro/con comments are not allowed at this time."
+        } 
+        
+        {
+          label: "Opinions only"
+          value: "opinions-only"
+          explanation: "People can only add their opinions by dragging sliders and writing pro/con points. No one can make new proposals."
+        } 
+        
+      ]
+
+
+    current_value = customization('contribution_phase') || 0
+
+
+    DIV 
+      className: 'FORUM_SETTINGS_section input_group'
+
+      H4 null, 
+
+        'Dialogue Phase'
+
+      DIV
+        className: 'explanation'
+
+        """
+        Control the phase of your dialogue. This setting gives you the ability to globally override your settings elsewhere. 
+        For example, even if you have allowed people to add proposals to a given list, if you set the phase to "opinions only", 
+        no one will be allowed to add new proposals to that list. However, if you later change the phase, your previous 
+        settings will hold. 
+        """
+
+
+      FIELDSET null,
+
+        for option in phases
+          DIV null,
+
+            DIV 
+              className: 'radio_group'
+              style: 
+                cursor: 'pointer'
+
+              onChange: do (option) -> (ev) -> 
+                subdomain.customizations ||= {}
+                subdomain.customizations.contribution_phase = option.value
+                save subdomain
+
+
+              INPUT 
+                style: 
+                  cursor: 'pointer'
+                type: 'radio'
+                name: "contribution_phase"
+                id: "contribution_phase_#{option.value}"
+                defaultChecked: current_value == option.value
+
+              LABEL 
+                style: 
+                  cursor: 'pointer'
+                  display: 'block'
+                htmlFor: "contribution_phase_#{option.value}"
+                
+                option.label
+
+
+            if option.explanation
+              DIV 
+                className: 'explanation field_explanation'
+                option.explanation
+
+        
+
+
+
+
+
+
+
+
+
+
+
   drawModerationSettings : -> 
     subdomain = fetch '/subdomain'
     moderatable_models = ['points', 'comments', 'proposals']
@@ -400,6 +479,7 @@ window.ForumSettingsDash = ReactiveComponent
               LABEL 
                 style: 
                   cursor: 'pointer'
+                  display: 'block'
                 htmlFor: "moderation_policy_#{option.value}"
                 
                 option.label

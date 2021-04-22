@@ -95,8 +95,14 @@ window.Homepage = ReactiveComponent
       save doc
 
     messages = []
-    if customization('frozen')
+    phase = customization('contribution_phase')
+    if phase == 'frozen'
       messages.push translator "engage.frozen_message", "The forum host has frozen this forum so no changes can be made."
+    else if phase == 'ideas-only'
+      messages.push translator "engage.ideas_only_message", "The forum host has set this forum to be ideas only. No opinions for now."
+    else if phase == 'opinions-only'
+      messages.push translator "engage.opinions_only_message", "The forum host has set this forum to be opinions only. No new ideas for now."
+
     if customization('anonymize_everything')
       messages.push translator "engage.anonymize_message", "The forum host has participation set to anonymous in this forum, so you won't be able to see the identity of others at this time."
     if customization('hide_opinions')

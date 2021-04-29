@@ -29,7 +29,7 @@ ConsiderIt::Application.routes.draw do
   get '/oembed(.:format)' => 'oembed#show'
   get '/embed/proposal/:slug' => 'oembed#proposal_embed', :constraints => NotJSON.new
 
-  get "/dashboard/export(.:format)" => 'import_data#export'
+  post "/dashboard/export(.:format)" => 'import_data#export'
 
   get "/create_subdomain" => 'subdomain#create'
   post '/subdomain' => 'subdomain#create'

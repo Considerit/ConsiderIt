@@ -36,10 +36,18 @@ window.DataDash = ReactiveComponent
         query = ''
         user_tags = customization 'user_tags'
         if user_tags
-          query = "?#{Object.keys(user_tags).join('&')}" 
+          query = "?#{Object.keys(user_tags).join('=1&')}" 
+
 
         FORM 
           action: "/dashboard/export#{query}"
+          method: 'post'
+
+          INPUT 
+            type: 'hidden'
+            name: 'authenticity_token'
+            value: current_user.csrf
+
           H4
             style: 
               fontSize: 20

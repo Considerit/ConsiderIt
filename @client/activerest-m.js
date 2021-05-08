@@ -397,7 +397,12 @@
             // prop, because it often has a circular reference.
             next_props = clone(next_props); this_props = clone(this.props)
             delete next_props['children']; delete this_props['children']
-            return JSON.stringify([next_state, next_props]) != JSON.stringify([this.state, this_props])
+
+            // console.assert(!_.isEqual([next_state, next_props], [this.state, this_props]) == JSON.stringify([next_state, next_props]) != JSON.stringify([this.state, this_props]), {next_state: next_state, next_props: next_props})
+            if (_)
+                return !_.isEqual([next_state, next_props], [this.state, this_props])
+            else 
+                return JSON.stringify([next_state, next_props]) != JSON.stringify([this.state, this_props])
         }
         
         component.is_waiting = function () {

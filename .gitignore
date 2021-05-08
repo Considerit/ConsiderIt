@@ -54,3 +54,4 @@ lib/tasks/customizations
 lib/tasks/extract_customizations.rake
 
 package-lock.json
+*_scrap.*

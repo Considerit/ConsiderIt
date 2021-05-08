@@ -148,5 +148,36 @@ task :subscription_changes_from_default => :environment do
 end
 
 
+task :fix_duplicate_opinions => :environment do
+  total_dups = 0  
+  Proposal.where(published: true).each do |p|
+    dups = ActiveRecord::Base.connection.execute("SELECT user_id, COUNT(user_id) AS cnt FROM opinions WHERE proposal_id = #{p.id} GROUP BY user_id having cnt > 1")
+    if dups.count > 0 
 
+      dups.each do |result|
+        user_id = result[0]
+
+        pp 'dups found', p.name, p.subdomain.name, User.find(user_id).name
+
+        opinions = p.opinions.where(:user_id => user_id).order(:updated_at)
+        total_dups += opinions.count - 1
+
+        to_delete = []
+        opinions.each_with_index do |o, idx|
+          if idx != opinions.count - 1
+            pp "DELETING #{idx + 1} / #{opinions.count}"
+            to_delete.push o
+          end
+        end
+
+        to_delete.each do |o|
+          o.delete
+        end
+
+      end
+    end
+
+  end
+
+end
 

@@ -226,6 +226,8 @@ Page = ReactiveComponent
               EditProposal key: "new_proposal", fresh: true      
             when '/accessibility_support'
               AccessibilitySupport()
+            when '/histogram_test'
+              HistogramTester()
 
             else
               if @page?.result == 'Not found'

@@ -49,7 +49,7 @@ window.ForumSettingsDash = ReactiveComponent
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 
-    lang = @local.language or subdomain.lang
+    lang = @local.language or subdomain.lang or 'en'
     not_english = lang? && lang != 'en'
 
     return SPAN null if !subdomain.name

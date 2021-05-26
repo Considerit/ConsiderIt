@@ -985,10 +985,6 @@ window.PhotoBanner = (opts) ->
           background-color: white;
           color: black;        
         }
-        .dark .PhotoBanner #tabs > ul > li.selected > h4, .dark .PhotoBanner #tabs > ul > li.hovered > h4 {
-          background-color: black;
-          color: white;
-        }
         .PhotoBanner #tabs > ul > li.selected, .PhotoBanner #tabs > ul > li.hovered {
           background-color: #{tab_background_color};
         }

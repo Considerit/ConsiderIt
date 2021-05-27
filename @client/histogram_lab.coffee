@@ -2,19 +2,21 @@ window.HistogramTester = ReactiveComponent
   displayName: 'HistogramTester'
 
   render: -> 
+    num_histos = 100
+    start_idx = 0
 
     common_layout_params = 
       engine: 'matterjs'
-      initial_layout: 'tiled'      
+      initial_layout: 'pixelated'      
       show_histogram_physics: false  
+      show_histogram_initial_layout: false
       verbose: true
       
-      fill_ratio: 1
+      fill_ratio: 2
       motionSleepThreshold: .005
       motionSleepThresholdIncrement: .000025
       enable_boosting: false
-      wake_every_x_ticks: 9999
-      global_swap_every_x_ticks: 150
+      global_swap_every_x_ticks: 9999
       reduce_sleep_threshold_if_little_movement: true 
       sleep_reduction_exponent: .5
       cleanup_layout_every_x_ticks: 50
@@ -27,8 +29,14 @@ window.HistogramTester = ReactiveComponent
       cleanup_when_percent_sleeping: .4
       end_sleep_percent: .75
       filter_to_inflections_and_flats: true
-      cleanup_overlap: 1.8
+      cleanup_overlap: 2 # 1.8
       cascade_instability: true
+      friction: 0
+      frictionStatic: 0
+      frictionAir: 0
+      restitution: 0
+      density: .1
+      bucket_size_multiple: 4
 
     layout_params = []
 
@@ -36,33 +44,51 @@ window.HistogramTester = ReactiveComponent
 
     # layout_params.push {engine: 'tiled'}
 
-    for engine in ['matterjs'] #, 'packed-tile', 'tiled-with-wiggle', 'tiled-with-wiggle-2']
+    for engine in ['dd'] #, 'packed-tile', 'tiled-with-wiggle', 'tiled-with-wiggle-2']
+      for initial_layout in ['pixelated']
 
-      # don't believe in the aesthetics > .01
-      for motionSleepThreshold in [.005] #[0, .01]
-        # don't believe in the aesthetics > .00005, might be able to get away with .00005, but it doesn't help much
-        for motionSleepThresholdIncrement in [.000025] #, .00005] #[0, .00001, .0001]
-          # This matters timing wise, but I'm not sure if .5 is good enough aesthetically
-          for sleep_reduction_exponent in [.5] #[.5, .7] #[.5, .7, .9]
-            # Significant timing impact, is there any benefit to < 125? 250 even looks pretty good
-            for wake_every_x_ticks in [9999]
+        # don't believe in the aesthetics > .01
+        for motionSleepThreshold in [.005] #[0, .01]
+          # don't believe in the aesthetics > .00005, might be able to get away with .00005, but it doesn't help much
+          for motionSleepThresholdIncrement in [.000025] #, .00005] #[0, .00001, .0001]
+            # This matters timing wise, but I'm not sure if .5 is good enough aesthetically
+            for sleep_reduction_exponent in [.5] #[.5, .7] #[.5, .7, .9]
+              # Significant timing impact, is there any benefit to < 125? 250 even looks pretty good
               for x_force_mult in [.008]
                 # this matters a lot for time. big improvement in aestetics if disabled, with big performance hit
                 for reduce_sleep_threshold_if_little_movement in [true]
                   # This matters a lot, but not sure if > 10 is ok aesthetically. Actually, with cleanup layout, not sure it is even necessary.
-                  for global_swap_every_x_ticks in [150] # [10, 100, 250] #[2, 10, 100]
+                  for global_swap_every_x_ticks in [99999] # [10, 100, 250] #[2, 10, 100]
                     for end_sleep_percent in [.75]
 
-                      # layout_params.push {end_sleep_percent, engine, show_histogram_physics: false, x_force_mult, filter_to_inflections_and_flats: null, cascade_instability: null, cleanup_stability: null, cleanup_overlap: null, cleanup_layout_every_x_ticks: null,motionSleepThreshold,motionSleepThresholdIncrement,sleep_reduction_exponent,wake_every_x_ticks,reduce_sleep_threshold_if_little_movement,global_swap_every_x_ticks}
+                      # layout_params.push {end_sleep_percent, engine, show_histogram_physics: false, x_force_mult, filter_to_inflections_and_flats: null, cascade_instability: null, cleanup_stability: null, cleanup_overlap: null, cleanup_layout_every_x_ticks: null,motionSleepThreshold,motionSleepThresholdIncrement,sleep_reduction_exponent,reduce_sleep_threshold_if_little_movement,global_swap_every_x_ticks}
                       for filter_to_inflections_and_flats in [true]
                         for cleanup_layout_every_x_ticks in [50]
                           for cleanup_when_percent_sleeping in [.4]
-                            for cleanup_overlap in [1.8]
-                              for cleanup_stability in [.7, .9]
-                                for final_cleanup_stability in [.5]
-                                  for change_cleanup_stability in [-0.2]
+                            for cleanup_overlap in [1.95] # [1.98] #1.8
+                              for cleanup_stability in [.6]
+                                for final_cleanup_stability in [.6]
+                                  for change_cleanup_stability in [-0.1]
                                     for cascade_instability in [true]
-                                      layout_params.push {end_sleep_percent, engine, cleanup_when_percent_sleeping, change_cleanup_stability, final_cleanup_stability, x_force_mult, filter_to_inflections_and_flats, cascade_instability, cleanup_stability, cleanup_overlap, cleanup_layout_every_x_ticks,motionSleepThreshold,motionSleepThresholdIncrement,sleep_reduction_exponent,wake_every_x_ticks,reduce_sleep_threshold_if_little_movement,global_swap_every_x_ticks}
+                                      for adj_for_target in [false]
+                                        for bucket_size_multiple in [4]
+                                          for sleepThreshold in [60]
+                                            for jostle in [.4]
+                                              layout_params.push {jostle, sleepThreshold, initial_layout, bucket_size_multiple, adj_for_target, end_sleep_percent, engine, cleanup_when_percent_sleeping, change_cleanup_stability, final_cleanup_stability, x_force_mult, filter_to_inflections_and_flats, cascade_instability, cleanup_stability, cleanup_overlap, cleanup_layout_every_x_ticks,motionSleepThreshold,motionSleepThresholdIncrement,sleep_reduction_exponent,reduce_sleep_threshold_if_little_movement,global_swap_every_x_ticks}
+
+    # for density in [.1]
+    #   for gravity_scale in [.000012] #, .00002, .00003]
+    #     for initial_layout in ['tiled']
+    #       for adj_for_target in [true]
+    #         copy = JSON.parse JSON.stringify layout_params[0]
+
+    #         copy.density = density
+    #         copy.gravity_scale = gravity_scale
+    #         copy.initial_layout = initial_layout
+    #         copy.adj_for_target = adj_for_target
+    #         layout_params.push copy
+
+    # layout_params.shift()
 
 
     param_sets = {}
@@ -95,8 +121,6 @@ window.HistogramTester = ReactiveComponent
 
     # proposals.sort (b,a) -> opinionsForProposal(b).length - opinionsForProposal(a).length
 
-    num_histos = 40
-    start_idx = 0
     proposals_to_show = proposals.slice(start_idx,start_idx + num_histos)
 
 
@@ -163,7 +187,7 @@ _.defaults histo_layout_explorer_options,
   show_prime_openings: true      
   circle_around_openings: false 
   highlight_instability: true 
-  show_neighbor_touchpoints: false
+  show_neighbor_touchpoints: true
   connect_to_xtarget: false 
   line_from_to: false
 save histo_layout_explorer_options
@@ -250,7 +274,7 @@ LayoutExplorer = ReactiveComponent
           if has_cleanup 
             DIV null,
               DIV null,
-                "Move: #{@local.move + 1} / #{cleanup[@local.ticks].length}"
+                "Move: #{@local.move + 1} / #{cleanup[@local.ticks].length} [#{tick_data.iteration}]"
 
                 for move in [0..cleanup[@local.ticks].length - 1]
                   do (move) =>
@@ -309,7 +333,7 @@ LayoutExplorer = ReactiveComponent
     cleanup = running_state.cleanup
     opts = fetch('histo_layout_explorer_options')
 
-    return if !opts.show_explorer || !running_state.occupancy_map
+    return if !opts.show_explorer || !running_state.cleanup
 
     @local.ticks ?= 0
     @local.move ?= 0 
@@ -363,13 +387,13 @@ LayoutExplorer = ReactiveComponent
           base = 4 * (row * width + col)
 
           a = 255
-          r = g = b =150
+          r = g = b = 150
 
           d[base + 0]   = r
           d[base + 1]   = g
           d[base + 2]   = b
           d[base + 3]   = a
-        else if opts.show_openings && !opening_this_col && row <= height - radius && col >= radius && col <= width - radius && openings[ row * width + col ] == 0 
+        else if opts.show_openings && !opening_this_col && openings[ row * width + col ] == 0  # && row <= height - radius && col >= radius && col <= width - radius 
           for i in [0..1]
             base = 4 * ((row - i) * width + col)
             d[base + 0]   = 128
@@ -377,10 +401,11 @@ LayoutExplorer = ReactiveComponent
             d[base + 2]   = 128
             d[base + 3]   = 255
 
-          opening_this_col = row 
+          #opening_this_col = row 
 
     if has_cleanup && opts.show_prime_openings
       prime_positions = tick_data.prime_positions
+
       for col in [0..width]
         if prime_positions[col]
           for w in [0] #[-1..2]
@@ -390,15 +415,24 @@ LayoutExplorer = ReactiveComponent
               d[base + 1]   = 128
               d[base + 2]   = 255
               d[base + 3]   = 255
+        else 
+          for w in [0] #[-1..2]
+            for h in [0..4]
+              base = 4 * ((prime_positions[col] - h) * width + col + w)
+              d[base + 0]   = 255
+              d[base + 1]   = 128
+              d[base + 2]   = 128
+              d[base + 3]   = 255
+
 
     ctx.putImageData( img, 0, 0)
 
     # lines from center of each body toward each neighbor's center
     if opts.show_neighbor_touchpoints
-      for a in running_state.bodies 
+      for a in (if has_cleanup then tick_data.bodies else running_state.bodies)
         if a.neighbors?.length > 0 
           for [b, angle] in a.neighbors
-            x = Math.round a.position.x; y = Math.round a.position.y
+            x = Math.round a.x; y = Math.round a.y
             r = a.radius
             x2 = x + r * Math.cos(angle)
             y2 = y + r * Math.sin(angle)
@@ -421,7 +455,7 @@ LayoutExplorer = ReactiveComponent
         ctx.beginPath()
         ctx.strokeStyle = 'red'   
         ctx.lineWidth = 1
-        ctx.arc(unstable_body.position.x, unstable_body.position.y, unstable_body.radius, 0, 2 * Math.PI)
+        ctx.arc(unstable_body.x, unstable_body.y, unstable_body.radius, 0, 2 * Math.PI)
         ctx.closePath()
         ctx.stroke()
 
@@ -455,13 +489,17 @@ LayoutExplorer = ReactiveComponent
 
     # Line connecting the new location of the body to its x-target
     if opts.connect_to_xtarget
-      ctx.beginPath()
-      ctx.moveTo(x2, y2)
-      ctx.lineWidth = 3
-      ctx.lineTo(tick_data.body.x_target, height)
-      ctx.strokeStyle = '#FF6666'
-      ctx.closePath()
-      ctx.stroke()
+
+      for body in tick_data.bodies 
+        x2 = body.x 
+        y2 = body.y 
+        ctx.beginPath()
+        ctx.moveTo(x2, y2)
+        ctx.lineWidth = 1
+        ctx.lineTo(body.x_target, height)
+        ctx.strokeStyle = '#FF6666'
+        ctx.closePath()
+        ctx.stroke()
 
     # visualize circle around some of the prime positions
     if opts.circle_around_openings

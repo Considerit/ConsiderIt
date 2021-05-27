@@ -178,9 +178,12 @@ window.Histogram = ReactiveComponent
     proposal = fetch(@props.proposal)
     histocache_key = @histocache_key()
     if @last_key != histocache_key
-      avatar_radius = calculateAvatarRadius @props.width, @props.height, @props.opinions, 
+      @weights ?= {}
+      for o in @props.opinions when !@weights[o.user]?
+        @weights[o.user] = 1 # Math.floor(Math.random() * 50 + 1)
+
+      avatar_radius = calculateAvatarRadius @props.width, @props.height, @props.opinions, @weights,
                         fill_ratio: @props.layout_params?.fill_ratio or 1
-                        round: @props.layout_params?.round
 
       if @local.avatar_size != avatar_radius * 2
         @local.avatar_size = avatar_radius * 2
@@ -554,6 +557,8 @@ window.Histogram = ReactiveComponent
     key = JSON.stringify _.map(opinions, (o) => 
             Math.round(fetch(o.key).stance * 100) / 100 )
     key += " (#{@props.width}, #{@props.height})"
+    if @weights
+      key += JSON.stringify(@weights)
     md5 key
 
   try_histocache : -> 
@@ -625,9 +630,10 @@ window.Histogram = ReactiveComponent
             running_state: @props.key 
             k: histocache_key
             r: @local.avatar_size / 2
-            w: @props.width
-            h: @props.height
-            o: opinions
+            w: @props.width or 400
+            h: @props.height or 70
+            o: opinions.slice()
+            weights: @weights
             layout_params: layout_params
             abort: => 
               abort = !@isMounted() || @current_request != histocache_key
@@ -682,6 +688,8 @@ HistoAvatars = ReactiveComponent
 
   render: ->
     filter_out = fetch 'filtered'    
+    users = fetch '/users'
+    return SPAN null if !users.users
 
     # Highlighted users are the users whose avatars are colorized and fully 
     # opaque in the histogram. It is based on the current opinion selection and 
@@ -718,11 +726,10 @@ HistoAvatars = ReactiveComponent
     backgrounded_page_avatar_style = _.extend {}, unselected_avatar_style, 
       opacity: if customization('show_histogram_on_crafting', @props.proposal) then .1 else 0.0
 
-    # Draw the avatars in the histogram. Placement will be determined later
-    # by the physics sim
-
-
+    # Draw the avatars in the histogram. Placement is determined by the physics sim
     users = {}
+    colors = getNiceRandomHues 14
+
     DIV 
       id: @props.histocache_key
       key: @props.histocache_key
@@ -766,16 +773,20 @@ HistoAvatars = ReactiveComponent
           avatar_style = regular_avatar_style
 
         pos = @props.histocache?.positions?[(user.key or user).substring(6)]
+
         if pos 
           custom_size = 2 * pos[2] != base_avatar_diameter
+
+          avatar_style = _.extend {}, avatar_style
+
           avatar_style.left = pos?[0]
           avatar_style.top = pos?[1]
-          if pos[2] && 2 * pos[2] != base_avatar_diameter
+
+
+          if pos[2] && custom_size
             avatar_style.width = avatar_style.height = 2 * pos[2]
-
-
-
-        continue if !pos
+        else 
+          continue
 
 
         stance = opinion.stance 
@@ -801,11 +812,14 @@ HistoAvatars = ReactiveComponent
           className: className
           alt: "<user>: #{alt} #{pos[3]?.toFixed(3)}"
           anonymous: true
-          style: _.extend {}, avatar_style, 
-            # border: "2px solid #{if pos[2] then '#999' else 'orange'}"
+          style: _.extend {}, avatar_style,
+            # backgroundColor: '#999'
+
+            border: "2px solid #{if pos[2] then '#999' else 'orange'}"
             # border: "2px solid #{if pos[3] < .7 && pos[3] > .5 then 'red' else if pos[3] <= .5 then 'red' else '#999'}"
-            border: "1px solid #{hsv2rgb(1 - pos[3] * .8, .5, .5)}" # #{if pos[3] <= .5 then 'red' else '#999'}"
+            # border: "1px solid #{hsv2rgb(1 - (pos[3] or .5) * .8, .5, .5)}" # #{if pos[3] <= .5 then 'red' else '#999'}"
             # backgroundColor: "#{hsv2rgb(pos[3] or .3, 1 - pos[3] or .5, .5)}" # #{if pos[3] <= .5 then 'red' else '#999'}"
+            # backgroundColor: "#{hsv2rgb(colors[Math.round(pos[2])], .5, .5)}" # #{if pos[3] <= .5 then 'red' else '#999'}"
 
 
 

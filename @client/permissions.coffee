@@ -46,6 +46,7 @@ Permission =
 # permission check.
 permit = (action) ->
   current_user = fetch '/current_user'
+  subdomain = fetch '/subdomain'
 
   phase = customization('contribution_phase')
 
@@ -55,7 +56,7 @@ permit = (action) ->
   switch action
 
     when 'read proposal', 'access forum'
-      subdomain = fetch '/subdomain'
+      
       if !current_user.is_admin && !matchSomeRole(subdomain.roles, ['visitor']) 
         if !current_user.logged_in
           return Permission.NOT_LOGGED_IN 
@@ -66,7 +67,6 @@ permit = (action) ->
         return Permission.UNVERIFIED_EMAIL
 
     when 'create proposal'
-      subdomain = fetch '/subdomain'
 
       if arguments[1]
         list_key = arguments[1]
@@ -93,7 +93,6 @@ permit = (action) ->
 
     when 'publish opinion'
       proposal = fetch arguments[1]
-      subdomain = fetch '/subdomain'
 
       return Permission.DISABLED if phase == 'ideas-only'
 

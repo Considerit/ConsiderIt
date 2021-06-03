@@ -114,7 +114,7 @@ window.avatar = (user, props) ->
       fetch user
       return SPAN null
 
-  attrs.style ||= {}
+  attrs.style ?= {}
   style = attrs.style
 
   # Setting avatar image
@@ -135,6 +135,9 @@ window.avatar = (user, props) ->
     # isn't set to transparent because a transparent icon in many cases
     # will reveal content behind it that is undesirable to show.  
     style.backgroundColor = 'white'
+  else if props.set_bg_color 
+    user.bg_color ?= hsv2rgb(Math.random() / 5 + .6, Math.random() / 8 + .025, Math.random() / 4 + .4)
+    style.backgroundColor = user.bg_color
 
   id = if anonymous 
          "avatar-hidden" 
@@ -170,7 +173,6 @@ window.avatar = (user, props) ->
   else 
     # IE9 gets confused if there is an image without a src
     # Chrome puts a weird gray border around IMGs without a src
-    attrs.style.backgroundColor ?= 'transparent'
     SPAN attrs
   
 
@@ -196,6 +198,7 @@ styles += """
   border-radius: 50%;
   background-size: cover;
   background-color: #{default_avatar_in_histogram_color}; 
+  transition: width 1s, height 1s, top 1s, left 1s, background-color 1s, opacity 100ms;
   user-select: none; 
   -moz-user-select: none; 
   -webkit-user-select: none;

@@ -87,8 +87,10 @@ window.Proposal = ReactiveComponent
       save doc
 
     your_opinion = fetch @proposal.your_opinion
-    current_user = fetch('/current_user')
+    current_user = fetch '/current_user'
     subdomain = fetch '/subdomain'
+
+    return DIV(null) if !proposal.roles
 
 
     point_cols = ['your_con_points', 'your_pro_points', 'community_cons', 'community_pros']

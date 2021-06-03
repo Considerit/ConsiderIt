@@ -439,12 +439,15 @@ class User < ApplicationRecord
       #             didn't include any points (and they're logging in)
       if new_op.stance == 0 && (new_op.point_inclusions || []).length == 0
         new_op.destroy
+        dirty_key("/proposal/#{new_op.proposal_id}")
         next 
       end
 
       # puts("Looking for opinion to absorb into #{new_op.id}...")
       old_op = Opinion.where(:user_id => older_user,
                              :proposal_id => new_op.proposal.id).first
+
+
 
       if old_op
         # puts("Found opinion to absorb into #{new_op.id}: #{old_op.id}")

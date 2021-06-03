@@ -292,7 +292,7 @@ window.CollapsedProposal = ReactiveComponent
                 style: 
                   padding: '0 16px'
 
-                TRANSLATE "engage.proposal_read_only.short", 'read only'
+                TRANSLATE "engage.proposal_read_only.short", 'read-only'
 
           if can_edit
             DIV

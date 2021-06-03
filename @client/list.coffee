@@ -92,6 +92,8 @@ window.List = ReactiveComponent
           list_key: list_key
 
       else if !is_collapsed && !@props.fresh
+        permitted = permit('create proposal', list_key)
+
         DIV null, 
           UL null, 
             for proposal,idx in proposals
@@ -104,7 +106,7 @@ window.List = ReactiveComponent
                 category_color: if @props.combines_these_lists then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], .9, .8)
 
             if  (list_state.show_all_proposals || proposals.length <= list_state.show_first_num_items) && \
-               ((@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || permit('create proposal', list_key) > 0) && \
+               ((@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || (permitted > 0 || permitted == Permission.NOT_LOGGED_IN) ) && \
                 !edit_list.editing
 
               LI 
@@ -1138,6 +1140,7 @@ window.list_actions = (props) ->
   if add_new 
     permitted = permit('create proposal', list_key)
     add_new &&= permitted > 0 || permitted == Permission.NOT_LOGGED_IN
+
 
   DIV   
     className: 'list_actions'

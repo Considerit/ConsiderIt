@@ -46,14 +46,17 @@ Permission =
 # permission check.
 permit = (action) ->
   current_user = fetch '/current_user'
+  subdomain = fetch '/subdomain'
 
-  if customization('frozen') && action not in ['read proposal', 'access forum']
+  phase = customization('contribution_phase')
+
+  if phase == 'frozen' && action not in ['read proposal', 'access forum']
     return Permission.DISABLED
 
   switch action
 
     when 'read proposal', 'access forum'
-      subdomain = fetch '/subdomain'
+      
       if !current_user.is_admin && !matchSomeRole(subdomain.roles, ['visitor']) 
         if !current_user.logged_in
           return Permission.NOT_LOGGED_IN 
@@ -64,7 +67,6 @@ permit = (action) ->
         return Permission.UNVERIFIED_EMAIL
 
     when 'create proposal'
-      subdomain = fetch '/subdomain'
 
       if arguments[1]
         list_key = arguments[1]
@@ -74,6 +76,9 @@ permit = (action) ->
         can_add_to_list = customization('list_permit_new_items', list_key)
       else 
         can_add_to_list = true
+
+      if phase == 'opinions-only'
+        can_add_to_list = false
 
       if !current_user.is_admin && !matchEmail(subdomain.roles.proposer) && !can_add_to_list
         return Permission.INSUFFICIENT_PRIVILEGES 
@@ -88,7 +93,8 @@ permit = (action) ->
 
     when 'publish opinion'
       proposal = fetch arguments[1]
-      subdomain = fetch '/subdomain'
+
+      return Permission.DISABLED if phase == 'ideas-only'
 
       return Permission.DISABLED if !proposal.active
       return Permission.NOT_LOGGED_IN if !current_user.logged_in
@@ -108,6 +114,9 @@ permit = (action) ->
 
     when 'create point'
       proposal = fetch arguments[1]
+
+      return Permission.DISABLED if phase == 'ideas-only'
+
       return Permission.DISABLED if !proposal.active
       if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'participant'])
         if !current_user.logged_in
@@ -135,6 +144,8 @@ permit = (action) ->
 
     when 'create comment'
       proposal = fetch arguments[1]
+
+      return Permission.DISABLED if phase == 'ideas-only'      
       return Permission.DISABLED if !proposal.active
       return Permission.NOT_LOGGED_IN if !current_user.logged_in 
 

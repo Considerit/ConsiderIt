@@ -153,7 +153,7 @@ window.reset_selection_state = (state) ->
 ENABLE_SERVER_HISTOCACHE = false 
 
 
-window.show_histogram_physics = false
+window.show_histogram_layout = false
 
 window.Histogram = ReactiveComponent
   displayName : 'Histogram'
@@ -163,8 +163,8 @@ window.Histogram = ReactiveComponent
   render: -> 
 
     loc = fetch 'location'
-    if loc.query_params.show_histogram_physics
-      window.show_histogram_physics = true
+    if loc.query_params.show_histogram_layout
+      window.show_histogram_layout = true
 
     hist = @get_hist_state()
 
@@ -180,7 +180,7 @@ window.Histogram = ReactiveComponent
     if @last_key != histocache_key
       @weights ?= {}
       for o in @props.opinions when !@weights[o.user]?
-        @weights[o.user] = 1 # Math.floor(Math.random() * 50 + 1)
+        @weights[o.user] = 1 #Math.floor(Math.random() * 50 + 1)
 
       avatar_radius = calculateAvatarRadius @props.width, @props.height, @props.opinions, @weights,
                         fill_ratio: @props.layout_params?.fill_ratio or 1
@@ -597,32 +597,15 @@ window.Histogram = ReactiveComponent
       opinions = for opinion, i in filtered_opinions
         {stance: opinion.stance, user: opinion.user}
       
-      # use a less cpu intensive layout for mobile browsers
-      layout_params = _.defaults {}, (@props.layout_params or {}), 
-        engine: if browser.is_mobile then 'tile' else 'matterjs'
-        initial_layout: if browser.is_mobile then 'packed-tile' else 'tiled-with-wiggle'
-        fill_ratio: 1
-        show_histogram_physics: show_histogram_physics
-        motionSleepThreshold: .005
-        motionSleepThresholdIncrement: .000025
-        enable_boosting: false
-        wake_every_x_ticks: 9999
-        global_swap_every_x_ticks: 150
-        reduce_sleep_threshold_if_little_movement: true 
-        sleep_reduction_exponent: .5
-        cleanup_layout_every_x_ticks: 50
-        x_force_mult: .008
-        gravity_scale: .000012
-        restack_top: false 
-        final_cleanup_stability: .5
-        change_cleanup_stability: -0.2
-        cleanup_stability: .9
-        cleanup_when_percent_sleeping: .4
-        end_sleep_percent: .75
-        filter_to_inflections_and_flats: true
-        cleanup_overlap: 1.8
-        cascade_instability: true
 
+      layout_params = _.defaults {}, (@props.layout_params or {}), 
+        fill_ratio: 1
+        show_histogram_layout: show_histogram_layout
+        cleanup_overlap: 1.95
+        jostle: .4
+        rando_order: .1
+        topple_towers: .05
+        density_modified_jostle: 1
 
       setTimeout =>
         if @isMounted()
@@ -728,7 +711,6 @@ HistoAvatars = ReactiveComponent
 
     # Draw the avatars in the histogram. Placement is determined by the physics sim
     users = {}
-    colors = getNiceRandomHues 14
 
     DIV 
       id: @props.histocache_key
@@ -742,11 +724,11 @@ HistoAvatars = ReactiveComponent
                     @props.enable_range_selection then 'pointer'
 
       for opinion, idx in @props.opinions
-        user = opinion.user
+        user = fetch opinion.user
 
-        users[opinion.user.key or opinion.user] = opinion
+        users[user.key] = opinion
 
-        backgrounded = filter_out.users?[user]
+        backgrounded = filter_out.users?[user.key]
         if backgrounded && !filter_out.enable_comparison
           continue
 
@@ -758,12 +740,12 @@ HistoAvatars = ReactiveComponent
 
         className = 'histo_avatar'
         if backgrounded || @props.backgrounded
-          avatar_style = if fetch('/current_user').user == user 
+          avatar_style = if fetch('/current_user').user == user.key
                            _.extend({}, regular_avatar_style, {opacity: .25}) 
                          else 
                            backgrounded_page_avatar_style
         else if highlighted_users
-          if _.contains(highlighted_users, opinion.user)   
+          if _.contains(highlighted_users, user.key)   
             avatar_style = selected_avatar_style
             className += " selected"
           else
@@ -772,7 +754,7 @@ HistoAvatars = ReactiveComponent
         else
           avatar_style = regular_avatar_style
 
-        pos = @props.histocache?.positions?[(user.key or user).substring(6)]
+        pos = @props.histocache?.positions?[user.key.substring(6)]
 
         if pos 
           custom_size = 2 * pos[2] != base_avatar_diameter
@@ -797,6 +779,7 @@ HistoAvatars = ReactiveComponent
         else 
           alt = translator "engage.histogram.user_is_neutral", "is neutral"
 
+        # alt += " #{o.stance}"
         if opinion.explanation
           paragraphs = safe_string(opinion.explanation).split(/(?:\r?\n)/g)
           alt += "<div style='margin-top: 12px; max-width:400px'>Their explanation:<div style='padding:4px 12px'>"
@@ -805,21 +788,19 @@ HistoAvatars = ReactiveComponent
             alt += "<p style='font-style:italic'>#{paragraph}</p>"
           alt += '</div></div>'
 
+
         avatar user,
           ref: "avatar-#{idx}"
           focusable: @props.navigating_inside && !@props.backgrounded && !backgrounded
           hide_tooltip: @props.backgrounded || backgrounded
           className: className
-          alt: "<user>: #{alt} #{pos[3]?.toFixed(3)}"
-          anonymous: true
-          style: _.extend {}, avatar_style,
-            # backgroundColor: '#999'
-
-            border: "2px solid #{if pos[2] then '#999' else 'orange'}"
-            # border: "2px solid #{if pos[3] < .7 && pos[3] > .5 then 'red' else if pos[3] <= .5 then 'red' else '#999'}"
-            # border: "1px solid #{hsv2rgb(1 - (pos[3] or .5) * .8, .5, .5)}" # #{if pos[3] <= .5 then 'red' else '#999'}"
-            # backgroundColor: "#{hsv2rgb(pos[3] or .3, 1 - pos[3] or .5, .5)}" # #{if pos[3] <= .5 then 'red' else '#999'}"
-            # backgroundColor: "#{hsv2rgb(colors[Math.round(pos[2])], .5, .5)}" # #{if pos[3] <= .5 then 'red' else '#999'}"
+          alt: "<user>: #{alt}"
+          # anonymous: true
+          style: avatar_style
+          set_bg_color: true
+          # style: _.extend {}, avatar_style,
+          #   backgroundColor: user.bg_color
+          #   # border: "1px solid #{hsv2rgb(1 - (pos[3] or .5) * .8, .5, .5)}" # #{if pos[3] <= .5 then 'red' else '#999'}"
 
 
 

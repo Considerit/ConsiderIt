@@ -2,94 +2,28 @@ window.HistogramTester = ReactiveComponent
   displayName: 'HistogramTester'
 
   render: -> 
-    num_histos = 100
+    # num_histos = 1
+    # start_idx = 42
+
+    num_histos = 1
     start_idx = 0
 
     common_layout_params = 
-      engine: 'matterjs'
-      initial_layout: 'pixelated'      
-      show_histogram_physics: false  
-      show_histogram_initial_layout: false
+      show_histogram_layout: false  
       verbose: true
-      
-      fill_ratio: 2
-      motionSleepThreshold: .005
-      motionSleepThresholdIncrement: .000025
-      enable_boosting: false
-      global_swap_every_x_ticks: 9999
-      reduce_sleep_threshold_if_little_movement: true 
-      sleep_reduction_exponent: .5
-      cleanup_layout_every_x_ticks: 50
-      x_force_mult: .008
-      gravity_scale: .000012
-      restack_top: false 
-      final_cleanup_stability: .5
-      change_cleanup_stability: -0.2
-      cleanup_stability: .9
-      cleanup_when_percent_sleeping: .4
-      end_sleep_percent: .75
-      filter_to_inflections_and_flats: true
-      cleanup_overlap: 2 # 1.8
-      cascade_instability: true
-      friction: 0
-      frictionStatic: 0
-      frictionAir: 0
-      restitution: 0
-      density: .1
-      bucket_size_multiple: 4
+      fill_ratio: 1
+      cleanup_overlap: 1.95
+      jostle: .4
 
     layout_params = []
 
-    # layout_params.push {engine: 'd3'}
-
-    # layout_params.push {engine: 'tiled'}
-
-    for engine in ['dd'] #, 'packed-tile', 'tiled-with-wiggle', 'tiled-with-wiggle-2']
-      for initial_layout in ['pixelated']
-
-        # don't believe in the aesthetics > .01
-        for motionSleepThreshold in [.005] #[0, .01]
-          # don't believe in the aesthetics > .00005, might be able to get away with .00005, but it doesn't help much
-          for motionSleepThresholdIncrement in [.000025] #, .00005] #[0, .00001, .0001]
-            # This matters timing wise, but I'm not sure if .5 is good enough aesthetically
-            for sleep_reduction_exponent in [.5] #[.5, .7] #[.5, .7, .9]
-              # Significant timing impact, is there any benefit to < 125? 250 even looks pretty good
-              for x_force_mult in [.008]
-                # this matters a lot for time. big improvement in aestetics if disabled, with big performance hit
-                for reduce_sleep_threshold_if_little_movement in [true]
-                  # This matters a lot, but not sure if > 10 is ok aesthetically. Actually, with cleanup layout, not sure it is even necessary.
-                  for global_swap_every_x_ticks in [99999] # [10, 100, 250] #[2, 10, 100]
-                    for end_sleep_percent in [.75]
-
-                      # layout_params.push {end_sleep_percent, engine, show_histogram_physics: false, x_force_mult, filter_to_inflections_and_flats: null, cascade_instability: null, cleanup_stability: null, cleanup_overlap: null, cleanup_layout_every_x_ticks: null,motionSleepThreshold,motionSleepThresholdIncrement,sleep_reduction_exponent,reduce_sleep_threshold_if_little_movement,global_swap_every_x_ticks}
-                      for filter_to_inflections_and_flats in [true]
-                        for cleanup_layout_every_x_ticks in [50]
-                          for cleanup_when_percent_sleeping in [.4]
-                            for cleanup_overlap in [1.95] # [1.98] #1.8
-                              for cleanup_stability in [.6]
-                                for final_cleanup_stability in [.6]
-                                  for change_cleanup_stability in [-0.1]
-                                    for cascade_instability in [true]
-                                      for adj_for_target in [false]
-                                        for bucket_size_multiple in [4]
-                                          for sleepThreshold in [60]
-                                            for jostle in [.4]
-                                              layout_params.push {jostle, sleepThreshold, initial_layout, bucket_size_multiple, adj_for_target, end_sleep_percent, engine, cleanup_when_percent_sleeping, change_cleanup_stability, final_cleanup_stability, x_force_mult, filter_to_inflections_and_flats, cascade_instability, cleanup_stability, cleanup_overlap, cleanup_layout_every_x_ticks,motionSleepThreshold,motionSleepThresholdIncrement,sleep_reduction_exponent,reduce_sleep_threshold_if_little_movement,global_swap_every_x_ticks}
-
-    # for density in [.1]
-    #   for gravity_scale in [.000012] #, .00002, .00003]
-    #     for initial_layout in ['tiled']
-    #       for adj_for_target in [true]
-    #         copy = JSON.parse JSON.stringify layout_params[0]
-
-    #         copy.density = density
-    #         copy.gravity_scale = gravity_scale
-    #         copy.initial_layout = initial_layout
-    #         copy.adj_for_target = adj_for_target
-    #         layout_params.push copy
-
-    # layout_params.shift()
-
+    for fill_ratio in [1]
+      for cleanup_overlap in [1.95] # [1.98] #1.8
+        for jostle in [.4]
+          for rando_order in [.1]
+            for topple_towers in [.05]
+              for density_modified_jostle in [1]
+                layout_params.push {density_modified_jostle, topple_towers, rando_order, jostle, cleanup_overlap, fill_ratio}
 
     param_sets = {}
     for param in layout_params 
@@ -102,7 +36,17 @@ window.HistogramTester = ReactiveComponent
       {
         width: PROPOSAL_HISTO_WIDTH()
         height: 170   
-      } 
+      }
+      # {
+      #   width: PROPOSAL_HISTO_WIDTH()
+      #   height: 400   
+      # } 
+
+      # {
+      #   width: 1.25 * PROPOSAL_HISTO_WIDTH()
+      #   height: 350   
+      # }
+
       # {
       #   width: PROPOSAL_HISTO_WIDTH() / 2
       #   height: 170 / 2
@@ -132,7 +76,7 @@ window.HistogramTester = ReactiveComponent
       GlobalHistTiming
         param_sets: param_sets
 
-      for proposal in proposals_to_show
+      for proposal, idx in proposals_to_show
         histo = 
           proposal: proposal
           opinions: opinionsForProposal(proposal)
@@ -154,7 +98,12 @@ window.HistogramTester = ReactiveComponent
               fontFamily: 'Fira Sans Condensed' 
               fontWeight: 700
               fontSize: 28
-            proposal.name
+              # width: 825
+              textAlign: 'center'
+            proposal.name 
+
+            if num_histos > 1 && start_idx == 0
+              " (#{idx})"
 
             DIV null, 
               for hist, i in histos 
@@ -266,9 +215,13 @@ LayoutExplorer = ReactiveComponent
       LayoutExplorerOptions()
 
       if opts.show_explorer
-        DIV null, 
+        DIV 
+          style: 
+            marginTop: 20
           CANVAS 
             ref: 'my_canvas'
+            style: 
+              borderBottom: '2px solid black'
 
 
           if has_cleanup 
@@ -393,7 +346,7 @@ LayoutExplorer = ReactiveComponent
           d[base + 1]   = g
           d[base + 2]   = b
           d[base + 3]   = a
-        else if opts.show_openings && !opening_this_col && openings[ row * width + col ] == 0  # && row <= height - radius && col >= radius && col <= width - radius 
+        else if opts.show_openings && !opening_this_col && openings[ row * width + col ] == 0  && row <= height - radius && col >= radius && col <= width - radius 
           for i in [0..1]
             base = 4 * ((row - i) * width + col)
             d[base + 0]   = 128
@@ -415,14 +368,14 @@ LayoutExplorer = ReactiveComponent
               d[base + 1]   = 128
               d[base + 2]   = 255
               d[base + 3]   = 255
-        else 
-          for w in [0] #[-1..2]
-            for h in [0..4]
-              base = 4 * ((prime_positions[col] - h) * width + col + w)
-              d[base + 0]   = 255
-              d[base + 1]   = 128
-              d[base + 2]   = 128
-              d[base + 3]   = 255
+        # else 
+        #   for w in [0] #[-1..2]
+        #     for h in [0..4]
+        #       base = 4 * ((prime_positions[col] - h) * width + col + w)
+        #       d[base + 0]   = 255
+        #       d[base + 1]   = 128
+        #       d[base + 2]   = 128
+        #       d[base + 3]   = 255
 
 
     ctx.putImageData( img, 0, 0)
@@ -559,7 +512,7 @@ HistoDetails = ReactiveComponent
         style: 
           marginBottom: 10
 
-        for k,v of hist.layout_params when k not in ['verbose', 'show_histogram_physics', 'param_hash'] && params_with_multiple_vals[k]
+        for k,v of hist.layout_params when k not in ['verbose', 'show_histogram_layout', 'param_hash'] && params_with_multiple_vals[k]
           i += 1
           DIV null,
             "#{k} = "
@@ -578,7 +531,7 @@ HistoDetails = ReactiveComponent
         DIV null, 
           DIV 
             style: 
-              width: Math.min 200, running_state.layout_time / (if hist.layout_params.show_histogram_physics then 250 else 100)
+              width: Math.min 200, running_state.layout_time / (if hist.layout_params.show_histogram_layout then 250 else 100)
               height: 15
               backgroundColor: 'red'
 

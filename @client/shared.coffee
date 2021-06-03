@@ -301,6 +301,7 @@ logs_to_write = []
 log_writer = null 
 
 window.writeToLog = (entry) ->
+  return 
   entry.where = fetch('location').url
   logs_to_write.push entry 
   if !log_writer 

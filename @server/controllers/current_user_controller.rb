@@ -353,7 +353,7 @@ class CurrentUserController < ApplicationController
       
 
     else
-      raise 'Had trouble manipulating this user!'
+      raise 'Had trouble manipulating this user!', new_params
     end
 
     # Update their email address.  First, check if they gave us a new address

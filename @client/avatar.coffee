@@ -6,10 +6,12 @@ require './customizations'
 # globally accessible method for getting the URL of a user's avatar
 window.avatarUrl = (user, img_size) -> 
   user = fetch(user)
-  (fetch('/application').asset_host or '') + \
-        "/system/avatars/" + \
-        "#{user.key.split('/')[2]}/#{img_size}/#{user.avatar_file_name}"  
-
+  if !!user.avatar_file_name
+    (fetch('/application').asset_host or '') + \
+          "/system/avatars/" + \
+          "#{user.key.split('/')[2]}/#{img_size}/#{user.avatar_file_name}"  
+  else 
+    null
 
 
 user_name = (user, anon) -> 
@@ -101,7 +103,7 @@ $('body').on 'focusout', '.avatar', hide_tooltip
 
 
 window.avatar = (user, props) ->
-  props = _.extend {}, props
+  attrs = _.clone props
 
   if !user.key 
     if user == arest.cache['/current_user']?.user 
@@ -112,68 +114,53 @@ window.avatar = (user, props) ->
       fetch user
       return SPAN null
 
-  anonymous = props.anonymous? && props.anonymous 
+  attrs.style ?= {}
+  style = attrs.style
+
+  # Setting avatar image
+  #   Don't show one if it should be anonymous or the user doesn't have one
+  #   Default to small size if the width is small  
+  anonymous = attrs.anonymous? && attrs.anonymous 
+  src = null
+  if !anonymous && user.avatar_file_name 
+    if style?.width >= 50 && !browser.is_ie9
+      img_size = 'large'
+    else 
+      img_size = attrs.img_size or 'small'
+
+    src = avatarUrl user, img_size
+
+    # Override the gray default avatar color if we're showing an image. 
+    # In most cases the white will allow for a transparent look. It 
+    # isn't set to transparent because a transparent icon in many cases
+    # will reveal content behind it that is undesirable to show.  
+    style.backgroundColor = 'white'
+  else if props.set_bg_color 
+    user.bg_color ?= hsv2rgb(Math.random() / 5 + .6, Math.random() / 8 + .025, Math.random() / 4 + .4)
+    style.backgroundColor = user.bg_color
 
   id = if anonymous 
          "avatar-hidden" 
        else 
          "avatar-#{user.key.split('/')[2]}"
 
-  style = _.extend {}, props.style
-  img_size = props.img_size or 'small'
-
-  show_avatar = !anonymous && !!user.avatar_file_name
-  # Automatically upgrade the avatar size to 'large' if the width of the image is 
-  # greater than the size of the b64 encoded image
-  if img_size == 'small' && style?.width >= 50 && !browser.is_ie9
-    img_size = 'large' 
-  # ...but we only use a larger image if this user actually has one and isn't anonymous
-  use_large_image = img_size != 'small' && show_avatar
-
-  if use_large_image
-    props.src = avatarUrl user, img_size
-  else if show_avatar
-    props.src = avatarUrl user, img_size
-  else
-    current_user = fetch('/current_user')
-    if current_user.user == user.key && user.avatar_file_name && img_size == 'small'
-       props.src = avatarUrl user, 'small'
-    else
-      # prevents a weird webkit outlining issue
-      # http://stackoverflow.com/questions/4743127
-      style.content = "''" 
-
-  # Override the gray default avatar color if we're showing an image. 
-  # In most cases the white will allow for a transparent look. It 
-  # isn't set to transparent because a transparent icon in many cases
-  # will reveal content behind it that is undesirable to show.  
-  style.backgroundColor = 'white' if show_avatar
-
-  add_initials = false && !user.avatar_file_name && style.width > 8
-  
-  if add_initials
-    style.textAlign = 'center'
-
-
-  # IE9 gets confused if there is an image without a src
-  # Chrome puts a weird gray border around IMGs without a src
-  tag = if !props.src? then SPAN else IMG
-
   name = user_name user, anonymous
-  alt = props.alt 
-  delete props.alt if props.alt? 
-  tooltip = alt?.replace('<user>', name) or name
 
-  attrs = _.extend {}, props,
+  if attrs.alt 
+    alt = attrs.alt.replace('<user>', name) 
+    delete attrs.alt
+  else 
+    alt = name 
+
+  attrs = _.extend attrs,
     key: user.key
     className: "avatar #{props.className or ''}"
     'data-user': user.key
-    'data-tooltip': if !props.hide_tooltip then tooltip 
+    'data-tooltip': if !props.hide_tooltip then alt 
     'data-anon': anonymous  
-    style: style
     tabIndex: if props.focusable then 0 else -1
 
-  if tag == IMG
+  if src
     # attrs.alt = if props.hide_tooltip then '' else tooltip 
     # the above fails too much on broken images, and 
     # screenreaders would probably be overwhelmed with saying all these stances.
@@ -181,33 +168,13 @@ window.avatar = (user, props) ->
     # the broken text ugliness by using img { text-indent: -10000px } to 
     # hide the alt text / broken image
     attrs.alt = ""
+    attrs.src = src
+    IMG attrs
+  else 
+    # IE9 gets confused if there is an image without a src
+    # Chrome puts a weird gray border around IMGs without a src
+    SPAN attrs
   
-  tag attrs,
-    if add_initials
-      fontsize = style.width / 2
-      ff = 'monaco,Consolas,"Lucida Console",monospace'
-      if name == 'Anonymous'
-        name = '?'
-
-      if name.length == 2
-        name = "#{name[0][0]}#{name[1][0]}"
-      else 
-        name = "#{name[0][0]}"
-
-      DIV
-        style: 
-          color: 'white'
-          pointerEvents: 'none'
-          fontSize: fontsize
-          position: 'relative'
-          fontFamily: ff
-          top: .3 * fontsize #style.height / 2 - heightWhenRendered(name, {fontSize: fontsize, fontFamily: ff}) / 2
-          overflow: 'hidden'
-        name
-
-        DIV 
-          className: 'hidden'
-          tooltip
 
 
 
@@ -231,6 +198,7 @@ styles += """
   border-radius: 50%;
   background-size: cover;
   background-color: #{default_avatar_in_histogram_color}; 
+  transition: width 1s, height 1s, top 1s, left 1s, background-color 1s, opacity 100ms;
   user-select: none; 
   -moz-user-select: none; 
   -webkit-user-select: none;

@@ -1,4 +1,6 @@
 require './browser_hacks'
+require './histogram_layout'
+require './histogram_lab'
 # md5 = require './vendor/md5' 
 
 ##
@@ -7,7 +9,7 @@ require './browser_hacks'
 # Controls the display of the users arranged on a histogram. 
 # 
 # The user avatars are arranged imprecisely on the histogram
-# based on the user's opinion, using a physics simulation. 
+# based on the user's opinion, using a layout_params simulation. 
 #
 # The pros and cons can be filtered to specific opinion regions
 # (individual and collective). 
@@ -101,15 +103,15 @@ require './browser_hacks'
 #
 # Local state: 
 #   simulation_opinion_hash
-#      Hash of all opinion stances. Used to determine if the physics
+#      Hash of all opinion stances. Used to determine if the layout_params
 #      simulation needs to be rerun on a rerender.
 #   mouse_opinion_value
 #      Stores the mapped opinion value of the current mouse position
 #      within the histogram. 
 #   avatar_size
-#      The base size of the avatars, as determined by the physics 
+#      The base size of the avatars, as determined by the layout_params 
 #      simulation. This piece of state would be local, but it needs
-#      to be settable from the physics simulation.
+#      to be settable from the layout_params simulation.
 
 # Accessibility notes: 
 #   - histogram itself should be tabbable. Should summarize results. 
@@ -150,12 +152,20 @@ window.reset_selection_state = (state) ->
 
 ENABLE_SERVER_HISTOCACHE = false 
 
+
+window.show_histogram_layout = false
+
 window.Histogram = ReactiveComponent
   displayName : 'Histogram'
 
   get_hist_state: -> fetch (@props.selection_state or @props.key)
 
   render: -> 
+
+    loc = fetch 'location'
+    if loc.query_params.show_histogram_layout
+      window.show_histogram_layout = true
+
     hist = @get_hist_state()
 
     dirtied = false 
@@ -163,16 +173,24 @@ window.Histogram = ReactiveComponent
       reset_selection_state(hist)
       dirtied = true 
 
-    avatar_radius = calculateAvatarRadius(@props.width, @props.height, @props.opinions)
-
-    if @local.avatar_size != avatar_radius * 2
-      @local.avatar_size = avatar_radius * 2
-      save @local
-      dirtied = true 
 
     # extraction from @try_histocache
     proposal = fetch(@props.proposal)
     histocache_key = @histocache_key()
+    if @last_key != histocache_key
+      @weights ?= {}
+      for o in @props.opinions when !@weights[o.user]?
+        @weights[o.user] = 1 #Math.floor(Math.random() * 50 + 1)
+
+      avatar_radius = calculateAvatarRadius @props.width, @props.height, @props.opinions, @weights,
+                        fill_ratio: @props.layout_params?.fill_ratio or 1
+
+      if @local.avatar_size != avatar_radius * 2
+        @local.avatar_size = avatar_radius * 2
+        save @local
+        dirtied = true 
+
+      @last_key = histocache_key
     if ENABLE_SERVER_HISTOCACHE && proposal.histocache?[histocache_key]
       if histocache_key != @local.histocache?.hash
         @local.histocache =
@@ -330,7 +348,7 @@ window.Histogram = ReactiveComponent
 
       DIV 
         style: 
-          paddingTop: histo_height - @props.height 
+          paddingTop: histo_height - @props.height
 
         HistoAvatars
           dirtied: dirtied
@@ -539,6 +557,8 @@ window.Histogram = ReactiveComponent
     key = JSON.stringify _.map(opinions, (o) => 
             Math.round(fetch(o.key).stance * 100) / 100 )
     key += " (#{@props.width}, #{@props.height})"
+    if @weights
+      key += JSON.stringify(@weights)
     md5 key
 
   try_histocache : -> 
@@ -557,7 +577,7 @@ window.Histogram = ReactiveComponent
       
     false
 
-  physicsSimulation: ->
+  PhysicsSimulation: ->
     filter_out = fetch 'filtered'
     proposal = fetch @props.proposal
 
@@ -577,14 +597,27 @@ window.Histogram = ReactiveComponent
       opinions = for opinion, i in filtered_opinions
         {stance: opinion.stance, user: opinion.user}
       
-      setTimeout => 
+
+      layout_params = _.defaults {}, (@props.layout_params or {}), 
+        fill_ratio: 1
+        show_histogram_layout: show_histogram_layout
+        cleanup_overlap: 1.95
+        jostle: .4
+        rando_order: .1
+        topple_towers: .05
+        density_modified_jostle: 1
+
+      setTimeout =>
         if @isMounted()
-          layoutAvatars 
+          layoutAvatars
+            running_state: @props.key 
             k: histocache_key
-            w: @props.width
-            h: @props.height
-            o: opinions
             r: @local.avatar_size / 2
+            w: @props.width or 400
+            h: @props.height or 70
+            o: opinions.slice()
+            weights: @weights
+            layout_params: layout_params
             abort: => 
               abort = !@isMounted() || @current_request != histocache_key
               abort
@@ -605,25 +638,41 @@ window.Histogram = ReactiveComponent
                   save
                     key: "/histogram/proposal/#{fetch(@props.proposal).id}/#{histocache_key}"
                     positions: positions
-      , 1
+      , 0
 
     @current_request = histocache_key
 
-
-
-
   componentDidMount: ->   
-    @physicsSimulation()
+    @PhysicsSimulation()
 
   componentDidUpdate: -> 
-    @physicsSimulation()
+    @PhysicsSimulation()
 
+
+window.styles += """
+  .histo_avatar.avatar {
+    position: absolute;
+    cursor: pointer;
+  }
+  img.histo_avatar.avatar {
+    z-index: 1;
+  }
+  .histo_avatar.avatar.selected {
+    z-index: 9;
+    background-color: #{focus_color()};
+  }
+  .histo_avatar.avatar.not_selected {
+    opacity: .2;
+  }
+"""
 
 HistoAvatars = ReactiveComponent 
   displayName: 'HistoAvatars'
 
   render: ->
     filter_out = fetch 'filtered'    
+    users = fetch '/users'
+    return SPAN null if !users.users
 
     # Highlighted users are the users whose avatars are colorized and fully 
     # opaque in the histogram. It is based on the current opinion selection and 
@@ -640,33 +689,31 @@ HistoAvatars = ReactiveComponent
       else 
         highlighted_users = (fetch(o).user for o in selected_users)
 
+    base_avatar_diameter = @props.avatar_size
 
     # There are a few avatar styles that might be applied depending on state:
     # 1) Regular, for when no user is selected
     regular_avatar_style =
-      width: @props.avatar_size
-      height: @props.avatar_size
-      position: 'absolute'
-      cursor: if @props.enable_individual_selection then 'pointer' else 'auto'
+      width: base_avatar_diameter
+      height: base_avatar_diameter
+      cursor: if !@props.enable_individual_selection then 'auto'
 
     # 2) The style of a selected avatar
-    selected_avatar_style = _.extend {}, regular_avatar_style, 
-      zIndex: 9
-      backgroundColor: focus_color()
-    css.crossbrowserify selected_avatar_style
+    selected_avatar_style = regular_avatar_style
+
     # 3) The style of an unselected avatar when some other avatar(s) is selected
-    unselected_avatar_style = _.extend {}, regular_avatar_style,  
-      opacity: .2
-    # if !browser.is_mobile
-    #   unselected_avatar_style = css.grayscale _.extend unselected_avatar_style
+    unselected_avatar_style = regular_avatar_style
+
     # 4) The style of the avatar when the histogram is backgrounded 
     #    (e.g. on the crafting page)
     backgrounded_page_avatar_style = _.extend {}, unselected_avatar_style, 
       opacity: if customization('show_histogram_on_crafting', @props.proposal) then .1 else 0.0
 
-    # Draw the avatars in the histogram. Placement will be determined later
-    # by the physics sim
+    # Draw the avatars in the histogram. Placement is determined by the physics sim
+    users = {}
+
     DIV 
+      id: @props.histocache_key
       key: @props.histocache_key
       ref: 'histo'
       style: 
@@ -677,9 +724,11 @@ HistoAvatars = ReactiveComponent
                     @props.enable_range_selection then 'pointer'
 
       for opinion, idx in @props.opinions
-        user = opinion.user
+        user = fetch opinion.user
 
-        backgrounded = filter_out.users?[user]
+        users[user.key] = opinion
+
+        backgrounded = filter_out.users?[user.key]
         if backgrounded && !filter_out.enable_comparison
           continue
 
@@ -689,28 +738,38 @@ HistoAvatars = ReactiveComponent
         # creation = new Date(o.created_at).getTime()
         # opacity = .05 + .95 * (creation - sub_creation) / (Date.now() - sub_creation)
 
+        className = 'histo_avatar'
         if backgrounded || @props.backgrounded
-          avatar_style = if fetch('/current_user').user == user 
+          avatar_style = if fetch('/current_user').user == user.key
                            _.extend({}, regular_avatar_style, {opacity: .25}) 
                          else 
                            backgrounded_page_avatar_style
         else if highlighted_users
-          if _.contains(highlighted_users, opinion.user)   
+          if _.contains(highlighted_users, user.key)   
             avatar_style = selected_avatar_style
+            className += " selected"
           else
             avatar_style = unselected_avatar_style
+            className += " not_selected"
         else
           avatar_style = regular_avatar_style
 
-        pos = @props.histocache?.positions?[(user.key or user).substring(6)]
-        # Avatar 
-        #   key: user
-        #   user: user
-        #   hide_tooltip: @props.backgrounded
-        #   style: _.extend {}, avatar_style, 
-        #     left: pos?[0]
-        #     top: pos?[1]
-        #     # opacity: opacity
+        pos = @props.histocache?.positions?[user.key.substring(6)]
+
+        if pos 
+          custom_size = 2 * pos[2] != base_avatar_diameter
+
+          avatar_style = _.extend {}, avatar_style
+
+          avatar_style.left = pos?[0]
+          avatar_style.top = pos?[1]
+
+
+          if pos[2] && custom_size
+            avatar_style.width = avatar_style.height = 2 * pos[2]
+        else 
+          continue
+
 
         stance = opinion.stance 
         if stance > .01
@@ -720,6 +779,7 @@ HistoAvatars = ReactiveComponent
         else 
           alt = translator "engage.histogram.user_is_neutral", "is neutral"
 
+        # alt += " #{o.stance}"
         if opinion.explanation
           paragraphs = safe_string(opinion.explanation).split(/(?:\r?\n)/g)
           alt += "<div style='margin-top: 12px; max-width:400px'>Their explanation:<div style='padding:4px 12px'>"
@@ -728,325 +788,21 @@ HistoAvatars = ReactiveComponent
             alt += "<p style='font-style:italic'>#{paragraph}</p>"
           alt += '</div></div>'
 
+
         avatar user,
           ref: "avatar-#{idx}"
           focusable: @props.navigating_inside && !@props.backgrounded && !backgrounded
           hide_tooltip: @props.backgrounded || backgrounded
+          className: className
           alt: "<user>: #{alt}"
-          style: _.extend {}, avatar_style, 
-            left: pos?[0]
-            top: pos?[1]
-            # opacity: opacity
+          # anonymous: true
+          style: avatar_style
+          set_bg_color: true
+          # style: _.extend {}, avatar_style,
+          #   backgroundColor: user.bg_color
+          #   # border: "1px solid #{hsv2rgb(1 - (pos[3] or .5) * .8, .5, .5)}" # #{if pos[3] <= .5 then 'red' else '#999'}"
 
 
 
 
-######
-# Uses a d3-based physics simulation to calculate a reasonable layout
-# of avatars within a given area.
-
-layoutAvatars = (opts) -> 
-  histo_queue.push opts 
-  if !histo_running
-    histo_run_next_job()
-
-histo_queue = []
-histo_running = null 
-histo_run_next_job = (completed) -> 
-  if histo_running == completed 
-    histo_running = null
-
-  if !histo_running && histo_queue.length > 0
-    histo_running = histo_queue.shift()
-
-    positionAvatars histo_running
-
-
-positionAvatars = (opts) -> 
-
-  # Check if system energy would be reduced if two nodes' positions would 
-  # be swapped. We square the difference in order to favor large differences 
-  # for one vs small differences for the pair.
-  energy_reduced_by_swap = (p1, p2) ->
-    # how much does each point covet the other's location, over their own?
-    p1_jealousy = (p1.x - p1.x_target) * (p1.x - p1.x_target) - \
-                  (p2.x - p1.x_target) * (p2.x - p1.x_target)
-    p2_jealousy = (p2.x - p2.x_target) * (p2.x - p2.x_target) - \
-                  (p1.x - p2.x_target) * (p1.x - p2.x_target) 
-    p1_jealousy + p2_jealousy
-
-  # Swaps the positions of two avatars
-  swap_position = (p1, p2) ->
-    swap_x = p1.x; swap_y = p1.y
-    p1.x = p2.x; p1.y = p2.y
-    p2.x = swap_x; p2.y = swap_y 
-
-  # One iteration of the simulation
-  tick = (alpha) ->
-    stable = true
-
-    ####
-    # Repel colliding nodes
-    # A quadtree helps efficiently detect collisions
-    q = d3.geom.quadtree(nodes)
-
-    for n in nodes 
-      q.visit collide(n, alpha)
-
-    for o, i in nodes
-      o.px = o.x
-      o.py = o.y
-
-      # Push node toward its desired x-position
-      o.x += alpha * (x_force_mult * width  * .001) * (o.x_target - o.x)
-
-      # Push node downwards
-      o.y += alpha * y_force_mult
-
-      # Ensure node is still within the bounding box
-      if o.x < o.radius
-        o.x = o.radius
-      else if o.x > width - o.radius
-        o.x = width - o.radius
-
-      if o.y < o.radius
-        o.y = o.radius
-      else if o.y > height - o.radius
-        o.y = height - o.radius
-
-      dx = Math.abs(o.py - o.y)
-      dy = Math.abs(o.px - o.x) > .1
-
-      if stable && Math.sqrt(dx * dx + dy * dy) > 1
-        stable = false
-
-    # Complete the simulation if we've reached a steady state
-    stable
-
-  collide = (p1, alpha) ->
-
-    return (quad, x1, y1, x2, y2) ->
-      collisions += 1
-
-      p2 = quad.point
-      if quad.leaf && p2 && p2 != p1
-        dx = Math.abs (p1.x - p2.x)
-        dy = Math.abs (p1.y - p2.y)
-        dist = Math.sqrt(dx * dx + dy * dy)
-        combined_r = p1.radius + p2.radius
-
-        # Transpose two points in the same neighborhood if it would reduce 
-        # energy of system
-        if energy_reduced_by_swap(p1, p2) > 0
-          swap_position(p1, p2)          
-
-        # repel both points equally in opposite directions if they overlap
-        if dist < combined_r
-          separate_by = if dist == 0 then 1 else ( combined_r - dist ) / combined_r
-          offset_x = (combined_r - dx) * separate_by
-          offset_y = (combined_r - dy) * separate_by
-
-          if p1.x < p2.x 
-            p1.x -= offset_x / 2
-            p2.x += offset_x / 2
-          else 
-            p2.x -= offset_x / 2
-            p1.x += offset_x / 2
-
-          if p1.y < p2.y           
-            p1.y -= offset_y / 2
-            p2.y += offset_y / 2
-          else 
-            p2.y -= offset_y / 2
-            p1.y += offset_y / 2
-
-
-
-      # Visit subregions if we could possibly have a collision there
-      neighborhood_radius = p1.radius
-      nx1 = p1.x - neighborhood_radius
-      nx2 = p1.x + neighborhood_radius
-      ny1 = p1.y - neighborhood_radius
-      ny2 = p1.y + neighborhood_radius
-
-      return x1 > nx2 || 
-              x2 < nx1 ||
-              y1 > ny2 ||
-              y2 < ny1
-
-  write_positions = -> 
-    positions = {}
-    for o, i in nodes
-      positions[parseInt(opinions[i].user.substring(6))] = \
-        [Math.round((o.x - o.radius) * 10) / 10, Math.round((o.y - o.radius) * 10) / 10]
-
-    opts.done?(positions)
-
-  ##############
-  # Initialize positions of each node
-  targets = {}
-  opinions = opts.o.slice()
-  width = opts.w or 400
-  height = opts.h or 70
-  r = calculateAvatarRadius width, height, opinions
-
-  nodes = opinions.map (o, i) ->
-    x_target = (o.stance + 1) / 2 * width
-
-    if targets[x_target]
-      if x_target > .98
-        x_target -= .1 * Math.random() 
-      else if x_target < .02
-        x_target += .1 * Math.random() 
-
-    targets[x_target] = 1
-
-    x = x_target
-    y = height - r
-
-    return {
-      index: i
-      radius: r
-      x: x
-      y: y
-      x_target: x_target
-    }
-
-  ###########
-  # run the simulation
-  stable = false
-  alpha = .8
-  decay = .8
-  min_alpha = 0.0000001
-  x_force_mult = 2
-  y_force_mult = 2
-
-  total_ticks = 0
-  collisions = 0 
-
-  loc = fetch 'location'
-  if loc.query_params.show_histogram_physics
-    iterate = => 
-      stable = tick alpha
-      alpha *= decay
-      total_ticks += 1
-
-      console.log "Tick: #{total_ticks} Collisions: #{collisions}"
-      collisions = 0
-
-      stable ||= alpha <= min_alpha
-
-      if !aborted
-        write_positions()
-
-      aborted = opts.abort?()
-      if stable || aborted
-        histo_run_next_job(opts)
-      else 
-        setTimeout iterate, loc.query_params.show_histogram_physics or 100
-    iterate()
-
-  else 
-    while true
-      stable = tick alpha
-      alpha *= decay
-      total_ticks += 1
-
-      stable ||= alpha <= min_alpha
-
-      aborted = opts.abort?()
-      break if stable || aborted
-
-
-    if !aborted
-      write_positions()
-
-    histo_run_next_job(opts)
-
-
-
-#####
-# Calculate node radius based on the largest density of avatars in an 
-# area (based on a moving average of # of opinions, mapped across the
-# width and height)
-
-calculateAvatarRadius = (width, height, opinions) -> 
-  filter_out = fetch 'filtered'
-  if filter_out.users && !filter_out.enable_comparison
-    opinions = (o for o in opinions when !(filter_out.users?[o.user]))
-
-  opinions.sort (a,b) -> a.stance - b.stance
-
-  # first, calculate a moving average of the number of opinions
-  # across around all possible stances
-  window_size = .3
-  avg_inc = .01
-  moving_avg = []
-  idx = 0
-  stance = -1.0
-  sum = 0
-
-  while stance <= 1.0
-
-    o = idx
-    cnt = 0
-    while o < opinions.length
-
-      if opinions[o].stance < stance - window_size
-        idx = o
-      else if opinions[o].stance > stance + window_size
-        break
-      else 
-        cnt += 1
-
-      o += 1
-
-    moving_avg.push cnt
-    stance += avg_inc
-    sum += cnt
-
-  # second, calculate the densest area of opinions, operationalized
-  # as the region with the most opinions amongst all regions of 
-  # opinion space that have contiguous above average opinions. 
-  dense_regions = []
-  avg_of_moving_avg = sum / moving_avg.length
-
-  current_region = []
-  for avg, idx in moving_avg
-    reset = idx == moving_avg.length - 1
-    if avg >= avg_of_moving_avg
-      current_region.push idx
-    else
-      reset = true
-
-    if reset && current_region.length > 0
-      dense_regions.push [current_region[0] * avg_inc - 1.0 - window_size , \
-                    idx * avg_inc - 1.0 + window_size ]      
-      current_region = []
-
-  max_region = null
-  max_opinions = 0
-  for region in dense_regions
-    cnt = 0
-    for o in opinions
-      if o.stance >= region[0] && \
-         o.stance <= region[1] 
-        cnt += 1
-    if cnt > max_opinions
-      max_opinions = cnt
-      max_region = region
-
-  # Third, calculate the avatar radius we'll use. It is based on 
-  # trying to fill ratio_filled of the densest area of the histogram
-  ratio_filled = .5
-  if max_opinions > 0 
-    effective_width = width * Math.abs(max_region[0] - max_region[1]) / 2
-    area_per_avatar = ratio_filled * effective_width * height / max_opinions
-    r = Math.sqrt(area_per_avatar) / 2
-  else 
-    r = Math.sqrt(width * height / opinions.length * ratio_filled) / 2
-
-  r = Math.min(r, width / 2, height / 2)
-
-  r
 

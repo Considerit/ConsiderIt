@@ -53,6 +53,7 @@ window.Point = ReactiveComponent
               key: includer
               className: "point_includer_avatar"
               style: style
+              set_bg_color: true
               anonymous: point.user == includer && point.hide_name
 
 
@@ -664,6 +665,7 @@ window.Comment = ReactiveComponent
         Avatar
           key: comment.user
           hide_tooltip: true
+          set_bg_color: true
           style: 
             position: 'absolute'
             width: 50

@@ -2,7 +2,7 @@ require './questionaire'
 
 window.styles += """
   .LIST-header {
-    font-size: 44px;
+    font-size: 36px;
     font-weight: 700;
     text-align: left;     
     padding: 0; 
@@ -12,7 +12,7 @@ window.styles += """
   }
 
   .LIST-header.LIST-smaller-header {
-    font-size: 36px;
+    font-size: 32px;
     font-weight: 500;
   }
 
@@ -1064,7 +1064,7 @@ EditableDescription = ReactiveComponent
 
     DIV
       style: _.defaults {}, (description_style or {}),
-        fontSize: 18
+        # fontSize: 18
         fontWeight: 400 
         color: '#222'
         marginTop: 6

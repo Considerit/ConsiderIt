@@ -405,7 +405,7 @@ SortProposalsMenu = ReactiveComponent
     SPAN
       style: 
         color: 'black'
-        fontSize: 20
+        # fontSize: 20
 
       TRANSLATE "engage.sort_by", "sort by"
 
@@ -536,9 +536,6 @@ toggle_filter = (filter) ->
   users = fetch '/users'
   filter_out = fetch 'filtered'
 
-
-
-
   return if !users.users
   
   filter_out.users = {}
@@ -631,7 +628,7 @@ OpinionFilter = ReactiveComponent
 
         DIV
           style: 
-            fontSize: 20
+            # fontSize: 20
             position: 'relative'
 
           if true || current_filter?.label in ['everyone', 'just you']

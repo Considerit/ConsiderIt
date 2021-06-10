@@ -213,14 +213,16 @@ Placer = (opts, bodies) ->
             max_density = area 
           densities.push area
           stance += avg_inc
-        for area,idx in densities
-          densities[idx] /= max_density
+        if max_density > 0 
+          for area,idx in densities
+            densities[idx] /= max_density
 
     if !body.opinion_density_at_target
       density = 0
       for window_size, densities of opinion_density
         density += densities[ Math.round(body.x_target / (width - body.radius) * (densities.length - 1)) ]
-      body.opinion_density_at_target = density /= window_sizes.length
+      density /= window_sizes.length
+      body.opinion_density_at_target = density
 
     return body.opinion_density_at_target
 

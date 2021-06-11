@@ -3,7 +3,8 @@ require './customizations'
 require './permissions'
 require './browser_hacks' # for access to browser object
 require './browser_location' # for loadPage
-require './filter'
+require './proposal_sort_and_search'
+require './opinion_views'
 require './browser_location'
 require './collapsed_proposal'
 require './new_proposal'

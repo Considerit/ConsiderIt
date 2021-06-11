@@ -24,6 +24,7 @@ window.OpinionSlider = ReactiveComponent
 
     hist = fetch namespaced_key('histogram', @proposal)
     hist_selection = hist.selected_opinions || hist.selected_opinion
+    show_handle = @props.permitted && !hist_selection
 
     # Update the slider value when the server gets back to us
     if slider.value != your_opinion.stance && !slider.has_moved 
@@ -47,7 +48,7 @@ window.OpinionSlider = ReactiveComponent
       className: 'opinion_slider'
       style : slider_style
 
-      if (@props.focused || TWO_COL()) && @props.permitted && !hist_selection
+      if (@props.focused || TWO_COL()) && show_handle
         @drawFeedback() 
 
       Slider
@@ -74,7 +75,7 @@ window.OpinionSlider = ReactiveComponent
         handle_style: 
           transition: "transform #{TRANSITION_SPEED}ms"
           transform: "scale(#{if !@props.focused || slider.docked then 1 else 2.5})"
-          visibility: if hist_selection || !@props.permitted then 'hidden'
+          visibility: if !show_handle then 'hidden'
         
         onMouseUpCallback: @handleMouseUp
         respond_to_click: false

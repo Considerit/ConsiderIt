@@ -73,8 +73,6 @@ window.sorted_proposals = (proposals, sort_key, require_force) ->
   sort = fetch 'sort_proposals'
   set_sort() if !sort.name? 
 
-  filters = fetch 'filtered'
-
   proposals = proposals.slice()
 
 
@@ -148,7 +146,7 @@ basic_proposal_scoring = (proposal, opinion_value) ->
 
   filtered_out = fetch 'filtered'
   if filtered_out.users
-    opinions = (o for o in opinions when filtered_out.enable_comparison || !(filtered_out.users?[o.user]))
+    opinions = (o for o in opinions when !(filtered_out.users?[o.user]))
 
   sum = 0
   for opinion in opinions
@@ -291,7 +289,7 @@ ProposalSort = ReactiveComponent
   render : -> 
 
     proposals = fetch '/proposals' # registering dependency so that we get re-rendered...ApplyFilters is actually dependent
-    filter_out = fetch 'filtered'
+    # filter_out = fetch 'filtered'
     # filters = fetch 'filters'
 
     subdomain = fetch '/subdomain'
@@ -532,7 +530,7 @@ window.opinion_trickle = ->
 
 
 
-toggle_filter = (filter) -> 
+update_opinion_views = (filter) -> 
   users = fetch '/users'
   filter_out = fetch 'filtered'
 
@@ -566,16 +564,16 @@ set_comparison_mode = (enabled) ->
   save filter_out 
 
 
-OpinionFilter = ReactiveComponent
-  displayName: 'OpinionFilter'
+OpinionViews = ReactiveComponent
+  displayName: 'OpinionViews'
 
   render : -> 
 
     filter_out = fetch 'filtered'
-    users = fetch '/users' # fetched here so its ready for toggle_filter func
+    users = fetch '/users' # fetched here so its ready for update_opinion_views func
 
     return DIV null if !users.users
-    custom_filters = customization 'opinion_filters'
+    custom_filters = customization 'opinion_views'
 
     is_admin = fetch('/current_user').is_admin
     
@@ -610,7 +608,7 @@ OpinionFilter = ReactiveComponent
 
       initial_filter ||= filters[0]
 
-      toggle_filter initial_filter
+      update_opinion_views initial_filter
 
     current_filter = filter_out.current_filter
 
@@ -643,7 +641,7 @@ OpinionFilter = ReactiveComponent
 
             open_menu_on: 'activation'
 
-            selection_made_callback: toggle_filter
+            selection_made_callback: update_opinion_views
 
             render_anchor: ->
               
@@ -899,4 +897,4 @@ VerificationProcessExplanation = ReactiveComponent
 
 window.ProposalSort = ProposalSort
 window.SortProposalsMenu = SortProposalsMenu
-window.OpinionFilter = OpinionFilter
+window.OpinionViews = OpinionViews

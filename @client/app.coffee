@@ -145,9 +145,7 @@ LocationTransition = ReactiveComponent
 
     if @last_location != loc.url 
 
-      ######
-      # Temporary technique for handling resetting root state when switching 
-      # between routes. TODO: more elegant approach
+      # resetting root state when switching routes
       auth = fetch('auth')
 
       if auth.form

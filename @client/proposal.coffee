@@ -207,7 +207,7 @@ window.Proposal = ReactiveComponent
             width: BODY_WIDTH()
             margin: '0px auto 20px auto'
 
-          OpinionFilter
+          OpinionViews
             style: 
               textAlign: 'center'
             enable_comparison_wrapper_style: 

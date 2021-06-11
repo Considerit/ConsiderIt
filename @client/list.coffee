@@ -1188,7 +1188,7 @@ window.list_actions = (props) ->
 
 
 
-    OpinionFilter
+    OpinionViews
       style: 
         display: 'inline-block'
         float: 'right'

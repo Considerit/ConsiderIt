@@ -33,13 +33,8 @@ show_tooltip = (e) ->
 
     current_user = fetch('/current_user')
     name = e.target.getAttribute('data-tooltip')
-    # if name.indexOf(', ') > -1 
-    #   updated = ''
-    #   for part in name.split(', ')
-    #     updated += "<p>#{part}</p>"
-    #   name = updated
       
-    if !anonymous && (filters = customization('opinion_filters')) 
+    if !anonymous && (filters = customization('opinion_views')) 
       for filter in filters when (filter.visibility == 'open' || current_user.is_admin)
         if filter.icon && filter.pass(user)
           if typeof(filter.icon) != 'string'

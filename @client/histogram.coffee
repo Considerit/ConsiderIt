@@ -14,15 +14,6 @@ require './histogram_lab'
 # The pros and cons can be filtered to specific opinion regions
 # (individual and collective). 
 #
-# TODO: 
-#   - is it correct to store selected_opinion, selected_opinions, 
-#     highlighted_users at the histogram's key? 
-#   - reconsider how "selection" is incorporated. Selection seems 
-#     almost like a mixin. Now it is baked in, with the option to
-#     opt out if necessary, but the code wouldn't be very nice
-#     to work with to extend in a different direction other than
-#     selection. 
-#
 ##
 # Props
 # 
@@ -34,7 +25,7 @@ require './histogram_lab'
 #   enable_range_selection (default = false)
 #     Whether ranges can be selected on the histogram
 #   selection_state (default = @props.key)
-#     The statebus key at which selection state will be updated
+#     The state key at which selection state will be updated
 #   draw_base (default = false)
 #     Whether to draw a base with +/- labels. If a slider is attached,
 #     don't need the labels.
@@ -219,7 +210,7 @@ window.Histogram = ReactiveComponent
                               (!@local.touched && 
                                 @local.mouse_opinion_value && 
                                 !@local.hoving_over_avatar))
-    histo_height = @props.height + (if true || @props.enable_range_selection then REGION_SELECTION_VERTICAL_PADDING else 0)
+    histo_height = @props.height + REGION_SELECTION_VERTICAL_PADDING
     histogram_props = 
       tabIndex: if !@props.backgrounded then 0
 

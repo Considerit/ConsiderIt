@@ -33,6 +33,7 @@ require './point'
 require './legal'
 require './statement'
 require './proposal'
+require './viewport_visibility_sensor'
 
 
 
@@ -155,8 +156,9 @@ LocationTransition = ReactiveComponent
       #######
 
       if loc.url == '/'
-        reset_selection_state('filtered')
-
+        opinion_views = fetch 'opinion_views'
+        opinion_views.active_views = {}
+        save opinion_views
 
       @last_location = loc.url
     SPAN null
@@ -348,7 +350,7 @@ Root = ReactiveComponent
 
     if !fetch('auth').form && page.proposal
 
-      hist = fetch namespaced_key('histogram', page.proposal)
+      opinion_views = fetch 'opinion_views'
 
       if get_selected_point()
         window.writeToLog
@@ -359,14 +361,14 @@ Root = ReactiveComponent
         delete loc.query_params.selected
         save loc
 
-      else if hist.selected_opinions || hist.selected_opinion || hist.originating_histogram
-        reset_selection_state hist 
+      else if opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
+        clear_histogram_opinion_views opinion_views
 
     if !fetch('auth').form && loc.url == '/'
-      hist = fetch 'filtered'
-      if hist.selected_opinions || hist.selected_opinion || hist.originating_histogram
-        reset_selection_state hist
+      opinion_views = fetch 'opinion_views'
 
+      if opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
+        clear_histogram_opinion_views opinion_views
 
     wysiwyg_editor = fetch 'wysiwyg_editor'
     if wysiwyg_editor.showing

@@ -156,13 +156,14 @@ window.Proposal = ReactiveComponent
       save @local
     
 
-    hist = fetch namespaced_key('histogram', @proposal)
+    opinion_views = fetch 'opinion_views'
+    has_selection = opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
 
-    show_all_points = @local.show_all_points || mode == 'crafting' || community_points.length < 8 || hist.selected_opinion || hist.selected_opinions
+    show_all_points = @local.show_all_points || mode == 'crafting' || community_points.length < 8 || has_selection
 
     is_loading = !page.proposal || !@proposal.name?
 
-    just_you = fetch('filtered').current_filter?.label == 'just you'
+    just_you = opinion_views.active_views['just_you']
 
     draw_handle = can_opine != Permission.INSUFFICIENT_PRIVILEGES && 
                     (can_opine != Permission.DISABLED || your_opinion.published ) && 
@@ -777,7 +778,7 @@ DecisionBoard = ReactiveComponent
   render : ->
     current_user = fetch('/current_user')
     subdomain = fetch('/subdomain')
-    hist = fetch(namespaced_key('histogram', @proposal))
+
     db = fetch('decision_board')
     
     your_opinion = fetch(@proposal.your_opinion)
@@ -787,9 +788,12 @@ DecisionBoard = ReactiveComponent
     else
       can_opine = permit 'publish opinion', @proposal
 
+    opinion_views = fetch 'opinion_views'
+    has_selection = opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
+
     enable_opining = can_opine != Permission.INSUFFICIENT_PRIVILEGES && 
                       (can_opine != Permission.DISABLED || your_opinion.published ) && 
-                      !(hist.selected_opinions || hist.selected_opinion) &&
+                      !has_selection &&
                       !(!current_user.logged_in && '*' not in @proposal.roles.participant)
 
     return DIV null if !enable_opining
@@ -1200,9 +1204,11 @@ GroupSelectionRegion = ReactiveComponent
   displayName: 'GroupSelectionRegion'
 
   render : -> 
-    hist = fetch namespaced_key('histogram', @proposal)
 
-    has_histogram_focus = hist.selected_opinions || hist.selected_opinion
+    opinion_views = fetch 'opinion_views'
+    single_opinion_selected = opinion_views.active_views.single_opinion_selected
+    region_selected = opinion_views.active_views.region_selected
+    has_histogram_focus = single_opinion_selected || region_selected
     return SPAN null if !has_histogram_focus
 
     DIV 
@@ -1217,9 +1223,9 @@ GroupSelectionRegion = ReactiveComponent
         top: 18
 
       # draw a bubble mouth
-      if hist.selected_opinions
+      if region_selected
         w = 40; h = 30
-        left = translateStanceToPixelX(hist.selected_opinion_value, BODY_WIDTH()) + 10
+        left = translateStanceToPixelX(region_selected.opinion_value, BODY_WIDTH()) + 10
 
         DIV 
           style: cssTriangle 'top', \
@@ -1238,17 +1244,17 @@ GroupSelectionRegion = ReactiveComponent
       # draw a name + avatar display for the selected opinion
       else 
         place_avatar_opinion_value = \
-             if hist.selected_opinion_value > 0 then .66 else -.8
+             if single_opinion_selected.opinion_value > 0 then .66 else -.8
         left = translateStanceToPixelX(place_avatar_opinion_value, BODY_WIDTH() + 160)
 
         avatar_size = 80
-        user = fetch(fetch(hist.selected_opinion).user)
+        user = fetch(fetch(single_opinion_selected.opinion).user)
         name = user.name or 'Anonymous'
         title = "#{name}'#{if name[name.length - 1] != 's' then 's' else ''} Opinion"
 
         name_width = widthWhenRendered(title, {fontSize: '30px', fontWeight: '600'})
 
-        if hist.selected_opinion_value > 0
+        if single_opinion_selected.opinion_value > 0
           name_style = 
             left: -28 - avatar_size * .5 - name_width 
             borderTopLeftRadius: 16
@@ -1257,7 +1263,7 @@ GroupSelectionRegion = ReactiveComponent
 
         else
           name_style = 
-            left: avatar_size/4
+            left: avatar_size / 4
             borderTopRightRadius: 16
             paddingLeft: avatar_size * .75
             paddingRight: 18
@@ -1305,11 +1311,9 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
   opinions = fetch(proposal).opinions
 
 
-  # filter out filter users...
-  filtered_out = fetch 'filtered'
-  if filtered_out.users && !show_all_points
+  if !show_all_points
     filtered = true
-    opinions = (o for o in opinions when !(filtered_out.users?[o.user]))
+    opinions = get_opinions_for_proposal opinions, proposal
 
   points = (pnt for pnt in points when pnt.is_pro == (valence == 'pros') )
 
@@ -1325,12 +1329,13 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
 
 
   # Filter down to the points included in the selection opinions, if set. 
-  hist = fetch(namespaced_key('histogram', proposal))
-  if hist.selected_opinion 
-    opinions = [hist.selected_opinion] 
+  opinion_views = fetch('opinion_views')
+  if opinion_views.active_views.single_opinion_selected
+    opinions = [opinion_views.active_views.single_opinion_selected.opinion] 
     filtered = true
-  else if hist.selected_opinions
-    opinions = hist.selected_opinions
+  else if opinion_views.active_views.region_selected
+    {weights, salience, groups} = compose_opinion_views opinions, proposal
+    opinions = (o for o in opinions when salience[o.user.key or o.user] == 1)
     filtered = true
 
   # order points by resonance to users in view.    
@@ -1541,8 +1546,8 @@ PointsList = ReactiveComponent
     your_points = @data()
     can_add_new_point = permit 'create point', @proposal
 
-    hist = fetch namespaced_key('histogram', @proposal)
-    hist_selection = hist.selected_opinions || hist.selected_opinion
+    opinion_views = fetch 'opinion_views'
+    hist_selection = opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
 
 
     if can_add_new_point != Permission.INSUFFICIENT_PRIVILEGES && !hist_selection

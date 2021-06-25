@@ -22,8 +22,8 @@ window.OpinionSlider = ReactiveComponent
     slider = fetch @props.key
     your_opinion = fetch @props.your_opinion
 
-    hist = fetch namespaced_key('histogram', @proposal)
-    hist_selection = hist.selected_opinions || hist.selected_opinion
+    opinion_views = fetch 'opinion_views'
+    hist_selection = opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
     show_handle = @props.permitted && !hist_selection
 
     # Update the slider value when the server gets back to us

@@ -32,17 +32,19 @@ window.CollapsedProposal = ReactiveComponent
 
     return if !watching && fetch('homepage_filter').watched
 
+    subdomain = fetch '/subdomain'
+
     your_opinion = fetch proposal.your_opinion
     if your_opinion?.published
-      can_opine = permit 'update opinion', proposal, your_opinion
+      can_opine = permit 'update opinion', proposal, your_opinion, subdomain
     else
-      can_opine = permit 'publish opinion', proposal
+      can_opine = permit 'publish opinion', proposal, subdomain
 
     draw_slider = can_opine > 0 || your_opinion?.published
 
-    icons = customization('show_proposer_icon', proposal) && !@props.hide_icons
-    slider_regions = customization('slider_regions', proposal)
-    show_proposal_scores = !@props.hide_scores && customization('show_proposal_scores', proposal)
+    icons = customization('show_proposer_icon', proposal, subdomain) && !@props.hide_icons
+    slider_regions = customization('slider_regions', proposal, subdomain)
+    show_proposal_scores = !@props.hide_scores && customization('show_proposal_scores', proposal, subdomain)
 
     opinions = opinionsForProposal(proposal)
 
@@ -62,16 +64,19 @@ window.CollapsedProposal = ReactiveComponent
     # creation = new Date(proposal.created_at).getTime()
     # opacity = .05 + .95 * (creation - sub_creation) / (Date.now() - sub_creation)
 
-    can_edit = permit('update proposal', proposal) > 0
+    can_edit = permit('update proposal', proposal, subdomain) > 0
 
-    just_you = fetch('filtered').current_filter?.label == 'just you'
-    everyone = fetch('filtered').current_filter?.label == 'everyone'
+    opinion_views = fetch 'opinion_views'
+    just_you = opinion_views.active_views['just_you']
+    everyone = !!opinion_views.active_views['everyone'] || !!opinion_views.active_views['weighed_by_activity'] || !!opinion_views.active_views['weighed_by_recency']
+
+    opinion_publish_permission = permit('publish opinion', proposal, subdomain)
 
     slider_interpretation = (value) => 
       if value > .03
-        "#{(value * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.support", proposal)}"
+        "#{(value * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.support", proposal, subdomain)}"
       else if value < -.03 
-        "#{-1 * (value * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.oppose", proposal)}"
+        "#{-1 * (value * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.oppose", proposal, subdomain)}"
       else 
         translator "engage.slider_feedback.neutral", "Neutral"
 
@@ -86,6 +91,7 @@ window.CollapsedProposal = ReactiveComponent
         margin: "0 0 #{if can_edit then '0' else '15px'} 0"
         padding: 0
         listStyle: 'none'
+
 
       onMouseEnter: => 
         if draw_slider
@@ -187,7 +193,7 @@ window.CollapsedProposal = ReactiveComponent
 
             proposal.name
 
-          if customization('proposal_show_description_on_homepage')
+          if customization('proposal_show_description_on_homepage', null, subdomain)
             DIV 
               style: 
                 fontSize: 14
@@ -202,10 +208,10 @@ window.CollapsedProposal = ReactiveComponent
               marginTop: 4
               #fontStyle: 'italic'
 
-            if customization('proposal_meta_data')
-              customization('proposal_meta_data')(proposal)
+            if customization('proposal_meta_data', null, subdomain)?
+              customization('proposal_meta_data', null, subdomain)(proposal)
 
-            else if !@props.hide_metadata && customization('show_proposal_meta_data')
+            else if !@props.hide_metadata && customization('show_proposal_meta_data', null, subdomain)
               show_author_name_in_meta_data = !icons && (editor = proposal_editor(proposal)) && editor == proposal.user
 
               SPAN 
@@ -240,7 +246,7 @@ window.CollapsedProposal = ReactiveComponent
 
 
 
-                if customization('discussion_enabled', proposal)
+                if customization('discussion_enabled', proposal, subdomain)
                     A 
                       href: proposal_url(proposal, true)
                       style: 
@@ -253,7 +259,7 @@ window.CollapsedProposal = ReactiveComponent
 
                         "{cnt, plural, one {# consideration} other {# considerations}}"
 
-                      if proposal.active && permit('create point', proposal) > 0
+                      if proposal.active && permit('create point', proposal, subdomain) > 0
                         [
                           SPAN 
                             style: 
@@ -278,16 +284,16 @@ window.CollapsedProposal = ReactiveComponent
                   color: @props.category_color or 'black'
                   fontWeight: 500
 
-                get_list_title "list/#{proposal.cluster}", true
+                get_list_title "list/#{proposal.cluster}", true, subdomain
 
-            if permit('publish opinion', proposal) == Permission.DISABLED
+            if opinion_publish_permission == Permission.DISABLED
               SPAN 
                 style: 
                   padding: '0 16px'
 
                 TRANSLATE "engage.proposal_closed.short", 'closed'
 
-            else if permit('publish opinion', proposal) == Permission.INSUFFICIENT_PRIVILEGES
+            else if opinion_publish_permission == Permission.INSUFFICIENT_PRIVILEGES
               SPAN 
                 style: 
                   padding: '0 16px'
@@ -311,7 +317,7 @@ window.CollapsedProposal = ReactiveComponent
                   fontSize: 12
                 TRANSLATE 'engage.edit_button', 'edit'
 
-              if permit('delete proposal', proposal) > 0
+              if permit('delete proposal', proposal, subdomain) > 0
                 BUTTON
                   style:
                     marginRight: 10
@@ -351,7 +357,6 @@ window.CollapsedProposal = ReactiveComponent
           enable_range_selection: everyone && !browser.is_mobile
           draw_base: true
           draw_base_labels: !slider_regions
-          selection_state: 'filtered'
 
         Slider 
           base_height: 0
@@ -366,14 +371,14 @@ window.CollapsedProposal = ReactiveComponent
           handle_height: 18
           handle_width: 21
           handle_style: 
-            opacity: if fetch('filtered').current_filter?.label != "just you" && !browser.is_mobile && @local.hover_proposal != proposal.key && !@local.slider_has_focus then 0 else 1             
+            opacity: if just_you && !browser.is_mobile && @local.hover_proposal != proposal.key && !@local.slider_has_focus then 0 else 1             
           offset: true
           handle_props:
             use_face: false
           label: translator
                     id: "sliders.instructions"
-                    negative_pole: get_slider_label("slider_pole_labels.oppose", proposal)
-                    positive_pole: get_slider_label("slider_pole_labels.support", proposal)
+                    negative_pole: get_slider_label("slider_pole_labels.oppose", proposal, subdomain)
+                    positive_pole: get_slider_label("slider_pole_labels.support", proposal, subdomain)
                     "Express your opinion on a slider from {negative_pole} to {positive_pole}"
           onBlur: (e) => @local.slider_has_focus = false; save @local
           onFocus: (e) => @local.slider_has_focus = true; save @local 
@@ -412,12 +417,16 @@ window.CollapsedProposal = ReactiveComponent
       # little score feedback
       if show_proposal_scores
         score = 0
-        filter_out = fetch 'filtered'
-        opinions = (o for o in opinions when filter_out.enable_comparison || !filter_out.users?[o.user])
 
+        {weights, salience, groups} = compose_opinion_views(opinions, proposal)
+        opinions = get_opinions_for_proposal opinions, proposal, weights
+
+        weight = 0
         for o in opinions 
-          score += o.stance
-        avg = score / opinions.length
+          w = weights[o.user.key or o.user]
+          score += o.stance * w
+          weight += w
+        avg = score / weight
         negative = score < 0
         score *= -1 if negative
 
@@ -536,8 +545,8 @@ window.MediaCollapsedProposal = ReactiveComponent
 
     can_edit = permit('update proposal', proposal) > 0
 
-    just_you = fetch('filtered').current_filter?.label == 'just you'
-    everyone = fetch('filtered').current_filter?.label == 'everyone'
+    just_you = opinion_views.active_views['just_you']
+    everyone = opinion_views.active_views['everyone']
 
     slider_interpretation = (value) => 
       if value > .03
@@ -690,7 +699,6 @@ window.MediaCollapsedProposal = ReactiveComponent
           enable_range_selection: everyone && !browser.is_mobile
           draw_base: true
           draw_base_labels: !slider_regions
-          selection_state: 'filtered'
 
         Slider 
           base_height: 0
@@ -705,7 +713,7 @@ window.MediaCollapsedProposal = ReactiveComponent
           handle_height: 18
           handle_width: 21
           handle_style: 
-            opacity: if fetch('filtered').current_filter?.label != "just you" && !browser.is_mobile && @local.hover_proposal != proposal.key && !@local.slider_has_focus then 0 else 1             
+            opacity: if just_you && !browser.is_mobile && @local.hover_proposal != proposal.key && !@local.slider_has_focus then 0 else 1             
           offset: true
           handle_props:
             use_face: false

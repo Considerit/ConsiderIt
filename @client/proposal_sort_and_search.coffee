@@ -61,14 +61,20 @@ ApplyFilters = ReactiveComponent
     SPAN null
 
 
+proposal_sort_keys = {}
+window.stale_sort_order = (sort_key) ->
+  fetch(sort_key).stale
 
 window.invalidate_proposal_sorts = -> 
-  sort = fetch 'sort_proposals'
-  for k,v of sort.sorts 
-    v.force_resort = true 
-  save sort 
+  for sort_key, __ of proposal_sort_keys 
+    v = fetch sort_key
+    v.force_resort = true
+    save v
 
 window.sorted_proposals = (proposals, sort_key, require_force) ->
+
+  if sort_key not of proposal_sort_keys 
+    proposal_sort_keys[sort_key] = true
 
   sort = fetch 'sort_proposals'
   set_sort() if !sort.name? 
@@ -86,8 +92,8 @@ window.sorted_proposals = (proposals, sort_key, require_force) ->
     for proposal in filtered
       proposals.splice proposals.indexOf(proposal), 1
 
-  comp = sort.comp
-  proposals = proposals.sort comp
+
+  proposals = sort.order(proposals)
 
   if require_force
     # when dragging a slider on a list of proposals, we may want to 
@@ -95,72 +101,43 @@ window.sorted_proposals = (proposals, sort_key, require_force) ->
     # This is because it is too annoying to have the proposals list
     # jumping around all the time.  
 
-    sort.sorts ||= {}
-
     keys = (p.key for p in (proposals or []))
     order = md5 keys
 
-    cached_order = null
-    if sort_key of sort.sorts
-      cached_order = md5 sort.sorts[sort_key].cache
-    else 
+    sorted = fetch sort_key
+    if !sorted.cache
       cached_order = null 
-      sort.sorts[sort_key] = {cache: [], stale: true, force_resort: true}
+      _.extend sorted, 
+        cache: []
+        stale: true
+        force_resort: true
+    else 
+      cached_order = md5 sorted.cache
 
     # alright, same order
     if cached_order == order 
-      if sort.sorts[sort_key].force_resort
-        sort.sorts[sort_key].force_resort = false 
-        sort.sorts[sort_key].stale = false 
-        save sort
+      if sorted.force_resort
+        sorted.force_resort = false 
+        sorted.stale = false 
 
     # force an update to the sort order, either because its stale, bc we're initializing, or 
     # because a new proposal has been added or removed
-    else if sort.sorts[sort_key].force_resort || proposals.length != sort.sorts[sort_key].cache.length
-      sort.sorts[sort_key].force_resort = false
-      sort.sorts[sort_key].stale = false
-      sort.sorts[sort_key].cache = (p.key for p in proposals)
-      save sort
+    else if sorted.force_resort || proposals.length != sorted.cache.length
+      sorted.force_resort = false
+      sorted.stale = false
+      sorted.cache = keys
 
     # return the stale sort order
     else 
-      if !sort.sorts[sort_key].stale
-        sort.sorts[sort_key].stale = true 
-        save sort 
+      if !sorted.stale
+        sorted.stale = true 
+
       dict_proposals = {}
       for p in proposals 
         dict_proposals[p.key] = p 
-      proposals = (dict_proposals[k] for k in sort.sorts[sort_key].cache)
+      proposals = (dict_proposals[k] for k in sorted.cache)
 
   proposals
-
-
-
-basic_proposal_scoring = (proposal, opinion_value) -> 
-  if !opinion_value
-    opinion_value = (o) -> o.stance
-
-  opinions = fetch(proposal).opinions    
-  if !opinions || opinions.length == 0
-    return {sum: 0, avg: 0, std_dev: 0, opinions: []}
-
-  filtered_out = fetch 'filtered'
-  if filtered_out.users
-    opinions = (o for o in opinions when !(filtered_out.users?[o.user]))
-
-  sum = 0
-  for opinion in opinions
-    sum += opinion_value(opinion)
-
-  avg = sum / opinions.length
-
-  differences = 0
-  for o in opinions 
-    differences += (o.stance - avg) * (o.stance - avg)
-
-  std_dev = Math.sqrt(differences / opinions.length)
-  {sum, avg, std_dev, opinions}
-
 
 
 rnd_order = {}
@@ -168,86 +145,194 @@ rnd_order = {}
 sort_options = [
 
   { 
-    comp: (a, b) -> basic_proposal_scoring(b, ((o) -> o.stance)).avg - basic_proposal_scoring(a, ((o) -> o.stance)).avg
+    order: (proposals) -> 
+      cache = {}
+      opinion_views = fetch 'opinion_views'
+      val = (proposal) ->
+        if proposal.key not of cache 
+          opinions = fetch(proposal).opinions or []   
+          {weights, salience, groups} = compose_opinion_views opinions, proposal, opinion_views
+          sum = 0
+          weight = 0 
+          for opinion in opinions
+            w = weights[opinion.user] * salience[opinion.user]
+            sum += opinion.stance * w
+            weight += w
+          cache[proposal.key] = sum / weight 
+        cache[proposal.key]
+      proposals.sort (a, b) -> val(b) - val(a)
+
+
     name: 'Average Score'
     description: "Each response is scored by the average opinion score, where opinions are on [-1, 1]."
   }, { 
-    comp: (a, b) -> basic_proposal_scoring(b, ((o) -> o.stance)).sum - basic_proposal_scoring(a, ((o) -> o.stance)).sum
+    order: (proposals) -> 
+      cache = {}
+      opinion_views = fetch 'opinion_views'
+
+      val = (proposal) ->
+        if proposal.key not of cache 
+          opinions = fetch(proposal).opinions or []   
+          {weights, salience, groups} = compose_opinion_views opinions, proposal, opinion_views
+          sum = 0
+          for opinion in opinions
+            w = weights[opinion.user] * salience[opinion.user]
+            sum += opinion.stance * w
+          cache[proposal.key] = sum
+        cache[proposal.key]
+      proposals.sort (a, b) -> val(b) - val(a)
     name: 'Total Score'
     description: "Each response is scored by the sum of opinions, where opinions are on [-1, 1]."
   }, {
     name: 'Trending'
     description: "'Total Score', except that newer opinions and responses are weighed more heavily."
 
-    comp: (a, b) ->
+    order: (proposals) ->
+      cache = {}
+
+      n = Date.now()
       ov = (o) -> 
         ot = new Date(o.updated_at).getTime()
-        n = Date.now()
         o.stance / (1 + Math.pow((n - ot) / 100000, 2))
 
-      val = (proposal) -> 
-        sum = basic_proposal_scoring(proposal, ov).sum
-        n = Date.now()
-        pt = new Date(proposal.created_at).getTime()
-        sum / (1 + (n - pt) / 10000000000)  # decrease this constant to favor newer proposals
+      opinion_views = fetch 'opinion_views'
 
-      val(b) - val(a)
+      val = (proposal) -> 
+        if proposal.key not of cache
+          opinions = proposal.opinions or fetch(proposal).opinions or []   
+          {weights, salience, groups} = compose_opinion_views opinions, proposal, opinion_views
+          sum = 0
+          for opinion in opinions
+            w = weights[opinion.user] * salience[opinion.user]
+            sum += opinion.stance * w
+
+          n = Date.now()
+          pt = new Date(proposal.created_at).getTime()
+          cache[proposal.key] = sum / (1 + (n - pt) / 10000000000)  # decrease this constant to favor newer proposals
+        cache[proposal.key]
+
+      proposals.sort (a, b) ->
+        val(b) - val(a)
   },
   { 
     name: 'Alphabetically'
-    comp: (a, b) -> a.name.localeCompare b.name
+    order: (proposals) -> 
+      proposals.sort (a, b) -> a.name.localeCompare b.name
     description: "Sort alphabetically by the response's title"
   }, {
-    comp: (a,b) -> new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    order: (proposals) -> 
+      proposals.sort (a,b) -> new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     name: 'Newest'
     description: "The responses submitted most recently are shown first."
   }, {
-    comp: (a,b) -> new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    order: (proposals) -> 
+      proposals.sort (a,b) -> new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     name: 'Earliest'
     description: "The responses submitted first are shown first."
   }, { 
     name: 'Unity'
     description: "Responses where the community is most united for or against are shown highest."
-    comp: (a,b) -> 
-      ov = (o) -> o.stance
+    order: (proposals) -> 
+      cache = {}
+      opinion_views = fetch 'opinion_views'
       val = (proposal) ->
-        stats = basic_proposal_scoring(proposal, ov)
-        if stats.opinions.length > 1
-          Math.log(stats.opinions.length + 1) / stats.std_dev / (1 - Math.abs(stats.avg) + 1)
-        else 
-          -1
-      val(b) - val(a)
+        if proposal.key not of cache 
+          opinions = fetch(proposal).opinions or []   
+          {weights, salience, groups} = compose_opinion_views opinions, proposal, opinion_views
+          sum = 0
+          weight = 0 
+          for opinion in opinions
+            w = weights[opinion.user] * salience[opinion.user]
+            sum += opinion.stance * w
+            weight += w
+
+          avg = sum / weight
+
+          differences = 0
+          weight = 0 
+          for o in opinions 
+            w = weights[opinion.user] * salience[opinion.user]    
+            differences += w * (o.stance - avg) * (o.stance - avg)
+            weight += w
+
+          std_dev = Math.sqrt(differences / weight)
+          if opinions.length > 1
+            cache[proposal.key] = Math.log(opinions.length + 1) / std_dev / (1 - Math.abs(avg) + 1)
+          else 
+            cache[proposal.key] = -1
+
+        cache[proposal.key]
+      proposals.sort (a, b) -> val(b) - val(a)
+
 
   }, { 
     name: 'Difference'
     description: "Responses where the community is most split are shown highest."
-    comp: (a,b) -> 
+    order: (proposals) -> 
+      cache = {}
+      opinion_views = fetch 'opinion_views'
 
-      ov = (o) -> o.stance
       val = (proposal) ->
-        stats = basic_proposal_scoring(proposal, ov)
-        if stats.opinions.length > 1
-          stats.std_dev * Math.log(stats.opinions.length + 1) 
-        else
-          -1
-      val(b) - val(a)
+        if proposal.key not of cache 
+          opinions = fetch(proposal).opinions or []   
+          {weights, salience, groups} = compose_opinion_views opinions, proposal, opinion_views
+          sum = 0
+          weight = 0 
+          for opinion in opinions
+            w = weights[opinion.user] * salience[opinion.user]
+            sum += opinion.stance * w
+            weight += w
+
+          avg = sum / weight
+
+          differences = 0
+          weight = 0 
+          for o in opinions 
+            w = weights[opinion.user] * salience[opinion.user]    
+            differences += w * (o.stance - avg) * (o.stance - avg)
+            weight += w
+
+          std_dev = Math.sqrt(differences / weight)
+          if opinions.length > 1
+            cache[proposal.key] = std_dev * Math.log(opinions.length + 1) 
+          else 
+            cache[proposal.key] = -1
+
+        cache[proposal.key]
+      proposals.sort (a, b) -> val(b) - val(a)
+
 
   }, {
     name: 'Most Activity'
     description: "Ranked by number of opinions and discussion."
 
-    comp: (a,b) ->
-      ov = (o) -> 1 + (o.point_inclusions or []).length
-      basic_proposal_scoring(b, ov).sum - basic_proposal_scoring(a, ov).sum
+    order: (proposals) -> 
+      cache = {}
+      opinion_views = fetch 'opinion_views'
+
+      val = (proposal) ->
+        if proposal.key not of cache 
+          opinions = fetch(proposal).opinions or []   
+          {weights, salience, groups} = compose_opinion_views opinions, proposal, opinion_views
+          sum = 0
+          weight = 0 
+          for opinion in opinions
+            w = weights[opinion.user] * salience[opinion.user]
+            sum += (1 + (opinion.point_inclusions or []).length) * w
+            weight += w
+          cache[proposal.key] = sum
+        cache[proposal.key]
+      proposals.sort (a, b) -> val(b) - val(a)
 
   }, {
     name: 'Random'
     description: "Order will be randomized on every page load."
 
-    comp: (a,b) ->
-      rnd_order[a.key] ||= Math.round(Math.random() * 99999) + 1
-      rnd_order[b.key] ||= Math.round(Math.random() * 99999) + 1
-      rnd_order[a.key] - rnd_order[b.key]
+    order: (proposals) -> 
+      proposals.sort (a,b) ->
+        rnd_order[a.key] ||= Math.round(Math.random() * 99999) + 1
+        rnd_order[b.key] ||= Math.round(Math.random() * 99999) + 1
+        rnd_order[a.key] - rnd_order[b.key]
   }
 
 
@@ -289,9 +374,6 @@ ProposalSort = ReactiveComponent
   render : -> 
 
     proposals = fetch '/proposals' # registering dependency so that we get re-rendered...ApplyFilters is actually dependent
-    # filter_out = fetch 'filtered'
-    # filters = fetch 'filters'
-
     subdomain = fetch '/subdomain'
 
     return SPAN null if !subdomain.name

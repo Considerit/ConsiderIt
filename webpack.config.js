@@ -39,7 +39,8 @@ var fs = require('fs')
 // into the respective build. 
 entry_points = {
   franklin: './@client/app.coffee',
-  proposal_embed: './@client/app_proposal_embed.coffee'
+  proposal_embed: './@client/app_proposal_embed.coffee',
+  web_worker: './@client/web_worker'
 }
 
 ////////////////////////////////////////

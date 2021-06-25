@@ -152,7 +152,6 @@ window.Histogram = ReactiveComponent
   displayName : 'Histogram'
 
   render: -> 
-
     loc = fetch 'location'
     if loc.query_params.show_histogram_layout
       window.show_histogram_layout = true
@@ -603,8 +602,9 @@ window.Histogram = ReactiveComponent
 
       requestAnimationFrame =>
         if @isMounted()
-          layoutAvatars
-            running_state: @props.key 
+          delegate_layout_task
+            task: 'layoutAvatars'
+            histo: @local.key
             k: histocache_key
             r: @local.avatar_size / 2
             w: @props.width or 400
@@ -612,19 +612,7 @@ window.Histogram = ReactiveComponent
             o: opinions
             weights: @weights
             layout_params: layout_params
-            abort: => 
-              abort = !@isMounted() || @current_request != histocache_key
-              abort
 
-            done: (positions) =>   
-              return if !@isMounted()
-              if Object.keys(positions).length != 0 && @current_request == histocache_key
-                
-                @local.histocache = 
-                  hash: histocache_key
-                  positions: positions
-
-                save @local
 
 
     @current_request = histocache_key
@@ -634,6 +622,40 @@ window.Histogram = ReactiveComponent
 
   componentDidUpdate: -> 
     @PhysicsSimulation()
+
+
+num_layout_workers = 4
+num_layout_tasks_delegated = 0
+delegate_layout_task = (opts) -> 
+  if !window.histo_layout_workers
+    configure_histo_layout_web_worker()
+  histo_layout_worker = histo_layout_workers[num_layout_tasks_delegated % num_layout_workers]  
+  histo_layout_worker.postMessage opts
+  num_layout_tasks_delegated += 1
+
+configure_histo_layout_web_worker = ->
+
+  if !window.histo_layout_workers && arest.cache['/application']
+    window.histo_layout_workers = (new Worker("#{fetch('/application').asset_host}/build/web_worker.js") for i in [0..num_layout_workers - 1])
+
+    onmessage = (e) ->
+      {opts, positions} = e.data 
+
+      local = fetch opts.histo
+      histocache_key = opts.k 
+
+      if !local.histocache || (Object.keys(positions).length != 0 && @current_request == histocache_key)
+                      
+        local.histocache = 
+          hash: histocache_key
+          positions: positions
+
+        save local
+
+    for worker in histo_layout_workers
+      worker.onmessage = onmessage
+
+
 
 
 window.styles += """

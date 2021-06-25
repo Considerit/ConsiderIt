@@ -1,19 +1,31 @@
-
-window.layoutAvatars = (opts) -> 
-  histo_queue.push opts 
-  if !histo_running
-    histo_run_next_job()
-
-
 histo_queue = []
 histo_running = null 
-histo_run_next_job = (completed) ->
-  if histo_running == completed 
-    histo_running = null
 
+if window? 
+  top_level = window 
+else 
+  top_level = DedicatedWorkerGlobalScope
+
+top_level.enqueue_histo_layout = (opts) -> 
+  histo_queue.push opts 
+  process_next_layout()
+
+write_layout = (opts, positions) ->
+  # write message back about positions
+  postMessage {opts, positions}
+
+
+layout_complete = (opts, positions) -> 
+  histo_running = null 
+  write_layout(opts, positions)
+  process_next_layout()
+
+process_next_layout = -> 
   if !histo_running && histo_queue.length > 0
     histo_running = histo_queue.shift()
     positionAvatarsWithJustLayout histo_running 
+
+
 
 
 
@@ -72,20 +84,14 @@ positionAvatarsWithJustLayout = (opts) ->
     save global_running_state
 
 
-  opts.done?(positions)
-
-  if requestAnimationFrame
-
-    requestAnimationFrame -> histo_run_next_job(opts)
-  else 
-    histo_run_next_job(opts)
+  layout_complete opts, positions 
 
 
 #####
 # Calculate node radius based on the largest density of avatars in an 
 # area (based on a moving average of # of opinions, mapped across the
 # width and height)
-window.calculateAvatarRadius = (width, height, opinions, weights, {fill_ratio}) -> 
+top_level.calculateAvatarRadius = (width, height, opinions, weights, {fill_ratio}) -> 
   fill_ratio ?= .25
 
   opinions.sort (a,b) -> a.stance - b.stance
@@ -304,7 +310,7 @@ Placer = (opts, bodies) ->
             x = top_candidate
             y = options[x]
 
-
+ 
             if layout_params.jostle
               x_dist = x_target - x 
               y_dist = ( height - radius ) - y
@@ -377,8 +383,7 @@ Placer = (opts, bodies) ->
             [Math.round((body.x - r) * 10) / 10, Math.round((body.y - r) * 10) / 10, r]
 
 
-
-        opts.done?(positions)
+        write_layout opts, positions
 
         idx += 1
         setTimeout -> 

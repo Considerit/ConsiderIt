@@ -74,13 +74,13 @@ window.get_point_label = (id, proposal) ->
 #####################
 # SLIDER POLE LABELS
 
-window.get_slider_label = (id, proposal) -> 
+window.get_slider_label = (id, proposal, subdomain) -> 
   side = id.split('.')?[1] or id
 
   if proposal
-    conf = customization('slider_pole_labels', proposal)
+    conf = customization('slider_pole_labels', proposal, subdomain)
   else 
-    conf = customization('slider_pole_labels')
+    conf = customization('slider_pole_labels', null, subdomain)
 
   label = conf[side]
   if !label 

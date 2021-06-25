@@ -179,7 +179,6 @@ window.TagHomepage = ReactiveComponent
 
   render: -> 
     current_user = fetch('/current_user')
-    proposals = sorted_proposals(fetch('/proposals').proposals, @local.key, true)
 
     homepage_tabs = fetch 'homepage_tabs'
     aggregate_list_key = homepage_tabs.filter
@@ -190,7 +189,7 @@ window.TagHomepage = ReactiveComponent
       list: 
         key: "list/#{aggregate_list_key}"
         name: aggregate_list_key
-        proposals: proposals
+        proposals: fetch('/proposals').proposals
 
 
 #############
@@ -374,7 +373,7 @@ window.ManualProposalResort = ReactiveComponent
   render: -> 
     sort = fetch 'sort_proposals'
 
-    if !sort.sorts?[@props.sort_key].stale 
+    if !stale_sort_order(@props.sort_key) 
       return SPAN null 
 
     DIV 
@@ -415,6 +414,7 @@ ProposalsLoading = ReactiveComponent
   displayName: 'ProposalLoading'
 
   render: ->  
+
     if !@local.cnt?
       @local.cnt = 0
 
@@ -453,7 +453,7 @@ ProposalsLoading = ReactiveComponent
     @int = setInterval => 
       @local.cnt += 1 
       save @local 
-    , 10
+    , 25
 
   componentWillUnmount: -> 
     clearInterval @int 

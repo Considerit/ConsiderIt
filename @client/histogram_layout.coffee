@@ -48,8 +48,7 @@ positionAvatarsWithJustLayout = (opts) ->
   positions = {}
   for n in nodes
     r = n.radius
-    i = n.index
-    positions[parseInt(opinions[i].user.substring(6))] = [ Math.round((n.x - r) * 10) / 10, Math.round((n.y - r) * 10) / 10, r]
+    positions[n.user] = [ Math.round((n.x - r) * 10) / 10, Math.round((n.y - r) * 10) / 10, r]
 
 
   if layout_params.verbose 
@@ -88,10 +87,6 @@ positionAvatarsWithJustLayout = (opts) ->
 # width and height)
 window.calculateAvatarRadius = (width, height, opinions, weights, {fill_ratio}) -> 
   fill_ratio ?= .25
-
-  filter_out = fetch 'filtered'
-  if filter_out.users && !filter_out.enable_comparison
-    opinions = (o for o in opinions when !(filter_out.users?[o.user]))
 
   opinions.sort (a,b) -> a.stance - b.stance
 
@@ -325,11 +320,11 @@ Placer = (opts, bodies) ->
                 y += sag * y_dist / total_dist
 
             b =
-              index: idx
               radius: radius
               x: x
               y: y
               x_target: x_target
+              user: o.user 
             
             laid_out.push b
 
@@ -344,7 +339,7 @@ Placer = (opts, bodies) ->
 
       if save_snapshots
         current_cleanup.push 
-          body: JSON.parse JSON.stringify {x: b.x, y: b.y, radius: b.radius, x_target: b.x_target, index: b.index}
+          body: JSON.parse JSON.stringify {x: b.x, y: b.y, radius: b.radius, x_target: b.x_target}
           from: {x, y}
           to: {x: b.x, y: b.y}
           candidates: [] # candidates
@@ -352,7 +347,7 @@ Placer = (opts, bodies) ->
           occupancy: occupancy_map
           prime_positions: options.slice()
           unstable_bodies: []
-          bodies: JSON.parse JSON.stringify ({user: opinions[b.index].user, neighbors: b.neighbors, x: b.x, y: b.y, radius: b.radius, index: b.index, x_target: b.x_target} for b in laid_out)
+          bodies: JSON.parse JSON.stringify ({user: b.user, neighbors: b.neighbors, x: b.x, y: b.y, radius: b.radius, x_target: b.x_target} for b in laid_out)
           iteration: 0
 
 
@@ -377,10 +372,11 @@ Placer = (opts, bodies) ->
         positions = {}
         for body in laid_out
           r = body.radius
-          i = body.index 
 
-          positions[parseInt(opinions[i].user.substring(6))] = \
-            [Math.round((body.x - r) * 10) / 10, Math.round((body.y - r) * 10) / 10, r, body.stability]
+          positions[body.user] = \
+            [Math.round((body.x - r) * 10) / 10, Math.round((body.y - r) * 10) / 10, r]
+
+
 
         opts.done?(positions)
 

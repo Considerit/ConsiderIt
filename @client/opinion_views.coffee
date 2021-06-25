@@ -3,38 +3,131 @@ require './customizations'
 
 
 
-update_opinion_views = (filter) -> 
-  users = fetch '/users'
-  filter_out = fetch 'filtered'
+save 
+  key: 'opinion_views'
+  active_views: {}
 
-  return if !users.users
-  
-  filter_out.users = {}
+activate_opinion_view = (view) -> 
 
-  if filter_out.current_filter == filter
-    filter_out.current_filter = null 
-  else 
-    filter_out.current_filter = filter 
+  opinion_views = fetch('opinion_views')
+  opinion_views.active_views ?= {}
+  active_views = opinion_views.active_views
 
-  filter_func = filter_out.current_filter?.pass
+  # TODO: In the future, we'll allow conjunctive views, but 
+  #       for now, only allow one at a time
+  to_delete = []
+  for k,v of active_views
+    if v.created_by == 'activate_opinion_view'
+      to_delete.push k 
+  for k in to_delete
+    delete active_views[k]
 
-  if filter_func
-    for user in users.users   
-      passes_filter = filter_func(user) 
-      if !passes_filter
-        filter_out.users[user.key] = 1
+  view_name = view.key or view.label
+
+  active_views[view_name] = 
+    created_by: 'activate_opinion_view'
+    get_salience: (u, opinion, proposal) ->
+      if view.salience?
+        view.salience u, opinion, proposal
+      else if !view.pass || view.pass(u, opinion, proposal)
+        1
+      else if opinion_views.enable_comparison 
+        .1
+      else 
+        0
+    get_weight: (u, opinion, proposal) ->
+      if view.weight?
+        view.weight(u, opinion, proposal)
+      else if opinion_views.enable_comparison || view.pass?(u, opinion, proposal)
+        1
+      else 
+        0
 
   invalidate_proposal_sorts()
-  save filter_out
+  save opinion_views
 
-set_comparison_mode = (enabled) ->
-  filter_out = fetch 'filtered'
 
-  if enabled == null # toggle if argument not passed 
-    filter_out.enable_comparison = !filter_out.enable_comparison
-  else 
-    filter_out.enable_comparison = enabled
-  save filter_out 
+
+opinion_view_cache = {}
+window.compose_opinion_views = (opinions, proposal, opinion_views) -> 
+  opinion_views ?= fetch('opinion_views')
+  opinion_views.active_views ?= {}
+  active_views = opinion_views.active_views
+
+  if !opinions
+    opinions = opinionsForProposal(proposal)
+
+  weights = {}
+  salience = {}
+  groups = {}
+
+  for o in opinions
+    weight = 1
+    min_salience = 1
+    groups = []
+    u = o.user.key or o.user
+
+    for view_name, view of active_views
+      if view.get_salience?
+        s = view.get_salience(u, o, proposal)
+        if s < min_salience
+          min_salience = s
+      if view.get_weight?
+        weight *= view.get_weight(u, o, proposal)
+      if view.groups? 
+        groups.concat view.groups(u, o, proposal)
+    weights[u] = weight
+    salience[u] = min_salience
+    groups[u] = groups
+  {weights, salience, groups}
+  
+
+window.get_opinions_for_proposal = (opinions, proposal, weights) ->
+  if !opinions
+    opinions = opinionsForProposal proposal
+  if !weights
+    {weights, salience, groups} = compose_opinion_views(opinions, proposal)
+
+  (o for o in opinions when weights[o.user] > 0)
+
+
+
+default_views = 
+  everyone: 
+    key: 'everyone'
+    label: 'everyone'
+    tooltip: null 
+    pass: (u) -> true 
+
+  just_you: 
+    key: 'just_you'
+    label: 'just you'
+    tooltip: null 
+    pass: (u) -> 
+      user = fetch(u)
+      user.key == fetch('/current_user').user
+
+  weighed_by_activity: 
+    key: 'weighed_by_activity'
+    label: 'weighed by reasons given'
+    weight: (u, opinion, proposal) ->
+      point_inclusions = opinion.point_inclusions?.length or 0 
+      .1 + point_inclusions
+
+  weighed_by_recency: 
+    key: 'weighed_by_recency'
+    label: 'weighed by recency'
+    weight: (u, opinion, proposal) ->
+      if !proposal.time_created 
+        proposal.time_created = new Date(proposal.created_at).getTime()
+      earliest = proposal.time_created
+
+      ot = new Date(opinion.updated_at).getTime()
+
+      time_since_creation = ot - earliest 
+
+      # based on days since creation
+      Math.log .1 + time_since_creation / (1000 * 60 * 60 * 24)
 
 
 OpinionViews = ReactiveComponent
@@ -42,28 +135,17 @@ OpinionViews = ReactiveComponent
 
   render : -> 
 
-    filter_out = fetch 'filtered'
-    users = fetch '/users' # fetched here so its ready for update_opinion_views func
-
-    return DIV null if !users.users
     custom_filters = customization 'opinion_views'
+    opinion_views = fetch 'opinion_views'
 
     is_admin = fetch('/current_user').is_admin
     
-    filters = [{
-                label: 'just you'
-                tooltip: null 
-                pass: (u) -> 
-                  user = fetch(u)
-                  user.key == fetch('/current_user').user
-              }]
+    filters = [default_views.just_you]
 
     if !customization('hide_opinions') || is_admin
-      filters.unshift {
-        label: 'everyone'
-        tooltip: null 
-        pass: (u) -> true 
-      }
+      filters.unshift default_views.everyone
+      filters.push default_views.weighed_by_activity
+      filters.push default_views.weighed_by_recency
 
 
     if custom_filters && !customization('hide_opinions')
@@ -71,7 +153,7 @@ OpinionViews = ReactiveComponent
         if filter.visibility == 'open' || is_admin
           filters.push filter
 
-    if !filter_out.current_filter
+    if !@local.current_filter
       dfault = customization('opinion_filters_default') or 'everyone'
       initial_filter = null 
       for filter in filters 
@@ -81,9 +163,11 @@ OpinionViews = ReactiveComponent
 
       initial_filter ||= filters[0]
 
-      update_opinion_views initial_filter
+      activate_opinion_view initial_filter
+      @local.current_filter = initial_filter
+      save @local
 
-    current_filter = filter_out.current_filter
+    current_filter = @local.current_filter
 
     DIV 
       style: (@props.style or {})
@@ -102,10 +186,7 @@ OpinionViews = ReactiveComponent
             # fontSize: 20
             position: 'relative'
 
-          if true || current_filter?.label in ['everyone', 'just you']
-            TRANSLATE "engage.opinion_filter.label", 'show opinion of' 
-          else 
-            TRANSLATE "engage.opinion_filter.label_short", 'showing'
+          TRANSLATE "engage.opinion_filter.label", 'show opinion of' 
           
           ": "
 
@@ -114,11 +195,14 @@ OpinionViews = ReactiveComponent
 
             open_menu_on: 'activation'
 
-            selection_made_callback: update_opinion_views
+            selection_made_callback: (filter) =>
+              activate_opinion_view filter
+              @local.current_filter = filter
+              save @local
 
             render_anchor: ->
               
-              key = if current_filter?.label not in ['everyone', 'just you'] then "/translations/#{fetch('/subdomain').name}" else null
+              key = if (current_filter?.key or current_filter?.label) not in ['everyone', 'just_you', 'weighed_by_activity', 'weighed_by_recency'] then "/translations/#{fetch('/subdomain').name}" else null
               SPAN 
                 style: 
                   fontWeight: 'bold'      
@@ -188,7 +272,7 @@ OpinionViews = ReactiveComponent
               color: 'white'
               backgroundColor: focus_color()
 
-          if current_filter.label != 'everyone' && (is_admin || !customization('hide_opinions'))
+          if current_filter.key != 'everyone' && (is_admin || !customization('hide_opinions'))
             DIV 
               style: @props.enable_comparison_wrapper_style or {}
 
@@ -196,10 +280,16 @@ OpinionViews = ReactiveComponent
               INPUT 
                 type: 'checkbox'
                 id: 'enable_comparison'
-                checked: filter_out.enable_comparison
+                checked: opinion_views.enable_comparison
                 ref: 'enable_comparison'
                 onChange: => 
-                  set_comparison_mode @refs.enable_comparison.getDOMNode().checked
+                  enabled = @refs.enable_comparison.getDOMNode().checked
+
+                  if enabled == null # toggle if argument not passed 
+                    opinion_views.enable_comparison = !opinion_views.enable_comparison
+                  else 
+                    opinion_views.enable_comparison = enabled
+                  save opinion_views 
 
               LABEL 
                 htmlFor: 'enable_comparison'
@@ -364,48 +454,48 @@ VerificationProcessExplanation = ReactiveComponent
                       user.tags.verified
 
 
-window.opinion_trickle = -> 
-  filter_out = fetch 'filtered'
+# window.opinion_trickle = -> 
+#   filter_out = fetch 'filtered'
   
-  proposals = fetch '/proposals'
+#   proposals = fetch '/proposals'
 
-  users = {}
-  for prop in proposals.proposals
-    for o in prop.opinions
-      users[o.user] = o.created_at or o.updated_at
+#   users = {}
+#   for prop in proposals.proposals
+#     for o in prop.opinions
+#       users[o.user] = o.created_at or o.updated_at
 
-  users = ([k,v] for k,v of users)
-  users.sort (a,b) -> 
-    i = new Date(a[1])
-    j = new Date(b[1])
-    i.getTime() - j.getTime()
+#   users = ([k,v] for k,v of users)
+#   users.sort (a,b) -> 
+#     i = new Date(a[1])
+#     j = new Date(b[1])
+#     i.getTime() - j.getTime()
 
-  users = (u[0] for u in users)
-  cnt = users.length
+#   users = (u[0] for u in users)
+#   cnt = users.length
 
-  steps = 1
-  tick = (interval) => 
-    if cnt >= 0
-      setTimeout => 
-        filter_out.users = {}
-        for user, idx in users
-          filter_out.users[user] = 1
-          break if idx > cnt 
+#   steps = 1
+#   tick = (interval) => 
+#     if cnt >= 0
+#       setTimeout => 
+#         filter_out.users = {}
+#         for user, idx in users
+#           filter_out.users[user] = 1
+#           break if idx > cnt 
 
-        cnt--
-        #cnt -= Math.ceil(steps / 2)
-        #tick(interval * .9)
-        tick(interval * .9)
-        steps++
-        dirty = true
-        setTimeout -> 
-          if dirty
-            save filter_out
-            dirty = false
-        , 2000
-      , interval
+#         cnt--
+#         #cnt -= Math.ceil(steps / 2)
+#         #tick(interval * .9)
+#         tick(interval * .9)
+#         steps++
+#         dirty = true
+#         setTimeout -> 
+#           if dirty
+#             save filter_out
+#             dirty = false
+#         , 2000
+#       , interval
 
-  tick 1000
+#   tick 1000
 
 
 window.OpinionViews = OpinionViews

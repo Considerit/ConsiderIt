@@ -137,7 +137,7 @@ is_controlling_histogram = (key) ->
   
   !originating_histogram? || originating_histogram == key
 
-window.clear_histogram_opinion_views = (opinion_views, field) ->
+window.clear_histogram_managed_opinion_views = (opinion_views, field) ->
   opinion_views ?= fetch 'opinion_views'
   if field 
     delete opinion_views.active_views[field]
@@ -164,6 +164,7 @@ window.Histogram = ReactiveComponent
     @salience = salience 
     @groups = groups
     @opinions = opinions = get_opinions_for_proposal @props.opinions, proposal, weights
+    @opinions.sort (a,b) -> a.stance - b.stance
 
     histocache_key = @histocache_key()
 
@@ -326,6 +327,7 @@ window.Histogram = ReactiveComponent
       DIV 
         style: 
           paddingTop: histo_height - @props.height
+          'content-visibility': 'auto'
 
         HistoAvatars
           dirtied: dirtied
@@ -433,7 +435,7 @@ window.Histogram = ReactiveComponent
 
         is_deselection = (single_selection?.opinion == user_opinion.key || @weights[user_key] == 0 ) 
         if is_deselection
-          clear_histogram_opinion_views opinion_views
+          clear_histogram_managed_opinion_views opinion_views
         else 
           opinion_views.active_views.single_opinion_selected =
             created_by: @props.key
@@ -444,7 +446,7 @@ window.Histogram = ReactiveComponent
                 1
               else 
                 .1
-          clear_histogram_opinion_views opinion_views, 'region_selected'
+          clear_histogram_managed_opinion_views opinion_views, 'region_selected'
       else
         max = @local.mouse_opinion_value + REGION_SELECTION_WIDTH
         min = @local.mouse_opinion_value - REGION_SELECTION_WIDTH
@@ -455,11 +457,11 @@ window.Histogram = ReactiveComponent
            (!@local.touched || inRange(@local.mouse_opinion_value, min, max)))
 
         if is_deselection
-          clear_histogram_opinion_views opinion_views
+          clear_histogram_managed_opinion_views opinion_views
           if ev.type == 'touchstart'
             @local.mouse_opinion_value = null
         else if @props.enable_range_selection
-          clear_histogram_opinion_views opinion_views, 'single_opinion_selected'
+          clear_histogram_managed_opinion_views opinion_views, 'single_opinion_selected'
 
           @users_in_region = @getUsersInRegion()
           opinion_views.active_views.region_selected =
@@ -553,7 +555,7 @@ window.Histogram = ReactiveComponent
 
 
   histocache_key: -> # based on variables that could alter the layout
-    key = """#{JSON.stringify( (Math.round(fetch(o.key).stance * 100) for o in @opinions) )} #{JSON.stringify(@weights)} (#{@props.width}, #{@props.height})"""
+    key = """#{JSON.stringify( (Math.round(fetch(o.key).stance * 100) for o in @opinions) )} #{JSON.stringify(@weights)} #{JSON.stringify(@groups)} (#{@props.width}, #{@props.height})"""
     md5 key
 
 
@@ -567,13 +569,14 @@ window.Histogram = ReactiveComponent
     # the javascript does when moving one's slider)
     histocache_key = @histocache_key()
     
-
     if !@local.dirty && histocache_key != @local.histocache?.hash && @current_request != histocache_key
+      @current_request = histocache_key
 
       opinions = ({stance: o.stance, user: o.user} for o in @opinions)
       
       multi_weighed = false
       previous = null  
+
       for k,v of @weights 
         if previous != null && v != previous 
           multi_weighed = true 
@@ -600,22 +603,26 @@ window.Histogram = ReactiveComponent
           topple_towers: .05
           density_modified_jostle: 1
 
-      requestAnimationFrame =>
-        if @isMounted()
-          delegate_layout_task
-            task: 'layoutAvatars'
-            histo: @local.key
-            k: histocache_key
-            r: @local.avatar_size / 2
-            w: @props.width or 400
-            h: @props.height or 70
-            o: opinions
-            weights: @weights
-            layout_params: layout_params
+      # requestAnimationFrame =>
+      #   if @isMounted()
+
+      has_groups = Object.keys(@groups).length > 0
+      delegate_layout_task
+        task: 'layoutAvatars'
+        histo: @local.key
+        k: histocache_key
+        r: @local.avatar_size / 2
+        w: @props.width or 400
+        h: @props.height or 70
+        o: opinions
+        weights: @weights
+        groups: if has_groups then @groups
+        all_groups: if has_groups then get_user_groups_from_views(@groups)
+        layout_params: layout_params
 
 
 
-    @current_request = histocache_key
+    
 
   componentDidMount: ->   
     @PhysicsSimulation()
@@ -643,14 +650,12 @@ configure_histo_layout_web_worker = ->
 
       local = fetch opts.histo
       histocache_key = opts.k 
+                       
+      local.histocache = 
+        hash: histocache_key
+        positions: positions
 
-      if !local.histocache || (Object.keys(positions).length != 0 && @current_request == histocache_key)
-                      
-        local.histocache = 
-          hash: histocache_key
-          positions: positions
-
-        save local
+      save local
 
     for worker in histo_layout_workers
       worker.onmessage = onmessage
@@ -688,14 +693,23 @@ HistoAvatars = ReactiveComponent
     regular_avatar_style =
       width: base_avatar_diameter
       height: base_avatar_diameter
-      cursor: if !@props.enable_individual_selection then 'auto'
+
+    if !@props.enable_individual_selection
+      regular_avatar_style.cursor = 'auto'
 
     # The style of the avatar when the histogram is backgrounded 
     backgrounded_page_avatar_style = _.extend {}, regular_avatar_style, 
       opacity: .1
 
     # Draw the avatars in the histogram. Placement is determined by the physics sim
-    opinion_views = fetch 'opinion_views'   
+    opinion_views = fetch 'opinion_views'  
+
+
+    groups = get_user_groups_from_views @props.groups 
+    has_groups = !!groups
+    if has_groups
+      colors = get_color_for_groups groups 
+
 
     DIV 
       id: @props.histocache_key
@@ -709,7 +723,6 @@ HistoAvatars = ReactiveComponent
         top: -1
         cursor: if !@props.backgrounded && 
                     @props.enable_range_selection then 'pointer'
-        'content-visibility': 'auto'
 
       if @local.in_viewport
 
@@ -735,6 +748,11 @@ HistoAvatars = ReactiveComponent
           else
             avatar_style = _.extend {}, regular_avatar_style
 
+          if has_groups 
+            group = @props.groups[user.key]?[0]
+            if group 
+              avatar_style.backgroundColor = colors[group]
+
           pos = @props.histocache?.positions?[user.key]
 
           if pos 
@@ -747,7 +765,6 @@ HistoAvatars = ReactiveComponent
 
             # avatar_style.left = pos?[0]
             # avatar_style.top = pos?[1]
-
 
             if pos[2] && custom_size
               avatar_style.width = avatar_style.height = 2 * pos[2]
@@ -783,6 +800,7 @@ HistoAvatars = ReactiveComponent
             # anonymous: true
             style: avatar_style
             set_bg_color: true
+            custom_bg_color: has_groups && group
             # style: _.extend {}, avatar_style,
             #   backgroundColor: user.bg_color
             #   # border: "1px solid #{hsv2rgb(1 - (pos[3] or .5) * .8, .5, .5)}" # #{if pos[3] <= .5 then 'red' else '#999'}"

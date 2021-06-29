@@ -7,7 +7,8 @@ require './customizations'
 window.avatarUrl = (user, img_size) -> 
   user = fetch(user)
   if !!user.avatar_file_name
-    (fetch('/application').asset_host or '') + \
+    app = arest.cache['/application'] or fetch('/application')
+    (app.asset_host or '') + \
           "/system/avatars/" + \
           "#{user.key.split('/')[2]}/#{img_size}/#{user.avatar_file_name}"  
   else 
@@ -117,7 +118,7 @@ window.avatar = (user, props) ->
   #   Default to small size if the width is small  
   anonymous = attrs.anonymous? && attrs.anonymous 
   src = null
-  if !anonymous && user.avatar_file_name 
+  if !anonymous && !props.custom_bg_color && user.avatar_file_name 
     if style?.width >= 50 && !browser.is_ie9
       img_size = 'large'
     else 
@@ -130,7 +131,7 @@ window.avatar = (user, props) ->
     # isn't set to transparent because a transparent icon in many cases
     # will reveal content behind it that is undesirable to show.  
     style.backgroundColor = 'white'
-  else if props.set_bg_color 
+  else if props.set_bg_color && !props.custom_bg_color 
     user.bg_color ?= hsv2rgb(Math.random() / 5 + .6, Math.random() / 8 + .025, Math.random() / 4 + .4)
     style.backgroundColor = user.bg_color
 
@@ -154,6 +155,8 @@ window.avatar = (user, props) ->
     'data-tooltip': if !props.hide_tooltip then alt 
     'data-anon': anonymous  
     tabIndex: if props.focusable then 0 else -1
+    width: style?.width
+    height: style?.width
 
   if src
     # attrs.alt = if props.hide_tooltip then '' else tooltip 
@@ -193,7 +196,7 @@ styles += """
   border-radius: 50%;
   background-size: cover;
   background-color: #{default_avatar_in_histogram_color}; 
-  transition: width 1s, height 1s, top 1s, left 1s, background-color 1s, opacity 100ms;
+  transition: width 1s, height 1s, transform 500ms, background-color 1s, opacity 50ms;
   user-select: none; 
   -moz-user-select: none; 
   -webkit-user-select: none;

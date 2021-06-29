@@ -29,7 +29,7 @@ activate_opinion_view = (view) ->
     get_salience: (u, opinion, proposal) ->
       if view.salience?
         view.salience u, opinion, proposal
-      else if !view.pass || view.pass(u, opinion, proposal)
+      else if !view.pass? || view.pass(u, opinion, proposal)
         1
       else if opinion_views.enable_comparison 
         .1
@@ -38,10 +38,14 @@ activate_opinion_view = (view) ->
     get_weight: (u, opinion, proposal) ->
       if view.weight?
         view.weight(u, opinion, proposal)
-      else if opinion_views.enable_comparison || view.pass?(u, opinion, proposal)
+      else if opinion_views.enable_comparison || (!view.pass? || view.pass?(u, opinion, proposal))
         1
       else 
         0
+
+    get_group: if view.group? then (u, opinion, proposal) -> 
+      view.group(u, opinion, proposal) or 'Unknown'
+
 
   invalidate_proposal_sorts()
   save opinion_views
@@ -64,7 +68,13 @@ window.compose_opinion_views = (opinions, proposal, opinion_views) ->
   for o in opinions
     weight = 1
     min_salience = 1
-    groups = []
+    has_groups = false
+    for view_name, view of active_views
+      has_groups ||= view.get_group?
+
+    if has_groups
+      u_groups = []
+
     u = o.user.key or o.user
 
     for view_name, view of active_views
@@ -74,11 +84,13 @@ window.compose_opinion_views = (opinions, proposal, opinion_views) ->
           min_salience = s
       if view.get_weight?
         weight *= view.get_weight(u, o, proposal)
-      if view.groups? 
-        groups.concat view.groups(u, o, proposal)
+      if has_groups && view.get_group?
+        u_groups.push view.get_group(u, o, proposal)
     weights[u] = weight
     salience[u] = min_salience
-    groups[u] = groups
+    if has_groups      
+      groups[u] = u_groups
+
   {weights, salience, groups}
   
 
@@ -130,13 +142,39 @@ default_views =
       Math.log .1 + time_since_creation / (1000 * 60 * 60 * 24)
 
 
+window.get_user_groups_from_views = (groups) ->
+  has_groups = Object.keys(groups).length > 0
+  if has_groups
+    group_set = new Set()
+    for u, u_groups of groups
+      for g in u_groups 
+        group_set.add g
+
+    Array.from group_set
+  else 
+    null 
+
+group_colors = {}
+window.get_color_for_groups = (group_array) ->
+  num_groups = group_array.length
+  hues = getNiceRandomHues num_groups
+  colors = group_colors
+  for hue,idx in hues 
+    if group_array[idx] not of group_colors
+      group_colors[group_array[idx]] = hsv2rgb hue, Math.random() / 2 + .5, Math.random() / 2 + .5
+  group_colors
+
+
+
 OpinionViews = ReactiveComponent
   displayName: 'OpinionViews'
 
   render : -> 
 
     custom_filters = customization 'opinion_views'
+
     opinion_views = fetch 'opinion_views'
+    opinion_view_ui = fetch 'opinion_views_ui'
 
     is_admin = fetch('/current_user').is_admin
     
@@ -153,7 +191,7 @@ OpinionViews = ReactiveComponent
         if filter.visibility == 'open' || is_admin
           filters.push filter
 
-    if !@local.current_filter
+    if !opinion_view_ui.current_filter
       dfault = customization('opinion_filters_default') or 'everyone'
       initial_filter = null 
       for filter in filters 
@@ -164,10 +202,14 @@ OpinionViews = ReactiveComponent
       initial_filter ||= filters[0]
 
       activate_opinion_view initial_filter
-      @local.current_filter = initial_filter
-      save @local
+      opinion_view_ui.current_filter = initial_filter
+      save opinion_view_ui
 
-    current_filter = @local.current_filter
+    current_filter = opinion_view_ui.current_filter
+
+    if opinion_view_ui.current_filter && !opinion_views.active_views[current_filter.key or current_filter.label]
+      activate_opinion_view current_filter
+
 
     DIV 
       style: (@props.style or {})
@@ -197,8 +239,8 @@ OpinionViews = ReactiveComponent
 
             selection_made_callback: (filter) =>
               activate_opinion_view filter
-              @local.current_filter = filter
-              save @local
+              opinion_view_ui.current_filter = filter
+              save opinion_view_ui
 
             render_anchor: ->
               

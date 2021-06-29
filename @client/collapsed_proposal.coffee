@@ -354,7 +354,7 @@ window.CollapsedProposal = ReactiveComponent
           width: col_sizes.second
           height: 40
           enable_individual_selection: !browser.is_mobile
-          enable_range_selection: everyone && !browser.is_mobile
+          enable_range_selection: !just_you && !browser.is_mobile
           draw_base: true
           draw_base_labels: !slider_regions
 
@@ -416,70 +416,79 @@ window.CollapsedProposal = ReactiveComponent
     
       # little score feedback
       if show_proposal_scores
-        score = 0
+        HistogramScores
+          proposal: proposal
 
-        {weights, salience, groups} = compose_opinion_views(opinions, proposal)
-        opinions = get_opinions_for_proposal opinions, proposal, weights
+HistogramScores = ReactiveComponent
+  displayName: 'HistogramScores'
 
-        weight = 0
-        for o in opinions 
-          w = weights[o.user.key or o.user]
-          score += o.stance * w
-          weight += w
-        avg = score / weight
-        negative = score < 0
-        score *= -1 if negative
+  render: ->
+    proposal = @props.proposal
+    
+    score = 0
 
-        score = pad score.toFixed(1),2
+    {weights, salience, groups} = compose_opinion_views(opinions, proposal)
+    opinions = get_opinions_for_proposal opinions, proposal, weights
 
-        val = "0000 opinion#{if opinions.length != 1 then 's' else ''}"
-        score_w = widthWhenRendered(' opinion' + (if opinions.length != 1 then 's' else ''), {fontSize: 12}) + widthWhenRendered("0000", {fontSize: 20})
+    weight = 0
+    for o in opinions 
+      w = weights[o.user.key or o.user]
+      score += o.stance * w
+      weight += w
+    avg = score / weight
+    negative = score < 0
+    score *= -1 if negative
 
-        show_tooltip = => 
-          if opinions.length > 0
-            tooltip = fetch 'tooltip'
-            tooltip.coords = $(@refs.score.getDOMNode()).offset()
-            tooltip.tip = translator({id: "engage.proposal_score_summary.explanation", percentage: Math.round(avg * 100)}, "Average rating is {percentage}%")
-            save tooltip
-        hide_tooltip = => 
-          tooltip = fetch 'tooltip'
-          tooltip.coords = null
-          save tooltip
+    score = pad score.toFixed(1),2
 
-        DIV 
-          'aria-hidden': true
-          ref: 'score'
-          style: 
-            position: 'absolute'
-            right: -18 - score_w
-            top: 23 #40 - 12
-            textAlign: 'left'
+    val = "0000 opinion#{if opinions.length != 1 then 's' else ''}"
+    score_w = widthWhenRendered(' opinion' + (if opinions.length != 1 then 's' else ''), {fontSize: 12}) + widthWhenRendered("0000", {fontSize: 20})
 
-          onFocus: show_tooltip
-          onMouseEnter: show_tooltip
-          onBlur: hide_tooltip
-          onMouseLeave: hide_tooltip
+    show_tooltip = => 
+      if opinions.length > 0
+        tooltip = fetch 'tooltip'
+        tooltip.coords = $(@refs.score.getDOMNode()).offset()
+        tooltip.tip = translator({id: "engage.proposal_score_summary.explanation", percentage: Math.round(avg * 100)}, "Average rating is {percentage}%")
+        save tooltip
+    hide_tooltip = => 
+      tooltip = fetch 'tooltip'
+      tooltip.coords = null
+      save tooltip
 
-          SPAN 
-            style: 
-              color: '#999'
-              fontSize: 20
-              #fontWeight: 600
-              cursor: 'default'
-              lineHeight: 1
+    DIV 
+      'aria-hidden': true
+      ref: 'score'
+      style: 
+        position: 'absolute'
+        right: -18 - score_w
+        top: 23 #40 - 12
+        textAlign: 'left'
 
-            TRANSLATE
-              id: "engage.proposal_score_summary"
-              small: 
-                component: SPAN 
-                args: 
-                  style: 
-                    color: '#999'
-                    fontSize: 12
-                    cursor: 'default'
-                    verticalAlign: 'baseline'
-              num_opinions: opinions.length 
-              "{num_opinions, plural, =0 {<small>no opinions</small>} one {# <small>opinion</small>} other {# <small>opinions</small>} }"
+      onFocus: show_tooltip
+      onMouseEnter: show_tooltip
+      onBlur: hide_tooltip
+      onMouseLeave: hide_tooltip
+
+      SPAN 
+        style: 
+          color: '#999'
+          fontSize: 20
+          #fontWeight: 600
+          cursor: 'default'
+          lineHeight: 1
+
+        TRANSLATE
+          id: "engage.proposal_score_summary"
+          small: 
+            component: SPAN 
+            args: 
+              style: 
+                color: '#999'
+                fontSize: 12
+                cursor: 'default'
+                verticalAlign: 'baseline'
+          num_opinions: opinions.length 
+          "{num_opinions, plural, =0 {<small>no opinions</small>} one {# <small>opinion</small>} other {# <small>opinions</small>} }"
 
 
 

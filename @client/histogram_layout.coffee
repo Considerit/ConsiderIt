@@ -55,6 +55,17 @@ positionAvatarsWithJustLayout = (opts) ->
     true 
   , nodes
 
+  if opts.groups
+    placer.sweep_all_for_group_swaps (a,b) ->
+      tmpx = a.x
+      tmpy = a.y
+      a.x = b.x 
+      a.y = b.y 
+      b.x = tmpx 
+      b.y = tmpy
+      true 
+    , opts.groups, opts.all_groups, nodes
+
 
   opinions = opts.o
   positions = {}
@@ -171,9 +182,7 @@ Placer = (opts, bodies) ->
   layout_params = opts.layout_params
   base_radius = opts.r
   weights = opts.weights
-
   cleanup_overlap = layout_params.cleanup_overlap or 2
-
   if layout_params.verbose 
     running_state = fetch opts.running_state
     histo_layout_explorer_options = fetch('histo_layout_explorer_options')
@@ -597,9 +606,9 @@ Placer = (opts, bodies) ->
   # Compares each body to each other body to determine if the pairs should be swapped, and if so, swaps them
   sweep_all_for_position_swaps = (attempt_swap, nodes) ->
 
-    for node, idx in nodes 
-      if idx > 0 
-        console.assert node.x_target >= nodes[idx - 1].x_target
+    # for node, idx in nodes 
+    #   if idx > 0 
+    #     console.assert node.x_target >= nodes[idx - 1].x_target
 
     num = nodes.length 
     num_swaps = 1
@@ -625,8 +634,42 @@ Placer = (opts, bodies) ->
         i += 1
 
 
+  # try to put bodies with the same group in sedimentary layers so it is easier to see patterns in groups
+  sweep_all_for_group_swaps = (attempt_swap, groups, all_groups, nodes) -> 
+    group_idx = {}
+    for g,idx in all_groups
+      group_idx[g] = idx 
 
-  {Openings, sweep_all_for_position_swaps, pixelated_layout, get_mask, imprint_body_on_map}
+    num = nodes.length 
+    num_swaps = 1
+    while num_swaps > 0
+
+      num_swaps = 0 
+      i = 0 
+      while i < num
+        body = nodes[i] 
+        j = i + 1 
+
+        body_g_idx = Math.min.apply null, (group_idx[g] for g in groups[body.user])
+        while j < num 
+          if j == i
+            j += 1
+            continue 
+          body2 = nodes[j]
+
+          body2_g_idx = Math.min.apply null, (group_idx[g] for g in groups[body2.user])
+  
+
+          if body.radius == body2.radius && Math.abs(body.x_target - body2.x_target) < (body.radius + body2.radius) && ((body.y < body2.y && body_g_idx < body2_g_idx) || (body.y > body2.y && body_g_idx > body2_g_idx))
+            result = attempt_swap(body, body2)
+            if result 
+              num_swaps += 1
+              # break 
+          j += 1
+        i += 1
+
+
+  {Openings, sweep_all_for_position_swaps, sweep_all_for_group_swaps, pixelated_layout, get_mask, imprint_body_on_map}
 
 EvaluateLayout = (opts, bodies, placer) -> 
   opinions = opts.o

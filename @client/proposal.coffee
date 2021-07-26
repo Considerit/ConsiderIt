@@ -205,19 +205,11 @@ window.Proposal = ReactiveComponent
         DIV 
           style: 
             position: 'relative'
-            width: BODY_WIDTH()
-            margin: '0px auto 20px auto'
+            width: 380
+            margin: '8px auto 20px auto'
 
-          OpinionViews
-            style: 
-              textAlign: 'center'
-            enable_comparison_wrapper_style: 
-              # position: 'absolute'
-              # right: 0 
-              # bottom: -20
-              fontSize: 14
-              marginTop: 4
-              # zIndex: 99
+          OpinionViews()
+
 
 
         if is_loading
@@ -1348,10 +1340,10 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
         point_inclusions_per_point[point] += 1
 
   # try enforce k=2-anonymity for hidden points
-  if opinions.length < 2
-    for point,inclusions of point_inclusions_per_point
-      if fetch(point).hide_name
-        delete point_inclusions_per_point[point]
+  # if opinions.length < 2
+  #   for point,inclusions of point_inclusions_per_point
+  #     if fetch(point).hide_name
+  #       delete point_inclusions_per_point[point]
 
   points = (pnt for pnt in points when (pnt.key of point_inclusions_per_point) || (pnt.key in included_points))
   # Sort points based on resonance with selected users, or custom sort_field

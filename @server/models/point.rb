@@ -62,6 +62,22 @@ class Point < ApplicationRecord
     result
   end
 
+  def self.get_all
+    if current_subdomain.moderation_policy == 1
+      moderation_status_check = 'moderation_status=1'
+    else 
+      moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
+    end
+
+    pointz = Point.where("(published=1 AND #{moderation_status_check}) OR user_id=#{current_user.id}")
+    pointz = pointz.public_fields.map {|p| p.as_json}
+    data = {
+      key: '/points',
+      points: pointz
+    }
+    data 
+  end
+
   def publish
     return if self.published
     self.published = true

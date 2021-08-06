@@ -79,7 +79,9 @@ window.OpinionSlider = ReactiveComponent
         
         onMouseUpCallback: @handleMouseUp
         respond_to_click: false
-
+        ticks: 
+          increment: .5
+          height: 5
         label: translator
                  id: "sliders.instructions-with-proposal"
                  negative_pole: @props.pole_labels[0]

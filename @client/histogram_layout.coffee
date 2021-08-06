@@ -41,9 +41,9 @@ positionAvatarsWithJustLayout = (opts) ->
 
   placer = Placer opts  
   nodes = placer.pixelated_layout()
+
   # sort so we can optimize by knowing that bodies are ordered by x_target
   nodes.sort (a,b) -> a.x_target - b.x_target
-
 
   placer.sweep_all_for_position_swaps (a,b) ->
     tmpx = a.x
@@ -252,7 +252,8 @@ Placer = (opts, bodies) ->
     # order strategically, placing bigger bodies first, then ordered from the poles inward
     opinions.sort (a,b) ->
       diff = Math.abs(b.stance - a.stance)
-      if diff < .02 && weights[b.user] != weights[a.user]
+      # if diff < .02 && weights[b.user] != weights[a.user]
+      if weights[b.user] != weights[a.user]        
         weights[b.user] - weights[a.user]
       else if layout_params.rando_order && diff < layout_params.rando_order && Math.abs(b.stance) < 1 - layout_params.rando_order
         # Introduce some randomness to the sort when two bodies are close to one another. 

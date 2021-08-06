@@ -173,7 +173,7 @@ window.Histogram = ReactiveComponent
     if @last_key != histocache_key
 
       avatar_radius = calculateAvatarRadius @props.width, @props.height, @opinions, @weights,
-                        fill_ratio: @props.layout_params?.fill_ratio or 1
+                        fill_ratio: @getFillRatio()
 
       if @local.avatar_size != avatar_radius * 2
         @local.avatar_size = avatar_radius * 2
@@ -189,7 +189,7 @@ window.Histogram = ReactiveComponent
 
 
     @props.enable_individual_selection &&= opinions.length > 0
-    @props.enable_range_selection &&= opinions.length > 1 && !opinion_views.active_views?['just_you']
+    @props.enable_range_selection &&= opinions.length > 1
 
     # whether to show the shaded opinion selection region in the histogram
     draw_selection_area = @props.enable_range_selection &&
@@ -199,6 +199,8 @@ window.Histogram = ReactiveComponent
                               (!@local.touched && 
                                 @local.mouse_opinion_value && 
                                 !@local.hovering_over_avatar))
+
+
     histo_height = @props.height + REGION_SELECTION_VERTICAL_PADDING
     histogram_props = 
       tabIndex: if !@props.backgrounded then 0
@@ -352,7 +354,7 @@ window.Histogram = ReactiveComponent
     label_style = @props.label_style or {
       fontSize: 12
       fontWeight: 400
-      color: '#999'
+      color: '#555'
       bottom: -19
     }
 
@@ -381,7 +383,6 @@ window.Histogram = ReactiveComponent
                         Math.min(base_width, base_width + left), \
                         @props.width - left)
     selection_left = Math.max 0, left
-
 
 
     return DIV null if !is_controlling_histogram(@props.key) 
@@ -559,6 +560,26 @@ window.Histogram = ReactiveComponent
     md5 key
 
 
+
+  isMultiWeighedHistogram: -> 
+    multi_weighed = false
+    previous = null  
+
+    for k,v of @weights 
+      if previous != null && v != previous 
+        multi_weighed = true 
+        break 
+      previous = v
+
+    multi_weighed
+  getFillRatio: -> 
+    if @props.layout_params?.fill_ratio
+      @props.layout_params.fill_ratio
+    else if @isMultiWeighedHistogram()
+      .75
+    else 
+      1
+
   PhysicsSimulation: ->
     proposal = fetch @props.proposal
 
@@ -574,18 +595,10 @@ window.Histogram = ReactiveComponent
 
       opinions = ({stance: o.stance, user: o.user} for o in @opinions)
       
-      multi_weighed = false
-      previous = null  
 
-      for k,v of @weights 
-        if previous != null && v != previous 
-          multi_weighed = true 
-          break 
-        previous = v
-
-      if multi_weighed
+      if @isMultiWeighedHistogram()
         layout_params = _.defaults {}, (@props.layout_params or {}), 
-          fill_ratio: 1
+          fill_ratio: @getFillRatio()
           show_histogram_layout: show_histogram_layout
           cleanup_overlap: 2
           jostle: 0

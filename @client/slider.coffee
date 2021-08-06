@@ -37,7 +37,10 @@
 #       sharp: arrow endpoints that don't extend above or below the base
 #    If you pass a string, that value will apply to both endpoints. 
 #    If you pass an array of two strings, those will apply to the left and
-#    right endpoints respectively. 
+#    right endpoints respectively.
+#
+#  - ticks (default is null)
+#    Put ticks on the slider. options example: {interval: .5, height: 2}
 #    
 #  - polarized (default = false)
 #    If true, the slider is polarized, and value will vary from [-1.0, 1.0].
@@ -146,10 +149,28 @@ window.Slider = ReactiveComponent
     else
       endpoints = @props.base_endpoint
 
+
     DIV 
       ref: 'base'
+      key: 'slider_base'
       style : slider_base_style
       onClick: @handleMouseClick
+
+      if @props.ticks 
+        num_ticks = 2 / @props.ticks.increment
+        inc = slider_base_style.width / num_ticks
+        tick_position = -inc
+        while tick_position <= slider_base_style.width - inc
+          tick_position += inc 
+          DIV 
+            key: "tick-#{tick_position}"
+            style: 
+              position: 'absolute'
+              left: tick_position - (if Math.abs(tick_position - slider_base_style.width) < 2 then 1 else 0) 
+              top: 0
+              width: 1
+              height: (@props.ticks.height or 5) * (if Math.abs(tick_position - slider_base_style.width / 2) < 3 then 2 else 1)
+              backgroundColor: "#aaa" 
 
       # Draw the endpoints on either side of the base
       for endpoint, idx in endpoints

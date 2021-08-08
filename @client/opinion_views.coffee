@@ -105,6 +105,66 @@ default_filters =
 
 
 
+
+window.influence_network = {}
+window.influencer_scores = {}
+influencer_scores_initialized = false 
+add_influence = (influenced, influencer, amount) ->
+  amount ?= 1
+  influence_network[influenced] ?=
+    influenced_by: {}
+    influenced: {}
+  influence_network[influencer] ?=
+    influenced_by: {}
+    influenced: {}
+
+  influence_network[influencer].influenced[influenced] ?= 0
+  influence_network[influencer].influenced[influenced] += amount
+
+  influence_network[influenced].influenced_by[influencer] ?= 0
+  influence_network[influenced].influenced_by[influencer] += amount
+
+
+build_influencer_network = ->
+  proposals = fetch '/proposals'
+  points = fetch '/points'
+
+  if !points.points || !proposals.proposals 
+    return
+
+  for point in points.points
+    for user in point.includers or []
+      continue if (user.key or user) == point.user
+      add_influence user, point.user
+
+
+  for proposal in proposals.proposals 
+    opinions = opinionsForProposal proposal
+    for opinion in opinions  
+      continue if opinion.stance < 0.1
+
+      add_influence opinion.user, proposal.user, opinion.stance
+
+  max_influence = 0 
+  for user, influence of influence_network
+    num_influenced = Object.keys(influence.influenced).length
+    total_influence = 0
+    for u, amount of influence.influenced
+      total_influence += amount
+    if total_influence > max_influence
+      max_influence = total_influence
+
+    influencer_scores[user] = num_influenced + total_influence
+
+  for user, influence of influence_network
+    influencer_scores[user] /= max_influence
+
+
+
+  influencer_scores_initialized = true
+
+
+
 default_weights = 
   weighed_by_recency: 
     key: 'weighed_by_recency'
@@ -160,6 +220,19 @@ default_weights =
       else 
         .1
 
+  weighed_by_influence: 
+    key: 'weighed_by_influence'
+    name: 'Influence'
+    label: 'Add weight to the opinions of people who have contributed proposals and arguments that other people have found valuable.'
+    weight: (u, opinion, proposal) ->
+      if !influencer_scores_initialized
+        build_influencer_network()
+
+      if !influencer_scores_initialized
+        return 1 # still waiting for data to be fetched
+
+      u = u.key or u 
+      .1 + (influencer_scores[u] or 0)
 
 toggle_group = (view, replace_existing) ->
   _activate_opinion_view(view, 'group', replace_existing)
@@ -346,9 +419,7 @@ OpinionFilters = ReactiveComponent
       if !has_one_enabled
         opinion_view_ui.selected_vals_for_attribute[attribute] = {}
 
-      view = 
-        key: attribute
-        pass: (u) -> 
+      pass = (u) -> 
           user = fetch(u)
           val_for_user = user.tags[attribute]
           is_array = Array.isArray(val_for_user)
@@ -364,6 +435,21 @@ OpinionFilters = ReactiveComponent
             passes ||= val_for_user == passing_val || (is_array && passing_val in val_for_user)
 
           passes 
+
+      view = 
+        key: attribute
+        # pass: pass
+        salience: (u) ->
+          if pass(u)
+            1 
+          else 
+            .1
+
+        weight: (u) ->
+          if pass(u)
+            1
+          else 
+            .05
 
       toggle_opinion_filter view, has_one_enabled
 
@@ -576,7 +662,7 @@ OpinionFilters = ReactiveComponent
 
                             DIV 
                               className: 'opinion_view_explanation'
-                              "Opinions in the histogram are colorized based on the selected attributed."
+                              "Colorize opinions based on the selected attribute."
           
           DIV 
             style: 

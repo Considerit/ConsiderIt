@@ -99,6 +99,23 @@ window.getNiceRandomHues = (num, seed) ->
     i -= 1
   hues
 
+window.getColors = (num) ->
+  if num >= 3 && num <= 12
+    if num <= 9
+      group_colors = colorbrewer.Set1[num]
+    else 
+      group_colors = colorbrewer.Paired[num]
+    group_colors = _.shuffle group_colors
+  else 
+    group_colors = []
+    hues = getNiceRandomHues num
+    colors = group_colors
+    for hue,idx in hues 
+      group_colors.push hsv2rgb hue, Math.random() / 2 + .5, Math.random() / 2 + .5
+  
+  group_colors
+
+
 
 window.is_light_background = (color) ->
   color ||= fetch('edit_banner').background_css or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR

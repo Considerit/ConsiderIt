@@ -111,14 +111,16 @@ window.sorted_proposals = (proposals, sort_key, require_force) ->
         cache: []
         stale: true
         force_resort: true
+      save sorted 
     else 
       cached_order = md5 sorted.cache
 
     # alright, same order
-    if cached_order == order 
-      if sorted.force_resort
+    if cached_order == order
+      if sorted.stale || sorted.force_resort
         sorted.force_resort = false 
         sorted.stale = false 
+        save sorted 
 
     # force an update to the sort order, either because its stale, bc we're initializing, or 
     # because a new proposal has been added or removed
@@ -126,11 +128,13 @@ window.sorted_proposals = (proposals, sort_key, require_force) ->
       sorted.force_resort = false
       sorted.stale = false
       sorted.cache = keys
+      save sorted 
 
     # return the stale sort order
     else 
       if !sorted.stale
         sorted.stale = true 
+        save sorted 
 
       dict_proposals = {}
       for p in proposals 
@@ -145,27 +149,8 @@ rnd_order = {}
 sort_options = [
 
   { 
-    order: (proposals) -> 
-      cache = {}
-      opinion_views = fetch 'opinion_views'
-      val = (proposal) ->
-        if proposal.key not of cache 
-          opinions = fetch(proposal).opinions or []   
-          {weights, salience, groups} = compose_opinion_views opinions, proposal, opinion_views
-          sum = 0
-          weight = 0 
-          for opinion in opinions
-            w = weights[opinion.user] * salience[opinion.user]
-            sum += opinion.stance * w
-            weight += w
-          cache[proposal.key] = sum / weight 
-        cache[proposal.key]
-      proposals.sort (a, b) -> val(b) - val(a)
-
-
-    name: 'Average Score'
-    description: "Each response is scored by the average opinion score, where opinions are on [-1, 1]."
-  }, { 
+    name: 'Total Score'
+    description: "Each item is scored by the sum of all opinions, where each opinion expresses a score on a spectrum from -1 to 1. "    
     order: (proposals) -> 
       cache = {}
       opinion_views = fetch 'opinion_views'
@@ -176,16 +161,15 @@ sort_options = [
           {weights, salience, groups} = compose_opinion_views opinions, proposal, opinion_views
           sum = 0
           for opinion in opinions
-            w = weights[opinion.user] * salience[opinion.user]
+            continue if salience[opinion.user] < 1 # don't count users who aren't fully salient, they're considered backgrounded
+            w = weights[opinion.user] # * salience[opinion.user]
             sum += opinion.stance * w
           cache[proposal.key] = sum
         cache[proposal.key]
       proposals.sort (a, b) -> val(b) - val(a)
-    name: 'Total Score'
-    description: "Each response is scored by the sum of opinions, where opinions are on [-1, 1]."
   }, {
     name: 'Trending'
-    description: "'Total Score', except that newer opinions and responses are weighed more heavily."
+    description: "Same as 'Total Score', except newer items and opinions are weighed more heavily."
 
     order: (proposals) ->
       cache = {}
@@ -203,7 +187,8 @@ sort_options = [
           {weights, salience, groups} = compose_opinion_views opinions, proposal, opinion_views
           sum = 0
           for opinion in opinions
-            w = weights[opinion.user] * salience[opinion.user]
+            continue if salience[opinion.user] < 1 # don't count users who aren't fully salient, they're considered backgrounded
+            w = weights[opinion.user] # * salience[opinion.user]
             sum += opinion.stance * w
 
           n = Date.now()
@@ -214,24 +199,19 @@ sort_options = [
       proposals.sort (a, b) ->
         val(b) - val(a)
   },
-  { 
-    name: 'Alphabetically'
-    order: (proposals) -> 
-      proposals.sort (a, b) -> a.name.localeCompare b.name
-    description: "Sort alphabetically by the response's title"
-  }, {
+  {
     order: (proposals) -> 
       proposals.sort (a,b) -> new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    name: 'Newest'
-    description: "The responses submitted most recently are shown first."
+    name: 'Date: Most recent first'
+    description: "The items submitted most recently are shown first."
   }, {
     order: (proposals) -> 
       proposals.sort (a,b) -> new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-    name: 'Earliest'
-    description: "The responses submitted first are shown first."
+    name: 'Date: Earliest first'
+    description: "The items submitted first are shown first."
   }, { 
-    name: 'Unity'
-    description: "Responses where the community is most united for or against are shown highest."
+    name: 'Most unifying first'
+    description: "The items on which participants are most united for or against are shown first."
     order: (proposals) -> 
       cache = {}
       opinion_views = fetch 'opinion_views'
@@ -242,7 +222,8 @@ sort_options = [
           sum = 0
           weight = 0 
           for opinion in opinions
-            w = weights[opinion.user] * salience[opinion.user]
+            continue if salience[opinion.user] < 1 # don't count users who aren't fully salient, they're considered backgrounded
+            w = weights[opinion.user] # * salience[opinion.user]
             sum += opinion.stance * w
             weight += w
 
@@ -250,9 +231,10 @@ sort_options = [
 
           differences = 0
           weight = 0 
-          for o in opinions 
-            w = weights[opinion.user] * salience[opinion.user]    
-            differences += w * (o.stance - avg) * (o.stance - avg)
+          for opinion in opinions
+            continue if salience[opinion.user] < 1 # don't count users who aren't fully salient, they're considered backgrounded
+            w = weights[opinion.user] # * salience[opinion.user]
+            differences += w * (opinion.stance - avg) * (opinion.stance - avg)
             weight += w
 
           std_dev = Math.sqrt(differences / weight)
@@ -266,8 +248,8 @@ sort_options = [
 
 
   }, { 
-    name: 'Difference'
-    description: "Responses where the community is most split are shown highest."
+    name: 'Most polarizing first'
+    description: "The items on which participants are most split are shown highest."
     order: (proposals) -> 
       cache = {}
       opinion_views = fetch 'opinion_views'
@@ -279,7 +261,8 @@ sort_options = [
           sum = 0
           weight = 0 
           for opinion in opinions
-            w = weights[opinion.user] * salience[opinion.user]
+            continue if salience[opinion.user] < 1 # don't count users who aren't fully salient, they're considered backgrounded
+            w = weights[opinion.user] # * salience[opinion.user]
             sum += opinion.stance * w
             weight += w
 
@@ -287,9 +270,10 @@ sort_options = [
 
           differences = 0
           weight = 0 
-          for o in opinions 
-            w = weights[opinion.user] * salience[opinion.user]    
-            differences += w * (o.stance - avg) * (o.stance - avg)
+          for opinion in opinions
+            continue if salience[opinion.user] < 1 # don't count users who aren't fully salient, they're considered backgrounded
+            w = weights[opinion.user] # * salience[opinion.user]
+            differences += w * (opinion.stance - avg) * (opinion.stance - avg)
             weight += w
 
           std_dev = Math.sqrt(differences / weight)
@@ -302,14 +286,14 @@ sort_options = [
       proposals.sort (a, b) -> val(b) - val(a)
 
 
-  }, {
-    name: 'Most Activity'
-    description: "Ranked by number of opinions and discussion."
+  }, 
 
+  { 
+    name: 'Average Score'
+    description: "Each item is scored by the average opinion, where each opinion expresses a score on a spectrum from -1 to 1. "
     order: (proposals) -> 
       cache = {}
       opinion_views = fetch 'opinion_views'
-
       val = (proposal) ->
         if proposal.key not of cache 
           opinions = fetch(proposal).opinions or []   
@@ -317,16 +301,49 @@ sort_options = [
           sum = 0
           weight = 0 
           for opinion in opinions
-            w = weights[opinion.user] * salience[opinion.user]
-            sum += (1 + (opinion.point_inclusions or []).length) * w
+            continue if salience[opinion.user] < 1 # don't count users who aren't fully salient, they're considered backgrounded
+            w = weights[opinion.user] # * salience[opinion.user]
+            sum += opinion.stance * w
             weight += w
-          cache[proposal.key] = sum
+          cache[proposal.key] = sum / weight 
         cache[proposal.key]
       proposals.sort (a, b) -> val(b) - val(a)
 
-  }, {
+
+  },   
+  # {
+  #   name: 'Most Activity'
+  #   description: "Ranked by number of opinions and discussion."
+
+  #   order: (proposals) -> 
+  #     cache = {}
+  #     opinion_views = fetch 'opinion_views'
+
+  #     val = (proposal) ->
+  #       if proposal.key not of cache 
+  #         opinions = fetch(proposal).opinions or []   
+  #         {weights, salience, groups} = compose_opinion_views opinions, proposal, opinion_views
+  #         sum = 0
+  #         weight = 0 
+  #         for opinion in opinions
+  #           continue if salience[opinion.user] < 1 # don't count users who aren't fully salient, they're considered backgrounded
+  #           w = weights[opinion.user] # * salience[opinion.user]
+  #           sum += (1 + (opinion.point_inclusions or []).length) * w
+  #           weight += w
+  #         cache[proposal.key] = sum
+  #       cache[proposal.key]
+  #     proposals.sort (a, b) -> val(b) - val(a)
+  # 
+  # }, 
+  { 
+    name: 'Alphabetical order'
+    order: (proposals) -> 
+      proposals.sort (a, b) -> a.name.localeCompare b.name
+    description: "Sort alphabetically by the item's title"
+  }, 
+  {
     name: 'Random'
-    description: "Order will be randomized on every page load."
+    description: "Item order is randomized on each page load."
 
     order: (proposals) -> 
       proposals.sort (a,b) ->
@@ -346,7 +363,7 @@ set_sort = ->
     if loc.query_params?.sort_by
       for s in sort_options
         if s.name == loc.query_params.sort_by.replace('_', ' ')
-          _.extend sort, s or sort_options[2]
+          _.extend sort, s or sort_options[1]
           found = true 
           break
 
@@ -357,10 +374,10 @@ set_sort = ->
           if s.name == def_sort
             def = s
             break 
-        _.extend sort, def or sort_options[2]
+        _.extend sort, def or sort_options[1]
 
       else 
-        _.extend sort, sort_options[2]
+        _.extend sort, sort_options[1]
 
     save sort 
 
@@ -480,89 +497,93 @@ SortProposalsMenu = ReactiveComponent
   render: -> 
 
     sort = fetch 'sort_proposals'
-    set_sort() if !sort.name? 
+    set_sort() if !sort.name?       
 
-    SPAN
-      style: 
-        color: 'black'
-        # fontSize: 20
 
-      TRANSLATE "engage.sort_by", "sort by"
+    DropMenu
+      options: sort_options
+      anchor_class_name: 'sort_proposals'
 
-      " "
+      open_menu_on: 'activation'
 
-      DropMenu
-        options: sort_options
+      selection_made_callback: (option) -> 
+        invalidate_proposal_sorts()
+        _.extend sort, option   
+        save sort 
 
-        open_menu_on: 'activation'
+      render_anchor: ->
+        current_sort = translator "engage.sort_order.#{sort.name}", sort.name
+        if current_sort.indexOf(':') > -1 
+          current_sort = current_sort.split(':')[1]
+        [
+          TRANSLATE "engage.sort_by", "sort by"
+          ": "
 
-        selection_made_callback: (option) -> 
-          invalidate_proposal_sorts()
-          _.extend sort, option   
-          save sort 
-
-        render_anchor: ->
           SPAN 
             style: 
               fontWeight: 700
+              paddingLeft: 8
 
-            translator "engage.sort_order.#{sort.name}", sort.name
+            current_sort
 
-            SPAN style: _.extend cssTriangle 'bottom', focus_color(), 8, 5,
+            SPAN style: _.extend cssTriangle 'bottom', 'white', 8, 5,
               display: 'inline-block'
               marginLeft: 4   
               marginBottom: 2
+        ]
 
-        render_option: (option, is_active) -> 
-          [        
-            DIV 
-              style: 
-                fontWeight: 600
-                fontSize: 18
+      render_option: (option, is_active) -> 
+        [
+          SPAN 
+            style: 
+              # fontWeight: 600
+              fontSize: 16
+              marginBottom: 2
 
-              translator "engage.sort_order.#{option.name}", option.name 
+            translator "engage.sort_order.#{option.name}", option.name 
 
-            DIV 
-              style: 
-                fontSize: 12
-                color: if is_active then 'white' else 'black'
+          SPAN 
+            style: 
+              float: 'right'
+            HelpIcon translator "engage.sort_order.#{option.name}.description", option.description
 
-              translator "engage.sort_order.#{option.name}.description", option.description 
-          ]
+          # DIV 
+          #   style: 
+          #     fontSize: 12
+          #     color: if is_active then 'white' else '#444'
 
-        wrapper_style: 
-          display: 'inline-block'
+          #   translator "engage.sort_order.#{option.name}.description", option.description 
+        ]
 
-        anchor_style: 
-          fontWeight: 600
-          padding: 0
-          display: 'inline-block'
-          color: focus_color() #'inherit'
-          textTransform: 'lowercase'
-          borderRadius: 16
+      anchor_style:
+        display: 'flex'
+      wrapper_style: 
+        display: 'inline-block'
 
-        menu_style: 
-          minWidth: 500
-          backgroundColor: '#eee'
-          border: "1px solid #{focus_color()}"
-          left: -9999
-          top: 18
-          borderRadius: 8
-          fontWeight: 400
-          overflow: 'hidden'
-          boxShadow: '0 1px 2px rgba(0,0,0,.3)'
+      menu_style: 
+        minWidth: 350
+        backgroundColor: '#fbfbfb'
+        border: "1px solid #ccc"
+        left: -9999
+        top: 26
+        borderRadius: 8
+        fontWeight: 400
+        overflow: 'hidden'
+        boxShadow: '0 1px 2px rgba(0,0,0,.8)'
+        padding: '4px 24px 12px 24px'
 
-        menu_when_open_style: 
-          left: 0
+      menu_when_open_style: 
+        left: 0
 
-        option_style: 
-          padding: '6px 12px'
-          borderBottom: "1px solid #ddd"
-          display: 'block'
+      option_style: 
+        padding: '6px 12px'
+        borderBottom: "1px solid #ddd"
+        display: 'block'
 
-        active_option_style: 
-          color: 'white'
-          backgroundColor: focus_color()
+      active_option_style: 
+        borderBottom: "1px solid #444"
+        # color: 'white'
+        # backgroundColor: focus_color()
 
 
 

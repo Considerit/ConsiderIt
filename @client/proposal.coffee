@@ -171,6 +171,7 @@ window.Proposal = ReactiveComponent
 
     ARTICLE 
       id: "proposal-#{@proposal.id}"
+      "data-proposal": @proposal.key
       key: @props.slug
       style: 
         paddingBottom: if browser.is_mobile && has_focus == 'edit point' then 200
@@ -202,15 +203,28 @@ window.Proposal = ReactiveComponent
                   'Opinions about this proposal'
 
 
-        DIV 
+
+        OpinionViews
           style: 
-            position: 'relative'
-            width: 380
+            width: if get_participant_attributes().length > 0 then HOMEPAGE_WIDTH() else Math.max(660,PROPOSAL_HISTO_WIDTH()) # REASONS_REGION_WIDTH()
             margin: '8px auto 20px auto'
+            position: 'relative'
 
-          OpinionViews()
+        if mode != 'crafting'
+          DIV 
+            style: 
+              width: PROPOSAL_HISTO_WIDTH()
+              margin: 'auto'
+              position: 'relative'
 
+            DIV 
+              style: 
+                position: 'absolute'
+                right: -100
+                top: if fetch('histogram-dock').docked then 50 else 170
 
+              HistogramScores
+                proposal: @proposal
 
         if is_loading
           LOADING_INDICATOR
@@ -1325,7 +1339,7 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
   if opinion_views.active_views.single_opinion_selected
     opinions = [opinion_views.active_views.single_opinion_selected.opinion] 
     filtered = true
-  else if opinion_views.active_views.region_selected
+  else if opinion_views.active_views.region_selected || (key for key,view of opinion_views.active_views when view.view_type == 'filter').length > 0
     {weights, salience, groups} = compose_opinion_views opinions, proposal
     opinions = (o for o in opinions when salience[o.user.key or o.user] == 1)
     filtered = true

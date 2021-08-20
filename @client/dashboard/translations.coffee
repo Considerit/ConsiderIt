@@ -530,10 +530,7 @@ TranslationsForLang = ReactiveComponent
                           tooltip.tip = if no_id then 'no ID' else name 
                           save tooltip
 
-                      hide_tooltip = => 
-                        tooltip = fetch 'tooltip'
-                        tooltip.coords = null
-                        save tooltip
+                      hide_tooltip = clearTooltip
 
                       DIV 
                         ref: "message-#{name}-#{idx}"

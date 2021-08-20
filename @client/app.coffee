@@ -155,11 +155,6 @@ LocationTransition = ReactiveComponent
 
       #######
 
-      if loc.url == '/'
-        opinion_views = fetch 'opinion_views'
-        opinion_views.active_views = {}
-        save opinion_views
-
       @last_location = loc.url
     SPAN null
 
@@ -362,13 +357,13 @@ Root = ReactiveComponent
         save loc
 
       else if opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
-        clear_histogram_opinion_views opinion_views
+        clear_histogram_managed_opinion_views opinion_views
 
     if !fetch('auth').form && loc.url == '/'
       opinion_views = fetch 'opinion_views'
 
       if opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
-        clear_histogram_opinion_views opinion_views
+        clear_histogram_managed_opinion_views opinion_views
 
     wysiwyg_editor = fetch 'wysiwyg_editor'
     if wysiwyg_editor.showing

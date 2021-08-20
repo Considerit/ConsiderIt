@@ -260,7 +260,7 @@ window.styles += """
   }
 
   /* The slider */
-  .toggle_switch span {
+  .toggle_switch .toggle_switch_circle {
     position: absolute;
     cursor: pointer;
     top: 0;
@@ -291,9 +291,9 @@ window.styles += """
     background-color: #{selected_color};
   }
 
-  input:focus + .toggle_switch_circle {
-    box-shadow: 0 0 1px #{selected_color};
-  }
+  # input:focus + .toggle_switch_circle {
+  #   box-shadow: 0 0 1px #{selected_color};
+  # }
 
   input:checked + .toggle_switch_circle:before {
     -webkit-transform: translateX(26px);

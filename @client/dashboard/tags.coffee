@@ -22,11 +22,14 @@ UserTags = ReactiveComponent
 
     tags_config = customization('user_tags')
     all_tags = {}
+    tag_names = {}
 
-    for tag,vals of tags_config
+    for vals in tags_config
+      tag = vals.key
       all_tags[tag] = {
         not_answered: []
       }
+      tag_names[tag] = vals.view_name or vals.self_report?.question or tag
 
       if vals.self_report
         if vals.self_report.options
@@ -38,7 +41,8 @@ UserTags = ReactiveComponent
 
     for user in users.users 
 
-      for tag,vals of tags_config 
+      for vals in tags_config 
+        tag = vals.key
         if tag not of user.tags || user.tags[tag] == "" || user.tags[tag] == 'undefined'
           all_tags[tag].not_answered.push user
 
@@ -250,7 +254,7 @@ UserTags = ReactiveComponent
                 fontSize: 36
                 marginTop: 36
 
-              dangerouslySetInnerHTML: __html: tags_config[tag]?.self_report?.question or tag
+              dangerouslySetInnerHTML: __html: tag_names[tag]
 
             if !show_all
 

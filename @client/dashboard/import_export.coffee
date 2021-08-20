@@ -36,7 +36,8 @@ window.DataDash = ReactiveComponent
         query = ''
         user_tags = customization 'user_tags'
         if user_tags
-          query = "?#{Object.keys(user_tags).join('=1&')}" 
+
+          query = "?#{(v.key for v in user_tags).join('=1&')}" 
 
 
         FORM 

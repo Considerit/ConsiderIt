@@ -71,7 +71,13 @@ class User < ApplicationRecord
   def has_answered_all_required_host_questions(subdomain=nil)
     has_filled_required_fields = true
     customizations = (subdomain or current_subdomain).customization_json
-    user_tags = customizations.fetch("user_tags", {})
+
+    tag_config = customizations.fetch('user_tags', [])
+    user_tags = {}
+    tag_config.each do |vals|
+      user_tags[vals["key"]] = vals 
+    end 
+
     my_tags = self.tags || {}
     user_tags.each do |tag, vals|
       if vals.has_key?('self_report') && vals['self_report'].fetch('required', false) && !(['boolean', 'checklist'].index(vals['self_report']['input']))
@@ -91,11 +97,12 @@ class User < ApplicationRecord
 
     anonymize_everything = current_subdomain.customization_json['anonymize_everything']
 
-    tags_config = current_subdomain.customization_json.fetch('user_tags', {})
+    tags_config = current_subdomain.customization_json.fetch('user_tags', [])
     users.each do |u| 
       u_tags = Oj.load(u['tags']||'{}')
       u['tags'] = {}
-      tags_config.each do |tag, vals|
+      tags_config.each do |vals|
+        tag = vals["key"]
         if u_tags.has_key?(tag) && (current_user.is_admin? || vals.fetch('visibility', 'host-only') == 'open')
           u['tags'][tag] = u_tags[tag]
         end
@@ -119,7 +126,7 @@ class User < ApplicationRecord
 
     customizations = current_subdomain.customization_json
     anonymize_everything = customizations['anonymize_everything']
-    if anonymize_everything
+    if anonymize_everything && self.id != current_user.id
       data['name'] = 'Anonymous'
       data['avatar_file_name'] = nil
     end 
@@ -128,10 +135,11 @@ class User < ApplicationRecord
       data['email'] = email
     end
 
-    tags_config = customizations.fetch('user_tags', {})
+    tags_config = customizations.fetch('user_tags', [])
     tags = tags || {}
     data['tags'] = {}
-    tags_config.each do |tag, vals|
+    tags_config.each do |vals|
+      tag = vals["key"]
       if tags.has_key?(tag) && (current_user.is_admin? || vals.fetch('visibility', 'host-only') == 'open')
         data['tags'][tag] = tags[tag]
       end

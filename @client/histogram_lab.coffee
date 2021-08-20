@@ -6,7 +6,7 @@ window.HistogramTester = ReactiveComponent
     # start_idx = 42
 
     num_histos = 1
-    start_idx = 0
+    start_idx = 6
 
     common_layout_params = 
       show_histogram_layout: false  
@@ -18,9 +18,9 @@ window.HistogramTester = ReactiveComponent
     layout_params = []
 
     for fill_ratio in [1]
-      for cleanup_overlap in [1.95] # [1.98] #1.8
-        for jostle in [.4]
-          for rando_order in [.1]
+      for cleanup_overlap in [2] # [1.98] #1.8
+        for jostle in [0]
+          for rando_order in [0]
             for topple_towers in [.05]
               for density_modified_jostle in [1]
                 layout_params.push {density_modified_jostle, topple_towers, rando_order, jostle, cleanup_overlap, fill_ratio}
@@ -72,6 +72,8 @@ window.HistogramTester = ReactiveComponent
       style:
         width: PROPOSAL_HISTO_WIDTH() 
         margin: 'auto'
+
+      OpinionViews()
 
       GlobalHistTiming
         param_sets: param_sets
@@ -128,7 +130,7 @@ window.HistogramTester = ReactiveComponent
 
 histo_layout_explorer_options = fetch('histo_layout_explorer_options')
 _.defaults histo_layout_explorer_options, 
-  show_explorer: false
+  show_explorer: true
   ms_between_plays: 99999
   show_move_log: false 
   show_occupancy: true
@@ -259,7 +261,7 @@ LayoutExplorer = ReactiveComponent
 
               if opts.show_move_log 
                 DIV null, 
-                  "#{tick_data.body.index} [#{tick_data.body.x_target}]: (#{x}, #{y}) => (#{x2}, #{y2})"
+                  "#{tick_data.body.user} [#{tick_data.body.x_target}]: (#{x}, #{y}) => (#{x2}, #{y2})"
 
                   DIV 
                     style: 
@@ -276,7 +278,7 @@ LayoutExplorer = ReactiveComponent
                           x2 = tdat.to.x; y2 = tdat.to.y
 
                           DIV null,
-                            "#{tdat.body.index} [#{tdat.body.x_target}]: (#{x}, #{y}) => (#{x2}, #{y2})"
+                            "#{tdat.body.user} [#{tdat.body.x_target}]: (#{x}, #{y}) => (#{x2}, #{y2})"
 
 
 

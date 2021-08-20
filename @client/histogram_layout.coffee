@@ -173,7 +173,7 @@ top_level.calculateAvatarRadius = (width, height, opinions, weights, {fill_ratio
   if r > width / 2 || r > height / 2 
     r = Math.min width / 2, height / 2
 
-  Math.round r
+  Math.max 1, Math.round r
 
 Placer = (opts, bodies) -> 
   opinions = opts.o
@@ -244,7 +244,10 @@ Placer = (opts, bodies) ->
 
     for o in opinions
       weight = weights[o.user] or 1
-      radius = o.radius = Math.round Math.sqrt(weight) * base_radius  # circle area of avatar grows linearly with weight 
+      o.radius = Math.round Math.sqrt(weight) * base_radius  # circle area of avatar grows linearly with weight 
+      if o.radius < 1
+        o.radius = 1
+      radius = o.radius
       adjusted_stance = (o.stance + 1) / 2
       o.x_target = adjusted_stance * (width - 2 * radius) + radius
 

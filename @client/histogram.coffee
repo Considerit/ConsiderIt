@@ -148,6 +148,26 @@ window.clear_histogram_managed_opinion_views = (opinion_views, field) ->
   save opinion_views
 
 
+window.select_single_opinion = (user, opinions, created_by) ->
+  opinion_views = fetch 'opinion_views'
+  user_opinion = _.findWhere opinions, {user: user.key or user}
+  opinion_views.active_views.single_opinion_selected =
+    created_by: created_by
+    opinion: user_opinion.key 
+    opinion_value: user_opinion.stance 
+    get_salience: (u, opinion, proposal) =>
+      if (u.key or u) == user_opinion.user
+        1
+      else 
+        .1
+    get_weight: (u, opinion, proposal) =>
+      if (u.key or u) == user_opinion.user
+        1
+      else 
+        .1
+
+  clear_histogram_managed_opinion_views opinion_views, 'region_selected'
+
 window.Histogram = ReactiveComponent
   displayName : 'Histogram'
 
@@ -434,20 +454,13 @@ window.Histogram = ReactiveComponent
         user_key = ev.target.getAttribute('data-user')
         user_opinion = _.findWhere @opinions, {user: user_key}
 
-        is_deselection = (single_selection?.opinion == user_opinion.key || @weights[user_key] == 0 ) 
-        if is_deselection
-          clear_histogram_managed_opinion_views opinion_views
-        else 
-          opinion_views.active_views.single_opinion_selected =
-            created_by: @props.key
-            opinion: user_opinion.key 
-            opinion_value: user_opinion.stance 
-            get_salience: (u, opinion, proposal) =>
-              if (u.key or u) == user_opinion.user
-                1
-              else 
-                .1
-          clear_histogram_managed_opinion_views opinion_views, 'region_selected'
+        if user_opinion
+          is_deselection = (single_selection?.opinion == user_opinion.key || @weights[user_key] == 0 ) 
+          if is_deselection
+            clear_histogram_managed_opinion_views opinion_views
+          else 
+            select_single_opinion user_key, @opinions, @props.key
+
       else
         max = @local.mouse_opinion_value + REGION_SELECTION_WIDTH
         min = @local.mouse_opinion_value - REGION_SELECTION_WIDTH
@@ -714,6 +727,7 @@ HistoAvatars = ReactiveComponent
     backgrounded_page_avatar_style = _.extend {}, regular_avatar_style, 
       opacity: .1
 
+
     # Draw the avatars in the histogram. Placement is determined by the physics sim
     opinion_views = fetch 'opinion_views'  
 
@@ -722,6 +736,8 @@ HistoAvatars = ReactiveComponent
     has_groups = !!groups
     if has_groups
       colors = get_color_for_groups groups 
+
+
 
 
     DIV 
@@ -761,10 +777,23 @@ HistoAvatars = ReactiveComponent
           else
             avatar_style = _.extend {}, regular_avatar_style
 
-          if has_groups 
-            group = @props.groups[user.key]?[0]
-            if group 
+          if has_groups && @props.groups[user.key]?
+            if @props.groups[user.key].length == 1
+              group = @props.groups[user.key][0]
               avatar_style.backgroundColor = colors[group]
+            else 
+              gcolors = []
+              for group in @props.groups[user.key]
+                gcolors.push colors[group]
+              gradient = ""
+              size = 1 / gcolors.length / 8
+              for gcolor,idx in gcolors
+                gradient += ", #{gcolor} #{100 * idx * size}%, #{gcolor} #{100 * (idx + 1) * size}%"
+
+              avatar_style.background = "repeating-linear-gradient(45deg #{gradient})"
+
+          if @props.backgrounded
+            avatar_style = _.extend {}, backgrounded_page_avatar_style
 
           pos = @props.histocache?.positions?[user.key]
 
@@ -790,18 +819,9 @@ HistoAvatars = ReactiveComponent
           if stance > .01
             alt = "#{(stance * 100).toFixed(0)}%"
           else if stance < -.01
-            alt = "– #{(stance * -100).toFixed(0)}%"
+            alt = "–#{(stance * -100).toFixed(0)}%"
           else 
             alt = translator "engage.histogram.user_is_neutral", "is neutral"
-
-          # alt += " #{o.stance}"
-          if opinion.explanation
-            paragraphs = safe_string(opinion.explanation).split(/(?:\r?\n)/g)
-            alt += "<div style='margin-top: 12px; max-width:400px'>Their explanation:<div style='padding:4px 12px'>"
-
-            for paragraph in paragraphs
-              alt += "<p style='font-style:italic'>#{paragraph}</p>"
-            alt += '</div></div>'
 
 
           avatar user,
@@ -810,7 +830,7 @@ HistoAvatars = ReactiveComponent
             hide_tooltip: @props.backgrounded || salience < 1
             className: className
             alt: "<user>: #{alt}"
-            # anonymous: true
+            anonymous: customization('anonymize_everything')
             style: avatar_style
             set_bg_color: true
             custom_bg_color: has_groups && group

@@ -30,25 +30,101 @@ user_name = (user, anon) ->
 show_tooltip = (e) ->
   if e.target.getAttribute('data-user') && e.target.getAttribute('data-tooltip')
     user = fetch(e.target.getAttribute('data-user'))
-    anonymous = e.target.getAttribute('data-anonymous') == 'true'
+
+    anonymous = user.key != fetch('/current_user').user && (customization('anonymize_everything') || e.target.getAttribute('data-anonymous') == 'true')
 
     current_user = fetch('/current_user')
     name = e.target.getAttribute('data-tooltip')
-      
-    if !anonymous && (filters = customization('opinion_views')) 
-      for filter in filters when (filter.visibility == 'open' || current_user.is_admin)
-        if filter.icon && filter.pass(user)
-          if typeof(filter.icon) != 'string'
-            icon = filter.icon(user)
-          else
-            icon = filter.icon 
-          name += '<div style="font-style: italic; padding: 4px 0 0 0px">' + icon + "</div>"
+    
+    opinion_views = fetch 'opinion_views'
+
+    attributes = get_participant_attributes()
+    grouped_by = opinion_views.active_views.group_by
 
     tooltip = fetch 'tooltip'
+
+    tooltip.render = ->
+      DIV 
+        style: 
+          padding: '8px 4px'
+          color: 'white'
+          position: 'relative'
+
+
+        DIV 
+          style: 
+            display: 'flex'
+            alignItems: 'center'
+
+          if user.avatar_file_name
+            IMG 
+              style: 
+                width: 70
+                height: 70
+                borderRadius: '50%'
+                marginRight: 10
+                display: 'inline-block' 
+              src: avatarUrl user, 'large'
+
+          DIV 
+            style: 
+              fontFamily: 'Fira Sans Condensed'
+              fontSize: 18
+
+            name
+
+        if !anonymous
+
+          UL 
+            style:
+              listStyle: 'none'
+              marginTop: 4
+
+            for attribute in attributes
+              is_grouped = grouped_by && grouped_by.name == attribute.name
+
+              user_val = user.tags[attribute.key]
+
+              if typeof user_val == "string" && user_val?.indexOf ',' > -1 
+                user_val = user_val.split(',')
+              else if is_grouped
+                user_val = [user_val]
+
+              continue if !is_grouped && !user_val
+
+              LI 
+                style: 
+                  padding: '1px 0'
+
+                SPAN 
+                  style: 
+                    fontFamily: 'Fira Sans Condensed'
+                    fontSize: 12
+                    # fontStyle: 'italic'
+                    paddingRight: 8 
+                    textTransform: 'uppercase'   
+                    color: '#ccc'              
+                  attribute.name 
+
+                for val in user_val
+                  SPAN 
+                    style: 
+                      fontSize: 12
+                      color: if is_grouped then get_color_for_group(val or 'Unreported')
+                      whiteSpace: 'nowrap'
+                      paddingRight: 8
+                    val or 'Unreported'
+
+
     tooltip.coords = $(e.target).offset()
+    tooltip.coords.left += e.target.offsetWidth / 2
     tooltip.tip = name
     save tooltip
     e.preventDefault()
+
+
+
+
 
 hide_tooltip = (e) ->
   if e.target.getAttribute('data-user') && e.target.getAttribute('data-tooltip')
@@ -56,9 +132,7 @@ hide_tooltip = (e) ->
       e.target.setAttribute('title', e.target.getAttribute('data-title'))
       e.target.removeAttribute('data-title')
 
-    tooltip = fetch 'tooltip'
-    tooltip.coords = null
-    save tooltip
+    clearTooltip()
 
 
 
@@ -116,8 +190,9 @@ window.avatar = (user, props) ->
   # Setting avatar image
   #   Don't show one if it should be anonymous or the user doesn't have one
   #   Default to small size if the width is small  
-  anonymous = attrs.anonymous? && attrs.anonymous 
+  anonymous = (user.key != arest.cache['/current_user']?.user) && (attrs.anonymous? && attrs.anonymous) 
   src = null
+
   if !anonymous && !props.custom_bg_color && user.avatar_file_name 
     if style?.width >= 50 && !browser.is_ie9
       img_size = 'large'
@@ -151,7 +226,7 @@ window.avatar = (user, props) ->
   attrs = _.extend attrs,
     key: user.key
     className: "avatar #{props.className or ''}"
-    'data-user': user.key
+    'data-user': if anonymous then -1 else user.key
     'data-tooltip': if !props.hide_tooltip then alt 
     'data-anon': anonymous  
     tabIndex: if props.focusable then 0 else -1
@@ -196,7 +271,7 @@ styles += """
   border-radius: 50%;
   background-size: cover;
   background-color: #{default_avatar_in_histogram_color}; 
-  transition: width 1s, height 1s, transform 500ms, background-color 1s, opacity 50ms;
+  transition: width 750ms, height 750ms, transform 750ms, background-color 750ms, opacity 50ms;
   user-select: none; 
   -moz-user-select: none; 
   -webkit-user-select: none;

@@ -68,7 +68,7 @@ window.CollapsedProposal = ReactiveComponent
 
     opinion_views = fetch 'opinion_views'
     just_you = opinion_views.active_views['just_you']
-    everyone = !!opinion_views.active_views['everyone'] || !!opinion_views.active_views['weighed_by_activity'] || !!opinion_views.active_views['weighed_by_recency']
+    everyone = !!opinion_views.active_views['everyone'] || !!opinion_views.active_views['weighed_by_substantiated'] || !!opinion_views.active_views['weighed_by_recency']
 
     opinion_publish_permission = permit('publish opinion', proposal, subdomain)
 
@@ -204,7 +204,7 @@ window.CollapsedProposal = ReactiveComponent
           DIV 
             style: 
               fontSize: 12
-              color: 'black' #'#999'
+              color: '#555' #'#999'
               marginTop: 4
               #fontStyle: 'italic'
 
@@ -257,7 +257,7 @@ window.CollapsedProposal = ReactiveComponent
                         id: "engage.point_count"
                         cnt: proposal.point_count
 
-                        "{cnt, plural, one {# consideration} other {# considerations}}"
+                        "{cnt, plural, one {# pro or con} other {# pros and cons}}"
 
                       if proposal.active && permit('create point', proposal, subdomain) > 0
                         [
@@ -373,6 +373,10 @@ window.CollapsedProposal = ReactiveComponent
           handle_style: 
             opacity: if just_you && !browser.is_mobile && @local.hover_proposal != proposal.key && !@local.slider_has_focus then 0 else 1             
           offset: true
+          ticks: 
+            increment: .5
+            height: 2
+
           handle_props:
             use_face: false
           label: translator
@@ -415,85 +419,235 @@ window.CollapsedProposal = ReactiveComponent
               save @local
     
       # little score feedback
-      if show_proposal_scores
-        HistogramScores
-          proposal: proposal
+      if show_proposal_scores        
+        DIV 
+          style: 
+            position: 'absolute'
+            left: "calc(100% + 22px)"
+            top: 9
 
-HistogramScores = ReactiveComponent
+          HistogramScores
+            proposal: proposal
+
+window.HistogramScores = ReactiveComponent
   displayName: 'HistogramScores'
 
   render: ->
     proposal = @props.proposal
-    
-    score = 0
 
     {weights, salience, groups} = compose_opinion_views(opinions, proposal)
     opinions = get_opinions_for_proposal opinions, proposal, weights
 
-    weight = 0
-    for o in opinions 
-      w = weights[o.user.key or o.user]
-      score += o.stance * w
-      weight += w
-    avg = score / weight
-    negative = score < 0
-    score *= -1 if negative
 
-    score = pad score.toFixed(1),2
+    if opinions.length == 0 
+      return SPAN null
 
-    val = "0000 opinion#{if opinions.length != 1 then 's' else ''}"
-    score_w = widthWhenRendered(' opinion' + (if opinions.length != 1 then 's' else ''), {fontSize: 12}) + widthWhenRendered("0000", {fontSize: 20})
+    all_groups = get_user_groups_from_views groups
+    has_groups = !!all_groups
+
 
     show_tooltip = => 
-      if opinions.length > 0
+      if has_groups && opinions.length > 0
         tooltip = fetch 'tooltip'
-        tooltip.coords = $(@refs.score.getDOMNode()).offset()
-        tooltip.tip = translator({id: "engage.proposal_score_summary.explanation", percentage: Math.round(avg * 100)}, "Average rating is {percentage}%")
+        anchor = $(@refs.score.getDOMNode())
+        tooltip.coords = anchor.offset()
+        tooltip.offsetY = anchor[0].offsetHeight + 8
+        tooltip.offsetX = anchor[0].offsetWidth
+        tooltip.positioned = 'right'
+        tooltip.top = false
+        colors = get_color_for_groups all_groups
+
+        legend_color_size = 28
+
+        rating_str = "0000 / 00%"
+
+        group_scores = {}
+
+        for group in all_groups 
+
+          weight = 0
+          cnt = 0
+          score = 0
+          for o in opinions 
+            continue if salience[o.user.key or o.user] < 1 or group not in groups[o.user.key or o.user]
+            w = weights[o.user.key or o.user]
+            score += o.stance * w
+            weight += w
+            cnt += 1
+          avg = score / weight
+          if weight > 0 
+            group_scores[group] = {avg, cnt}
+
+        visible_groups = Object.keys group_scores
+        visible_groups.sort (a,b) -> group_scores[b].avg - group_scores[a].avg
+
+        separator_inserted = false 
+
+        items = visible_groups.slice()
+
+        if items.length > 1
+          separator_idx = 0
+          for group,idx in items 
+            {avg, cnt} = group_scores[group]
+            if idx != 0 && group_scores[items[idx - 1]].avg > overall_avg \
+                        && group_scores[items[idx]].avg <= overall_avg 
+              separator_idx = idx 
+              break 
+          items.splice separator_idx, 0, 'avg_separator'
+
+        tooltip.render =  =>
+          opinion_views = fetch 'opinion_views'
+          DIV 
+            style: 
+              padding: "12px 12px 12px 18px"
+
+            DIV 
+              style:
+                marginBottom: 12
+              "Grouped by: #{opinion_views.active_views.group_by.name}"
+
+            UL 
+              'aria-hidden': true
+              style: 
+                listStyle: 'none'
+
+              for group,idx in items 
+                insert_separator = group == 'avg_separator' 
+
+                if insert_separator
+                  separator_inserted = true 
+                else 
+                  {avg, cnt} = group_scores[group]
+
+                diff = avg - overall_avg
+
+                LI 
+                  style: 
+                    fontSize: 14
+                    display: 'flex'
+                    alignItems: 'center'
+                    marginBottom: 16
+
+                  DIV 
+                    style: 
+                      borderRadius: '50%'
+                      backgroundColor: colors[group]
+                      width: legend_color_size
+                      height: legend_color_size
+                      display: 'inline-block'
+                      border: '1px solid white'
+                      boxShadow: "inset 0 -1px 2px 0 rgba(0,0,0,0.16)"
+                      visibility: if insert_separator then 'hidden'
+
+                  DIV 
+                    style: 
+                      paddingLeft: 12
+
+                    DIV 
+                      style: 
+                        fontWeight: 500
+                        fontFamily: 'Fira Sans Condensed'
+                        textAlign: if insert_separator then 'right'
+
+                      if !insert_separator
+                        group
+                      else 
+                        "Overall average opinion:"
+
+                    
+                    if !insert_separator
+                      DIV 
+                        style: 
+                          color: 'white'
+                          marginTop: -2
+                          fontSize: 11
+
+                        "#{Math.round(avg * 100)}% • "
+                        TRANSLATE
+                          id: "engage.proposal_score_summary"
+                          num_opinions: cnt 
+                          "{num_opinions, plural, =0 {no opinions} one {# opinion} other {# opinions} }"
+
+                  DIV 
+                    style: 
+                      color: if insert_separator then 'white' else if diff < 0 then '#ff3636' else '#21e621'
+                      textAlign: 'right'
+                      flex: 1
+                      paddingLeft: 16
+                      fontSize: 12
+                      fontWeight: 600
+
+                    if insert_separator
+                      "#{Math.round(overall_avg * 100)}%" 
+                    else 
+                      "#{if diff > 0 then '+' else ''}#{Math.round(diff * 100)}%"
+
+
+
+
         save tooltip
-    hide_tooltip = => 
-      tooltip = fetch 'tooltip'
-      tooltip.coords = null
-      save tooltip
+
+
+    overall_score = 0
+    overall_weight = 0
+    overall_cnt = 0
+    for o in opinions 
+      continue if salience[o.user.key or o.user] < 1
+      w = weights[o.user.key or o.user]
+      overall_score += o.stance * w
+      overall_weight += w
+      overall_cnt += 1
+    overall_avg = overall_score / overall_weight
+    negative = overall_score < 0
+    overall_score *= -1 if negative
+
+    score = pad overall_score.toFixed(1),2
+
 
     DIV 
       'aria-hidden': true
       ref: 'score'
       style: 
-        position: 'absolute'
-        right: -18 - score_w
-        top: 23 #40 - 12
         textAlign: 'left'
+        whiteSpace: 'nowrap'
+
 
       onFocus: show_tooltip
       onMouseEnter: show_tooltip
-      onBlur: hide_tooltip
-      onMouseLeave: hide_tooltip
+      onBlur: clearTooltip
+      onMouseLeave: clearTooltip
+
 
       SPAN 
         style: 
-          color: '#999'
-          fontSize: 20
-          #fontWeight: 600
+          color: '#555'
           cursor: 'default'
-          lineHeight: 1
+          lineHeight: .8
+          fontSize: 11
 
         TRANSLATE
           id: "engage.proposal_score_summary"
-          small: 
-            component: SPAN 
-            args: 
-              style: 
-                color: '#999'
-                fontSize: 12
-                cursor: 'default'
-                verticalAlign: 'baseline'
-          num_opinions: opinions.length 
-          "{num_opinions, plural, =0 {<small>no opinions</small>} one {# <small>opinion</small>} other {# <small>opinions</small>} }"
 
+          num_opinions: overall_cnt 
+          "{num_opinions, plural, =0 {no opinions} one {# opinion} other {# opinions} }"
 
+        DIV 
+          style: 
+            position: 'relative'
+            top: -4
+      
+          TRANSLATE
+            id: "engage.proposal_score_summary.explanation"
+            percentage: Math.round(overall_avg * 100) 
+            "{percentage}% average"
 
-
-
+        if has_groups
+          DIV 
+            style: 
+              color: focus_color()
+              position: 'relative'
+              top: -4
+            'by group' 
 
 
 

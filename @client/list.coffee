@@ -471,20 +471,20 @@ window.ListHeader = ReactiveComponent
                   list: @props.list
                   fresh: @props.fresh
 
-          if edit_list.editing || !is_collapsed
-            DIV 
-              style: 
-                position: 'relative'
-                marginTop: if get_list_title(list_key, null, subdomain)?.length > 0 || edit_list.editing then  18
-                display: if !edit_list.editing && category_value(list_key, null, subdomain).length + histo_title(list_key).length == 0 then 'none'
+          # if edit_list.editing || !is_collapsed
+          #   DIV 
+          #     style: 
+          #       position: 'relative'
+          #       marginTop: if get_list_title(list_key, null, subdomain)?.length > 0 || edit_list.editing then  18
+          #       display: if !edit_list.editing && category_value(list_key, null, subdomain).length + histo_title(list_key).length == 0 then 'none'
 
-              EditableListCategory
-                list: @props.list
-                fresh: @props.fresh
+          #     EditableListCategory
+          #       list: @props.list
+          #       fresh: @props.fresh
 
-              EditableOpinionLabel
-                list: @props.list
-                fresh: @props.fresh
+          #     EditableOpinionLabel
+          #       list: @props.list
+          #       fresh: @props.fresh
 
         if edit_list.editing
 
@@ -840,7 +840,7 @@ EditableTitle = ReactiveComponent
     edit_list = fetch "edit-#{list_key}"
     subdomain = fetch '/subdomain'
 
-    title = get_list_title list_key, is_collapsed, subdomain
+    title = get_list_title list_key, true, subdomain
 
     list_uncollapseable = customization 'list_uncollapseable', list_key, subdomain
     TITLE_WRAPPER = if list_uncollapseable then DIV else BUTTON
@@ -937,134 +937,134 @@ EditableTitle = ReactiveComponent
                     verticalAlign: 'top'
 
 
-EditableListCategory = ReactiveComponent
-  displayName: 'EditableListCategory'
-  render: -> 
-    subdomain = fetch '/subdomain'
-    current_user = fetch '/current_user'
+# EditableListCategory = ReactiveComponent
+#   displayName: 'EditableListCategory'
+#   render: -> 
+#     subdomain = fetch '/subdomain'
+#     current_user = fetch '/current_user'
 
-    list = @props.list
-    list_key = list.key
-    list_state = fetch list_key
-    edit_list = fetch "edit-#{list_key}"
+#     list = @props.list
+#     list_key = list.key
+#     list_state = fetch list_key
+#     edit_list = fetch "edit-#{list_key}"
 
-    category = category_value list_key, @props.fresh, subdomain
+#     category = category_value list_key, @props.fresh, subdomain
 
-    has_title = customization('list_description', list_key)?.length > 0 || customization('list_title', list_key)?.length > 0
-    heading_style = _.defaults {}, customization('list_label_style', list_key),
-      fontSize: if !has_title then 44 else 36
-      fontWeight: if !has_title then 700 else 500
-      fontFamily: header_font()
+#     has_title = customization('list_description', list_key)?.length > 0 || customization('list_title', list_key)?.length > 0
+#     heading_style = _.defaults {}, customization('list_label_style', list_key),
+#       fontSize: if !has_title then 44 else 36
+#       fontWeight: if !has_title then 700 else 500
+#       fontFamily: header_font()
 
-    show_opinion_header = edit_list.editing || widthWhenRendered(category, heading_style) <= column_sizes().first + column_sizes().gutter
+#     show_opinion_header = edit_list.editing || widthWhenRendered(category, heading_style) <= column_sizes().first + column_sizes().gutter
 
-    DIV 
-      style: 
-        width: if show_opinion_header then column_sizes().first else '100%'
-        display: 'inline-block'
+#     DIV 
+#       style: 
+#         width: if show_opinion_header then column_sizes().first else '100%'
+#         display: 'inline-block'
 
-      if edit_list.editing 
-        DIV 
-          className: 'LIST-field-edit-label'
+#       if edit_list.editing 
+#         DIV 
+#           className: 'LIST-field-edit-label'
 
-          TRANSLATE
-            id: "engage.list-config-category"
-            span: 
-              component: SPAN 
-              args: 
-                style: 
-                  fontWeight: 700
+#           TRANSLATE
+#             id: "engage.list-config-category"
+#             span: 
+#               component: SPAN 
+#               args: 
+#                 style: 
+#                   fontWeight: 700
 
-            "<span>Category.</span> e.g. \"Ideas\", \"Policies\", \"Questions\", \"Strategies\"."
+#             "<span>Category.</span> e.g. \"Ideas\", \"Policies\", \"Questions\", \"Strategies\"."
 
-      H1 null,
+#       H1 null,
 
-        if edit_list.editing
-          AutoGrowTextArea
-            id: "category-#{list_key}"
-            ref: 'input'
-            className: "LIST-header LIST-fat-header-field #{if has_title then 'LIST-smaller-header'}"
-            style: _.defaults {}, customization('list_label_style', list_key) or {}, 
-              fontFamily: header_font()
-              width: column_sizes().first + 24
+#         if edit_list.editing
+#           AutoGrowTextArea
+#             id: "category-#{list_key}"
+#             ref: 'input'
+#             className: "LIST-header LIST-fat-header-field #{if has_title then 'LIST-smaller-header'}"
+#             style: _.defaults {}, customization('list_label_style', list_key) or {}, 
+#               fontFamily: header_font()
+#               width: column_sizes().first + 24
 
-            defaultValue: category
-            onChange: (e) ->
-              edit_list.list_category = e.target.value 
-              save edit_list
-        else 
-          SPAN 
-            className: if !has_title then 'LIST-header' else 'LIST-header LIST-smaller-header'          
-            style: _.defaults {}, customization('list_label_style', list_key) or {}
-            category
+#             defaultValue: category
+#             onChange: (e) ->
+#               edit_list.list_category = e.target.value 
+#               save edit_list
+#         else 
+#           SPAN 
+#             className: if !has_title then 'LIST-header' else 'LIST-header LIST-smaller-header'          
+#             style: _.defaults {}, customization('list_label_style', list_key) or {}
+#             category
 
 
-EditableOpinionLabel = ReactiveComponent
-  displayName: 'EditableOpinionLabel'
-  render: -> 
-    subdomain = fetch '/subdomain'
-    current_user = fetch '/current_user'
+# EditableOpinionLabel = ReactiveComponent
+#   displayName: 'EditableOpinionLabel'
+#   render: -> 
+#     subdomain = fetch '/subdomain'
+#     current_user = fetch '/current_user'
 
-    list = @props.list
-    list_key = list.key
-    list_state = fetch list_key
-    edit_list = fetch "edit-#{list_key}"
+#     list = @props.list
+#     list_key = list.key
+#     list_state = fetch list_key
+#     edit_list = fetch "edit-#{list_key}"
 
-    opinion_title = histo_title list_key
+#     opinion_title = histo_title list_key
 
-    has_title = customization('list_description', list_key)?.length > 0 || customization('list_title', list_key)?.length > 0
-    heading_style = _.defaults {}, customization('list_label_style', list_key),
-      fontSize: if !has_title then 44 else 36
-      fontWeight: if !has_title then 700 else 500
-      fontFamily: header_font()
+#     has_title = customization('list_description', list_key)?.length > 0 || customization('list_title', list_key)?.length > 0
+#     heading_style = _.defaults {}, customization('list_label_style', list_key),
+#       fontSize: if !has_title then 44 else 36
+#       fontWeight: if !has_title then 700 else 500
+#       fontFamily: header_font()
 
-    show = edit_list.editing || widthWhenRendered(category_value(list_key, null, subdomain), heading_style) <= column_sizes().first + column_sizes().gutter
+#     show = edit_list.editing || widthWhenRendered(category_value(list_key, null, subdomain), heading_style) <= column_sizes().first + column_sizes().gutter
     
-    DIV 
-      style: 
-        width: column_sizes().second
-        display: if show then 'inline-block' else 'none'
-        marginLeft: column_sizes().gutter
-        textAlign: 'right'
+#     DIV 
+#       style: 
+#         width: column_sizes().second
+#         display: if show then 'inline-block' else 'none'
+#         marginLeft: column_sizes().gutter
+#         textAlign: 'center'
 
-      if edit_list.editing 
-        DIV 
-          className: 'LIST-field-edit-label'
-          style: 
-            textAlign: 'right'
+#       if edit_list.editing 
+#         DIV 
+#           className: 'LIST-field-edit-label'
+#           style: 
+#             textAlign: 'right'
 
-          TRANSLATE
-            id: "engage.list-config-opinion-title"
-            span: 
-              component: SPAN 
-              args: 
-                style: 
-                  fontWeight: 700
+#           TRANSLATE
+#             id: "engage.list-config-opinion-title"
+#             span: 
+#               component: SPAN 
+#               args: 
+#                 style: 
+#                   fontWeight: 700
 
-            "<span>Opinion title.</span> e.g. \"Ratings\", \"Gut checks\"."
+#             "<span>Opinion title.</span> e.g. \"Ratings\", \"Gut checks\"."
 
 
-      H1 null,
-        if edit_list.editing
-          AutoGrowTextArea
-            id: "list_opinions_title-#{list_key}"
-            ref: 'input'
-            className: "LIST-header LIST-fat-header-field #{if has_title then 'LIST-smaller-header'}"
-            style: _.defaults {}, customization('list_label_style', list_key) or {},  
-              fontFamily: header_font()
-              width: column_sizes().second + 24
-              textAlign: 'right'
+#       H1 null,
+#         if edit_list.editing
+#           AutoGrowTextArea
+#             id: "list_opinions_title-#{list_key}"
+#             ref: 'input'
+#             className: "LIST-header LIST-fat-header-field #{if has_title then 'LIST-smaller-header'}"
+#             style: _.defaults {}, customization('list_label_style', list_key) or {},  
+#               fontFamily: header_font()
+#               width: column_sizes().second + 24
+#               textAlign: 'right'
 
-            defaultValue: opinion_title
-            onChange: (e) ->
-              edit_list.list_opinions_title = e.target.value 
-              save edit_list
+#             defaultValue: opinion_title
+#             onChange: (e) ->
+#               edit_list.list_opinions_title = e.target.value 
+#               save edit_list
 
-        else 
-          SPAN 
-            className: if !has_title then 'LIST-header' else 'LIST-header LIST-smaller-header'
-            style: _.defaults {}, customization('list_label_style', list_key) or {}
-            opinion_title
+#         else 
+#           SPAN 
+#             className: if !has_title then 'LIST-header' else 'LIST-header LIST-smaller-header'
+#             style: _.defaults {}, customization('list_label_style', list_key) or {}
+#             opinion_title
 
 
 EditableDescription = ReactiveComponent
@@ -1167,76 +1167,72 @@ window.list_actions = (props) ->
     className: 'list_actions'
     style: 
       marginBottom: 50
-
-    if add_new
-
-      SPAN null, 
-        A
-          style: 
-            textDecoration: 'underline'
-            fontSize: 20
-            color: focus_color()
-            fontFamily: customization('font')
-            fontStyle: 'normal'
-            fontWeight: 700
-          onClick: (e) => 
-            list_state = fetch list_key
-            list_state.show_all_proposals = true 
-            save list_state
-            e.stopPropagation()
-
-            wait_for = ->
-              add_new_button = $("[name='new_#{props.list.key.substring(5)}']")
-              if add_new_button.length > 0 
-                add_new_button.ensureInView()
-                add_new_button.click()
-              else 
-                setTimeout wait_for, 1
-
-            wait_for()
-
-          translator "engage.add_new_proposal_to_list", 'add new'
-
-    if props.can_sort && add_new
-      SPAN 
-        style: 
-          padding: '0 24px'
-          fontSize: 20
-        '|'
-
-    if props.can_sort
-      SortProposalsMenu()
-
-
-
-    OpinionViews
-      style: 
-        display: 'inline-block'
-        float: 'right'
-        maxWidth: column_sizes().second
-        textAlign: 'right'
-      enable_comparison_wrapper_style: 
-        position: 'absolute'
-        right: 0 
-        bottom: -20
-        fontSize: 14
-        zIndex: 99
-      
+      marginTop: 24
+      display: 'flex'
 
     DIV 
       style: 
-        clear: 'both'
+        width: column_sizes().first
+        marginRight: column_sizes().gutter
+        display: 'flex'
+
+      if add_new
+
+        SPAN null, 
+          A
+            style: 
+              textDecoration: 'underline'
+              fontSize: 20
+              color: focus_color()
+              fontFamily: customization('font')
+              fontStyle: 'normal'
+              fontWeight: 700
+            onClick: (e) => 
+              list_state = fetch list_key
+              list_state.show_all_proposals = true 
+              save list_state
+              e.stopPropagation()
+
+              wait_for = ->
+                add_new_button = $("[name='new_#{props.list.key.substring(5)}']")
+                if add_new_button.length > 0 
+                  add_new_button.ensureInView()
+                  add_new_button.click()
+                else 
+                  setTimeout wait_for, 1
+
+              wait_for()
+
+            translator "engage.add_new_proposal_to_list", 'add new'
+
+      if props.can_sort && add_new
+        SPAN 
+          style: 
+            padding: '0 24px'
+            fontSize: 20
+          # '|'
+
+      if props.can_sort
+        SortProposalsMenu()
+        
+
+    OpinionViews
+      style: 
+        width: column_sizes().second
+      additional_width: column_sizes().gutter + column_sizes().first
+
+
 
 
 window.get_list_title = (list_key, include_category_value, subdomain) -> 
   edit_list = fetch "edit-#{list_key}"
 
-  title = (edit_list.editing and edit_list.list_title) or customization('list_title', list_key, subdomain) 
+  title = (edit_list.editing and edit_list.list_title)
+  title ?= customization('list_title', list_key, subdomain)
   if include_category_value
     title ?= category_value list_key, null, subdomain
-  title ?= ""
 
-  if title == 'Show all'
+  if title == 'Show all' || !title?
     title = translator "engage.all_proposals_list", "All Proposals"
   else if title == 'Proposals'
     title = translator "engage.default_proposals_list", "Proposals"

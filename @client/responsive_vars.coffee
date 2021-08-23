@@ -94,7 +94,7 @@ setResponsive = ->
     POINT_FONT_SIZE: point_font_size
     AUTH_WIDTH: if browser.is_mobile then content_width else Math.max decision_board_width, 720
     TWO_COL: two_col
-    SLIDER_HANDLE_SIZE: if two_col then 65 else 25
+    SLIDER_HANDLE_SIZE: if two_col then 65 else 36
     CONTENT_WIDTH: content_width
     PORTRAIT_MOBILE: portrait && browser.is_mobile
     LANDSCAPE_MOBILE: !portrait && browser.is_mobile

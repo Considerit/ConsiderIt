@@ -119,7 +119,7 @@ require './shared'
 # hovering over the histogram. It defines the opinion bounds within which 
 # opinions are selected. Opinions = [-1, 1]. REGION_SELECTION_WIDTH is 
 # on this scale. 
-REGION_SELECTION_WIDTH = .25
+window.REGION_SELECTION_WIDTH = .25
 
 # Controls the size of the vertical space at the top of 
 # the histogram that gives some space for users to hover over 
@@ -208,8 +208,7 @@ window.Histogram = ReactiveComponent
 
     @local.dirty == dirtied
 
-    if !@props.draw_base_labels?
-      @props.draw_base_labels = true
+    @props.draw_base_labels ?= true
 
 
     @props.enable_individual_selection &&= opinions.length > 0
@@ -356,6 +355,7 @@ window.Histogram = ReactiveComponent
           'content-visibility': 'auto'
 
         HistoAvatars
+          key: @props.proposal.key or @props.proposal        
           dirtied: dirtied
           weights: @weights
           salience: @salience
@@ -363,7 +363,6 @@ window.Histogram = ReactiveComponent
           avatar_size: @local.avatar_size 
           enable_individual_selection: @props.enable_individual_selection
           enable_range_selection: @props.enable_range_selection
-          proposal: @props.proposal
           height: @props.height 
           backgrounded: @props.backgrounded
           opinions: @opinions 
@@ -751,7 +750,7 @@ HistoAvatars = ReactiveComponent
 
     DIV 
       id: @props.histocache_key
-      key: @props.proposal.key or @props.proposal
+      key: @props.key or @local.key
       ref: 'histo'
       'data-receive-viewport-visibility-updates': 2
       'data-component': @local.key      
@@ -766,7 +765,6 @@ HistoAvatars = ReactiveComponent
 
         for opinion, idx in @props.opinions
           user = fetch opinion.user
-
           o = fetch(opinion) # subscribe to changes so physics sim will get rerun...
 
           # sub_creation = new Date(fetch('/subdomain').created_at).getTime()

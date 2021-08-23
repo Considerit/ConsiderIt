@@ -105,8 +105,7 @@ window.Slider = ReactiveComponent
 
     slider = fetch @props.key
 
-    if !@props.draw_handle?
-      @props.draw_handle = true
+    @props.draw_handle ?= true
 
     # initialize
     if !slider.value?
@@ -586,14 +585,27 @@ slider_handle.triangley = (props) ->
 
 
 slider_handle.flat = (props) -> 
+  return \
+    DIV 
+      style: 
+        borderRadius: '50%'
+        position: 'absolute'
+        top: 0
+        zIndex: 10
+        height: props.handle_height
+        width: props.handle_width        
+        backgroundColor: focus_color()
+        boxShadow: 'inset 0 -1px 2px rgba(0,0,0,.3), 0 1px 1px rgba(0,0,0,.2)'
+
+
   svg_props = 
     height: props.handle_height
     width: props.handle_width
     viewBox: "-2 -1 104 104"
     style: 
       pointerEvents: 'none'
-      position: 'absolute'
-      top: 0
+      # position: 'absolute'
+      # top: 0
       zIndex: 10
       filter: if props.has_focus then "drop-shadow(0 0 3px rgba(0,0,0,.5))"
 

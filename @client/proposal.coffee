@@ -1217,97 +1217,68 @@ GroupSelectionRegion = ReactiveComponent
     has_histogram_focus = single_opinion_selected || region_selected
     return SPAN null if !has_histogram_focus
 
+    wrapper_width = BODY_WIDTH() + 160
+
+    # draw a bubble mouth
+    w = 36; h = 24
+
+    margin = wrapper_width - PROPOSAL_HISTO_WIDTH()
+    stance = (region_selected or single_opinion_selected).opinion_value
+    if region_selected
+      left = translateStanceToPixelX(1 / 0.75 * stance, PROPOSAL_HISTO_WIDTH()) + margin / 2 - w / 2
+    else 
+      avatar_in_histo = document.querySelector("[data-opinion='#{single_opinion_selected.opinion}'")
+      left = margin / 2 + avatar_in_histo.getBoundingClientRect().left - avatar_in_histo.parentElement.getBoundingClientRect().left
+
     DIV 
       style: 
-        width: BODY_WIDTH() + 160
+        width: wrapper_width
         border: "3px solid #{if get_selected_point() then '#eee' else focus_color() }"
         height: '100%'
         position: 'absolute'
         borderRadius: 16
         marginLeft: -BODY_WIDTH()/2 - 80
         left: '50%'
-        top: 18
+        top: 4 #18
 
-      # draw a bubble mouth
-      if region_selected
-        w = 40; h = 30
-        left = translateStanceToPixelX(region_selected.opinion_value, BODY_WIDTH()) + 10
 
-        DIV 
-          style: cssTriangle 'top', \
-                             (if get_selected_point() then '#eee' else focus_color()), \
-                             w, h,               
-                                position: 'relative'
-                                top: -32
-                                left: left
+      DIV 
+        style: cssTriangle 'top', \
+                           (if get_selected_point() then '#eee' else focus_color()), \
+                           w, h,               
+                              position: 'relative'
+                              top: -26
+                              left: left
 
-          DIV
-            style: cssTriangle 'top', 'white', w - 1, h - 1,
-              position: 'relative'
-              left: -(w - 2)/2
-              top: 6
+        DIV
+          style: cssTriangle 'top', 'white', w - 1, h - 1,
+            position: 'relative'
+            left: -(w - 2)/2
+            top: 6
 
-      # draw a name + avatar display for the selected opinion
-      else 
-        place_avatar_opinion_value = \
-             if single_opinion_selected.opinion_value > 0 then .66 else -.8
-        left = translateStanceToPixelX(place_avatar_opinion_value, BODY_WIDTH() + 160)
 
-        avatar_size = 80
+      if single_opinion_selected
+        # display a name for the selected opinion
+
+
+        avatar_height = avatar_in_histo.offsetHeight
+
+        name_style = 
+          fontSize: 30
+          fontWeight: 600
+
         user = fetch(fetch(single_opinion_selected.opinion).user)
         name = user.name or 'Anonymous'
         title = "#{name}'#{if name[name.length - 1] != 's' then 's' else ''} Opinion"
-
-        name_width = widthWhenRendered(title, {fontSize: '30px', fontWeight: '600'})
-
-        if single_opinion_selected.opinion_value > 0
-          name_style = 
-            left: -28 - avatar_size * .5 - name_width 
-            borderTopLeftRadius: 16
-            paddingRight: avatar_size * .75
-            paddingLeft: 18
-
-        else
-          name_style = 
-            left: avatar_size / 4
-            borderTopRightRadius: 16
-            paddingLeft: avatar_size * .75
-            paddingRight: 18
-              
-        DIV 
-          style: 
-            left: left
+        name_width = widthWhenRendered(title, name_style)
+        DIV
+          style: _.extend name_style,
             position: 'absolute'
-            zIndex: 1
-
-          DIV null,
-            Avatar 
-              key: user
-              user: user
-              hide_popover: true
-              style: 
-                position: 'absolute'
-                width: avatar_size
-                height: avatar_size
-                top: -avatar_size * .75
-                left: -avatar_size/4
-                zIndex: 99 
-                border: "3px solid #{focus_color()}"
-
-            DIV 
-              style: _.extend name_style,
-                position: 'absolute'
-                backgroundColor: focus_color()
-                paddingTop: 8
-                paddingBottom: 8
-                color: 'white'
-                top: -58
-                width: name_width + 10 + 18 + avatar_size * .75 + 10
-
-              SPAN 
-                style: 
-                  fontSize: 30
-                title      
+            top: -(avatar_height + 172)
+            color: focus_color()
+            left: Math.min(wrapper_width - name_width - 10, Math.max(0, left - name_width / 2))
+          title 
+  
 
 
 

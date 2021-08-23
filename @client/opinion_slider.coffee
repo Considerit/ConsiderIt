@@ -55,7 +55,7 @@ window.OpinionSlider = ReactiveComponent
         key: @props.key
         width: @props.width
         handle_height: SLIDER_HANDLE_SIZE()
-        base_height: 6
+        base_height: 0 # 6
         base_color: 'transparent'
         # base_color: if @props.focused 
         #               'rgb(175, 215, 255)' 
@@ -68,13 +68,13 @@ window.OpinionSlider = ReactiveComponent
         handle: if @props.backgrounded 
                   slider_handle.flat 
                 else 
-                  customization('slider_handle', @proposal)
+                  customization('slider_handle', @proposal) or slider_handle.flat
         handle_props: 
           color: if @props.backgrounded then '#ccc' else focus_color()
           detail: @props.focused
         handle_style: 
           transition: "transform #{TRANSITION_SPEED}ms"
-          transform: "scale(#{if !@props.focused || slider.docked then 1 else 2.5})"
+          transform: "scale(#{if !@props.focused || slider.docked then 1 else 1.75})"
           visibility: if !show_handle then 'hidden'
         
         onMouseUpCallback: @handleMouseUp

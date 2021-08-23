@@ -1,5 +1,5 @@
 require './shared'
-require './tooltip'
+require './popover'
 require './customizations'
 
 
@@ -22,129 +22,176 @@ user_name = (user, anon) ->
   else 
     user.name
 
-##########
-# Performance hack.
-# Was seeing major slowdown on pages with lots of avatars simply because we
-# were attaching a mouseover and mouseout event on each and every Avatar for
-# the purpose of showing a tooltip name. So we use event delegation instead. 
-show_tooltip = (e) ->
-  if e.target.getAttribute('data-user') && e.target.getAttribute('data-tooltip')
-    user = fetch(e.target.getAttribute('data-user'))
 
-    anonymous = user.key != fetch('/current_user').user && (customization('anonymize_everything') || e.target.getAttribute('data-anonymous') == 'true')
 
-    current_user = fetch('/current_user')
-    name = e.target.getAttribute('data-tooltip')
-    
+window.AvatarPopover = ReactiveComponent
+  displayName: 'AvatarPopover' 
+
+  render: -> 
+    {user, anon, opinion} = @props
+    user = fetch user
+
+    anonymous = user.key != fetch('/current_user').user && (customization('anonymize_everything') || anon)      
     opinion_views = fetch 'opinion_views'
 
     attributes = get_participant_attributes()
     grouped_by = opinion_views.active_views.group_by
 
-    tooltip = fetch 'tooltip'
+    name = user_name user, anonymous
 
-    tooltip.render = ->
+    has_opinion = opinion?
+    if has_opinion
+      opinion = fetch(opinion)    
+      stance = opinion.stance 
+      if stance > .01
+        alt = "#{(stance * 100).toFixed(0)}%"
+      else if stance < -.01
+        alt = "–#{(stance * -100).toFixed(0)}%"
+      else 
+        alt = translator "engage.histogram.user_is_neutral", "is neutral"
+
+
+    DIV 
+      style: 
+        padding: '8px 4px'
+        position: 'relative'
+
+
       DIV 
         style: 
-          padding: '8px 4px'
-          color: 'white'
-          position: 'relative'
+          display: 'flex'
+          # alignItems: 'center'
 
+        if user.avatar_file_name
+          IMG 
+            style: 
+              width: 120
+              height: 120
+              borderRadius: '50%'
+              marginRight: 24
+              display: 'inline-block' 
+            src: avatarUrl user, 'large'
 
-        DIV 
-          style: 
-            display: 'flex'
-            alignItems: 'center'
-
-          if user.avatar_file_name
-            IMG 
-              style: 
-                width: 70
-                height: 70
-                borderRadius: '50%'
-                marginRight: 10
-                display: 'inline-block' 
-              src: avatarUrl user, 'large'
+        DIV null,
+          
 
           DIV 
             style: 
               fontFamily: 'Fira Sans Condensed'
-              fontSize: 18
-
+              fontSize: 18  
+              fontWeight: 'bold'       
             name
 
-        if !anonymous
 
-          UL 
-            style:
-              listStyle: 'none'
-              marginTop: 4
+          if !anonymous
 
-            for attribute in attributes
-              is_grouped = grouped_by && grouped_by.name == attribute.name
+            UL 
+              style:
+                listStyle: 'none'
+                marginTop: 4
 
-              user_val = user.tags[attribute.key]
+              for attribute in attributes
+                is_grouped = grouped_by && grouped_by.name == attribute.name
 
-              if typeof user_val == "string" && user_val?.indexOf ',' > -1 
-                user_val = user_val.split(',')
-              else if is_grouped
-                user_val = [user_val]
+                user_val = user.tags[attribute.key]
 
-              continue if !is_grouped && !user_val
+                if typeof user_val == "string" && user_val?.indexOf ',' > -1 
+                  user_val = user_val.split(',')
+                else if is_grouped
+                  user_val = [user_val]
 
-              LI 
-                style: 
-                  padding: '1px 0'
+                continue if !is_grouped && !user_val
 
-                SPAN 
+                LI 
                   style: 
-                    fontFamily: 'Fira Sans Condensed'
-                    fontSize: 12
-                    # fontStyle: 'italic'
-                    paddingRight: 8 
-                    textTransform: 'uppercase'   
-                    color: '#ccc'              
-                  attribute.name 
+                    padding: '1px 0'
 
-                for val in user_val
                   SPAN 
                     style: 
-                      fontSize: 12
-                      color: if is_grouped then get_color_for_group(val or 'Unreported')
-                      whiteSpace: 'nowrap'
+                      fontFamily: 'Fira Sans Condensed'
+                      fontSize: 10
+                      display: 'inline-block'
+                      paddingRight: 8 
+                      textTransform: 'uppercase'   
+                      color: '#555'              
+                    attribute.name 
+
+                  for val in user_val
+                    SPAN 
+                      style: 
+                        fontSize: 12
+                        color: if is_grouped then get_color_for_group(val or 'Unreported')
+                        display: 'block'
+                        paddingRight: 8
+                      val or 'Unreported'
+      if has_opinion
+        inclusions = opinion.point_inclusions or []
+        cnt = inclusions.length
+        toggle_reasons = (e) =>
+          @local.show_reasons = !@local.show_reasons
+          save @local
+          popover = fetch 'popover'
+          popover.hide_triangle = @local.show_reasons
+          save popover
+          e.stopPropagation()
+          e.preventDefault()
+
+        DIV 
+          style: 
+            marginTop: 8 
+          DIV 
+            style: 
+              fontWeight: 'bold' 
+              textAlign: 'center'
+            "Opinion: #{alt} • #{cnt} reason#{if cnt != 1 then 's' else ''} given"
+            if cnt > 0
+              BUTTON
+                tabIndex: 1
+                className: 'like_link'
+                style: 
+                  paddingLeft: 8 
+                  # color: focus_color()
+                onClick: toggle_reasons
+                onKeyDown: (e) =>
+                  if e.which == 13 || e.which == 32 # ENTER or SPACE
+                    toggle_reasons(e)  
+                    e.preventDefault() 
+                if @local.show_reasons                 
+                  'Hide reasons'
+                else 
+                  'Show reasons'
+
+          if @local.show_reasons
+            UL 
+              style: 
+                listStyle: 'none'
+              for reason in inclusions
+                point = fetch reason 
+
+                LI 
+                  style: 
+                    paddingTop: 12
+
+                  SPAN 
+                    style: 
+                      textTransform: 'uppercase'
+                      color: '#555'
                       paddingRight: 8
-                    val or 'Unreported'
+                    if point.is_pro 
+                      'Pro'
+                    else 
+                      'Con'
+                    ':'
 
+                  SPAN 
+                    style: {}
+                    point.nutshell
 
-    tooltip.coords = $(e.target).offset()
-    tooltip.coords.left += e.target.offsetWidth / 2
-    tooltip.tip = name
-    save tooltip
-    e.preventDefault()
+                  SPAN 
+                    style: 
+                      fontStyle: 'italic'
+                    "~ #{if point.hide_name then 'Anonymous' else fetch(point.user).name}"
 
-
-
-
-
-hide_tooltip = (e) ->
-  if e.target.getAttribute('data-user') && e.target.getAttribute('data-tooltip')
-    if e.target.getAttribute('data-title')
-      e.target.setAttribute('title', e.target.getAttribute('data-title'))
-      e.target.removeAttribute('data-title')
-
-    clearTooltip()
-
-
-
-document.addEventListener "mouseover", show_tooltip
-document.addEventListener "mouseout", hide_tooltip
-
-$('body').on 'focusin', '.avatar', show_tooltip
-$('body').on 'focusout', '.avatar', hide_tooltip
-
-# focus/blur don't seem to work at document level
-# document.addEventListener "focus", show_tooltip, true
-# document.addEventListener "blur", hide_tooltip, true
 
 
 ##
@@ -166,10 +213,10 @@ $('body').on 'focusout', '.avatar', hide_tooltip
 # Props
 #   img_size (default = 'small')
 #      The size of the embedded image. 'small' or 'large' or 'original'
-#   hide_tooltip (default = false)
-#      Suppress the tooltip on hover. 
+#   hide_popover (default = false)
+#      Suppress the popover on hover. 
 #   anonymous (default = false)
-#      Don't show a real picture and show "anonymous" in the tooltip. 
+#      Don't show a real picture and show "anonymous" in the popover. 
 
 
 window.avatar = (user, props) ->
@@ -227,14 +274,14 @@ window.avatar = (user, props) ->
     key: user.key
     className: "avatar #{props.className or ''}"
     'data-user': if anonymous then -1 else user.key
-    'data-tooltip': if !props.hide_tooltip then alt 
+    'data-popover': if !props.hide_popover then alt 
     'data-anon': anonymous  
     tabIndex: if props.focusable then 0 else -1
     width: style?.width
     height: style?.width
 
   if src
-    # attrs.alt = if props.hide_tooltip then '' else tooltip 
+    # attrs.alt = if props.hide_popover then '' else popover 
     # the above fails too much on broken images, and 
     # screenreaders would probably be overwhelmed with saying all these stances.
     # If in future it turns out we want alt text for accessibility, we can address

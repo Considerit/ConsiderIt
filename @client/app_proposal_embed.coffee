@@ -173,6 +173,7 @@ Proposal = ReactiveComponent
         borderRadius: '16px 16px 18px 18px'
 
       Tooltip()
+      Popover()
 
       DIV 
         style: 

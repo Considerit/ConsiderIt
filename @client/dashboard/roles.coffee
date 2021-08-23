@@ -521,7 +521,7 @@ UserWithRole = (user_key, on_remove_from_role) ->
           if user.avatar_file_name
             Avatar 
               key: user_key
-              hide_tooltip: true
+              hide_popover: true
               style: 
                 width: if user.name then 35 else 20
                 height: if user.name then 35 else 20

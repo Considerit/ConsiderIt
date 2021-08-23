@@ -658,7 +658,7 @@ window.Comment = ReactiveComponent
         # Comment author icon
         Avatar
           key: comment.user
-          hide_tooltip: true
+          hide_popover: true
           set_bg_color: true
           style: 
             position: 'absolute'

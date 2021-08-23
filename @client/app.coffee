@@ -25,6 +25,7 @@ require './shared'
 require './opinion_slider'
 require './state_dash'
 require './tooltip'
+require './popover'
 require './development'
 require './su'
 require './edit_point'
@@ -325,6 +326,7 @@ Root = ReactiveComponent
           Page key: "/page#{loc.url}"
 
       Tooltip()
+      Popover()
 
 
       do -> 

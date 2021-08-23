@@ -20,12 +20,48 @@ styles += """
 
 """
 
-window.clearTooltip = ->
+clear_tooltip = ->
   tooltip = fetch('tooltip')
-  tooltip.coords = tooltip.tip = tooltip.render = tooltip.top = tooltip.positioned = null
+  tooltip.coords = tooltip.tip = tooltip.top = tooltip.positioned = null
   tooltip.offsetY = tooltip.offsetX = null 
   tooltip.rendered_size = false 
   save tooltip
+
+
+toggle_tooltip = (e) ->
+  if e.target.getAttribute('data-tooltip')
+    tooltip = fetch('tooltip')
+    if tooltip.coords
+      clear_tooltip()
+    else 
+      show_tooltip(e)
+
+show_tooltip = (e) ->
+  if e.target.getAttribute('data-tooltip')
+    name = e.target.getAttribute('data-tooltip')
+    tooltip = fetch 'tooltip'
+    tooltip.coords = $(e.target).offset()
+    tooltip.coords.left += e.target.offsetWidth / 2
+    tooltip.tip = name
+    save tooltip
+    e.preventDefault()
+
+hide_tooltip = (e) ->
+  if e.target.getAttribute('data-tooltip')
+    clear_tooltip()
+
+document.addEventListener "click", toggle_tooltip
+
+document.addEventListener "mouseover", show_tooltip
+document.addEventListener "mouseout", hide_tooltip
+
+$('body').on 'focusin', '[data-tooltip]', show_tooltip
+$('body').on 'focusout', '[data-tooltip]', hide_tooltip
+
+# focus/blur don't seem to work at document level
+# document.addEventListener "focus", show_tooltip, true
+# document.addEventListener "blur", hide_tooltip, true
+
 
 
 window.Tooltip = ReactiveComponent
@@ -71,11 +107,8 @@ window.Tooltip = ReactiveComponent
       style: style
 
 
-      if tooltip.render 
-        tooltip.render()
-      else 
-        DIV 
-          dangerouslySetInnerHTML: {__html: tip}
+      DIV 
+        dangerouslySetInnerHTML: {__html: tip}
 
       if tooltip.top || !tooltip.top?
         SPAN 

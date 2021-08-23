@@ -521,25 +521,11 @@ TranslationsForLang = ReactiveComponent
                       # display: 'inline-block'
                       # verticalAlign: 'top'
 
-                    do (name, idx) => 
-                      show_tooltip = => 
-                        tooltip = fetch 'tooltip'
-                        node = @refs["message-#{name}-#{idx}"]
-                        if node 
-                          tooltip.coords = $(node.getDOMNode()).offset()
-                          tooltip.tip = if no_id then 'no ID' else name 
-                          save tooltip
+                    DIV 
+                      ref: "message-#{name}-#{idx}"
+                      title: if no_id then 'no ID' else name 
 
-                      hide_tooltip = clearTooltip
-
-                      DIV 
-                        ref: "message-#{name}-#{idx}"
-                        onFocus: show_tooltip
-                        onMouseEnter: show_tooltip
-                        onBlur: hide_tooltip
-                        onMouseLeave: hide_tooltip
-
-                        "#{native_messages[name].txt}"
+                      "#{native_messages[name].txt}"
 
                   TD  
                     style: 

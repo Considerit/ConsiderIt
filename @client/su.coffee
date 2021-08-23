@@ -50,7 +50,7 @@ window.SU = ReactiveComponent
             Avatar 
               key: user
               user: user
-              hide_tooltip: true
+              hide_popover: true
               style: 
                 width: 50
                 height: 50

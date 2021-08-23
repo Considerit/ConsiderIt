@@ -1284,7 +1284,7 @@ GroupSelectionRegion = ReactiveComponent
             Avatar 
               key: user
               user: user
-              hide_tooltip: true
+              hide_popover: true
               style: 
                 position: 'absolute'
                 width: avatar_size

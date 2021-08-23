@@ -4,6 +4,7 @@ require './histogram'
 require './slider'
 require './permissions'
 require './bubblemouth'
+require './popover'
 
 
 pad = (num, len) -> 
@@ -429,13 +430,154 @@ window.CollapsedProposal = ReactiveComponent
           HistogramScores
             proposal: proposal
 
+
+window.ProposalScoresPopover =  ReactiveComponent
+  displayName: 'ProposalScoresPopover'
+
+  render: ->
+    proposal = @props.proposal 
+    overall_avg = @props.overall_avg
+
+    {weights, salience, groups} = compose_opinion_views(null, proposal)
+    opinions = get_opinions_for_proposal opinions, proposal, weights
+
+    all_groups = get_user_groups_from_views groups
+    has_groups = !!all_groups
+    opinion_views = fetch 'opinion_views'
+
+    colors = get_color_for_groups all_groups
+
+    legend_color_size = 28
+
+    rating_str = "0000 / 00%"
+
+    group_scores = {}
+
+    for group in all_groups 
+
+      weight = 0
+      cnt = 0
+      score = 0
+      for o in opinions 
+        continue if salience[o.user.key or o.user] < 1 or group not in groups[o.user.key or o.user]
+        w = weights[o.user.key or o.user]
+        score += o.stance * w
+        weight += w
+        cnt += 1
+      avg = score / weight
+      if weight > 0 
+        group_scores[group] = {avg, cnt}
+
+    visible_groups = Object.keys group_scores
+    visible_groups.sort (a,b) -> group_scores[b].avg - group_scores[a].avg
+
+    separator_inserted = false 
+
+    items = visible_groups.slice()
+
+    if items.length > 1
+      separator_idx = 0
+      for group,idx in items 
+        {avg, cnt} = group_scores[group]
+        if idx != 0 && group_scores[items[idx - 1]].avg > overall_avg \
+                    && group_scores[items[idx]].avg <= overall_avg 
+          separator_idx = idx 
+          break 
+      items.splice separator_idx, 0, 'avg_separator'
+
+    DIV 
+      style: 
+        padding: "12px 12px 12px 18px"
+
+      DIV 
+        style:
+          marginBottom: 12
+        "Grouped by: #{opinion_views.active_views.group_by.name}"
+
+      UL 
+        'aria-hidden': true
+        style: 
+          listStyle: 'none'
+
+        for group,idx in items 
+          insert_separator = group == 'avg_separator' 
+
+          if insert_separator
+            separator_inserted = true 
+          else 
+            {avg, cnt} = group_scores[group]
+
+          diff = avg - overall_avg
+
+          LI 
+            style: 
+              fontSize: 14
+              display: 'flex'
+              alignItems: 'center'
+              marginBottom: 16
+
+            DIV 
+              style: 
+                borderRadius: '50%'
+                backgroundColor: colors[group]
+                width: legend_color_size
+                height: legend_color_size
+                display: 'inline-block'
+                border: '1px solid white'
+                boxShadow: "inset 0 -1px 2px 0 rgba(0,0,0,0.16)"
+                visibility: if insert_separator then 'hidden'
+
+            DIV 
+              style: 
+                paddingLeft: 12
+
+              DIV 
+                style: 
+                  fontWeight: 500
+                  fontFamily: 'Fira Sans Condensed'
+                  textAlign: if insert_separator then 'right'
+
+                if !insert_separator
+                  group
+                else 
+                  "Overall average opinion:"
+
+              
+              if !insert_separator
+                DIV 
+                  style: 
+                    color: 'white'
+                    marginTop: -2
+                    fontSize: 11
+
+                  "#{Math.round(avg * 100)}% • "
+                  TRANSLATE
+                    id: "engage.proposal_score_summary"
+                    num_opinions: cnt 
+                    "{num_opinions, plural, =0 {no opinions} one {# opinion} other {# opinions} }"
+
+            DIV 
+              style: 
+                color: if insert_separator then 'white' else if diff < 0 then '#ff3636' else '#21e621'
+                textAlign: 'right'
+                flex: 1
+                paddingLeft: 16
+                fontSize: 12
+                fontWeight: 600
+
+              if insert_separator
+                "#{Math.round(overall_avg * 100)}%" 
+              else 
+                "#{if diff > 0 then '+' else ''}#{Math.round(diff * 100)}%"
+
+
 window.HistogramScores = ReactiveComponent
   displayName: 'HistogramScores'
 
   render: ->
     proposal = @props.proposal
 
-    {weights, salience, groups} = compose_opinion_views(opinions, proposal)
+    {weights, salience, groups} = compose_opinion_views(null, proposal)
     opinions = get_opinions_for_proposal opinions, proposal, weights
 
 
@@ -444,149 +586,6 @@ window.HistogramScores = ReactiveComponent
 
     all_groups = get_user_groups_from_views groups
     has_groups = !!all_groups
-
-
-    show_tooltip = => 
-      if has_groups && opinions.length > 0
-        tooltip = fetch 'tooltip'
-        anchor = $(@refs.score.getDOMNode())
-        tooltip.coords = anchor.offset()
-        tooltip.offsetY = anchor[0].offsetHeight + 8
-        tooltip.offsetX = anchor[0].offsetWidth
-        tooltip.positioned = 'right'
-        tooltip.top = false
-        colors = get_color_for_groups all_groups
-
-        legend_color_size = 28
-
-        rating_str = "0000 / 00%"
-
-        group_scores = {}
-
-        for group in all_groups 
-
-          weight = 0
-          cnt = 0
-          score = 0
-          for o in opinions 
-            continue if salience[o.user.key or o.user] < 1 or group not in groups[o.user.key or o.user]
-            w = weights[o.user.key or o.user]
-            score += o.stance * w
-            weight += w
-            cnt += 1
-          avg = score / weight
-          if weight > 0 
-            group_scores[group] = {avg, cnt}
-
-        visible_groups = Object.keys group_scores
-        visible_groups.sort (a,b) -> group_scores[b].avg - group_scores[a].avg
-
-        separator_inserted = false 
-
-        items = visible_groups.slice()
-
-        if items.length > 1
-          separator_idx = 0
-          for group,idx in items 
-            {avg, cnt} = group_scores[group]
-            if idx != 0 && group_scores[items[idx - 1]].avg > overall_avg \
-                        && group_scores[items[idx]].avg <= overall_avg 
-              separator_idx = idx 
-              break 
-          items.splice separator_idx, 0, 'avg_separator'
-
-        tooltip.render =  =>
-          opinion_views = fetch 'opinion_views'
-          DIV 
-            style: 
-              padding: "12px 12px 12px 18px"
-
-            DIV 
-              style:
-                marginBottom: 12
-              "Grouped by: #{opinion_views.active_views.group_by.name}"
-
-            UL 
-              'aria-hidden': true
-              style: 
-                listStyle: 'none'
-
-              for group,idx in items 
-                insert_separator = group == 'avg_separator' 
-
-                if insert_separator
-                  separator_inserted = true 
-                else 
-                  {avg, cnt} = group_scores[group]
-
-                diff = avg - overall_avg
-
-                LI 
-                  style: 
-                    fontSize: 14
-                    display: 'flex'
-                    alignItems: 'center'
-                    marginBottom: 16
-
-                  DIV 
-                    style: 
-                      borderRadius: '50%'
-                      backgroundColor: colors[group]
-                      width: legend_color_size
-                      height: legend_color_size
-                      display: 'inline-block'
-                      border: '1px solid white'
-                      boxShadow: "inset 0 -1px 2px 0 rgba(0,0,0,0.16)"
-                      visibility: if insert_separator then 'hidden'
-
-                  DIV 
-                    style: 
-                      paddingLeft: 12
-
-                    DIV 
-                      style: 
-                        fontWeight: 500
-                        fontFamily: 'Fira Sans Condensed'
-                        textAlign: if insert_separator then 'right'
-
-                      if !insert_separator
-                        group
-                      else 
-                        "Overall average opinion:"
-
-                    
-                    if !insert_separator
-                      DIV 
-                        style: 
-                          color: 'white'
-                          marginTop: -2
-                          fontSize: 11
-
-                        "#{Math.round(avg * 100)}% • "
-                        TRANSLATE
-                          id: "engage.proposal_score_summary"
-                          num_opinions: cnt 
-                          "{num_opinions, plural, =0 {no opinions} one {# opinion} other {# opinions} }"
-
-                  DIV 
-                    style: 
-                      color: if insert_separator then 'white' else if diff < 0 then '#ff3636' else '#21e621'
-                      textAlign: 'right'
-                      flex: 1
-                      paddingLeft: 16
-                      fontSize: 12
-                      fontWeight: 600
-
-                    if insert_separator
-                      "#{Math.round(overall_avg * 100)}%" 
-                    else 
-                      "#{if diff > 0 then '+' else ''}#{Math.round(diff * 100)}%"
-
-
-
-
-        save tooltip
-
 
     overall_score = 0
     overall_weight = 0
@@ -611,11 +610,6 @@ window.HistogramScores = ReactiveComponent
         textAlign: 'left'
         whiteSpace: 'nowrap'
 
-
-      onFocus: show_tooltip
-      onMouseEnter: show_tooltip
-      onBlur: clearTooltip
-      onMouseLeave: clearTooltip
 
 
       SPAN 
@@ -642,12 +636,14 @@ window.HistogramScores = ReactiveComponent
             "{percentage}% average"
 
         if has_groups
-          DIV 
+          DIV
+            'data-popover': @props.proposal.key or @props.proposal
+            'data-proposal-scores': overall_avg
             style: 
               color: focus_color()
               position: 'relative'
               top: -4
-            'by group' 
+            "breakdown by #{fetch('opinion_views').active_views.group_by.name}"
 
 
 

@@ -29,7 +29,7 @@ window.EditComment = ReactiveComponent
           border:          if permitted < 0 then '1px dashed grey'
 
         key: fetch('/current_user').user
-        hide_tooltip: true
+        hide_popover: true
 
       if permitted == Permission.DISABLED
         SPAN 

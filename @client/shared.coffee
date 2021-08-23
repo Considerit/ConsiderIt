@@ -250,18 +250,10 @@ window.opinionsForProposal = (proposal) ->
 
 window.HelpIcon = (help_text, style) ->
   style ?= {}
-  show_tooltip = (e) -> 
-    tooltip = fetch 'tooltip'
-    tooltip.coords = $(e.target).offset()
-    el_with_width = e.target
-    while !el_with_width.offsetWidth 
-      el_with_width = el_with_width.parentElement
-    tooltip.coords.left += el_with_width.offsetWidth / 2
-    tooltip.tip = help_text
-    save tooltip
-    e.preventDefault()
 
   BUTTON 
+    "data-tooltip": help_text
+
     style: _.defaults style or {}, 
       backgroundColor: 'transparent'
       border: 'none'
@@ -270,18 +262,12 @@ window.HelpIcon = (help_text, style) ->
       width: style.width or 17
       height: style.height or 17
 
-    onMouseEnter: show_tooltip
-    onMouseLeave: clearTooltip
-    onClick: (e) -> 
-      if fetch('tooltip').coords
-        clearTooltip(e)
-      else 
-        show_tooltip(e)
-
     SVG 
       width: style.width or 17
       height: style.height or 17
       viewBox: "0 0 17 17.0000094" 
+      style: 
+        pointerEvents: 'none'
 
       G 
         stroke: "none" 

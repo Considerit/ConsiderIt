@@ -130,10 +130,10 @@ REGION_SELECTION_VERTICAL_PADDING = 30
 window.show_histogram_layout = false
 
 
-is_controlling_histogram = (key) -> 
+is_histogram_controlling_region_selection = (key) -> 
   opinion_views = fetch 'opinion_views'
   active = opinion_views.active_views
-  originating_histogram = (active.single_opinion_selected or active.region_selected)?.created_by
+  originating_histogram = opinion_views.active_views.region_selected?.created_by
   
   !originating_histogram? || originating_histogram == key
 
@@ -148,25 +148,29 @@ window.clear_histogram_managed_opinion_views = (opinion_views, field) ->
   save opinion_views
 
 
-window.select_single_opinion = (user, opinions, created_by) ->
+window.select_single_opinion = (user_opinion, created_by) ->
   opinion_views = fetch 'opinion_views'
-  user_opinion = _.findWhere opinions, {user: user.key or user}
-  opinion_views.active_views.single_opinion_selected =
-    created_by: created_by
-    opinion: user_opinion.key 
-    opinion_value: user_opinion.stance 
-    get_salience: (u, opinion, proposal) =>
-      if (u.key or u) == user_opinion.user
-        1
-      else 
-        .1
-    get_weight: (u, opinion, proposal) =>
-      if (u.key or u) == user_opinion.user
-        1
-      else 
-        .1
 
-  clear_histogram_managed_opinion_views opinion_views, 'region_selected'
+  is_deselection = opinion_views.active_views.single_opinion_selected?.opinion == user_opinion.key
+  if is_deselection
+    clear_histogram_managed_opinion_views opinion_views
+  else 
+    opinion_views.active_views.single_opinion_selected =
+      created_by: created_by
+      opinion: user_opinion.key 
+      opinion_value: user_opinion.stance 
+      get_salience: (u, opinion, proposal) =>
+        if (u.key or u) == user_opinion.user
+          1
+        else 
+          .1
+      get_weight: (u, opinion, proposal) =>
+        if (u.key or u) == user_opinion.user
+          1
+        else 
+          .1
+
+    clear_histogram_managed_opinion_views opinion_views, 'region_selected'
 
 window.Histogram = ReactiveComponent
   displayName : 'Histogram'
@@ -405,7 +409,7 @@ window.Histogram = ReactiveComponent
     selection_left = Math.max 0, left
 
 
-    return DIV null if !is_controlling_histogram(@props.key) 
+    return DIV null if !is_histogram_controlling_region_selection(@props.key) 
     DIV 
       style:
         height: @props.height + REGION_SELECTION_VERTICAL_PADDING
@@ -454,19 +458,17 @@ window.Histogram = ReactiveComponent
         user_key = ev.target.getAttribute('data-user')
         user_opinion = _.findWhere @opinions, {user: user_key}
 
-        if user_opinion
-          is_deselection = (single_selection?.opinion == user_opinion.key || @weights[user_key] == 0 ) 
-          if is_deselection
-            clear_histogram_managed_opinion_views opinion_views
-          else 
-            select_single_opinion user_key, @opinions, @props.key
+        if @weights[user_key] == 0
+          clear_histogram_managed_opinion_views opinion_views
+        else 
+          select_single_opinion user_opinion, @props.key
 
       else
         max = @local.mouse_opinion_value + REGION_SELECTION_WIDTH
         min = @local.mouse_opinion_value - REGION_SELECTION_WIDTH
 
         is_deselection = \
-          !is_controlling_histogram(@props.key) || ( \
+          !is_histogram_controlling_region_selection(@props.key) || ( \
           region_selected && 
            (!@local.touched || inRange(@local.mouse_opinion_value, min, max)))
 
@@ -515,7 +517,7 @@ window.Histogram = ReactiveComponent
 
     return if fetch(namespaced_key('slider', @props.proposal)).is_moving  || \
               @props.backgrounded || !@props.enable_range_selection || \
-              !is_controlling_histogram(@props.key)
+              !is_histogram_controlling_region_selection(@props.key)
 
     ev.stopPropagation()
 
@@ -701,6 +703,13 @@ window.styles += """
   }
 """
 
+
+
+$('body').on 'keydown', '.avatar[data-opinion]', (e) ->
+  if e.which == 13 || e.which == 32 # ENTER or SPACE 
+    user_opinion = fetch e.target.getAttribute 'data-opinion'
+    select_single_opinion user_opinion, 'keydown'
+
 HistoAvatars = ReactiveComponent 
   displayName: 'HistoAvatars'
 
@@ -815,21 +824,15 @@ HistoAvatars = ReactiveComponent
             continue
 
 
-          stance = opinion.stance 
-          if stance > .01
-            alt = "#{(stance * 100).toFixed(0)}%"
-          else if stance < -.01
-            alt = "–#{(stance * -100).toFixed(0)}%"
-          else 
-            alt = translator "engage.histogram.user_is_neutral", "is neutral"
 
 
           avatar user,
             ref: "avatar-#{idx}"
+            'data-opinion': opinion.key or opinion
             focusable: @props.navigating_inside && salience == 1
-            hide_tooltip: @props.backgrounded || salience < 1
+            hide_popover: @props.backgrounded || salience < 1
             className: className
-            alt: "<user>: #{alt}"
+            # alt: "<user>: #{alt}"
             anonymous: customization('anonymize_everything')
             style: avatar_style
             set_bg_color: true

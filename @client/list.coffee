@@ -129,7 +129,7 @@ ListItems = ReactiveComponent
     list = @props.list 
     list_key = list.key
 
-    sort_key = "sorted-proposals-#{@local.key}"
+    sort_key = "sorted-proposals-#{list_key}"
     proposals = if !@props.fresh then sorted_proposals(list.proposals, sort_key, true) or [] else []
 
     RenderListItem = customization('RenderListItem') or CollapsedProposal
@@ -141,8 +141,6 @@ ListItems = ReactiveComponent
         colors[aggregated_list] = hues[idx]
 
     DIV null, 
-      if !@props.fresh
-        ManualProposalResort {sort_key}
 
       UL null, 
         for proposal,idx in proposals
@@ -758,7 +756,7 @@ window.ListHeader = ReactiveComponent
           list: @props.list
           add_new: !@props.combines_these_lists && customization('list_permit_new_items', list_key, subdomain) && !is_collapsed && @props.proposals_count > 4
           can_sort: customization('homepage_show_search_and_sort', null, subdomain) && @props.proposals_count > 1 
-
+          fresh: @props.fresh
 
 
 window.NewList = ReactiveComponent
@@ -1214,6 +1212,17 @@ window.list_actions = (props) ->
 
       if props.can_sort
         SortProposalsMenu()
+
+
+      if !props.fresh
+        sort_key = "sorted-proposals-#{list_key}"
+        SPAN 
+          style: 
+            display: 'inline-block'
+            marginLeft: 12
+          
+          ManualProposalResort {sort_key}
+
         
 
     OpinionViews
@@ -1379,4 +1388,7 @@ window.lists_current_user_can_add_to = (lists) ->
     if permit('create proposal', list_key) > 0
       appendable.push list_key 
   appendable
+
+
+
 

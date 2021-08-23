@@ -367,47 +367,6 @@ window.HomepageTabs = ReactiveComponent
 
 
 
-window.ManualProposalResort = ReactiveComponent
-  displayName: 'ManualProposalResort'
-
-  render: -> 
-    sort = fetch 'sort_proposals'
-
-    if !stale_sort_order(@props.sort_key) 
-      return SPAN null 
-
-    DIV 
-      style: 
-        position: 'fixed'
-        width: '100%'
-        bottom: 0
-        left: 0
-        zIndex: 100
-        backgroundColor: '#ddd'
-        textAlign: 'center'
-        fontSize: 26
-        padding: '8px 0'
-
-
-      TRANSLATE
-        id: "engage.re-sort_list"
-        button: 
-          component: BUTTON
-          args: 
-            style: 
-              color: focus_color()
-              fontSize: 26
-              textDecoration: 'underline'
-              fontWeight: 'bold'
-              border: 'none'
-              backgroundColor: 'transparent'
-              padding: 0
-            onClick: invalidate_proposal_sorts
-            onKeyDown: (e) => 
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                invalidate_proposal_sorts()
-                e.preventDefault()
-        "<button>Re-sort this list</button> if you want. It is out of order."
 
 
 ProposalsLoading = ReactiveComponent

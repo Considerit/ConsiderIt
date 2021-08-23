@@ -29,7 +29,8 @@ clear_tooltip = ->
 
 
 toggle_tooltip = (e) ->
-  if e.target.getAttribute('data-tooltip')
+  tooltip_el = e.target.closest('[data-tooltip]')
+  if tooltip_el?
     tooltip = fetch('tooltip')
     if tooltip.coords
       clear_tooltip()
@@ -37,17 +38,19 @@ toggle_tooltip = (e) ->
       show_tooltip(e)
 
 show_tooltip = (e) ->
-  if e.target.getAttribute('data-tooltip')
-    name = e.target.getAttribute('data-tooltip')
+  tooltip_el = e.target.closest('[data-tooltip]')
+  if tooltip_el?
+    name = tooltip_el.getAttribute('data-tooltip')
     tooltip = fetch 'tooltip'
-    tooltip.coords = $(e.target).offset()
-    tooltip.coords.left += e.target.offsetWidth / 2
+    tooltip.coords = $(tooltip_el).offset()
+    tooltip.coords.left += tooltip_el.offsetWidth / 2
     tooltip.tip = name
     save tooltip
     e.preventDefault()
 
 hide_tooltip = (e) ->
-  if e.target.getAttribute('data-tooltip')
+  tooltip_el = e.target.closest('[data-tooltip]')
+  if tooltip_el?
     clear_tooltip()
 
 document.addEventListener "click", toggle_tooltip

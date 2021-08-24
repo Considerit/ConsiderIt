@@ -28,6 +28,9 @@ window.clear_popover = (immediate, cb) ->
 
 
 
+
+
+
 window.hide_popover = (e) ->
   if e.target.getAttribute('data-popover')
     if e.target.getAttribute('data-title')
@@ -35,62 +38,77 @@ window.hide_popover = (e) ->
       e.target.removeAttribute('data-title')
     popover = fetch('popover')
     popover.element_in_focus = false 
-    clear_popover false, ->
-      if e.target.getAttribute('data-previous_zindex')?
-        e.target.style.zIndex = e.target.getAttribute('data-previous_zindex')
-        e.target.removeAttribute 'data-previous_zindex'
+    if popover.coords
+      clear_popover false, ->
+        if e.target.getAttribute('data-previous_zindex')?
+          e.target.style.zIndex = e.target.getAttribute('data-previous_zindex')
+          e.target.removeAttribute 'data-previous_zindex'
 
+
+window.toggle_popover = (e) ->
+  if e.target.getAttribute('data-popover')
+    popover = fetch('popover')
+    if popover.element_in_focus
+      hide_popover(e)
+    else 
+      show_popover(e) 
 
 
 window.show_popover = (e) ->
   if e.target.getAttribute('data-popover')
     popover = fetch 'popover'
 
-    popover.element_in_focus = true 
+    popover.element_in_focus = e.target.getAttribute('data-popover')
 
-    if e.target.getAttribute('title')
-      e.target.setAttribute('data-title', e.target.getAttribute('title'))
-      e.target.removeAttribute('title')
+    setTimeout -> 
+      if popover.element_in_focus == e.target.getAttribute('data-popover') 
 
-    style = getComputedStyle(e.target)
-    if style?.zIndex
-      e.target.setAttribute('data-previous_zindex', "#{e.target.style.zIndex}")
-      e.target.style.zIndex = "#{parseInt(style.zIndex) + 1}"
 
-    if e.target.getAttribute('data-user')
-      user = e.target.getAttribute('data-user')
-      if user != popover.id 
-        clear_popover(true)
-        anon = e.target.getAttribute('data-anonymous') == 'true'
-        popover.id = user 
-        popover.render = -> 
-          AvatarPopover 
-            key: user 
-            user: user
-            anon: anon
-            opinion: e.target.getAttribute('data-opinion')
-    else if e.target.getAttribute('data-proposal-scores')
-      proposal = e.target.getAttribute('data-popover')
-      if proposal != popover.id 
-        clear_popover(true)
-        popover.render = -> 
-          ProposalScoresPopover 
-            key: proposal
-            proposal: proposal
-            overall_avg: parseFloat(e.target.getAttribute('data-proposal-scores'))
 
-        # popover.offsetY = anchor[0].offsetHeight + 8
-        # popover.offsetX = anchor[0].offsetWidth
-        popover.positioned = 'right'
-        popover.top = false
-        popover.id = proposal
+        if e.target.getAttribute('title')
+          e.target.setAttribute('data-title', e.target.getAttribute('title'))
+          e.target.removeAttribute('title')
 
-    else 
-      popover.tip = e.target.getAttribute('data-popover')
+        style = getComputedStyle(e.target)
+        if style?.zIndex
+          e.target.setAttribute('data-previous_zindex', "#{e.target.style.zIndex}")
+          e.target.style.zIndex = "#{parseInt(style.zIndex) + 1}"
 
-    popover.coords = calc_coords(e.target) 
+        if e.target.getAttribute('data-user')
+          user = e.target.getAttribute('data-user')
+          if user != popover.id 
+            clear_popover(true)
+            anon = e.target.getAttribute('data-anonymous') == 'true'
+            popover.id = user 
+            popover.render = -> 
+              AvatarPopover 
+                key: user 
+                user: user
+                anon: anon
+                opinion: e.target.getAttribute('data-opinion')
+        else if e.target.getAttribute('data-proposal-scores')
+          proposal = e.target.getAttribute('data-popover')
+          if proposal != popover.id 
+            clear_popover(true)
+            popover.render = -> 
+              ProposalScoresPopover 
+                key: proposal
+                proposal: proposal
+                overall_avg: parseFloat(e.target.getAttribute('data-proposal-scores'))
 
-    save popover
+            popover.offsetY = e.target.offsetHeight + 12
+            popover.offsetX = -e.target.offsetWidth / 2 + 36
+            popover.positioned = 'right'
+            popover.top = false
+            popover.id = proposal
+
+        else 
+          popover.tip = e.target.getAttribute('data-popover')
+
+        popover.coords = calc_coords(e.target) 
+
+        save popover
+    , 400
     e.preventDefault()
 
 
@@ -99,12 +117,16 @@ calc_coords = (el) ->
   coords.left += el.offsetWidth / 2
   coords
 
+
+
 document.addEventListener "mouseover", show_popover
 document.addEventListener "mouseout", hide_popover
 
 $('body').on 'focusin', '[data-popover]', show_popover
 $('body').on 'focusout', '[data-popover]', hide_popover
 
+
+$('body').on 'click', '[data-popover]', toggle_popover
 
 window.Popover = ReactiveComponent
   displayName: 'Popover'
@@ -125,7 +147,7 @@ window.Popover = ReactiveComponent
       backgroundColor: 'white'
       position: 'absolute'      
       boxShadow: '0 1px 9px rgba(0,0,0,.5)'
-      maxWidth: 350
+      # maxWidth: 350
 
 
     arrow_size = 

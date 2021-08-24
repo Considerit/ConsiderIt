@@ -660,7 +660,7 @@ window.Histogram = ReactiveComponent
 
 num_layout_workers = 4
 num_layout_tasks_delegated = 0
-delegate_layout_task = (opts) -> 
+window.delegate_layout_task = (opts) -> 
   if !window.histo_layout_workers
     configure_histo_layout_web_worker()
   histo_layout_worker = histo_layout_workers[num_layout_tasks_delegated % num_layout_workers]  

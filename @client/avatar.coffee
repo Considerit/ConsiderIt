@@ -120,9 +120,11 @@ window.AvatarPopover = ReactiveComponent
                     SPAN 
                       style: 
                         fontSize: 12
-                        color: if is_grouped then get_color_for_group(val or 'Unreported')
-                        display: 'block'
-                        paddingRight: 8
+                        backgroundColor: if is_grouped then get_color_for_group(val or 'Unreported')
+                        color: if is_grouped then 'white'
+                        display: 'inline-block'
+                        marginRight: 8
+                        padding: if is_grouped then '2px 8px'
                       val or 'Unreported'
       if has_opinion
         inclusions = opinion.point_inclusions or []

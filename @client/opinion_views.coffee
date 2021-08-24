@@ -173,13 +173,14 @@ build_influencer_network = ->
     total_influence = 0
     for u, amount of influence.influenced
       total_influence += amount
+    influence = Math.log(2 + num_influenced + total_influence)
     if num_influenced + total_influence > max_influence
-      max_influence = num_influenced + total_influence
+      max_influence = influence
 
-    influencer_scores[user] = num_influenced + total_influence
+    influencer_scores[user] = influence
 
   for user, influence of influence_network
-    influencer_scores[user] /= Math.sqrt(max_influence)
+    influencer_scores[user] /= max_influence # Math.sqrt(max_influence)
 
 
 
@@ -194,7 +195,7 @@ default_weights =
     name: 'Gave reasons'
     label: 'Add weight to opinions that explained their stance with pro and/or con reasons.'
     weight: (u, opinion, proposal) ->
-      point_inclusions = Math.min(8,opinion.point_inclusions?.length or 0) 
+      point_inclusions = Math.log(1 + Math.min(8,opinion.point_inclusions?.length or 0))
       .1 + point_inclusions
     icon: (color) -> 
       color ?= 'black'
@@ -220,14 +221,19 @@ default_weights =
     label: 'Add weight to opinions that acknowledge both pro and con tradeoffs.'
     weight: (u, opinion, proposal) ->
       point_inclusions = opinion.point_inclusions
-      has_pro = false 
-      has_con = false  
+      pros = 0 
+      cons = 0  
       for inc in point_inclusions or []
         pnt = fetch(inc)
-        has_pro ||= pnt.is_pro
-        has_con ||= !pnt.is_pro
-      if has_con && has_pro
-        2
+        if pnt.is_pro 
+          pros += 1
+        else 
+          cons += 1
+
+      tradeoffs_recognized = Math.min pros, cons 
+
+      if tradeoffs_recognized > 0
+        1 + Math.log tradeoffs_recognized
       else 
         .1
     icon: (color) -> 

@@ -103,17 +103,18 @@ window.Slider = ReactiveComponent
 
   render : ->
 
-    slider = fetch @props.key
 
     @props.draw_handle ?= true
 
     # initialize
-    if !slider.value?
-      _.defaults slider,
-        value: if @props.polarized then -1.0 else 0
-        has_moved : false
-        is_moving : false
-      save slider
+    if @props.draw_handle
+      slider = fetch @props.key
+      if !slider.value?
+        _.defaults slider,
+          value: if @props.polarized then -1.0 else 0
+          has_moved : false
+          is_moving : false
+        save slider
 
     ####
     # Define slider layout
@@ -134,7 +135,6 @@ window.Slider = ReactiveComponent
 
 
   drawSliderBase: -> 
-    slider = fetch @props.key
 
     slider_base_style = 
       width: @props.width

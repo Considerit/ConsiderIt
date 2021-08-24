@@ -84,7 +84,7 @@ window.Tooltip = ReactiveComponent
       padding: '4px 8px'
       borderRadius: 8
       pointerEvents: 'none'
-      zIndex: 9999
+      zIndex: 999999999999
       color: 'white'
       backgroundColor: 'black'
       position: 'absolute'      

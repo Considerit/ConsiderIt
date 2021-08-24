@@ -624,6 +624,8 @@ ManualProposalResort = ReactiveComponent
           display: 'flex'
           alignItems: 'center'
 
+        'data-tooltip': "A re-sort may be needed because someone else added or updated their opinion, or you selected an opinion view that filtered or weighed opinions differently."
+
         onClick: invalidate_proposal_sorts
         onKeyDown: (e) => 
           if e.which == 13 || e.which == 32 # ENTER or SPACE

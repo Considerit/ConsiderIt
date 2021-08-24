@@ -200,7 +200,7 @@ customizations.default =
 
   show_proposal_meta_data: true 
 
-  slider_handle: slider_handle.face
+  slider_handle: slider_handle.flat
   slider_regions: null
 
   show_proposal_scores: true

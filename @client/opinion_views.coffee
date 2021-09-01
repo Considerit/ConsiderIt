@@ -583,6 +583,11 @@ OpinionViews = ReactiveComponent
       }
     ]
 
+    reset_to_show_all_opinions = ->
+      clear_all()
+      opinion_views_ui.active = 'All opinions'
+      save opinion_views_ui
+
     reset_to_default_view = ->
       clear_all()
 
@@ -591,7 +596,25 @@ OpinionViews = ReactiveComponent
         toggle_opinion_filter default_filters.just_you
         opinion_views_ui.active = 'Just you'
       else if dfault
+        # LIMITATION: default date views not implemented
+
         opinion_views_ui.active = 'Custom view'
+
+        # opinion_filters_default follows the format of opinion_views_ui
+        # So we'll read the default values and activate the appropriate views.
+        attributes = get_participant_attributes_with_defaults()
+        if dfault.selected_vals_for_attribute?
+          for key, vals of dfault.selected_vals_for_attribute
+            continue if Object.keys(vals).length == 0
+            attribute = attributes.find (attr) -> attr?.key == key
+            opinion_views_ui.selected_vals_for_attribute[attribute.key] = vals
+            opinion_views_ui.visible_attributes[attribute.key] = true
+            update_view_for_attribute attribute
+
+        if dfault.group_by
+          attribute = attributes.find (attr) -> attr?.key == dfault.group_by
+          set_group_by_attribute attribute       
+
       else       
         opinion_views_ui.active = 'All opinions'
 
@@ -601,10 +624,11 @@ OpinionViews = ReactiveComponent
     if !opinion_views_ui.initialized      
       reset_to_default_view()
       opinion_views_ui.initialized = true 
+      @local.clicked_more_views = true
       save opinion_views_ui
 
     if !@user_has_set_a_view() && @local.minimized && @local.clicked_more_views
-      reset_to_default_view()
+      reset_to_show_all_opinions()
 
 
 
@@ -758,6 +782,66 @@ toggle_attribute_visibility = (attribute) ->
     delete opinion_views.active_views[attribute.key]
     save opinion_views
 
+
+
+update_view_for_attribute = (attribute) ->
+  opinion_views_ui = fetch 'opinion_views_ui'
+  attr_key = attribute.key
+  # having no selections for an attribute paradoxically means that all values are valid.
+  has_one_enabled = false 
+  for val,enabled of opinion_views_ui.selected_vals_for_attribute[attr_key]
+    has_one_enabled ||= enabled
+  if !has_one_enabled
+    opinion_views_ui.selected_vals_for_attribute[attr_key] = {}
+
+  pass = (u) -> 
+    user = fetch(u)
+    val_for_user = user.tags[attr_key]
+    is_array = Array.isArray(val_for_user)
+
+    passing_vals = (val for val,enabled of opinion_views_ui.selected_vals_for_attribute[attr_key] when enabled)
+
+    passes = false
+    for passing_val in passing_vals
+      if passing_val == 'true'
+        passing_val = true 
+      else if passing_val == 'false'
+        passing_val = false
+
+      if attribute.pass 
+        passes ||= passing_val == attribute.pass(u)
+      else 
+        passes ||= val_for_user == passing_val || (is_array && passing_val in val_for_user)
+
+    passes 
+
+  view = 
+    key: attr_key
+    # pass: pass
+    salience: (u) -> if pass(u) then 1 else .1
+    weight:   (u) -> if pass(u) then 1 else .1
+
+  toggle_opinion_filter view, has_one_enabled
+
+set_group_by_attribute = (attribute) ->
+  opinion_views_ui = fetch 'opinion_views_ui'
+  opinion_views_ui.group_by = attribute.key 
+  save opinion_views_ui
+
+  view = 
+    key: 'group_by'
+    name: attribute.name
+    group: (u, opinion, proposal) -> 
+      group_val = if attribute.pass then attribute.pass(u) else fetch(u).tags[opinion_views_ui.group_by] or 'Unreported'
+      if attribute.input_type == 'checklist'
+        group_val.split(',')
+      else 
+        group_val
+    options: attribute.options
+
+  toggle_group view, true
+
+
 OpinionFilters = ReactiveComponent
   displayName: 'OpinionFilters'
   render: -> 
@@ -773,43 +857,6 @@ OpinionFilters = ReactiveComponent
         active_filters[k] = v 
 
 
-    update_view_for_attribute = (attribute) ->
-      attr_key = attribute.key
-      # having no selections for an attribute paradoxically means that all values are valid.
-      has_one_enabled = false 
-      for val,enabled of opinion_views_ui.selected_vals_for_attribute[attr_key]
-        has_one_enabled ||= enabled
-      if !has_one_enabled
-        opinion_views_ui.selected_vals_for_attribute[attr_key] = {}
-
-      pass = (u) -> 
-        user = fetch(u)
-        val_for_user = user.tags[attr_key]
-        is_array = Array.isArray(val_for_user)
-
-        passing_vals = (val for val,enabled of opinion_views_ui.selected_vals_for_attribute[attr_key] when enabled)
-
-        passes = false
-        for passing_val in passing_vals
-          if passing_val == 'true'
-            passing_val = true 
-          else if passing_val == 'false'
-            passing_val = false
-
-          if attribute.pass 
-            passes ||= passing_val == attribute.pass(u)
-          else 
-            passes ||= val_for_user == passing_val || (is_array && passing_val in val_for_user)
-
-        passes 
-
-      view = 
-        key: attr_key
-        # pass: pass
-        salience: (u) -> if pass(u) then 1 else .1
-        weight:   (u) -> if pass(u) then 1 else .1
-
-      toggle_opinion_filter view, has_one_enabled
 
     
 
@@ -980,18 +1027,7 @@ OpinionFilters = ReactiveComponent
               save opinion_views_ui
 
               if opinion_views_ui.group_by
-                view = 
-                  key: 'group_by'
-                  name: attribute.name
-                  group: (u, opinion, proposal) -> 
-                    group_val = if attribute.pass then attribute.pass(u) else fetch(u).tags[opinion_views_ui.group_by] or 'Unreported'
-                    if attribute.input_type == 'checklist'
-                      group_val.split(',')
-                    else 
-                      group_val
-                  options: attribute.options
-
-                toggle_group view, true
+                set_group_by_attribute attribute 
 
               else 
                 delete opinion_views.active_views.group_by
@@ -1088,6 +1124,7 @@ MinimizedViews = ReactiveComponent
 
       is_grouped = opinion_views_ui.group_by == attribute.key 
 
+      console.log attribute.key, is_grouped, opinion_views_ui
       checked = []
       unchecked = []
       if attribute.key == 'date'

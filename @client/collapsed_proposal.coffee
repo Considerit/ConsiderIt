@@ -43,7 +43,7 @@ window.CollapsedProposal = ReactiveComponent
 
     draw_slider = can_opine > 0 || your_opinion?.published
 
-    icons = customization('show_proposer_icon', proposal, subdomain) && !@props.hide_icons
+    icons = customization('show_proposer_icon', proposal, subdomain) && !@props.hide_icons && !customization('anonymize_everything')
     slider_regions = customization('slider_regions', proposal, subdomain)
     show_proposal_scores = !@props.hide_scores && customization('show_proposal_scores', proposal, subdomain)
 
@@ -213,7 +213,7 @@ window.CollapsedProposal = ReactiveComponent
               customization('proposal_meta_data', null, subdomain)(proposal)
 
             else if !@props.hide_metadata && customization('show_proposal_meta_data', null, subdomain)
-              show_author_name_in_meta_data = !icons && (editor = proposal_editor(proposal)) && editor == proposal.user
+              show_author_name_in_meta_data = !icons && (editor = proposal_editor(proposal)) && editor == proposal.user && !customization('anonymize_everything')
 
               SPAN 
                 style: 
@@ -464,6 +464,10 @@ window.HistogramScores = ReactiveComponent
 
     score = pad overall_score.toFixed(1),2
 
+    opinion_views = fetch('opinion_views')
+    is_weighted = false 
+    for v,view of opinion_views.active_views
+      is_weighted ||= view.view_type == 'weight'
 
     DIV 
       'aria-hidden': true
@@ -490,11 +494,18 @@ window.HistogramScores = ReactiveComponent
             style: 
               position: 'relative'
               top: -4
-        
-            TRANSLATE
-              id: "engage.proposal_score_summary.explanation"
-              percentage: Math.round(overall_avg * 100) 
-              "{percentage}% average"
+
+            if is_weighted         
+              TRANSLATE
+                id: "engage.proposal_score_summary_weighted.explanation"
+                percentage: Math.round(overall_avg * 100) 
+                "{percentage}% weighted average"
+
+            else 
+              TRANSLATE
+                id: "engage.proposal_score_summary.explanation"
+                percentage: Math.round(overall_avg * 100) 
+                "{percentage}% average"
 
         if has_groups && overall_weight > 0
           BUTTON
@@ -538,6 +549,11 @@ window.ProposalScoresPopover =  ReactiveComponent
 
     group_opinions = []
     group_weights = {}
+
+    opinion_views = fetch('opinion_views')
+    is_weighted = false 
+    for v,view of opinion_views.active_views
+      is_weighted ||= view.view_type == 'weight'
 
 
     for group in all_groups 
@@ -629,7 +645,7 @@ window.ProposalScoresPopover =  ReactiveComponent
             pos = @local.histocache.positions[group]
             {avg, cnt} = group_scores[group]
             DIV 
-              "data-tooltip": "#{group}: #{cnt} opinions with #{Math.round(100 * avg)}% avg"
+              "data-tooltip": "#{group}: #{cnt} opinions with #{Math.round(100 * avg)}% #{if is_weighted then 'weighted' else ''} avg"
               style: _.extend {}, group_avatar_style,
                 width:  pos[2] * 2
                 height: pos[2] * 2
@@ -709,7 +725,7 @@ window.ProposalScoresPopover =  ReactiveComponent
                 if !insert_separator
                   group
                 else 
-                  "Overall average opinion:"
+                  "Overall average #{if is_weighted then 'weighted' else ''} opinion:"
 
               
               if !insert_separator
@@ -720,7 +736,7 @@ window.ProposalScoresPopover =  ReactiveComponent
                     fontSize: 11
 
 
-                  "#{Math.round(avg * 100)}% avg • "
+                  "#{Math.round(avg * 100)}% #{if is_weighted then 'weighted ' else ''}avg • "
 
                   TRANSLATE
                     id: "engage.proposal_score_summary"

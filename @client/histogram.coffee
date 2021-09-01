@@ -834,7 +834,7 @@ HistoAvatars = ReactiveComponent
             anonymous: customization('anonymize_everything')
             style: avatar_style
             set_bg_color: true
-            custom_bg_color: has_groups && group
+            custom_bg_color: avatar_style.background || avatar_style.backgroundColor
             # style: _.extend {}, avatar_style,
             #   backgroundColor: user.bg_color
             #   # border: "1px solid #{hsv2rgb(1 - (pos[3] or .5) * .8, .5, .5)}" # #{if pos[3] <= .5 then 'red' else '#999'}"

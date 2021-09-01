@@ -93,12 +93,19 @@ window.AvatarPopover = ReactiveComponent
               for attribute in attributes
                 is_grouped = grouped_by && grouped_by.name == attribute.name
 
-                user_val = user.tags[attribute.key]
 
-                if typeof user_val == "string" && user_val?.indexOf ',' > -1 
-                  user_val = user_val.split(',')
-                else if is_grouped
-                  user_val = [user_val]
+                if attribute.pass 
+                  user_val = attribute.pass(user)
+                  user_val ?= "Unreported"
+                  user_val = ["#{user_val}"]
+                else 
+                  user_val = user.tags[attribute.key] 
+                  user_val ?= "Unreported"
+
+                  if typeof user_val == "string" && user_val?.indexOf ',' > -1 
+                    user_val = user_val.split(',')
+                  else if is_grouped
+                    user_val = [user_val]
 
                 continue if !is_grouped && !user_val
 
@@ -167,12 +174,19 @@ window.AvatarPopover = ReactiveComponent
             UL 
               style: 
                 listStyle: 'none'
+                margin: '12px auto'
               for reason in inclusions
                 point = fetch reason 
 
                 LI 
                   style: 
                     paddingTop: 12
+                    maxWidth: 450
+                    borderRadius: 16
+                    padding: '0.5em 16px'
+                    backgroundColor: '#f6f7f9'
+                    boxShadow: '#b5b5b5 0 1px 1px 0px'
+                    margin: '0px 16px 12px 16px'
 
                   SPAN 
                     style: 
@@ -192,6 +206,7 @@ window.AvatarPopover = ReactiveComponent
                   SPAN 
                     style: 
                       fontStyle: 'italic'
+                      marginLeft: 12
                     "~ #{if point.hide_name then 'Anonymous' else fetch(point.user).name}"
 
 
@@ -276,7 +291,8 @@ window.avatar = (user, props) ->
     key: user.key
     className: "avatar #{props.className or ''}"
     'data-user': if anonymous then -1 else user.key
-    'data-popover': if !props.hide_popover then alt 
+    'data-popover': if !props.hide_popover && !anonymous then alt 
+    'data-tooltip': if anonymous then alt
     'data-anon': anonymous  
     tabIndex: if props.focusable then 0 else -1
     width: style?.width

@@ -294,9 +294,11 @@ EditList = ReactiveComponent
           backgroundColor: focus_color()
 
         render_anchor: ->
-          GearIcon
-            size: 20
-            fill: '#888'
+          SPAN 
+            "data-tooltip": "Configure list" 
+            GearIcon
+              size: 20
+              fill: '#888'
 
         render_option: (option, is_active) ->
           SPAN null, 
@@ -1206,9 +1208,7 @@ window.list_actions = (props) ->
       if props.can_sort && add_new
         SPAN 
           style: 
-            padding: '0 24px'
-            fontSize: 20
-          # '|'
+            padding: '0 12px'
 
       if props.can_sort
         SortProposalsMenu()
@@ -1228,6 +1228,8 @@ window.list_actions = (props) ->
     OpinionViews
       style: 
         width: column_sizes().second
+      more_views_positioning: 'right'
+
       additional_width: column_sizes().gutter + column_sizes().first
 
 

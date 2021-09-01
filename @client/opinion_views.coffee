@@ -7,7 +7,11 @@ save
   key: 'opinion_views'
   active_views: {}
 
-
+save
+  key: 'opinion_views_ui'
+  active: "All opinions"
+  visible_attributes: {}
+  selected_vals_for_attribute: {}
 
 
 window.compose_opinion_views = (opinions, proposal, opinion_views) -> 
@@ -63,6 +67,49 @@ window.get_opinions_for_proposal = (opinions, proposal, weights) ->
     {weights, salience, groups} = compose_opinion_views(opinions, proposal)
 
   (o for o in opinions when weights[o.user] > 0)
+
+
+# Attributes are data about participants that can serve as additional filters. 
+# We take them from legacy opinion views, and from 
+# qualifying user_tags
+window.get_participant_attributes = -> 
+  attributes = [] 
+  is_admin = fetch('/current_user').is_admin
+  show_others = (!customization('hide_opinions') || is_admin) && !customization('anonymize_everything')
+  custom_filters = customization 'opinion_views'
+  user_tags = customization 'user_tags'
+
+  if show_others
+    if custom_filters
+      for filter in custom_filters
+        if filter.visibility == 'open' || is_admin
+          if filter.pass
+            attributes.push _.extend {}, filter, 
+              key: filter.label
+              name: filter.label
+              options: ['true', 'false']
+
+    if user_tags
+      for tag in user_tags 
+        name = tag.key
+        if (tag.visibility == 'open' || is_admin) && \
+           (tag.self_report?.input in ['dropdown', 'boolean', 'checklist']) && \
+           !tag.no_opinion_view # set in the user_tags customization to prevent an opinion view from automatically getting created
+
+          attributes.push 
+            key: name
+            name: tag.view_name or tag.name or tag.self_report?.question or name
+            pass: do(name) -> (u, value) -> 
+              if value?
+                fetch(u).tags[name] == value
+              else 
+                fetch(u).tags[name]
+            options: tag.self_report.options or (if tag.self_report.input == 'boolean' then [true, false])
+            input_type: tag.self_report?.input
+
+  attributes
+
+
 
 
 window.get_user_groups_from_views = (groups) ->
@@ -192,7 +239,7 @@ default_weights =
 
   weighed_by_substantiated: 
     key: 'weighed_by_substantiated'
-    name: 'Gave reasons'
+    name: 'Reasons given'
     label: 'Add weight to opinions that explained their stance with pro and/or con reasons.'
     weight: (u, opinion, proposal) ->
       point_inclusions = Math.log(1 + Math.min(8,opinion.point_inclusions?.length or 0))
@@ -217,7 +264,7 @@ default_weights =
 
   weighed_by_deliberative: 
     key: 'weighed_by_deliberative'
-    name: 'Weighed tradeoffs'
+    name: 'Tradeoffs recognized'
     label: 'Add weight to opinions that acknowledge both pro and con tradeoffs.'
     weight: (u, opinion, proposal) ->
       point_inclusions = opinion.point_inclusions
@@ -281,7 +328,6 @@ default_weights =
 toggle_group = (view, replace_existing) ->
   _activate_opinion_view(view, 'group', replace_existing)
 
-
 toggle_weight = (view, replace_existing) -> 
   _activate_opinion_view(view, 'weight', replace_existing)
 
@@ -322,20 +368,20 @@ _activate_opinion_view = (view, view_type, replace_existing) ->
           view.salience u, opinion, proposal
         else if !view.pass? || view.pass(u, opinion, proposal)
           1
-        else if opinion_views.enable_comparison 
-          .1
         else 
           0
       get_weight: (u, opinion, proposal) ->
         if view.weight?
           view.weight(u, opinion, proposal)
-        else if opinion_views.enable_comparison || (!view.pass? || view.pass?(u, opinion, proposal))
+        else if (!view.pass? || view.pass?(u, opinion, proposal))
           1
         else 
           0
 
       get_group: if view.group? then (u, opinion, proposal) -> 
-        view.group(u, opinion, proposal) or 'Unreported'
+        group = view.group(u, opinion, proposal) 
+        group ?= 'Unreported'
+        group
       options: if view.group? then view.options
 
 
@@ -345,128 +391,13 @@ _activate_opinion_view = (view, view_type, replace_existing) ->
 
 
 
-FilterOpinionsIcon = (opts) ->
-  if opts.height && !opts.width 
-    opts.width = opts.height * 72 / 61
 
-  SVG 
-    dangerouslySetInnerHTML: __html: '<g id="filter2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><circle id="Oval" fill="#FFFFFF" cx="12" cy="16" r="9"></circle><circle id="Oval" fill="#FFFFFF" cx="35" cy="16" r="9"></circle><circle id="Oval" fill="#FFFFFF" cx="35" cy="47" r="9"></circle><circle id="Oval" fill="#FFFFFF" cx="59" cy="16" r="9"></circle><line x1="6.5" y1="31.5" x2="67.5" y2="32.5" id="Line" stroke="#FFFFFF" stroke-width="3" stroke-linecap="square" stroke-dasharray="0,5"></line></g>'
-    height: opts.height or 61
-    width: opts.width or 72
-    viewBox: "0 0 72 61" 
-
-WeighOpinionsIcon = (opts) ->
-  if opts.height && !opts.width 
-    opts.width = opts.height * 72 / 61
-
-  SVG 
-    dangerouslySetInnerHTML: __html: '<g id="weigh" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><circle id="Oval" fill="#FFFFFF" cx="10" cy="40" r="7"></circle><circle id="Oval" fill="#FFFFFF" cx="61" cy="38" r="10"></circle><circle id="Oval" fill="#FFFFFF" cx="34" cy="29" r="18"></circle><line x1="1.5" y1="48.5" x2="70.5" y2="48.5" id="Line" stroke="#FFFFFF" stroke-width="2" stroke-linecap="square"></line></g>'
-    height: opts.height or 61
-    width: opts.width or 72
-    viewBox: "0 0 72 61" 
-
-
-
-
-
-
-
-
-OpinionViews = ReactiveComponent
-  displayName: 'OpinionViews'
-
-  render : -> 
-
-    clear_all = ->
-      to_remove = []
-      for k,v of opinion_views.active_views
-        if v.view_type in ['filter', 'weight'] || k == 'group_by'
-          to_remove.push v
-      for view in to_remove
-        toggle_opinion_filter view
-
-      for attr in ['group_by', 'selected_vals_for_attribute', 'visible_attributes']
-        if opinion_views_ui[attr]
-          delete opinion_views_ui[attr]
-      save opinion_views_ui
-
-    has_other_filters = get_participant_attributes().length > 0
-    opinion_views = fetch 'opinion_views'
-    opinion_views_ui = fetch 'opinion_views_ui'
-    view_buttons = [ 
-      {
-        label: 'All opinions'
-        callback: clear_all
-      }
-      {
-        label: 'Just you'
-        callback: ->
-          clear_all()
-          toggle_opinion_filter default_filters.just_you
-      }, 
-      {
-        label: 'More views'
-        callback: (item, previous_state) -> 
-          if previous_state == 'More views'
-            opinion_views_ui.active = 'All opinions'
-            save opinion_views_ui
-          clear_all()
-      }
-    ]
-
-    DIV 
-      style: (@props.style or {})
-      className: 'filter_opinions_to'
-
-      DIV 
-        style: 
-          marginTop: 0
-          lineHeight: 1
-
-        if customization('verification-by-pic') 
-          VerificationProcessExplanation()
-
-        ToggleButtons view_buttons, opinion_views_ui
-
-      if opinion_views_ui.active == 'More views'
-        needs_expansion = @props.additional_width && @props.style?.width
-        width = 0
-        if needs_expansion 
-          if has_other_filters 
-            width = @props.style.width + @props.additional_width 
-          else 
-            width = Math.min(660, @props.style.width + @props.additional_width)
-
-        DIV 
-          style: 
-            width: if width then width
-            maxWidth: if !has_other_filters then 660
-            position: 'relative'
-            right: if needs_expansion then width - @props.style.width 
-            border: '1px solid #B6B6B6'
-            borderRadius: 8
-            marginTop: 18
-            padding: '18px 24px'
-
-          DIV 
-            style: 
-              position: 'absolute'
-              left: (document.querySelector('[data-view-state="More views"]')?.offsetLeft or 60) + 35 - (if needs_expansion then (@props.style.width + @props.additional_width - width ) else 0)
-              top: -17
-
-            dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="#979797"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
-
-          DIV 
-            style: 
-              display: 'flex'
-
-            OpinionFilters()
-            OpinionWeights()
 
 
 
 DateFilters = ->
   opinion_views = fetch 'opinion_views'
+  tz_offset = new Date().getTimezoneOffset() * 60 * 1000
 
   cb = (activated) ->
     pass = (u, opinion, proposal) -> 
@@ -486,17 +417,20 @@ DateFilters = ->
       else if activated.label == 'Custom'
 
         if date_toggle_state.start
-          earliest = date_toggle_state.start
+          earliest = date_toggle_state.start + tz_offset
+
 
         if date_toggle_state.end 
-          latest = date_toggle_state.end
+          latest = date_toggle_state.end + tz_offset
+
 
       (earliest == null || earliest <= date) && (latest == null || latest >= date) 
 
     view = 
-      key: 'date-filter'
+      key: 'date'
       salience: (u, opinion, proposal) -> if pass(u, opinion, proposal) then 1 else .1
       weight:   (u, opinion, proposal) -> if pass(u, opinion, proposal) then 1 else .1
+      name: activated.label
 
     set_opinion_date_filter view
 
@@ -506,8 +440,6 @@ DateFilters = ->
     save date_toggle_state
 
 
-  has_other_filters = get_participant_attributes().length > 0
-
 
   date_toggle_state = fetch 'opinion-date-filter'
   date_options = [
@@ -515,8 +447,8 @@ DateFilters = ->
       label: 'All'
       callback: ->
         clear_custom_date()
-        if opinion_views.active_views['date-filter']
-          delete opinion_views.active_views['date-filter']
+        if opinion_views.active_views['date']
+          delete opinion_views.active_views['date']
           save opinion_views
     }
     { label: 'Today', callback: cb }
@@ -526,82 +458,305 @@ DateFilters = ->
 
   DIV 
     className: 'grays' # for toggle buttons
-    SPAN 
-      className: 'opinion_view_name'
-      style: 
-        paddingRight: 8
-      'Filter opinions by date:'
 
-    ToggleButtons date_options, date_toggle_state, 
-      display: if has_other_filters then 'inline-block'
-      marginTop: if !has_other_filters then 8
+    ToggleButtons date_options, date_toggle_state
 
     if date_toggle_state.active == 'Custom'
 
       DIV 
         className: 'opinion-date-filter'
 
-        LABEL null,
-          'From:'
-        INPUT 
-          type: 'date'
-          id: 'start'
-          name: 'opinion-start'
-          onChange: (e) ->
-            date_toggle_state.start = new Date(e.target.value).getTime()
-            save date_toggle_state
-            cb date_options[3]            
+        SPAN 
+          style: 
+            position: 'relative'
+
+          LABEL null,
+            'From:'
+          INPUT 
+            type: 'date'
+            id: 'start'
+            name: 'opinion-start'
+            defaultValue: if date_toggle_state.start then to_date_str date_toggle_state.start
+            onChange: (e) ->
+              date_toggle_state.start = new Date(e.target.value).getTime()
+              save date_toggle_state
+              cb date_options[3]            
+              e.preventDefault()
+
+        SPAN 
+          style: 
+            position: 'relative'
+            paddingLeft: 8
+
+          LABEL null,
+            'To:'
+          INPUT 
+            type: 'date'
+            id: 'end'
+            name: 'opinion-end'
+            defaultValue: if date_toggle_state.end then to_date_str date_toggle_state.end
+            onChange: (e) ->
+              date_toggle_state.end = new Date(e.target.value).getTime()
+              save date_toggle_state
+              cb date_options[3]
+              e.preventDefault()
+
+to_date_str = (ms) -> 
+  ms += new Date().getTimezoneOffset() * 60 * 1000
+  date = new Date(ms)
+  year = date.getFullYear()
+  month = ("0" + (date.getMonth() + 1)).slice(-2)
+  day = ("0" + date.getDate()).slice(-2)
+  "#{year}-#{month}-#{day}"
+
+
+
+
+
+
+OpinionViews = ReactiveComponent
+  displayName: 'OpinionViews'
+
+  render : -> 
+    @local.minimized ?= true 
+    clear_all = =>
+      to_remove = []
+      for k,v of opinion_views.active_views
+        if v.view_type in ['filter', 'weight', 'group', 'date-filter']
+          to_remove.push v
+      for view in to_remove
+        toggle_opinion_filter view
+
+
+      for attr in ['group_by', 'selected_vals_for_attribute', 'visible_attributes']
+        if attr == 'group_by'
+          delete opinion_views_ui[attr] if attr of opinion_views_ui
+        else 
+          opinion_views_ui[attr] = {}
+      save opinion_views_ui
+
+      date_state = fetch 'opinion-date-filter'
+      date_state.start = date_state.end = date_state.active = null 
+      save date_state
+
+      @local.clicked_more_views = false
+
+
+    return SPAN null if !fetch('/subdomain').name
+
+
+    has_other_filters = get_participant_attributes().length > 0
+    opinion_views = fetch 'opinion_views'
+    opinion_views_ui = fetch 'opinion_views_ui'
+
+
+    is_admin = fetch('/current_user').is_admin
+    show_others = !customization('hide_opinions') || is_admin
+    show_all_not_available = !show_others
+
+    view_buttons = [ 
+      {
+        label: 'All opinions'
+        callback: clear_all
+        disabled: !show_others
+      }
+      {
+        label: 'Just you'
+        callback: ->
+          clear_all()
+          toggle_opinion_filter default_filters.just_you
+      }, 
+      {
+        label: 'Custom view'
+        disabled: !show_others
+        callback: (item, previous_state) => 
+          if previous_state == 'Custom view'
+            if @user_has_set_a_view()
+              @local.minimized = !@local.minimized
+              save @local
+            else 
+              reset_to_default_view()
+          else 
+            @local.minimized = false
+            clear_all()
+          @local.clicked_more_views = true          
+      }
+    ]
+
+    reset_to_default_view = ->
+      clear_all()
+
+      dfault = customization('opinion_filters_default')
+      if !show_others || dfault?.active == 'Just you'
+        toggle_opinion_filter default_filters.just_you
+        opinion_views_ui.active = 'Just you'
+      else if dfault
+        opinion_views_ui.active = 'Custom view'
+      else       
+        opinion_views_ui.active = 'All opinions'
+
+      save opinion_views_ui
+
+
+    if !opinion_views_ui.initialized      
+      reset_to_default_view()
+      opinion_views_ui.initialized = true 
+      save opinion_views_ui
+
+    if !@user_has_set_a_view() && @local.minimized && @local.clicked_more_views
+      reset_to_default_view()
+
+
+
+    DIV 
+      style: (@props.style or {})
+      className: 'filter_opinions_to'
+
+      DIV 
+        style: 
+          marginTop: 0
+          lineHeight: 1
+          
+
+        if customization('verification-by-pic') 
+          VerificationProcessExplanation()
+
+        SPAN 
+          style: 
+            display: 'flex'
+
+          ToggleButtons view_buttons, opinion_views_ui, 
+            minWidth: 290
+
+          SPAN 
+            style: 
+              position: 'absolute'
+              left: '100%'
+            @MinimizeExpandButton()
+
+      if opinion_views_ui.active == 'Custom view'
+        needs_expansion = @props.additional_width && @props.style?.width
+        width = 0
+        if needs_expansion 
+          if has_other_filters 
+            width = @props.style.width + @props.additional_width 
+          else 
+            width = Math.min(660, @props.style.width + @props.additional_width)
+
+        DIV
+          style: 
+            width: if width then width
+            position: 'relative'
+            right: if needs_expansion then width - @props.style.width 
+            marginTop: 18
+
+          if !@local.minimized
+            DIV 
+              style: 
+                position: 'absolute'
+                left: (document.querySelector('[data-view-state="Custom view"]')?.offsetLeft or 60) + 35 - (if needs_expansion then (@props.style.width + @props.additional_width - width ) else 0)
+                top: -16
+
+              dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="#979797"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
+
+
+          if @local.minimized 
+            DIV null, 
+
+              MinimizedViews
+                more_views_positioning: @props.more_views_positioning
+
+
+
+          else 
+
+            DIV 
+              style: 
+                # maxWidth: if !has_other_filters then 660
+                border: '1px solid #B6B6B6'
+                borderRadius: 8
+                width: 'fit-content'
+
+                margin: if @props.more_views_positioning == 'centered' then 'auto'
+                float: if @props.more_views_positioning == 'right' then 'right'
+
+              
+              DIV 
+                style: 
+                  padding: '0px 24px'
+
+                OpinionFilters()
+                OpinionWeights()
+
+
+
+
+
+          DIV style: clear: 'both'
+
+  user_has_set_a_view: ->
+    opinion_views = fetch 'opinion_views'
+    user_has_set_a_view = false 
+    for k,v of opinion_views.active_views
+      user_has_set_a_view ||= v.view_type in ['filter', 'weight', 'group', 'date-filter']
+    user_has_set_a_view
+
+  MinimizeExpandButton: ->
+    return SPAN(null) if !@user_has_set_a_view() || fetch('opinion_views_ui').active != 'Custom view'
+
+    toggle_expanded = (e) =>
+      @local.minimized = !@local.minimized
+      save @local
+
+    DIV null,
+      BUTTON 
+        className: 'like_link'
+        onClick: toggle_expanded
+        onKeyDown: (e) => 
+          if e.which == 13 || e.which == 32 # ENTER or SPACE
+            toggle_expanded(e)
             e.preventDefault()
+        style: 
+          fontSize: 12
+          color: "#868686"
+          whiteSpace: 'nowrap'
+          marginLeft: 4
 
-        LABEL null,
-          'To:'
-        INPUT 
-          type: 'date'
-          id: 'end'
-          name: 'opinion-end'
-          onChange: (e) ->
-            date_toggle_state.end = new Date(e.target.value).getTime()
-            save date_toggle_state
-            cb date_options[3]
-            e.preventDefault()
+        if @local.minimized
+          'configure view'
+        else 
+          'minimize'
 
 
-# Attributes are additional filters that can distinguish amongst all 
-# participants. We take them from legacy opinion views, and from 
-# qualifying user_tags
-window.get_participant_attributes = -> 
-  attributes = [] 
-  is_admin = fetch('/current_user').is_admin
-  show_others = !customization('hide_opinions') || is_admin
-  custom_filters = customization 'opinion_views'
-  user_tags = customization 'user_tags'
 
-  if show_others
-    if custom_filters
-      for filter in custom_filters
-        if filter.visibility == 'open' || is_admin
-          if filter.pass
-            attributes.push _.extend {}, filter, 
-              name: filter.label
-              options: [true, false]
 
-    if user_tags
-      for tag in user_tags 
-        name = tag.key
-        if (tag.visibility == 'open' || is_admin) && \
-           (tag.self_report?.input in ['dropdown', 'boolean', 'checklist']) && \
-           !tag.no_opinion_view # set in the user_tags customization to prevent an opinion view from automatically getting created
 
-          attributes.push 
-            key: name
-            name: tag.view_name or tag.name or tag.self_report?.question or name
-            pass: do(name) -> (u, value) -> 
-              u.tags[name] == value
-            options: tag.self_report.options or (if tag.self_report.input == 'boolean' then [true, false])
-            input_type: tag.self_report?.input
-
+get_participant_attributes_with_defaults = ->
+  attributes = get_participant_attributes()
+  attributes.unshift {key: 'date', icon: date_icon, name: 'Date', render: DateFilters}
   attributes
 
+
+
+toggle_attribute_visibility = (attribute) ->
+  opinion_views = fetch 'opinion_views'
+  opinion_views_ui = fetch 'opinion_views_ui'
+  opinion_views_ui.visible_attributes[attribute.key] = !opinion_views_ui.visible_attributes[attribute.key]
+  if !opinion_views_ui.visible_attributes[attribute.key] && opinion_views_ui.group_by == attribute.key
+    toggle_group opinion_views.active_views.group_by
+    opinion_views_ui.group_by = null
+
+  opinion_views_ui.selected_vals_for_attribute[attribute.key] = {}
+  save opinion_views_ui
+
+  if attribute.key == 'date'
+    date_toggle_state = fetch 'opinion-date-filter'
+    date_toggle_state.active = null 
+    save date_toggle_state
+
+  if attribute.key of opinion_views.active_views
+    delete opinion_views.active_views[attribute.key]
+    save opinion_views
 
 OpinionFilters = ReactiveComponent
   displayName: 'OpinionFilters'
@@ -610,47 +765,29 @@ OpinionFilters = ReactiveComponent
     opinion_views = fetch 'opinion_views'
     opinion_views_ui = fetch 'opinion_views_ui'
 
-    is_admin = fetch('/current_user').is_admin
-    show_others = !customization('hide_opinions') || is_admin
-
-    attributes = get_participant_attributes()
+    attributes = get_participant_attributes_with_defaults()
 
     active_filters = {}
     for k,v of opinion_views.active_views
       if v.view_type == 'filter'
         active_filters[k] = v 
 
-    if !opinion_views_ui.initialized      
-      initial_filter = null 
-
-      if !show_others
-        toggle_opinion_filter default_filters.just_you
-      # else if dfault = customization('opinion_filters_default')
-      #   for filter in filters 
-      #     if filter.label == dfault 
-      #       toggle_opinion_filter filter 
-      #       break 
-      opinion_views_ui.initialized = true 
-      save opinion_views_ui
-
 
     update_view_for_attribute = (attribute) ->
-      if attribute.key 
-        attribute = attribute.key
-
+      attr_key = attribute.key
       # having no selections for an attribute paradoxically means that all values are valid.
       has_one_enabled = false 
-      for val,enabled of opinion_views_ui.selected_vals_for_attribute[attribute]
+      for val,enabled of opinion_views_ui.selected_vals_for_attribute[attr_key]
         has_one_enabled ||= enabled
       if !has_one_enabled
-        opinion_views_ui.selected_vals_for_attribute[attribute] = {}
+        opinion_views_ui.selected_vals_for_attribute[attr_key] = {}
 
       pass = (u) -> 
         user = fetch(u)
-        val_for_user = user.tags[attribute]
+        val_for_user = user.tags[attr_key]
         is_array = Array.isArray(val_for_user)
 
-        passing_vals = (val for val,enabled of opinion_views_ui.selected_vals_for_attribute[attribute] when enabled)
+        passing_vals = (val for val,enabled of opinion_views_ui.selected_vals_for_attribute[attr_key] when enabled)
 
         passes = false
         for passing_val in passing_vals
@@ -658,232 +795,231 @@ OpinionFilters = ReactiveComponent
             passing_val = true 
           else if passing_val == 'false'
             passing_val = false
-          passes ||= val_for_user == passing_val || (is_array && passing_val in val_for_user)
+
+          if attribute.pass 
+            passes ||= passing_val == attribute.pass(u)
+          else 
+            passes ||= val_for_user == passing_val || (is_array && passing_val in val_for_user)
 
         passes 
 
       view = 
-        key: attribute
+        key: attr_key
         # pass: pass
         salience: (u) -> if pass(u) then 1 else .1
         weight:   (u) -> if pass(u) then 1 else .1
 
       toggle_opinion_filter view, has_one_enabled
 
-    show_all_not_available = !show_others
-
-    if attributes.length > 0
-      opinion_views_ui.visible_attributes ?= {}
-      opinion_views_ui.selected_vals_for_attribute ?= {}
+    
 
     for attribute, cnt in attributes
       opinion_views_ui.selected_vals_for_attribute[attribute.key] ?= {}
-
-    toggle_attribute_visible = (attribute) ->
-      opinion_views_ui.visible_attributes[attribute.key] = !opinion_views_ui.visible_attributes[attribute.key]
-      if !opinion_views_ui.visible_attributes[attribute.key] && opinion_views_ui.group_by == attribute.key
-        toggle_group opinion_views.active_views.group_by
-        opinion_views_ui.group_by = null
-      save opinion_views_ui
 
     if opinion_views_ui.group_by
       all_groups = opinion_views.active_views.group_by.options
       group_colors = get_color_for_groups all_groups
 
-
-
-
-
-
-    DIV 
-      style:
-        flex: 1
-        paddingRight: 24
-
-
-
-      DateFilters()
-
-
+    DIV null, 
       if attributes.length > 0 
         DIV 
-          style: 
-            marginTop: 18
+          className: 'opinion_view_row'
+
+          filter_icon()
 
 
+          LABEL 
+            className: 'opinion_view_name'
+            'Narrow by'
+            ':'
 
-          DIV 
+
+          UL 
             style: 
-              display: 'flex'
-            SPAN 
-              className: 'opinion_view_name'
-              style: 
-                paddingRight: 16
-                whiteSpace: 'nowrap'
-              'More filters:'
+              listStyle: 'none'
+
+            for attribute, cnt in attributes
+              do (attribute) ->
+                attr_name = attribute.name 
+                shortened = false 
+                if attr_name.length > 40
+                  attr_name = "#{attr_name.substring(0,37)}..."
+                  shortened = true
+                LI 
+                  style: 
+                    display: 'inline-block'
+
+                  BUTTON
+                    title: if shortened then attribute.name
+                    className: "filter opinion_view_button #{if opinion_views_ui.visible_attributes[attribute.key] then 'active' else ''}"
+                    onClick: -> toggle_attribute_visibility(attribute)
+                    onKeyDown: (e) => 
+                      if e.which == 13 || e.which == 32 # ENTER or SPACE
+                        toggle_attribute_visibility(attribute)
+                        e.preventDefault()
+
+                    if attribute.icon 
+                      SPAN 
+                        style: 
+                          position: 'relative'
+                          top: 2
+                          marginRight: 7
+                        attribute.icon?(opinion_views_ui.visible_attributes[attribute.key])
+
+                    attr_name
 
 
-            UL 
-              style: 
-                listStyle: 'none'
-                display: 'inline'
+      for attribute, cnt in attributes
+        continue if !opinion_views_ui.visible_attributes[attribute.key]
+        do (attribute) => 
+          DIV 
+            className: 'attribute_wrapper'
 
+            DIV 
+              className: 'attribute_group'
 
-              for attribute, cnt in attributes
-                continue if opinion_views_ui.visible_attributes[attribute.key]
-                do (attribute) ->
-                  LI 
-                    style: 
-                      display: 'inline-block'
-                    BUTTON
-                      className: 'filter opinion_view_button' 
-                      onClick: -> toggle_attribute_visible(attribute)
-                      onKeyDown: (e) => 
-                        if e.which == 13 || e.which == 32 # ENTER or SPACE
-                          toggle_attribute_visible(attribute)
-                          e.preventDefault()
-
-                      "+ #{attribute.name}"
-
-
-          for attribute, cnt in attributes
-            continue if !opinion_views_ui.visible_attributes[attribute.key]
-            do (attribute) => 
 
               DIV 
-                className: 'attribute_group'
+                className: 'attribute_name'
+                "#{attribute.name}"
 
-                BUTTON
-                  className: 'attribute_group_header'
-                  onClick: -> toggle_attribute_visible(attribute)
-                  onKeyDown: (e) => 
-                    if e.which == 13 || e.which == 32 # ENTER or SPACE
-                      toggle_attribute_visible(attribute)
-                      e.preventDefault()
+              if attribute.render 
+                attribute.render()
+              else 
+                UL null, 
 
-                  "#{attribute.name}"
+                  for val in attribute.options
+                    is_grouped = opinion_views_ui.group_by == attribute.key
+                    checked = !!opinion_views_ui.selected_vals_for_attribute[attribute.key][val]
 
-                  SPAN 
-                    style: 
-                      float: 'right'
-                    'x'
+                    val_name = val 
+                    shortened = false 
+                    if val_name.length > 25
+                      val_name = "#{val_name.substring(0,22)}..."
+                      shortened = true
 
-                if attribute.render 
-                  attribute.render()
-                else 
-                  UL 
-                    className: 'attribute_container' 
+                    do (val) => 
+                      LI 
+                        style: 
+                          display: 'inline-block'
+                        LABEL 
+                          className: "attribute_value_selector"
+                          title: if shortened then val 
+                          SPAN
+                            className: if is_grouped then 'toggle_switch' else ''
 
-                    for val in attribute.options
-                      is_grouped = opinion_views_ui.group_by == attribute.key
-                      checked = !!opinion_views_ui.selected_vals_for_attribute[attribute.key][val]
+                            INPUT 
+                              type: 'checkbox'
+                              # className: 'bigger'
+                              value: val
+                              checked: checked
+                              onChange: (e) ->
+                                # create a view on the fly for this attribute
+                                opinion_views_ui.selected_vals_for_attribute[attribute.key][val] = e.target.checked
+                                save opinion_views_ui
+                                update_view_for_attribute(attribute)
 
-                      do (val) => 
-                        LI 
-                          style: 
-                            display: 'inline-block'
-                          LABEL 
-                            className: "attribute_value_selector"
+                            if is_grouped
+                              SPAN 
+                                className: 'toggle_switch_circle'
+                                style: 
+                                  backgroundColor: if checked then group_colors[val]
 
-                            SPAN
-                              className: if is_grouped then 'toggle_switch' else ''
+                          SPAN 
+                            className: 'attribute_value_value'
+                            val_name
 
-                              INPUT 
-                                type: 'checkbox'
-                                # className: 'bigger'
-                                value: val
-                                checked: checked
-                                onChange: (e) ->
-                                  # create a view on the fly for this attribute
-                                  opinion_views_ui.selected_vals_for_attribute[attribute.key][val] = e.target.checked
-                                  save opinion_views_ui
-                                  update_view_for_attribute(attribute)
+            BUTTON
+              className: 'attribute_close'
+              onClick: -> toggle_attribute_visibility(attribute)
+              onKeyDown: (e) => 
+                if e.which == 13 || e.which == 32 # ENTER or SPACE
+                  toggle_attribute_visibility(attribute)
+                  e.preventDefault()
 
-                              if is_grouped
-                                SPAN 
-                                  className: 'toggle_switch_circle'
-                                  style: 
-                                    backgroundColor: if checked then group_colors[val]
+              'x'
 
-                            SPAN 
-                              className: 'attribute_value_value'
-                              "#{val}"
-
-      if attributes.length > 0 
+      if attributes.length > 1 
         cur_val = -1
         for attr, idx in attributes
           if opinion_views_ui.group_by == attr.key 
             cur_val = idx
         DIV 
+          className: 'opinion_view_row'
           style: 
-            marginTop: 18
+            borderTop: '1px dotted #DEDDDD' 
+
+          group_by_icon()
 
           LABEL 
+            className: 'opinion_view_name'
+            'Color code by'
+            ':'
+
+          SELECT 
             style: 
-              display: 'flex'
-              alignItems: 'center'
+              maxWidth: '100%'
+              marginRight: 12
+              borderColor: '#bbb'
+              backgroundColor: '#f9f9f9'
+              borderRadius: 2
 
-            SPAN 
-              className: 'opinion_view_name'
-              style: 
-                paddingRight: 16
+            onChange: (ev) -> 
+              if ev.target.value != null
+                attribute = attributes[ev.target.value]
+                opinion_views_ui.group_by = attribute?.key
+              else 
+                opinion_views_ui.group_by = null
 
-              "Group opinions by:"  
+              if opinion_views_ui.group_by && (!opinion_views_ui.visible_attributes[opinion_views_ui.group_by] ||  \
+                                  (o for o,val of opinion_views_ui.selected_vals_for_attribute[opinion_views_ui.group_by] when val).length == 0)
+                            # if no attribute value is selected, which mean all are enabled, select them all
+                opinion_views_ui.visible_attributes[opinion_views_ui.group_by] = true 
+                for option in attribute.options 
+                  opinion_views_ui.selected_vals_for_attribute[attribute.key][option] = true
+              save opinion_views_ui
 
-            SELECT 
-              style: 
-                maxWidth: '100%'
-                marginRight: 12
-                borderColor: '#bbb'
-                backgroundColor: '#f9f9f9'
-                borderRadius: 2
+              if opinion_views_ui.group_by
+                view = 
+                  key: 'group_by'
+                  name: attribute.name
+                  group: (u, opinion, proposal) -> 
+                    group_val = if attribute.pass then attribute.pass(u) else fetch(u).tags[opinion_views_ui.group_by] or 'Unreported'
+                    if attribute.input_type == 'checklist'
+                      group_val.split(',')
+                    else 
+                      group_val
+                  options: attribute.options
 
-              onChange: (ev) -> 
-                if ev.target.value != null
-                  attribute = attributes[ev.target.value]
-                  opinion_views_ui.group_by = attribute?.key
-                else 
-                  opinion_views_ui.group_by = null
+                toggle_group view, true
 
-                if opinion_views_ui.group_by && (!opinion_views_ui.visible_attributes[opinion_views_ui.group_by] ||  \
-                                    (o for o,val of opinion_views_ui.selected_vals_for_attribute[opinion_views_ui.group_by] when val).length == 0)
-                              # if no attribute value is selected, which mean all are enabled, select them all
-                  opinion_views_ui.visible_attributes[opinion_views_ui.group_by] = true 
-                  for option in attribute.options 
-                    opinion_views_ui.selected_vals_for_attribute[attribute.key][option] = true
-                save opinion_views_ui
-
-                if opinion_views_ui.group_by
-                  view = 
-                    key: 'group_by'
-                    name: attribute.name
-                    group: (u, opinion, proposal) -> 
-                      group_val = fetch(u).tags[opinion_views_ui.group_by] or 'Unreported'
-                      if attribute.input_type == 'checklist'
-                        group_val.split(',')
-                      else 
-                        group_val
-                    options: attribute.options
-
-                  toggle_group view, true
-
-                else 
-                  delete opinion_views.active_views.group_by
-                  save opinion_views
+              else 
+                delete opinion_views.active_views.group_by
+                save opinion_views
 
 
-              value: cur_val
+            value: cur_val
 
-              OPTION 
-                value: null
-                ""
-              for attribute,idx in attributes 
-                do (attribute) =>
-                  OPTION 
-                    value: idx 
-                    attribute.name or attribute.question
+            OPTION 
+              value: null
+              ""
+            for attribute,idx in attributes 
+              continue if !attribute.options
+              do (attribute) =>
+                OPTION 
+                  value: idx 
+                  attribute.name or attribute.question
 
-            HelpIcon 'Opinions will be colorized based on this attribute so you can see differences between groups.'
+
+
+get_activated_weights = ->
+  opinion_views = fetch 'opinion_views'
+
+  activated_weights = {}
+  for k,v of opinion_views.active_views
+    if v.view_type == 'weight'
+      activated_weights[k] = v 
+  activated_weights
 
 
 OpinionWeights = ReactiveComponent
@@ -891,22 +1027,19 @@ OpinionWeights = ReactiveComponent
   render: ->
     opinion_views = fetch 'opinion_views'
 
-    activated_weights = {}
-    for k,v of opinion_views.active_views
-      if v.view_type == 'weight'
-        activated_weights[k] = v 
-
+    activated_weights = get_activated_weights()
     DIV 
+      className: 'opinion_view_row'
       style: 
-        paddingLeft: 36
-        borderLeft: '1px solid #DEDDDD' 
+        borderTop: '1px dotted #DEDDDD' 
 
-      DIV 
+      weigh_icon()
+
+      LABEL 
         className: 'opinion_view_name'
-        style: 
-          textAlign: 'center'
-          marginBottom: 12
-        'Weigh opinions'
+
+        'Weigh by'
+        ':'
 
       UL 
         style: 
@@ -916,11 +1049,11 @@ OpinionWeights = ReactiveComponent
           do (k,v) ->
             LI 
               style: 
-                marginBottom: 8
-                display: 'flex'
-                alignItems: 'center'
+                marginRight: 8
+                display: 'inline-block'
 
               BUTTON 
+                'data-tooltip': v.label
                 className: "weight opinion_view_button #{if activated_weights[k] then 'active' else ''}"
                 onClick: ->
                   toggle_weight v
@@ -928,7 +1061,6 @@ OpinionWeights = ReactiveComponent
                   if e.which == 13 || e.which == 32 # ENTER or SPACE
                     toggle_weight v
                     e.preventDefault()
-
 
                 if v.icon
                   v.icon if activated_weights[k] then 'white'
@@ -939,11 +1071,244 @@ OpinionWeights = ReactiveComponent
 
                   v.name
 
-              HelpIcon v.label,
-                width: 18
-                height: 18
 
 
+MinimizedViews = ReactiveComponent
+  displayName: 'MinimizedViews'
+  render: -> 
+
+    minimized_views = []
+    opinion_views = fetch 'opinion_views'
+    opinion_views_ui = fetch 'opinion_views_ui'
+
+    attributes = get_participant_attributes_with_defaults()
+
+    for attribute, cnt in attributes
+      continue if !opinion_views_ui.visible_attributes[attribute.key]
+
+      is_grouped = opinion_views_ui.group_by == attribute.key 
+
+      checked = []
+      unchecked = []
+      if attribute.key == 'date'
+        
+        filter_str = opinion_views.active_views['date']?.name 
+        continue if !filter_str
+
+        if filter_str == 'Custom'
+          date_toggle_state = fetch 'opinion-date-filter'
+
+
+          if !date_toggle_state.start && !date_toggle_state.end 
+            filter_str = 'any date'
+          else if !date_toggle_state.start
+            filter_str = "up to #{to_date_str(date_toggle_state.end)}"
+          else if !date_toggle_state.end
+            filter_str = "after #{to_date_str(date_toggle_state.start)}"
+          else 
+            filter_str = "#{to_date_str(date_toggle_state.start)} - #{to_date_str(date_toggle_state.end)}" 
+
+      else 
+        for val in attribute.options
+          if !!opinion_views_ui.selected_vals_for_attribute[attribute.key][val]
+            checked.push val 
+          else 
+            unchecked.push val
+
+        continue if !is_grouped && (checked.length == 0 || checked.length == attribute.options.length)
+
+        checked_string = "" 
+        unchecked_string = ""
+        for val,idx in checked 
+          if val.length > 25
+            val = "#{val.substring(0,22)}..."
+          if idx == checked.length - 1 && checked.length > 1
+            checked_string += ' and '
+          checked_string += "&ldquo;#{val}&rdquo;" 
+          if idx != checked.length - 1 && checked.length > 2
+            checked_string += ', '
+
+        for val,idx in unchecked 
+          if val.length > 25
+            val = "#{val.substring(0,22)}..."
+          if idx == unchecked.length - 1 && unchecked.length > 1
+            unchecked_string += ' and '
+          unchecked_string += "&ldquo;#{val}&rdquo;" 
+          if idx != unchecked.length - 1 && unchecked.length > 2
+            unchecked_string += ', '
+
+        if unchecked_string.length < checked_string.length
+          filter_str = unchecked_string
+          if unchecked_string.length > 0
+            filter_str = "Filter out #{filter_str}"
+        else 
+          filter_str = checked_string
+          if checked_string.length > 0
+            filter_str = "Narrow to #{filter_str}"
+
+
+      minimized_views.push
+        name: attribute.name 
+        label: '' #if is_grouped then 'Color code by' else 'Narrow by'
+        icon: if is_grouped then group_by_icon # else filter_icon
+        filters: filter_str
+        toggle: do (attribute, is_grouped) -> ->
+          if is_grouped
+            delete opinion_views_ui.group_by
+            save opinion_views_ui
+            toggle_group opinion_views.active_views.group_by, false 
+          # else                           
+          toggle_attribute_visibility(attribute)
+
+
+    activated_weights = get_activated_weights()
+    for k,v of default_weights
+      continue if !activated_weights[k]
+      minimized_views.push
+        name: v.name 
+        label: 'Weigh by'
+        # icon: weigh_icon
+        toggle: do (v) -> ->
+          toggle_weight v
+
+    UL 
+      style: 
+        listStyle: 'none'
+        textAlign: if @props.more_views_positioning == 'centered' then 'center' else 'right'
+      for view in minimized_views
+        do (view) ->
+          LI  
+            className: 'minimized_view_wrapper'
+
+            SPAN 
+              className: "minimized_view"
+
+              view.icon?(16)
+
+              view.label
+
+              SPAN
+                className: "minimized_view_name" 
+                style: 
+                  paddingLeft: 4
+
+                view.name
+                if view.filters
+                  ": "
+
+              if view.filters 
+                SPAN 
+                  style: 
+                    paddingLeft: 4
+                  dangerouslySetInnerHTML: __html: view.filters
+
+              BUTTON 
+                className: "minimized_view_close" 
+                onClick: ->
+                  view.toggle()
+                onKeyDown: (e) -> 
+                  if e.which == 13 || e.which == 32 # ENTER or SPACE
+                    view.toggle()
+                    e.preventDefault()
+                'x'
+
+
+
+filter_icon = (height) -> 
+  height ?= 27
+  SVG 
+    className: 'opinion_view_class' 
+    width: 33 / 27 * height
+    height: height
+    viewBox: "0 0 33 27" 
+    dangerouslySetInnerHTML: __html: """
+      <g id="final-push,-filters,-weights,-group-by" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+          <g id="Artboard-Copy-47" transform="translate(-373.000000, -868.000000)">
+              <g id="Group-22" transform="translate(333.000000, 843.000000)">
+                  <g id="filter2" transform="translate(40.000000, 25.000000)">
+                      <circle id="Oval" fill-opacity="0.491815314" fill="#B0B0B0" cx="4.5" cy="4.5" r="4.5"></circle>
+                      <circle id="Oval" fill-opacity="0.491815314" fill="#B0B0B0" cx="15.5" cy="4.5" r="4.5"></circle>
+                      <circle id="Oval" fill="#5F5E5E" cx="15.5" cy="22.5" r="4.5"></circle>
+                      <circle id="Oval" fill-opacity="0.491815314" fill="#B0B0B0" cx="25.5" cy="4.5" r="4.5"></circle>
+                      <line x1="2.1744186" y1="13" x2="31.8255814" y2="13" id="Line" stroke="#757575" stroke-linecap="square" stroke-dasharray="0,2"></line>
+                  </g>
+              </g>
+          </g>
+      </g>
+    """    
+    
+group_by_icon = (height) ->
+  height ?= 19
+  SVG
+    className: 'opinion_view_class' 
+    width: 34/19 * height  
+    height: height
+    viewBox: "0 0 34 19" 
+
+    dangerouslySetInnerHTML: __html: """
+      <g id="final-push,-filters,-weights,-group-by" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+          <g id="Artboard-Copy-47" transform="translate(-371.000000, -937.000000)">
+              <g id="Group-22" transform="translate(333.000000, 843.000000)">
+                  <g id="weigh" transform="translate(39.000000, 94.000000)">
+                      <circle id="Oval" fill="#F09552" cx="6.45454545" cy="13.1818182" r="5"></circle>
+                      <circle id="Oval" fill="#F09552" cx="16.2727273" cy="13" r="5"></circle>
+                      <circle id="Oval" fill="#5E91E9" cx="10.8181818" cy="5" r="5"></circle>
+                      <circle id="Oval" fill="#BC62C4" cx="27.8181818" cy="13" r="5"></circle>
+                      <line x1="0.228571429" y1="18.4545455" x2="31.7714286" y2="18.4545455" id="Line" stroke="#A7A7A7" stroke-linecap="square"></line>
+                  </g>
+              </g>
+          </g>
+      </g>
+    """
+
+
+weigh_icon = (height) ->
+  height ?= 18
+  SVG
+    className: 'opinion_view_class' 
+    width: height * 34/18 
+    height: height
+    viewBox: "0 0 34 18" 
+
+    dangerouslySetInnerHTML: __html: """
+      <g id="final-push,-filters,-weights,-group-by" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+          <g id="Artboard-Copy-47" transform="translate(-372.000000, -759.000000)">
+              <g id="Group-22" transform="translate(333.000000, 602.000000)">
+                  <g id="weigh" transform="translate(40.000000, 157.000000)">
+                      <circle id="Oval" fill="#9C9C9C" cx="4.36363636" cy="13.0909091" r="2.90909091"></circle>
+                      <circle id="Oval" fill="#9C9C9C" cx="27.6363636" cy="13.0909091" r="4.36363636"></circle>
+                      <circle id="Oval" fill="#9C9C9C" cx="13.8181818" cy="8" r="8"></circle>
+                      <line x1="0.228571429" y1="17.4545455" x2="31.7714286" y2="17.4545455" id="Line" stroke="#A7A7A7" stroke-linecap="square"></line>
+                  </g>
+              </g>
+          </g>
+      </g>
+    """
+
+date_icon = (activated) ->
+  SVG 
+    width: 13
+    height: 12 
+    viewBox: "0 0 96 86"
+    dangerouslySetInnerHTML: __html: """
+
+    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(-234.000000, -823.000000)" fill="#{if activated then '#ffffff' else '#000000'}" fill-rule="nonzero">
+            <g transform="translate(234.500000, 823.000000)">
+                <path d="M84.3,5.7 L73.1,5.7 L73.1,2.9 C73.1,1.3 71.8,-1.77635684e-15 70.2,-1.77635684e-15 C68.6,-1.77635684e-15 67.3,1.3 67.3,2.9 L67.3,5.7 L50.4,5.7 L50.4,2.9 C50.4,1.3 49.1,-1.77635684e-15 47.5,-1.77635684e-15 C45.9,-1.77635684e-15 44.6,1.3 44.6,2.9 L44.6,5.7 L27.7,5.7 L27.7,2.9 C27.7,1.3 26.4,-1.77635684e-15 24.8,-1.77635684e-15 C23.2,-1.77635684e-15 21.9,1.3 21.9,2.9 L21.9,5.7 L10.7,5.7 C4.8,5.7 0,10.5 0,16.4 L0,75.2 C0,81.1 4.8,85.9 10.7,85.9 L84.4,85.9 C90.3,85.9 95.1,81.1 95.1,75.2 L95.1,16.4 C95,10.5 90.2,5.7 84.3,5.7 Z M89.2,75.1 C89.2,77.8 87,79.9 84.4,79.9 L10.7,79.9 C8,79.9 5.9,77.7 5.9,75.1 L5.9,16.4 C5.9,13.7 8.1,11.6 10.7,11.6 L21.9,11.6 L21.9,14.4 C21.9,16 23.2,17.3 24.8,17.3 C26.4,17.3 27.7,16 27.7,14.4 L27.7,11.6 L44.6,11.6 L44.6,14.4 C44.6,16 45.9,17.3 47.5,17.3 C49.1,17.3 50.4,16 50.4,14.4 L50.4,11.6 L67.3,11.6 L67.3,14.4 C67.3,16 68.6,17.3 70.2,17.3 C71.8,17.3 73.1,16 73.1,14.4 L73.1,11.6 L84.3,11.6 C87,11.6 89.1,13.8 89.1,16.4 L89.1,75.1 L89.2,75.1 Z" id="Shape"></path>
+                <path d="M29.9,27.9 L21.4,27.9 C19.8,27.9 18.6,29.2 18.6,30.7 C18.6,32.3 19.9,33.5 21.4,33.5 L29.9,33.5 C31.5,33.5 32.7,32.2 32.7,30.7 C32.8,29.2 31.5,27.9 29.9,27.9 Z" id="Path"></path>
+                <path d="M73.6,27.9 L65.1,27.9 C63.5,27.9 62.3,29.2 62.3,30.7 C62.3,32.3 63.6,33.5 65.1,33.5 L73.6,33.5 C75.2,33.5 76.4,32.2 76.4,30.7 C76.4,29.2 75.1,27.9 73.6,27.9 Z" id="Path"></path>
+                <path d="M51.7,27.9 L43.2,27.9 C41.6,27.9 40.4,29.2 40.4,30.7 C40.4,32.3 41.7,33.5 43.2,33.5 L51.7,33.5 C53.3,33.5 54.5,32.2 54.5,30.7 C54.6,29.2 53.3,27.9 51.7,27.9 Z" id="Path"></path>
+                <path d="M29.9,45.2 L21.4,45.2 C19.8,45.2 18.6,46.5 18.6,48 C18.6,49.6 19.9,50.8 21.4,50.8 L29.9,50.8 C31.5,50.8 32.7,49.5 32.7,48 C32.8,46.5 31.5,45.2 29.9,45.2 Z" id="Path"></path>
+                <path d="M73.6,45.2 L65.1,45.2 C63.5,45.2 62.3,46.5 62.3,48 C62.3,49.6 63.6,50.8 65.1,50.8 L73.6,50.8 C75.2,50.8 76.4,49.5 76.4,48 C76.4,46.5 75.1,45.2 73.6,45.2 Z" id="Path"></path>
+                <path d="M51.7,45.2 L43.2,45.2 C41.6,45.2 40.4,46.5 40.4,48 C40.4,49.6 41.7,50.8 43.2,50.8 L51.7,50.8 C53.3,50.8 54.5,49.5 54.5,48 C54.6,46.5 53.3,45.2 51.7,45.2 Z" id="Path"></path>
+                <path d="M29.9,62.5 L21.4,62.5 C19.8,62.5 18.6,63.8 18.6,65.3 C18.6,66.9 19.9,68.1 21.4,68.1 L29.9,68.1 C31.5,68.1 32.7,66.8 32.7,65.3 C32.8,63.8 31.5,62.5 29.9,62.5 Z" id="Path"></path>
+                <path d="M73.6,62.5 L65.1,62.5 C63.5,62.5 62.3,63.8 62.3,65.3 C62.3,66.9 63.6,68.1 65.1,68.1 L73.6,68.1 C75.2,68.1 76.4,66.8 76.4,65.3 C76.4,63.8 75.1,62.5 73.6,62.5 Z" id="Path"></path>
+                <path d="M51.7,62.5 L43.2,62.5 C41.6,62.5 40.4,63.8 40.4,65.3 C40.4,66.9 41.7,68.1 43.2,68.1 L51.7,68.1 C53.3,68.1 54.5,66.8 54.5,65.3 C54.6,63.8 53.3,62.5 51.7,62.5 Z" id="Path"></path>
+            </g>
+        </g>
+    </g>
+    """
 
 VerificationProcessExplanation = ReactiveComponent
   displayName: 'VerificationProcessExplanation'
@@ -1104,6 +1469,7 @@ VerificationProcessExplanation = ReactiveComponent
 
 
 
+
 styles += """
 
   button.opinion_view_button {
@@ -1134,51 +1500,96 @@ styles += """
   button.opinion_view_button.active {
     background-color: #{focus_blue};
     color: white;
+    border-color: #{focus_blue};
   }
 
-  .opinion_view_label input.opinion_view_checker {
-    position: relative;
-    top: 3px;
-  }
-  .opinion_view_label .opinion_view_label_block {
-    width: 90%;
-    padding-left: 12px;
-    display: inline-block;
-    cursor: pointer;
-  }
-  .opinion_view_name {
-    font-size: 14px;
-    font-weight: 600;
+
+  .opinion_view_row {
+    padding: 16px 0px;
+    display: flex;
   } 
+  svg.opinion_view_class {
+    display: block; 
+    margin-right: 18px;
+  }
+
+  .opinion_view_name {
+    margin-right: 18px;    
+    font-weight: 600;
+    font-size: 16px;
+    white-space: nowrap;
+  }
+
+  .attribute_wrapper {
+    display: flex;    
+    margin-bottom: 8px;
+  }
+
+  .attribute_group, .minimized_view {
+    border-radius: 8px;    
+    padding: 8px 16px;
+  }
 
   .attribute_group {
-    margin-top: 8px;
+    margin-left: 50px;
+    width: 100%;
+    background-color: #F3F3F3;  
+    display: flex;  
+    align-items: center;      
   }
 
-  .attribute_container {
-    border: 1px solid #D9D9D9;
-    border-top: none;
-    padding: 2px 4px 4px 4px;
-    border-radius: 0 0 8px 8px;
-  }
-  .attribute_group .attribute_group_header {
-    background: #F0F0F0;
-    border: 1px solid #E0E0E0;
-    border-radius: 8px 8px 0 0;
+  .attribute_name {
+    font-weight: 600;
     font-size: 12px;
-    width: 100%;
-    padding: 4px 12px;
-    text-align: left;
+    text-align: right;   
+    width: 100px;
+    padding-right: 16px; 
+  }
+  .attribute_close, .minimized_view_close {
+    font-size: 12px;
+    color: #000000;
+    background-color: transparent;
+    border: none;
+  }
+  .minimized_view_close {
+    position: absolute;
+    right: -17px;
+  }
+
+  .minimized_view_wrapper {
+    margin-bottom: 4px;
+    margin-left: 24px;    
+    display: inline-block;
+    font-size: 12px; 
+    position: relative;   
+  }
+
+  .minimized_view {
+    color: #1a5fa5;
+    background-color: #e4edf7;
+    width: fit-content;
+    position: relative;
+    display: inline-block;
+  }
+  .minimized_view_name {
+    font-weight: 700;
+  }
+
+  .minimized_view svg.opinion_view_class {
+    display: inline;
+    position: relative;
+    top: 3px;
+    height: 12px;
   }
 
   .attribute_value_selector {
-    display: block; 
+    display: flex; 
+    align-items: center;
     cursor: pointer;
     margin-right: 18px;
   }
   .attribute_value_selector input {
-    position: relative;
-    top: 2px;
+
   }
   .attribute_value_selector .attribute_value_value {
     padding-left: 8px;
@@ -1188,6 +1599,7 @@ styles += """
   }
 
   .opinion-date-filter {
+    display: inline-block;
     margin-top: 8px;
   }
   .opinion-date-filter label {
@@ -1203,48 +1615,6 @@ styles += """
 
 """
 
-# window.opinion_trickle = -> 
-#   filter_out = fetch 'filtered'
-  
-#   proposals = fetch '/proposals'
-
-#   users = {}
-#   for prop in proposals.proposals
-#     for o in prop.opinions
-#       users[o.user] = o.created_at or o.updated_at
-
-#   users = ([k,v] for k,v of users)
-#   users.sort (a,b) -> 
-#     i = new Date(a[1])
-#     j = new Date(b[1])
-#     i.getTime() - j.getTime()
-
-#   users = (u[0] for u in users)
-#   cnt = users.length
-
-#   steps = 1
-#   tick = (interval) => 
-#     if cnt >= 0
-#       setTimeout => 
-#         filter_out.users = {}
-#         for user, idx in users
-#           filter_out.users[user] = 1
-#           break if idx > cnt 
-
-#         cnt--
-#         #cnt -= Math.ceil(steps / 2)
-#         #tick(interval * .9)
-#         tick(interval * .9)
-#         steps++
-#         dirty = true
-#         setTimeout -> 
-#           if dirty
-#             save filter_out
-#             dirty = false
-#         , 2000
-#       , interval
-
-#   tick 1000
 
 
 styles += """
@@ -1283,6 +1653,11 @@ styles += """
     color: white;
   }
 
+  .toggle_buttons button[disabled] {
+    opacity: .45;
+    cursor: default;
+  }
+
   .grays .toggle_buttons button {
     color: #444;
     border-color: #444;
@@ -1314,7 +1689,9 @@ window.ToggleButtons = (items, view_state, style) ->
         LI 
           className: if view_state.active == item.label then 'active'
           'data-view-state': item.label
+          
           BUTTON
+            disabled: item.disabled 
             onClick: (e) -> toggled(e, item) 
             onKeyDown: (e) -> 
               if e.which == 13 || e.which == 32 # ENTER or SPACE

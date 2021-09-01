@@ -205,6 +205,7 @@ window.Proposal = ReactiveComponent
 
 
         OpinionViews
+          more_views_positioning: 'centered'
           style: 
             width: if get_participant_attributes().length > 0 then HOMEPAGE_WIDTH() else Math.max(660,PROPOSAL_HISTO_WIDTH()) # REASONS_REGION_WIDTH()
             margin: '8px auto 20px auto'
@@ -369,7 +370,7 @@ window.Proposal = ReactiveComponent
                     @proposal, 'cons', \
                     (if mode == 'results' then 'score' else 'last_inclusion'), \ 
                     mode == 'crafting' && !TWO_COL(), \
-                    mode == 'crafting' || TWO_COL() || !just_you
+                    mode == 'crafting' || TWO_COL() || (just_you && mode == 'results')
                   style: 
                     visibility: if !TWO_COL() && !has_community_points then 'hidden'
 
@@ -386,7 +387,7 @@ window.Proposal = ReactiveComponent
                     @proposal, 'pros', \
                     (if mode == 'results' then 'score' else 'last_inclusion'), \ 
                     mode == 'crafting' && !TWO_COL(), \
-                    mode == 'crafting' || TWO_COL() || !just_you
+                    mode == 'crafting' || TWO_COL() || (just_you && mode == 'results')
                   style: 
                     visibility: if !TWO_COL() && !has_community_points then 'hidden'
 
@@ -493,6 +494,10 @@ ProposalDescription = ReactiveComponent
       wrapper_style = 
         paddingTop: 36
 
+
+    anonymized = !customization('show_proposer_icon', "list/#{@proposal.cluster}") || customization('anonymize_everything')
+    show_proposal_meta_data = customization('show_proposal_meta_data') && !customization('anonymize_everything')
+
     DIV 
       style: wrapper_style
 
@@ -507,12 +512,12 @@ ProposalDescription = ReactiveComponent
              
 
         BUBBLE_WRAP 
-          user: if !@proposal.pic then editor
+          user: if !@proposal.pic && !customization('anonymize_everything') then editor
           pic: if @proposal.pic then @proposal.pic
           width: HOMEPAGE_WIDTH()
           mouth_style: 
             width: 24
-            display: if !customization('show_proposer_icon', "list/#{@proposal.cluster}") then 'none'
+            display: if anonymized then 'none'
             bottom: 28
             top: 'auto'
             transform: 'rotate(-90deg)'
@@ -520,7 +525,7 @@ ProposalDescription = ReactiveComponent
             padding: '12px 24px'
             borderRadius: 42
           avatar_style: 
-            display: if !customization('show_proposer_icon', "list/#{@proposal.cluster}") then 'none'
+            display: if anonymized then 'none'
             width: 124
             height: 124
             left: -28 - 124
@@ -557,12 +562,12 @@ ProposalDescription = ReactiveComponent
                 SPAN null, 
                   "##{@proposal.cluster or 'proposals'}"
 
-                  if customization('show_proposal_meta_data')
+                  if show_proposal_meta_data
                     SPAN 
                       style: 
                         padding: '0 8px'
                       '|'
-              if customization('show_proposal_meta_data')
+              if show_proposal_meta_data
                 TRANSLATE 
                   id: "engage.proposal_meta_data"
                   timestamp: prettyDate(@proposal.created_at)
@@ -1293,7 +1298,10 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
     filtered = true
     opinions = get_opinions_for_proposal opinions, proposal
 
+
   points = (pnt for pnt in points when pnt.is_pro == (valence == 'pros') )
+
+
 
   included_points = fetch(proposal.your_opinion).point_inclusions
   if filter_included
@@ -1311,7 +1319,7 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
   if opinion_views.active_views.single_opinion_selected
     opinions = [opinion_views.active_views.single_opinion_selected.opinion] 
     filtered = true
-  else if opinion_views.active_views.region_selected || (key for key,view of opinion_views.active_views when view.view_type == 'filter').length > 0
+  else if opinion_views.active_views.region_selected || (key for key,view of opinion_views.active_views when view.view_type == 'filter' && key != 'just_you').length > 0
     {weights, salience, groups} = compose_opinion_views opinions, proposal
     opinions = (o for o in opinions when salience[o.user.key or o.user] == 1)
     filtered = true
@@ -1332,6 +1340,7 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
   #       delete point_inclusions_per_point[point]
 
   points = (pnt for pnt in points when (pnt.key of point_inclusions_per_point) || (pnt.key in included_points))
+
   # Sort points based on resonance with selected users, or custom sort_field
   sort = (pnt) ->
     if filtered
@@ -1348,6 +1357,7 @@ PointsList = ReactiveComponent
 
   render: -> 
     points = (fetch(pnt) for pnt in @props.points)
+
     mode = get_proposal_mode()
 
     your_points = @data()

@@ -27,7 +27,6 @@ clear_tooltip = ->
   tooltip.rendered_size = false 
   save tooltip
 
-
 toggle_tooltip = (e) ->
   tooltip_el = e.target.closest('[data-tooltip]')
   if tooltip_el?
@@ -42,21 +41,26 @@ show_tooltip = (e) ->
   if tooltip_el?
     name = tooltip_el.getAttribute('data-tooltip')
     tooltip = fetch 'tooltip'
-    tooltip.coords = $(tooltip_el).offset()
-    tooltip.coords.left += tooltip_el.offsetWidth / 2
-    tooltip.tip = name
-    save tooltip
+    if tooltip.tip != name 
+      tooltip.coords = $(tooltip_el).offset()
+      tooltip.coords.left += tooltip_el.offsetWidth / 2
+      tooltip.tip = name
+      save tooltip
     e.preventDefault()
+    e.stopPropagation()
 
+tooltip = fetch 'tooltip'
 hide_tooltip = (e) ->
-  tooltip_el = e.target.closest('[data-tooltip]')
-  if tooltip_el?
+  if e.target.getAttribute('data-tooltip')
     clear_tooltip()
+    e.preventDefault()
+    e.stopPropagation()
 
 document.addEventListener "click", toggle_tooltip
 
-document.addEventListener "mouseover", show_tooltip
-document.addEventListener "mouseout", hide_tooltip
+document.body.addEventListener "mouseover", show_tooltip, true
+document.body.addEventListener "mouseleave", hide_tooltip, true
+
 
 $('body').on 'focusin', '[data-tooltip]', show_tooltip
 $('body').on 'focusout', '[data-tooltip]', hide_tooltip

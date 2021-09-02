@@ -76,17 +76,17 @@ window.get_participant_attributes = ->
   attributes = [] 
   is_admin = fetch('/current_user').is_admin
   show_others = (!customization('hide_opinions') || is_admin) && !customization('anonymize_everything')
-  custom_filters = customization 'opinion_views'
+  custom_views = customization 'opinion_views'
   user_tags = customization 'user_tags'
 
   if show_others
-    if custom_filters
-      for filter in custom_filters
-        if filter.visibility == 'open' || is_admin
-          if filter.pass
-            attributes.push _.extend {}, filter, 
-              key: filter.label
-              name: filter.label
+    if custom_views
+      for view in custom_views
+        if view.visibility == 'open' || is_admin
+          if view.pass || view.type == 'filter'
+            attributes.push _.extend {}, view, 
+              key: view.label
+              name: view.label
               options: ['true', 'false']
 
     if user_tags
@@ -212,31 +212,16 @@ build_influencer_network = ->
 
 
 
-default_filters = 
-  everyone: 
-    key: 'everyone'
-    name: 'everyone'
-    pass: (u) -> true 
-
-  just_you: 
-    key: 'just_you'
-    name: 'Just you'
-    pass: (u) -> 
-      user = fetch(u)
-      user.key == fetch('/current_user').user
-
-  by_date: 
-    key: 'date'
-    name: 'By date'
-    pass: (u) ->
-      true
-    options: ['Today', 'Past week', 'Custom']
+just_you_filter = 
+  key: 'just_you'
+  name: 'Just you'
+  pass: (u) -> 
+    user = fetch(u)
+    user.key == fetch('/current_user').user
 
 
-
-default_weights = 
-
-  weighed_by_substantiated: 
+default_weights = [ 
+  {
     key: 'weighed_by_substantiated'
     name: 'Reasons given'
     label: 'Add weight to opinions that explained their stance with pro and/or con reasons.'
@@ -260,8 +245,7 @@ default_weights =
               <line stroke="#{color}" x1="8.37575758" y1="13.5" x2="17.7575758" y2="13.5" id="Line-5" stroke="#979797" stroke-linecap="square"></line>
           </g>
         """    
-
-  weighed_by_deliberative: 
+  }, {
     key: 'weighed_by_deliberative'
     name: 'Tradeoffs recognized'
     label: 'Add weight to opinions that acknowledge both pro and con tradeoffs.'
@@ -292,9 +276,8 @@ default_weights =
           <g id="weigh" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
               <path fill="#{color}" d="M22.9670971,20.1929176 L22.9670971,20.1683744 C22.9815886,20.1324736 22.9922265,20.0943011 22.9987304,20.0548621 C22.9987304,20.0548621 22.9987304,20.0548621 22.9987304,20.0548621 C23.0004232,20.0293408 23.0004232,20.0036859 22.9987304,19.9781646 C22.9987304,19.9781646 22.9987304,19.9566893 22.9987304,19.9444177 C22.9987304,19.9321461 22.9987304,19.9229424 22.9987304,19.9137387 C22.9949502,19.8726516 22.9867644,19.8324016 22.9743971,19.7940906 L22.9743971,19.7940906 L18.9399256,8.02562631 C18.9506738,7.99615751 18.9588334,7.96529502 18.9642589,7.93358931 C18.9781664,7.81275485 18.9534152,7.68990536 18.8954544,7.59208741 C18.8374936,7.49426946 18.7510753,7.42950274 18.6552252,7.41204631 L13.4527523,6.45792942 C13.4151172,5.40049872 12.8144155,4.50934755 11.9927506,4.29199205 L11.9927506,0.460184995 C11.9927506,0.20603184 11.8293343,0 11.6277502,0 C11.426166,0 11.2627497,0.20603184 11.2627497,0.460184995 L11.2627497,4.29199205 C10.6280528,4.45682465 10.10874,5.03001236 9.89521475,5.80139883 L4.44940823,4.80126344 C4.35356714,4.78372914 4.25612781,4.81493501 4.1785425,4.88801078 C4.1009572,4.96108654 4.04958681,5.07004101 4.03574107,5.19088674 C4.03155491,5.23059483 4.03155491,5.27082675 4.03574107,5.31053484 L0.025602933,16.9992337 L0.025602933,16.9992337 C0.0132356207,17.0375447 0.00504978749,17.0777948 0.00126957058,17.1188818 C0.00126957058,17.1188818 0.00126957058,17.1403571 0.00126957058,17.1495608 C0.00126957058,17.1587645 0.00126957058,17.1710361 0.00126957058,17.1833077 C-0.000423190195,17.208829 -0.000423190195,17.2344839 0.00126957058,17.2600052 C0.00126957058,17.2600052 0.00126957058,17.2600052 0.00126957058,17.2600052 C0.00774547506,17.2994541 0.0183845876,17.3376312 0.0329029418,17.3735175 L0.0329029418,17.3980607 C0.0488060712,17.4339253 0.0684473538,17.4669431 0.0913030117,17.4962335 L0.699637073,18.2632085 C2.75983325,20.8606357 6.10004983,20.8606357 8.160246,18.2632085 L8.76858006,17.4962335 C8.79161354,17.465998 8.81126198,17.431936 8.82698013,17.3949928 L8.82698013,17.3704496 C8.84147172,17.3345488 8.85210954,17.2963764 8.85861351,17.2569373 C8.85861351,17.2569373 8.85861351,17.2569373 8.85861351,17.2569373 C8.86030627,17.231416 8.86030627,17.2057611 8.85861351,17.1802398 C8.85861351,17.1802398 8.85861351,17.1587645 8.85861351,17.1464929 C8.85861351,17.1342213 8.85861351,17.1250176 8.85861351,17.1158139 C8.85483329,17.0747269 8.84664746,17.0344768 8.83428014,16.9961658 L8.83428014,16.9961658 L5.01394224,5.83207783 L9.80274797,6.71256512 C9.85757198,7.80370794 10.5108448,8.69745358 11.3689468,8.85528909 C12.2270488,9.0131246 13.0556206,8.39194297 13.3554189,7.36602781 L18.1320579,8.2434472 L14.1584198,19.7879548 L14.1584198,19.7879548 C14.1460238,19.8262538 14.1378369,19.8665089 14.1340865,19.9076029 C14.1340865,19.9076029 14.1340865,19.9290782 14.1340865,19.9382819 C14.1340865,19.9474856 14.1340865,19.9597572 14.1340865,19.9720288 C14.1323937,19.9975501 14.1323937,20.023205 14.1340865,20.0487263 C14.1340865,20.0487263 14.1340865,20.0487263 14.1340865,20.0487263 C14.1405624,20.0881752 14.1512015,20.1263523 14.1657199,20.1622386 L14.1657199,20.1867818 C14.1816474,20.2226264 14.2012863,20.2556402 14.2241199,20.2849546 L14.832454,21.0519296 C16.8926502,23.6493568 20.2328667,23.6493568 22.2930629,21.0519296 L22.901397,20.2849546 C22.9264857,20.2581473 22.9485857,20.2271881 22.9670971,20.1929176 Z M15.0490209,19.5087759 L18.5627585,9.26505789 L22.0959627,19.5087759 L15.0490209,19.5087759 Z M0.916203999,16.7200548 L4.44940823,6.48247262 L7.96314577,16.7200548 L0.916203999,16.7200548 Z M1.24227106,17.6404248 L7.63707871,17.6404248 C5.86694476,19.8538124 3.01240501,19.8538124 1.24227106,17.6404248 L1.24227106,17.6404248 Z M11.6277502,7.95813251 C11.02159,7.94807762 10.5340258,7.32653669 10.5327488,6.56223802 C10.5327488,6.51928742 10.5327488,6.48247262 10.5327488,6.43952202 C10.5385866,6.42154559 10.5434641,6.40309702 10.5473489,6.38429982 C10.5510895,6.34660935 10.5510895,6.308478 10.5473489,6.27078753 C10.6654865,5.57212652 11.1829331,5.09866324 11.7464056,5.17365144 C12.3098781,5.24863963 12.7375156,5.84787683 12.7373515,6.56223802 C12.7373515,6.60518862 12.7373515,6.64507132 12.7373515,6.68802192 C12.7187894,6.74960828 12.7113093,6.81562397 12.7154515,6.88129962 C12.5971458,7.51670329 12.1454062,7.96392904 11.6277502,7.95813251 L11.6277502,7.95813251 Z M15.375088,20.4291459 L21.7698956,20.4291459 C19.9997617,22.6425334 17.1452219,22.6425334 15.375088,20.4291459 L15.375088,20.4291459 Z" id="Shape" fill-rule="nonzero"></path>
           </g>
-          """    
-
-  weighed_by_influence: 
+          """
+  }, {   
     key: 'weighed_by_influence'
     name: 'Influence'
     label: 'Add weight to the opinions of people who have contributed proposals and arguments that other people have found valuable.'
@@ -323,6 +306,27 @@ default_weights =
               <path d="M5.56354114,16.1 L1.98908469,16.1 C1.60839511,16.1 1.29976266,16.3838118 1.29976266,16.7338859 C1.29976266,17.0839599 1.60839511,17.3677718 1.98908469,17.3677718 L3.89933392,17.3677718 L0.201902425,20.7678511 C-0.0673008082,21.0154047 -0.0673008082,21.4167813 0.201902425,21.6643348 C0.471105657,21.9118884 0.907584371,21.9118884 1.1767876,21.6643348 L4.8742191,18.2642555 L4.87431101,20.02088 C4.87431101,20.3709541 5.18294346,20.6547659 5.56363305,20.6547659 C5.94432263,20.6547659 6.25295508,20.3709541 6.25295508,20.02088 L6.25295508,16.7338859 C6.25286317,16.3837273 5.94423072,16.1 5.56354114,16.1 Z" id="Path" fill="#{color}" fill-rule="nonzero" transform="translate(3.126478, 18.975000) scale(-1, -1) translate(-3.126478, -18.975000) "></path>
           </g>
         """
+  }
+]
+
+get_weights = ->
+  custom_views = customization 'opinion_views'
+  is_admin = fetch('/current_user').is_admin
+  show_others = (!customization('hide_opinions') || is_admin) && !customization('anonymize_everything')
+
+  weights = default_weights.slice()
+
+  if show_others && custom_views
+    for view in custom_views
+      if view.visibility == 'open' || is_admin
+        if view.type == 'weight'
+          weights.push _.extend {}, view, 
+            key: view.label
+            name: view.label
+            options: ['true', 'false']
+
+  weights
+
 
 toggle_group = (view, replace_existing) ->
   _activate_opinion_view(view, 'group', replace_existing)
@@ -348,15 +352,15 @@ _activate_opinion_view = (view, view_type, replace_existing) ->
     delete active_views[view_name] #activating an active view toggles it off
   else 
     if view_type == 'filter'
-      if view_name == default_filters.just_you.key
+      if view_name == just_you_filter.key
         to_delete = []
         for k,v of active_views
           if v.view_type == view_type
             to_delete.push k 
         for k in to_delete
           delete active_views[k]
-      else if active_views[default_filters.just_you.key]
-        delete active_views[default_filters.just_you.key]
+      else if active_views[just_you_filter.key]
+        delete active_views[just_you_filter.key]
 
     active_views[view_name] = 
       key: view.key
@@ -563,7 +567,7 @@ OpinionViews = ReactiveComponent
         label: 'Just you'
         callback: ->
           clear_all()
-          toggle_opinion_filter default_filters.just_you
+          toggle_opinion_filter just_you_filter
       }, 
       {
         label: 'Custom view'
@@ -591,10 +595,9 @@ OpinionViews = ReactiveComponent
       clear_all()
 
       dfault = customization('opinion_views_default')
-      console.log dfault
 
       if !show_others || dfault?.active == 'Just you'
-        toggle_opinion_filter default_filters.just_you
+        toggle_opinion_filter just_you_filter
         opinion_views_ui.active = 'Just you'
       else if dfault
         # LIMITATION: default date views not implemented
@@ -618,11 +621,11 @@ OpinionViews = ReactiveComponent
 
 
         if dfault.weights
+          weights = get_weights()
           for weight_key in dfault.weights
-            console.log Object.keys(default_weights)
-            continue if weight_key not of default_weights # LIMITATION: does not allow for custom weight
-            v = default_weights[weight_key]
-            toggle_weight v     
+            v = weights.find (w) -> w.key == weight_key
+            if v
+              toggle_weight v     
 
       else       
         opinion_views_ui.active = 'All opinions'
@@ -867,10 +870,7 @@ InteractiveOpinionViews = ReactiveComponent
       all_groups = opinion_views.active_views.group_by.options
       group_colors = get_color_for_groups all_groups
 
-
     activated_weights = get_activated_weights()
-
-
 
     DIV null, 
       if attributes.length > 0 
@@ -1069,31 +1069,31 @@ InteractiveOpinionViews = ReactiveComponent
           style: 
             listStyle: 'none'
 
-          for k,v of default_weights
-            do (k,v) ->
+          for weight in get_weights()
+            do (weight) ->
               LI 
                 style: 
                   marginRight: 8
                   display: 'inline-block'
 
                 BUTTON 
-                  'data-tooltip': v.label
-                  className: "weight opinion_view_button #{if activated_weights[k] then 'active' else ''}"
+                  'data-tooltip': weight.label
+                  className: "weight opinion_view_button #{if activated_weights[weight.key] then 'active' else ''}"
                   onClick: ->
-                    toggle_weight v
+                    toggle_weight weight
                   onKeyDown: (e) -> 
                     if e.which == 13 || e.which == 32 # ENTER or SPACE
-                      toggle_weight v
+                      toggle_weight weight
                       e.preventDefault()
 
-                  if v.icon
-                    v.icon if activated_weights[k] then 'white'
+                  if weight.icon
+                    weight.icon if activated_weights[weight.key] then 'white'
 
                   SPAN 
                     style: 
-                      paddingLeft: if v.icon then 10
+                      paddingLeft: if weight.icon then 10
 
-                    v.name
+                    weight.name
 
 
 
@@ -1197,14 +1197,14 @@ NonInteractiveOpinionViews = ReactiveComponent
 
 
     activated_weights = get_activated_weights()
-    for k,v of default_weights
-      continue if !activated_weights[k]
+    for weight in get_weights()
+      continue if !activated_weights[weight.key]
       minimized_views.push
-        name: v.name 
+        name: weight.name 
         label: 'Weigh by'
         # icon: weigh_icon
-        toggle: do (v) -> ->
-          toggle_weight v
+        toggle: do (weight) -> ->
+          toggle_weight weight
 
     UL 
       style: 

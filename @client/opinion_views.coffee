@@ -10,8 +10,8 @@ save
 save
   key: 'opinion_views_ui'
   active: "All opinions"
-  visible_attributes: {}
-  selected_vals_for_attribute: {}
+  activated_attributes: {}
+  visible_attribute_values: {}
 
 
 window.compose_opinion_views = (opinions, proposal, opinion_views) -> 
@@ -152,29 +152,6 @@ window.get_color_for_group = (val) ->
 
 
 
-
-
-default_filters = 
-  everyone: 
-    key: 'everyone'
-    name: 'everyone'
-    pass: (u) -> true 
-
-  just_you: 
-    key: 'just_you'
-    name: 'Just you'
-    pass: (u) -> 
-      user = fetch(u)
-      user.key == fetch('/current_user').user
-
-  by_date: 
-    key: 'date'
-    name: 'By date'
-    pass: (u) ->
-      true
-    options: ['Today', 'Past week', 'Custom']
-
-
 window.influence_network = {}
 window.influencer_scores = {}
 influencer_scores_initialized = false 
@@ -192,7 +169,6 @@ add_influence = (influenced, influencer, amount) ->
 
   influence_network[influenced].influenced_by[influencer] ?= 0
   influence_network[influenced].influenced_by[influencer] += amount
-
 
 build_influencer_network = ->
   proposals = fetch '/proposals'
@@ -232,6 +208,29 @@ build_influencer_network = ->
 
 
   influencer_scores_initialized = true
+
+
+
+
+default_filters = 
+  everyone: 
+    key: 'everyone'
+    name: 'everyone'
+    pass: (u) -> true 
+
+  just_you: 
+    key: 'just_you'
+    name: 'Just you'
+    pass: (u) -> 
+      user = fetch(u)
+      user.key == fetch('/current_user').user
+
+  by_date: 
+    key: 'date'
+    name: 'By date'
+    pass: (u) ->
+      true
+    options: ['Today', 'Past week', 'Custom']
 
 
 
@@ -334,7 +333,7 @@ toggle_weight = (view, replace_existing) ->
 toggle_opinion_filter = (view, replace_existing) -> 
   _activate_opinion_view(view, 'filter', replace_existing)
 
-set_opinion_date_filter = (view) -> 
+activate_opinion_date_filter = (view) -> 
   _activate_opinion_view(view, 'date-filter', true)
 
 
@@ -432,7 +431,7 @@ DateFilters = ->
       weight:   (u, opinion, proposal) -> if pass(u, opinion, proposal) then 1 else .1
       name: activated.label
 
-    set_opinion_date_filter view
+    activate_opinion_date_filter view
 
   clear_custom_date = ->
     date_toggle_state.start = null
@@ -528,7 +527,7 @@ OpinionViews = ReactiveComponent
         toggle_opinion_filter view
 
 
-      for attr in ['group_by', 'selected_vals_for_attribute', 'visible_attributes']
+      for attr in ['group_by', 'visible_attribute_values', 'activated_attributes']
         if attr == 'group_by'
           delete opinion_views_ui[attr] if attr of opinion_views_ui
         else 
@@ -591,7 +590,9 @@ OpinionViews = ReactiveComponent
     reset_to_default_view = ->
       clear_all()
 
-      dfault = customization('opinion_filters_default')
+      dfault = customization('opinion_views_default')
+      console.log dfault
+
       if !show_others || dfault?.active == 'Just you'
         toggle_opinion_filter default_filters.just_you
         opinion_views_ui.active = 'Just you'
@@ -600,20 +601,28 @@ OpinionViews = ReactiveComponent
 
         opinion_views_ui.active = 'Custom view'
 
-        # opinion_filters_default follows the format of opinion_views_ui
+        # opinion_views_default follows the format of opinion_views_ui
         # So we'll read the default values and activate the appropriate views.
         attributes = get_participant_attributes_with_defaults()
-        if dfault.selected_vals_for_attribute?
-          for key, vals of dfault.selected_vals_for_attribute
+        if dfault.visible_attribute_values?
+          for key, vals of dfault.visible_attribute_values
             continue if Object.keys(vals).length == 0
             attribute = attributes.find (attr) -> attr?.key == key
-            opinion_views_ui.selected_vals_for_attribute[attribute.key] = vals
-            opinion_views_ui.visible_attributes[attribute.key] = true
+            opinion_views_ui.visible_attribute_values[attribute.key] = vals
+            opinion_views_ui.activated_attributes[attribute.key] = true
             update_view_for_attribute attribute
 
         if dfault.group_by
           attribute = attributes.find (attr) -> attr?.key == dfault.group_by
-          set_group_by_attribute attribute       
+          set_group_by_attribute attribute  
+
+
+        if dfault.weights
+          for weight_key in dfault.weights
+            console.log Object.keys(default_weights)
+            continue if weight_key not of default_weights # LIMITATION: does not allow for custom weight
+            v = default_weights[weight_key]
+            toggle_weight v     
 
       else       
         opinion_views_ui.active = 'All opinions'
@@ -674,43 +683,38 @@ OpinionViews = ReactiveComponent
             right: if needs_expansion then width - @props.style.width 
             marginTop: 18
 
-          if !@local.minimized
-            DIV 
-              style: 
-                position: 'absolute'
-                left: (document.querySelector('[data-view-state="Custom view"]')?.offsetLeft or 60) + 35 - (if needs_expansion then (@props.style.width + @props.additional_width - width ) else 0)
-                top: -16
-
-              dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="#979797"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
-
 
           if @local.minimized 
             DIV null, 
-
-              MinimizedViews
+              NonInteractiveOpinionViews
                 more_views_positioning: @props.more_views_positioning
 
-
-
           else 
-
-            DIV 
-              style: 
-                # maxWidth: if !has_other_filters then 660
-                border: '1px solid #B6B6B6'
-                borderRadius: 8
-                width: 'fit-content'
-
-                margin: if @props.more_views_positioning == 'centered' then 'auto'
-                float: if @props.more_views_positioning == 'right' then 'right'
-
-              
+            triangle_left = (document.querySelector('[data-view-state="Custom view"]')?.offsetLeft or 60) + 35 - (if needs_expansion then (@props.style.width + @props.additional_width - width ) else 0)
+            DIV null,
               DIV 
                 style: 
-                  padding: '0px 24px'
+                  position: 'absolute'
+                  left: triangle_left
+                  top: -16
 
-                OpinionFilters()
-                OpinionWeights()
+                dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="#979797"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
+
+              DIV 
+                style: 
+                  border: '1px solid #B6B6B6'
+                  borderRadius: 8
+                  width: 'fit-content'
+
+                  margin: if @props.more_views_positioning == 'centered' then 'auto'
+                  float: if @props.more_views_positioning == 'right' then 'right'
+
+                
+                DIV 
+                  style: 
+                    padding: '0px 24px'
+
+                  InteractiveOpinionViews()
 
 
 
@@ -761,16 +765,16 @@ get_participant_attributes_with_defaults = ->
   attributes
 
 
-
+# manages opinion_view_ui state around which attributes the user is interacting with
 toggle_attribute_visibility = (attribute) ->
   opinion_views = fetch 'opinion_views'
   opinion_views_ui = fetch 'opinion_views_ui'
-  opinion_views_ui.visible_attributes[attribute.key] = !opinion_views_ui.visible_attributes[attribute.key]
-  if !opinion_views_ui.visible_attributes[attribute.key] && opinion_views_ui.group_by == attribute.key
+  opinion_views_ui.activated_attributes[attribute.key] = !opinion_views_ui.activated_attributes[attribute.key]
+  if !opinion_views_ui.activated_attributes[attribute.key] && opinion_views_ui.group_by == attribute.key
     toggle_group opinion_views.active_views.group_by
     opinion_views_ui.group_by = null
 
-  opinion_views_ui.selected_vals_for_attribute[attribute.key] = {}
+  opinion_views_ui.visible_attribute_values[attribute.key] = {}
   save opinion_views_ui
 
   if attribute.key == 'date'
@@ -782,24 +786,23 @@ toggle_attribute_visibility = (attribute) ->
     delete opinion_views.active_views[attribute.key]
     save opinion_views
 
-
-
+# Creates a view function on the fly given the values selected for an attribute by a user
 update_view_for_attribute = (attribute) ->
   opinion_views_ui = fetch 'opinion_views_ui'
   attr_key = attribute.key
   # having no selections for an attribute paradoxically means that all values are valid.
   has_one_enabled = false 
-  for val,enabled of opinion_views_ui.selected_vals_for_attribute[attr_key]
+  for val,enabled of opinion_views_ui.visible_attribute_values[attr_key]
     has_one_enabled ||= enabled
   if !has_one_enabled
-    opinion_views_ui.selected_vals_for_attribute[attr_key] = {}
+    opinion_views_ui.visible_attribute_values[attr_key] = {}
 
   pass = (u) -> 
     user = fetch(u)
     val_for_user = user.tags[attr_key]
     is_array = Array.isArray(val_for_user)
 
-    passing_vals = (val for val,enabled of opinion_views_ui.selected_vals_for_attribute[attr_key] when enabled)
+    passing_vals = (val for val,enabled of opinion_views_ui.visible_attribute_values[attr_key] when enabled)
 
     passes = false
     for passing_val in passing_vals
@@ -823,6 +826,7 @@ update_view_for_attribute = (attribute) ->
 
   toggle_opinion_filter view, has_one_enabled
 
+# manages opinion_view_ui state and the view for grouping by an attribute
 set_group_by_attribute = (attribute) ->
   opinion_views_ui = fetch 'opinion_views_ui'
   opinion_views_ui.group_by = attribute.key 
@@ -842,8 +846,8 @@ set_group_by_attribute = (attribute) ->
   toggle_group view, true
 
 
-OpinionFilters = ReactiveComponent
-  displayName: 'OpinionFilters'
+InteractiveOpinionViews = ReactiveComponent
+  displayName: 'InteractiveOpinionViews'
   render: -> 
 
     opinion_views = fetch 'opinion_views'
@@ -856,16 +860,17 @@ OpinionFilters = ReactiveComponent
       if v.view_type == 'filter'
         active_filters[k] = v 
 
-
-
-    
-
     for attribute, cnt in attributes
-      opinion_views_ui.selected_vals_for_attribute[attribute.key] ?= {}
+      opinion_views_ui.visible_attribute_values[attribute.key] ?= {}
 
     if opinion_views_ui.group_by
       all_groups = opinion_views.active_views.group_by.options
       group_colors = get_color_for_groups all_groups
+
+
+    activated_weights = get_activated_weights()
+
+
 
     DIV null, 
       if attributes.length > 0 
@@ -898,7 +903,7 @@ OpinionFilters = ReactiveComponent
 
                   BUTTON
                     title: if shortened then attribute.name
-                    className: "filter opinion_view_button #{if opinion_views_ui.visible_attributes[attribute.key] then 'active' else ''}"
+                    className: "filter opinion_view_button #{if opinion_views_ui.activated_attributes[attribute.key] then 'active' else ''}"
                     onClick: -> toggle_attribute_visibility(attribute)
                     onKeyDown: (e) => 
                       if e.which == 13 || e.which == 32 # ENTER or SPACE
@@ -911,13 +916,13 @@ OpinionFilters = ReactiveComponent
                           position: 'relative'
                           top: 2
                           marginRight: 7
-                        attribute.icon?(opinion_views_ui.visible_attributes[attribute.key])
+                        attribute.icon?(opinion_views_ui.activated_attributes[attribute.key])
 
                     attr_name
 
 
       for attribute, cnt in attributes
-        continue if !opinion_views_ui.visible_attributes[attribute.key]
+        continue if !opinion_views_ui.activated_attributes[attribute.key]
         do (attribute) => 
           DIV 
             className: 'attribute_wrapper'
@@ -937,7 +942,7 @@ OpinionFilters = ReactiveComponent
 
                   for val in attribute.options
                     is_grouped = opinion_views_ui.group_by == attribute.key
-                    checked = !!opinion_views_ui.selected_vals_for_attribute[attribute.key][val]
+                    checked = !!opinion_views_ui.visible_attribute_values[attribute.key][val]
 
                     val_name = val 
                     shortened = false 
@@ -962,7 +967,7 @@ OpinionFilters = ReactiveComponent
                               checked: checked
                               onChange: (e) ->
                                 # create a view on the fly for this attribute
-                                opinion_views_ui.selected_vals_for_attribute[attribute.key][val] = e.target.checked
+                                opinion_views_ui.visible_attribute_values[attribute.key][val] = e.target.checked
                                 save opinion_views_ui
                                 update_view_for_attribute(attribute)
 
@@ -1018,12 +1023,12 @@ OpinionFilters = ReactiveComponent
               else 
                 opinion_views_ui.group_by = null
 
-              if opinion_views_ui.group_by && (!opinion_views_ui.visible_attributes[opinion_views_ui.group_by] ||  \
-                                  (o for o,val of opinion_views_ui.selected_vals_for_attribute[opinion_views_ui.group_by] when val).length == 0)
+              if opinion_views_ui.group_by && (!opinion_views_ui.activated_attributes[opinion_views_ui.group_by] ||  \
+                                  (o for o,val of opinion_views_ui.visible_attribute_values[opinion_views_ui.group_by] when val).length == 0)
                             # if no attribute value is selected, which mean all are enabled, select them all
-                opinion_views_ui.visible_attributes[opinion_views_ui.group_by] = true 
+                opinion_views_ui.activated_attributes[opinion_views_ui.group_by] = true 
                 for option in attribute.options 
-                  opinion_views_ui.selected_vals_for_attribute[attribute.key][option] = true
+                  opinion_views_ui.visible_attribute_values[attribute.key][option] = true
               save opinion_views_ui
 
               if opinion_views_ui.group_by
@@ -1045,9 +1050,54 @@ OpinionFilters = ReactiveComponent
                 OPTION 
                   value: idx 
                   attribute.name or attribute.question
+    
+
+      DIV 
+        className: 'opinion_view_row'
+        style: 
+          borderTop: '1px dotted #DEDDDD' 
+
+        weigh_icon()
+
+        LABEL 
+          className: 'opinion_view_name'
+
+          'Weigh by'
+          ':'
+
+        UL 
+          style: 
+            listStyle: 'none'
+
+          for k,v of default_weights
+            do (k,v) ->
+              LI 
+                style: 
+                  marginRight: 8
+                  display: 'inline-block'
+
+                BUTTON 
+                  'data-tooltip': v.label
+                  className: "weight opinion_view_button #{if activated_weights[k] then 'active' else ''}"
+                  onClick: ->
+                    toggle_weight v
+                  onKeyDown: (e) -> 
+                    if e.which == 13 || e.which == 32 # ENTER or SPACE
+                      toggle_weight v
+                      e.preventDefault()
+
+                  if v.icon
+                    v.icon if activated_weights[k] then 'white'
+
+                  SPAN 
+                    style: 
+                      paddingLeft: if v.icon then 10
+
+                    v.name
 
 
 
+# returns a list of the active opinion weights
 get_activated_weights = ->
   opinion_views = fetch 'opinion_views'
 
@@ -1058,59 +1108,8 @@ get_activated_weights = ->
   activated_weights
 
 
-OpinionWeights = ReactiveComponent
-  displayName: 'OpinionWeights'
-  render: ->
-    opinion_views = fetch 'opinion_views'
-
-    activated_weights = get_activated_weights()
-    DIV 
-      className: 'opinion_view_row'
-      style: 
-        borderTop: '1px dotted #DEDDDD' 
-
-      weigh_icon()
-
-      LABEL 
-        className: 'opinion_view_name'
-
-        'Weigh by'
-        ':'
-
-      UL 
-        style: 
-          listStyle: 'none'
-
-        for k,v of default_weights
-          do (k,v) ->
-            LI 
-              style: 
-                marginRight: 8
-                display: 'inline-block'
-
-              BUTTON 
-                'data-tooltip': v.label
-                className: "weight opinion_view_button #{if activated_weights[k] then 'active' else ''}"
-                onClick: ->
-                  toggle_weight v
-                onKeyDown: (e) -> 
-                  if e.which == 13 || e.which == 32 # ENTER or SPACE
-                    toggle_weight v
-                    e.preventDefault()
-
-                if v.icon
-                  v.icon if activated_weights[k] then 'white'
-
-                SPAN 
-                  style: 
-                    paddingLeft: if v.icon then 10
-
-                  v.name
-
-
-
-MinimizedViews = ReactiveComponent
-  displayName: 'MinimizedViews'
+NonInteractiveOpinionViews = ReactiveComponent
+  displayName: 'NonInteractiveOpinionViews'
   render: -> 
 
     minimized_views = []
@@ -1120,11 +1119,10 @@ MinimizedViews = ReactiveComponent
     attributes = get_participant_attributes_with_defaults()
 
     for attribute, cnt in attributes
-      continue if !opinion_views_ui.visible_attributes[attribute.key]
+      continue if !opinion_views_ui.activated_attributes[attribute.key]
 
       is_grouped = opinion_views_ui.group_by == attribute.key 
 
-      console.log attribute.key, is_grouped, opinion_views_ui
       checked = []
       unchecked = []
       if attribute.key == 'date'
@@ -1147,7 +1145,7 @@ MinimizedViews = ReactiveComponent
 
       else 
         for val in attribute.options
-          if !!opinion_views_ui.selected_vals_for_attribute[attribute.key][val]
+          if !!opinion_views_ui.visible_attribute_values[attribute.key][val]
             checked.push val 
           else 
             unchecked.push val
@@ -1194,7 +1192,7 @@ MinimizedViews = ReactiveComponent
             delete opinion_views_ui.group_by
             save opinion_views_ui
             toggle_group opinion_views.active_views.group_by, false 
-          # else                           
+
           toggle_attribute_visibility(attribute)
 
 

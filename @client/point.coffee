@@ -215,7 +215,7 @@ window.Point = ReactiveComponent
 
             translator
               id: "engage.point_explanation"
-              author: if point.hide_name then 'Anonymous' else fetch(point.user).name
+              author: if point.hide_name then anonymous_label() else fetch(point.user).name
               num_inclusions: @data().includers.length
               comment_count: point.comment_count
               """By {author}. 

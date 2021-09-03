@@ -1274,7 +1274,7 @@ GroupSelectionRegion = ReactiveComponent
           fontWeight: 600
 
         user = fetch(fetch(single_opinion_selected.opinion).user)
-        name = user.name or 'Anonymous'
+        name = user.name or anonymous_label()
         title = "#{name}'#{if name[name.length - 1] != 's' then 's' else ''} Opinion"
         name_width = widthWhenRendered(title, name_style)
         DIV

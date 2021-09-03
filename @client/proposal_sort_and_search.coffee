@@ -596,7 +596,7 @@ ManualProposalResort = ReactiveComponent
     if !stale_sort_order(@props.sort_key) 
       return SPAN null 
 
-    DIV 
+    DIV
       style: 
         position: 'relative'
 
@@ -607,7 +607,8 @@ ManualProposalResort = ReactiveComponent
           position: 'absolute'
           top: -16
           left: 9
-        "List is out of order"
+          width: 175
+        translator "engage.sort_order.out-of-order", "List is out of order"
 
 
 
@@ -624,7 +625,7 @@ ManualProposalResort = ReactiveComponent
           display: 'flex'
           alignItems: 'center'
 
-        'data-tooltip': "A re-sort may be needed because someone else added or updated their opinion, or you selected an opinion view that filtered or weighed opinions differently."
+        'data-tooltip': translator "engage.sort_order.out-of-order-tooltip", "A re-sort may be needed because someone else added or updated their opinion, or you selected an opinion view that filtered or weighed opinions differently."
 
         onClick: invalidate_proposal_sorts
         onKeyDown: (e) => 
@@ -656,7 +657,7 @@ ManualProposalResort = ReactiveComponent
           style: 
             padding: "2px 0 2px 8px"
 
-          'Re-sort'
+          translator "engage.sort_order.resort", 'Re-sort'
 
 
 

@@ -15,10 +15,14 @@ window.avatarUrl = (user, img_size) ->
     null
 
 
+
+window.anonymous_label = ->
+  translator 'anonymous', 'Anonymous'
+
 user_name = (user, anon) -> 
   user = fetch user
   if anon || !user.name || user.name.trim().length == 0 
-    'Anonymous' 
+    anonymous_label() 
   else 
     user.name
 
@@ -84,6 +88,7 @@ window.AvatarPopover = ReactiveComponent
 
 
           if !anonymous
+            unreported = missing_attribute_info_label()
 
             UL 
               style:
@@ -96,11 +101,11 @@ window.AvatarPopover = ReactiveComponent
 
                 if attribute.pass 
                   user_val = attribute.pass(user)
-                  user_val ?= "Unreported"
+                  user_val ?= unreported
                   user_val = ["#{user_val}"]
                 else 
                   user_val = user.tags[attribute.key] 
-                  user_val ?= "Unreported"
+                  user_val ?= unreported
 
                   if typeof user_val == "string" && user_val?.indexOf ',' > -1 
                     user_val = user_val.split(',')
@@ -127,12 +132,12 @@ window.AvatarPopover = ReactiveComponent
                     SPAN 
                       style: 
                         fontSize: 12
-                        backgroundColor: if is_grouped then get_color_for_group(val or 'Unreported')
+                        backgroundColor: if is_grouped then get_color_for_group(val or unreported)
                         color: if is_grouped then 'white'
                         display: 'inline-block'
                         marginRight: 8
                         padding: if is_grouped then '2px 8px'
-                      val or 'Unreported'
+                      val or unreported
       if has_opinion
         inclusions = opinion.point_inclusions or []
         cnt = inclusions.length
@@ -145,6 +150,9 @@ window.AvatarPopover = ReactiveComponent
           e.stopPropagation()
           e.preventDefault()
 
+        o_trans = translator('opinion', 'Opinion')
+        reasons_trans = translator {id: 'avatar_popover.reason_count', cnt: cnt}, '{cnt, plural, one {# reason} other {# reasons}} given'
+        console.log 'boo'        
         DIV 
           style: 
             marginTop: 8 
@@ -152,7 +160,10 @@ window.AvatarPopover = ReactiveComponent
             style: 
               fontWeight: 'bold' 
               textAlign: 'center'
-            "Opinion: #{alt} • #{cnt} reason#{if cnt != 1 then 's' else ''} given"
+            
+            "#{o_trans}: #{alt} • #{reasons_trans}"                      
+
+
             if cnt > 0
               BUTTON
                 tabIndex: 1
@@ -166,9 +177,9 @@ window.AvatarPopover = ReactiveComponent
                     toggle_reasons(e)  
                     e.preventDefault() 
                 if @local.show_reasons                 
-                  'Hide reasons'
+                  translator 'avatar_popover.hide_reasons', 'Hide reasons'
                 else 
-                  'Show reasons'
+                  translator 'avatar_popover.show_reasons', 'Show reasons'
 
           if @local.show_reasons
             UL 
@@ -194,9 +205,9 @@ window.AvatarPopover = ReactiveComponent
                       color: '#555'
                       paddingRight: 8
                     if point.is_pro 
-                      'Pro'
+                      get_point_label 'pro'
                     else 
-                      'Con'
+                      get_point_label 'con'
                     ':'
 
                   SPAN 
@@ -207,7 +218,7 @@ window.AvatarPopover = ReactiveComponent
                     style: 
                       fontStyle: 'italic'
                       marginLeft: 12
-                    "~ #{if point.hide_name then 'Anonymous' else fetch(point.user).name}"
+                    "~ #{if point.hide_name then anonymous_label() else fetch(point.user).name}"
 
 
 

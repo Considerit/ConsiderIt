@@ -9,7 +9,7 @@ save
 
 save
   key: 'opinion_views_ui'
-  active: "All opinions"
+  active: "all"
   activated_attributes: {}
   visible_attribute_values: {}
 
@@ -125,14 +125,14 @@ window.get_user_groups_from_views = (groups) ->
 
 window.group_colors = {}
 window.get_color_for_groups = (group_array) ->
-  if 'Unreported' not in group_array
+  if i18n().unreported not in group_array
     group_array = group_array.slice()
-    group_array.push 'Unreported'
+    group_array.push i18n().unreported
   colors = getColors(group_array.length)
 
   for color,idx in colors 
     if group_array[idx] not of group_colors
-      if group_array[idx] == 'Unreported'
+      if group_array[idx] == i18n().unreported
         color = 'black'
       group_colors[group_array[idx]] = color
   group_colors
@@ -150,6 +150,11 @@ window.get_color_for_group = (val) ->
   # group_colors
 
 
+window.missing_attribute_info_label = -> 
+  i18n().unreported 
+
+i18n = ->
+  unreported: translator('opinion_views.unreported', 'Unreported')
 
 
 window.influence_network = {}
@@ -220,101 +225,102 @@ just_you_filter =
     user.key == fetch('/current_user').user
 
 
-default_weights = [ 
-  {
-    key: 'weighed_by_substantiated'
-    name: 'Reasons given'
-    label: 'Add weight to opinions that explained their stance with pro and/or con reasons.'
-    weight: (u, opinion, proposal) ->
-      point_inclusions = Math.log(1 + Math.min(8,opinion.point_inclusions?.length or 0))
-      .1 + point_inclusions
-    icon: (color) -> 
-      color ?= 'black'
-      SVG
-        width: 14
-        height: 14
-        viewBox: "0 0 23 23"
-        dangerouslySetInnerHTML: __html: """
-          <g id="Group-8" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-              <polygon id="Rectangle" stroke="#{color}" points="0 0 23 0 23 17.8367347 11.5 17.8367347 6.41522296 23 6.41522296 17.8367347 0 17.8367347"></polygon>
-              <ellipse id="Oval" fill="#{color}" cx="4.66666683" cy="8.43750016" rx="1.5333335" ry="1.43750016"></ellipse>
-              <line stroke="#{color}" x1="8.37575758" y1="8.5" x2="17.7575758" y2="8.5" id="Line-5" stroke="#979797" stroke-linecap="square"></line>
-              <ellipse id="Oval" fill="#{color}" cx="4.66666683" cy="3.43750016" rx="1.5333335" ry="1.43750016"></ellipse>
-              <line stroke="#{color}" x1="8.37575758" y1="3.5" x2="17.7575758" y2="3.5" id="Line-5" stroke="#979797" stroke-linecap="square"></line>
-              <ellipse id="Oval" fill="#{color}" cx="4.66666683" cy="13.4375002" rx="1.5333335" ry="1.43750016"></ellipse>
-              <line stroke="#{color}" x1="8.37575758" y1="13.5" x2="17.7575758" y2="13.5" id="Line-5" stroke="#979797" stroke-linecap="square"></line>
-          </g>
-        """    
-  }, {
-    key: 'weighed_by_deliberative'
-    name: 'Tradeoffs recognized'
-    label: 'Add weight to opinions that acknowledge both pro and con tradeoffs.'
-    weight: (u, opinion, proposal) ->
-      point_inclusions = opinion.point_inclusions
-      pros = 0 
-      cons = 0  
-      for inc in point_inclusions or []
-        pnt = fetch(inc)
-        if pnt.is_pro 
-          pros += 1
+default_weights = -> 
+  [ 
+    {
+      key: 'weighed_by_substantiated'
+      name: translator 'opinion_views.weights_reasons', 'Reasons given'
+      label: translator 'opinion_views.weights_reasons_label', 'Add weight to opinions that explained their stance with pro and/or con reasons.'
+      weight: (u, opinion, proposal) ->
+        point_inclusions = Math.log(1 + Math.min(8,opinion.point_inclusions?.length or 0))
+        .1 + point_inclusions
+      icon: (color) -> 
+        color ?= 'black'
+        SVG
+          width: 14
+          height: 14
+          viewBox: "0 0 23 23"
+          dangerouslySetInnerHTML: __html: """
+            <g id="Group-8" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                <polygon id="Rectangle" stroke="#{color}" points="0 0 23 0 23 17.8367347 11.5 17.8367347 6.41522296 23 6.41522296 17.8367347 0 17.8367347"></polygon>
+                <ellipse id="Oval" fill="#{color}" cx="4.66666683" cy="8.43750016" rx="1.5333335" ry="1.43750016"></ellipse>
+                <line stroke="#{color}" x1="8.37575758" y1="8.5" x2="17.7575758" y2="8.5" id="Line-5" stroke="#979797" stroke-linecap="square"></line>
+                <ellipse id="Oval" fill="#{color}" cx="4.66666683" cy="3.43750016" rx="1.5333335" ry="1.43750016"></ellipse>
+                <line stroke="#{color}" x1="8.37575758" y1="3.5" x2="17.7575758" y2="3.5" id="Line-5" stroke="#979797" stroke-linecap="square"></line>
+                <ellipse id="Oval" fill="#{color}" cx="4.66666683" cy="13.4375002" rx="1.5333335" ry="1.43750016"></ellipse>
+                <line stroke="#{color}" x1="8.37575758" y1="13.5" x2="17.7575758" y2="13.5" id="Line-5" stroke="#979797" stroke-linecap="square"></line>
+            </g>
+          """    
+    }, {
+      key: 'weighed_by_deliberative'
+      name: translator 'opinion_views.weights_tradeoffs', 'Tradeoffs recognized'
+      label: translator 'opinion_views.weights_tradeoffs_label', 'Add weight to opinions that acknowledge both pro and con tradeoffs.'
+      weight: (u, opinion, proposal) ->
+        point_inclusions = opinion.point_inclusions
+        pros = 0 
+        cons = 0  
+        for inc in point_inclusions or []
+          pnt = fetch(inc)
+          if pnt.is_pro 
+            pros += 1
+          else 
+            cons += 1
+
+        tradeoffs_recognized = Math.min pros, cons 
+
+        if tradeoffs_recognized > 0
+          1 + Math.log tradeoffs_recognized
         else 
-          cons += 1
+          .1
+      icon: (color) -> 
+        color ?= 'black'
+        SVG
+          width: 14
+          height: 14
+          viewBox: "0 0 23 23"
+          dangerouslySetInnerHTML: __html: """
+            <g id="weigh" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                <path fill="#{color}" d="M22.9670971,20.1929176 L22.9670971,20.1683744 C22.9815886,20.1324736 22.9922265,20.0943011 22.9987304,20.0548621 C22.9987304,20.0548621 22.9987304,20.0548621 22.9987304,20.0548621 C23.0004232,20.0293408 23.0004232,20.0036859 22.9987304,19.9781646 C22.9987304,19.9781646 22.9987304,19.9566893 22.9987304,19.9444177 C22.9987304,19.9321461 22.9987304,19.9229424 22.9987304,19.9137387 C22.9949502,19.8726516 22.9867644,19.8324016 22.9743971,19.7940906 L22.9743971,19.7940906 L18.9399256,8.02562631 C18.9506738,7.99615751 18.9588334,7.96529502 18.9642589,7.93358931 C18.9781664,7.81275485 18.9534152,7.68990536 18.8954544,7.59208741 C18.8374936,7.49426946 18.7510753,7.42950274 18.6552252,7.41204631 L13.4527523,6.45792942 C13.4151172,5.40049872 12.8144155,4.50934755 11.9927506,4.29199205 L11.9927506,0.460184995 C11.9927506,0.20603184 11.8293343,0 11.6277502,0 C11.426166,0 11.2627497,0.20603184 11.2627497,0.460184995 L11.2627497,4.29199205 C10.6280528,4.45682465 10.10874,5.03001236 9.89521475,5.80139883 L4.44940823,4.80126344 C4.35356714,4.78372914 4.25612781,4.81493501 4.1785425,4.88801078 C4.1009572,4.96108654 4.04958681,5.07004101 4.03574107,5.19088674 C4.03155491,5.23059483 4.03155491,5.27082675 4.03574107,5.31053484 L0.025602933,16.9992337 L0.025602933,16.9992337 C0.0132356207,17.0375447 0.00504978749,17.0777948 0.00126957058,17.1188818 C0.00126957058,17.1188818 0.00126957058,17.1403571 0.00126957058,17.1495608 C0.00126957058,17.1587645 0.00126957058,17.1710361 0.00126957058,17.1833077 C-0.000423190195,17.208829 -0.000423190195,17.2344839 0.00126957058,17.2600052 C0.00126957058,17.2600052 0.00126957058,17.2600052 0.00126957058,17.2600052 C0.00774547506,17.2994541 0.0183845876,17.3376312 0.0329029418,17.3735175 L0.0329029418,17.3980607 C0.0488060712,17.4339253 0.0684473538,17.4669431 0.0913030117,17.4962335 L0.699637073,18.2632085 C2.75983325,20.8606357 6.10004983,20.8606357 8.160246,18.2632085 L8.76858006,17.4962335 C8.79161354,17.465998 8.81126198,17.431936 8.82698013,17.3949928 L8.82698013,17.3704496 C8.84147172,17.3345488 8.85210954,17.2963764 8.85861351,17.2569373 C8.85861351,17.2569373 8.85861351,17.2569373 8.85861351,17.2569373 C8.86030627,17.231416 8.86030627,17.2057611 8.85861351,17.1802398 C8.85861351,17.1802398 8.85861351,17.1587645 8.85861351,17.1464929 C8.85861351,17.1342213 8.85861351,17.1250176 8.85861351,17.1158139 C8.85483329,17.0747269 8.84664746,17.0344768 8.83428014,16.9961658 L8.83428014,16.9961658 L5.01394224,5.83207783 L9.80274797,6.71256512 C9.85757198,7.80370794 10.5108448,8.69745358 11.3689468,8.85528909 C12.2270488,9.0131246 13.0556206,8.39194297 13.3554189,7.36602781 L18.1320579,8.2434472 L14.1584198,19.7879548 L14.1584198,19.7879548 C14.1460238,19.8262538 14.1378369,19.8665089 14.1340865,19.9076029 C14.1340865,19.9076029 14.1340865,19.9290782 14.1340865,19.9382819 C14.1340865,19.9474856 14.1340865,19.9597572 14.1340865,19.9720288 C14.1323937,19.9975501 14.1323937,20.023205 14.1340865,20.0487263 C14.1340865,20.0487263 14.1340865,20.0487263 14.1340865,20.0487263 C14.1405624,20.0881752 14.1512015,20.1263523 14.1657199,20.1622386 L14.1657199,20.1867818 C14.1816474,20.2226264 14.2012863,20.2556402 14.2241199,20.2849546 L14.832454,21.0519296 C16.8926502,23.6493568 20.2328667,23.6493568 22.2930629,21.0519296 L22.901397,20.2849546 C22.9264857,20.2581473 22.9485857,20.2271881 22.9670971,20.1929176 Z M15.0490209,19.5087759 L18.5627585,9.26505789 L22.0959627,19.5087759 L15.0490209,19.5087759 Z M0.916203999,16.7200548 L4.44940823,6.48247262 L7.96314577,16.7200548 L0.916203999,16.7200548 Z M1.24227106,17.6404248 L7.63707871,17.6404248 C5.86694476,19.8538124 3.01240501,19.8538124 1.24227106,17.6404248 L1.24227106,17.6404248 Z M11.6277502,7.95813251 C11.02159,7.94807762 10.5340258,7.32653669 10.5327488,6.56223802 C10.5327488,6.51928742 10.5327488,6.48247262 10.5327488,6.43952202 C10.5385866,6.42154559 10.5434641,6.40309702 10.5473489,6.38429982 C10.5510895,6.34660935 10.5510895,6.308478 10.5473489,6.27078753 C10.6654865,5.57212652 11.1829331,5.09866324 11.7464056,5.17365144 C12.3098781,5.24863963 12.7375156,5.84787683 12.7373515,6.56223802 C12.7373515,6.60518862 12.7373515,6.64507132 12.7373515,6.68802192 C12.7187894,6.74960828 12.7113093,6.81562397 12.7154515,6.88129962 C12.5971458,7.51670329 12.1454062,7.96392904 11.6277502,7.95813251 L11.6277502,7.95813251 Z M15.375088,20.4291459 L21.7698956,20.4291459 C19.9997617,22.6425334 17.1452219,22.6425334 15.375088,20.4291459 L15.375088,20.4291459 Z" id="Shape" fill-rule="nonzero"></path>
+            </g>
+            """
+    }, {   
+      key: 'weighed_by_influence'
+      name: translator 'opinion_views.weights_influence', 'Influence'
+      label: translator 'opinion_views.weights_influence_label', 'Add weight to the opinions of people who have contributed proposals and arguments that other people have found valuable.'
+      weight: (u, opinion, proposal) ->
+        if !influencer_scores_initialized
+          build_influencer_network()
 
-      tradeoffs_recognized = Math.min pros, cons 
+        if !influencer_scores_initialized
+          return 1 # still waiting for data to be fetched
 
-      if tradeoffs_recognized > 0
-        1 + Math.log tradeoffs_recognized
-      else 
-        .1
-    icon: (color) -> 
-      color ?= 'black'
-      SVG
-        width: 14
-        height: 14
-        viewBox: "0 0 23 23"
-        dangerouslySetInnerHTML: __html: """
-          <g id="weigh" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-              <path fill="#{color}" d="M22.9670971,20.1929176 L22.9670971,20.1683744 C22.9815886,20.1324736 22.9922265,20.0943011 22.9987304,20.0548621 C22.9987304,20.0548621 22.9987304,20.0548621 22.9987304,20.0548621 C23.0004232,20.0293408 23.0004232,20.0036859 22.9987304,19.9781646 C22.9987304,19.9781646 22.9987304,19.9566893 22.9987304,19.9444177 C22.9987304,19.9321461 22.9987304,19.9229424 22.9987304,19.9137387 C22.9949502,19.8726516 22.9867644,19.8324016 22.9743971,19.7940906 L22.9743971,19.7940906 L18.9399256,8.02562631 C18.9506738,7.99615751 18.9588334,7.96529502 18.9642589,7.93358931 C18.9781664,7.81275485 18.9534152,7.68990536 18.8954544,7.59208741 C18.8374936,7.49426946 18.7510753,7.42950274 18.6552252,7.41204631 L13.4527523,6.45792942 C13.4151172,5.40049872 12.8144155,4.50934755 11.9927506,4.29199205 L11.9927506,0.460184995 C11.9927506,0.20603184 11.8293343,0 11.6277502,0 C11.426166,0 11.2627497,0.20603184 11.2627497,0.460184995 L11.2627497,4.29199205 C10.6280528,4.45682465 10.10874,5.03001236 9.89521475,5.80139883 L4.44940823,4.80126344 C4.35356714,4.78372914 4.25612781,4.81493501 4.1785425,4.88801078 C4.1009572,4.96108654 4.04958681,5.07004101 4.03574107,5.19088674 C4.03155491,5.23059483 4.03155491,5.27082675 4.03574107,5.31053484 L0.025602933,16.9992337 L0.025602933,16.9992337 C0.0132356207,17.0375447 0.00504978749,17.0777948 0.00126957058,17.1188818 C0.00126957058,17.1188818 0.00126957058,17.1403571 0.00126957058,17.1495608 C0.00126957058,17.1587645 0.00126957058,17.1710361 0.00126957058,17.1833077 C-0.000423190195,17.208829 -0.000423190195,17.2344839 0.00126957058,17.2600052 C0.00126957058,17.2600052 0.00126957058,17.2600052 0.00126957058,17.2600052 C0.00774547506,17.2994541 0.0183845876,17.3376312 0.0329029418,17.3735175 L0.0329029418,17.3980607 C0.0488060712,17.4339253 0.0684473538,17.4669431 0.0913030117,17.4962335 L0.699637073,18.2632085 C2.75983325,20.8606357 6.10004983,20.8606357 8.160246,18.2632085 L8.76858006,17.4962335 C8.79161354,17.465998 8.81126198,17.431936 8.82698013,17.3949928 L8.82698013,17.3704496 C8.84147172,17.3345488 8.85210954,17.2963764 8.85861351,17.2569373 C8.85861351,17.2569373 8.85861351,17.2569373 8.85861351,17.2569373 C8.86030627,17.231416 8.86030627,17.2057611 8.85861351,17.1802398 C8.85861351,17.1802398 8.85861351,17.1587645 8.85861351,17.1464929 C8.85861351,17.1342213 8.85861351,17.1250176 8.85861351,17.1158139 C8.85483329,17.0747269 8.84664746,17.0344768 8.83428014,16.9961658 L8.83428014,16.9961658 L5.01394224,5.83207783 L9.80274797,6.71256512 C9.85757198,7.80370794 10.5108448,8.69745358 11.3689468,8.85528909 C12.2270488,9.0131246 13.0556206,8.39194297 13.3554189,7.36602781 L18.1320579,8.2434472 L14.1584198,19.7879548 L14.1584198,19.7879548 C14.1460238,19.8262538 14.1378369,19.8665089 14.1340865,19.9076029 C14.1340865,19.9076029 14.1340865,19.9290782 14.1340865,19.9382819 C14.1340865,19.9474856 14.1340865,19.9597572 14.1340865,19.9720288 C14.1323937,19.9975501 14.1323937,20.023205 14.1340865,20.0487263 C14.1340865,20.0487263 14.1340865,20.0487263 14.1340865,20.0487263 C14.1405624,20.0881752 14.1512015,20.1263523 14.1657199,20.1622386 L14.1657199,20.1867818 C14.1816474,20.2226264 14.2012863,20.2556402 14.2241199,20.2849546 L14.832454,21.0519296 C16.8926502,23.6493568 20.2328667,23.6493568 22.2930629,21.0519296 L22.901397,20.2849546 C22.9264857,20.2581473 22.9485857,20.2271881 22.9670971,20.1929176 Z M15.0490209,19.5087759 L18.5627585,9.26505789 L22.0959627,19.5087759 L15.0490209,19.5087759 Z M0.916203999,16.7200548 L4.44940823,6.48247262 L7.96314577,16.7200548 L0.916203999,16.7200548 Z M1.24227106,17.6404248 L7.63707871,17.6404248 C5.86694476,19.8538124 3.01240501,19.8538124 1.24227106,17.6404248 L1.24227106,17.6404248 Z M11.6277502,7.95813251 C11.02159,7.94807762 10.5340258,7.32653669 10.5327488,6.56223802 C10.5327488,6.51928742 10.5327488,6.48247262 10.5327488,6.43952202 C10.5385866,6.42154559 10.5434641,6.40309702 10.5473489,6.38429982 C10.5510895,6.34660935 10.5510895,6.308478 10.5473489,6.27078753 C10.6654865,5.57212652 11.1829331,5.09866324 11.7464056,5.17365144 C12.3098781,5.24863963 12.7375156,5.84787683 12.7373515,6.56223802 C12.7373515,6.60518862 12.7373515,6.64507132 12.7373515,6.68802192 C12.7187894,6.74960828 12.7113093,6.81562397 12.7154515,6.88129962 C12.5971458,7.51670329 12.1454062,7.96392904 11.6277502,7.95813251 L11.6277502,7.95813251 Z M15.375088,20.4291459 L21.7698956,20.4291459 C19.9997617,22.6425334 17.1452219,22.6425334 15.375088,20.4291459 L15.375088,20.4291459 Z" id="Shape" fill-rule="nonzero"></path>
-          </g>
+        u = u.key or u 
+        .1 + (influencer_scores[u] or 0)
+      icon: (color) -> 
+        color ?= 'black'
+        SVG
+          width: 14
+          height: 14
+          viewBox: "0 0 23 23"
+          dangerouslySetInnerHTML: __html: """
+            <g id="influence" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                <ellipse id="Oval" fill="#{color}" fill-rule="nonzero" transform="translate(11.364066, 2.300000) scale(-1, 1) translate(-11.364066, -2.300000) " cx="11.3640662" cy="2.3" rx="2.39243499" ry="2.3"></ellipse>
+                <path d="M12.5828538,4.6 L11.3640662,4.6 L10.1452786,4.6 C7.83466033,4.6 5.98108747,6.46815021 5.98108747,8.79694019 L5.98108747,13.403338 C5.98108747,13.940751 6.41274142,14.3502086 6.92056961,14.3502086 C7.4537892,14.3502086 7.86005174,13.9151599 7.86005174,13.403338 L7.86005174,8.7201669 C7.86005174,8.54102921 7.98700879,8.41307371 8.16474865,8.41307371 C8.34248851,8.41307371 8.46944556,8.54102921 8.46944556,8.7201669 L8.46944556,13.2753825 L8.46944556,22.0531293 C8.46944556,22.5905424 8.90109951,23 9.4089277,23 C9.94214729,23 10.3484098,22.5649513 10.3484098,22.0531293 L11.0085865,13.2753825 L11.6687631,13.2753825 L12.3797226,22.0531293 C12.3797226,22.5905424 12.8113765,23 13.3192047,23 C13.8524243,23 14.2586868,22.5649513 14.2586868,22.0531293 L14.2586868,13.2497914 L14.2586868,8.7201669 C14.2586868,8.54102921 14.3856439,8.41307371 14.5633837,8.41307371 C14.7411236,8.41307371 14.8680806,8.54102921 14.8680806,8.7201669 L14.8680806,13.403338 C14.8680806,13.940751 15.2997346,14.3502086 15.8075628,14.3502086 C16.3407824,14.3502086 16.7470449,13.9151599 16.7470449,13.403338 L16.7470449,8.79694019 C16.7470449,6.49374131 14.8934721,4.6 12.5828538,4.6 Z" id="Path" fill="#{color}" fill-rule="nonzero" transform="translate(11.364066, 13.800000) scale(-1, 1) translate(-11.364066, -13.800000) "></path>
+                <path d="M22.3105861,0 L18.7361296,0 C18.35544,0 18.0468076,0.283811841 18.0468076,0.633885886 C18.0468076,0.983959931 18.35544,1.26777177 18.7361296,1.26777177 L20.6463788,1.26777177 L16.9489473,4.66785115 C16.6797441,4.91540471 16.6797441,5.31678126 16.9489473,5.56433482 C17.2181506,5.81188839 17.6546293,5.81188839 17.9238325,5.56433482 L21.621264,2.16425545 L21.6213559,3.92088002 C21.6213559,4.27095406 21.9299884,4.5547659 22.310678,4.5547659 C22.6913675,4.5547659 23,4.27095406 23,3.92088002 L23,0.633885886 C22.9999081,0.283727323 22.6912756,0 22.3105861,0 Z" id="Path" fill="#{color}" fill-rule="nonzero"></path>
+                <path d="M5.56354114,0 L1.98908469,0 C1.60839511,0 1.29976266,0.283811841 1.29976266,0.633885886 C1.29976266,0.983959931 1.60839511,1.26777177 1.98908469,1.26777177 L3.89933392,1.26777177 L0.201902425,4.66785115 C-0.0673008082,4.91540471 -0.0673008082,5.31678126 0.201902425,5.56433482 C0.471105657,5.81188839 0.907584371,5.81188839 1.1767876,5.56433482 L4.8742191,2.16425545 L4.87431101,3.92088002 C4.87431101,4.27095406 5.18294346,4.5547659 5.56363305,4.5547659 C5.94432263,4.5547659 6.25295508,4.27095406 6.25295508,3.92088002 L6.25295508,0.633885886 C6.25286317,0.283727323 5.94423072,0 5.56354114,0 Z" id="Path" fill="#{color}" fill-rule="nonzero" transform="translate(3.126478, 2.875000) scale(-1, 1) translate(-3.126478, -2.875000) "></path>
+                <path d="M22.3105861,16.1 L18.7361296,16.1 C18.35544,16.1 18.0468076,16.3838118 18.0468076,16.7338859 C18.0468076,17.0839599 18.35544,17.3677718 18.7361296,17.3677718 L20.6463788,17.3677718 L16.9489473,20.7678511 C16.6797441,21.0154047 16.6797441,21.4167813 16.9489473,21.6643348 C17.2181506,21.9118884 17.6546293,21.9118884 17.9238325,21.6643348 L21.621264,18.2642555 L21.6213559,20.02088 C21.6213559,20.3709541 21.9299884,20.6547659 22.310678,20.6547659 C22.6913675,20.6547659 23,20.3709541 23,20.02088 L23,16.7338859 C22.9999081,16.3837273 22.6912756,16.1 22.3105861,16.1 Z" id="Path" fill="#{color}" fill-rule="nonzero" transform="translate(19.873522, 18.975000) scale(1, -1) translate(-19.873522, -18.975000) "></path>
+                <path d="M5.56354114,16.1 L1.98908469,16.1 C1.60839511,16.1 1.29976266,16.3838118 1.29976266,16.7338859 C1.29976266,17.0839599 1.60839511,17.3677718 1.98908469,17.3677718 L3.89933392,17.3677718 L0.201902425,20.7678511 C-0.0673008082,21.0154047 -0.0673008082,21.4167813 0.201902425,21.6643348 C0.471105657,21.9118884 0.907584371,21.9118884 1.1767876,21.6643348 L4.8742191,18.2642555 L4.87431101,20.02088 C4.87431101,20.3709541 5.18294346,20.6547659 5.56363305,20.6547659 C5.94432263,20.6547659 6.25295508,20.3709541 6.25295508,20.02088 L6.25295508,16.7338859 C6.25286317,16.3837273 5.94423072,16.1 5.56354114,16.1 Z" id="Path" fill="#{color}" fill-rule="nonzero" transform="translate(3.126478, 18.975000) scale(-1, -1) translate(-3.126478, -18.975000) "></path>
+            </g>
           """
-  }, {   
-    key: 'weighed_by_influence'
-    name: 'Influence'
-    label: 'Add weight to the opinions of people who have contributed proposals and arguments that other people have found valuable.'
-    weight: (u, opinion, proposal) ->
-      if !influencer_scores_initialized
-        build_influencer_network()
-
-      if !influencer_scores_initialized
-        return 1 # still waiting for data to be fetched
-
-      u = u.key or u 
-      .1 + (influencer_scores[u] or 0)
-    icon: (color) -> 
-      color ?= 'black'
-      SVG
-        width: 14
-        height: 14
-        viewBox: "0 0 23 23"
-        dangerouslySetInnerHTML: __html: """
-          <g id="influence" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-              <ellipse id="Oval" fill="#{color}" fill-rule="nonzero" transform="translate(11.364066, 2.300000) scale(-1, 1) translate(-11.364066, -2.300000) " cx="11.3640662" cy="2.3" rx="2.39243499" ry="2.3"></ellipse>
-              <path d="M12.5828538,4.6 L11.3640662,4.6 L10.1452786,4.6 C7.83466033,4.6 5.98108747,6.46815021 5.98108747,8.79694019 L5.98108747,13.403338 C5.98108747,13.940751 6.41274142,14.3502086 6.92056961,14.3502086 C7.4537892,14.3502086 7.86005174,13.9151599 7.86005174,13.403338 L7.86005174,8.7201669 C7.86005174,8.54102921 7.98700879,8.41307371 8.16474865,8.41307371 C8.34248851,8.41307371 8.46944556,8.54102921 8.46944556,8.7201669 L8.46944556,13.2753825 L8.46944556,22.0531293 C8.46944556,22.5905424 8.90109951,23 9.4089277,23 C9.94214729,23 10.3484098,22.5649513 10.3484098,22.0531293 L11.0085865,13.2753825 L11.6687631,13.2753825 L12.3797226,22.0531293 C12.3797226,22.5905424 12.8113765,23 13.3192047,23 C13.8524243,23 14.2586868,22.5649513 14.2586868,22.0531293 L14.2586868,13.2497914 L14.2586868,8.7201669 C14.2586868,8.54102921 14.3856439,8.41307371 14.5633837,8.41307371 C14.7411236,8.41307371 14.8680806,8.54102921 14.8680806,8.7201669 L14.8680806,13.403338 C14.8680806,13.940751 15.2997346,14.3502086 15.8075628,14.3502086 C16.3407824,14.3502086 16.7470449,13.9151599 16.7470449,13.403338 L16.7470449,8.79694019 C16.7470449,6.49374131 14.8934721,4.6 12.5828538,4.6 Z" id="Path" fill="#{color}" fill-rule="nonzero" transform="translate(11.364066, 13.800000) scale(-1, 1) translate(-11.364066, -13.800000) "></path>
-              <path d="M22.3105861,0 L18.7361296,0 C18.35544,0 18.0468076,0.283811841 18.0468076,0.633885886 C18.0468076,0.983959931 18.35544,1.26777177 18.7361296,1.26777177 L20.6463788,1.26777177 L16.9489473,4.66785115 C16.6797441,4.91540471 16.6797441,5.31678126 16.9489473,5.56433482 C17.2181506,5.81188839 17.6546293,5.81188839 17.9238325,5.56433482 L21.621264,2.16425545 L21.6213559,3.92088002 C21.6213559,4.27095406 21.9299884,4.5547659 22.310678,4.5547659 C22.6913675,4.5547659 23,4.27095406 23,3.92088002 L23,0.633885886 C22.9999081,0.283727323 22.6912756,0 22.3105861,0 Z" id="Path" fill="#{color}" fill-rule="nonzero"></path>
-              <path d="M5.56354114,0 L1.98908469,0 C1.60839511,0 1.29976266,0.283811841 1.29976266,0.633885886 C1.29976266,0.983959931 1.60839511,1.26777177 1.98908469,1.26777177 L3.89933392,1.26777177 L0.201902425,4.66785115 C-0.0673008082,4.91540471 -0.0673008082,5.31678126 0.201902425,5.56433482 C0.471105657,5.81188839 0.907584371,5.81188839 1.1767876,5.56433482 L4.8742191,2.16425545 L4.87431101,3.92088002 C4.87431101,4.27095406 5.18294346,4.5547659 5.56363305,4.5547659 C5.94432263,4.5547659 6.25295508,4.27095406 6.25295508,3.92088002 L6.25295508,0.633885886 C6.25286317,0.283727323 5.94423072,0 5.56354114,0 Z" id="Path" fill="#{color}" fill-rule="nonzero" transform="translate(3.126478, 2.875000) scale(-1, 1) translate(-3.126478, -2.875000) "></path>
-              <path d="M22.3105861,16.1 L18.7361296,16.1 C18.35544,16.1 18.0468076,16.3838118 18.0468076,16.7338859 C18.0468076,17.0839599 18.35544,17.3677718 18.7361296,17.3677718 L20.6463788,17.3677718 L16.9489473,20.7678511 C16.6797441,21.0154047 16.6797441,21.4167813 16.9489473,21.6643348 C17.2181506,21.9118884 17.6546293,21.9118884 17.9238325,21.6643348 L21.621264,18.2642555 L21.6213559,20.02088 C21.6213559,20.3709541 21.9299884,20.6547659 22.310678,20.6547659 C22.6913675,20.6547659 23,20.3709541 23,20.02088 L23,16.7338859 C22.9999081,16.3837273 22.6912756,16.1 22.3105861,16.1 Z" id="Path" fill="#{color}" fill-rule="nonzero" transform="translate(19.873522, 18.975000) scale(1, -1) translate(-19.873522, -18.975000) "></path>
-              <path d="M5.56354114,16.1 L1.98908469,16.1 C1.60839511,16.1 1.29976266,16.3838118 1.29976266,16.7338859 C1.29976266,17.0839599 1.60839511,17.3677718 1.98908469,17.3677718 L3.89933392,17.3677718 L0.201902425,20.7678511 C-0.0673008082,21.0154047 -0.0673008082,21.4167813 0.201902425,21.6643348 C0.471105657,21.9118884 0.907584371,21.9118884 1.1767876,21.6643348 L4.8742191,18.2642555 L4.87431101,20.02088 C4.87431101,20.3709541 5.18294346,20.6547659 5.56363305,20.6547659 C5.94432263,20.6547659 6.25295508,20.3709541 6.25295508,20.02088 L6.25295508,16.7338859 C6.25286317,16.3837273 5.94423072,16.1 5.56354114,16.1 Z" id="Path" fill="#{color}" fill-rule="nonzero" transform="translate(3.126478, 18.975000) scale(-1, -1) translate(-3.126478, -18.975000) "></path>
-          </g>
-        """
-  }
-]
+    }
+  ]
 
 get_weights = ->
   custom_views = customization 'opinion_views'
   is_admin = fetch('/current_user').is_admin
   show_others = (!customization('hide_opinions') || is_admin) && !customization('anonymize_everything')
 
-  weights = default_weights.slice()
+  weights = default_weights()
 
   if show_others && custom_views
     for view in custom_views
@@ -346,13 +352,13 @@ _activate_opinion_view = (view, view_type, replace_existing) ->
   opinion_views.active_views ?= {}
   active_views = opinion_views.active_views
 
-  view_name = view.key or view.label
+  view_key = view.key or view.label
 
-  if view_name of active_views && !replace_existing
-    delete active_views[view_name] #activating an active view toggles it off
+  if view_key of active_views && !replace_existing
+    delete active_views[view_key] #activating an active view toggles it off
   else 
     if view_type == 'filter'
-      if view_name == just_you_filter.key
+      if view_key == just_you_filter.key
         to_delete = []
         for k,v of active_views
           if v.view_type == view_type
@@ -362,9 +368,8 @@ _activate_opinion_view = (view, view_type, replace_existing) ->
       else if active_views[just_you_filter.key]
         delete active_views[just_you_filter.key]
 
-    active_views[view_name] = 
+    active_views[view_key] = 
       key: view.key
-      name: view.name 
       view_type: view_type
       get_salience: (u, opinion, proposal) ->
         if view.salience?
@@ -383,7 +388,7 @@ _activate_opinion_view = (view, view_type, replace_existing) ->
 
       get_group: if view.group? then (u, opinion, proposal) -> 
         group = view.group(u, opinion, proposal) 
-        group ?= 'Unreported'
+        group ?= i18n().unreported
         group
       options: if view.group? then view.options
 
@@ -396,75 +401,79 @@ _activate_opinion_view = (view, view_type, replace_existing) ->
 
 
 
+date_option_changed = (activated) ->
+  date_toggle_state = fetch 'date_toggle_state'
+  pass = (u, opinion, proposal) -> 
+    date = new Date(opinion.updated_at).getTime()
+    now = Date.now()
+
+    earliest = latest = null
+    if activated.key != 'custom'
+      clear_custom_date()
+
+    if activated.key == 'today'
+      earliest = now - 1000 * 60 * 60 * 24
+
+    else if activated.key == 'week'
+      earliest = now - 1000 * 60 * 60 * 24 * 7
+
+    else if activated.key == 'custom'
+
+      if date_toggle_state.start
+        earliest = date_toggle_state.start + tz_offset
+
+
+      if date_toggle_state.end 
+        latest = date_toggle_state.end + tz_offset
+
+
+    (earliest == null || earliest <= date) && (latest == null || latest >= date) 
+
+  view = 
+    key: 'date'
+    salience: (u, opinion, proposal) -> if pass(u, opinion, proposal) then 1 else .1
+    weight:   (u, opinion, proposal) -> if pass(u, opinion, proposal) then 1 else .1
+    name: activated.key
+
+  activate_opinion_date_filter view
+
+
+default_date_options = ->
+  [
+    {
+      key: 'all'
+      label: translator('opinion_views.date_all', 'All')
+      callback: ->
+        opinion_views = fetch 'opinion_views'
+        clear_custom_date()
+        if opinion_views.active_views['date']
+          delete opinion_views.active_views['date']
+          save opinion_views
+    }
+    { key: 'today', label: translator('opinion_views.date_today', 'Today'), callback: date_option_changed }
+    { key: 'week', label: translator('opinion_views.date_week', 'Past week'), callback: date_option_changed }
+    { key: 'custom', label: translator('opinion_views.date_custom', 'Custom'), callback: date_option_changed }
+  ]
+
+clear_custom_date = ->
+  date_toggle_state = fetch 'date_toggle_state'
+  date_toggle_state.start = null
+  date_toggle_state.end = null
+  save date_toggle_state
 
 
 DateFilters = ->
   opinion_views = fetch 'opinion_views'
   tz_offset = new Date().getTimezoneOffset() * 60 * 1000
 
-  cb = (activated) ->
-    pass = (u, opinion, proposal) -> 
-      date = new Date(opinion.updated_at).getTime()
-      now = Date.now()
-
-      earliest = latest = null
-      if activated.label != 'Custom'
-        clear_custom_date()
-
-      if activated.label == 'Today'
-        earliest = now - 1000 * 60 * 60 * 24
-
-      else if activated.label == 'Past week'
-        earliest = now - 1000 * 60 * 60 * 24 * 7
-
-      else if activated.label == 'Custom'
-
-        if date_toggle_state.start
-          earliest = date_toggle_state.start + tz_offset
-
-
-        if date_toggle_state.end 
-          latest = date_toggle_state.end + tz_offset
-
-
-      (earliest == null || earliest <= date) && (latest == null || latest >= date) 
-
-    view = 
-      key: 'date'
-      salience: (u, opinion, proposal) -> if pass(u, opinion, proposal) then 1 else .1
-      weight:   (u, opinion, proposal) -> if pass(u, opinion, proposal) then 1 else .1
-      name: activated.label
-
-    activate_opinion_date_filter view
-
-  clear_custom_date = ->
-    date_toggle_state.start = null
-    date_toggle_state.end = null
-    save date_toggle_state
-
-
-
   date_toggle_state = fetch 'opinion-date-filter'
-  date_options = [
-    {
-      label: 'All'
-      callback: ->
-        clear_custom_date()
-        if opinion_views.active_views['date']
-          delete opinion_views.active_views['date']
-          save opinion_views
-    }
-    { label: 'Today', callback: cb }
-    { label: 'Past week', callback: cb }
-    { label: 'Custom', callback: cb }
-  ]
-
+  date_options = default_date_options()
   DIV 
     className: 'grays' # for toggle buttons
 
     ToggleButtons date_options, date_toggle_state
 
-    if date_toggle_state.active == 'Custom'
+    if date_toggle_state.active == 'custom'
 
       DIV 
         className: 'opinion-date-filter'
@@ -474,7 +483,7 @@ DateFilters = ->
             position: 'relative'
 
           LABEL null,
-            'From:'
+            translator 'opinion_views.date_from', 'From:'
           INPUT 
             type: 'date'
             id: 'start'
@@ -483,7 +492,7 @@ DateFilters = ->
             onChange: (e) ->
               date_toggle_state.start = new Date(e.target.value).getTime()
               save date_toggle_state
-              cb date_options[3]            
+              date_option_changed date_options[3]            
               e.preventDefault()
 
         SPAN 
@@ -492,7 +501,9 @@ DateFilters = ->
             paddingLeft: 8
 
           LABEL null,
-            'To:'
+            translator 'opinion_views.date_to', 'To:'
+
+            
           INPUT 
             type: 'date'
             id: 'end'
@@ -501,7 +512,7 @@ DateFilters = ->
             onChange: (e) ->
               date_toggle_state.end = new Date(e.target.value).getTime()
               save date_toggle_state
-              cb date_options[3]
+              date_option_changed date_options[3]
               e.preventDefault()
 
 to_date_str = (ms) -> 
@@ -559,21 +570,24 @@ OpinionViews = ReactiveComponent
 
     view_buttons = [ 
       {
-        label: 'All opinions'
+        key: 'all'
+        label: translator 'opinion_views.view_buttons_all', 'All opinions'
         callback: clear_all
         disabled: !show_others
       }
       {
-        label: 'Just you'
+        key: 'you'
+        label: translator 'opinion_views.view_buttons_you', 'Just you'
         callback: ->
           clear_all()
           toggle_opinion_filter just_you_filter
       }, 
       {
-        label: 'Custom view'
+        key: 'custom'
+        label: translator 'opinion_views.view_buttons_custom', 'Custom view'
         disabled: !show_others
         callback: (item, previous_state) => 
-          if previous_state == 'Custom view'
+          if previous_state == 'custom'
             if @user_has_set_a_view()
               @local.minimized = !@local.minimized
               save @local
@@ -588,7 +602,7 @@ OpinionViews = ReactiveComponent
 
     reset_to_show_all_opinions = ->
       clear_all()
-      opinion_views_ui.active = 'All opinions'
+      opinion_views_ui.active = 'all'
       save opinion_views_ui
 
     reset_to_default_view = ->
@@ -596,13 +610,13 @@ OpinionViews = ReactiveComponent
 
       dfault = customization('opinion_views_default')
 
-      if !show_others || dfault?.active == 'Just you'
+      if !show_others || dfault?.active == 'you'
         toggle_opinion_filter just_you_filter
-        opinion_views_ui.active = 'Just you'
+        opinion_views_ui.active = 'you'
       else if dfault
         # LIMITATION: default date views not implemented
 
-        opinion_views_ui.active = 'Custom view'
+        opinion_views_ui.active = 'custom'
 
         # opinion_views_default follows the format of opinion_views_ui
         # So we'll read the default values and activate the appropriate views.
@@ -628,7 +642,7 @@ OpinionViews = ReactiveComponent
               toggle_weight v     
 
       else       
-        opinion_views_ui.active = 'All opinions'
+        opinion_views_ui.active = 'all'
 
       save opinion_views_ui
 
@@ -670,7 +684,7 @@ OpinionViews = ReactiveComponent
               left: '100%'
             @MinimizeExpandButton()
 
-      if opinion_views_ui.active == 'Custom view'
+      if opinion_views_ui.active == 'custom'
         needs_expansion = @props.additional_width && @props.style?.width
         width = 0
         if needs_expansion 
@@ -693,7 +707,7 @@ OpinionViews = ReactiveComponent
                 more_views_positioning: @props.more_views_positioning
 
           else 
-            triangle_left = (document.querySelector('[data-view-state="Custom view"]')?.offsetLeft or 60) + 35 - (if needs_expansion then (@props.style.width + @props.additional_width - width ) else 0)
+            triangle_left = (document.querySelector('[data-view-state="custom"]')?.offsetLeft or 60) + 35 - (if needs_expansion then (@props.style.width + @props.additional_width - width ) else 0)
             DIV null,
               DIV 
                 style: 
@@ -708,6 +722,7 @@ OpinionViews = ReactiveComponent
                   border: '1px solid #B6B6B6'
                   borderRadius: 8
                   width: 'fit-content'
+                  maxWidth: if width then width
 
                   margin: if @props.more_views_positioning == 'centered' then 'auto'
                   float: if @props.more_views_positioning == 'right' then 'right'
@@ -719,10 +734,6 @@ OpinionViews = ReactiveComponent
 
                   InteractiveOpinionViews()
 
-
-
-
-
           DIV style: clear: 'both'
 
   user_has_set_a_view: ->
@@ -733,7 +744,7 @@ OpinionViews = ReactiveComponent
     user_has_set_a_view
 
   MinimizeExpandButton: ->
-    return SPAN(null) if !@user_has_set_a_view() || fetch('opinion_views_ui').active != 'Custom view'
+    return SPAN(null) if !@user_has_set_a_view() || fetch('opinion_views_ui').active != 'custom'
 
     toggle_expanded = (e) =>
       @local.minimized = !@local.minimized
@@ -754,9 +765,9 @@ OpinionViews = ReactiveComponent
           marginLeft: 4
 
         if @local.minimized
-          'configure view'
+          translator 'opinion_views.minimize_configure', 'configure view'
         else 
-          'minimize'
+          translator 'opinion_views.minimize_minimize', 'minimize'
 
 
 
@@ -764,7 +775,7 @@ OpinionViews = ReactiveComponent
 
 get_participant_attributes_with_defaults = ->
   attributes = get_participant_attributes()
-  attributes.unshift {key: 'date', icon: date_icon, name: 'Date', render: DateFilters}
+  attributes.unshift {key: 'date', icon: date_icon, name: translator('opinion_views.views_date', 'Date'), render: DateFilters}
   attributes
 
 
@@ -839,7 +850,7 @@ set_group_by_attribute = (attribute) ->
     key: 'group_by'
     name: attribute.name
     group: (u, opinion, proposal) -> 
-      group_val = if attribute.pass then attribute.pass(u) else fetch(u).tags[opinion_views_ui.group_by] or 'Unreported'
+      group_val = if attribute.pass then attribute.pass(u) else fetch(u).tags[opinion_views_ui.group_by] or i18n().unreported
       if attribute.input_type == 'checklist'
         group_val.split(',')
       else 
@@ -882,7 +893,7 @@ InteractiveOpinionViews = ReactiveComponent
 
           LABEL 
             className: 'opinion_view_name'
-            'Narrow by'
+            translator 'opinion_views.view_type_filter', 'Narrow by'
             ':'
 
 
@@ -1005,12 +1016,12 @@ InteractiveOpinionViews = ReactiveComponent
 
           LABEL 
             className: 'opinion_view_name'
-            'Color code by'
+            translator 'opinion_views.view_type_group', 'Color code by'
             ':'
 
           SELECT 
             style: 
-              maxWidth: '100%'
+              maxWidth: '75%'
               marginRight: 12
               borderColor: '#bbb'
               backgroundColor: '#f9f9f9'
@@ -1062,7 +1073,7 @@ InteractiveOpinionViews = ReactiveComponent
         LABEL 
           className: 'opinion_view_name'
 
-          'Weigh by'
+          translator 'opinion_views.view_type_weigh', 'Weigh by'
           ':'
 
         UL 
@@ -1126,22 +1137,26 @@ NonInteractiveOpinionViews = ReactiveComponent
       checked = []
       unchecked = []
       if attribute.key == 'date'
-        
-        filter_str = opinion_views.active_views['date']?.name 
-        continue if !filter_str
+        date_toggle_state = fetch 'opinion-date-filter'
+        continue if !opinion_views.active_views['date'] || date_toggle_state.active == 'all' || (!date_toggle_state.start && !date_toggle_state.end)
 
-        if filter_str == 'Custom'
-          date_toggle_state = fetch 'opinion-date-filter'
+        if date_toggle_state.active == 'custom'
+          if !date_toggle_state.start
+            filter_str = translator 
+              id: "opinion_views.date_up_to"
+              date: to_date_str(date_toggle_state.end)
+              "up to {date}"
 
-
-          if !date_toggle_state.start && !date_toggle_state.end 
-            filter_str = 'any date'
-          else if !date_toggle_state.start
-            filter_str = "up to #{to_date_str(date_toggle_state.end)}"
           else if !date_toggle_state.end
-            filter_str = "after #{to_date_str(date_toggle_state.start)}"
-          else 
+            filter_str = translator 
+              id: "opinion_views.date_after"
+              date: to_date_str(date_toggle_state.start)
+              "after {date}"
+
+          else             
             filter_str = "#{to_date_str(date_toggle_state.start)} - #{to_date_str(date_toggle_state.end)}" 
+        else 
+          filter_str = default_date_options().find((o) -> o.key == date_toggle_state.active).label
 
       else 
         for val in attribute.options
@@ -1175,16 +1190,23 @@ NonInteractiveOpinionViews = ReactiveComponent
         if unchecked_string.length < checked_string.length
           filter_str = unchecked_string
           if unchecked_string.length > 0
-            filter_str = "Filter out #{filter_str}"
+            filter_str = translator 
+              id: "opinion_views.filter_out"
+              filter_string: filter_str
+              "Filter out {filter_string}"
+
         else 
           filter_str = checked_string
           if checked_string.length > 0
-            filter_str = "Narrow to #{filter_str}"
+            filter_str = translator 
+              id: "opinion_views.narrow_to"
+              filter_string: filter_str
+              "Narrow to {filter_string}"
 
 
       minimized_views.push
         name: attribute.name 
-        label: '' #if is_grouped then 'Color code by' else 'Narrow by'
+        label: ''
         icon: if is_grouped then group_by_icon # else filter_icon
         filters: filter_str
         toggle: do (attribute, is_grouped) -> ->
@@ -1201,7 +1223,7 @@ NonInteractiveOpinionViews = ReactiveComponent
       continue if !activated_weights[weight.key]
       minimized_views.push
         name: weight.name 
-        label: 'Weigh by'
+        label: translator 'opinion_views.mini_weigh', 'Weigh by'
         # icon: weigh_icon
         toggle: do (weight) -> ->
           toggle_weight weight
@@ -1210,40 +1232,40 @@ NonInteractiveOpinionViews = ReactiveComponent
       style: 
         listStyle: 'none'
         textAlign: if @props.more_views_positioning == 'centered' then 'center' else 'right'
-      for view in minimized_views
-        do (view) ->
+      for mini in minimized_views
+        do (mini) ->
           LI  
             className: 'minimized_view_wrapper'
 
             SPAN 
               className: "minimized_view"
 
-              view.icon?(16)
+              mini.icon?(16)
 
-              view.label
+              mini.label
 
               SPAN
                 className: "minimized_view_name" 
                 style: 
                   paddingLeft: 4
 
-                view.name
-                if view.filters
+                mini.name
+                if mini.filters
                   ": "
 
-              if view.filters 
+              if mini.filters 
                 SPAN 
                   style: 
                     paddingLeft: 4
-                  dangerouslySetInnerHTML: __html: view.filters
+                  dangerouslySetInnerHTML: __html: mini.filters
 
               BUTTON 
                 className: "minimized_view_close" 
                 onClick: ->
-                  view.toggle()
+                  mini.toggle()
                 onKeyDown: (e) -> 
                   if e.which == 13 || e.which == 32 # ENTER or SPACE
-                    view.toggle()
+                    mini.toggle()
                     e.preventDefault()
                 'x'
 
@@ -1546,6 +1568,7 @@ styles += """
   svg.opinion_view_class {
     display: block; 
     margin-right: 18px;
+    flex-shrink: 0;
   }
 
   .opinion_view_name {
@@ -1656,7 +1679,8 @@ styles += """
   .toggle_buttons {
     list-style: none;
     margin: auto;
-    text-align: center
+    text-align: center;
+    white-space: nowrap;
   }
   .toggle_buttons li {
     display: inline-block;
@@ -1705,11 +1729,11 @@ styles += """
 
 window.ToggleButtons = (items, view_state, style) ->
   toggle_state = fetch view_state 
-  toggle_state.active ?= items[0]?.label
+  toggle_state.active ?= items[0]?.key or items[0]?.label
 
   toggled = (e, item) ->
     prev = view_state.active
-    view_state.active = item.label
+    view_state.active = item.key or item.label
     save view_state
 
     item.callback?(item, prev)
@@ -1721,9 +1745,10 @@ window.ToggleButtons = (items, view_state, style) ->
 
     for item in items
       do (item) =>
+        key = item.key or item.label
         LI 
-          className: if view_state.active == item.label then 'active'
-          'data-view-state': item.label
+          className: if view_state.active == key then 'active'
+          'data-view-state': key
           
           BUTTON
             disabled: item.disabled 

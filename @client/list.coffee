@@ -295,7 +295,7 @@ EditList = ReactiveComponent
 
         render_anchor: ->
           SPAN 
-            "data-tooltip": "Configure list" 
+            "data-tooltip": translator "engage.list-config-icon-tooltip", "Configure list settings" 
             GearIcon
               size: 20
               fill: '#888'

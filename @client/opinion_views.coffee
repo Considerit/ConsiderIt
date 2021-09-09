@@ -93,7 +93,7 @@ window.get_participant_attributes = ->
       for tag in user_tags 
         name = tag.key
         if (tag.visibility == 'open' || is_admin) && \
-           (tag.self_report?.input in ['dropdown', 'boolean', 'checklist']) && \
+           ( (tag.self_report?.input or tag.input) in ['dropdown', 'boolean', 'checklist']) && \
            !tag.no_opinion_view # set in the user_tags customization to prevent an opinion view from automatically getting created
 
           attributes.push 
@@ -104,7 +104,7 @@ window.get_participant_attributes = ->
                 fetch(u).tags[name] == value
               else 
                 fetch(u).tags[name]
-            options: tag.self_report.options or (if tag.self_report.input == 'boolean' then [true, false])
+            options: tag.self_report?.options or tag.options or (if (tag.self_report?.input or tag.input) == 'boolean' then [true, false])
             input_type: tag.self_report?.input
 
   attributes
@@ -286,7 +286,7 @@ default_weights = ->
     }, {   
       key: 'weighed_by_influence'
       name: translator 'opinion_views.weights_influence', 'Influence'
-      label: translator 'opinion_views.weights_influence_label', 'Add weight to the opinions of people who have contributed proposals and arguments that other people have found valuable.'
+      label: translator 'opinion_views.weights_influence_label', 'Add weight to the opinions of people who have contributed proposals and pro/con reasons that other people have found valuable.'
       weight: (u, opinion, proposal) ->
         if !influencer_scores_initialized
           build_influencer_network()
@@ -370,6 +370,7 @@ _activate_opinion_view = (view, view_type, replace_existing) ->
 
     active_views[view_key] = 
       key: view.key
+      name: view.name
       view_type: view_type
       get_salience: (u, opinion, proposal) ->
         if view.salience?
@@ -390,7 +391,7 @@ _activate_opinion_view = (view, view_type, replace_existing) ->
         group = view.group(u, opinion, proposal) 
         group ?= i18n().unreported
         group
-      options: if view.group? then view.options
+      options: view.options # if view.group? then view.options
 
 
   # invalidate_proposal_sorts()
@@ -581,7 +582,7 @@ OpinionViews = ReactiveComponent
         callback: ->
           clear_all()
           toggle_opinion_filter just_you_filter
-      }, 
+      }
       {
         key: 'custom'
         label: translator 'opinion_views.view_buttons_custom', 'Custom view'
@@ -592,7 +593,7 @@ OpinionViews = ReactiveComponent
               @local.minimized = !@local.minimized
               save @local
             else 
-              reset_to_default_view()
+              reset_to_default_view(true)
           else 
             @local.minimized = false
             clear_all()
@@ -605,15 +606,15 @@ OpinionViews = ReactiveComponent
       opinion_views_ui.active = 'all'
       save opinion_views_ui
 
-    reset_to_default_view = ->
+    reset_to_default_view = (force_all) ->
       clear_all()
 
       dfault = customization('opinion_views_default')
 
-      if !show_others || dfault?.active == 'you'
+      if !show_others || (dfault?.active == 'you' && !force_all)
         toggle_opinion_filter just_you_filter
         opinion_views_ui.active = 'you'
-      else if dfault
+      else if dfault && !force_all
         # LIMITATION: default date views not implemented
 
         opinion_views_ui.active = 'custom'
@@ -627,7 +628,7 @@ OpinionViews = ReactiveComponent
             attribute = attributes.find (attr) -> attr?.key == key
             opinion_views_ui.visible_attribute_values[attribute.key] = vals
             opinion_views_ui.activated_attributes[attribute.key] = true
-            update_view_for_attribute attribute
+            construct_view_for_attribute attribute
 
         if dfault.group_by
           attribute = attributes.find (attr) -> attr?.key == dfault.group_by
@@ -674,9 +675,33 @@ OpinionViews = ReactiveComponent
         SPAN 
           style: 
             display: 'flex'
+            position: 'relative'
 
           ToggleButtons view_buttons, opinion_views_ui, 
             minWidth: 290
+
+          if opinion_views_ui.active == 'custom' 
+            triangle_left = (document.querySelector('[data-view-state="custom"]')?.offsetLeft or 60) + 35 - (if needs_expansion then (@props.style.width + @props.additional_width - width ) else 0)
+
+            if @user_has_set_a_view() && @local.minimized
+              DIV 
+                className: 'custom_view_triangle'
+                style: 
+                  left: triangle_left
+                  bottom: if browser.is_mobile then -5 else -5                  
+                  width: 0
+                  height: 0 
+                  borderLeft: '12px solid transparent'
+                  borderRight: '12px solid transparent'                    
+                  borderTop: '7px solid #2478CC'
+            else 
+              DIV 
+                className: 'custom_view_triangle'
+                style: 
+                  left: triangle_left
+                  bottom: if browser.is_mobile then -25 else -24
+                dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="#979797"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
+
 
           SPAN 
             style: 
@@ -686,6 +711,7 @@ OpinionViews = ReactiveComponent
 
       if opinion_views_ui.active == 'custom'
         needs_expansion = @props.additional_width && @props.style?.width
+
         width = 0
         if needs_expansion 
           if has_other_filters 
@@ -698,24 +724,21 @@ OpinionViews = ReactiveComponent
             width: if width then width
             position: 'relative'
             right: if needs_expansion then width - @props.style.width 
-            marginTop: 18
 
 
           if @local.minimized 
-            DIV null, 
+
+            DIV 
+              style:
+                marginTop: 12
+
               NonInteractiveOpinionViews
                 more_views_positioning: @props.more_views_positioning
 
           else 
-            triangle_left = (document.querySelector('[data-view-state="custom"]')?.offsetLeft or 60) + 35 - (if needs_expansion then (@props.style.width + @props.additional_width - width ) else 0)
-            DIV null,
-              DIV 
-                style: 
-                  position: 'absolute'
-                  left: triangle_left
-                  top: -16
-
-                dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="#979797"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
+            DIV 
+              style:
+                marginTop: 18
 
               DIV 
                 style: 
@@ -740,7 +763,18 @@ OpinionViews = ReactiveComponent
     opinion_views = fetch 'opinion_views'
     user_has_set_a_view = false 
     for k,v of opinion_views.active_views
-      user_has_set_a_view ||= v.view_type in ['filter', 'weight', 'group', 'date-filter']
+      if v.view_type == 'filter' && v.options
+        # user hasn't set a view if they've selected all the attribute values, as that essentially means "all"
+        opinion_views_ui = fetch 'opinion_views_ui'
+        checked = 0
+        for val in v.options
+          if !!opinion_views_ui.visible_attribute_values[v.key][val]
+            checked += 1
+
+        user_has_set_a_view ||= checked > 0 && checked < v.options.length
+
+      else 
+        user_has_set_a_view ||= v.view_type in ['filter', 'weight', 'group', 'date-filter']
     user_has_set_a_view
 
   MinimizeExpandButton: ->
@@ -801,7 +835,7 @@ toggle_attribute_visibility = (attribute) ->
     save opinion_views
 
 # Creates a view function on the fly given the values selected for an attribute by a user
-update_view_for_attribute = (attribute) ->
+construct_view_for_attribute = (attribute) ->
   opinion_views_ui = fetch 'opinion_views_ui'
   attr_key = attribute.key
   # having no selections for an attribute paradoxically means that all values are valid.
@@ -820,15 +854,20 @@ update_view_for_attribute = (attribute) ->
 
     passes = false
     for passing_val in passing_vals
-      if passing_val == 'true'
-        passing_val = true 
-      else if passing_val == 'false'
-        passing_val = false
 
       if attribute.pass 
-        passes ||= passing_val == attribute.pass(u)
+        val = attribute.pass(u)
+        passes ||= passing_val == val 
+
+        if passing_val == 'true'
+          passes ||= true == val 
+        else if passing_val == 'false'
+          passes ||= false == val
+          passes ||= undefined == val  
+
       else 
         passes ||= val_for_user == passing_val || (is_array && passing_val in val_for_user)
+
 
     passes 
 
@@ -837,6 +876,7 @@ update_view_for_attribute = (attribute) ->
     # pass: pass
     salience: (u) -> if pass(u) then 1 else .1
     weight:   (u) -> if pass(u) then 1 else .1
+    options: attribute.options
 
   toggle_opinion_filter view, has_one_enabled
 
@@ -955,7 +995,7 @@ InteractiveOpinionViews = ReactiveComponent
                     is_grouped = opinion_views_ui.group_by == attribute.key
                     checked = !!opinion_views_ui.visible_attribute_values[attribute.key][val]
 
-                    val_name = val 
+                    val_name = "#{val}" 
                     shortened = false 
                     if val_name.length > 25
                       val_name = "#{val_name.substring(0,22)}..."
@@ -980,7 +1020,7 @@ InteractiveOpinionViews = ReactiveComponent
                                 # create a view on the fly for this attribute
                                 opinion_views_ui.visible_attribute_values[attribute.key][val] = e.target.checked
                                 save opinion_views_ui
-                                update_view_for_attribute(attribute)
+                                construct_view_for_attribute(attribute)
 
                             if is_grouped
                               SPAN 
@@ -1088,7 +1128,7 @@ InteractiveOpinionViews = ReactiveComponent
                   display: 'inline-block'
 
                 BUTTON 
-                  'data-tooltip': weight.label
+                  'data-tooltip': if !browser.is_mobile then weight.label
                   className: "weight opinion_view_button #{if activated_weights[weight.key] then 'active' else ''}"
                   onClick: ->
                     toggle_weight weight
@@ -1133,12 +1173,14 @@ NonInteractiveOpinionViews = ReactiveComponent
       continue if !opinion_views_ui.activated_attributes[attribute.key]
 
       is_grouped = opinion_views_ui.group_by == attribute.key 
-
+      label = null
       checked = []
       unchecked = []
+
       if attribute.key == 'date'
         date_toggle_state = fetch 'opinion-date-filter'
-        continue if !opinion_views.active_views['date'] || date_toggle_state.active == 'all' || (!date_toggle_state.start && !date_toggle_state.end)
+
+        continue if !opinion_views.active_views['date'] || date_toggle_state.active == 'all' || (date_toggle_state.active == 'custom' && !date_toggle_state.start && !date_toggle_state.end)
 
         if date_toggle_state.active == 'custom'
           if !date_toggle_state.start
@@ -1158,6 +1200,22 @@ NonInteractiveOpinionViews = ReactiveComponent
         else 
           filter_str = default_date_options().find((o) -> o.key == date_toggle_state.active).label
 
+      else if attribute.input == 'boolean' || \
+             (attribute.options.length == 2 && ['yes', true, 'true', 'no', false, 'false'].filter( (val) -> attribute.options.includes(val)).length == 2 )
+        for val in attribute.options
+          if !!opinion_views_ui.visible_attribute_values[attribute.key][val]
+            if val in ['yes', true, 'true']
+              label = translator 
+                id: "opinion_views.narrow_to"
+                filter_string: ""
+                "Narrowed to {filter_string}"
+            else 
+              label = translator 
+                id: "opinion_views.filter_out"
+                filter_string: ""
+                "Excluding {filter_string}"
+            break 
+        filter_str = null
       else 
         for val in attribute.options
           if !!opinion_views_ui.visible_attribute_values[attribute.key][val]
@@ -1193,7 +1251,7 @@ NonInteractiveOpinionViews = ReactiveComponent
             filter_str = translator 
               id: "opinion_views.filter_out"
               filter_string: filter_str
-              "Filter out {filter_string}"
+              "Excluding {filter_string}"
 
         else 
           filter_str = checked_string
@@ -1201,12 +1259,12 @@ NonInteractiveOpinionViews = ReactiveComponent
             filter_str = translator 
               id: "opinion_views.narrow_to"
               filter_string: filter_str
-              "Narrow to {filter_string}"
+              "Narrowed to {filter_string}"
 
 
       minimized_views.push
         name: attribute.name 
-        label: ''
+        label: label
         icon: if is_grouped then group_by_icon # else filter_icon
         filters: filter_str
         toggle: do (attribute, is_grouped) -> ->
@@ -1223,15 +1281,17 @@ NonInteractiveOpinionViews = ReactiveComponent
       continue if !activated_weights[weight.key]
       minimized_views.push
         name: weight.name 
-        label: translator 'opinion_views.mini_weigh', 'Weigh by'
+        label: translator 'opinion_views.mini_weigh', 'Weighing by'
         # icon: weigh_icon
         toggle: do (weight) -> ->
           toggle_weight weight
 
     UL 
+      className: 'minimized_view_list'
       style: 
-        listStyle: 'none'
-        textAlign: if @props.more_views_positioning == 'centered' then 'center' else 'right'
+        width: if @props.more_views_positioning == 'centered' then 'fit-content'
+        textAlign: 'right' # if @props.more_views_positioning == 'centered' then 'center' else 'right'
+
       for mini in minimized_views
         do (mini) ->
           LI  
@@ -1570,6 +1630,9 @@ styles += """
     margin-right: 18px;
     flex-shrink: 0;
   }
+  .minimized_view .svg.opinion_view_class{
+    margin-right: 4px;
+  }
 
   .opinion_view_name {
     margin-right: 18px;    
@@ -1583,7 +1646,7 @@ styles += """
     margin-bottom: 8px;
   }
 
-  .attribute_group, .minimized_view {
+  .attribute_group {
     border-radius: 8px;    
     padding: 8px 16px;
   }
@@ -1604,30 +1667,44 @@ styles += """
     padding-right: 16px; 
   }
   .attribute_close, .minimized_view_close {
-    font-size: 12px;
+    font-size: 13px;
     color: #000000;
     background-color: transparent;
     border: none;
   }
-  .minimized_view_close {
+  .custom_view_triangle {
     position: absolute;
-    right: -17px;
+    z-index: 1;
   }
 
+  .minimized_view_close {
+    position: absolute;
+    right: -22px;
+    top: 1px;
+  }
+  .minimized_view_list {
+    list-style: none;
+    margin: auto;
+  }
   .minimized_view_wrapper {
     margin-bottom: 4px;
-    margin-left: 24px;    
-    display: inline-block;
     font-size: 12px; 
     position: relative;   
   }
+  li.minimized_view_wrapper:not(:first-child) {
+    margin-left: 24px;    
+  }
 
   .minimized_view {
-    color: #1a5fa5;
+    color: #1059a2;
+    # border: 1px solid #2478cc;
     background-color: #e4edf7;
     width: fit-content;
     position: relative;
     display: inline-block;
+    padding: 6px 12px;
+    border-radius: 8px;
+    min-width: 200px;
   }
   .minimized_view_name {
     font-weight: 700;
@@ -1695,16 +1772,20 @@ styles += """
     font-size: 12px;
     border: 1px solid;
     border-color: #{focus_blue};
-    border-right: none;
     padding: 4px 16px;
   }  
+  .toggle_buttons li:not(:last-child) button {
+    border-right: none;
+  }
   .toggle_buttons li:first-child button {
     border-radius: 8px 0 0 8px;
-    border-right: none;
   }
   .toggle_buttons li:last-child button {
     border-radius: 0px 8px 8px 0px;
-    border-right: 1px solid;
+  }
+
+  .toggle_buttons li, .toggle_buttons li button {
+    margin: 0;
   }
 
   button.sort_proposals, .toggle_buttons .active button {

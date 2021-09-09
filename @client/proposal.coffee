@@ -418,7 +418,7 @@ window.Proposal = ReactiveComponent
 
                 TRANSLATE
                   id: "engage.show_all_thoughts"
-                  "Show All Thoughts"
+                  "Show All Reasons"
 
 
       if mode == 'results'
@@ -1287,7 +1287,7 @@ GroupSelectionRegion = ReactiveComponent
   
 
 
-
+stored_points_order = {}
 buildPointsList = (proposal, valence, sort_field, filter_included, show_all_points) ->
   sort_field = sort_field or 'score'
   points = fetch("/page/#{proposal.slug}").points or []
@@ -1314,7 +1314,7 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
         points.push point 
 
 
-  # Filter down to the points included in the selection opinions, if set. 
+  # Filter down to the points included in the selected opinions, if set. 
   opinion_views = fetch('opinion_views')
   if opinion_views.active_views.single_opinion_selected
     opinions = [opinion_views.active_views.single_opinion_selected.opinion] 
@@ -1323,6 +1323,7 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
     {weights, salience, groups} = compose_opinion_views opinions, proposal
     opinions = (o for o in opinions when salience[o.user.key or o.user] == 1)
     filtered = true
+
 
   # order points by resonance to users in view.    
   point_inclusions_per_point = {} # map of points to including users
@@ -1339,16 +1340,27 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
   #     if fetch(point).hide_name
   #       delete point_inclusions_per_point[point]
 
-  points = (pnt for pnt in points when (pnt.key of point_inclusions_per_point) || (pnt.key in included_points))
+  # really ugly, but if we're hovering over point includers, turning on the point includer filter, 
+  # the points will automatically re-sort, causing flickering, unless we some how undo the auto 
+  # sorting caused by the point includer filter
+  active_views = _.without Object.keys(opinion_views.active_views), 'point_includers'
+  sort_key = JSON.stringify {proposal:proposal.key, valence, sort_field, filter_included, show_all_points, views: active_views, pnts: (pnt.key for pnt in points)}
+  if sort_key of stored_points_order && opinion_views.active_views.point_includers
+    points = stored_points_order[sort_key]
+  else 
+    points = (pnt for pnt in points when (pnt.key of point_inclusions_per_point) || (TWO_COL() && pnt.key in included_points))
 
-  # Sort points based on resonance with selected users, or custom sort_field
-  sort = (pnt) ->
-    if filtered
-      -point_inclusions_per_point[pnt.key] 
-    else
-      -pnt[sort_field]
+    # Sort points based on resonance with selected users, or custom sort_field
+    sort = (pnt) ->
+      if filtered
+        -point_inclusions_per_point[pnt.key] 
+      else
+        -pnt[sort_field]
 
-  points = _.sortBy points, sort
+
+    points = _.sortBy points, sort
+    stored_points_order[sort_key] = points
+
   (pnt.key for pnt in points)
 
 

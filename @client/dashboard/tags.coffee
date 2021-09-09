@@ -40,7 +40,7 @@ UserTags = ReactiveComponent
             all_tags[tag][false] = []
 
     for user in users.users 
-
+      user = fetch(user.key or user) # subscribe to changes
       for vals in tags_config 
         tag = vals.key
         if tag not of user.tags || user.tags[tag] == "" || user.tags[tag] == 'undefined'
@@ -302,36 +302,71 @@ UserTags = ReactiveComponent
 
             else 
               for v,users of vals 
-
-                DIV 
-                  style: 
-                    marginBottom: 18
-
-                  DIV
-                    style:
-                      fontWeight: 700
-                      marginRight: 8
-
-                    v
-
-                  UL
+                do (tag, v) =>
+                  DIV 
                     style: 
-                      listStyle: 'none'
-                      display: 'inline'
-                      fontSize: 0
-                      lineHeight: 0
+                      marginBottom: 18
+                    onKeyDown: (e) => 
+                      if e.which == 18 # alt/opt 
+                        @local.control_depressed = true 
+                    onKeyUp: (e) =>
+                      @local.control_depressed = false 
 
-                    for user in users
-                      do (user) => 
-                        Avatar 
-                          key: user.key
-                          style: 
-                            width: 40
-                            height: 40
-                            cursor: 'pointer'
-                          alt: "<user>: #{v}"
-                          onClick: => change_selected_user user.key      
+                    onDragEnter: (e) => 
+                      if @local.control_depressed
+                        e.preventDefault()
+                    onDragOver: (e) => 
+                      if @local.control_depressed
+                        e.preventDefault()
+                    onDragLeave: (e) => 
+                      if @local.control_depressed
+                        e.preventDefault()
+                    onDrop: (e) =>
+                      if @local.control_depressed
+                        e.preventDefault()
+                        user = fetch e.dataTransfer.getData("text/plain")
+                        user.tags[tag] = v 
+                        save user                      
 
+
+                    DIV
+                      style:
+                        fontWeight: 700
+                        marginRight: 8
+
+                      v
+
+                    UL
+                      style: 
+                        listStyle: 'none'
+                        display: 'inline'
+                        fontSize: 0
+                        lineHeight: 0
+
+                      for user in users
+                        do (user) => 
+                          SPAN 
+                            draggable: true  
+                            onDragStart: (ev) =>
+                              if @local.control_depressed
+                                ev.dataTransfer.setData("text/plain", user.key)
+                            style: 
+                              width: 40
+                              height: 40
+                              cursor: 'move'
+
+                            Avatar 
+                              key: user.key
+                              style: 
+                                width: 40
+                                height: 40
+                              alt: "<user>: #{v}"
+                              hide_popover: true
+                              onClick: (e) => 
+                                if !@local.control_depressed
+                                  change_selected_user user.key
+                                  e.stopPropagation()
+                                  e.preventDefault()
 
 
 

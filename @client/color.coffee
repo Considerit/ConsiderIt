@@ -101,11 +101,13 @@ window.getNiceRandomHues = (num, seed) ->
 
 window.getColors = (num) ->
   if num >= 3 && num <= 12
-    if num <= 9
+    if num <= 5
       group_colors = colorbrewer.Set1[num]
+    else if num <= 8
+      group_colors = colorbrewer.Dark2[num]
     else 
       group_colors = colorbrewer.Paired[num]
-    group_colors = _.shuffle group_colors
+    # group_colors = _.shuffle group_colors
   else 
     group_colors = []
     hues = getNiceRandomHues num

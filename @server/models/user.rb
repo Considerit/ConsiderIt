@@ -136,14 +136,17 @@ class User < ApplicationRecord
     end
 
     tags_config = customizations.fetch('user_tags', [])
-    tags = tags || {}
+
+    my_tags = self.tags || {}
     data['tags'] = {}
     tags_config.each do |vals|
+
       tag = vals["key"]
-      if tags.has_key?(tag) && (current_user.is_admin? || vals.fetch('visibility', 'host-only') == 'open')
-        data['tags'][tag] = tags[tag]
+      if my_tags.has_key?(tag) && (current_user.is_admin? || vals.fetch('visibility', 'host-only') == 'open')
+        data['tags'][tag] = my_tags[tag]
       end
     end
+
 
     data
   end

@@ -889,9 +889,9 @@ button.like_link {
 
 .btn {
   color: white;
-  text-transform: uppercase;
+  # text-transform: uppercase;
   border: 0;
-  box-shadow: 0 2px 5px 0 rgb(0 0 0 / 20%), 0 2px 10px 0 rgb(0 0 0 / 10%);
+  # box-shadow: 0 2px 5px 0 rgb(0 0 0 / 20%), 0 2px 10px 0 rgb(0 0 0 / 10%);
   font-weight: 700;
   padding: .625rem 1.5rem .5rem;
   line-height: 1.5;

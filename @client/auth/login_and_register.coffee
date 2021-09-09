@@ -39,9 +39,9 @@ toggle_modes = ->
         className: 'toggle_auth'
         style:
           display: 'inline-block'
-          # color: 'white'
+          color: focus_blue
           textDecoration: 'underline'
-          fontWeight: 600
+          fontWeight: 700
           fontSize: 16
           backgroundColor: 'transparent'
           border: 'none'
@@ -140,10 +140,11 @@ window.Login = ReactiveComponent
           color: '#333'
           backgroundColor: 'transparent'
           border: 'none'
-          fontSize: 16
+          fontSize: 12
           padding: 0
           position: 'relative'
           top: -8
+          fontWeight: 700
 
         onClick: reset
         onKeyDown: (e) =>
@@ -184,7 +185,7 @@ window.CreateAccount = ReactiveComponent
       task: if @props.by_invitation 
               translator 'auth.create-by-invitation.heading', 'Complete registration'
             else 
-              translator 'auth.create.heading', 'Create an account'
+              translator 'auth.create.heading', 'Create your account'
       disallow_cancel: disallow_cancel()
       goal: if auth.goal then translator "auth.login_goal.#{auth.goal.toLowerCase()}", auth.goal
       on_submit: on_submit
@@ -244,6 +245,8 @@ window.CreateAccount = ReactiveComponent
                 LI
                   style: 
                     marginBottom: 8
+                    display: 'flex'
+                    alignItems: 'center'
 
                   INPUT
                     className:"pledge-input"
@@ -253,14 +256,13 @@ window.CreateAccount = ReactiveComponent
                     name:"pledge-#{idx}"
                     style: 
                       verticalAlign: 'baseline'
-                      marginLeft: 1
-                      marginTop: 7
 
                   LABEL 
                     style: 
                       display: 'inline-block'
                       width: '90%'
-                      paddingLeft: 8
+                      paddingLeft: 12
+                      cursor: 'pointer'
                     htmlFor: "pledge-#{idx}"
                     dangerouslySetInnerHTML: __html: pledge
 
@@ -304,35 +306,23 @@ window.CreateAccount = ReactiveComponent
       as_html: true
       privacy_link: 
         component: "a"
-        args: "href='/privacy_policy' style='text-decoration: underline'"
+        args: "href='/privacy_policy' style='font-weight: 700; color: #{focus_blue};' target='_blank'"
 
       terms_link:
         component: "a" 
-        args: "href='/terms_of_service' style='text-decoration: underline'"
+        args: "href='/terms_of_service' style='font-weight: 700; color: #{focus_blue};' target='_blank'"
 
-      "I agree to the Consider.it <privacy_link>Privacy Policy</privacy_link> and <terms_link>Terms</terms_link>."
+      "By signing up, you agree to the Consider.it <privacy_link>Privacy Policy</privacy_link> and <terms_link>Terms of Service</terms_link>."
 
     terms = customization('terms') or default_terms.join('')
 
+
     DIV 
       style: 
-        margin: '18px 0'
+        margin: '18px 0 8px 0'
+        fontSize: 13
+        color: '#444'
 
-      INPUT
-        id: slugify("considerit_termsinputBox")
-        key: "considerit_terms_inputBox"
-        type:'checkbox'
-        className: 'bigger'
-        style: 
-          verticalAlign: 'baseline'
-          marginLeft: 1
-        defaultChecked: false
-
-      LABEL
-        htmlFor: slugify("considerit_termsinputBox")
-        style: 
-          fontSize: 18
-          paddingLeft: 8
-        dangerouslySetInnerHTML: __html: terms
+      dangerouslySetInnerHTML: __html: terms
 
 

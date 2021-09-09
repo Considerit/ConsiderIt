@@ -185,16 +185,17 @@ window.styles += """
 
   #AUTH_task {
     font-size: 44px;
-    font-weight: 400;
+    font-weight: 600;
     white-space: nowrap;
   }
 
   .AUTH_body_wrapper {
-    padding: 1.5em 50px 2.5em 50px;
-    font-size: 18px;
+    padding: 1.5em 50px 2em 50px;
+    font-size: 16px;
     box-shadow: 0 2px 4px rgba(0,0,0,.4);
     background-color: white;
     position: relative;
+    border-radius: 16px;
   }
 
   .AUTH_cancel {
@@ -220,10 +221,12 @@ window.styles += """
   }
 
   .AUTH_submit_button {
-    font-size: 30px;
+    font-size: 22px;
     display: block;
     width: 100%;
     margin-top: 20px;
+    border-radius: 16px;
+    padding: .8rem 1.5rem .8rem;
   }
 
   .AUTH_field_wrapper {
@@ -232,7 +235,7 @@ window.styles += """
 
   .AUTH_field_label {
     color: #444;
-    font-size: 16px;
+    font-size: 12px;
     display: block;
     text-transform: uppercase;
   }
@@ -340,23 +343,23 @@ window.AuthForm =
               
               options.submit_button or @i18n().submit_button      
 
-            if !options.disallow_cancel
-              DIV 
-                style: 
-                  textAlign: 'right'
-                BUTTON
-                  ref: 'cancel_dialog'
-                  className: 'AUTH_cancel embedded'
-                  title: translator 'shared.cancel_button', 'cancel'
+            # if !options.disallow_cancel
+            #   DIV 
+            #     style: 
+            #       textAlign: 'right'
+            #     BUTTON
+            #       ref: 'cancel_dialog'
+            #       className: 'AUTH_cancel embedded'
+            #       title: translator 'shared.cancel_button', 'cancel'
 
-                  onKeyDown: (e) => 
-                    if e.which == 13 || e.which == 32 # ENTER or SPACE
-                      e.target.click()
-                      e.preventDefault()
+            #       onKeyDown: (e) => 
+            #         if e.which == 13 || e.which == 32 # ENTER or SPACE
+            #           e.target.click()
+            #           e.preventDefault()
 
-                  onClick: cancel_modal
+            #       onClick: cancel_modal
 
-                  translator 'shared.cancel_button', 'cancel'
+            #       translator 'shared.cancel_button', 'cancel'
 
 
   RenderInput: (opts) -> 

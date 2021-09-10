@@ -15,6 +15,8 @@ window.avatarUrl = (user, img_size) ->
     null
 
 
+window.user_is_organization_account = (user) -> 
+  (user.key or user) in (customization('organizational_account') or [])
 
 window.anonymous_label = ->
   translator 'anonymous', 'Anonymous'
@@ -87,7 +89,7 @@ window.AvatarPopover = ReactiveComponent
             name
 
 
-          if !anonymous
+          if !anonymous && !user_is_organization_account(user)
             unreported = missing_attribute_info_label()
 
             UL 
@@ -152,7 +154,7 @@ window.AvatarPopover = ReactiveComponent
 
         o_trans = translator('opinion', 'Opinion')
         reasons_trans = translator {id: 'avatar_popover.reason_count', cnt: cnt}, '{cnt, plural, one {# reason} other {# reasons}} given'
-        console.log 'boo'        
+
         DIV 
           style: 
             marginTop: 8 

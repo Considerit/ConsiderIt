@@ -208,6 +208,29 @@ UserTags = ReactiveComponent
           #       @local.new_tags["tag-#{i}"] = ""
           #       save @local
 
+
+          # Hack for designating an account as a sort of non-participating organizational account 
+          # used for seeding content
+          DIV 
+            style: {}
+
+            LABEL 
+              style: {}
+                        
+              INPUT 
+                type: 'checkbox'
+                checked: selected_user.key in (customization('organizational_account') or [])
+                onChange: (e) ->
+                  orgs = customization('organizational_account') or []
+                  if selected_user.key in orgs 
+                    orgs = _.without orgs, selected_user.key
+                  else 
+                    orgs.push selected_user.key
+                  subdomain.customizations['organizational_account'] = orgs
+                  save subdomain
+
+              "Designate as organizational account"
+
           DIV 
             style: 
               marginTop: 12

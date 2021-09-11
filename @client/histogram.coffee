@@ -457,7 +457,7 @@ window.Histogram = ReactiveComponent
         user_key = ev.target.getAttribute('data-user')
         user_opinion = _.findWhere @opinions, {user: user_key}
 
-        if @weights[user_key] == 0
+        if @weights[user_key] == 0 || @salience[user_key] < 1
           clear_histogram_managed_opinion_views opinion_views
         else 
           select_single_opinion user_opinion, @props.key
@@ -731,11 +731,6 @@ HistoAvatars = ReactiveComponent
     if !@props.enable_individual_selection
       regular_avatar_style.cursor = 'auto'
 
-    # The style of the avatar when the histogram is backgrounded 
-    backgrounded_page_avatar_style = _.extend {}, regular_avatar_style, 
-      opacity: .1
-
-
     # Draw the avatars in the histogram. Placement is determined by the physics sim
     opinion_views = fetch 'opinion_views'  
 
@@ -773,13 +768,10 @@ HistoAvatars = ReactiveComponent
 
           className = 'histo_avatar'
           
-          salience = @props.salience[user.key]
+          salience = if @props.backgrounded then 0.1 else @props.salience[user.key]
 
           if salience < 1
-            if salience == 0.1
-              avatar_style = _.extend {}, backgrounded_page_avatar_style
-            else 
-              avatar_style = _.extend({}, regular_avatar_style, {opacity: salience})  
+            avatar_style = _.extend({}, regular_avatar_style, {opacity: salience, cursor: 'default'})  
 
           else
             avatar_style = _.extend {}, regular_avatar_style
@@ -799,8 +791,6 @@ HistoAvatars = ReactiveComponent
 
               avatar_style.background = "repeating-linear-gradient(45deg #{gradient})"
 
-          if @props.backgrounded
-            avatar_style = _.extend {}, backgrounded_page_avatar_style
 
           pos = @props.histocache?.positions?[user.key]
 

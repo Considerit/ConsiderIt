@@ -542,10 +542,12 @@ SortProposalsMenu = ReactiveComponent
 
             translator "engage.sort_order.#{option.name}", option.name 
 
-          SPAN 
-            style: 
-              float: 'right'
-            HelpIcon translator "engage.sort_order.#{option.name}.description", option.description
+          if !browser.is_mobile
+            SPAN 
+              style: 
+                float: 'right'
+              HelpIcon translator "engage.sort_order.#{option.name}.description", option.description
+              
 
           # DIV 
           #   style: 
@@ -625,7 +627,7 @@ ManualProposalResort = ReactiveComponent
           display: 'flex'
           alignItems: 'center'
 
-        'data-tooltip': translator "engage.sort_order.out-of-order-tooltip", "A re-sort may be needed because someone else added or updated their opinion, or you selected an opinion view that filtered or weighed opinions differently."
+        'data-tooltip': if !browser.is_mobile then translator "engage.sort_order.out-of-order-tooltip", "A re-sort may be needed because someone else added or updated their opinion, or you selected an opinion view that filtered or weighed opinions differently."
 
         onClick: invalidate_proposal_sorts
         onKeyDown: (e) => 

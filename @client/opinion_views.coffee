@@ -528,33 +528,63 @@ to_date_str = (ms) ->
 
 
 
+clear_all = ->
+  opinion_views = fetch 'opinion_views'
+  opinion_views_ui = fetch 'opinion_views_ui'
+
+  to_remove = []
+  for k,v of opinion_views.active_views
+    if v.view_type in ['filter', 'weight', 'group', 'date-filter']
+      to_remove.push v
+  for view in to_remove
+    toggle_opinion_filter view
+
+  for attr in ['group_by', 'visible_attribute_values', 'activated_attributes']
+    if attr == 'group_by'
+      delete opinion_views_ui[attr] if attr of opinion_views_ui
+    else 
+      opinion_views_ui[attr] = {}
+  save opinion_views_ui
+
+  date_state = fetch 'opinion-date-filter'
+  date_state.start = date_state.end = date_state.active = null 
+  save date_state
+
+reset_to_all = ->
+  clear_all()
+  is_admin = fetch('/current_user').is_admin  
+  show_others = !customization('hide_opinions') || is_admin
+  opinion_views_ui = fetch 'opinion_views_ui'  
+  if show_others
+    opinion_views_ui.active = 'all'
+  else 
+    opinion_views_ui.active = 'you'
+  save opinion_views_ui
+
+user_has_set_a_view = ->
+  opinion_views = fetch 'opinion_views'
+  view_is_set = false 
+  for k,v of opinion_views.active_views
+    if v.view_type == 'filter' && v.options
+      # user hasn't set a view if they've selected all the attribute values, as that essentially means "all"
+      opinion_views_ui = fetch 'opinion_views_ui'
+      checked = 0
+      for val in v.options
+        if !!opinion_views_ui.visible_attribute_values[v.key][val]
+          checked += 1
+
+      view_is_set ||= checked > 0 && checked < v.options.length
+
+    else 
+      view_is_set ||= v.view_type in ['filter', 'weight', 'group', 'date-filter']
+  view_is_set
+
 
 OpinionViews = ReactiveComponent
   displayName: 'OpinionViews'
 
   render : -> 
     @local.minimized ?= true 
-    clear_all = =>
-      to_remove = []
-      for k,v of opinion_views.active_views
-        if v.view_type in ['filter', 'weight', 'group', 'date-filter']
-          to_remove.push v
-      for view in to_remove
-        toggle_opinion_filter view
-
-
-      for attr in ['group_by', 'visible_attribute_values', 'activated_attributes']
-        if attr == 'group_by'
-          delete opinion_views_ui[attr] if attr of opinion_views_ui
-        else 
-          opinion_views_ui[attr] = {}
-      save opinion_views_ui
-
-      date_state = fetch 'opinion-date-filter'
-      date_state.start = date_state.end = date_state.active = null 
-      save date_state
-
-      @local.clicked_more_views = false
 
 
     return SPAN null if !fetch('/subdomain').name
@@ -589,22 +619,17 @@ OpinionViews = ReactiveComponent
         disabled: !show_others
         callback: (item, previous_state) => 
           if previous_state == 'custom'
-            if @user_has_set_a_view()
+            if user_has_set_a_view()
               @local.minimized = !@local.minimized
               save @local
             else 
-              reset_to_default_view(true)
+              reset_to_all()
+
           else 
             @local.minimized = false
             clear_all()
-          @local.clicked_more_views = true          
       }
     ]
-
-    reset_to_show_all_opinions = ->
-      clear_all()
-      opinion_views_ui.active = 'all'
-      save opinion_views_ui
 
     reset_to_default_view = (force_all) ->
       clear_all()
@@ -651,12 +676,7 @@ OpinionViews = ReactiveComponent
     if !opinion_views_ui.initialized      
       reset_to_default_view()
       opinion_views_ui.initialized = true 
-      @local.clicked_more_views = true
       save opinion_views_ui
-
-    if !@user_has_set_a_view() && @local.minimized && @local.clicked_more_views
-      reset_to_show_all_opinions()
-
 
 
     DIV 
@@ -683,17 +703,18 @@ OpinionViews = ReactiveComponent
           if opinion_views_ui.active == 'custom' 
             triangle_left = (document.querySelector('[data-view-state="custom"]')?.offsetLeft or 60) + 35 - (if needs_expansion then (@props.style.width + @props.additional_width - width ) else 0)
 
-            if @user_has_set_a_view() && @local.minimized
-              DIV 
-                className: 'custom_view_triangle'
-                style: 
-                  left: triangle_left
-                  bottom: if browser.is_mobile then -5 else -5                  
-                  width: 0
-                  height: 0 
-                  borderLeft: '12px solid transparent'
-                  borderRight: '12px solid transparent'                    
-                  borderTop: '7px solid #2478CC'
+            if @local.minimized
+              if user_has_set_a_view()
+                DIV 
+                  className: 'custom_view_triangle'
+                  style: 
+                    left: triangle_left
+                    bottom: if browser.is_mobile then -5 else -5                  
+                    width: 0
+                    height: 0 
+                    borderLeft: '12px solid transparent'
+                    borderRight: '12px solid transparent'                    
+                    borderTop: '7px solid #2478CC'
             else 
               DIV 
                 className: 'custom_view_triangle'
@@ -759,26 +780,9 @@ OpinionViews = ReactiveComponent
 
           DIV style: clear: 'both'
 
-  user_has_set_a_view: ->
-    opinion_views = fetch 'opinion_views'
-    user_has_set_a_view = false 
-    for k,v of opinion_views.active_views
-      if v.view_type == 'filter' && v.options
-        # user hasn't set a view if they've selected all the attribute values, as that essentially means "all"
-        opinion_views_ui = fetch 'opinion_views_ui'
-        checked = 0
-        for val in v.options
-          if !!opinion_views_ui.visible_attribute_values[v.key][val]
-            checked += 1
-
-        user_has_set_a_view ||= checked > 0 && checked < v.options.length
-
-      else 
-        user_has_set_a_view ||= v.view_type in ['filter', 'weight', 'group', 'date-filter']
-    user_has_set_a_view
 
   MinimizeExpandButton: ->
-    return SPAN(null) if !@user_has_set_a_view() || fetch('opinion_views_ui').active != 'custom'
+    return SPAN(null) if !user_has_set_a_view() || fetch('opinion_views_ui').active != 'custom'
 
     toggle_expanded = (e) =>
       @local.minimized = !@local.minimized
@@ -1323,10 +1327,15 @@ NonInteractiveOpinionViews = ReactiveComponent
                 className: "minimized_view_close" 
                 onClick: ->
                   mini.toggle()
+                  if !user_has_set_a_view()
+                    reset_to_all()
                 onKeyDown: (e) -> 
                   if e.which == 13 || e.which == 32 # ENTER or SPACE
                     mini.toggle()
+                    if !user_has_set_a_view()
+                      reset_to_all()
                     e.preventDefault()
+
                 'x'
 
 

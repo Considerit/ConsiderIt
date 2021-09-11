@@ -215,6 +215,13 @@ task :migrate_translations => :environment do
   rename_translation "auth.sign_up", "shared.auth.sign_up"
   rename_translation "auth.log_in", "shared.auth.log_in"
 
+
+  delete_translation "engage.opinion_filter.label"
+  delete_translation "engage.proposal_score_summary.explanation"
+  delete_translation "engage.proposal_score_summary.explanation"
+  delete_translation "engage.re-sort_list"
+
+
   sync_keys_with_english
   execute_translation_migration
 

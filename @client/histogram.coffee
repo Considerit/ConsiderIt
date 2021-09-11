@@ -670,7 +670,7 @@ window.delegate_layout_task = (opts) ->
 configure_histo_layout_web_worker = ->
 
   if !window.histo_layout_workers && arest.cache['/application']
-    window.histo_layout_workers = (new Worker("#{fetch('/application').asset_host}/build/web_worker.js") for i in [0..num_layout_workers - 1])
+    window.histo_layout_workers = (new Worker("/build/web_worker.js") for i in [0..num_layout_workers - 1])
 
     onmessage = (e) ->
       {opts, positions} = e.data 

@@ -233,10 +233,12 @@ protected
         response.append Comment.comments_for_point(point)
       
       elsif key == '/application'
+        manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})
         response.append({
           key: '/application',
           dev: (Rails.env.development? || request.host.end_with?('chlk.it')),
           asset_host: "#{Rails.application.config.action_controller.asset_host}",
+          web_worker: "#{manifest['web_worker']}",
           su: session[:su]
         })
         

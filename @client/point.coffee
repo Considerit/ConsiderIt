@@ -215,7 +215,7 @@ window.Point = ReactiveComponent
 
             translator
               id: "engage.point_explanation"
-              author: if point.hide_name then 'Anonymous' else fetch(point.user).name
+              author: if point.hide_name then anonymous_label() else fetch(point.user).name
               num_inclusions: @data().includers.length
               comment_count: point.comment_count
               """By {author}. 
@@ -548,43 +548,37 @@ window.Point = ReactiveComponent
     # anyone to discover who wrote this point. 
     if point.hide_name
       includers = _.without includers, point.user
-    hist = fetch namespaced_key('histogram', @proposal)
-    if hist.highlighted_users != includers
-      hist.highlighted_users = includers
-      save(hist)
+
+    opinion_views = fetch 'opinion_views'
+    opinion_views.active_views.point_includers =
+      created_by: @props.key 
+      point: point.key 
+      get_salience: (u, opinion, proposal) ->
+        if (u.key or u) in includers 
+          1 
+        else 
+          .1
+    save opinion_views
+
 
   unHighlightIncluders : -> 
-    hist = fetch namespaced_key('histogram', @proposal)
-    hist.highlighted_users = null
-    save(hist)
+    opinion_views = fetch 'opinion_views'
+    if opinion_views.active_views.point_includers
+      delete opinion_views.active_views.point_includers
+      save opinion_views
 
   buildIncluders : -> 
-    filter_out = fetch 'filtered'
     point = @data()
-    #author_has_included = _.contains point.includers, point.user
 
     includers = point.includers
 
-    hist = fetch(namespaced_key('histogram', @proposal))
-    selected_opinions = if hist.selected_opinion
-                          [hist.selected_opinion] 
-                        else 
-                          hist.selected_opinions
+    opinion_views = fetch 'opinion_views'
+    {weights, salience, groups} = compose_opinion_views null, @proposal
 
-    if selected_opinions?.length > 0
-      # only show includers from the current opinion selection
-      selected_users = (fetch(o).user for o in selected_opinions)
-      includers = _.intersection includers, selected_users
-      #author_has_included = _.contains selected_users, point.user
+    includers = (i for i in includers when salience[i] == 1 && weights[i] > 0)
 
-    if filter_out.users 
-      includers = (i for i in includers when !filter_out.users[i])
-
-      
-
-    if true #author_has_included 
-      includers = _.without includers, point.user
-      includers.push point.user
+    includers = _.without includers, point.user
+    includers.push point.user
 
     _.uniq includers
         
@@ -664,7 +658,7 @@ window.Comment = ReactiveComponent
         # Comment author icon
         Avatar
           key: comment.user
-          hide_tooltip: true
+          hide_popover: true
           set_bg_color: true
           style: 
             position: 'absolute'

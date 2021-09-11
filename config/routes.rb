@@ -68,7 +68,8 @@ ConsiderIt::Application.routes.draw do
   get '/subdomain' => 'subdomain#show'
   get '/subdomain/:id' => 'subdomain#show'
 
-  
+  get '/points' => 'point#index'
+
   match '/subdomain' => 'subdomain#update', :via => [:put]
   get '/subdomains' => 'subdomain#index'
 

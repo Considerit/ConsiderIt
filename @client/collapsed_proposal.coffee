@@ -4,6 +4,7 @@ require './histogram'
 require './slider'
 require './permissions'
 require './bubblemouth'
+require './popover'
 
 
 pad = (num, len) -> 
@@ -32,17 +33,19 @@ window.CollapsedProposal = ReactiveComponent
 
     return if !watching && fetch('homepage_filter').watched
 
+    subdomain = fetch '/subdomain'
+
     your_opinion = fetch proposal.your_opinion
     if your_opinion?.published
-      can_opine = permit 'update opinion', proposal, your_opinion
+      can_opine = permit 'update opinion', proposal, your_opinion, subdomain
     else
-      can_opine = permit 'publish opinion', proposal
+      can_opine = permit 'publish opinion', proposal, subdomain
 
     draw_slider = can_opine > 0 || your_opinion?.published
 
-    icons = customization('show_proposer_icon', proposal) && !@props.hide_icons
-    slider_regions = customization('slider_regions', proposal)
-    show_proposal_scores = !@props.hide_scores && customization('show_proposal_scores', proposal)
+    icons = customization('show_proposer_icon', proposal, subdomain) && !@props.hide_icons && !customization('anonymize_everything')
+    slider_regions = customization('slider_regions', proposal, subdomain)
+    show_proposal_scores = !@props.hide_scores && customization('show_proposal_scores', proposal, subdomain)
 
     opinions = opinionsForProposal(proposal)
 
@@ -62,16 +65,19 @@ window.CollapsedProposal = ReactiveComponent
     # creation = new Date(proposal.created_at).getTime()
     # opacity = .05 + .95 * (creation - sub_creation) / (Date.now() - sub_creation)
 
-    can_edit = permit('update proposal', proposal) > 0
+    can_edit = permit('update proposal', proposal, subdomain) > 0
 
-    just_you = fetch('filtered').current_filter?.label == 'just you'
-    everyone = fetch('filtered').current_filter?.label == 'everyone'
+    opinion_views = fetch 'opinion_views'
+    just_you = opinion_views.active_views['just_you']
+    everyone = !!opinion_views.active_views['everyone'] || !!opinion_views.active_views['weighed_by_substantiated'] || !!opinion_views.active_views['weighed_by_recency']
+
+    opinion_publish_permission = permit('publish opinion', proposal, subdomain)
 
     slider_interpretation = (value) => 
       if value > .03
-        "#{(value * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.support", proposal)}"
+        "#{(value * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.support", proposal, subdomain)}"
       else if value < -.03 
-        "#{-1 * (value * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.oppose", proposal)}"
+        "#{-1 * (value * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.oppose", proposal, subdomain)}"
       else 
         translator "engage.slider_feedback.neutral", "Neutral"
 
@@ -86,6 +92,7 @@ window.CollapsedProposal = ReactiveComponent
         margin: "0 0 #{if can_edit then '0' else '15px'} 0"
         padding: 0
         listStyle: 'none'
+
 
       onMouseEnter: => 
         if draw_slider
@@ -187,7 +194,7 @@ window.CollapsedProposal = ReactiveComponent
 
             proposal.name
 
-          if customization('proposal_show_description_on_homepage')
+          if customization('proposal_show_description_on_homepage', null, subdomain)
             DIV 
               style: 
                 fontSize: 14
@@ -198,15 +205,15 @@ window.CollapsedProposal = ReactiveComponent
           DIV 
             style: 
               fontSize: 12
-              color: 'black' #'#999'
+              color: '#555' #'#999'
               marginTop: 4
               #fontStyle: 'italic'
 
-            if customization('proposal_meta_data')
-              customization('proposal_meta_data')(proposal)
+            if customization('proposal_meta_data', null, subdomain)?
+              customization('proposal_meta_data', null, subdomain)(proposal)
 
-            else if !@props.hide_metadata && customization('show_proposal_meta_data')
-              show_author_name_in_meta_data = !icons && (editor = proposal_editor(proposal)) && editor == proposal.user
+            else if !@props.hide_metadata && customization('show_proposal_meta_data', null, subdomain)
+              show_author_name_in_meta_data = !icons && (editor = proposal_editor(proposal)) && editor == proposal.user && !customization('anonymize_everything')
 
               SPAN 
                 style: 
@@ -240,7 +247,7 @@ window.CollapsedProposal = ReactiveComponent
 
 
 
-                if customization('discussion_enabled', proposal)
+                if customization('discussion_enabled', proposal, subdomain)
                     A 
                       href: proposal_url(proposal, true)
                       style: 
@@ -251,9 +258,9 @@ window.CollapsedProposal = ReactiveComponent
                         id: "engage.point_count"
                         cnt: proposal.point_count
 
-                        "{cnt, plural, one {# consideration} other {# considerations}}"
+                        "{cnt, plural, one {# pro or con} other {# pros and cons}}"
 
-                      if proposal.active && permit('create point', proposal) > 0
+                      if proposal.active && permit('create point', proposal, subdomain) > 0
                         [
                           SPAN 
                             style: 
@@ -278,16 +285,16 @@ window.CollapsedProposal = ReactiveComponent
                   color: @props.category_color or 'black'
                   fontWeight: 500
 
-                get_list_title "list/#{proposal.cluster}", true
+                get_list_title "list/#{proposal.cluster}", true, subdomain
 
-            if permit('publish opinion', proposal) == Permission.DISABLED
+            if opinion_publish_permission == Permission.DISABLED
               SPAN 
                 style: 
                   padding: '0 16px'
 
                 TRANSLATE "engage.proposal_closed.short", 'closed'
 
-            else if permit('publish opinion', proposal) == Permission.INSUFFICIENT_PRIVILEGES
+            else if opinion_publish_permission == Permission.INSUFFICIENT_PRIVILEGES
               SPAN 
                 style: 
                   padding: '0 16px'
@@ -311,7 +318,7 @@ window.CollapsedProposal = ReactiveComponent
                   fontSize: 12
                 TRANSLATE 'engage.edit_button', 'edit'
 
-              if permit('delete proposal', proposal) > 0
+              if permit('delete proposal', proposal, subdomain) > 0
                 BUTTON
                   style:
                     marginRight: 10
@@ -348,10 +355,9 @@ window.CollapsedProposal = ReactiveComponent
           width: col_sizes.second
           height: 40
           enable_individual_selection: !browser.is_mobile
-          enable_range_selection: everyone && !browser.is_mobile
+          enable_range_selection: !just_you && !browser.is_mobile
           draw_base: true
           draw_base_labels: !slider_regions
-          selection_state: 'filtered'
 
         Slider 
           base_height: 0
@@ -366,14 +372,18 @@ window.CollapsedProposal = ReactiveComponent
           handle_height: 18
           handle_width: 21
           handle_style: 
-            opacity: if fetch('filtered').current_filter?.label != "just you" && !browser.is_mobile && @local.hover_proposal != proposal.key && !@local.slider_has_focus then 0 else 1             
+            opacity: if just_you && !browser.is_mobile && @local.hover_proposal != proposal.key && !@local.slider_has_focus then 0 else 1             
           offset: true
+          ticks: 
+            increment: .5
+            height: 2
+
           handle_props:
             use_face: false
           label: translator
                     id: "sliders.instructions"
-                    negative_pole: get_slider_label("slider_pole_labels.oppose", proposal)
-                    positive_pole: get_slider_label("slider_pole_labels.support", proposal)
+                    negative_pole: get_slider_label("slider_pole_labels.oppose", proposal, subdomain)
+                    positive_pole: get_slider_label("slider_pole_labels.support", proposal, subdomain)
                     "Express your opinion on a slider from {negative_pole} to {positive_pole}"
           onBlur: (e) => @local.slider_has_focus = false; save @local
           onFocus: (e) => @local.slider_has_focus = true; save @local 
@@ -410,75 +420,342 @@ window.CollapsedProposal = ReactiveComponent
               save @local
     
       # little score feedback
-      if show_proposal_scores
-        score = 0
-        filter_out = fetch 'filtered'
-        opinions = (o for o in opinions when filter_out.enable_comparison || !filter_out.users?[o.user])
-
-        for o in opinions 
-          score += o.stance
-        avg = score / opinions.length
-        negative = score < 0
-        score *= -1 if negative
-
-        score = pad score.toFixed(1),2
-
-        val = "0000 opinion#{if opinions.length != 1 then 's' else ''}"
-        score_w = widthWhenRendered(' opinion' + (if opinions.length != 1 then 's' else ''), {fontSize: 12}) + widthWhenRendered("0000", {fontSize: 20})
-
-        show_tooltip = => 
-          if opinions.length > 0
-            tooltip = fetch 'tooltip'
-            tooltip.coords = $(@refs.score.getDOMNode()).offset()
-            tooltip.tip = translator({id: "engage.proposal_score_summary.explanation", percentage: Math.round(avg * 100)}, "Average rating is {percentage}%")
-            save tooltip
-        hide_tooltip = => 
-          tooltip = fetch 'tooltip'
-          tooltip.coords = null
-          save tooltip
-
+      if show_proposal_scores        
         DIV 
-          'aria-hidden': true
-          ref: 'score'
           style: 
             position: 'absolute'
-            right: -18 - score_w
-            top: 23 #40 - 12
-            textAlign: 'left'
+            left: "calc(100% + 22px)"
+            top: 9
 
-          onFocus: show_tooltip
-          onMouseEnter: show_tooltip
-          onBlur: hide_tooltip
-          onMouseLeave: hide_tooltip
+          HistogramScores
+            proposal: proposal
 
-          SPAN 
+
+
+
+window.HistogramScores = ReactiveComponent
+  displayName: 'HistogramScores'
+
+  render: ->
+    proposal = @props.proposal
+
+    {weights, salience, groups} = compose_opinion_views(null, proposal)
+    opinions = get_opinions_for_proposal opinions, proposal, weights
+
+
+    if opinions.length == 0 
+      return SPAN null
+
+    all_groups = get_user_groups_from_views groups
+    has_groups = !!all_groups
+
+    overall_score = 0
+    overall_weight = 0
+    overall_cnt = 0
+    for o in opinions 
+      continue if salience[o.user.key or o.user] < 1
+      w = weights[o.user.key or o.user]
+      overall_score += o.stance * w
+      overall_weight += w
+      overall_cnt += 1
+    overall_avg = overall_score / overall_weight
+    negative = overall_score < 0
+    overall_score *= -1 if negative
+
+    score = pad overall_score.toFixed(1),2
+
+    opinion_views = fetch('opinion_views')
+    is_weighted = false 
+    for v,view of opinion_views.active_views
+      is_weighted ||= view.view_type == 'weight'
+
+    DIV 
+      'aria-hidden': true
+      ref: 'score'
+      style: 
+        textAlign: 'left'
+        whiteSpace: 'nowrap'
+
+      SPAN 
+        style: 
+          color: '#555'
+          cursor: 'default'
+          lineHeight: .8
+          fontSize: 11
+
+        TRANSLATE
+          id: "engage.proposal_score_summary"
+
+          num_opinions: overall_cnt 
+          "{num_opinions, plural, =0 {no opinions} one {# opinion} other {# opinions} }"
+
+        if overall_weight > 0  
+          DIV 
             style: 
-              color: '#999'
-              fontSize: 20
-              #fontWeight: 600
-              cursor: 'default'
-              lineHeight: 1
+              position: 'relative'
+              top: -4
 
-            TRANSLATE
-              id: "engage.proposal_score_summary"
-              small: 
-                component: SPAN 
-                args: 
+            if is_weighted         
+              TRANSLATE
+                id: "engage.proposal_score_summary_weighted.explanation"
+                percentage: Math.round(overall_avg * 100) 
+                "{percentage}% weighted average"
+
+            else 
+              TRANSLATE
+                id: "engage.proposal_score_summary.explanation"
+                percentage: Math.round(overall_avg * 100) 
+                "{percentage}% average"
+
+        if has_groups && overall_weight > 0
+          BUTTON
+            'data-popover': @props.proposal.key or @props.proposal
+            'data-proposal-scores': overall_avg
+            className: 'like_link'
+            style: 
+              color: focus_color()
+              position: 'relative'
+              top: -4
+            "breakdown by #{fetch('opinion_views').active_views.group_by.name}"
+
+
+
+window.ProposalScoresPopover =  ReactiveComponent
+  displayName: 'ProposalScoresPopover'
+
+  render: ->
+    proposal = @props.proposal 
+    overall_avg = @props.overall_avg
+
+    {weights, salience, groups} = compose_opinion_views(null, proposal)
+    opinions = get_opinions_for_proposal opinions, proposal, weights
+
+    all_groups = get_user_groups_from_views groups
+    has_groups = !!all_groups
+
+
+    col_sizes = column_sizes()
+
+    opinion_views = fetch 'opinion_views'
+
+    colors = get_color_for_groups all_groups
+
+    legend_color_size = 28
+
+    rating_str = "0000 / 00%"
+
+    group_scores = {}
+
+
+    group_opinions = []
+    group_weights = {}
+
+    opinion_views = fetch('opinion_views')
+    is_weighted = false 
+    for v,view of opinion_views.active_views
+      is_weighted ||= view.view_type == 'weight'
+
+
+    for group in all_groups 
+
+      weight = 0
+      cnt = 0
+      score = 0
+      for o in opinions 
+        continue if salience[o.user.key or o.user] < 1 or group not in groups[o.user.key or o.user]
+        w = weights[o.user.key or o.user]
+        score += o.stance * w
+        weight += w
+        cnt += 1
+
+      if weight > 0 
+        avg = score / weight
+        group_scores[group] = {avg, cnt}
+
+        group_weights[group] = cnt
+        group_opinions.push {stance: avg, user: group}
+
+    visible_groups = Object.keys group_scores
+    visible_groups.sort (a,b) -> group_scores[b].avg - group_scores[a].avg
+
+    w = col_sizes.second
+    h = 70
+    if !@local.histocache?
+      fill_ratio = .6
+
+      delegate_layout_task 
+        task: 'layoutAvatars'
+        histo: @local.key
+        k: @local.key
+        r: calculateAvatarRadius w, h, group_opinions, group_weights,
+                          fill_ratio: fill_ratio
+        w: w
+        h: h
+        o: group_opinions
+        weights: group_weights
+        layout_params: 
+          fill_ratio: fill_ratio
+          cleanup_overlap: 2
+          jostle: 0
+          rando_order: 0
+          topple_towers: .05
+          density_modified_jostle: 0
+
+    group_avatar_style = 
+      borderRadius: '50%'
+      width: legend_color_size
+      height: legend_color_size
+      display: 'inline-block'
+      boxShadow: "0 1px 2px 0 rgba(103,103,103,0.50), inset 0 -1px 2px 0 rgba(0,0,0,0.16)"
+
+    separator_inserted = false 
+
+    items = visible_groups.slice()
+
+    if items.length > 1
+      separator_idx = 0
+      for group,idx in items 
+        {avg, cnt} = group_scores[group]
+        if idx != 0 && group_scores[items[idx - 1]].avg > overall_avg \
+                    && group_scores[items[idx]].avg <= overall_avg 
+          separator_idx = idx 
+          break 
+      items.splice separator_idx, 0, 'avg_separator'
+
+    label_style = 
+      fontSize: 12
+      fontWeight: 400
+      color: '#555'
+      bottom: -13
+
+    DIV 
+      style: 
+        padding: "12px 12px 12px 18px"
+
+
+      DIV 
+        style: 
+          width: w
+          height: h
+          position: 'relative'
+
+        if @local.histocache?.positions
+
+          for group in visible_groups
+            pos = @local.histocache.positions[group]
+            {avg, cnt} = group_scores[group]
+            DIV 
+              "data-tooltip": "#{group}: #{cnt} opinions with #{Math.round(100 * avg)}% #{if is_weighted then 'weighted' else ''} avg"
+              style: _.extend {}, group_avatar_style,
+                width:  pos[2] * 2
+                height: pos[2] * 2
+                transform: "translate(#{pos[0]}px, #{pos[1]}px)"
+                backgroundColor: colors[group]
+                position: 'absolute'
+      DIV 
+        style: 
+          position: 'relative'
+
+        Slider 
+          base_height: 1
+          width: col_sizes.second
+          polarized: true
+          respond_to_click: false
+          base_color: '#999'
+          draw_handle: false 
+          offset: true
+          ticks: 
+            increment: .5
+            height: 4
+
+        SPAN
+          style: _.extend {}, label_style,
+            position: 'absolute'
+            left: 0
+          get_slider_label("slider_pole_labels.oppose", proposal)
+
+        SPAN
+          style: _.extend {}, label_style,
+            position: 'absolute'
+            right: 0
+
+          get_slider_label("slider_pole_labels.support", proposal)
+
+      UL 
+        'aria-hidden': true
+        style: 
+          listStyle: 'none'
+          marginTop: 24
+          maxWidth: 250
+          margin: '24px auto 0px auto'
+
+        for group,idx in items 
+          insert_separator = group == 'avg_separator' 
+
+          if insert_separator
+            separator_inserted = true 
+          else 
+            {avg, cnt} = group_scores[group]
+
+          continue if !(cnt > 0)
+          diff = avg - overall_avg
+
+          LI 
+            style: 
+              fontSize: 14
+              display: 'flex'
+              alignItems: 'center'
+              marginBottom: 16
+
+            DIV 
+              style: _.extend {}, group_avatar_style, 
+                backgroundColor: colors[group]
+                visibility: if insert_separator then 'hidden'        
+
+            DIV 
+              style: 
+                paddingLeft: 12
+
+              DIV 
+                style: 
+                  fontWeight: if insert_separator then 400 else 700
+                  fontFamily: 'Fira Sans Condensed'
+                  textAlign: if insert_separator then 'right'
+
+                if !insert_separator
+                  group
+                else 
+                  "Overall average #{if is_weighted then 'weighted' else ''} opinion:"
+
+              
+              if !insert_separator
+                DIV 
                   style: 
-                    color: '#999'
-                    fontSize: 12
-                    cursor: 'default'
-                    verticalAlign: 'baseline'
-              num_opinions: opinions.length 
-              "{num_opinions, plural, =0 {<small>no opinions</small>} one {# <small>opinion</small>} other {# <small>opinions</small>} }"
+                    color: '#666'
+                    marginTop: -2
+                    fontSize: 11
 
 
+                  "#{Math.round(avg * 100)}% #{if is_weighted then 'weighted ' else ''}avg • "
 
+                  TRANSLATE
+                    id: "engage.proposal_score_summary"
+                    num_opinions: cnt 
+                    "{num_opinions, plural, =0 {no opinions} one {# opinion} other {# opinions} }"
 
+            DIV 
+              style: 
+                color: if insert_separator then 'black' else if diff < 0 then '#C02626' else '#148918'
+                textAlign: 'right'
+                flex: 1
+                paddingLeft: 16
+                fontSize: 12
+                fontWeight: 600
 
-
-
-
+              if insert_separator
+                "#{Math.round(overall_avg * 100)}%" 
+              else 
+                "#{if diff > 0 then '+' else ''}#{Math.round(diff * 100)}%"
 
 
 
@@ -536,8 +813,8 @@ window.MediaCollapsedProposal = ReactiveComponent
 
     can_edit = permit('update proposal', proposal) > 0
 
-    just_you = fetch('filtered').current_filter?.label == 'just you'
-    everyone = fetch('filtered').current_filter?.label == 'everyone'
+    just_you = opinion_views.active_views['just_you']
+    everyone = opinion_views.active_views['everyone']
 
     slider_interpretation = (value) => 
       if value > .03
@@ -690,7 +967,6 @@ window.MediaCollapsedProposal = ReactiveComponent
           enable_range_selection: everyone && !browser.is_mobile
           draw_base: true
           draw_base_labels: !slider_regions
-          selection_state: 'filtered'
 
         Slider 
           base_height: 0
@@ -705,7 +981,7 @@ window.MediaCollapsedProposal = ReactiveComponent
           handle_height: 18
           handle_width: 21
           handle_style: 
-            opacity: if fetch('filtered').current_filter?.label != "just you" && !browser.is_mobile && @local.hover_proposal != proposal.key && !@local.slider_has_focus then 0 else 1             
+            opacity: if just_you && !browser.is_mobile && @local.hover_proposal != proposal.key && !@local.slider_has_focus then 0 else 1             
           offset: true
           handle_props:
             use_face: false

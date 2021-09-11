@@ -346,7 +346,7 @@ ModerateItem = ReactiveComponent
               width: '100%'
 
             DIV null,
-              "by #{author?.name or 'Anonymous'}"
+              "by #{author?.name or anonymous_label()}"
 
 
               A 

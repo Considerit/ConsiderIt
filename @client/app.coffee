@@ -18,12 +18,14 @@ require './edit_proposal'
 require './customizations'
 require './form'
 require './histogram'
-require './filter'
+require './proposal_sort_and_search'
+require './opinion_views'
 require './homepage'
 require './shared'
 require './opinion_slider'
 require './state_dash'
 require './tooltip'
+require './popover'
 require './development'
 require './su'
 require './edit_point'
@@ -32,6 +34,7 @@ require './point'
 require './legal'
 require './statement'
 require './proposal'
+require './viewport_visibility_sensor'
 
 
 
@@ -145,19 +148,13 @@ LocationTransition = ReactiveComponent
 
     if @last_location != loc.url 
 
-      ######
-      # Temporary technique for handling resetting root state when switching 
-      # between routes. TODO: more elegant approach
+      # resetting root state when switching routes
       auth = fetch('auth')
 
       if auth.form
         reset_key auth
 
       #######
-
-      if loc.url == '/'
-        reset_selection_state('filtered')
-
 
       @last_location = loc.url
     SPAN null
@@ -329,6 +326,7 @@ Root = ReactiveComponent
           Page key: "/page#{loc.url}"
 
       Tooltip()
+      Popover()
 
 
       do -> 
@@ -349,7 +347,7 @@ Root = ReactiveComponent
 
     if !fetch('auth').form && page.proposal
 
-      hist = fetch namespaced_key('histogram', page.proposal)
+      opinion_views = fetch 'opinion_views'
 
       if get_selected_point()
         window.writeToLog
@@ -360,14 +358,14 @@ Root = ReactiveComponent
         delete loc.query_params.selected
         save loc
 
-      else if hist.selected_opinions || hist.selected_opinion || hist.originating_histogram
-        reset_selection_state hist 
+      else if opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
+        clear_histogram_managed_opinion_views opinion_views
 
     if !fetch('auth').form && loc.url == '/'
-      hist = fetch 'filtered'
-      if hist.selected_opinions || hist.selected_opinion || hist.originating_histogram
-        reset_selection_state hist
+      opinion_views = fetch 'opinion_views'
 
+      if opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
+        clear_histogram_managed_opinion_views opinion_views
 
     wysiwyg_editor = fetch 'wysiwyg_editor'
     if wysiwyg_editor.showing

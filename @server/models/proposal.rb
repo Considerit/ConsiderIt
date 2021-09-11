@@ -128,7 +128,7 @@ class Proposal < ApplicationRecord
     data = { 
       key: "/page/#{self.slug}",
       proposal: "/proposal/#{self.id}",
-      points: pointz,
+      points: pointz
       # opinions: ops
     }
 

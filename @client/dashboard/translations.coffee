@@ -141,10 +141,24 @@ IN_SITU_TRANSLATOR = ReactiveComponent
 
 DEVELOPMENT_LANGUAGE = 'en'
 
+translation_cache = {}
+translations_loaded = false 
 window.T = window.t = window.translator = (args, native_text) -> 
-  # user = fetch '/current_user'
-  subdomain = fetch '/subdomain'
 
+  if translations_loaded 
+    cache_key = JSON.stringify(args, native_text)
+    if cache_key of translation_cache
+      return translation_cache[cache_key]
+
+  translations_key_prefix = args.key or "/translations"
+  translations_native = fetch "#{translations_key_prefix}/#{DEVELOPMENT_LANGUAGE}"
+  return '...' if waiting_for(translations_native)
+
+  translations_loaded ||= true
+
+
+
+  subdomain = fetch '/subdomain'
 
   if typeof args == "string"
     if native_text
@@ -154,11 +168,7 @@ window.T = window.t = window.translator = (args, native_text) ->
       args = {}
 
   id = args.id or native_text
-  translations_key_prefix = args.key or "/translations"
 
-  translations_native = fetch "#{translations_key_prefix}/#{DEVELOPMENT_LANGUAGE}"
-
-  return '...' if waiting_for(translations_native)
 
   native_text = native_text.replace(/\n/g, "")
 
@@ -198,17 +208,17 @@ window.T = window.t = window.translator = (args, native_text) ->
   try 
     translator = new IntlMessageFormat.IntlMessageFormat message, lang_used
     message = translator.format(args)
-
   catch e
      # this is a bad fallback, as plural rules won't work
     console.error "Error translating #{id}", {error: e, message, native_text}
     message = translations_native[id]?.txt
 
   if args.return_lang_used # useful for a T wrapper that enables in situ translations
-    {message, lang_used, target_lang: fetch('translations').translating_lang or langs[0]}
+    translation_cache[cache_key] = {message, lang_used, target_lang: fetch('translations').translating_lang or langs[0]}
   else 
-    message
+    translation_cache[cache_key] = message
 
+  translation_cache[cache_key] 
 
 TranslationsDash = ReactiveComponent
   displayName: 'TranslationsDash'
@@ -511,28 +521,11 @@ TranslationsForLang = ReactiveComponent
                       # display: 'inline-block'
                       # verticalAlign: 'top'
 
-                    do (name, idx) => 
-                      show_tooltip = => 
-                        tooltip = fetch 'tooltip'
-                        node = @refs["message-#{name}-#{idx}"]
-                        if node 
-                          tooltip.coords = $(node.getDOMNode()).offset()
-                          tooltip.tip = if no_id then 'no ID' else name 
-                          save tooltip
+                    DIV 
+                      ref: "message-#{name}-#{idx}"
+                      title: if no_id then 'no ID' else name 
 
-                      hide_tooltip = => 
-                        tooltip = fetch 'tooltip'
-                        tooltip.coords = null
-                        save tooltip
-
-                      DIV 
-                        ref: "message-#{name}-#{idx}"
-                        onFocus: show_tooltip
-                        onMouseEnter: show_tooltip
-                        onBlur: hide_tooltip
-                        onMouseLeave: hide_tooltip
-
-                        "#{native_messages[name].txt}"
+                      "#{native_messages[name].txt}"
 
                   TD  
                     style: 

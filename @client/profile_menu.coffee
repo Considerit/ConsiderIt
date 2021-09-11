@@ -50,7 +50,7 @@ window.ProfileMenu = ReactiveComponent
             [
               Avatar 
                 key: current_user.user
-                hide_tooltip: true
+                hide_popover: true
                 className: 'userbar_avatar'
                 style: 
                   height: 35

@@ -76,11 +76,14 @@ window.CustomizationsDash = ReactiveComponent
             verticalAlign: 'top'
 
           DIV null, 
-            CodeMirrorTextArea 
-              id: 'customizations'
+
+
+            JSONEditorTextArea          
+              id: 'json'
               key: md5(subdomain.customizations) # update text area if subdomain.customizations changes elsewhere
-              default_value: JSON.stringify(subdomain.customizations or "\n\n\n\n\n\n\n", null, 2)
+              json: subdomain.customizations
               onChange: (val) => 
+                console.log val
                 @local.stringified_current_value = val
 
           DIV 
@@ -297,6 +300,27 @@ window.CustomizationsDash = ReactiveComponent
       save @local
 
 
+JSONEditorTextArea = ReactiveComponent
+  displayName: 'JSONEditorTextArea'
+
+  render: -> 
+    DIV 
+      ref: 'json_editor'
+      style: 
+        height: '100vh'
+
+  componentDidMount: -> 
+
+    editor = new JSONEditor @getDOMNode(), 
+      mode: 'code'
+      modes: ['tree', 'code']
+      onChange: =>
+        try 
+          @props.onChange? editor.getText()
+        catch e 
+          console.log 'Got error', e
+
+    editor.set @props.json
 
 
 CodeMirrorTextArea = ReactiveComponent
@@ -326,7 +350,7 @@ CodeMirrorTextArea = ReactiveComponent
           lineNumbers: true
           matchBrackets: true
           indentUnit: 2
-          mode: 'coffeescript'
+          mode: 'javascript'
           extraKeys: 
             Tab: betterTab
     if @props.onChange

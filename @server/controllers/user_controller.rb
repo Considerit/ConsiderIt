@@ -28,9 +28,10 @@ class UserController < ApplicationController
       new_tags = params["tags"]
       old_tags = user.tags || {}
 
-      tags_config = current_subdomain.customization_json.fetch('user_tags', {})
+      tags_config = current_subdomain.customization_json.fetch('user_tags', [])
 
-      tags_config.each do |tag, vals|
+      tags_config.each do |vals|
+        tag = vals["key"]
         if new_tags.has_key?(tag)
           old_tags[tag] = new_tags[tag]
         elsif old_tags.has_key?(tag)

@@ -44,11 +44,17 @@ Permission =
 # 
 # It returns a value from Permission indicating the result of the 
 # permission check.
-permit = (action) ->
-  current_user = fetch '/current_user'
-  subdomain = fetch '/subdomain'
 
-  phase = customization('contribution_phase')
+permit = (action) ->
+  subdomain = null 
+  for arg in arguments # an ugly micro-optimization that probably isn't worth it
+    if arg.customizations 
+      subdomain = arg 
+      break 
+
+  current_user = fetch '/current_user'
+  phase = customization('contribution_phase', null, subdomain)
+
 
   if phase == 'frozen' && action not in ['read proposal', 'access forum']
     return Permission.DISABLED
@@ -56,7 +62,7 @@ permit = (action) ->
   switch action
 
     when 'read proposal', 'access forum'
-      
+      subdomain ?= fetch '/subdomain'      
       if !current_user.is_admin && !matchSomeRole(subdomain.roles, ['visitor']) 
         if !current_user.logged_in
           return Permission.NOT_LOGGED_IN 
@@ -67,13 +73,13 @@ permit = (action) ->
         return Permission.UNVERIFIED_EMAIL
 
     when 'create proposal'
-
+      subdomain ?= fetch '/subdomain'
       if arguments[1]
         list_key = arguments[1]
         list_key = list_key.key or list_key
         if !list_key.startsWith 'list/'
           list_key = "list/#{list_key}"
-        can_add_to_list = customization('list_permit_new_items', list_key)
+        can_add_to_list = customization('list_permit_new_items', list_key, subdomain)
       else 
         can_add_to_list = true
 

@@ -37,8 +37,9 @@ window.errors_in_host_questions = (responses) ->
   questions = customization('auth_questions')
   errors = []
 
-  for tag, vals of (customization('user_tags') or {})
+  for vals in (customization('user_tags') or [])
     continue if !vals.self_report
+    tag = vals.key
     question = vals.self_report
     if question.required
       has_response = question.input in ['boolean', 'checklist'] || !!responses[tag]
@@ -138,7 +139,8 @@ window.ShowHostQuestions = ReactiveComponent
     return DIV() if !current_user.tags
 
     questions = []
-    for tag, vals of (customization('user_tags') or {})
+    for vals in (customization('user_tags') or [])
+      tag = vals.key
       if vals.self_report
         questions.push _.extend {}, vals.self_report, {tag}
 

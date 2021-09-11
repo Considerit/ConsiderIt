@@ -321,11 +321,17 @@ class CurrentUserController < ApplicationController
     new_params[:name] = '' if !new_params[:name] #TODO: Do we really want to allow blank names?...
 
     if new_params.has_key? :tags
-      user_tags = current_subdomain.customization_json.fetch('user_tags', {})
+      tag_config = current_subdomain.customization_json.fetch('user_tags', [])
+      user_tags = {}
+      tag_config.each do |vals|
+        user_tags[vals["key"]] = vals 
+      end 
+
       current_tags = current_user.tags || {}
       new_tags = {}
 
-      new_params[:tags].each do |tag, val|
+      new_params[:tags].each do |tag, val|  
+        pp tag, user_tags.has_key?(tag),user_tags.has_key?(tag) && user_tags[tag].has_key?('self_report') 
         if user_tags.has_key?(tag) && user_tags[tag].has_key?('self_report') 
           new_tags[tag] = new_params[:tags].fetch(tag, nil)
         end
@@ -337,6 +343,8 @@ class CurrentUserController < ApplicationController
           new_tags[tag] = val
         end
       end
+
+      pp 'ni!', new_tags
 
       new_params[:tags] = new_tags
     end

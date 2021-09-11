@@ -3,7 +3,8 @@ require './customizations'
 require './permissions'
 require './browser_hacks' # for access to browser object
 require './browser_location' # for loadPage
-require './filter'
+require './proposal_sort_and_search'
+require './opinion_views'
 require './browser_location'
 require './collapsed_proposal'
 require './new_proposal'
@@ -178,7 +179,6 @@ window.TagHomepage = ReactiveComponent
 
   render: -> 
     current_user = fetch('/current_user')
-    proposals = sorted_proposals(fetch('/proposals').proposals, @local.key, true)
 
     homepage_tabs = fetch 'homepage_tabs'
     aggregate_list_key = homepage_tabs.filter
@@ -189,7 +189,7 @@ window.TagHomepage = ReactiveComponent
       list: 
         key: "list/#{aggregate_list_key}"
         name: aggregate_list_key
-        proposals: proposals
+        proposals: fetch('/proposals').proposals
 
 
 #############
@@ -367,53 +367,13 @@ window.HomepageTabs = ReactiveComponent
 
 
 
-window.ManualProposalResort = ReactiveComponent
-  displayName: 'ManualProposalResort'
-
-  render: -> 
-    sort = fetch 'sort_proposals'
-
-    if !sort.sorts?[@props.sort_key].stale 
-      return SPAN null 
-
-    DIV 
-      style: 
-        position: 'fixed'
-        width: '100%'
-        bottom: 0
-        left: 0
-        zIndex: 100
-        backgroundColor: '#ddd'
-        textAlign: 'center'
-        fontSize: 26
-        padding: '8px 0'
-
-
-      TRANSLATE
-        id: "engage.re-sort_list"
-        button: 
-          component: BUTTON
-          args: 
-            style: 
-              color: focus_color()
-              fontSize: 26
-              textDecoration: 'underline'
-              fontWeight: 'bold'
-              border: 'none'
-              backgroundColor: 'transparent'
-              padding: 0
-            onClick: invalidate_proposal_sorts
-            onKeyDown: (e) => 
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                invalidate_proposal_sorts()
-                e.preventDefault()
-        "<button>Re-sort this list</button> if you want. It is out of order."
 
 
 ProposalsLoading = ReactiveComponent
   displayName: 'ProposalLoading'
 
   render: ->  
+
     if !@local.cnt?
       @local.cnt = 0
 
@@ -452,7 +412,7 @@ ProposalsLoading = ReactiveComponent
     @int = setInterval => 
       @local.cnt += 1 
       save @local 
-    , 10
+    , 25
 
   componentWillUnmount: -> 
     clearInterval @int 

@@ -1,19 +1,31 @@
-
-window.layoutAvatars = (opts) -> 
-  histo_queue.push opts 
-  if !histo_running
-    histo_run_next_job()
-
-
 histo_queue = []
 histo_running = null 
-histo_run_next_job = (completed) ->
-  if histo_running == completed 
-    histo_running = null
 
+if window? 
+  top_level = window 
+else 
+  top_level = DedicatedWorkerGlobalScope
+
+top_level.enqueue_histo_layout = (opts) -> 
+  histo_queue.push opts 
+  process_next_layout()
+
+write_layout = (opts, positions) ->
+  # write message back about positions
+  postMessage {opts, positions}
+
+
+layout_complete = (opts, positions) -> 
+  histo_running = null 
+  write_layout(opts, positions)
+  process_next_layout()
+
+process_next_layout = -> 
   if !histo_running && histo_queue.length > 0
     histo_running = histo_queue.shift()
     positionAvatarsWithJustLayout histo_running 
+
+
 
 
 
@@ -29,9 +41,9 @@ positionAvatarsWithJustLayout = (opts) ->
 
   placer = Placer opts  
   nodes = placer.pixelated_layout()
+
   # sort so we can optimize by knowing that bodies are ordered by x_target
   nodes.sort (a,b) -> a.x_target - b.x_target
-
 
   placer.sweep_all_for_position_swaps (a,b) ->
     tmpx = a.x
@@ -43,13 +55,23 @@ positionAvatarsWithJustLayout = (opts) ->
     true 
   , nodes
 
+  if opts.groups
+    placer.sweep_all_for_group_swaps (a,b) ->
+      tmpx = a.x
+      tmpy = a.y
+      a.x = b.x 
+      a.y = b.y 
+      b.x = tmpx 
+      b.y = tmpy
+      true 
+    , opts.groups, opts.all_groups, nodes
+
 
   opinions = opts.o
   positions = {}
   for n in nodes
     r = n.radius
-    i = n.index
-    positions[parseInt(opinions[i].user.substring(6))] = [ Math.round((n.x - r) * 10) / 10, Math.round((n.y - r) * 10) / 10, r]
+    positions[n.user] = [ Math.round((n.x - r) * 10) / 10, Math.round((n.y - r) * 10) / 10, r]
 
 
   if layout_params.verbose 
@@ -73,25 +95,15 @@ positionAvatarsWithJustLayout = (opts) ->
     save global_running_state
 
 
-  opts.done?(positions)
-
-  if requestAnimationFrame
-
-    requestAnimationFrame -> histo_run_next_job(opts)
-  else 
-    histo_run_next_job(opts)
+  layout_complete opts, positions 
 
 
 #####
 # Calculate node radius based on the largest density of avatars in an 
 # area (based on a moving average of # of opinions, mapped across the
 # width and height)
-window.calculateAvatarRadius = (width, height, opinions, weights, {fill_ratio}) -> 
+top_level.calculateAvatarRadius = (width, height, opinions, weights, {fill_ratio}) -> 
   fill_ratio ?= .25
-
-  filter_out = fetch 'filtered'
-  if filter_out.users && !filter_out.enable_comparison
-    opinions = (o for o in opinions when !(filter_out.users?[o.user]))
 
   opinions.sort (a,b) -> a.stance - b.stance
 
@@ -161,7 +173,7 @@ window.calculateAvatarRadius = (width, height, opinions, weights, {fill_ratio}) 
   if r > width / 2 || r > height / 2 
     r = Math.min width / 2, height / 2
 
-  Math.round r
+  Math.max 1, Math.round r
 
 Placer = (opts, bodies) -> 
   opinions = opts.o
@@ -170,9 +182,7 @@ Placer = (opts, bodies) ->
   layout_params = opts.layout_params
   base_radius = opts.r
   weights = opts.weights
-
   cleanup_overlap = layout_params.cleanup_overlap or 2
-
   if layout_params.verbose 
     running_state = fetch opts.running_state
     histo_layout_explorer_options = fetch('histo_layout_explorer_options')
@@ -234,7 +244,10 @@ Placer = (opts, bodies) ->
 
     for o in opinions
       weight = weights[o.user] or 1
-      radius = o.radius = Math.round Math.sqrt(weight) * base_radius  # circle area of avatar grows linearly with weight 
+      o.radius = Math.round Math.sqrt(weight) * base_radius  # circle area of avatar grows linearly with weight 
+      if o.radius < 1
+        o.radius = 1
+      radius = o.radius
       adjusted_stance = (o.stance + 1) / 2
       o.x_target = adjusted_stance * (width - 2 * radius) + radius
 
@@ -242,7 +255,8 @@ Placer = (opts, bodies) ->
     # order strategically, placing bigger bodies first, then ordered from the poles inward
     opinions.sort (a,b) ->
       diff = Math.abs(b.stance - a.stance)
-      if diff < .02 && weights[b.user] != weights[a.user]
+      # if diff < .02 && weights[b.user] != weights[a.user]
+      if weights[b.user] != weights[a.user]        
         weights[b.user] - weights[a.user]
       else if layout_params.rando_order && diff < layout_params.rando_order && Math.abs(b.stance) < 1 - layout_params.rando_order
         # Introduce some randomness to the sort when two bodies are close to one another. 
@@ -309,7 +323,7 @@ Placer = (opts, bodies) ->
             x = top_candidate
             y = options[x]
 
-
+ 
             if layout_params.jostle
               x_dist = x_target - x 
               y_dist = ( height - radius ) - y
@@ -325,11 +339,11 @@ Placer = (opts, bodies) ->
                 y += sag * y_dist / total_dist
 
             b =
-              index: idx
               radius: radius
               x: x
               y: y
               x_target: x_target
+              user: o.user 
             
             laid_out.push b
 
@@ -344,7 +358,7 @@ Placer = (opts, bodies) ->
 
       if save_snapshots
         current_cleanup.push 
-          body: JSON.parse JSON.stringify {x: b.x, y: b.y, radius: b.radius, x_target: b.x_target, index: b.index}
+          body: JSON.parse JSON.stringify {x: b.x, y: b.y, radius: b.radius, x_target: b.x_target}
           from: {x, y}
           to: {x: b.x, y: b.y}
           candidates: [] # candidates
@@ -352,7 +366,7 @@ Placer = (opts, bodies) ->
           occupancy: occupancy_map
           prime_positions: options.slice()
           unstable_bodies: []
-          bodies: JSON.parse JSON.stringify ({user: opinions[b.index].user, neighbors: b.neighbors, x: b.x, y: b.y, radius: b.radius, index: b.index, x_target: b.x_target} for b in laid_out)
+          bodies: JSON.parse JSON.stringify ({user: b.user, neighbors: b.neighbors, x: b.x, y: b.y, radius: b.radius, x_target: b.x_target} for b in laid_out)
           iteration: 0
 
 
@@ -377,12 +391,12 @@ Placer = (opts, bodies) ->
         positions = {}
         for body in laid_out
           r = body.radius
-          i = body.index 
 
-          positions[parseInt(opinions[i].user.substring(6))] = \
-            [Math.round((body.x - r) * 10) / 10, Math.round((body.y - r) * 10) / 10, r, body.stability]
+          positions[body.user] = \
+            [Math.round((body.x - r) * 10) / 10, Math.round((body.y - r) * 10) / 10, r]
 
-        opts.done?(positions)
+
+        write_layout opts, positions
 
         idx += 1
         setTimeout -> 
@@ -596,9 +610,9 @@ Placer = (opts, bodies) ->
   # Compares each body to each other body to determine if the pairs should be swapped, and if so, swaps them
   sweep_all_for_position_swaps = (attempt_swap, nodes) ->
 
-    for node, idx in nodes 
-      if idx > 0 
-        console.assert node.x_target >= nodes[idx - 1].x_target
+    # for node, idx in nodes 
+    #   if idx > 0 
+    #     console.assert node.x_target >= nodes[idx - 1].x_target
 
     num = nodes.length 
     num_swaps = 1
@@ -624,8 +638,42 @@ Placer = (opts, bodies) ->
         i += 1
 
 
+  # try to put bodies with the same group in sedimentary layers so it is easier to see patterns in groups
+  sweep_all_for_group_swaps = (attempt_swap, groups, all_groups, nodes) -> 
+    group_idx = {}
+    for g,idx in all_groups
+      group_idx[g] = idx 
 
-  {Openings, sweep_all_for_position_swaps, pixelated_layout, get_mask, imprint_body_on_map}
+    num = nodes.length 
+    num_swaps = 1
+    while num_swaps > 0
+
+      num_swaps = 0 
+      i = 0 
+      while i < num
+        body = nodes[i] 
+        j = i + 1 
+
+        body_g_idx = Math.min.apply null, (group_idx[g] for g in groups[body.user])
+        while j < num 
+          if j == i
+            j += 1
+            continue 
+          body2 = nodes[j]
+
+          body2_g_idx = Math.min.apply null, (group_idx[g] for g in groups[body2.user])
+  
+
+          if body.radius == body2.radius && Math.abs(body.x_target - body2.x_target) < (body.radius + body2.radius) && ((body.y < body2.y && body_g_idx < body2_g_idx) || (body.y > body2.y && body_g_idx > body2_g_idx))
+            result = attempt_swap(body, body2)
+            if result 
+              num_swaps += 1
+              # break 
+          j += 1
+        i += 1
+
+
+  {Openings, sweep_all_for_position_swaps, sweep_all_for_group_swaps, pixelated_layout, get_mask, imprint_body_on_map}
 
 EvaluateLayout = (opts, bodies, placer) -> 
   opinions = opts.o

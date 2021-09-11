@@ -114,6 +114,10 @@ window.back_to_homepage_button = (style, text) ->
           text 
 
 
+
+
+
+
 ####
 # Make the DIV, SPAN, etc.
 for el of React.DOM
@@ -244,6 +248,42 @@ window.opinionsForProposal = (proposal) ->
 
 
 
+window.HelpIcon = (help_text, style) ->
+  style ?= {}
+
+  BUTTON 
+    "data-tooltip": help_text
+
+    style: _.defaults style or {}, 
+      backgroundColor: 'transparent'
+      border: 'none'
+      padding: 0
+      display: 'inline-block'
+      width: style.width or 17
+      height: style.height or 17
+
+    SVG 
+      width: style.width or 17
+      height: style.height or 17
+      viewBox: "0 0 17 17.0000094" 
+      style: 
+        pointerEvents: 'none'
+
+      G 
+        stroke: "none" 
+        strokeWidth: "1" 
+        fill: "none" 
+        fillRule: "evenodd"
+        G 
+          transform: "translate(0.000000, 0.000000)" 
+          fill: style.color or "#666" 
+          fillRule: "nonzero"
+          PATH 
+            d: "M8.5,2.833339 C7.71759653,2.833339 7.08333333,3.4676022 7.08333333,4.25000567 C7.08333333,5.03240913 7.71759653,5.66667233 8.5,5.66667233 C9.28240347,5.66667233 9.91666667,5.03240913 9.91666667,4.25000567 C9.91666667,3.4676022 9.28240347,2.833339 8.5,2.833339 Z M6.61111111,6.61111678 L7.55555556,7.55556122 L7.55555556,13.2222279 L6.61111111,13.2222279 L6.61111111,14.1666723 L10.3888889,14.1666723 L10.3888889,13.2222279 L9.44444444,13.2222279 L9.44444444,6.61111678 L7.55555556,6.61111678 L6.61111111,6.61111678 Z"
+          PATH 
+            d: "M8.5,2.14741805e-14 C3.81117296,2.14741805e-14 0,3.81117333 0,8.5 C0,13.1888361 3.81117296,17 8.5,17 C13.188827,17 17,13.1888361 17,8.5 C17,3.81117333 13.188827,2.14741805e-14 8.5,2.14741805e-14 Z M8.5,0.944444444 C12.6784115,0.944444444 16.0555556,4.32158889 16.0555556,8.49999056 C16.0555556,12.6784206 12.6784115,16.055565 8.5,16.055565 C4.32158851,16.055565 0.944444444,12.6784206 0.944444444,8.49999056 C0.944444444,4.32158889 4.32158851,0.944444444 8.5,0.944444444 Z"
+
+
 
 
 ######
@@ -264,9 +304,9 @@ window.proposal_url = (proposal, prefer_crafting_page) ->
 
   proposal = fetch proposal
   result = '/' + proposal.slug
-  subdomain = fetch('/subdomain') 
+  subdomain = fetch '/subdomain'
 
-  if TWO_COL() || !proposal.active || (!customization('show_crafting_page_first', proposal) && !prefer_crafting_page) || !customization('discussion_enabled', proposal)
+  if TWO_COL() || !proposal.active || (!customization('show_crafting_page_first', proposal, subdomain) && !prefer_crafting_page) || !customization('discussion_enabled', proposal, subdomain)
     result += '?results=true'
 
   return result
@@ -849,9 +889,9 @@ button.like_link {
 
 .btn {
   color: white;
-  text-transform: uppercase;
+  # text-transform: uppercase;
   border: 0;
-  box-shadow: 0 2px 5px 0 rgb(0 0 0 / 20%), 0 2px 10px 0 rgb(0 0 0 / 10%);
+  # box-shadow: 0 2px 5px 0 rgb(0 0 0 / 20%), 0 2px 10px 0 rgb(0 0 0 / 10%);
   font-weight: 700;
   padding: .625rem 1.5rem .5rem;
   line-height: 1.5;

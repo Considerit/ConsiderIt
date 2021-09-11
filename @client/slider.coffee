@@ -37,7 +37,10 @@
 #       sharp: arrow endpoints that don't extend above or below the base
 #    If you pass a string, that value will apply to both endpoints. 
 #    If you pass an array of two strings, those will apply to the left and
-#    right endpoints respectively. 
+#    right endpoints respectively.
+#
+#  - ticks (default is null)
+#    Put ticks on the slider. options example: {interval: .5, height: 2}
 #    
 #  - polarized (default = false)
 #    If true, the slider is polarized, and value will vary from [-1.0, 1.0].
@@ -100,18 +103,18 @@ window.Slider = ReactiveComponent
 
   render : ->
 
-    slider = fetch @props.key
 
-    if !@props.draw_handle?
-      @props.draw_handle = true
+    @props.draw_handle ?= true
 
     # initialize
-    if !slider.value?
-      _.defaults slider,
-        value: if @props.polarized then -1.0 else 0
-        has_moved : false
-        is_moving : false
-      save slider
+    if @props.draw_handle
+      slider = fetch @props.key
+      if !slider.value?
+        _.defaults slider,
+          value: if @props.polarized then -1.0 else 0
+          has_moved : false
+          is_moving : false
+        save slider
 
     ####
     # Define slider layout
@@ -132,7 +135,6 @@ window.Slider = ReactiveComponent
 
 
   drawSliderBase: -> 
-    slider = fetch @props.key
 
     slider_base_style = 
       width: @props.width
@@ -146,10 +148,28 @@ window.Slider = ReactiveComponent
     else
       endpoints = @props.base_endpoint
 
+
     DIV 
       ref: 'base'
+      key: 'slider_base'
       style : slider_base_style
       onClick: @handleMouseClick
+
+      if @props.ticks 
+        num_ticks = 2 / @props.ticks.increment
+        inc = slider_base_style.width / num_ticks
+        tick_position = -inc
+        while tick_position <= slider_base_style.width - inc
+          tick_position += inc 
+          DIV 
+            key: "tick-#{tick_position}"
+            style: 
+              position: 'absolute'
+              left: tick_position - (if Math.abs(tick_position - slider_base_style.width) < 2 then 1 else 0) 
+              top: 0
+              width: 1
+              height: (@props.ticks.height or 5) * (if Math.abs(tick_position - slider_base_style.width / 2) < 3 then 2 else 1)
+              backgroundColor: "#aaa" 
 
       # Draw the endpoints on either side of the base
       for endpoint, idx in endpoints
@@ -565,14 +585,27 @@ slider_handle.triangley = (props) ->
 
 
 slider_handle.flat = (props) -> 
+  return \
+    DIV 
+      style: 
+        borderRadius: '50%'
+        position: 'absolute'
+        top: 0
+        zIndex: 10
+        height: props.handle_height
+        width: props.handle_width        
+        backgroundColor: focus_color()
+        boxShadow: 'inset 0 -1px 2px rgba(0,0,0,.3), 0 1px 1px rgba(0,0,0,.2)'
+
+
   svg_props = 
     height: props.handle_height
     width: props.handle_width
     viewBox: "-2 -1 104 104"
     style: 
       pointerEvents: 'none'
-      position: 'absolute'
-      top: 0
+      # position: 'absolute'
+      # top: 0
       zIndex: 10
       filter: if props.has_focus then "drop-shadow(0 0 3px rgba(0,0,0,.5))"
 

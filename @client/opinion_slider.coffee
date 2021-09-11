@@ -22,8 +22,9 @@ window.OpinionSlider = ReactiveComponent
     slider = fetch @props.key
     your_opinion = fetch @props.your_opinion
 
-    hist = fetch namespaced_key('histogram', @proposal)
-    hist_selection = hist.selected_opinions || hist.selected_opinion
+    opinion_views = fetch 'opinion_views'
+    hist_selection = opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
+    show_handle = @props.permitted && !hist_selection
 
     # Update the slider value when the server gets back to us
     if slider.value != your_opinion.stance && !slider.has_moved 
@@ -47,14 +48,14 @@ window.OpinionSlider = ReactiveComponent
       className: 'opinion_slider'
       style : slider_style
 
-      if (@props.focused || TWO_COL()) && @props.permitted && !hist_selection
+      if (@props.focused || TWO_COL()) && show_handle
         @drawFeedback() 
 
       Slider
         key: @props.key
         width: @props.width
         handle_height: SLIDER_HANDLE_SIZE()
-        base_height: 6
+        base_height: 0 # 6
         base_color: 'transparent'
         # base_color: if @props.focused 
         #               'rgb(175, 215, 255)' 
@@ -67,18 +68,20 @@ window.OpinionSlider = ReactiveComponent
         handle: if @props.backgrounded 
                   slider_handle.flat 
                 else 
-                  customization('slider_handle', @proposal)
+                  customization('slider_handle', @proposal) or slider_handle.flat
         handle_props: 
           color: if @props.backgrounded then '#ccc' else focus_color()
           detail: @props.focused
         handle_style: 
           transition: "transform #{TRANSITION_SPEED}ms"
-          transform: "scale(#{if !@props.focused || slider.docked then 1 else 2.5})"
-          visibility: if hist_selection || !@props.permitted then 'hidden'
+          transform: "scale(#{if !@props.focused || slider.docked then 1 else 1.75})"
+          visibility: if !show_handle then 'hidden'
         
         onMouseUpCallback: @handleMouseUp
         respond_to_click: false
-
+        ticks: 
+          increment: .5
+          height: 5
         label: translator
                  id: "sliders.instructions-with-proposal"
                  negative_pole: @props.pole_labels[0]

@@ -225,6 +225,9 @@ protected
         proposal = Proposal.find_by_id(id) || Proposal.find_by_slug(id)
         response.append proposal.as_json  #proposal_data
 
+      elsif key == "/points"
+        response.append Point.get_all.as_json
+
       elsif key.match "/comments/"
         point = Point.find(key[10..key.length])
         response.append Comment.comments_for_point(point)

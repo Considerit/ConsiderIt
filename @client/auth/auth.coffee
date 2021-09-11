@@ -14,7 +14,7 @@ require '../browser_location' # for loadPage
 require '../bubblemouth'
 require '../customizations'
 require '../shared'
-
+require '../modal'
 
 
 # AuthTransition doesn't actually render anything.  It just handles state
@@ -185,16 +185,17 @@ window.styles += """
 
   #AUTH_task {
     font-size: 44px;
-    font-weight: 400;
+    font-weight: 600;
     white-space: nowrap;
   }
 
   .AUTH_body_wrapper {
-    padding: 1.5em 50px 2.5em 50px;
-    font-size: 18px;
+    padding: 1.5em 50px 2em 50px;
+    font-size: 16px;
     box-shadow: 0 2px 4px rgba(0,0,0,.4);
     background-color: white;
     position: relative;
+    border-radius: 16px;
   }
 
   .AUTH_cancel {
@@ -220,10 +221,12 @@ window.styles += """
   }
 
   .AUTH_submit_button {
-    font-size: 30px;
+    font-size: 22px;
     display: block;
     width: 100%;
     margin-top: 20px;
+    border-radius: 16px;
+    padding: .8rem 1.5rem .8rem;
   }
 
   .AUTH_field_wrapper {
@@ -232,7 +235,7 @@ window.styles += """
 
   .AUTH_field_label {
     color: #444;
-    font-size: 16px;
+    font-size: 12px;
     display: block;
     text-transform: uppercase;
   }
@@ -340,23 +343,23 @@ window.AuthForm =
               
               options.submit_button or @i18n().submit_button      
 
-            if !options.disallow_cancel
-              DIV 
-                style: 
-                  textAlign: 'right'
-                BUTTON
-                  ref: 'cancel_dialog'
-                  className: 'AUTH_cancel embedded'
-                  title: translator 'shared.cancel_button', 'cancel'
+            # if !options.disallow_cancel
+            #   DIV 
+            #     style: 
+            #       textAlign: 'right'
+            #     BUTTON
+            #       ref: 'cancel_dialog'
+            #       className: 'AUTH_cancel embedded'
+            #       title: translator 'shared.cancel_button', 'cancel'
 
-                  onKeyDown: (e) => 
-                    if e.which == 13 || e.which == 32 # ENTER or SPACE
-                      e.target.click()
-                      e.preventDefault()
+            #       onKeyDown: (e) => 
+            #         if e.which == 13 || e.which == 32 # ENTER or SPACE
+            #           e.target.click()
+            #           e.preventDefault()
 
-                  onClick: cancel_modal
+            #       onClick: cancel_modal
 
-                  translator 'shared.cancel_button', 'cancel'
+            #       translator 'shared.cancel_button', 'cancel'
 
 
   RenderInput: (opts) -> 
@@ -466,109 +469,6 @@ window.AuthForm =
     successful_update: translator("auth.successful_update", "Updated successfully")
     verification_sent_message: translator('auth.verification_sent', 'We just emailed you a verification code. Copy / paste it below.')
     submit_button: translator("auth.submit", 'Submit')
-
-
-######
-# Modal
-#
-# Mixin for handling some aspects of accessible modal forms
-# Currently makes the first element with role=dialog exclusively focusable, unless there exists an @refs.dialog
-# Will cancel on ESC if there exists a cancel button with @ref=cancel_dialog
-# Code influenced by: 
-#    - https://uxdesign.cc/how-to-trap-focus-inside-modal-to-make-it-ada-compliant-6a50f9a70700
-#    - https://bitsofco.de/accessible-modal-dialog/
-window.styles += """
-#lightbox {
-  position: fixed;
-  top: 0;
-  left: 0;
-  background: rgba(0,0,0,.8);
-  width: 100vw;
-  height: 100vh;
-  z-index: 99999;
-}
-"""
-
-window.Modal =
-
-  accessibility_on_keydown: (e) ->
-    # cancel on ESC if a cancel button has been defined
-    if e.key == 'Escape' || e.keyCode == 27
-      @refs.cancel_dialog?.getDOMNode().click()
-
-    # trap focus
-    is_tab_pressed = e.key == 'Tab' or e.keyCode == 9
-    if !is_tab_pressed
-      return
-    if e.shiftKey
-      # if shift key pressed for shift + tab combination
-      if document.activeElement == @first_focusable_element
-        @last_focusable_element.focus()
-        # add focus for the last focusable element
-        e.preventDefault()
-    else
-      # if tab key is pressed
-      if document.activeElement == @last_focusable_element
-        # if focused has reached to last focusable element then focus first focusable element after pressing tab
-        @first_focusable_element.focus()
-        # add focus for the first focusable element
-        e.preventDefault()
-
-    return
-
-  componentDidMount: ->
-    @focused_element_before_opening = document.activeElement
-
-    ######################################
-    # For capturing focus inside the modal
-    # add all the elements inside modal which you want to make focusable
-    focusable_elements = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    modal = @refs?.dialog?.getDOMNode() or document.querySelector '[role=dialog]'
-
-    # select the modal by it's id
-    @first_focusable_element = modal.querySelectorAll(focusable_elements)[0]
-    # get first element to be focused inside modal
-    focusable_content = modal.querySelectorAll(focusable_elements)
-    @last_focusable_element = focusable_content[focusable_content.length - 1]
-
-    # get last element to be focused inside modal
-    document.addEventListener 'keydown', @accessibility_on_keydown
-
-    try 
-      modal.querySelector('input').focus()
-    catch e 
-      console.error e
-
-    #####################
-    # For preventing scroll outside of the modal, and allowing scroll within, 
-    # all while making it seem like the whole page is scrollable. 
-    _.extend modal.style,
-      position: 'fixed'
-      top: 0
-      left: 0
-      width: '100vw'
-      height: '100vh'
-      overflow: 'auto'
-      zIndex: 99999
-      paddingBottom: if browser.is_mobile then "150px"
-
-    scroll_bar_width = window.innerWidth - document.body.offsetWidth
-    _.extend document.body.style,
-      marginRight: scroll_bar_width
-      overflow: 'hidden'
-      position: 'fixed'
-  
-  componentWillUnmount: -> 
-    # return the focus to the element that had focus when the modal was launched
-    if @focused_element_before_opening && document.body.contains(@focused_element_before_opening)
-      @focused_element_before_opening.focus()
-    document.removeEventListener 'keydown', @accessibility_on_keydown
-
-    _.extend document.body.style,
-      marginRight: null
-      overflow: null
-      position: null
-
 
 
 

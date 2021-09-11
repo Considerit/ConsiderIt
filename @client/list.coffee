@@ -43,14 +43,13 @@ window.List = ReactiveComponent
   # list of proposals
   render: -> 
     current_user = fetch '/current_user'
-
     list = @props.list
     list_key = list.key
 
     # subscribe to a key that will alert us to when sort order has changed
     fetch('homepage_you_updated_proposal')
 
-    proposals = if !@props.fresh then sorted_proposals(list.proposals, @local.key, true) or [] else []
+    proposals = list.proposals or []
 
     list_state = fetch list_key
     list_state.show_first_num_items ?= @props.show_first_num_items or 12
@@ -60,13 +59,6 @@ window.List = ReactiveComponent
 
     edit_list = fetch "edit-#{list_key}"
 
-    if @props.combines_these_lists 
-      hues = getNiceRandomHues @props.combines_these_lists.length
-      colors = {}
-      for aggregated_list, idx in @props.combines_these_lists
-        colors[aggregated_list] = hues[idx]
-
-    RenderListItem = customization('RenderListItem') or CollapsedProposal
 
     ARTICLE
       key: list_key
@@ -77,8 +69,6 @@ window.List = ReactiveComponent
 
       A name: list_key.substring(5).toLowerCase().replace(/ /g, '_')
 
-      if !@props.fresh
-        ManualProposalResort sort_key: @local.key
 
       ListHeader 
         list: list
@@ -92,36 +82,19 @@ window.List = ReactiveComponent
           list_key: list_key
 
       else if !is_collapsed && !@props.fresh
+        
         permitted = permit('create proposal', list_key)
-
         DIV null, 
-          UL null, 
-            for proposal,idx in proposals
-              continue if idx > list_state.show_first_num_items - 1 && !list_state.show_all_proposals
 
-              RenderListItem 
-                key: "collapsed#{proposal.key}"
-                proposal: proposal
-                show_category: !!@props.combines_these_lists
-                category_color: if @props.combines_these_lists then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], .9, .8)
-
-            if  (list_state.show_all_proposals || proposals.length <= list_state.show_first_num_items) && \
+          ListItems 
+            list: list 
+            key: "#{list.key}-items"
+            fresh: @props.fresh
+            show_first_num_items: if list_state.show_all_proposals then 999999 else list_state.show_first_num_items
+            combines_these_lists: @props.combines_these_lists
+            show_new_button: (list_state.show_all_proposals || proposals.length <= list_state.show_first_num_items) && \
                ((@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || (permitted > 0 || permitted == Permission.NOT_LOGGED_IN) ) && \
                 !edit_list.editing
-
-              LI 
-                key: "new#{list_key}"
-                style: 
-                  margin: 0 
-                  padding: 0
-                  listStyle: 'none'
-                  display: 'inline-block'
-                  marginBottom: 20
-                  marginTop: 6
-                  
-                NewProposal 
-                  list_key: list_key
-                  combines_these_lists: @props.combines_these_lists
 
           if !list_state.show_all_proposals && proposals.length > list_state.show_first_num_items 
             BUTTON
@@ -149,6 +122,51 @@ window.List = ReactiveComponent
       if customization('footer', list_key) && !is_collapsed
         customization('footer', list_key)()
 
+ListItems = ReactiveComponent
+  displayName: 'ListItems'
+
+  render: ->
+    list = @props.list 
+    list_key = list.key
+
+    sort_key = "sorted-proposals-#{list_key}"
+    proposals = if !@props.fresh then sorted_proposals(list.proposals, sort_key, true) or [] else []
+
+    RenderListItem = customization('RenderListItem') or CollapsedProposal
+
+    if @props.combines_these_lists
+      hues = getNiceRandomHues @props.combines_these_lists.length
+      colors = {}
+      for aggregated_list, idx in @props.combines_these_lists
+        colors[aggregated_list] = hues[idx]
+
+    DIV null, 
+
+      UL null, 
+        for proposal,idx in proposals
+          continue if idx > @props.show_first_num_items - 1
+
+          RenderListItem
+            key: "collapsed#{proposal.key}"
+            proposal: proposal.key
+            show_category: !!@props.combines_these_lists
+            category_color: if @props.combines_these_lists then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], .9, .8)
+
+        if @props.show_new_button
+
+          LI 
+            key: "new#{list_key}"
+            style: 
+              margin: 0 
+              padding: 0
+              listStyle: 'none'
+              display: 'inline-block'
+              marginBottom: 20
+              marginTop: 6
+              
+            NewProposal 
+              list_key: list_key
+              combines_these_lists: @props.combines_these_lists
 
 
 
@@ -276,9 +294,11 @@ EditList = ReactiveComponent
           backgroundColor: focus_color()
 
         render_anchor: ->
-          GearIcon
-            size: 20
-            fill: '#888'
+          SPAN 
+            "data-tooltip": translator "engage.list-config-icon-tooltip", "Configure list settings" 
+            GearIcon
+              size: 20
+              fill: '#888'
 
         render_option: (option, is_active) ->
           SPAN null, 
@@ -406,9 +426,9 @@ window.ListHeader = ReactiveComponent
 
     subdomain = fetch '/subdomain'
 
-    description = edit_list.description or customization('list_description', list_key)
+    description = edit_list.description or customization('list_description', list_key, subdomain)
 
-    DIVIDER = customization 'list_divider', list_key
+    DIVIDER = customization 'list_divider', list_key, subdomain
 
     wrapper_style = 
       width: HOMEPAGE_WIDTH()
@@ -451,20 +471,20 @@ window.ListHeader = ReactiveComponent
                   list: @props.list
                   fresh: @props.fresh
 
-          if edit_list.editing || !is_collapsed
-            DIV 
-              style: 
-                position: 'relative'
-                marginTop: if get_list_title()?.length > 0 || edit_list.editing then  18
-                display: if !edit_list.editing && category_value(list_key).length + histo_title(list_key).length == 0 then 'none'
+          # if edit_list.editing || !is_collapsed
+          #   DIV 
+          #     style: 
+          #       position: 'relative'
+          #       marginTop: if get_list_title(list_key, null, subdomain)?.length > 0 || edit_list.editing then  18
+          #       display: if !edit_list.editing && category_value(list_key, null, subdomain).length + histo_title(list_key).length == 0 then 'none'
 
-              EditableListCategory
-                list: @props.list
-                fresh: @props.fresh
+          #     EditableListCategory
+          #       list: @props.list
+          #       fresh: @props.fresh
 
-              EditableOpinionLabel
-                list: @props.list
-                fresh: @props.fresh
+          #     EditableOpinionLabel
+          #       list: @props.list
+          #       fresh: @props.fresh
 
         if edit_list.editing
 
@@ -503,7 +523,7 @@ window.ListHeader = ReactiveComponent
                     id: 'any-participant'
                     type: 'radio'
                     name: 'list_permit_new_items'
-                    defaultChecked: customization('list_permit_new_items', list_key)
+                    defaultChecked: customization('list_permit_new_items', list_key, subdomain)
                     onChange: (e) =>
                       edit_list.list_permit_new_items = true
                       save edit_list
@@ -522,7 +542,7 @@ window.ListHeader = ReactiveComponent
                     id: 'host-only'
                     type: 'radio'
                     name: 'list_permit_new_items'
-                    defaultChecked: !customization('list_permit_new_items', list_key)
+                    defaultChecked: !customization('list_permit_new_items', list_key, subdomain)
                     onChange: (e) =>
                       edit_list.list_permit_new_items = false
                       save edit_list
@@ -597,7 +617,7 @@ window.ListHeader = ReactiveComponent
                         textAlign: 'left'
 
                       ref: 'oppose_slider'
-                      defaultValue: customization('slider_pole_labels', list_key).oppose 
+                      defaultValue: customization('slider_pole_labels', list_key, subdomain).oppose 
                       placeholder: translator 'engage.slider_config.negative-pole-placeholder', 'Negative pole'
                       onChange: (e) ->
                         edit_list.slider_pole_labels ?= {}
@@ -611,7 +631,7 @@ window.ListHeader = ReactiveComponent
                         right: 0
 
                       ref: 'support_slider'
-                      defaultValue: customization('slider_pole_labels', list_key).support
+                      defaultValue: customization('slider_pole_labels', list_key, subdomain).support
                       onChange: (e) ->
                         edit_list.slider_pole_labels ?= {}
                         edit_list.slider_pole_labels.support = e.target.value 
@@ -733,12 +753,12 @@ window.ListHeader = ReactiveComponent
           list: @props.list
           fresh: @props.fresh
 
-      if !edit_list.editing && @props.proposals_count > 0 && !customization('questionaire', list_key) && !is_collapsed && !customization('list_no_filters', list_key)
+      if !edit_list.editing && @props.proposals_count > 0 && !customization('questionaire', list_key, subdomain) && !is_collapsed && !customization('list_no_filters', list_key, subdomain)
         list_actions
           list: @props.list
-          add_new: !@props.combines_these_lists && customization('list_permit_new_items', list_key) && !is_collapsed && @props.proposals_count > 4
-          can_sort: customization('homepage_show_search_and_sort') && @props.proposals_count > 1 
-
+          add_new: !@props.combines_these_lists && customization('list_permit_new_items', list_key, subdomain) && !is_collapsed && @props.proposals_count > 4
+          can_sort: customization('homepage_show_search_and_sort', null, subdomain) && @props.proposals_count > 1 
+          fresh: @props.fresh
 
 
 window.NewList = ReactiveComponent
@@ -818,10 +838,11 @@ EditableTitle = ReactiveComponent
     is_collapsed = list_state.collapsed
 
     edit_list = fetch "edit-#{list_key}"
+    subdomain = fetch '/subdomain'
 
-    title = get_list_title list_key, is_collapsed
+    title = get_list_title list_key, true, subdomain
 
-    list_uncollapseable = customization 'list_uncollapseable', list_key
+    list_uncollapseable = customization 'list_uncollapseable', list_key, subdomain
     TITLE_WRAPPER = if list_uncollapseable then DIV else BUTTON
 
     tw = if is_collapsed then 15 else 20
@@ -859,7 +880,7 @@ EditableTitle = ReactiveComponent
             className: 'LIST-header LIST-fat-header-field'
             ref: 'input'
             focus_on_mount: true
-            style: _.defaults {}, customization('list_label_style', list_key) or {}, 
+            style: _.defaults {}, customization('list_label_style', list_key, subdomain) or {}, 
               fontFamily: header_font()
               width: HOMEPAGE_WIDTH() + 24
 
@@ -877,7 +898,7 @@ EditableTitle = ReactiveComponent
             onMouseEnter: => @local.hover_label = true; save @local 
             onMouseLeave: => @local.hover_label = false; save @local
             className: 'LIST-header'          
-            style: _.defaults {}, customization('list_label_style', list_key) or {}, 
+            style: _.defaults {}, customization('list_label_style', list_key, subdomain) or {}, 
               fontFamily: header_font()              
               cursor: if !list_uncollapseable then 'pointer'
               position: 'relative'
@@ -907,7 +928,7 @@ EditableTitle = ReactiveComponent
 
                 SPAN 
                   
-                  style: cssTriangle (if is_collapsed then 'right' else 'bottom'), ((customization('list_label_style', list_key) or {}).color or 'black'), tw, th,
+                  style: cssTriangle (if is_collapsed then 'right' else 'bottom'), ((customization('list_label_style', list_key, subdomain) or {}).color or 'black'), tw, th,
                     width: tw
                     height: th
                     opacity: if @local.hover_label or is_collapsed then 1 else .1
@@ -916,134 +937,134 @@ EditableTitle = ReactiveComponent
                     verticalAlign: 'top'
 
 
-EditableListCategory = ReactiveComponent
-  displayName: 'EditableListCategory'
-  render: -> 
-    subdomain = fetch '/subdomain'
-    current_user = fetch '/current_user'
+# EditableListCategory = ReactiveComponent
+#   displayName: 'EditableListCategory'
+#   render: -> 
+#     subdomain = fetch '/subdomain'
+#     current_user = fetch '/current_user'
 
-    list = @props.list
-    list_key = list.key
-    list_state = fetch list_key
-    edit_list = fetch "edit-#{list_key}"
+#     list = @props.list
+#     list_key = list.key
+#     list_state = fetch list_key
+#     edit_list = fetch "edit-#{list_key}"
 
-    category = category_value list_key, @props.fresh
+#     category = category_value list_key, @props.fresh, subdomain
 
-    has_title = customization('list_description', list_key)?.length > 0 || customization('list_title', list_key)?.length > 0
-    heading_style = _.defaults {}, customization('list_label_style', list_key),
-      fontSize: if !has_title then 44 else 36
-      fontWeight: if !has_title then 700 else 500
-      fontFamily: header_font()
+#     has_title = customization('list_description', list_key)?.length > 0 || customization('list_title', list_key)?.length > 0
+#     heading_style = _.defaults {}, customization('list_label_style', list_key),
+#       fontSize: if !has_title then 44 else 36
+#       fontWeight: if !has_title then 700 else 500
+#       fontFamily: header_font()
 
-    show_opinion_header = edit_list.editing || widthWhenRendered(category, heading_style) <= column_sizes().first + column_sizes().gutter
+#     show_opinion_header = edit_list.editing || widthWhenRendered(category, heading_style) <= column_sizes().first + column_sizes().gutter
 
-    DIV 
-      style: 
-        width: if show_opinion_header then column_sizes().first else '100%'
-        display: 'inline-block'
+#     DIV 
+#       style: 
+#         width: if show_opinion_header then column_sizes().first else '100%'
+#         display: 'inline-block'
 
-      if edit_list.editing 
-        DIV 
-          className: 'LIST-field-edit-label'
+#       if edit_list.editing 
+#         DIV 
+#           className: 'LIST-field-edit-label'
 
-          TRANSLATE
-            id: "engage.list-config-category"
-            span: 
-              component: SPAN 
-              args: 
-                style: 
-                  fontWeight: 700
+#           TRANSLATE
+#             id: "engage.list-config-category"
+#             span: 
+#               component: SPAN 
+#               args: 
+#                 style: 
+#                   fontWeight: 700
 
-            "<span>Category.</span> e.g. \"Ideas\", \"Policies\", \"Questions\", \"Strategies\"."
+#             "<span>Category.</span> e.g. \"Ideas\", \"Policies\", \"Questions\", \"Strategies\"."
 
-      H1 null,
+#       H1 null,
 
-        if edit_list.editing
-          AutoGrowTextArea
-            id: "category-#{list_key}"
-            ref: 'input'
-            className: "LIST-header LIST-fat-header-field #{if has_title then 'LIST-smaller-header'}"
-            style: _.defaults {}, customization('list_label_style', list_key) or {}, 
-              fontFamily: header_font()
-              width: column_sizes().first + 24
+#         if edit_list.editing
+#           AutoGrowTextArea
+#             id: "category-#{list_key}"
+#             ref: 'input'
+#             className: "LIST-header LIST-fat-header-field #{if has_title then 'LIST-smaller-header'}"
+#             style: _.defaults {}, customization('list_label_style', list_key) or {}, 
+#               fontFamily: header_font()
+#               width: column_sizes().first + 24
 
-            defaultValue: category
-            onChange: (e) ->
-              edit_list.list_category = e.target.value 
-              save edit_list
-        else 
-          SPAN 
-            className: if !has_title then 'LIST-header' else 'LIST-header LIST-smaller-header'          
-            style: _.defaults {}, customization('list_label_style', list_key) or {}
-            category
+#             defaultValue: category
+#             onChange: (e) ->
+#               edit_list.list_category = e.target.value 
+#               save edit_list
+#         else 
+#           SPAN 
+#             className: if !has_title then 'LIST-header' else 'LIST-header LIST-smaller-header'          
+#             style: _.defaults {}, customization('list_label_style', list_key) or {}
+#             category
 
 
-EditableOpinionLabel = ReactiveComponent
-  displayName: 'EditableOpinionLabel'
-  render: -> 
-    subdomain = fetch '/subdomain'
-    current_user = fetch '/current_user'
+# EditableOpinionLabel = ReactiveComponent
+#   displayName: 'EditableOpinionLabel'
+#   render: -> 
+#     subdomain = fetch '/subdomain'
+#     current_user = fetch '/current_user'
 
-    list = @props.list
-    list_key = list.key
-    list_state = fetch list_key
-    edit_list = fetch "edit-#{list_key}"
+#     list = @props.list
+#     list_key = list.key
+#     list_state = fetch list_key
+#     edit_list = fetch "edit-#{list_key}"
 
-    opinion_title = histo_title list_key
+#     opinion_title = histo_title list_key
 
-    has_title = customization('list_description', list_key)?.length > 0 || customization('list_title', list_key)?.length > 0
-    heading_style = _.defaults {}, customization('list_label_style', list_key),
-      fontSize: if !has_title then 44 else 36
-      fontWeight: if !has_title then 700 else 500
-      fontFamily: header_font()
+#     has_title = customization('list_description', list_key)?.length > 0 || customization('list_title', list_key)?.length > 0
+#     heading_style = _.defaults {}, customization('list_label_style', list_key),
+#       fontSize: if !has_title then 44 else 36
+#       fontWeight: if !has_title then 700 else 500
+#       fontFamily: header_font()
 
-    show = edit_list.editing || widthWhenRendered(category_value(list_key), heading_style) <= column_sizes().first + column_sizes().gutter
+#     show = edit_list.editing || widthWhenRendered(category_value(list_key, null, subdomain), heading_style) <= column_sizes().first + column_sizes().gutter
     
-    DIV 
-      style: 
-        width: column_sizes().second
-        display: if show then 'inline-block' else 'none'
-        marginLeft: column_sizes().gutter
-        textAlign: 'right'
+#     DIV 
+#       style: 
+#         width: column_sizes().second
+#         display: if show then 'inline-block' else 'none'
+#         marginLeft: column_sizes().gutter
+#         textAlign: 'center'
 
-      if edit_list.editing 
-        DIV 
-          className: 'LIST-field-edit-label'
-          style: 
-            textAlign: 'right'
+#       if edit_list.editing 
+#         DIV 
+#           className: 'LIST-field-edit-label'
+#           style: 
+#             textAlign: 'right'
 
-          TRANSLATE
-            id: "engage.list-config-opinion-title"
-            span: 
-              component: SPAN 
-              args: 
-                style: 
-                  fontWeight: 700
+#           TRANSLATE
+#             id: "engage.list-config-opinion-title"
+#             span: 
+#               component: SPAN 
+#               args: 
+#                 style: 
+#                   fontWeight: 700
 
-            "<span>Opinion title.</span> e.g. \"Ratings\", \"Gut checks\"."
+#             "<span>Opinion title.</span> e.g. \"Ratings\", \"Gut checks\"."
 
 
-      H1 null,
-        if edit_list.editing
-          AutoGrowTextArea
-            id: "list_opinions_title-#{list_key}"
-            ref: 'input'
-            className: "LIST-header LIST-fat-header-field #{if has_title then 'LIST-smaller-header'}"
-            style: _.defaults {}, customization('list_label_style', list_key) or {},  
-              fontFamily: header_font()
-              width: column_sizes().second + 24
-              textAlign: 'right'
+#       H1 null,
+#         if edit_list.editing
+#           AutoGrowTextArea
+#             id: "list_opinions_title-#{list_key}"
+#             ref: 'input'
+#             className: "LIST-header LIST-fat-header-field #{if has_title then 'LIST-smaller-header'}"
+#             style: _.defaults {}, customization('list_label_style', list_key) or {},  
+#               fontFamily: header_font()
+#               width: column_sizes().second + 24
+#               textAlign: 'right'
 
-            defaultValue: opinion_title
-            onChange: (e) ->
-              edit_list.list_opinions_title = e.target.value 
-              save edit_list
+#             defaultValue: opinion_title
+#             onChange: (e) ->
+#               edit_list.list_opinions_title = e.target.value 
+#               save edit_list
 
-        else 
-          SPAN 
-            className: if !has_title then 'LIST-header' else 'LIST-header LIST-smaller-header'
-            style: _.defaults {}, customization('list_label_style', list_key) or {}
-            opinion_title
+#         else 
+#           SPAN 
+#             className: if !has_title then 'LIST-header' else 'LIST-header LIST-smaller-header'
+#             style: _.defaults {}, customization('list_label_style', list_key) or {}
+#             opinion_title
 
 
 EditableDescription = ReactiveComponent
@@ -1146,76 +1167,83 @@ window.list_actions = (props) ->
     className: 'list_actions'
     style: 
       marginBottom: 50
-
-    if add_new
-
-      SPAN null, 
-        A
-          style: 
-            textDecoration: 'underline'
-            fontSize: 20
-            color: focus_color()
-            fontFamily: customization('font')
-            fontStyle: 'normal'
-            fontWeight: 700
-          onClick: (e) => 
-            list_state = fetch list_key
-            list_state.show_all_proposals = true 
-            save list_state
-            e.stopPropagation()
-
-            wait_for = ->
-              add_new_button = $("[name='new_#{props.list.key.substring(5)}']")
-              if add_new_button.length > 0 
-                add_new_button.ensureInView()
-                add_new_button.click()
-              else 
-                setTimeout wait_for, 1
-
-            wait_for()
-
-          translator "engage.add_new_proposal_to_list", 'add new'
-
-    if props.can_sort && add_new
-      SPAN 
-        style: 
-          padding: '0 24px'
-          fontSize: 20
-        '|'
-
-    if props.can_sort
-      SortProposalsMenu()
-
-
-
-    OpinionFilter
-      style: 
-        display: 'inline-block'
-        float: 'right'
-        maxWidth: column_sizes().second
-        textAlign: 'right'
-      enable_comparison_wrapper_style: 
-        position: 'absolute'
-        right: 0 
-        bottom: -20
-        fontSize: 14
-        zIndex: 99
-      
+      marginTop: 24
+      display: 'flex'
 
     DIV 
       style: 
-        clear: 'both'
+        width: column_sizes().first
+        marginRight: column_sizes().gutter
+        display: 'flex'
+
+      if add_new
+
+        SPAN null, 
+          A
+            style: 
+              textDecoration: 'underline'
+              fontSize: 20
+              color: focus_color()
+              fontFamily: customization('font')
+              fontStyle: 'normal'
+              fontWeight: 700
+            onClick: (e) => 
+              list_state = fetch list_key
+              list_state.show_all_proposals = true 
+              save list_state
+              e.stopPropagation()
+
+              wait_for = ->
+                add_new_button = $("[name='new_#{props.list.key.substring(5)}']")
+                if add_new_button.length > 0 
+                  add_new_button.ensureInView()
+                  add_new_button.click()
+                else 
+                  setTimeout wait_for, 1
+
+              wait_for()
+
+            translator "engage.add_new_proposal_to_list", 'add new'
+
+      if props.can_sort && add_new
+        SPAN 
+          style: 
+            padding: '0 12px'
+
+      if props.can_sort
+        SortProposalsMenu()
 
 
-window.get_list_title = (list_key, include_category_value) -> 
+      if !props.fresh
+        sort_key = "sorted-proposals-#{list_key}"
+        SPAN 
+          style: 
+            display: 'inline-block'
+            marginLeft: 12
+          
+          ManualProposalResort {sort_key}
+
+        
+
+    OpinionViews
+      style: 
+        width: column_sizes().second
+      more_views_positioning: 'right'
+
+      additional_width: column_sizes().gutter + column_sizes().first
+
+
+
+
+window.get_list_title = (list_key, include_category_value, subdomain) -> 
   edit_list = fetch "edit-#{list_key}"
 
-  title = (edit_list.editing and edit_list.list_title) or customization('list_title', list_key) 
+  title = (edit_list.editing and edit_list.list_title)
+  title ?= customization('list_title', list_key, subdomain)
   if include_category_value
-    title ?= category_value list_key
-  title ?= ""
+    title ?= category_value list_key, null, subdomain
 
-  if title == 'Show all'
+  if title == 'Show all' || !title?
     title = translator "engage.all_proposals_list", "All Proposals"
   else if title == 'Proposals'
     title = translator "engage.default_proposals_list", "Proposals"
@@ -1223,11 +1251,12 @@ window.get_list_title = (list_key, include_category_value) ->
   title 
 
 
-category_value = (list_key, fresh) -> 
+category_value = (list_key, fresh, subdomain) -> 
+
   edit_list = fetch "edit-#{list_key}"
   category = if edit_list.editing then edit_list.list_category
-  category ?= customization('list_category', list_key)
-  if !category && !customization(list_key) && !fresh # if we haven't customized this list, take the proposal category
+  category ?= customization('list_category', list_key, subdomain)
+  if !category && !customization(list_key, null, subdomain) && !fresh # if we haven't customized this list, take the proposal category
     category ?= list_key.substring(5)
   category ?= translator 'engage.default_proposals_list', 'Proposals'
   category
@@ -1361,4 +1390,7 @@ window.lists_current_user_can_add_to = (lists) ->
     if permit('create proposal', list_key) > 0
       appendable.push list_key 
   appendable
+
+
+
 

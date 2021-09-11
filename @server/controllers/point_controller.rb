@@ -8,6 +8,11 @@ class PointController < ApplicationController
     render :json => []
   end
 
+  def index
+    dirty_key '/points'
+    render :json => []
+  end
+
 
   def validate_input(attrs, proposal, point)
     errors = []

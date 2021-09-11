@@ -104,16 +104,18 @@
         recurse(object)
 
         // Now initiate the re-rendering, if there isn't a timer already going
-        re_render_timer = re_render_timer || setTimeout(function () {
-            re_render_timer = null
-            var keys = affected_keys.all()
-            affected_keys.clear()
-            if (keys.length > 0) {
-                var re_render = (window.re_render || function () {
-                    console.log('You need to implement re_render()') })
-                re_render(keys)
-            }
-        })
+        if (!re_render_timer){
+            re_render_timer = requestAnimationFrame(function () {
+                re_render_timer = null
+                var keys = affected_keys.all()
+                affected_keys.clear()
+                if (keys.length > 0) {
+                    var re_render = (window.re_render || function () {
+                        console.log('You need to implement re_render()') })
+                    re_render(keys)
+                }
+            })
+        }
     }
 
     var outstanding_fetches = {}
@@ -347,11 +349,18 @@
 
                  // STEP 2: Create shortcuts e.g. `this.foo' for all parents up the
                  // tree, and this component's local key
+                 
                  function add_shortcut (obj, shortcut_name, to_key) {
                      //console.log('Giving '+obj.name+' shorcut @'+shortcut_name+'='+to_key)
                      delete obj[name]
                      Object.defineProperty(obj, shortcut_name, {
-                         get: function () { return obj.get(to_key) },
+                         get: function () {
+                            if (!obj.shortcuts)
+                                obj.shortcuts = Object.create(null)
+                            if (!obj.shortcuts[to_key])
+                              obj.shortcuts[to_key] = obj.get(to_key)
+                            return obj.shortcuts[to_key]
+                         },
                          configurable: true })
                  }
 
@@ -374,6 +383,14 @@
             // dependencies before rendering and finding new ones
             clear_component_dependencies(this.local_key)
             delete dirty_components[this.local_key]
+            if (this.shortcuts) {
+                keys = Object.keys(this.shortcuts)
+                for (var i=0; i < keys.length; i++){
+                    key = keys[i]
+                    keys_4_component.add(this.local_key, key)  // Track dependencies
+                    components_4_key.add(key, this.local_key)  // both ways
+                }
+            }
         })
 
         wrap(component, 'componentDidMount')
@@ -444,7 +461,7 @@
     var components_4_key = new One_To_Many() // Maps key to its dependent components
     function react_rerender (keys) {
         // Re-renders only the components that depend on `keys'
-
+        // console.log('RENDERING BASED ON:', keys)
         // First we determine the components that will need to be updated
         for (var i = 0; i < keys.length; i++) {
             affected_components = components_4_key.get(keys[i])
@@ -453,12 +470,15 @@
         }
 
         // Then we sweep through and update them
-        for (var comp_key in dirty_components)
+        for (var comp_key in dirty_components){
+            // console.log("\tREDO", comp_key, arest.components[comp_key])
             // the check on both dirty_components and components is a PATCH
             // for a possible inconsistency between dirty_components and components
             // that occurs if a component has a componentWillUnmount method.
-            if (dirty_components[comp_key] && components[comp_key]) // Since one component might update another
+            if (dirty_components[comp_key] && components[comp_key]){ // Since one component might update another
                 components[comp_key].forceUpdate()
+            }
+        }
     }
     function record_component_dependence(key) {
         // Looks up current component from the execution context
@@ -478,22 +498,43 @@
 
     // ****************
     // Utility for React Components
+    window.add_cnt = {}
+    window.print_add_cnt = function(){
+        var my_keys = Object.keys(add_cnt);
+        var values = Object.values(add_cnt)
+        values = values.sort(function(a,b){return (b - a)})
+        sorted_keys = my_keys.sort(function(a,b){return parseInt(add_cnt[b]) - parseInt(add_cnt[a])})
+        var idx=0
+        for(var i=0; i < sorted_keys.length; i++){
+            key = sorted_keys[i]
+            console.log(key, add_cnt[key])
+            idx = idx + 1
+            if (idx > 100)
+                break
+        }
+    }
     function One_To_Many() {
-        var hash = this.hash = {}
+        var hash = this.hash = Object.create(null)
         this.get = function (k) { return Object.keys(hash[k] || {}) }
         this.add = function (k, v) {
             if (hash[k] === undefined)
-                hash[k] = {}
+                hash[k] = Object.create(null)
+
+            // if (window.add_cnt[k + v] == undefined)
+            //     window.add_cnt[k+v] = 0 
+            // if (k == 'component/64' && v == '/subdomain')
+            //     console.trace()
+            // window.add_cnt[k+v] += 1
             hash[k][v] = true
         }
         this.del = function (k, v) {
             delete hash[k][v]
         }
-        this.delAll = function (k) { hash[k] = {} }
+        this.delAll = function (k) { hash[k] = Object.create(null) }
     }
     function Set() {
         var hash = {}
-        this.add = function (a) { hash[a] = true }
+        this.add = function (a) { if (!hash[a]) hash[a] = true }
         this.all = function () { return Object.keys(hash) }
         this.clear = function () { hash = {} }
     }

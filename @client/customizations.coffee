@@ -72,26 +72,23 @@ window.load_customization = (subdomain) ->
     console.error error
 
 
-window.customization = (field, object_or_key) -> 
+window.customization = (field, object_or_key, subdomain) -> 
   
   if !!object_or_key && !object_or_key.key?
     obj = fetch object_or_key
   else 
     obj = object_or_key
 
-  if obj && obj.subdomain_id && "#{obj.subdomain_id}" != document.querySelector("meta[name='forum']")?.getAttribute("content")
-    subdomain = fetch "/subdomain/#{obj.subdomain_id}" 
-  else 
-    subdomain = fetch('/subdomain')
+  if !subdomain?
+    if object_or_key?.key?.match('/subdomain/')
+      subdomain = object_or_key
+    else 
+      subdomain = fetch('/subdomain')
+      if obj?.subdomain_id? && obj.subdomain_id != subdomain.id 
+        subdomain = fetch "/subdomain/#{obj.subdomain_id}" 
 
   subdomain_name = subdomain.name?.toLowerCase()
   
-  customizations_signature = fetch('customizations_signature')
-  if customizations_signature.dirty || !customizations_signature.signature
-    load_customization subdomain
-    customizations_signature.dirty = false 
-    save customizations_signature
-
   key = if obj 
           if obj.key then obj.key else obj
         else 
@@ -154,8 +151,11 @@ window.CustomizationTransition = ReactiveComponent
 
     if customizations_signature.signature != signature 
       customizations_signature.signature = signature
-      customizations_signature.dirty = true 
+      load_customization subdomain
       save customizations_signature
+      subdomain.customization_loaded ?= 0
+      subdomain.customization_loaded += 1
+      save subdomain 
 
     SPAN null
 
@@ -198,11 +198,9 @@ customizations.default =
 
   show_crafting_page_first: false
 
-  show_histogram_on_crafting: true
-
   show_proposal_meta_data: true 
 
-  slider_handle: slider_handle.face
+  slider_handle: slider_handle.flat
   slider_regions: null
 
   show_proposal_scores: true

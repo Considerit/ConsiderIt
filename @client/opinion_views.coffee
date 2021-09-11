@@ -88,6 +88,7 @@ window.get_participant_attributes = ->
               key: view.label
               name: view.label
               options: ['true', 'false']
+              continuous_value: view.continuous_value
 
     if user_tags
       for tag in user_tags 
@@ -106,6 +107,7 @@ window.get_participant_attributes = ->
                 fetch(u).tags[name]
             options: tag.self_report?.options or tag.options or (if (tag.self_report?.input or tag.input) == 'boolean' then [true, false])
             input_type: tag.self_report?.input
+            continuous_value: tag.continuous_value
 
   attributes
 
@@ -128,7 +130,9 @@ window.get_color_for_groups = (group_array) ->
   if i18n().unreported not in group_array
     group_array = group_array.slice()
     group_array.push i18n().unreported
-  colors = getColors(group_array.length)
+
+  opinion_views = fetch 'opinion_views'
+  colors = getColors(group_array.length, opinion_views.active_views.group_by.continuous_value)
 
   for color,idx in colors 
     if group_array[idx] not of group_colors
@@ -372,6 +376,7 @@ _activate_opinion_view = (view, view_type, replace_existing) ->
       key: view.key
       name: view.name
       view_type: view_type
+      continuous_value: view.continuous_value
       get_salience: (u, opinion, proposal) ->
         if view.salience?
           view.salience u, opinion, proposal
@@ -893,8 +898,9 @@ set_group_by_attribute = (attribute) ->
   view = 
     key: 'group_by'
     name: attribute.name
+    continuous_value: attribute.continuous_value
     group: (u, opinion, proposal) -> 
-      group_val = if attribute.pass then attribute.pass(u) else fetch(u).tags[opinion_views_ui.group_by] or i18n().unreported
+      group_val = (if attribute.pass then attribute.pass(u) else fetch(u).tags[opinion_views_ui.group_by]) or i18n().unreported
       if attribute.input_type == 'checklist'
         group_val.split(',')
       else 

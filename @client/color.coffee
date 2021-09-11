@@ -99,8 +99,16 @@ window.getNiceRandomHues = (num, seed) ->
     i -= 1
   hues
 
-window.getColors = (num) ->
-  if num >= 3 && num <= 12
+window.getColors = (num, continuous) ->
+  if continuous
+    group_colors = []
+    inc = 1 / (num + 1)
+    colors = group_colors
+    for idx in [0..num-1]
+      hue = inc * idx 
+      group_colors.push hsv2rgb hue, Math.random() / 2 + .5, Math.random() / 2 + .5
+
+  else if num >= 3 && num <= 12
     if num <= 5
       group_colors = colorbrewer.Set1[num]
     else if num <= 8

@@ -106,7 +106,7 @@ window.getColors = (num, continuous) ->
     colors = group_colors
     for idx in [0..num-1]
       hue = inc * idx 
-      group_colors.push hsv2rgb hue, Math.random() / 2 + .5, Math.random() / 2 + .5
+      group_colors.push hsv2rgb hue, .75, .65
 
   else if num >= 3 && num <= 12
     if num <= 5

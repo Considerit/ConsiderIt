@@ -83,7 +83,6 @@ window.CustomizationsDash = ReactiveComponent
               key: md5(subdomain.customizations) # update text area if subdomain.customizations changes elsewhere
               json: subdomain.customizations
               onChange: (val) => 
-                console.log val
                 @local.stringified_current_value = val
 
           DIV 

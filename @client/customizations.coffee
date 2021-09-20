@@ -147,15 +147,24 @@ window.CustomizationTransition = ReactiveComponent
     subdomain = fetch('/subdomain')
     customizations_signature = fetch('customizations_signature')
 
-    signature = JSON.stringify(subdomain.customizations)
+    check_update_customizations_object = -> 
+      signature = JSON.stringify(subdomain.customizations)
 
-    if customizations_signature.signature != signature 
-      customizations_signature.signature = signature
-      load_customization subdomain
-      save customizations_signature
-      subdomain.customization_loaded ?= 0
-      subdomain.customization_loaded += 1
-      save subdomain 
+      if customizations_signature.signature != signature 
+        customizations_signature.signature = signature
+        load_customization subdomain
+        save customizations_signature
+        subdomain.customization_loaded ?= 0
+        subdomain.customization_loaded += 1
+        save subdomain 
+
+    # we need to wait for the server to return if there is still a pending /subdomain save otherwise weird stuff happens
+    ck = setInterval ->
+      if !arest.pending_saves['/subdomain']
+        check_update_customizations_object()
+        clearInterval ck
+    , 1
+
 
     SPAN null
 

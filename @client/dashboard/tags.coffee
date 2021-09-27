@@ -384,7 +384,7 @@ UserTags = ReactiveComponent
                                 width: 40
                                 height: 40
                               alt: "<user>: #{v}"
-                              hide_popover: true
+                              hide_popover: @local.control_depressed
                               onClick: (e) => 
                                 if !@local.control_depressed
                                   change_selected_user user.key

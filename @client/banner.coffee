@@ -940,6 +940,8 @@ window.PhotoBanner = (opts) ->
           width: 300px;
           margin: 0 auto 36px auto; 
           background-color: rgba(255,255,255,.8);
+          position: relative; 
+          top: 36px;
         }
 
         .PhotoBanner > .wrapper > .text_block {
@@ -1016,7 +1018,9 @@ window.PhotoBanner = (opts) ->
             DIV 
               style: 
                 marginBottom: 16
+                marginTop: 
                 textAlign: 'center'
+                color: 'black'
               trns.callout
 
           GoogleTranslate()      

@@ -18,7 +18,6 @@ window.HostQuestions = ReactiveComponent
         @Submit ev, 
           action: 'user questions'
           has_host_questions: true
-          check_considerit_terms: false
 
       ShowHostQuestions()      
 

@@ -179,7 +179,6 @@ window.CreateAccount = ReactiveComponent
         action: form_name
         has_host_questions: true
         has_avatar_upload: true
-        check_considerit_terms: true
 
     @Draw
       task: if @props.by_invitation 

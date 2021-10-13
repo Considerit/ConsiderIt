@@ -1018,7 +1018,6 @@ window.PhotoBanner = (opts) ->
             DIV 
               style: 
                 marginBottom: 16
-                marginTop: 
                 textAlign: 'center'
                 color: 'black'
               trns.callout

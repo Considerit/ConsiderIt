@@ -43,7 +43,7 @@ window.Header = ReactiveComponent
 
         ProfileMenu()
 
-        if customization('google_translate_style') && fetch('location').url == '/'
+        if customization('google_translate_style') && !customization('google_translate_style').prominent && fetch('location').url == '/'
           DIV 
             style: 
               position: 'absolute'

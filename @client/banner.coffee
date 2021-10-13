@@ -935,6 +935,13 @@ window.PhotoBanner = (opts) ->
           background: #{background_color};
         }
 
+        .PhotoBanner > .wrapper > .translator {
+          padding: 16px;
+          width: 300px;
+          margin: 0 auto 36px auto; 
+          background-color: rgba(255,255,255,.8);
+        }
+
         .PhotoBanner > .wrapper > .text_block {
           padding: 48px 48px 48px 48px;
           width: #{HOMEPAGE_WIDTH()}px;
@@ -998,6 +1005,21 @@ window.PhotoBanner = (opts) ->
       CustomizeLogo()
 
       CustomizeBackground()
+
+      if customization('google_translate_style')?.prominent
+        trns = customization('google_translate_style')
+        DIV
+          className: "translator"
+
+
+          if trns.callout?
+            DIV 
+              style: 
+                marginBottom: 16
+                textAlign: 'center'
+              trns.callout
+
+          GoogleTranslate()      
 
       DIV
         className: 'text_block'

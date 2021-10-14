@@ -25,7 +25,7 @@ task :create_forum, [:forum_name] => :environment do |t, args|
   
   require 'socket'
   ip = Socket.ip_address_list.map{|intf| intf.ip_address}
-  pp "You may need to set a DNS A record for your domain that points to this server's ip (one of #{ip}) (e.g. at https://linode.com)"
+  pp "You may need to set a DNS A record for #{forum_name} for your domain that points to this server's ip (one of #{ip}) (e.g. at https://cloud.linode.com/domains)"
 end
 
 task :create_super_admin, [:email, :name, :password] => :environment do |t, args|
@@ -41,6 +41,7 @@ task :create_super_admin, [:email, :name, :password] => :environment do |t, args
     user.super_admin = true 
     user.complete_profile = false 
     user.verified = true 
+    user.registered = true
     user.save 
   end 
 end

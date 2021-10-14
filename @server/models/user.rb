@@ -109,7 +109,7 @@ class User < ApplicationRecord
       end
 
       if current_user.key != u['key'] && anonymize_everything
-        u['name'] = anonymous_label()
+        u['name'] = translator('anonymous', 'Anonymous')
         u['avatar_file_name'] = nil
       end 
     end 

@@ -46,14 +46,22 @@
   - if num > 5
     - if @part == 'text'
       :ruby 
-        view_more = translator({id: "email.digest.view_more_proposals.text", link: full_link('', {:sort_by => 'newest'}), more_than_5_proposals_count: num - 3}, 
-          "View the other {more_than_5_proposals_count} new proposals at {link})")
+        view_more = translator({
+          id: "email.digest.view_more_proposals.text",
+          link: full_link('', {:sort_by => 'newest'}), 
+          more_than_5_proposals_count: num - 3}, 
+          "View the other {more_than_5_proposals_count} new proposals at {link}"
+        )
+      
       #{view_more}
       
     - else 
       :ruby 
-        view_more = translator({id: "email.digest.view_more_proposals.html", more_than_5_proposals_count: num - 3}, 
-          "View {more_than_5_proposals_count} more new proposals")
+        view_more = translator({
+          id: "email.digest.view_more_proposals.html", 
+          more_than_5_proposals_count: num - 3}, 
+          "View {more_than_5_proposals_count} more new proposals"
+        )
       
 
       %a{:href => full_link('', {:sort_by => 'newest'}), :style=>"text-align:center; color:black;padding-top:20px;display:block;"}

@@ -49,7 +49,6 @@ task :send_email_notifications => :environment do
 
       end
     rescue => e
-      raise e
       pp 'Notification runner failure', e
       ExceptionNotifier.notify_exception(e)      
     end

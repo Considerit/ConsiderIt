@@ -46,18 +46,21 @@ window.InitializeProposalRoles = (proposal) ->
   subdomain = fetch '/subdomain'
 
   proposal.roles = {}
-  for role in proposal_roles()
-    proposal.roles[role.name] = []
-    if role.wildcard && role.wildcard.default
-      if role.name == 'observer' 
-        # by default, proposals can be accessed by the same folks as the subdomain
-        proposal.roles[role.name] = subdomain.roles['visitor'].slice()
-      else if role.name == 'participant'
-        proposal.roles[role.name] = subdomain.roles['participant'].slice()
-      else
-        proposal.roles[role.name].push '*'
+  # Commented out b/c it is better to let the server fill these in dynamically 
+  # so they're easier to modify through the forum settings. We're currently 
+  # not supporting fine-grained proposal roles anyway.
+  # for role in proposal_roles()
+  #   proposal.roles[role.name] = []
+  #   if role.wildcard && role.wildcard.default
+  #     if role.name == 'observer' 
+  #       # by default, proposals can be accessed by the same folks as the subdomain
+  #       proposal.roles[role.name] = subdomain.roles['visitor'].slice()
+  #     else if role.name == 'participant'
+  #       proposal.roles[role.name] = subdomain.roles['participant'].slice()
+  #     else
+  #       proposal.roles[role.name].push '*'
 
-  proposal.roles['editor'].push "/user/#{current_user.id}" 
+  proposal.roles['editor'] = ["/user/#{current_user.id}"]
                         #default proposal author as editor
 
 

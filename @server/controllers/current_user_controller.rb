@@ -105,7 +105,7 @@ class CurrentUserController < ApplicationController
             # note: Returning this error message is a security risk as it
             #       reveals that a particular email address exists in the
             #       system or not.  But it's prolly the right tradeoff.
-            errors.append translator("errors.user.no_user_at_email", "No user exists at that email address. Maybe you should click Create New Account below.") 
+            errors.append translator("errors.user.no_user_at_email", "No user exists at that email address. Maybe you should \"Create an Account\" instead.") 
 
           elsif !user.authenticate(params[:password])
             errors.append translator("errors.user.bad_password", "Wrong password. Click \"I forgot my password\" if you are having problems.")

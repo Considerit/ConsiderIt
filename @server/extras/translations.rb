@@ -154,8 +154,15 @@ def translator(args, native_text = nil)
   end
 
   if message 
-    mf = MessageFormat.new(message, lang_used)
-    message = mf.format(args)
+    begin
+      mf = MessageFormat.new(message, lang_used)
+      message = mf.format(args)
+    rescue => e
+      pp 'translator', e
+      ExceptionNotifier.notify_exception(e)
+      message = native_text
+    end
+    
   else 
     message = native_text
   end

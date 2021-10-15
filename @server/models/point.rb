@@ -31,7 +31,7 @@ class Point < ApplicationRecord
   acts_as_tenant :subdomain
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:comment_count, :created_at, :updated_at, :id, :includers, :is_pro, :nutshell, :proposal_id, :published, :score, :text, :user_id, :hide_name, :last_inclusion, :subdomain_id]
+  self.my_public_fields = [:comment_count, :created_at, :updated_at, :id, :includers, :is_pro, :nutshell, :proposal_id, :published, :text, :user_id, :hide_name, :last_inclusion, :subdomain_id]
 
   scope :public_fields, -> {select(self.my_public_fields)}
 
@@ -105,26 +105,26 @@ class Point < ApplicationRecord
 
     updated_includers = opinions.map {|x| x.user_id}
 
-    ###
-    # define cross-spectrum appeal
-    if updated_includers.length == 0 # special cases
-      self.appeal = 0.001
-    elsif updated_includers.length == 1
-      self.appeal = 0.001
-    else
-      # Compute the variance of the distribution of stances of users
-      # including this point. 
-      includer_stances = opinions.map {|o| o.stance} 
+    # ###
+    # # define cross-spectrum appeal
+    # if updated_includers.length == 0 # special cases
+    #   self.appeal = 0.001
+    # elsif updated_includers.length == 1
+    #   self.appeal = 0.001
+    # else
+    #   # Compute the variance of the distribution of stances of users
+    #   # including this point. 
+    #   includer_stances = opinions.map {|o| o.stance} 
 
-      n = includer_stances.length
-      mean = includer_stances.inject(:+) / n
+    #   n = includer_stances.length
+    #   mean = includer_stances.inject(:+) / n
 
-      variance = 1.0 / n * (includer_stances.map {|v| (v - mean) ** 2 }).inject(:+)
-      standard_deviation = Math.sqrt(variance)
+    #   variance = 1.0 / n * (includer_stances.map {|v| (v - mean) ** 2 }).inject(:+)
+    #   standard_deviation = Math.sqrt(variance)
 
-      self.appeal = standard_deviation
-      self.score = updated_includers.length + standard_deviation * updated_includers.length
-    end
+    #   self.appeal = standard_deviation
+    #   self.score = updated_includers.length + standard_deviation * updated_includers.length
+    # end
 
     self.includers = updated_includers
     self.last_inclusion = updated_includers.length > 0 ? self.inclusions.where("user_id IN (?)", updated_includers).order(:created_at).last.created_at.to_i : -1

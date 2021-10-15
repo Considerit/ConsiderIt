@@ -45,3 +45,21 @@ task :create_super_admin, [:email, :name, :password] => :environment do |t, args
     user.save 
   end 
 end
+
+task :freeze_inactive_forums => :environment do 
+
+  Subdomain.all.each do |subdomain|
+    last_proposal = subdomain.proposals.last
+    next if !last_proposal || subdomain.name == 'galacticfederation'
+    last_date = last_proposal.created_at 
+
+    customizations = subdomain.customizations || {}
+
+    if last_date < 1.year.ago && (!customizations.has_key?('contribution_phase') || customizations['contribution_phase'] != 'frozen')
+      customizations['contribution_phase'] = 'frozen'
+      subdomain.customizations = customizations
+      subdomain.save 
+      pp "Freezing #{subdomain.name}, last proposal #{last_date}"
+    end 
+  end
+end

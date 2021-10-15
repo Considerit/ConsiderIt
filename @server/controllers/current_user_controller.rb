@@ -344,8 +344,6 @@ class CurrentUserController < ApplicationController
         end
       end
 
-      pp 'ni!', new_tags
-
       new_params[:tags] = new_tags
     end
 
@@ -359,9 +357,8 @@ class CurrentUserController < ApplicationController
         raise 'Error saving basic current_user parameters!'
       end
       
-
     else
-      raise 'Had trouble manipulating this user!', new_params
+      raise StandardError 'Had trouble manipulating this user!', new_params
     end
 
     # Update their email address.  First, check if they gave us a new address

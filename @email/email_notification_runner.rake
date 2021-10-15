@@ -14,7 +14,6 @@ task :send_email_notifications => :environment do
       ExceptionNotifier.notify_exception err
     end
   else 
-
     open_f = File.new(f, "w+")
 
     begin
@@ -48,6 +47,10 @@ task :send_email_notifications => :environment do
         end
 
       end
+      
+      # log when the last successful run was
+      File.write Rails.root.join('tmp', 'email_notification_runner_success'), Time.new.inspect
+
     rescue => e
       pp 'Notification runner failure', e
       ExceptionNotifier.notify_exception(e)      

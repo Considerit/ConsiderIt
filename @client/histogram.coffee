@@ -661,11 +661,21 @@ window.Histogram = ReactiveComponent
 num_layout_workers = 4
 num_layout_tasks_delegated = 0
 window.delegate_layout_task = (opts) -> 
-  if !window.histo_layout_workers
-    configure_histo_layout_web_worker()
-  histo_layout_worker = histo_layout_workers[num_layout_tasks_delegated % num_layout_workers]  
-  histo_layout_worker.postMessage opts
-  num_layout_tasks_delegated += 1
+  after_loaded = ->
+    histo_layout_worker = histo_layout_workers[num_layout_tasks_delegated % num_layout_workers]  
+    histo_layout_worker.postMessage opts
+    num_layout_tasks_delegated += 1
+
+  if window.histo_layout_workers
+    after_loaded()
+  else 
+    intv = setInterval ->
+      if window.histo_layout_workers
+        after_loaded()
+        clearInterval intv
+      configure_histo_layout_web_worker()
+    , 20
+
 
 configure_histo_layout_web_worker = ->
 

@@ -29,6 +29,8 @@ window.TRANSLATE = (args, native_text) ->
   args.return_lang_used = true
   {message, lang_used, target_lang} = T args, native_text 
 
+  return native_text if !message
+  
   # allow composing of components into translatable messages
   if message.indexOf('<') > -1
     parts = message.split(regexp_tsplit)

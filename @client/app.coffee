@@ -41,8 +41,7 @@ require './viewport_visibility_sensor'
 ## ########################
 ## Initialize defaults for client data
 
-fetch 'root',
-  opinions_to_publish : []
+fetch 'root'
 
 
 AccessibilitySupport = ReactiveComponent 

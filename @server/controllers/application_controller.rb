@@ -175,15 +175,13 @@ protected
     Thread.current[:current_user]    = user
 
     if user.registered
-      dirty_if_any_private_proposals current_user
+      dirty_proposals current_user
     end 
   end
 
   def replace_user(old_user, new_user)
     return if old_user.id == new_user.id
     if old_user.registered then raise "Replacing a real user! Danger!" end
-
-    new_user.absorb(old_user)
 
     # puts("Deleting old user #{old_user.id}")
     old_user.destroy()
@@ -354,7 +352,7 @@ protected
           set_current_user(target_user)
           current_user.add_token() # Logging in via email token is dangerous, so we'll only allow it once per token          
           current_user.update_roles_and_permissions
-          dirty_if_any_private_proposals(current_user)
+          dirty_proposals(current_user)
           current_user.add_to_active_in
         end
 
@@ -373,25 +371,8 @@ protected
     end
   end
 
-  def dirty_if_any_private_proposals(real_user)
-    matters = false 
-
-    proposals = Proposal.all_proposals_for_subdomain
-
-    dummy = User.new
-
-    proposals.each do |proposal|
-      if permit('read proposal', proposal, real_user) != permit('read proposal', proposal, dummy)
-        matters = true 
-        break 
-      end
-    end 
-
-    if matters 
-      dirty_key '/proposals'
-    end 
-
-    matters
+  def dirty_proposals(real_user)
+    dirty_key '/proposals'
   end
 
   

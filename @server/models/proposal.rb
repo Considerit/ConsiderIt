@@ -53,40 +53,9 @@ class Proposal < ApplicationRecord
     # Impose access control restrictions for current user    
     proposals = proposals.select {|p| permit('read proposal', p) > 0 }
 
-    # make sure that there is an opinion created for current
-    # user for all proposals
-    your_opinions = {}
-
-    Opinion.where(:user => current_user).order('id DESC').each do |opinion|
-      your_opinions[opinion.proposal_id] = opinion
-    end 
-
-    if your_opinions.keys().length < proposals.length
-      missing_opinions = []
-      proposals.each do |proposal|
-        if !your_opinions.has_key?(proposal.id)
-          missing_opinions << Opinion.new({
-            :proposal_id => proposal.id,
-            :user => current_user ? current_user : nil,
-            :subdomain_id => current_subdomain.id,
-            :stance => 0,
-            :point_inclusions => [],
-          })
-        end 
-      end 
-
-      Opinion.import missing_opinions
-
-      Opinion.where(:user => current_user).each do |opinion|
-        your_opinions[opinion.proposal_id] = opinion
-      end 
-    end 
-
-
-
     proposals_obj = {
       key: '/proposals',
-      proposals: proposals.map {|p| p.as_json({}, your_opinions[p.id])}
+      proposals: proposals.map {|p| p.as_json }
     }
 
     if all_points 
@@ -118,37 +87,44 @@ class Proposal < ApplicationRecord
     pointz = self.points.where("(published=1 AND #{moderation_status_check}) OR user_id=#{current_user.id}")
     pointz = pointz.public_fields.map {|p| p.as_json}
 
-    # published_opinions = self.opinions.published
-    # ops = published_opinions.public_fields.map {|x| x.as_json}
-
-    # if published_opinions.where(:user_id => nil).count > 0
-    #   throw "We have published opinions without a user: #{published_opinions.map {|o| o.id}}"
-    # end
-
     data = { 
       key: "/page/#{self.slug}",
       proposal: "/proposal/#{self.id}",
       points: pointz
-      # opinions: ops
     }
 
     data
 
   end
 
-  def as_json(options={}, your_opinion=nil)
+  def as_json(options={})
     options[:only] ||= Proposal.my_public_fields
     json = super(options)
 
     # Find an existing opinion for this user
-    if !your_opinion
-      your_opinion = Opinion.get_or_make(self)
-    end 
+    user = current_user
+    if current_user.logged_in?
+      your_opinion = self.opinions.where(:user_id => user.id).order('id DESC')
+      if your_opinion.length > 1
+        pp "Duplicate opinions for user #{current_user}: #{your_opinion.map {|o| o.id} }!"
+      end      
+      your_opinion = your_opinion.first
+    else 
+      your_opinion = nil 
+    end
 
-    json['your_opinion'] = your_opinion #if your_opinion
+    if your_opinion
+      json['your_opinion'] = your_opinion 
+    else 
+      json['your_opinion'] = {
+        stance: 0,
+        user: "/user/#{current_user.id}",
+        point_inclusions: [],
+        proposal: "/proposal/#{self.id}",
+        published: false
+      }
 
-    # published_opinions = self.opinions.published
-    # ops = published_opinions.public_fields.map {|x| x.as_json}
+    end
 
     o = ActiveRecord::Base.connection.execute """\
       SELECT created_at, id, point_inclusions, proposal_id, 
@@ -180,10 +156,6 @@ class Proposal < ApplicationRecord
 
       r 
     end 
-
-
-    # The JSON.parse is expensive...
-    # json['histocache'] = Oj.load(json['histocache'] || '{}')
 
 
     json['json'] = json['json'] || {}

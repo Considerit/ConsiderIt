@@ -11,68 +11,6 @@ require './new_proposal'
 require './list'
 
 
-window.AuthCallout = ReactiveComponent
-  displayName: 'AuthCallout'
-
-  render: ->
-    current_user = fetch '/current_user'
-    subdomain = fetch '/subdomain'
-
-    return SPAN null if current_user.logged_in
-
-    DIV  
-      style: 
-        width: '100%'
-        paddingBottom: 16
-
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-          margin: 'auto'
-        DIV 
-          style: 
-            fontSize: 24
-            fontWeight: 600
-
-
-          if subdomain.SSO_domain
-            TRANSLATE
-              id: 'create_account.call_out'
-              BUTTON1: 
-                component: A 
-                args: 
-                  href: '/login_via_saml'
-                  treat_as_external_link: true
-                  style: 
-                    backgroundColor: 'transparent'
-                    border: 'none'
-                    fontWeight: 700
-                    textDecoration: 'underline'
-                    #color: 'white'
-                    textTransform: 'lowercase'
-                    padding: 0
-
-              "Please <BUTTON1>create an account</BUTTON1> to participate"
-          else 
-            TRANSLATE
-              id: 'create_account.call_out'
-              BUTTON1: 
-                component: BUTTON 
-                args: 
-                  'data-action': 'create'
-                  onClick: (e) =>
-                    reset_key 'auth',
-                      form: 'create account'
-                  style: 
-                    backgroundColor: 'transparent'
-                    border: 'none'
-                    fontWeight: 700
-                    textDecoration: 'underline'
-                    #color: 'white'
-                    textTransform: 'lowercase'
-                    padding: 0
-
-              "Please <BUTTON1>create an account</BUTTON1> to participate"
 
 
 window.Homepage = ReactiveComponent
@@ -105,7 +43,7 @@ window.Homepage = ReactiveComponent
       messages.push translator "engage.opinions_only_message", "The forum host has set this forum to be opinions only. No new ideas for now."
 
     if customization('anonymize_everything')
-      messages.push translator "engage.anonymize_message", "The forum host has participation set to anonymous in this forum, so you won't be able to see the identity of others at this time."
+      messages.push translator "engage.anonymize_message", "The forum host has set participation to anonymous, so you won't be able to see the identity of others at this time."
     if customization('hide_opinions')
       messages.push translator "engage.hide_opinions_message", "The forum host has hidden the opinions of other participants, so you won't be able to see their specific opinions at this time."
 
@@ -126,7 +64,10 @@ window.Homepage = ReactiveComponent
         role: if customization('homepage_tabs') then "tabpanel"
 
         if customization('auth_callout')
-          AuthCallout()
+          DIV 
+            style: 
+              marginBottom: 36
+            AuthCallout()
 
         for message in messages
           DIV 

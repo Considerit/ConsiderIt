@@ -322,6 +322,7 @@ window.isNeutralOpinion = (stance) ->
 window.on_ajax_error = () ->
   (root = fetch('root')).server_error = true
   save(root)
+
 window.on_client_error = (e) ->
   if navigator.userAgent.indexOf('PhantomJS') >= 0
     # don't care about errors on phtanomjs web crawlers
@@ -893,7 +894,7 @@ button.like_link {
   border: 0;
   # box-shadow: 0 2px 5px 0 rgb(0 0 0 / 20%), 0 2px 10px 0 rgb(0 0 0 / 10%);
   font-weight: 700;
-  padding: .625rem 1.5rem .5rem;
+  padding: .225rem 1.5rem .3rem;
   line-height: 1.5;
   text-align: center;
   text-decoration: none;

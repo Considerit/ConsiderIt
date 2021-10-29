@@ -50,6 +50,7 @@ class Opinion < ApplicationRecord
                                       :user => user,
                                       :subdomain_id => proposal.subdomain_id,
                                       :stance => 0,
+                                      :published => true,
                                       :point_inclusions => []
                                      )
       end 
@@ -63,11 +64,6 @@ class Opinion < ApplicationRecord
     self.published = true
     recache
     self.save if changed?
-
-    # When we publish an opinion, all the points the user wrote on
-    # this opinion/proposal become published too
-    Point.where(:user_id => self.user_id,
-                :proposal_id => self.proposal_id).each {|p| p.publish()}
 
     # New opinion means the proposal needs to be re-fetched so that
     # it includes it in its list of stuff
@@ -118,9 +114,6 @@ class Opinion < ApplicationRecord
       self.include point_id
     end
 
-    # Return the points that were not touched in this process
-    # These points are used in the absorb method. 
-    points_to_include.select {|p_id| points_already_included.include? p_id }
   end
 
   def include(point, subdomain = nil)
@@ -171,60 +164,6 @@ class Opinion < ApplicationRecord
     inclusion.destroy
     point.recache
     self.recache
-  end
-  
-  def absorb( opinion, absorb_user = false)
-
-    # First record everything we're dirtying
-    dirty_key("/opinion/#{id}")
-    dirty_key("/proposal/#{proposal_id}")    
-
-    # If we're absorbing the Opinion's user as well
-    if absorb_user
-      # puts("Changing user for Opinion #{id} to #{opinion.user_id}")
-
-      # We only have to update inclusions if the user is changing because
-      # inclusions are identified by (proposal_id, user_id), not by Opinion.
-      new_inclusions = self.proposal.inclusions.where(:user_id => opinion.user_id).where('point_id IS NOT NULL')
-      all_inclusions = ( inclusions.where('point_id IS NOT NULL').map{|i| i.point.id} \
-                    + new_inclusions.map{|i| i.point.id}).uniq
-
-      # BUG: There is a strange bug we can't find where inclusion.point_id can
-      # get set to null. The code above has been null guarded. 
-      # This is an attempt to gather more data on it. 
-      # if inclusions.where('point_id IS NULL').count > 0 
-      #   begin 
-      #     raise "We have a null point_id for an inclusion!"
-      #   rescue => e
-      #     ExceptionNotifier.notify_exception e, :env => request.env
-      #   end
-      # end
-
-      proposal.inclusions.where(:user_id => self.user_id).destroy_all
-
-      self.user_id = opinion.user_id # Do this after getting all_inclusions, but before update_inclusions.
-      not_recached = self.update_inclusions(all_inclusions) # And this will recached
-      not_recached.each do |pnt_id|
-        Point.find(pnt_id).recache
-      end
-    end
-
-    # puts("Absorbing opinion #{opinion.id} into #{self.id}")
-
-    # Copy the stance of the opinion if the opinion is older
-    # (Picking the older one because of a bug where if you
-    # login on a proposal page, it will replace your old opinion
-    # with the new neutral one)
-    if opinion.updated_at < updated_at && opinion.published
-      self.stance = opinion.stance
-    end
-
-    # If something was published, ensure everything is published
-    self.publish(opinion.published) if self.published or opinion.published
-
-    opinion.destroy()
-    recache
-
   end
 
   def recache

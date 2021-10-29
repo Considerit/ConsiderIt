@@ -867,7 +867,7 @@ EditableTitle = ReactiveComponent
                 style: 
                   fontWeight: 700
 
-            "<span>Title [optional].</span> Usually an open-ended question like \"What are your ideas?\" or a list label like \"Recommended actions for mitigation\"."
+            "<span>Title.</span> Usually an open-ended question like \"What are your ideas?\" or a list label like \"Recommended actions for mitigation\"."
 
       H1 
         className: 'LIST-header'

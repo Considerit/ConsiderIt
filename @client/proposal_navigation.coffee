@@ -186,7 +186,7 @@ window.GroupedProposalNavigation = (args) ->
                                   fontSize: 16
                                 wrapper_style: 
                                   backgroundColor: if active then "#eee"
-                                icon: if proposal.your_opinion.published
+                                icon: if proposal.your_opinion?.published
                                         -> 
                                           SPAN 
                                             style: 

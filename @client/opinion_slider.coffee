@@ -20,7 +20,11 @@ window.OpinionSlider = ReactiveComponent
   render : ->
     @proposal ||= fetch(@props.proposal)
     slider = fetch @props.key
-    your_opinion = fetch @props.your_opinion
+
+    your_opinion = @props.your_opinion
+
+    if @props.your_opinion.key
+      your_opinion = fetch @props.your_opinion
 
     opinion_views = fetch 'opinion_views'
     hist_selection = opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
@@ -100,14 +104,12 @@ window.OpinionSlider = ReactiveComponent
 
 
   saveYourOpinionNotice : -> 
-    your_opinion = fetch @props.your_opinion
+    your_opinion = @props.your_opinion
     slider = fetch @props.key
     current_user = fetch '/current_user'
 
     return SPAN null if (!TWO_COL() && customization('discussion_enabled', @proposal))  || \
-                        ( your_opinion.published || \
-                          (!slider.has_moved && your_opinion.point_inclusions.length == 0)\
-                        ) || slider.is_moving
+                         current_user.logged_in || slider.is_moving
     
 
     style = 
@@ -116,19 +118,33 @@ window.OpinionSlider = ReactiveComponent
       color: 'white'
       textAlign: 'center'
       fontSize: 16
-      margin: '10px 0'
       position: 'relative'
       fontWeight: 700
       textDecoration: 'underline'
       cursor: 'pointer'
       color: focus_color()
 
-    notice = if current_user.logged_in
-               translator "engage.save_opinion_button", "Save your opinion"
-             else 
-               translator "engage.login_to_save_opinion", 'Log in to save your opinion'
+    notice = translator "engage.login_to_save_opinion", 'Log in to save your opinion'
     
     s = sizeWhenRendered notice, style
+
+    save_opinion = (proposal) -> 
+      if your_opinion.published
+        can_opine = permit 'update opinion', proposal, your_opinion
+      else
+        can_opine = permit 'publish opinion', proposal
+
+      if can_opine > 0
+        your_opinion.published = true
+        your_opinion.key ?= "/new/opinion"
+        save your_opinion
+      else
+        # trigger authentication
+        reset_key 'auth',
+          form: 'create account'
+          goal: 'To participate, please introduce yourself.'
+          after: =>
+            save_opinion(proposal)
 
 
     DIV 
@@ -141,7 +157,11 @@ window.OpinionSlider = ReactiveComponent
         style: _.extend style, 
           left: (slider.value + 1) / 2 * @props.width - s.width / 2 - 10
 
-        onClick: => saveOpinion(@proposal)
+        onClick: => save_opinion(@proposal)
+        onKeyDown: (e) => 
+          if e.which == 13 || e.which == 32 # ENTER or SPACE
+            save_opinion(@proposal)
+            e.preventDefault()
 
         notice 
 
@@ -153,10 +173,9 @@ window.OpinionSlider = ReactiveComponent
       else 
         "#{Math.round(value * 100)}%"
 
-
-
     labels = customization 'slider_pole_labels', @proposal
     slider_feedback = 
+
       if !slider.has_moved 
         TRANSLATE "sliders.slide_prompt", 'Slide Your Overall Opinion'
       else if func = labels.slider_feedback or default_feedback
@@ -201,7 +220,7 @@ window.OpinionSlider = ReactiveComponent
 
   handleMouseUp: (e) ->
     slider = fetch @props.key
-    your_opinion = fetch @props.your_opinion
+    your_opinion = @props.your_opinion
     mode = get_proposal_mode()
     
     e.stopPropagation()
@@ -214,8 +233,26 @@ window.OpinionSlider = ReactiveComponent
        customization('discussion_enabled', @proposal)
 
     if transition
-      new_page = if mode == 'results' then 'crafting' else 'results'
-      updateProposalMode new_page, 'click_slider'
+
+
+      if your_opinion.published
+        can_opine = permit 'update opinion', @proposal, your_opinion
+      else
+        can_opine = permit 'publish opinion', @proposal
+
+      if can_opine > 0
+        new_page = if mode == 'results' then 'crafting' else 'results'
+        updateProposalMode new_page, 'click_slider'
+      else
+        # trigger authentication
+        reset_key 'auth',
+          form: 'create account'
+          goal: 'To participate, please introduce yourself.'
+          after: =>
+            new_page = if mode == 'results' then 'crafting' else 'results'
+            updateProposalMode new_page, 'click_slider'
+
+
 
 
     # We save the slider's position to the server only on mouse-up.
@@ -224,6 +261,8 @@ window.OpinionSlider = ReactiveComponent
       your_opinion.stance = slider.value
       if !transition && fetch('/current_user').logged_in
         your_opinion.published = true
+      your_opinion.key ?= "/new/opinion"
+        
       save your_opinion
       window.writeToLog 
         what: 'move slider'

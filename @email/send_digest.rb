@@ -13,7 +13,7 @@ def send_digest(subdomain, user, subscription_settings, deliver = true, since = 
     if last_digest_sent_at
       since = last_digest_sent_at
     else 
-      since = user.created_at
+      since = user.created_at.to_s
     end
   end 
 

@@ -61,7 +61,7 @@ group :production do
   gem 'aws-sdk-rails'
   gem 'aws-sdk-ses'
   gem 'aws-sdk-s3'
-  gem 'dalli' # memcaching: https://github.com/mperham/dalli/
+  # gem 'dalli' # memcaching: https://github.com/mperham/dalli/
 
   ##############
   # SEO

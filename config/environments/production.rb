@@ -27,7 +27,7 @@ ConsiderIt::Application.configure do
   # config.logger = SyslogLogger.new
 
   # Use a different cache store in production
-  config.cache_store = :dalli_store, { :expires_in => 1.day, :compress => true }
+  config.cache_store = :mem_cache_store, { :expires_in => 1.day, :compress => true }
 
   config.force_ssl = false
 

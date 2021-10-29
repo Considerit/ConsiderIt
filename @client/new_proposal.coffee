@@ -141,6 +141,7 @@ window.NewProposal = ReactiveComponent
             'aria-label': translator("engage.edit_proposal.summary.placeholder", 'Clear and concise summary')
             placeholder: translator("engage.edit_proposal.summary.placeholder", 'Clear and concise summary')
             required: 'required'
+            focus_on_mount: true
 
             count_style: 
               position: 'absolute'

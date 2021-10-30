@@ -148,31 +148,6 @@ window.DataDash = ReactiveComponent
                   style: {backgroundColor: selected_color, color: 'white', fontWeight: 700, borderRadius: 8, padding: 6}
             
 
-          if current_user.is_super_admin
-            [
-              DIV 
-                style: 
-                  padding: '20px 0 20px 20px' 
-                INPUT type: 'checkbox', name: 'generate_inclusions', id: 'generate_inclusions'
-                LABEL htmlFor: 'generate_inclusions', 
-                  """
-                  Generate opinions & inclusions of points?
-                  It requires a proposal file; for each proposal in the file, this option will increase by 
-                  2x the number of existing opinions. Each simulated opinion will include two points. 
-                  Stances and inclusions will not be assigned randomly, but rather following a 
-                  rich-get-richer model. You can use this option multiple times. This option is only good for demos.
-                  """
-
-              DIV 
-                style: 
-                  padding: '20px 0 20px 20px' 
-                INPUT type: 'checkbox', name: 'assign_pics', id: 'assign_pics'
-                LABEL htmlFor: 'assign_pics', 
-                  """
-                  Assign a random profile picture for users without an avatar url
-                  """
-            ]
-
           BUTTON
             id: 'submit_import'
             className: 'btn'

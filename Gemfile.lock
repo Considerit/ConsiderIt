@@ -235,6 +235,8 @@ GEM
     public_suffix (4.0.6)
     racc (1.6.0)
     rack (2.2.3)
+    rack-mini-profiler (2.3.3)
+      rack (>= 1.2.0)
     rack-protection (2.1.0)
       rack
     rack-test (1.1.0)
@@ -354,6 +356,7 @@ DEPENDENCIES
   oj
   oj_mimic_json
   prerender_rails
+  rack-mini-profiler
   rails (~> 5.2)
   ruby-prof (~> 1.0.0)
   ruby-saml (~> 1.11)

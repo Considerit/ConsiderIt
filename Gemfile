@@ -52,7 +52,8 @@ group :development, :test do
   gem 'thin'
   gem 'ruby-prof', '~> 1.0.0'
   gem 'mailcatcher'
-  # gem 'rack-mini-profiler'
+
+  gem 'rack-mini-profiler'
 end
 
 group :production do

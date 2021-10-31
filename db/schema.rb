@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_15_232919) do
+ActiveRecord::Schema.define(version: 2021_10_30_180557) do
 
   create_table "comments", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "commentable_id", default: 0
@@ -85,7 +85,6 @@ ActiveRecord::Schema.define(version: 2021_04_15_232919) do
   end
 
   create_table "opinions", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.integer "proposal_id"
     t.integer "user_id"
     t.text "explanation", collation: "utf8mb4_0900_ai_ci"
     t.float "stance"
@@ -94,10 +93,10 @@ ActiveRecord::Schema.define(version: 2021_04_15_232919) do
     t.datetime "updated_at"
     t.integer "subdomain_id"
     t.json "point_inclusions"
-    t.index ["proposal_id"], name: "index_positions_on_option_id"
+    t.string "statement_type"
+    t.bigint "statement_id"
     t.index ["published"], name: "index_opinions_on_published"
-    t.index ["subdomain_id", "proposal_id", "published"], name: "index_opinions_on_subdomain_id_and_proposal_id_and_published"
-    t.index ["subdomain_id", "proposal_id", "user_id"], name: "index_opinions_on_subdomain_id_and_proposal_id_and_user_id"
+    t.index ["statement_type", "statement_id"], name: "index_opinions_on_statement_type_and_statement_id"
     t.index ["subdomain_id"], name: "index_opinions_on_subdomain_id"
     t.index ["user_id"], name: "index_opinions_on_user_id"
   end
@@ -110,7 +109,6 @@ ActiveRecord::Schema.define(version: 2021_04_15_232919) do
     t.boolean "is_pro"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer "num_inclusions"
     t.float "score"
     t.float "appeal"
     t.boolean "published", default: true

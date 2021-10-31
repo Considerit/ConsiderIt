@@ -54,7 +54,7 @@ class PointController < ApplicationController
 
       point = Point.new point
 
-      opinion = Opinion.get_or_make(proposal)
+      opinion = Opinion.get_or_make(proposal, 'Proposal')
 
       if !proposal
         raise "Error! No proposal matching '#{point['proposal']}'"

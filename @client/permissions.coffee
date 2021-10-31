@@ -98,23 +98,29 @@ permit = (action) ->
         return Permission.INSUFFICIENT_PRIVILEGES
 
     when 'publish opinion'
-      proposal = fetch arguments[1]
+      statement = fetch arguments[1]
+
+      # TODO: need a more flexible solution
+      if statement.key.startsWith '/proposal/'
+        roles = statement.roles
+        active = statement.active
+      else 
+        roles = fetch(statement.proposal).roles
+        active = fetch(statement.proposal).active
 
       return Permission.DISABLED if phase == 'ideas-only'
 
-      return Permission.DISABLED if !proposal.active
+      return Permission.DISABLED if !active
       return Permission.NOT_LOGGED_IN if !current_user.logged_in
 
-      if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'participant'])
+      if !current_user.is_admin && !matchSomeRole(roles, ['editor', 'participant'])
         return Permission.INSUFFICIENT_PRIVILEGES 
 
       if !current_user.completed_host_questions
         return Permission.INSUFFICIENT_INFORMATION
 
     when 'update opinion'
-      proposal = fetch arguments[1]
       opinion = fetch arguments[2]
-
       return Permission.INSUFFICIENT_PRIVILEGES if opinion.user != fetch('/current_user').user
         
 

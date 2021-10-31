@@ -70,7 +70,7 @@ end
 def permit(action, object = nil, user = nil)
 
   user ||= current_user
-  if object && object.class.name == 'Subdomain'
+  if object && object.is_a?(Subdomain)
     subdomain = object
   else 
     subdomain = current_subdomain
@@ -146,10 +146,19 @@ def permit(action, object = nil, user = nil)
     end
 
   when 'publish opinion'
-    proposal = object
-    return Permission::DISABLED if !proposal.active
+    statement = object
+
+    # TODO: need a more flexible solution
+    if statement.is_a? Proposal
+      roles = statement.user_roles
+      active = statement.active
+    else 
+      roles = statement.proposal.user_roles
+      active = statement.proposal.active
+    end 
+    return Permission::DISABLED if !active
     return Permission::NOT_LOGGED_IN if !user.registered
-    if !user.is_admin?(subdomain) && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'participant'], user)
+    if !user.is_admin?(subdomain) && !Permitted::matchSomeRole(roles, ['editor', 'participant'], user)
       return Permission::INSUFFICIENT_PRIVILEGES
     end
 

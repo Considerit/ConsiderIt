@@ -52,11 +52,11 @@ module Exports
     subdomain.proposals.each do |proposal|
       proposal.points.published.each do |pnt|
         begin 
-          opinion = pnt.user.opinions.find_by_proposal_id(pnt.proposal.id)
+          opinion = pnt.proposal.opinions.published.find_by_user_id(pnt.user_id)
           rows.append [pnt.proposal.slug, 'POINT', pnt.created_at, pnt.hide_name ? 'ANONYMOUS' : pnt.user.name, pnt.hide_name ? 'ANONYMOUS' : pnt.user.email.gsub('.ghost', ''), pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance : '-', pnt.inclusions.count, pnt.comments.count]
 
           pnt.comments.each do |comment|
-            opinion = comment.user.opinions.find_by_proposal_id(pnt.proposal.id)
+            opinion = pnt.proposal.opinions.published.find_by_user_id(comment.user_id) 
             rows.append [pnt.proposal.slug, 'COMMENT', comment.created_at, comment.user.name, comment.user.email.gsub('.ghost', ''), "", comment.body, '', opinion ? opinion.stance : '-', '', '']
           end
         rescue 
@@ -174,8 +174,7 @@ end
 
 
 def opinion_for_proposal(user, proposal_id)
-  user.opinions.published.find_by_proposal_id(proposal_id)
-  Proposal.find(proposal_id).opinions.find_by_user_id(user.id)
+  Proposal.find(proposal_id).opinions.published.find_by_user_id(user.id)
 end 
 
 def group_differences(proposal)

@@ -3,20 +3,20 @@ class OpinionController < ApplicationController
   def show
     opinion = Opinion.find(params[:id])
     authorize! 'read opinion', opinion
-    dirty_key "/opinion/#{params[:id]}"
+    dirty_key opinion.key
     render :json => []
   end
 
   def create
-    proposal = Proposal.find(key_id(params['proposal']))
-    authorize! 'publish opinion', proposal
+    matches = /\/([a-zA-Z]+)\/(\d+)/.match(params['statement'])
+    params['statement_type'] = matches[1].capitalize
+    params['statement_id'] = matches[2]
 
-    fields = ['proposal', 'stance', 'point_inclusions']
+    statement = params['statement_type'].constantize.find params['statement_id']
+    authorize! 'publish opinion', statement
+
+    fields = ['statement_id', 'statement_type', 'stance', 'point_inclusions']
     updates = params.select{|k,v| fields.include? k}.to_h
-
-    # Convert proposal key to id
-    updates['proposal_id'] = key_id(updates['proposal'])
-    updates.delete('proposal')
 
     # Convert point_inclusions to ids
     incs = updates['point_inclusions']
@@ -34,14 +34,14 @@ class OpinionController < ApplicationController
     opinion.publish()
     write_to_log({
       :what => 'published opinion',
-      :where => proposal.slug
+      :where => statement.slug || statement.key
     })
 
     original_id = key_id(params[:key])
     result = opinion.as_json
-    result['key'] = "/opinion/#{opinion.id}?original_id=#{original_id}"
-
-    dirty_key "/proposal/#{proposal.id}"
+    result['key'] = "#{opinion.key}?original_id=#{original_id}"
+    
+    dirty_key statement.key
     render :json => [result]
 
   end
@@ -50,12 +50,8 @@ class OpinionController < ApplicationController
     opinion = Opinion.find key_id(params)
     authorize! 'update opinion', opinion
 
-    fields = ['proposal', 'stance', 'point_inclusions', 'explanation']
+    fields = ['stance', 'point_inclusions', 'explanation']
     updates = params.select{|k,v| fields.include? k}.to_h
-
-    # Convert proposal key to id
-    updates['proposal_id'] = key_id(updates['proposal'])
-    updates.delete('proposal')
 
     # Convert point_inclusions to ids
     incs = updates['point_inclusions']
@@ -64,36 +60,36 @@ class OpinionController < ApplicationController
     incs = incs.map! {|p| key_id(p)}
     opinion.update_inclusions incs
     updates['point_inclusions'] = incs
-
-    # Grab the proposal
-    proposal = Proposal.find(updates['proposal_id'])
     
     # Update the normal fields
     opinion.update_attributes updates
     opinion.save
 
+    statement = opinion.statement
+
     # Update published
     if params['published'] && !opinion.published
-      authorize! 'publish opinion', proposal
+
+      authorize! 'publish opinion', statement
 
       opinion.publish()  # This will also publish all the newly-written points
 
       write_to_log({
         :what => 'published opinion',
-        :where => proposal.slug
+        :where => statement.slug || statement.key
       })
     elsif params.has_key?('published') && !params['published'] && opinion.published
       opinion.unpublish()
       write_to_log({
         :what => 'unpublished opinion',
-        :where => proposal.slug
+        :where => statement.slug || statement.key
       })
 
     end
 
-    dirty_key "/proposal/#{proposal.id}"
+    dirty_key statement.key
     
-    dirty_key "/opinion/#{opinion.id}"
+    dirty_key opinion.key
 
     render :json => []
 

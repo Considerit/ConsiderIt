@@ -223,9 +223,10 @@ class ImportDataController < ApplicationController
 
 
           when 'opinions'
-            opinion = Opinion.where(:user_id => user.id, :proposal_id => proposal.id).first
+            opinion = Proposal.opinions.published.find_by_user_id(user.id)
             attrs.update({
-              'proposal_id' => proposal.id,
+              'statement_id' => proposal.id,
+              'statement_type' => 'Proposal',
               'user_id' => user.id,
             })
 
@@ -249,7 +250,7 @@ class ImportDataController < ApplicationController
 
           when 'points'
 
-            opinion = Opinion.where(:user_id => user.id, :proposal_id => proposal.id).first
+            opinion = Proposal.opinions.published.find_by_user_id(user.id)
             if !opinion
               errors.push "A Point written by #{user.email} does not have an associated Opinion. Please add an Opinion for this user to the Opinions file!"
               next
@@ -261,7 +262,8 @@ class ImportDataController < ApplicationController
             end
 
             attrs.update({
-                        'proposal_id' => proposal.id,
+                        'statement_id' => proposal.id,
+                        'statement_type' => 'Proposal',
                         'user_id' => user.id,
                         'published' => true,
                         'is_pro' => ['1', 'true'].include?(row['is_pro'].downcase)
@@ -285,9 +287,7 @@ class ImportDataController < ApplicationController
           when 'comments'
             attrs.update({
               'point_id' => point.id,
-              'user_id' => user.id,
-              'commentable_type' => 'Point',
-              'commentable_id' => point.id
+              'user_id' => user.id
             })
 
             comment = Comment.where(:point_id => point.id, :user_id => user.id, :body => attrs['body'] ).first

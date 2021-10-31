@@ -93,9 +93,6 @@ ConsiderIt::Application.routes.draw do
   get 'current_user' => 'current_user#show'
   match 'current_user' => 'current_user#update', :via => [:put]
 
-  # This is for the special /opinion/current_user/234:
-  match 'opinion/:id/:proposal_id' => 'opinion#show', :via => [:get, :put]
-
   # New admin functionality
 
   get '/moderation/:id' => 'moderation#show'

@@ -1,8 +1,8 @@
 # coding: utf-8
 class Point < ApplicationRecord
   
-  include Moderatable, Notifier
-    
+  include Moderatable, Notifier, Slideable
+
   belongs_to :user
   belongs_to :proposal
   has_many :inclusions, :dependent => :destroy
@@ -41,6 +41,9 @@ class Point < ApplicationRecord
   scope :pros, -> {where( :is_pro => true )}
   scope :cons, -> {where( :is_pro => false )}
   
+  def roles
+    self.proposal.roles
+  end
 
   def as_json(options={})
     options[:only] ||= Point.my_public_fields
@@ -93,6 +96,10 @@ class Point < ApplicationRecord
     is_pro ? 'pro' : 'con'
   end
 
+  def key 
+    "/point/#{self.id}"
+  end
+
   def recache
     self.comment_count = comments.count
 
@@ -131,7 +138,7 @@ class Point < ApplicationRecord
 
     if changed?
       save(:validate => false) 
-      dirty_key "/point/#{self.id}"
+      dirty_key self.key
     end
   end
         

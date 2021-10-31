@@ -1,9 +1,9 @@
 # coding: utf-8
 
 class Proposal < ApplicationRecord
+  include Slideable
+
   has_many :points, :dependent => :destroy
-  has_many :opinions, :dependent => :destroy
-  has_many :inclusions, :dependent => :destroy
 
   has_attached_file :pic, 
     :processors => [:thumbnail],
@@ -120,18 +120,19 @@ class Proposal < ApplicationRecord
         stance: 0,
         user: "/user/#{current_user.id}",
         point_inclusions: [],
-        proposal: "/proposal/#{self.id}",
+        statement: self.key,
         published: false
       }
 
     end
 
     o = ActiveRecord::Base.connection.execute """\
-      SELECT created_at, id, point_inclusions, proposal_id, 
+      SELECT created_at, id, point_inclusions, 
       stance, user_id, updated_at, explanation
           FROM opinions 
           WHERE subdomain_id=#{self.subdomain_id} AND
-                proposal_id=#{self.id} AND 
+                statement_type='Proposal' AND
+                statement_id=#{self.id} AND 
                 published=1;
       """
 
@@ -139,11 +140,11 @@ class Proposal < ApplicationRecord
       r = {
         key: "/opinion/#{op[1]}",
         # created_at: op[0],
-        updated_at: op[6],
+        updated_at: op[5],
         # proposal: "/proposal/#{op[3]}",
-        user: "/user/#{op[5]}",
+        user: "/user/#{op[4]}",
         # published: true,
-        stance: op[4].to_f
+        stance: op[3].to_f
 
       }
       if op[7]

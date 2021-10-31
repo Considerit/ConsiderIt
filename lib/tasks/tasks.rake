@@ -1,15 +1,3 @@
-task :update_when_point_dragged_out => :environment do 
-
-  points = ActiveRecord::Base.connection.execute("select points.id from opinions, points,users where opinions.user_id=users.id and opinions.proposal_id=points.proposal_id and opinions.published=1 and users.id=points.user_id and users.registered=1 and points.subdomain_id in (3692,3624,3626,3661,3698) and json_length(includers) = 0")
-  
-  for pid in points
-    pnt = Point.find(pid[0])
-    o = Opinion.where(:proposal_id=>pnt.proposal_id, :user_id=>pnt.user_id)[0]
-    o.include(pnt, pnt.subdomain)
-    pp "Included #{pnt.id} for user #{pnt.user.name} in #{pnt.subdomain.name}"
-  end
-
-end
 
 task :compute_metrics => :environment do 
   begin
@@ -151,7 +139,7 @@ end
 task :fix_duplicate_opinions => :environment do
   total_dups = 0  
   Proposal.where(published: true).each do |p|
-    dups = ActiveRecord::Base.connection.execute("SELECT user_id, COUNT(user_id) AS cnt FROM opinions WHERE proposal_id = #{p.id} GROUP BY user_id having cnt > 1")
+    dups = ActiveRecord::Base.connection.execute("SELECT user_id, COUNT(user_id) AS cnt FROM opinions WHERE statement_type='Proposal' AND statement_id = #{p.id} GROUP BY user_id having cnt > 1")
     if dups.count > 0 
 
       dups.each do |result|

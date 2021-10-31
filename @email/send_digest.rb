@@ -66,7 +66,7 @@ def get_new_activity(subdomain, user, since)
       proposal_dict[proposal.id] = {
         :obj => proposal,
         :events => {},
-        :relationship => user.opinions.published.where(:proposal_id => proposal.id).count > 0 ? 'You gave an opinion' : false 
+        :relationship => proposal.opinions.published.where(:user_id => user.id).count > 0 ? 'You gave an opinion' : false 
       }
     end
 
@@ -87,7 +87,7 @@ def get_new_activity(subdomain, user, since)
       proposal_dict[proposal.id] = {
         :obj => proposal,
         :events => {},
-        :relationship => user.opinions.published.where(:proposal_id => proposal.id).count > 0 ? 'You gave an opinion' : false 
+        :relationship => proposal.opinions.published.where(:user_id => user.id).count > 0 ? 'You gave an opinion' : false 
       }
     end
 
@@ -113,28 +113,39 @@ def get_new_activity(subdomain, user, since)
   end 
 
   new_opinions.each do |opinion|
-    proposal = opinion.proposal
-    next if new_proposals.key?(proposal.id) || !proposal.user
+    statement = opinion.statement
 
-    proposal_dict = proposal.user_id == user.id ? your_proposals : active_proposals
-    if !proposal_dict.has_key?(proposal.id)
-      proposal_dict[proposal.id] = {
-        :obj => proposal,
-        :events => {},
-        :relationship => user.opinions.published.where(:proposal_id => proposal.id).count > 0 ? 'You gave an opinion' : false 
-      }
-    end
 
-    if !proposal_dict[proposal.id][:events].has_key? 'new_opinion' 
-      proposal_dict[proposal.id][:events]['new_opinion'] = {
-        :type => 'new_opinion',
-        :users => [opinion.user]
-      }
-    else 
-      proposal_dict[proposal.id][:events]['new_opinion'][:users].append opinion.user
+    if opinion.statement_type == 'Proposal'
+      next if new_proposals.key?(statement.id)
+      proposal = statement
+      proposal_dict = proposal.user_id == user.id ? your_proposals : active_proposals
+
+      if !proposal_dict.has_key?(proposal.id)
+        proposal_dict[proposal.id] = {
+          :obj => proposal,
+          :events => {},
+          :relationship => proposal.opinions.published.where(:user_id => user.id).count > 0 ? 'You gave an opinion' : false 
+        }
+      end
+
+      if !proposal_dict[proposal.id][:events].has_key? 'new_opinion' 
+        proposal_dict[proposal.id][:events]['new_opinion'] = {
+          :type => 'new_opinion',
+          :users => [opinion.user]
+        }
+      else 
+        proposal_dict[proposal.id][:events]['new_opinion'][:users].append opinion.user
+      end 
+
+    elsif opinion.statement_type == 'Point'
+      next if new_points.key?(statement.id)
+
     end 
+
   end 
 
+  # TODO: move this inclusion detector up into the "new_opinions" section above
   user.points.published.where(:subdomain_id => subdomain.id).each do |pnt|
     pnt.inclusions.where("created_at > '#{start_period}' AND created_at < '#{end_period}' AND user_id != #{user.id}").each do |inclusion|
       pnt = inclusion.point
@@ -146,7 +157,7 @@ def get_new_activity(subdomain, user, since)
         proposal_dict[proposal.id] = {
           :obj => proposal,
           :events => {},
-          :relationship => user.opinions.published.where(:proposal_id => proposal.id).count > 0 ? 'You gave an opinion' : false 
+          :relationship => proposal.opinions.published.where(:user_id => user.id).count > 0 ? 'You gave an opinion' : false 
         }
       end
 

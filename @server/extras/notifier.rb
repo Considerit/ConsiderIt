@@ -101,9 +101,14 @@ module Notifier
         'watched'
       end
     elsif event_object.class.name == 'Opinion'
-      proposal = event_object.proposal 
-      if proposal.user_id == user.id
-        'proposal_authored'
+
+      statement = event_object.statement 
+      if statement.user_id == user.id
+        if event_object.statement_type == 'Proposal'
+          'proposal_authored'
+        elsif event_object.statement_type == 'Point'
+          'point_authored'
+        end
       else 
         'watched'
       end
@@ -230,8 +235,11 @@ module Notifier
     case event_object.class.name.downcase
     when 'comment'
       event_object.point.proposal
-    when 'point', 'opinion'
+    when 'point'
       event_object.proposal
+    when 'opinion'
+      pp "\nMigrate event_object uses for Opinion!"
+      event_object.statement
     when 'proposal'
       if event_type == 'edited'
         event_object

@@ -14,6 +14,7 @@ class Inclusion < ApplicationRecord
       if purge
         user_points.map {|i| i.id}[1..99999999].each do |dup|
           Inclusion.find(dup).destroy
+          pp "Destroying duplicate"
         end
 
       end

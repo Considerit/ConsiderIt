@@ -56,7 +56,7 @@ ConsiderIt::Application.routes.draw do
   get '/all_comments' => 'comment#all_for_subdomain'
 
   resources :point, :only => [:create, :update, :destroy, :show]
-  resources :opinion, :only => [:create, :update, :show]
+  resources :opinion, :only => [:create, :update, :show, :destroy]
   resources :client_error, :only => [:create]
   match '/histogram/proposal/:id/:hash' => 'histogram#update', :via => [:put]
 

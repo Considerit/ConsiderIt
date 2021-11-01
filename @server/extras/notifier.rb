@@ -94,7 +94,7 @@ module Notifier
       point = event_object.point
       if point.user_id == user.id
         'point_authored'
-      elsif  (point.inclusions.select(:user_id).map {|x| x.user_id } \
+      elsif  (point.opinions.select(:user_id).map {|x| x.user_id } \
             + point.comments.select(:user_id).map {|x| x.user_id }).include?(user.id)
         'point_engaged'
       else 
@@ -211,7 +211,7 @@ module Notifier
     case object.class.name
       when 'Subdomain'
         subdomain = object
-      when 'Proposal'
+      when 'Proposal', 'Point'
         subdomain = object.subdomain        
       else 
         raise "Can't find users subscribed to #{object.class.name}"

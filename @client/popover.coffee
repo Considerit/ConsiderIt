@@ -86,6 +86,7 @@ window.show_popover = (e) ->
                 user: user
                 anon: anon
                 opinion: e.target.getAttribute('data-opinion')
+
         else if e.target.getAttribute('data-proposal-scores')
           proposal = e.target.getAttribute('data-popover')
           if proposal != popover.id 

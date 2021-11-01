@@ -187,9 +187,9 @@ build_influencer_network = ->
     return
 
   for point in points.points
-    for user in point.includers or []
-      continue if (user.key or user) == point.user
-      add_influence user, point.user
+    for opinion in point.opinions or []
+      continue if opinion.user == point.user
+      add_influence opinion.user, point.user
 
 
   for proposal in proposals.proposals 
@@ -236,8 +236,17 @@ default_weights = ->
       name: translator 'opinion_views.weights_reasons', 'Reasons given'
       label: translator 'opinion_views.weights_reasons_label', 'Add weight to opinions that explained their stance with pro and/or con reasons.'
       weight: (u, opinion, proposal) ->
-        point_inclusions = Math.log(1 + Math.min(8,opinion.point_inclusions?.length or 0))
-        .1 + point_inclusions
+        proposal = fetch proposal
+        points = fetch("/page/#{proposal.slug}").points or []
+        their_opinions = []
+        for pnt in points
+          for o in pnt.opinions 
+            if u == o.user 
+              their_opinions.push o 
+              break 
+
+        substantiated_score = Math.log(1 + Math.min(8, their_opinions.length or 0))
+        .1 + substantiated_score
       icon: (color) -> 
         color ?= 'black'
         SVG
@@ -260,15 +269,19 @@ default_weights = ->
       name: translator 'opinion_views.weights_tradeoffs', 'Tradeoffs recognized'
       label: translator 'opinion_views.weights_tradeoffs_label', 'Add weight to opinions that acknowledge both pro and con tradeoffs.'
       weight: (u, opinion, proposal) ->
-        point_inclusions = opinion.point_inclusions
-        pros = 0 
-        cons = 0  
-        for inc in point_inclusions or []
-          pnt = fetch(inc)
-          if pnt.is_pro 
-            pros += 1
-          else 
-            cons += 1
+        proposal = fetch proposal
+        points = fetch("/page/#{proposal.slug}").points or []
+
+        pros = 0; cons = 0
+
+        for pnt in points
+          for o in pnt.opinions 
+            if u == o.user 
+              if pnt.is_pro
+                pros += 1
+              else 
+                cons += 1              
+              break 
 
         tradeoffs_recognized = Math.min pros, cons 
 

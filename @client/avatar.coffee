@@ -140,9 +140,20 @@ window.AvatarPopover = ReactiveComponent
                         marginRight: 8
                         padding: if is_grouped then '2px 8px'
                       val or unreported
+
       if has_opinion
-        inclusions = opinion.point_inclusions or []
-        cnt = inclusions.length
+        proposal = fetch opinion.statement
+        points = fetch("/page/#{proposal.slug}").points or []
+
+        their_opinions = []
+        for pnt in points
+          for o in pnt.opinions 
+            if (user.key or user) == o.user 
+              their_opinions.push {pnt, o}
+              break 
+
+        cnt = their_opinions.length
+
         toggle_reasons = (e) =>
           @local.show_reasons = !@local.show_reasons
           save @local
@@ -184,12 +195,14 @@ window.AvatarPopover = ReactiveComponent
                   translator 'avatar_popover.show_reasons', 'Show reasons'
 
           if @local.show_reasons
+            # TODO: show histogram
             UL 
               style: 
                 listStyle: 'none'
                 margin: '12px auto'
-              for reason in inclusions
-                point = fetch reason 
+              for po in their_opinions
+                opinion = po.o
+                point = fetch po.pnt 
 
                 LI 
                   style: 
@@ -222,7 +235,11 @@ window.AvatarPopover = ReactiveComponent
                       marginLeft: 12
                     "~ #{if point.hide_name then anonymous_label() else fetch(point.user).name}"
 
-
+                  SPAN 
+                    style: 
+                      fontStyle: 'italic'
+                      marginLeft: 12
+                    "importance: #{opinion.stance}"
 
 ##
 # Avatar

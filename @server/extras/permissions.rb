@@ -198,7 +198,7 @@ def permit(action, object = nil, user = nil)
     point = object
     if !user.is_admin?(subdomain)
       return Permission::INSUFFICIENT_PRIVILEGES if user.id != point.user_id
-      return Permission::DISABLED if point.inclusions.count > 1
+      return Permission::DISABLED if point.opinions.count > 1
     end
 
   when 'read comment'

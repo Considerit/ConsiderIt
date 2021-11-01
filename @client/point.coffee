@@ -15,7 +15,7 @@ window.Point = ReactiveComponent
 
     renderIncluders = (draw_all_includers) =>
 
-      if @data().includers
+      if @data().opinions
 
         if draw_all_includers
           includers = @buildIncluders()
@@ -214,12 +214,12 @@ window.Point = ReactiveComponent
             className: 'hidden'
 
             translator
-              id: "engage.point_explanation"
+              id: "engage.point_explanations"
               author: if point.hide_name then anonymous_label() else fetch(point.user).name
-              num_inclusions: @data().includers.length
+              num_positive_opinions: (o for o in @data().opinions when o.stance > 0).length
               comment_count: point.comment_count
               """By {author}. 
-                 { num_inclusions, plural, =0 {} one {Important to one person.} other {Important to # people.} } 
+                 { num_positive_opinions, plural, =0 {} one {Important to one person.} other {Important to # people.} } 
                  {comment_count, plural, =0 {} one {Has received one comment.} other {Has received # comments.} }
                  Press ENTER or SPACE for details or discussion."""
 
@@ -299,8 +299,8 @@ window.Point = ReactiveComponent
         DIV 
           'aria-hidden': true
           className:'includers'
-          onMouseEnter: @highlightIncluders
-          onMouseLeave: @unHighlightIncluders
+          onMouseEnter: @highlightSupporters
+          onMouseLeave: @unhighlightSupporters
           style: includers_style
             
           renderIncluders(draw_all_includers)
@@ -471,45 +471,8 @@ window.Point = ReactiveComponent
         disabled: !@props.enable_dragging
 
   included: -> 
-    your_opinion = @proposal.your_opinion
-    your_opinion.point_inclusions.indexOf(@props.key) > -1
-
-  remove: -> 
-
-    pnt = fetch @props.key 
-
-    validate_first = pnt.user == fetch('/current_user').user && pnt.includers.length < 2
-
-
-    if !validate_first || confirm('Are you sure you want to remove your point? It will be gone forever.')
-
-      your_opinion = @proposal.your_opinion
-      your_opinion.point_inclusions = _.without your_opinion.point_inclusions, \
-                                                @props.key
-
-      your_opinion.key ?= "/new/opinion"
-      save(your_opinion)
-      window.writeToLog
-        what: 'removed point'
-        details: 
-          point: @props.key
-    else 
-      $point_content = $(@getDOMNode()).find('.point_content')
-      $point_content.css 'left', '-11px'
-      $point_content.css 'top', '-11px'
-
-  include: -> 
-    your_opinion = @proposal.your_opinion
-    your_opinion.key ?= "/new/opinion"
-
-    your_opinion.published = true 
-    your_opinion.point_inclusions.push @data().key
-    save(your_opinion)
-
-    window.writeToLog
-      what: 'included point'
-      details: 
-        point: @data().key
+    point = fetch(@props.key)
+    point.your_opinion.published
 
 
   selectPoint: (e) ->
@@ -541,42 +504,10 @@ window.Point = ReactiveComponent
         point: @props.key
 
 
-  ## ##
-  # On hovering over a point, highlight the people who included this 
-  # point in the Histogram.
-  highlightIncluders : -> 
-    point = @data()
-    includers = point.includers
-
-    # For point authors who chose not to sign their points, remove them from 
-    # the users to highlight. This is particularly important if the author 
-    # is the only one who "included" the point. Then it is very eash for 
-    # anyone to discover who wrote this point. 
-    if point.hide_name
-      includers = _.without includers, point.user
-
-    opinion_views = fetch 'opinion_views'
-    opinion_views.active_views.point_includers =
-      created_by: @props.key 
-      point: point.key 
-      get_salience: (u, opinion, proposal) ->
-        if (u.key or u) in includers 
-          1 
-        else 
-          .1
-    save opinion_views
-
-
-  unHighlightIncluders : -> 
-    opinion_views = fetch 'opinion_views'
-    if opinion_views.active_views.point_includers
-      delete opinion_views.active_views.point_includers
-      save opinion_views
-
   buildIncluders : -> 
     point = @data()
 
-    includers = point.includers
+    includers = (o.user for o in point.opinions or [])
 
     opinion_views = fetch 'opinion_views'
     {weights, salience, groups} = compose_opinion_views null, @proposal
@@ -739,11 +670,7 @@ window.Discussion = ReactiveComponent
     proposal = fetch point.proposal
     is_pro = point.is_pro
 
-    your_opinion = proposal.your_opinion
-    if your_opinion.key 
-      fetch your_opinion
-    point_included = _.contains(your_opinion.point_inclusions, point.key)
-    in_wings = get_proposal_mode() == 'crafting' && !point_included
+    in_wings = get_proposal_mode() == 'crafting' && !point.your_opinion.published
 
     comments = @discussion.comments
     

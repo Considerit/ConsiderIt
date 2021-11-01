@@ -54,23 +54,28 @@ class PointController < ApplicationController
 
       point = Point.new point
 
-      opinion = Opinion.get_or_make(proposal, 'Proposal')
 
       if !proposal
         raise "Error! No proposal matching '#{point['proposal']}'"
-      end
-      if !opinion
-        raise "Error! No opinion for user #{current_user.id} and proposal #{proposal.id}"
       end
 
       point.save
       point.publish
 
-      # Include into the user's opinion
-      opinion.include(point)
-      if !opinion.published
-        opinion.publish
-      end
+      po_params = {
+        subdomain_id: point.subdomain_id,
+        statement_id: point.id,
+        statement_type: 'Point',
+        stance: 0.5,
+        user_id: point.user_id,
+        published: true
+      }
+
+      # The author of the point gets a default stance on the point
+      po = Opinion.new po_params
+
+      po.save 
+
 
       original_id = key_id(params[:key])
       result = point.as_json
@@ -143,10 +148,6 @@ class PointController < ApplicationController
     authorize! 'delete point', point
 
     point.destroy
-    proposal.opinions.where("point_inclusions like '%#{params[:id]}%'").map do |o|
-      o.recache
-      dirty_key "/opinion/#{o.id}"
-    end
 
     dirty_key("/page/#{proposal.slug}") #because /points is changed...
     dirty_key("/proposal/#{proposal.id}")

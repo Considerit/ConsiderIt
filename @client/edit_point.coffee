@@ -322,7 +322,6 @@ window.EditPoint = ReactiveComponent
         is_pro : @props.valence == 'pros'
         user : current_user
         comment_count : 0
-        includers : [current_user]
         proposal : @proposal.key
         nutshell : nutshell
         text : text

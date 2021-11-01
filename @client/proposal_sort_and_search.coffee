@@ -311,30 +311,6 @@ sort_options = [
 
 
   },   
-  # {
-  #   name: 'Most Activity'
-  #   description: "Ranked by number of opinions and discussion."
-
-  #   order: (proposals) -> 
-  #     cache = {}
-  #     opinion_views = fetch 'opinion_views'
-
-  #     val = (proposal) ->
-  #       if proposal.key not of cache 
-  #         opinions = fetch(proposal).opinions or []   
-  #         {weights, salience, groups} = compose_opinion_views opinions, proposal, opinion_views
-  #         sum = 0
-  #         weight = 0 
-  #         for opinion in opinions
-  #           continue if salience[opinion.user] < 1 # don't count users who aren't fully salient, they're considered backgrounded
-  #           w = weights[opinion.user] # * salience[opinion.user]
-  #           sum += (1 + (opinion.point_inclusions or []).length) * w
-  #           weight += w
-  #         cache[proposal.key] = sum
-  #       cache[proposal.key]
-  #     proposals.sort (a, b) -> val(b) - val(a)
-  # 
-  # }, 
   { 
     name: 'Alphabetical order'
     order: (proposals) -> 

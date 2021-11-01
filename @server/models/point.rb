@@ -31,7 +31,7 @@ class Point < ApplicationRecord
   acts_as_tenant :subdomain
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:comment_count, :created_at, :updated_at, :id, :includers, :is_pro, :nutshell, :proposal_id, :published, :text, :user_id, :hide_name, :last_inclusion, :subdomain_id]
+  self.my_public_fields = [:comment_count, :created_at, :updated_at, :id, :is_pro, :nutshell, :proposal_id, :published, :text, :user_id, :hide_name, :last_inclusion, :subdomain_id]
 
   scope :public_fields, -> {select(self.my_public_fields)}
 
@@ -53,14 +53,60 @@ class Point < ApplicationRecord
     if (result['hide_name'] && (current_user.nil? || current_user.id != result['user_id']))
       result['user_id'] = -1
     end
-
-    result['includers'] = result['includers'] || []
-    result['includers'].map! {|u| hide_name && u == user_id ? -1 : u}
-    result['includers'].map! {|u| "/user/#{u}"}
         
     make_key(result, 'point')
     stubify_field(result, 'proposal')
     stubify_field(result, 'user')
+
+    # Find an existing opinion for this user
+    user = current_user
+    if current_user.logged_in?
+      your_opinion = self.opinions.where(:user_id => user.id).order('id DESC')
+      if your_opinion.length > 1
+        pp "Duplicate opinions for user #{current_user}: #{your_opinion.map {|o| o.id} }!"
+      end      
+      your_opinion = your_opinion.first
+    else 
+      your_opinion = nil 
+    end
+
+    if your_opinion
+      result['your_opinion'] = your_opinion 
+    else 
+      result['your_opinion'] = {
+        stance: 0,
+        user: "/user/#{current_user.id}",
+        statement: self.key,
+        published: false
+      }
+
+    end
+
+    o = ActiveRecord::Base.connection.execute """\
+      SELECT created_at, id, stance, user_id, updated_at, statement_id, statement_type
+          FROM opinions 
+          WHERE subdomain_id=#{self.subdomain_id} AND
+                statement_type='Point' AND
+                statement_id=#{self.id} AND 
+                published=1;
+      """
+
+    result['opinions'] = o.map do |op|
+      r = {
+        key: "/opinion/#{op[1]}",
+        # created_at: op[0],
+        updated_at: op[4],
+        # proposal: "/proposal/#{op[3]}",
+        user: "/user/#{op[3]}",
+        # published: true,
+        stance: op[2].to_f,
+        statement: "/#{op[6].downcase}/#{op[5]}"        
+      }
+
+      r 
+    end 
+
+
 
     result
   end
@@ -103,15 +149,6 @@ class Point < ApplicationRecord
   def recache
     self.comment_count = comments.count
 
-    # if we just look at self.inclusions, authors of unpublished opinions that
-    # included this point will be set as includers
-    opinions = Opinion.published \
-            .where(:proposal_id => self.proposal_id) \
-            .where("user_id IN (?)", self.inclusions.map {|i| i.user_id} ) \
-            .select(:stance, :user_id)
-
-    updated_includers = opinions.map {|x| x.user_id}
-
     # ###
     # # define cross-spectrum appeal
     # if updated_includers.length == 0 # special cases
@@ -133,8 +170,9 @@ class Point < ApplicationRecord
     #   self.score = updated_includers.length + standard_deviation * updated_includers.length
     # end
 
-    self.includers = updated_includers
-    self.last_inclusion = updated_includers.length > 0 ? self.inclusions.where("user_id IN (?)", updated_includers).order(:created_at).last.created_at.to_i : -1
+    # self.includers = updated_includers
+
+    self.last_inclusion = self.opinions.length > 0 ? self.opinions.order(:created_at).last.created_at.to_i : -1
 
     if changed?
       save(:validate => false) 

@@ -147,8 +147,8 @@ window.Proposal = ReactiveComponent
     # if there aren't community_points, then we won't bother showing them
     community_points = fetch("/page/#{@proposal.slug}").points or []
     if mode == 'crafting'
-      included_points = your_opinion.point_inclusions
-      community_points = (pnt for pnt in community_points when !_.contains(included_points, pnt.key) )
+      included_points = (pnt for pnt in community_points when pnt.your_opinion.published)
+      community_points = (pnt for pnt in community_points when !pnt.your_opinion.published)
     has_community_points = community_points.length > 0 
 
 
@@ -810,9 +810,11 @@ DecisionBoard = ReactiveComponent
 
     # if there aren't points in the wings, then we won't bother showing 
     # the drop target
-    wing_points = fetch("/page/#{@proposal.slug}").points or [] 
-    included_points = your_opinion.point_inclusions
-    wing_points = (pnt for pnt in wing_points when !_.contains(included_points, pnt.key) )
+    points = fetch("/page/#{@proposal.slug}").points or [] 
+
+    included_points = (pnt for pnt in points when pnt.your_opinion.published)
+    wing_points = (pnt for pnt in points when !pnt.your_opinion.published)
+
     are_points_in_wings = wing_points.length > 0 
     
     decision_board_style =
@@ -938,7 +940,7 @@ DecisionBoard = ReactiveComponent
                 points_editable: true
                 points_draggable: true
                 drop_target: are_points_in_wings
-                points: (p for p in your_opinion.point_inclusions \
+                points: (p for p in included_points \
                               when fetch(p).is_pro)
 
               PointsList 
@@ -948,7 +950,7 @@ DecisionBoard = ReactiveComponent
                 points_editable: true
                 points_draggable: true
                 drop_target: are_points_in_wings
-                points: (p for p in your_opinion.point_inclusions \
+                points: (p for p in included_points \
                               when !fetch(p).is_pro)
 
 
@@ -1018,10 +1020,7 @@ DecisionBoard = ReactiveComponent
 
         if your_opinion.published && permit('update opinion', @proposal, your_opinion) > 0
           remove_opinion = -> 
-            your_opinion.stance = 0
-            your_opinion.point_inclusions = []                   
-            your_opinion.published = false 
-            save your_opinion
+            destroy your_opinion.key
 
           DIV 
             className: 'below_save'
@@ -1062,14 +1061,19 @@ DecisionBoard = ReactiveComponent
           your_opinion = @proposal.your_opinion
           your_opinion.key ?= "/new/opinion"
           your_opinion.published = true
-          your_opinion.point_inclusions.push(
-            ui.draggable.parent().data('id'))
-          save(your_opinion)
+          save your_opinion
+
+          point_id = ui.draggable.parent().data('id')
+          po =
+            key: "/new/opinion"
+            statement: point_id
+            stance: 0.5
+          save po
 
           window.writeToLog
             what: 'included point'
             details: 
-              point: ui.draggable.parent().data('id')
+              point: point_id
 
           db.user_hovering_on_drop_target = false
           save db
@@ -1265,7 +1269,6 @@ GroupSelectionRegion = ReactiveComponent
   
 
 
-stored_points_order = {}
 buildPointsList = (proposal, valence, sort_field, filter_included, show_all_points) ->
   sort_field = sort_field or 'score'
   points = fetch("/page/#{proposal.slug}").points or []
@@ -1280,10 +1283,10 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
   points = (pnt for pnt in points when pnt.is_pro == (valence == 'pros') )
 
 
+  included_points = (pnt for pnt in points when pnt.your_opinion.published)
 
-  included_points = proposal.your_opinion.point_inclusions
   if filter_included
-    points = (pnt for pnt in points when !_.contains(included_points, pnt.key) )
+    points = (pnt for pnt in points when !pnt.your_opinion.published)
   else 
     for pnt in included_points
       point = fetch pnt 
@@ -1302,15 +1305,12 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
     opinions = (o for o in opinions when salience[o.user.key or o.user] == 1)
     filtered = true
 
-
   # order points by resonance to users in view.    
-  point_inclusions_per_point = {} # map of points to including users
-  _.each opinions, (opinion_key) =>
-    opinion = fetch(opinion_key)
-    if opinion.point_inclusions
-      for point in opinion.point_inclusions
-        point_inclusions_per_point[point] ||= 0
-        point_inclusions_per_point[point] += 1
+  opinions_per_point = {} # map of points to including users
+  for point in points
+    opinions_per_point[point.key] ?= 0
+    for o in point.opinions or []
+      opinions_per_point[point.key] += o.stance
 
   # try enforce k=2-anonymity for hidden points
   # if opinions.length < 2
@@ -1318,26 +1318,17 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
   #     if fetch(point).hide_name
   #       delete point_inclusions_per_point[point]
 
-  # really ugly, but if we're hovering over point includers, turning on the point includer filter, 
-  # the points will automatically re-sort, causing flickering, unless we some how undo the auto 
-  # sorting caused by the point includer filter
-  active_views = _.without Object.keys(opinion_views.active_views), 'point_includers'
-  sort_key = JSON.stringify {proposal:proposal.key, valence, sort_field, filter_included, show_all_points, views: active_views, pnts: (pnt.key for pnt in points)}
-  if sort_key of stored_points_order && opinion_views.active_views.point_includers
-    points = stored_points_order[sort_key]
-  else 
-    points = (pnt for pnt in points when (pnt.key of point_inclusions_per_point) || (TWO_COL() && pnt.key in included_points))
+  points = (pnt for pnt in points when (pnt.key of opinions_per_point) || (TWO_COL() && pnt.key in included_points))
 
-    # Sort points based on resonance with selected users, or custom sort_field
-    sort = (pnt) ->
-      if filtered
-        -point_inclusions_per_point[pnt.key] 
-      else
-        -pnt[sort_field]
+  # Sort points based on resonance with selected users, or custom sort_field
+  sort = (pnt) ->
+    if filtered
+      -opinions_per_point[pnt.key] 
+    else
+      -pnt[sort_field]
 
 
-    points = _.sortBy points, sort
-    stored_points_order[sort_key] = points
+  points = _.sortBy points, sort
 
   (pnt.key for pnt in points)
 

@@ -139,18 +139,11 @@ def get_new_activity(subdomain, user, since)
       end 
 
     elsif opinion.statement_type == 'Point'
-      next if new_points.key?(statement.id)
+      pnt = statement
+      next if new_points.key?(pnt.id)
 
-    end 
-
-  end 
-
-  # TODO: move this inclusion detector up into the "new_opinions" section above
-  user.points.published.where(:subdomain_id => subdomain.id).each do |pnt|
-    pnt.inclusions.where("created_at > '#{start_period}' AND created_at < '#{end_period}' AND user_id != #{user.id}").each do |inclusion|
-      pnt = inclusion.point
       proposal = pnt.proposal
-      next if !proposal.user || new_proposals.key?(proposal.id) || proposal.opinions.published.where(:user_id => inclusion.user_id).count == 0
+      next if !proposal.user || new_proposals.key?(proposal.id)
 
       proposal_dict = proposal.user_id == user.id ? your_proposals : active_proposals
       if !proposal_dict.has_key?(proposal.id)
@@ -161,29 +154,33 @@ def get_new_activity(subdomain, user, since)
         }
       end
 
-      key = "new_inclusion_#{pnt.id}"
+      key = "new_point_opinion_#{pnt.id}"
       if !proposal_dict[proposal.id][:events].has_key? key 
         if pnt.user_id == user.id
           relationship = 'Your point'
         elsif user.comments.where(:point_id => pnt.id).count > 0 
           relationship = 'You commented on this point'
-        elsif user.inclusions.where(:point_id => pnt.id).count > 0 
-          relationship = 'You agreed with this point'
+        elsif pnt.opinions.where(:user_id => user.id).count > 0 
+          relationship = 'You evaluated this point'
         else 
           relationship = false 
         end
         proposal_dict[proposal.id][:events][key] = {
           :obj => pnt,
-          :type => 'new_inclusion',
-          :users => [inclusion.user],
+          :type => 'new_point_opinion',
+          :users => [opinion.user],
           :relationship => relationship
         }
       else 
-        proposal_dict[proposal.id][:events][key][:users].append inclusion.user
+        proposal_dict[proposal.id][:events][key][:users].append opinion.user
       end 
 
+
+
+
     end 
-  end
+
+  end 
 
   active = active_proposals.values()
   your = your_proposals.values()

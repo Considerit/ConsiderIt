@@ -15,32 +15,25 @@ class OpinionController < ApplicationController
     statement = params['statement_type'].constantize.find params['statement_id']
     authorize! 'publish opinion', statement
 
-    fields = ['statement_id', 'statement_type', 'stance', 'point_inclusions']
+    fields = ['statement_id', 'statement_type', 'stance']
     updates = params.select{|k,v| fields.include? k}.to_h
 
-    # Convert point_inclusions to ids
-    incs = updates['point_inclusions']
-    incs = [] if incs.nil? # Damn rails http://guides.rubyonrails.org/security.html#unsafe-query-generation
-
-    incs = incs.map! {|p| key_id(p)}
-    updates['point_inclusions'] = incs
-
     updates['user_id'] = current_user.id 
-    
+    updates['subdomain_id'] = current_subdomain.id
+
     opinion = Opinion.new updates 
-    opinion.update_inclusions incs
 
     opinion.save 
     opinion.publish()
     write_to_log({
       :what => 'published opinion',
-      :where => statement.slug || statement.key
+      :where => if statement.respond_to?(:slug) then statement.slug else statement.key end
     })
 
     original_id = key_id(params[:key])
     result = opinion.as_json
     result['key'] = "#{opinion.key}?original_id=#{original_id}"
-    
+
     dirty_key statement.key
     render :json => [result]
 
@@ -50,16 +43,8 @@ class OpinionController < ApplicationController
     opinion = Opinion.find key_id(params)
     authorize! 'update opinion', opinion
 
-    fields = ['stance', 'point_inclusions', 'explanation']
+    fields = ['stance', 'explanation']
     updates = params.select{|k,v| fields.include? k}.to_h
-
-    # Convert point_inclusions to ids
-    incs = updates['point_inclusions']
-    incs = [] if incs.nil? # Damn rails http://guides.rubyonrails.org/security.html#unsafe-query-generation
-
-    incs = incs.map! {|p| key_id(p)}
-    opinion.update_inclusions incs
-    updates['point_inclusions'] = incs
     
     # Update the normal fields
     opinion.update_attributes updates
@@ -95,4 +80,14 @@ class OpinionController < ApplicationController
 
   end
 
+  def destroy
+    opinion = Opinion.find params['id']
+    statement = opinion.statement
+
+    authorize! 'delete opinion', opinion
+
+    opinion.destroy
+    dirty_key statement.key
+    render :json => []    
+  end
 end

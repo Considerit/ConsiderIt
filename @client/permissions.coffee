@@ -150,8 +150,7 @@ permit = (action) ->
 
         # Allow the point author to delete this point before it is published.
         # After it gets published, however, it can influence other people, so the author shouldn't be able to delete.
-        # They can just remove it from their list if they don't believe it anymore. 
-        if point.includers.length > 1 || (point.includers.length == 1 && point.includers[0] != current_user.user)
+        if point.opinions.length > 1 || (point.opinions.length == 1 && point.opinions[0].user != current_user.user)
           return Permission.DISABLED
 
     when 'create comment'

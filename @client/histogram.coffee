@@ -144,7 +144,6 @@ window.clear_histogram_managed_opinion_views = (opinion_views, field) ->
   else 
     delete opinion_views.active_views.single_opinion_selected
     delete opinion_views.active_views.region_selected
-    delete opinion_views.active_views.point_includers
   save opinion_views
 
 
@@ -159,12 +158,12 @@ window.select_single_opinion = (user_opinion, created_by) ->
       created_by: created_by
       opinion: user_opinion.key 
       opinion_value: user_opinion.stance 
-      get_salience: (u, opinion, proposal) =>
+      get_salience: (u, opinion) =>
         if (u.key or u) == user_opinion.user
           1
         else 
           .1
-      get_weight: (u, opinion, proposal) =>
+      get_weight: (u, opinion) =>
         if (u.key or u) == user_opinion.user
           1
         else 
@@ -273,9 +272,9 @@ window.Histogram = ReactiveComponent
     score = pad score.toFixed(1),2
 
     if avg < -.03
-      exp = "#{(-1 * avg * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.oppose", @props.proposal, subdomain)}"
+      exp = "#{(-1 * avg * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.oppose", proposal, subdomain)}"
     else if avg > .03
-      exp = "#{(avg * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.support", @props.proposal, subdomain)}"
+      exp = "#{(avg * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.support", proposal, subdomain)}"
     else 
       exp = translator "engage.slider_feedback.neutral", "Neutral"
 
@@ -328,8 +327,8 @@ window.Histogram = ReactiveComponent
           id: "engage.histogram.explanation_extended"
           num_opinions: opinions.length 
           avg_score: exp
-          negative_pole: get_slider_label("slider_pole_labels.oppose", @props.proposal, subdomain)
-          positive_pole: get_slider_label("slider_pole_labels.support", @props.proposal, subdomain)
+          negative_pole: get_slider_label("slider_pole_labels.oppose", proposal, subdomain)
+          positive_pole: get_slider_label("slider_pole_labels.support", proposal, subdomain)
 
           """{num_opinions, plural, one {one person's opinion of} other {# people's opinion, with an average of}} {avg_score} 
              on a spectrum from {negative_pole} to {positive_pole}. 
@@ -355,7 +354,7 @@ window.Histogram = ReactiveComponent
           'content-visibility': 'auto'
 
         HistoAvatars
-          key: @props.proposal.key or @props.proposal        
+          key: proposal.key
           dirtied: dirtied
           weights: @weights
           salience: @salience
@@ -482,7 +481,7 @@ window.Histogram = ReactiveComponent
           opinion_views.active_views.region_selected =
             created_by: @props.key 
             opinion_value: @local.mouse_opinion_value
-            get_salience: (u, opinion, proposal) => 
+            get_salience: (u, opinion) => 
               if @users_in_region[u.key || u] 
                 1
               else
@@ -595,8 +594,6 @@ window.Histogram = ReactiveComponent
       1
 
   PhysicsSimulation: ->
-    proposal = fetch @props.proposal
-
     # We only need to rerun the sim if the distribution of stances has changed, 
     # or the width/height of the histogram has changed. We round the stance to two 
     # decimals to avoid more frequent recalculations than necessary (one way 
@@ -647,9 +644,6 @@ window.Histogram = ReactiveComponent
         all_groups: if has_groups then get_user_groups_from_views(@groups)
         layout_params: layout_params
 
-
-
-    
 
   componentDidMount: ->   
     @PhysicsSimulation()

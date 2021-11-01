@@ -45,7 +45,7 @@ module Exports
 
   def points(subdomain)
     fname = "#{subdomain.name}-points"
-    heading = ['proposal', 'type', 'created', "username", "author", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
+    heading = ['proposal', 'type', 'created', "username", "author", "valence", "summary", "details", 'author_opinion', '#opinions', '#comments']
     rows = []
     rows.append heading 
 
@@ -53,7 +53,7 @@ module Exports
       proposal.points.published.each do |pnt|
         begin 
           opinion = pnt.proposal.opinions.published.find_by_user_id(pnt.user_id)
-          rows.append [pnt.proposal.slug, 'POINT', pnt.created_at, pnt.hide_name ? 'ANONYMOUS' : pnt.user.name, pnt.hide_name ? 'ANONYMOUS' : pnt.user.email.gsub('.ghost', ''), pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance : '-', pnt.inclusions.count, pnt.comments.count]
+          rows.append [pnt.proposal.slug, 'POINT', pnt.created_at, pnt.hide_name ? 'ANONYMOUS' : pnt.user.name, pnt.hide_name ? 'ANONYMOUS' : pnt.user.email.gsub('.ghost', ''), pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance : '-', pnt.opinions.count, pnt.comments.count]
 
           pnt.comments.each do |comment|
             opinion = pnt.proposal.opinions.published.find_by_user_id(comment.user_id) 

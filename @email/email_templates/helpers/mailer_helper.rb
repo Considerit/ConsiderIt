@@ -141,7 +141,7 @@ module MailerHelper
       case ev[:type] 
       when 'new_opinion'
         1
-      when 'new_inclusion'
+      when 'new_point_opinion'
         2
       when 'new_point'
         3
@@ -163,7 +163,7 @@ module MailerHelper
       case ev[:type] 
       when 'new_opinion'
         label = 'added their opinion'
-      when 'new_inclusion'
+      when 'new_point_opinion'
         label = "{ people_count, plural, 
                      one {agrees with:} 
                      other {agree with} }"

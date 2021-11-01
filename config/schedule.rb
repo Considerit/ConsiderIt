@@ -20,10 +20,6 @@ every :day, :at => '1:30 am' do
   envcommand 'bundle exec bin/delayed_job restart'
 end
 
-every 1.hour do
-  rake 'clear_null_inclusions'
-end
-
 every 20.minutes do 
   rake 'send_email_notifications'
 end

@@ -1,7 +1,7 @@
 # coding: utf-8
 
 class Proposal < ApplicationRecord
-  include Slideable
+  include Moderatable, Notifier, Slideable
 
   has_many :points, :dependent => :destroy
 
@@ -20,7 +20,7 @@ class Proposal < ApplicationRecord
 
   acts_as_tenant :subdomain
 
-  include Moderatable, Notifier
+  
   
   class_attribute :my_public_fields
   self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :name, :description, :active, :hide_on_homepage, :published, :subdomain_id, :json]
@@ -76,7 +76,7 @@ class Proposal < ApplicationRecord
 
   end
 
-  def full_data
+  def child_points_json
 
     if self.subdomain.moderation_policy == 1
       moderation_status_check = 'moderation_status=1'
@@ -119,7 +119,6 @@ class Proposal < ApplicationRecord
       json['your_opinion'] = {
         stance: 0,
         user: "/user/#{current_user.id}",
-        point_inclusions: [],
         statement: self.key,
         published: false
       }
@@ -127,8 +126,8 @@ class Proposal < ApplicationRecord
     end
 
     o = ActiveRecord::Base.connection.execute """\
-      SELECT created_at, id, point_inclusions, 
-      stance, user_id, updated_at, explanation
+      SELECT created_at, id, 
+      stance, user_id, updated_at, statement_id, statement_type
           FROM opinions 
           WHERE subdomain_id=#{self.subdomain_id} AND
                 statement_type='Proposal' AND
@@ -140,20 +139,14 @@ class Proposal < ApplicationRecord
       r = {
         key: "/opinion/#{op[1]}",
         # created_at: op[0],
-        updated_at: op[5],
+        updated_at: op[4],
         # proposal: "/proposal/#{op[3]}",
-        user: "/user/#{op[4]}",
+        user: "/user/#{op[3]}",
         # published: true,
-        stance: op[3].to_f
+        stance: op[2].to_f,
+        statement: "/#{op[6].downcase}/#{op[5]}" 
 
       }
-      if op[7]
-        r['explanation'] = op[7]
-      end
-
-      if op[2] && op[2] != '[]'
-        r[:point_inclusions] = Oj.load(op[2]).map! {|p| "/point/#{p}"}
-      end 
 
       r 
     end 
@@ -189,7 +182,7 @@ class Proposal < ApplicationRecord
       moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
     end
 
-    json['point_count'] = self.points.where("(published=1 AND #{moderation_status_check} AND json_length(includers) > 0) OR user_id=#{current_user.id}").count
+    json['point_count'] = self.points.where("(published=1 AND #{moderation_status_check}) OR user_id=#{current_user.id}").count
 
     json
   end

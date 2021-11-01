@@ -275,10 +275,12 @@ protected
         slug = key[6..key.length]
         proposal = Proposal.find_by_slug slug
 
+
         begin 
-          clean = proposal.full_data
+          clean = proposal.child_points_json
           response.append clean
         rescue => e
+          pp e
           ExceptionNotifier.notify_exception(e, data: {slug: slug, key: key})
         end
 

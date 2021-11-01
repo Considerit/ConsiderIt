@@ -244,7 +244,6 @@ class ImportDataController < ApplicationController
               modified[table].push "Created Opinion by #{user.name} on '#{proposal.name}'"
             else
               opinion.update_attributes attrs
-              opinion.recache
               modified[table].push "Updated Opinion by #{user.name} on '#{proposal.name}'"
             end
 

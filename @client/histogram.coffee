@@ -179,14 +179,13 @@ window.Histogram = ReactiveComponent
     if loc.query_params.show_histogram_layout
       window.show_histogram_layout = true
 
-    proposal = fetch @props.proposal
+    statement = fetch @props.statement
 
     opinion_views = fetch 'opinion_views'
-    {weights, salience, groups} = compose_opinion_views @props.opinions, proposal
-    @weights = weights
-    @salience = salience 
-    @groups = groups
-    @opinions = opinions = get_opinions_for_proposal @props.opinions, proposal, weights
+    {weights, salience, groups} = compose_opinion_views @props.opinions, statement
+    @weights = weights; @salience = salience; @groups = groups
+
+    @opinions = get_opinions_for_proposal @props.opinions, statement, weights
     @opinions.sort (a,b) -> a.stance - b.stance
 
     histocache_key = @histocache_key()
@@ -210,8 +209,8 @@ window.Histogram = ReactiveComponent
     @props.draw_base_labels ?= true
 
 
-    @props.enable_individual_selection &&= opinions.length > 0
-    @props.enable_range_selection &&= opinions.length > 1
+    @props.enable_individual_selection &&= @opinions.length > 0
+    @props.enable_range_selection &&= @opinions.length > 1
 
     # whether to show the shaded opinion selection region in the histogram
     draw_selection_area = @props.enable_range_selection &&
@@ -229,8 +228,8 @@ window.Histogram = ReactiveComponent
 
       className: 'histogram'
       'aria-hidden': @props.backgrounded
-      'aria-labelledby': if !@props.backgrounded then "##{proposal.id}-histo-label"
-      'aria-describedby': if !@props.backgrounded then "##{proposal.id}-histo-description"
+      'aria-labelledby': if !@props.backgrounded then "##{statement.id}-histo-label"
+      'aria-describedby': if !@props.backgrounded then "##{statement.id}-histo-description"
 
       style: css.crossbrowserify
         width: @props.width
@@ -264,17 +263,17 @@ window.Histogram = ReactiveComponent
         , 0
 
     score = 0
-    for o in opinions 
+    for o in @opinions 
       score += o.stance
-    avg = score / opinions.length
+    avg = score / @opinions.length
     negative = score < 0
     score *= -1 if negative
     score = pad score.toFixed(1),2
 
     if avg < -.03
-      exp = "#{(-1 * avg * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.oppose", proposal, subdomain)}"
+      exp = "#{(-1 * avg * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.oppose", statement, subdomain)}"
     else if avg > .03
-      exp = "#{(avg * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.support", proposal, subdomain)}"
+      exp = "#{(avg * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.support", statement, subdomain)}"
     else 
       exp = translator "engage.slider_feedback.neutral", "Neutral"
 
@@ -311,24 +310,24 @@ window.Histogram = ReactiveComponent
 
     DIV histogram_props, 
       DIV 
-        id: "##{proposal.id}-histo-label"
+        id: "##{statement.id}-histo-label"
         className: 'hidden'
         
         translator 
           id: "engage.histogram.explanation"
-          num_opinions: opinions.length 
+          num_opinions: @opinions.length 
           "Histogram showing {num_opinions, plural, one {# opinion} other {# opinions}}"
 
       DIV 
-        id: "##{proposal.id}-histo-description"
+        id: "##{statement.id}-histo-description"
         className: 'hidden'
 
         translator 
           id: "engage.histogram.explanation_extended"
-          num_opinions: opinions.length 
+          num_opinions: @opinions.length 
           avg_score: exp
-          negative_pole: get_slider_label("slider_pole_labels.oppose", proposal, subdomain)
-          positive_pole: get_slider_label("slider_pole_labels.support", proposal, subdomain)
+          negative_pole: get_slider_label("slider_pole_labels.oppose", statement, subdomain)
+          positive_pole: get_slider_label("slider_pole_labels.support", statement, subdomain)
 
           """{num_opinions, plural, one {one person's opinion of} other {# people's opinion, with an average of}} {avg_score} 
              on a spectrum from {negative_pole} to {positive_pole}. 
@@ -354,7 +353,7 @@ window.Histogram = ReactiveComponent
           'content-visibility': 'auto'
 
         HistoAvatars
-          key: proposal.key
+          key: statement.key
           dirtied: dirtied
           weights: @weights
           salience: @salience
@@ -385,13 +384,13 @@ window.Histogram = ReactiveComponent
         position: 'absolute'
         left: 0
 
-      get_slider_label("slider_pole_labels.oppose", @props.proposal, subdomain)
+      get_slider_label("slider_pole_labels.oppose", @props.statement, subdomain)
     SPAN
       style: _.extend {}, label_style,
         position: 'absolute'
         right: 0
 
-      get_slider_label("slider_pole_labels.support", @props.proposal, subdomain)
+      get_slider_label("slider_pole_labels.support", @props.statement, subdomain)
     ]
 
   drawSelectionArea: -> 
@@ -513,7 +512,7 @@ window.Histogram = ReactiveComponent
 
   onMouseMove: (ev) ->     
 
-    return if fetch(namespaced_key('slider', @props.proposal)).is_moving  || \
+    return if fetch(namespaced_key('slider', @props.statement)).is_moving  || \
               @props.backgrounded || !@props.enable_range_selection || \
               !is_histogram_controlling_region_selection(@props.key)
 
@@ -547,7 +546,7 @@ window.Histogram = ReactiveComponent
     save @local
 
   onMouseDown: (ev) -> 
-    return if fetch(namespaced_key('slider', @props.proposal)).is_moving
+    return if fetch(namespaced_key('slider', @props.statement)).is_moving
     ev.stopPropagation()
     return false 
       # The return false prevents text selections
@@ -556,7 +555,7 @@ window.Histogram = ReactiveComponent
 
 
   onMouseLeave: (ev) ->     
-    return if fetch(namespaced_key('slider', @props.proposal)).is_moving
+    return if fetch(namespaced_key('slider', @props.statement)).is_moving
 
     opinion_views = fetch 'opinion_views'
     active = opinion_views.active_views
@@ -572,8 +571,6 @@ window.Histogram = ReactiveComponent
     key = """#{JSON.stringify( (Math.round(fetch(o.key).stance * 100) for o in @opinions) )} #{JSON.stringify(@weights)} #{JSON.stringify(@groups)} (#{@props.width}, #{@props.height})"""
     md5 key
 
-
-
   isMultiWeighedHistogram: -> 
     multi_weighed = false
     previous = null  
@@ -585,6 +582,7 @@ window.Histogram = ReactiveComponent
       previous = v
 
     multi_weighed
+
   getFillRatio: -> 
     if @props.layout_params?.fill_ratio
       @props.layout_params.fill_ratio

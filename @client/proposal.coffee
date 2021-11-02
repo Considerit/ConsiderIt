@@ -276,8 +276,8 @@ window.Proposal = ReactiveComponent
 
               Histogram
                 key: namespaced_key('histogram', @proposal)
-                proposal: @proposal
-                opinions: opinionsForProposal(@proposal)
+                statement: @proposal
+                opinions: opinions_for_statement(@proposal)
                 width: PROPOSAL_HISTO_WIDTH()
                 height: if fetch('histogram-dock').docked then 50 else 170
                 enable_individual_selection: true

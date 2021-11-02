@@ -241,8 +241,8 @@ window.asset = (name) ->
 
 #####
 # data 
-window.opinionsForProposal = (proposal) ->       
-  opinions = fetch(proposal).opinions || []
+window.opinions_for_statement = (statement) ->
+  opinions = fetch(statement).opinions || []
   opinions
 
 

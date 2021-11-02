@@ -61,9 +61,9 @@ window.HistogramTester = ReactiveComponent
         histos.push _.extend {}, size, {layout_params: layout}
 
     proposals = fetch('/proposals').proposals
-    proposals.sort (a,b) -> opinionsForProposal(b).length - opinionsForProposal(a).length
+    proposals.sort (a,b) -> opinions_for_statement(b).length - opinions_for_statement(a).length
 
-    # proposals.sort (b,a) -> opinionsForProposal(b).length - opinionsForProposal(a).length
+    # proposals.sort (b,a) -> opinions_for_statement(b).length - opinions_for_statement(a).length
 
     proposals_to_show = proposals.slice(start_idx,start_idx + num_histos)
 
@@ -80,8 +80,8 @@ window.HistogramTester = ReactiveComponent
 
       for proposal, idx in proposals_to_show
         histo = 
-          proposal: proposal
-          opinions: opinionsForProposal(proposal)
+          statement: proposal
+          opinions: opinions_for_statement(proposal)
           enable_individual_selection: false
           enable_range_selection: false
           draw_base: true

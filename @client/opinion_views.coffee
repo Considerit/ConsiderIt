@@ -20,7 +20,7 @@ window.compose_opinion_views = (opinions, proposal, opinion_views) ->
   active_views = opinion_views.active_views
 
   if !opinions
-    opinions = opinionsForProposal(proposal)
+    opinions = opinions_for_statement(proposal)
 
   weights = {}
   salience = {}
@@ -62,7 +62,7 @@ window.compose_opinion_views = (opinions, proposal, opinion_views) ->
 
 window.get_opinions_for_proposal = (opinions, proposal, weights) ->
   if !opinions
-    opinions = opinionsForProposal proposal
+    opinions = opinions_for_statement proposal
   if !weights
     {weights, salience, groups} = compose_opinion_views(opinions, proposal)
 
@@ -193,7 +193,7 @@ build_influencer_network = ->
 
 
   for proposal in proposals.proposals 
-    opinions = opinionsForProposal proposal
+    opinions = opinions_for_statement proposal
     for opinion in opinions  
       continue if opinion.stance < 0.1
 

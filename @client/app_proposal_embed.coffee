@@ -35,7 +35,7 @@ proposal_link = (proposal, results) ->
   "#{location_origin()}/#{proposal.slug}#{if results then '?results=true' else ''}"
 
 
-window.opinionsForProposal = (proposal) ->       
+window.opinions_for_statement = (proposal) ->       
   opinions = fetch(proposal).opinions || []
   opinions
 
@@ -192,8 +192,8 @@ Proposal = ReactiveComponent
               
           Histogram
             key: namespaced_key('histogram', @proposal)
-            proposal: @proposal
-            opinions: opinionsForProposal(@proposal)
+            statement: @proposal
+            opinions: opinions_for_statement(@proposal)
             width: histo_width
             height: 80
             enable_individual_selection: false

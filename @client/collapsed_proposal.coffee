@@ -35,31 +35,8 @@ window.CollapsedProposal = ReactiveComponent
 
     subdomain = fetch '/subdomain'
 
-    your_opinion = proposal.your_opinion
-    if your_opinion.key 
-      fetch your_opinion.key 
-
-    if your_opinion.published
-      can_opine = permit 'update opinion', proposal, your_opinion, subdomain
-    else
-      can_opine = permit 'publish opinion', proposal, subdomain
-
-    draw_slider = can_opine > 0 || your_opinion.published
-
     icons = customization('show_proposer_icon', proposal, subdomain) && !@props.hide_icons && !customization('anonymize_everything')
     show_proposal_scores = !@props.hide_scores && customization('show_proposal_scores', proposal, subdomain)
-
-    if draw_slider
-      slider = fetch "slider-small-#{proposal.key}"
-    else 
-      slider = null 
-
-    if slider && your_opinion && slider.value != your_opinion.stance && !slider.has_moved 
-      # Update the slider value when the server gets back to us
-      slider.value = your_opinion.stance
-      if your_opinion.stance
-        slider.has_moved = true
-      save slider
 
     # sub_creation = new Date(fetch('/subdomain').created_at).getTime()
     # creation = new Date(proposal.created_at).getTime()
@@ -67,18 +44,8 @@ window.CollapsedProposal = ReactiveComponent
 
     can_edit = permit('update proposal', proposal, subdomain) > 0
 
-    opinion_views = fetch 'opinion_views'
-    just_you = opinion_views.active_views['just_you']
-
     opinion_publish_permission = permit('publish opinion', proposal, subdomain)
 
-    slider_interpretation = (value) => 
-      if value > .03
-        "#{(value * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.support", proposal, subdomain)}"
-      else if value < -.03 
-        "#{-1 * (value * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.oppose", proposal, subdomain)}"
-      else 
-        translator "engage.slider_feedback.neutral", "Neutral"
 
     LI
       key: proposal.key
@@ -91,20 +58,6 @@ window.CollapsedProposal = ReactiveComponent
         margin: "0 0 #{if can_edit then '0' else '15px'} 0"
         padding: 0
         listStyle: 'none'
-
-
-      onMouseEnter: => 
-        if draw_slider
-          @local.hover_proposal = proposal.key; save @local
-      onMouseLeave: => 
-        if draw_slider && !slider.is_moving
-          @local.hover_proposal = null; save @local
-      onFocus: => 
-        if draw_slider
-          @local.hover_proposal = proposal.key; save @local
-      onBlur: => 
-        if draw_slider && !slider.is_moving
-          @local.hover_proposal = null; save @local
 
       DIV 
         style: 
@@ -189,7 +142,7 @@ window.CollapsedProposal = ReactiveComponent
               color: '#000'            
               fontSize: 20
               
-            href: proposal_url(proposal, just_you && current_user.logged_in)
+            href: proposal_url(proposal, false)
 
             proposal.name
 
@@ -303,7 +256,6 @@ window.CollapsedProposal = ReactiveComponent
           if can_edit
             DIV
               style: 
-                visibility: if !@local.hover_proposal then 'hidden'
                 position: 'relative'
                 top: -2
 
@@ -343,7 +295,7 @@ window.CollapsedProposal = ReactiveComponent
           width: col_sizes.second
           marginLeft: col_sizes.gutter
 
-        SLIDERGRAM
+        Slidergram
           width: col_sizes.second
           statement: proposal
     

@@ -46,8 +46,8 @@ window.List = ReactiveComponent
     list = @props.list
     list_key = list.key
 
-    # subscribe to a key that will alert us to when sort order has changed
-    fetch('homepage_you_updated_proposal')
+    # subscribe to a key that will alert us to when sort order may have changed
+    fetch('slider_dragged')
 
     proposals = list.proposals or []
 

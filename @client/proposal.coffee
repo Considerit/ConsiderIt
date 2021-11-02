@@ -983,7 +983,7 @@ DecisionBoard = ReactiveComponent
         BUTTON 
           className:'save_opinion_button btn'
           style:
-            # display: 'none'
+            display: 'none'
             backgroundColor: focus_color()
             width: '100%'
             marginTop: 14

@@ -47,13 +47,10 @@ window.CollapsedProposal = ReactiveComponent
     draw_slider = can_opine > 0 || your_opinion.published
 
     icons = customization('show_proposer_icon', proposal, subdomain) && !@props.hide_icons && !customization('anonymize_everything')
-    slider_regions = customization('slider_regions', proposal, subdomain)
     show_proposal_scores = !@props.hide_scores && customization('show_proposal_scores', proposal, subdomain)
 
-    opinions = opinionsForProposal(proposal)
-
     if draw_slider
-      slider = fetch "homepage_slider#{proposal.key}"
+      slider = fetch "slider-small-#{proposal.key}"
     else 
       slider = null 
 
@@ -72,7 +69,6 @@ window.CollapsedProposal = ReactiveComponent
 
     opinion_views = fetch 'opinion_views'
     just_you = opinion_views.active_views['just_you']
-    everyone = !!opinion_views.active_views['everyone'] || !!opinion_views.active_views['weighed_by_substantiated'] || !!opinion_views.active_views['weighed_by_recency']
 
     opinion_publish_permission = permit('publish opinion', proposal, subdomain)
 
@@ -338,10 +334,7 @@ window.CollapsedProposal = ReactiveComponent
                   TRANSLATE 'engage.delete_button', 'delete'
 
 
-
-
-      # Histogram for Proposal
-      DIV 
+      DIV
         style: 
           display: 'inline-block' 
           position: 'relative'
@@ -349,80 +342,10 @@ window.CollapsedProposal = ReactiveComponent
           verticalAlign: 'top'
           width: col_sizes.second
           marginLeft: col_sizes.gutter
-                
 
-        Histogram
-          key: "histogram-#{proposal.slug}"
-          proposal: proposal
-          opinions: opinions
+        SLIDERGRAM
           width: col_sizes.second
-          height: 40
-          enable_individual_selection: !browser.is_mobile
-          enable_range_selection: !just_you && !browser.is_mobile
-          draw_base: true
-          draw_base_labels: !slider_regions
-
-        Slider 
-          base_height: 0
-          draw_handle: !!draw_slider
-          key: "homepage_slider#{proposal.key}"
-          width: col_sizes.second
-          polarized: true
-          regions: slider_regions
-          respond_to_click: false
-          base_color: 'transparent'
-          handle: slider_handle.triangley
-          handle_height: 18
-          handle_width: 21
-          handle_style: 
-            opacity: if just_you && !browser.is_mobile && @local.hover_proposal != proposal.key && !@local.slider_has_focus then 0 else 1             
-          offset: true
-          ticks: 
-            increment: .5
-            height: 2
-
-          handle_props:
-            use_face: false
-          label: translator
-                    id: "sliders.instructions"
-                    negative_pole: get_slider_label("slider_pole_labels.oppose", proposal, subdomain)
-                    positive_pole: get_slider_label("slider_pole_labels.support", proposal, subdomain)
-                    "Express your opinion on a slider from {negative_pole} to {positive_pole}"
-          onBlur: (e) => @local.slider_has_focus = false; save @local
-          onFocus: (e) => @local.slider_has_focus = true; save @local 
-
-          readable_text: slider_interpretation
-          onMouseUpCallback: (e) =>
-            # We save the slider's position to the server only on mouse-up.
-            # This way you can drag it with good performance.
-            if your_opinion.stance != slider.value
-
-              # save distance from top that the proposal is at, so we can 
-              # maintain that position after the save potentially triggers 
-              # a re-sort. 
-              prev_offset = @getDOMNode().offsetTop
-              prev_scroll = window.scrollY
-
-              your_opinion.stance = slider.value
-              your_opinion.published = true
-
-              your_opinion.key ?= "/new/opinion"
-              save your_opinion
-              window.writeToLog 
-                what: 'move slider'
-                details: {proposal: proposal.key, stance: slider.value}
-              @local.slid = 1000
-
-              update = fetch('homepage_you_updated_proposal')
-              update.dummy = !update.dummy
-              save update
-
-            mouse_over_element = closest e.target, (node) => 
-              node == @getDOMNode()
-
-            if @local.hover_proposal == proposal.key && !mouse_over_element
-              @local.hover_proposal = null 
-              save @local
+          statement: proposal
     
       # little score feedback
       if show_proposal_scores        

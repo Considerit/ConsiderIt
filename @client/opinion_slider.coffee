@@ -52,7 +52,7 @@ window.OpinionSlider = ReactiveComponent
       className: 'opinion_slider'
       style : slider_style
 
-      if (@props.focused || TWO_COL()) && show_handle
+      if @props.focused && show_handle
         @drawFeedback() 
 
       Slider
@@ -108,10 +108,9 @@ window.OpinionSlider = ReactiveComponent
     slider = fetch @props.key
     current_user = fetch '/current_user'
 
-    return SPAN null if (!TWO_COL() && customization('discussion_enabled', @proposal))  || \
+    return SPAN null if (customization('discussion_enabled', @proposal))  || \
                          current_user.logged_in || slider.is_moving
     
-
     style = 
       #backgroundColor: '#eee'
       padding: 10
@@ -180,8 +179,6 @@ window.OpinionSlider = ReactiveComponent
         TRANSLATE "sliders.slide_prompt", 'Slide Your Overall Opinion'
       else if func = labels.slider_feedback or default_feedback
         func slider.value, @proposal
-      else if TWO_COL() 
-        TRANSLATE "sliders.slide_feedback_short", "Your opinion"
       else 
         ''
 
@@ -189,8 +186,8 @@ window.OpinionSlider = ReactiveComponent
 
     feedback_style = 
       pointerEvents: 'none' 
-      fontSize: if TWO_COL() then 22 else 30
-      fontWeight: if !TWO_COL() then 700
+      fontSize: 30
+      fontWeight: 700
       color: if @props.backgrounded then '#eee' else focus_color()
       textAlign: 'center'
       #visibility: if @props.backgrounded then 'hidden'
@@ -208,7 +205,7 @@ window.OpinionSlider = ReactiveComponent
 
     _.extend feedback_style, 
       position: 'absolute'      
-      top: if slider.docked then -57 else if !TWO_COL() then -80 else 37
+      top: if slider.docked then -57 else -80
       left: feedback_left
       marginLeft: -feedback_width / 2
       width: feedback_width
@@ -228,7 +225,7 @@ window.OpinionSlider = ReactiveComponent
     # Clicking on the slider handle should transition us between 
     # crafting <=> results. We should also transition to crafting 
     # when we've been dragging on the results page.
-    transition = !TWO_COL() && \
+    transition = \
        (slider.value == your_opinion.stance || mode == 'results') &&
        customization('discussion_enabled', @proposal)
 

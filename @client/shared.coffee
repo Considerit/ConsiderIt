@@ -306,7 +306,7 @@ window.proposal_url = (proposal, prefer_crafting_page) ->
   result = '/' + proposal.slug
   subdomain = fetch '/subdomain'
 
-  if TWO_COL() || !proposal.active || (!customization('show_crafting_page_first', proposal, subdomain) && !prefer_crafting_page) || !customization('discussion_enabled', proposal, subdomain)
+  if !proposal.active || (!customization('show_crafting_page_first', proposal, subdomain) && !prefer_crafting_page) || !customization('discussion_enabled', proposal, subdomain)
     result += '?results=true'
 
   return result

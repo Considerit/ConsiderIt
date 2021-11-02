@@ -39,7 +39,7 @@ setResponsive = ->
   h = window.innerHeight
 
   portrait = h > w
-  two_col = w < 1080 || browser.is_mobile
+  two_col = false
 
   # The document will be at least 900px
   document_width = Math.max(900, w)
@@ -50,7 +50,7 @@ setResponsive = ->
 
   whitespace = Math.max(100, w / 10)
 
-  body_width = if two_col 
+  body_width = if true 
                  content_width - 2 * gutter
                else 
                  content_width - 2 * gutter - 2 * whitespace
@@ -63,9 +63,9 @@ setResponsive = ->
 
   decision_board_width = body_width + 4 # the four is for the border
 
-  point_width = if two_col then body_width / 2 - 38 else decision_board_width / 2 - 30
+  point_width = if true then body_width / 2 - 38 else decision_board_width / 2 - 30
 
-  reasons_region_width = if !two_col
+  reasons_region_width = if false
                            decision_board_width + 2 * point_width + 76
                          else 
                            decision_board_width
@@ -93,8 +93,7 @@ setResponsive = ->
     REASONS_REGION_WIDTH: reasons_region_width
     POINT_FONT_SIZE: point_font_size
     AUTH_WIDTH: if browser.is_mobile then content_width else Math.max decision_board_width, 720
-    TWO_COL: two_col
-    SLIDER_HANDLE_SIZE: if two_col then 65 else 36
+    SLIDER_HANDLE_SIZE: 36
     CONTENT_WIDTH: content_width
     PORTRAIT_MOBILE: portrait && browser.is_mobile
     LANDSCAPE_MOBILE: !portrait && browser.is_mobile

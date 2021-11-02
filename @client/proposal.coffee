@@ -13,7 +13,7 @@ window.get_proposal_mode = ->
   loc = fetch('location')
   if loc.url == '/'
     return null
-  else if loc.query_params?.results || TWO_COL()
+  else if loc.query_params?.results
     'results' 
   else 
     'crafting'
@@ -334,7 +334,7 @@ window.Proposal = ReactiveComponent
                   minHeight: if show_all_points then minheight     
                   position: 'relative'
                   paddingBottom: '4em' #padding instead of margin for docking
-                  margin: "#{if draw_handle && !TWO_COL() then '24px' else '0'} auto 0 auto"
+                  margin: "#{if draw_handle then '24px' else '0'} auto 0 auto"
                   display: if !customization('discussion_enabled', @proposal) then 'none'
 
 
@@ -349,7 +349,7 @@ window.Proposal = ReactiveComponent
                 # Border + bubblemouth that is shown when there is a histogram selection
                 GroupSelectionRegion()
 
-                if !TWO_COL() && customization('discussion_enabled', @proposal)
+                if customization('discussion_enabled', @proposal)
                   Dock
                     key: 'decisionboard-dock'
                     docked_key: 'decisionboard'            
@@ -382,34 +382,32 @@ window.Proposal = ReactiveComponent
                   PointsList 
                     key: 'community_cons'
                     rendered_as: 'community_point'
-                    points_editable: TWO_COL()
                     valence: 'cons'
                     points_draggable: mode == 'crafting'
                     drop_target: false
                     points: buildPointsList \
                       @proposal, 'cons', \
                       (if mode == 'results' then 'score' else 'last_inclusion'), \ 
-                      mode == 'crafting' && !TWO_COL(), \
-                      mode == 'crafting' || TWO_COL() || (just_you && mode == 'results')
+                      mode == 'crafting', \
+                      mode == 'crafting' || (just_you && mode == 'results')
                     style: 
-                      visibility: if !TWO_COL() && !has_community_points then 'hidden'
+                      visibility: if !has_community_points then 'hidden'
 
 
                   #community pros
                   PointsList 
                     key: 'community_pros'
                     rendered_as: 'community_point'
-                    points_editable: TWO_COL()
                     valence: 'pros'
                     points_draggable: mode == 'crafting'
                     drop_target: false
                     points: buildPointsList \
                       @proposal, 'pros', \
                       (if mode == 'results' then 'score' else 'last_inclusion'), \ 
-                      mode == 'crafting' && !TWO_COL(), \
-                      mode == 'crafting' || TWO_COL() || (just_you && mode == 'results')
+                      mode == 'crafting', \
+                      mode == 'crafting' || (just_you && mode == 'results')
                     style: 
-                      visibility: if !TWO_COL() && !has_community_points then 'hidden'
+                      visibility: if !has_community_points then 'hidden'
 
               if !show_all_points
                 BUTTON 
@@ -887,7 +885,7 @@ DecisionBoard = ReactiveComponent
       H3 
         className: 'hidden'
         style: 
-          display: if !TWO_COL() && get_proposal_mode() == 'results' then 'none'
+          display: if get_proposal_mode() == 'results' then 'none'
 
         translator 
           id: "engage.opinion_crafting_explanation" 
@@ -1318,7 +1316,7 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
   #     if fetch(point).hide_name
   #       delete point_inclusions_per_point[point]
 
-  points = (pnt for pnt in points when (pnt.key of opinions_per_point) || (TWO_COL() && pnt.key in included_points))
+  points = (pnt for pnt in points when (pnt.key of opinions_per_point))
 
   # Sort points based on resonance with selected users, or custom sort_field
   sort = (pnt) ->
@@ -1457,8 +1455,6 @@ PointsList = ReactiveComponent
   drawCommunityPoints: (children) -> 
     x_pos = if @props.points_draggable
               if @props.valence == 'cons' then 0 else DECISION_BOARD_WIDTH()
-            else if !TWO_COL()
-              DECISION_BOARD_WIDTH() / 2
             else
               0
 
@@ -1481,7 +1477,7 @@ PointsList = ReactiveComponent
 
         transition: "transform #{TRANSITION_SPEED}ms"
         transform: "translate(#{x_pos}px, 0)"
-      if get_proposal_mode() == 'crafting' && !TWO_COL()
+      if get_proposal_mode() == 'crafting'
 
         [A
           className: 'hidden'

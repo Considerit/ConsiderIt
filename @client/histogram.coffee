@@ -222,7 +222,7 @@ window.Histogram = ReactiveComponent
                                 !@local.hovering_over_avatar))
 
 
-    histo_height = @props.height + REGION_SELECTION_VERTICAL_PADDING
+    histo_height = @props.height + (if @enable_range_selection then REGION_SELECTION_VERTICAL_PADDING else 0)
     histogram_props = 
       tabIndex: if !@props.backgrounded then 0
 

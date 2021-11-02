@@ -40,6 +40,8 @@ window.Slidergram = ReactiveComponent
         slider.has_moved = true
       save slider
 
+    @props.enable_range_selection ?= true
+
     DIV null,
 
       Histogram
@@ -47,9 +49,9 @@ window.Slidergram = ReactiveComponent
         statement: statement
         opinions: opinions_for_statement statement
         width: @props.width
-        height: 40
+        height: @props.height or 40
         enable_individual_selection: !browser.is_mobile
-        enable_range_selection: !just_you && !browser.is_mobile
+        enable_range_selection: !just_you && !browser.is_mobile && @props.enable_range_selection
         draw_base: true
         draw_base_labels: !slider_regions
 

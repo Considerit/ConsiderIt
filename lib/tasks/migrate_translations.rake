@@ -222,6 +222,10 @@ task :migrate_translations => :environment do
   delete_translation "engage.re-sort_list"
 
   delete_translation "engage.save_opinion_button"
+  delete_translation "engage.include_button"
+  delete_translation "engage.uninclude_explanation"
+  delete_translation "engage.include_explanation"
+  delete_translation "sliders.slide_feedback_short"
 
   sync_keys_with_english
   execute_translation_migration

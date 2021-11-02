@@ -17,10 +17,7 @@ window.Point = ReactiveComponent
 
       if @data().opinions
 
-        if draw_all_includers
-          includers = @buildIncluders()
-        else 
-          includers = [point.user]
+        includers = [point.user]
 
         s = #includers_style
           rows: 8
@@ -45,6 +42,8 @@ window.Point = ReactiveComponent
             style = 
               top: top_offset
               position: 'absolute'
+              width: 50
+              height: 50
 
             style[left_right] = side_offset
 
@@ -89,7 +88,7 @@ window.Point = ReactiveComponent
     else if @props.rendered_as == 'community_point'
       _.extend point_content_style,
         padding: 8
-        borderRadius: if TWO_COL() then "16px 16px 0 0" else 16
+        borderRadius: 16
         top: point_content_style.top - 8
         #left: point_content_style.left - 8
         #width: point_content_style.width + 16
@@ -123,7 +122,7 @@ window.Point = ReactiveComponent
     ioffset = -50
     includers_style[left_or_right] = ioffset
 
-    draw_all_includers = @props.rendered_as == 'community_point' || TWO_COL()
+    draw_all_includers = @props.rendered_as == 'community_point'
 
     if expand_to_see_details && !is_selected
       append = SPAN 
@@ -148,14 +147,6 @@ window.Point = ReactiveComponent
           e.preventDefault()
       style: point_style
 
-      if @props.rendered_as == 'decision_board_point'
-        DIV 
-          style: 
-            position: 'absolute'
-            left: 0
-            top: 0
-
-          if @data().is_pro then '•' else '•'
 
       DIV 
         className:'point_content'
@@ -259,9 +250,10 @@ window.Point = ReactiveComponent
 
 
         if current_user.user == point.user
+
           DIV null,
             if permit('update point', point) > 0 && 
-                (@props.rendered_as == 'decision_board_point' || TWO_COL())
+                (@props.rendered_as == 'decision_board_point')
               BUTTON
                 style:
                   fontSize: if browser.is_mobile then 24 else 14
@@ -279,7 +271,7 @@ window.Point = ReactiveComponent
                 translator 'engage.edit_button', 'edit'
 
             if permit('delete point', point) > 0 && 
-                (@props.rendered_as == 'decision_board_point' || TWO_COL())
+                (@props.rendered_as == 'decision_board_point')
               BUTTON
                 'data-action': 'delete-point'
                 style:
@@ -295,121 +287,25 @@ window.Point = ReactiveComponent
                     destroy @props.key
                 translator 'engage.delete_button', 'delete'
 
-      if @props.rendered_as != 'decision_board_point' 
-        DIV 
-          'aria-hidden': true
-          className:'includers'
-          onMouseEnter: @highlightSupporters
-          onMouseLeave: @unhighlightSupporters
-          style: includers_style
-            
-          renderIncluders(draw_all_includers)
+      DIV 
+        'aria-hidden': true
+        className:'includers'
+        onMouseEnter: @highlightSupporters
+        onMouseLeave: @unhighlightSupporters
+        style: includers_style
+          
+        renderIncluders(draw_all_includers)
 
 
-
-      if TWO_COL() || (!TWO_COL() && @props.enable_dragging)
-        your_opinion = @proposal.your_opinion
-        if your_opinion.key 
-          fetch your_opinion
-        if your_opinion?.published
-          can_opine = permit 'update opinion', @proposal, your_opinion
-        else
-          can_opine = permit 'publish opinion', @proposal
-
-        included = @included()
-        includePoint = (e) => 
-          e.stopPropagation()
-          e.preventDefault()
-
-          return unless e.type != 'click' || \
-                        (!browser.is_android_browser && e.type == 'click')
-          if included
-            @remove()
-          else 
-            @include()
-
-        if !TWO_COL() && @props.enable_dragging
-          right = (included && point.is_pro) || (!included && !point.is_pro)
-          if right 
-            sty = 
-              right: if !@local.focused_include then 20 else if included then -20 else -40
-          else 
-            sty = 
-              left: if !@local.focused_include then 20 else if included then -20 else -40
-
-          BUTTON
-            'aria-label': if included 
-                            translator 'engage.uninclude_explanation', 'Mark this point as unimportant and move to next point' 
-                          else 
-                            translator 'engage.include_explanation', 'Mark this point as important and move to next point'
-            style: _.extend sty, 
-              position: 'absolute'
-              top: 20
-              opacity: if !@local.focused_include then 0
-              padding: 0
-              backgroundColor: 'transparent'
-              border: 'none'              
-              display: if get_selected_point() then 'none'
-            onFocus: (e) => @local.focused_include = true; save @local
-            onBlur: (e) => @local.focused_include = false; save @local
-            onTouchEnd: includePoint
-            onClick: includePoint
-            onKeyDown: (e) => 
-              if e.which == 13 || e.which == 32
-
-                next = $(e.target).closest('.point').next().find('.point_content')
-                includePoint(e)
-                valence = if @data().is_pro then 'pros' else 'cons'
-
-                next.focus()
-                e.preventDefault()
-
-            I 
-              style: 
-                fontSize: if included then 25 else 40
-                color: focus_color()
-              className: "fa fa-long-arrow-#{if !right then 'left' else 'right'}"
-
-        else
-          BUTTON 
-            style: 
-              border: "1px solid #{ if included || @local.hover_important then focus_color() else '#414141'}"
-              borderTopColor: if included then focus_color() else 'transparent'
-              color: if included then 'white' else if @local.hover_important then focus_color() else "#414141"
-              position: 'relative'
-              top: -13
-              padding: '8px 5px'
-              textAlign: 'center'
-              borderRadius: '0 0 16px 16px'
-              cursor: 'pointer'
-              backgroundColor: if included then focus_color() else 'white'
-              fontSize: 18  
-              zIndex: 0
-              display: if can_opine < 0 then 'none'
-              width: '100%'
-
-            onMouseEnter: => 
-              @local.hover_important = true
-              save @local
-            onMouseLeave: => 
-              @local.hover_important = false
-              save @local
-
-            onTouchEnd: includePoint
-            onClick: includePoint
-            onKeyDown: (e) => 
-              if e.which == 13 || e.which == 32
-                includePoint(e)
-                e.preventDefault()
-
-            I
-              className: 'fa fa-thumbs-o-up'
-              style: 
-                display: 'inline-block'
-                marginRight: 10
-
-            translator("engage.include_button", "Important point") + "#{if included then '' else '?'}" 
-
+      DIV
+        style: 
+          margin: "8px 0 36px 0"
+          
+        Slidergram
+          width: POINT_WIDTH()
+          height: 40
+          statement: point
+          enable_range_selection: false
 
       if is_selected
         Discussion
@@ -418,11 +314,9 @@ window.Point = ReactiveComponent
           rendered_as: @props.rendered_as
 
   componentDidMount : ->    
-    @setDraggability()
     @ensureDiscussionIsInViewPort()
 
   componentDidUpdate : -> 
-    @setDraggability()
     @ensureDiscussionIsInViewPort()
 
 
@@ -448,32 +342,6 @@ window.Point = ReactiveComponent
 
       @local.is_selected = is_selected
       save @local
-
-  setDraggability : ->
-    # Ability to drag include this point if a community point, 
-    # or drag remove for point on decision board
-    # also: disable for results page
-
-    $point_content = $(@getDOMNode()).find('.point_content')
-    revert = 
-      if @props.rendered_as == 'community_point' 
-        'invalid' 
-      else (valid) =>
-        if !valid
-          @remove()
-        valid
-
-    if $point_content.hasClass "ui-draggable"
-      $point_content.draggable(if @props.enable_dragging then 'enable' else 'disable' ) 
-    else
-      $point_content.draggable
-        revert: revert
-        disabled: !@props.enable_dragging
-
-  included: -> 
-    point = fetch(@props.key)
-    point.your_opinion.published
-
 
   selectPoint: (e) ->
     e.stopPropagation()
@@ -558,8 +426,8 @@ styles += """
   margin-bottom: 0; }
 
 .point_includer_avatar {
-  width: 22px;
-  height: 22px; }
+  width: 50px;
+  height: 50px; }
 
 .community_point.con .point_includer_avatar {
   box-shadow: -1px 2px 0 0 #eeeeee; }

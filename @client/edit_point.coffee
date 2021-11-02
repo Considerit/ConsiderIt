@@ -44,7 +44,6 @@ window.EditPoint = ReactiveComponent
         position: 'relative'
         fontSize: 14
         zIndex: 1
-        marginTop: if TWO_COL() then 40
         marginBottom: 15
 
 

@@ -221,8 +221,8 @@ window.Histogram = ReactiveComponent
                                 @local.mouse_opinion_value && 
                                 !@local.hovering_over_avatar))
 
+    histo_height = @props.height + (if @props.enable_range_selection then REGION_SELECTION_VERTICAL_PADDING else 0)
 
-    histo_height = @props.height + (if @enable_range_selection then REGION_SELECTION_VERTICAL_PADDING else 0)
     histogram_props = 
       tabIndex: if !@props.backgrounded then 0
 
@@ -629,7 +629,8 @@ window.Histogram = ReactiveComponent
       #   if @isMounted()
 
       has_groups = Object.keys(@groups).length > 0
-      delegate_layout_task
+
+      task_params =
         task: 'layoutAvatars'
         histo: @local.key
         k: histocache_key
@@ -642,6 +643,8 @@ window.Histogram = ReactiveComponent
         all_groups: if has_groups then get_user_groups_from_views(@groups)
         layout_params: layout_params
 
+      delegate_layout_task task_params
+      # enqueue_histo_layout task_params
 
   componentDidMount: ->   
     @PhysicsSimulation()

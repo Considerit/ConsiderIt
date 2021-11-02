@@ -5,12 +5,12 @@ window.HistogramTester = ReactiveComponent
     # num_histos = 1
     # start_idx = 42
 
-    num_histos = 1
-    start_idx = 6
+    num_histos = 10
+    start_idx = 0
 
     common_layout_params = 
       show_histogram_layout: false  
-      verbose: true
+      verbose: false
       fill_ratio: 1
       cleanup_overlap: 1.95
       jostle: .4
@@ -18,9 +18,9 @@ window.HistogramTester = ReactiveComponent
     layout_params = []
 
     for fill_ratio in [1]
-      for cleanup_overlap in [2] # [1.98] #1.8
-        for jostle in [0]
-          for rando_order in [0]
+      for cleanup_overlap in [1.95] # [1.98] #1.8
+        for jostle in [0.4]
+          for rando_order in [0.1]
             for topple_towers in [.05]
               for density_modified_jostle in [1]
                 layout_params.push {density_modified_jostle, topple_towers, rando_order, jostle, cleanup_overlap, fill_ratio}
@@ -61,10 +61,9 @@ window.HistogramTester = ReactiveComponent
         histos.push _.extend {}, size, {layout_params: layout}
 
     proposals = fetch('/proposals').proposals
+    # proposals = fetch('/points').points
+
     proposals.sort (a,b) -> opinions_for_statement(b).length - opinions_for_statement(a).length
-
-    # proposals.sort (b,a) -> opinions_for_statement(b).length - opinions_for_statement(a).length
-
     proposals_to_show = proposals.slice(start_idx,start_idx + num_histos)
 
 

@@ -177,8 +177,8 @@ top_level.calculateAvatarRadius = (width, height, opinions, weights, {fill_ratio
 
 Placer = (opts, bodies) -> 
   opinions = opts.o
-  width = opts.w
-  height = opts.h
+  width = Math.round opts.w
+  height = Math.round opts.h
   layout_params = opts.layout_params
   base_radius = opts.r
   weights = opts.weights
@@ -256,7 +256,7 @@ Placer = (opts, bodies) ->
     opinions.sort (a,b) ->
       diff = Math.abs(b.stance - a.stance)
       # if diff < .02 && weights[b.user] != weights[a.user]
-      if weights[b.user] != weights[a.user]        
+      if (weights[b.user] or 1) != (weights[a.user] or 1)       
         weights[b.user] - weights[a.user]
       else if layout_params.rando_order && diff < layout_params.rando_order && Math.abs(b.stance) < 1 - layout_params.rando_order
         # Introduce some randomness to the sort when two bodies are close to one another. 
@@ -354,6 +354,7 @@ Placer = (opts, bodies) ->
 
           if !placed && consider_only_prime_positions == false && move_within == width
             console.error("Could not place", xt, o)
+
         break if placed 
 
       if save_snapshots
@@ -540,7 +541,7 @@ Placer = (opts, bodies) ->
         if y_next?
           disjoint_next = hypo_pos.y < y_next
           radius_next = point_dist(hypo_pos, {x: i+dist, y: y_next}) - r_long   # If this point is tracing the side of a circular body, 
-                                                                               # it will be less than or equal to r_long long (the 
+                                                                               # it will be less than or equal to r_long long 
         if y_prev?
           disjoint_prev = hypo_pos.y < y_prev 
           radius_prev = point_dist(hypo_pos, {x: i-dist, y: y_prev}) - r_long
@@ -910,7 +911,9 @@ EvaluateLayout = (opts, bodies, placer) ->
         stability += Math.pow body.stability, 2 # body.space_below
 
     stability /= bodies.length 
-    _.extend running_state, {truth, visibility, stability}
+    running_state.truth = truth
+    running_state.visibility = visibility
+    running_state.stability = stability
 
     global_running_state[layout_params.param_hash].truth += truth
     global_running_state[layout_params.param_hash].visibility += visibility

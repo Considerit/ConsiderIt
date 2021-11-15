@@ -103,12 +103,11 @@ window.Slider = ReactiveComponent
 
   render : ->
 
-
     @props.draw_handle ?= true
 
     # initialize
     if @props.draw_handle
-      slider = fetch @props.key
+      slider = fetch @props.slider_key
       if !slider.value?
         _.defaults slider,
           value: if @props.polarized then -1.0 else 0
@@ -217,7 +216,7 @@ window.Slider = ReactiveComponent
   drawSliderHandle: -> 
     handle_width = handle_height = @props.handle_height
 
-    slider = fetch @props.key
+    slider = fetch @props.slider_key
 
     sliderHandle = @props.handle or slider_handle.flat
 
@@ -310,7 +309,7 @@ window.Slider = ReactiveComponent
     e.preventDefault()
 
     # Initiate dragging
-    slider = fetch @props.key
+    slider = fetch @props.slider_key
     slider.is_moving = true
     save slider
 
@@ -328,7 +327,7 @@ window.Slider = ReactiveComponent
   handleMouseMove: (e) ->
     e.preventDefault() # prevents text selection of surrounding elements
 
-    slider = fetch @props.key
+    slider = fetch @props.slider_key
 
     clientX = e.clientX or e.touches[0].clientX
 
@@ -358,7 +357,7 @@ window.Slider = ReactiveComponent
   handleMouseUp: (e) ->
     # Don't do anything if we're not actually dragging. We only hit this logic
     # if there is some delay in removing the event handlers.
-    slider = fetch @props.key
+    slider = fetch @props.slider_key
 
     return if !slider.is_moving
 
@@ -387,7 +386,7 @@ window.Slider = ReactiveComponent
       if @props.polarized
         val = val * 2 - 1
 
-      slider = fetch @props.key
+      slider = fetch @props.slider_key
       slider.has_moved = true
 
       slider.value = Math.round(val * 10000) / 10000

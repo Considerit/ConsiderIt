@@ -153,6 +153,7 @@ window.DropMenu = ReactiveComponent
       # anchor
 
       BUTTON 
+        key: 'drop-anchor'
         tabIndex: 0
         'aria-haspopup': "true"
         'aria-owns': "dropMenu-#{@local.key}"
@@ -183,6 +184,7 @@ window.DropMenu = ReactiveComponent
       # drop menu
 
       UL
+        key: 'dropMenu-menu'
         className: 'dropmenu-menu'
         id: "dropMenu-#{@local.key}" 
         role: "menu"

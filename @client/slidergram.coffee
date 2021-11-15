@@ -45,7 +45,7 @@ window.Slidergram = ReactiveComponent
     DIV null,
 
       Histogram
-        key: "histogram-#{statement.key}"
+        histo_key: "histogram-#{statement.key}"
         statement: statement
         opinions: opinions_for_statement statement
         width: @props.width
@@ -58,7 +58,7 @@ window.Slidergram = ReactiveComponent
       Slider 
         base_height: 0
         draw_handle: !!enable_sliding
-        key: "slidergram-#{statement.key}"
+        slider_key: "slidergram-#{statement.key}"
         width: @props.width
         polarized: true
         regions: slider_regions

@@ -19,7 +19,7 @@ window.OpinionSlider = ReactiveComponent
 
   render : ->
     @proposal ||= fetch(@props.proposal)
-    slider = fetch @props.key
+    slider = fetch @props.slider_key
 
     your_opinion = @props.your_opinion
 
@@ -56,7 +56,7 @@ window.OpinionSlider = ReactiveComponent
         @drawFeedback() 
 
       Slider
-        key: @props.key
+        slider_key: @props.slider_key
         width: @props.width
         handle_height: SLIDER_HANDLE_SIZE()
         base_height: 0 # 6
@@ -105,7 +105,7 @@ window.OpinionSlider = ReactiveComponent
 
   saveYourOpinionNotice : -> 
     your_opinion = @props.your_opinion
-    slider = fetch @props.key
+    slider = fetch @props.slider_key
     current_user = fetch '/current_user'
 
     return SPAN null if (customization('discussion_enabled', @proposal))  || \
@@ -165,7 +165,7 @@ window.OpinionSlider = ReactiveComponent
         notice 
 
   drawFeedback: -> 
-    slider = fetch @props.key
+    slider = fetch @props.slider_key
     default_feedback = (value, proposal) -> 
       if Math.abs(value) < 0.02
         translator "sliders.feedback.neutral", "You are neutral"
@@ -216,7 +216,7 @@ window.OpinionSlider = ReactiveComponent
       slider_feedback
 
   handleMouseUp: (e) ->
-    slider = fetch @props.key
+    slider = fetch @props.slider_key
     your_opinion = @props.your_opinion
     mode = get_proposal_mode()
     

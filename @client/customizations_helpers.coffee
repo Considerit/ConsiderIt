@@ -32,9 +32,8 @@ window.point_labels =
     pros: 'pros' 
     con: 'con'
     cons: 'cons'
-    your_header: "Give your {arguments}" 
-    other_header: "Others' {arguments}" 
-    top_header: "Top {arguments}" 
+    crafting_header: "Why?" 
+    results_header: "Pro & Con Factors" 
     your_cons_header: null
     your_pros_header: null
 
@@ -44,9 +43,8 @@ window.point_labels =
     pros: 'strengths' 
     con: 'weakness'
     cons: 'weaknesses'
-    your_header: "{arguments}" 
-    other_header: "{arguments} observed" 
-    top_header: "Top {arguments}" 
+    your_header: "Why?" 
+    other_header: "Strengths & Weaknesses" 
 
 
 window.get_point_label = (id, proposal) -> 

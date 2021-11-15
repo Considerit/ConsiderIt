@@ -108,7 +108,7 @@ window.HistogramTester = ReactiveComponent
 
             DIV null, 
               for hist, i in histos 
-                params = _.defaults {key: "#{namespaced_key('histogram', proposal)}-#{i}"}, histo, hist
+                params = _.defaults {histo_key: "#{namespaced_key('histogram', proposal)}-#{i}"}, histo, hist
                 RenderedHist = Histogram params 
 
                 DIV 

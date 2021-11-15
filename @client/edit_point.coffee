@@ -296,7 +296,7 @@ window.EditPoint = ReactiveComponent
     if @props.fresh
       your_points.adding_new_point = false
     else
-      your_points.editing_points = _.without your_points.editing_points, @props.key
+      your_points.editing_points = _.without your_points.editing_points, @props.point
 
     save your_points
 

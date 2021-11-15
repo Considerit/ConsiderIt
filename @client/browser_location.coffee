@@ -61,7 +61,7 @@ window.loadPage = (url, query_params) ->
 # it will reload the page, even if the link is internal to this site
 
 old_A = A
-window.A = React.createClass
+window.A = React.createFactory React.createClass
   render : -> 
 
     props = @props

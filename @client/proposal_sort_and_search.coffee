@@ -496,6 +496,7 @@ SortProposalsMenu = ReactiveComponent
           ": "
 
           SPAN 
+            key: 'current_sort'
             style: 
               fontWeight: 700
               paddingLeft: 8
@@ -511,6 +512,7 @@ SortProposalsMenu = ReactiveComponent
       render_option: (option, is_active) -> 
         [
           SPAN 
+            key: 'option name'
             style: 
               # fontWeight: 600
               fontSize: 16
@@ -520,6 +522,7 @@ SortProposalsMenu = ReactiveComponent
 
           if !browser.is_mobile
             SPAN 
+              key: 'option description'
               style: 
                 float: 'right'
               HelpIcon translator "engage.sort_order.#{option.name}.description", option.description

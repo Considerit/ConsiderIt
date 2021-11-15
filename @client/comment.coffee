@@ -98,8 +98,8 @@ window.Discussion = ReactiveComponent
 
     in_wings = get_proposal_mode() == 'crafting' && !point.your_opinion.published
 
-    comments = @discussion.comments
-    
+    comments = fetch(@props.comments).comments
+
     comments.sort (a,b) -> a.created_at > b.created_at
 
     discussion_style =
@@ -150,7 +150,7 @@ window.Discussion = ReactiveComponent
       e.preventDefault()
       e.stopPropagation()
 
-    HEADING = if @props.rendered_as != 'decision_board_point' then H4 else H5
+    HEADING = H5
     SECTION 
       id: 'open_point'
       style: discussion_style
@@ -230,7 +230,7 @@ window.Discussion = ReactiveComponent
             Comment key: comment.key
 
         # Write a new comment
-        EditComment fresh: true, point: arest.key_id(@props.key)
+        EditComment fresh: true, point: arest.key_id(@props.comments)
 
   # HACK! Save the height of the open point, which will be added 
   # to the min height of the reasons region to accommodate the

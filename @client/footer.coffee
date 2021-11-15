@@ -63,6 +63,7 @@ window.DefaultFooter = ReactiveComponent
           # buttons 
 
           DIV 
+            key: 'back2top'
             style: 
               position: 'relative'
               margin: 'auto'
@@ -83,6 +84,7 @@ window.DefaultFooter = ReactiveComponent
 
 
           DIV 
+            key: 'create-forum'
             style: 
               textAlign: 'center'
 
@@ -130,59 +132,63 @@ window.DefaultFooter = ReactiveComponent
           # more info
 
           DIV 
+            key: 'more_info'
             style: 
               color: '#303030'
               fontSize: 11
               textAlign: 'center'
               marginTop: 20
 
-            SPAN null, 
+            SPAN 
+              key: 'considerit-errata'
+              
+              SPAN key: 'copy', '© Consider.it LLC. All rights reserved. '
 
+              TRANSLATE
+                id: 'footer.policies'
+                privacy_link: 
+                  component: A 
+                  args: 
+                    key: 'privacy_link'
+                    href: '/privacy_policy'
+                    style: 
+                      textDecoration: 'underline'
+
+                terms_link:
+                  component: A 
+                  args: 
+                    key: 'terms'
+                    href: '/terms_of_service'
+                    style: 
+                      textDecoration: 'underline'
+
+                "<privacy_link>Privacy</privacy_link> and <terms_link>Terms</terms_link>."
+
+            SPAN 
+              key: 'bug reports'
+              style: 
+                marginLeft: 40
+                display: 'inline-block'
+
+              TRANSLATE
+                id: "footer.bug_reports"
+                link: 
+                  component: A
+                  args: 
+                    key: 'link'
+                    style: 
+                      textDecoration: 'underline'                    
+                    href: 'mailto:help@consider.it'
+
+                "Report bugs to <link>help@consider.it</link>"
+
+            if !customization('google_translate_style') || fetch('location').url != '/'
               DIV 
-                style: 
-                  display: 'inline-block'
-                '© Consider.it LLC. All rights reserved. '
-
-                TRANSLATE
-                  id: 'footer.policies'
-                  privacy_link: 
-                    component: A 
-                    args: 
-                      href: '/privacy_policy'
-                      style: 
-                        textDecoration: 'underline'
-
-                  terms_link:
-                    component: A 
-                    args: 
-                      href: '/terms_of_service'
-                      style: 
-                        textDecoration: 'underline'
-
-                  "<privacy_link>Privacy</privacy_link> and <terms_link>Terms</terms_link>."
-
-              SPAN 
+                key: 'googletranslate'
                 style: 
                   marginLeft: 40
-                  display: 'inline-block'
-
-                TRANSLATE
-                  id: "footer.bug_reports"
-                  link: 
-                    component: A
-                    args: 
-                      style: 
-                        textDecoration: 'underline'                    
-                      href: 'mailto:help@consider.it'
-
-                  "Report bugs to <link>help@consider.it</link>"
-
-              if !customization('google_translate_style') || fetch('location').url != '/'
-                DIV 
-                  style: 
-                    marginLeft: 40
-                    display: 'inline-block'            
-                  GoogleTranslate()
+                  display: 'inline-block'            
+                GoogleTranslate()
 
 
 

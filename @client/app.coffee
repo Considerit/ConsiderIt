@@ -34,6 +34,7 @@ require './edit_comment'
 require './point'
 require './legal'
 require './statement'
+require './pro_con_widget'
 require './proposal'
 require './viewport_visibility_sensor'
 
@@ -175,6 +176,7 @@ Page = ReactiveComponent
     subdomain = fetch('/subdomain')
     loc = fetch('location')
     auth = fetch('auth')
+    page = fetch @props.page
 
     access_granted = @accessGranted()
 
@@ -227,7 +229,7 @@ Page = ReactiveComponent
               HistogramTester()
 
             else
-              if @page?.result == 'Not found'
+              if page?.result == 'Not found'
                 DIV 
                   style: 
                     textAlign: 'center'
@@ -245,13 +247,13 @@ Page = ReactiveComponent
               else 
                 result = null
 
-                if @page.proposal 
-                  result = Proposal key: @page.proposal
-                else if !@page.proposal? && arest.cache['/proposals']?.proposals?
+                if page.proposal 
+                  result = Proposal key: page.proposal, proposal: page.proposal
+                else if !page.proposal? && arest.cache['/proposals']?.proposals?
                   # search to see if we already have this proposal loaded
                   for proposal in arest.cache['/proposals'].proposals
                     if '/' + proposal.slug == loc.url
-                      result = Proposal key: "/proposal/#{proposal.id}"
+                      result = Proposal key: "/proposal/#{proposal.id}", proposal: "/proposal/#{proposal.id}"
                       break 
 
                 result or LOADING_INDICATOR
@@ -323,7 +325,9 @@ Root = ReactiveComponent
           
           BrowserHacks()
 
-          Page key: "/page#{loc.url}"
+          Page 
+            key: "/page#{loc.url}"
+            page: "/page#{loc.url}"
 
       Tooltip()
       Popover()
@@ -343,7 +347,7 @@ Root = ReactiveComponent
     #       top. There are global interdependencies to unwind as well.
 
     loc = fetch('location')
-    page = fetch("/page#{loc.url}")
+    page = get_page()
 
     if !fetch('auth').form && page.proposal
 
@@ -377,6 +381,8 @@ Root = ReactiveComponent
       if selected.isCollapsed
         wysiwyg_editor.showing = false
         save wysiwyg_editor
+
+window.get_page = -> fetch("/page#{fetch('location').url}")
 
 
 # exports...

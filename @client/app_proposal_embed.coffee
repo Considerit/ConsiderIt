@@ -153,7 +153,7 @@ Proposal = ReactiveComponent
   displayName: 'Root'
 
   render : -> 
-    @proposal = fetch @props.key
+    @proposal = fetch @props.proposal
 
     users = fetch '/users'
 
@@ -191,7 +191,7 @@ Proposal = ReactiveComponent
             width: histo_width
               
           Histogram
-            key: namespaced_key('histogram', @proposal)
+            histo_key: namespaced_key('histogram', @proposal)
             statement: @proposal
             opinions: opinions_for_statement(@proposal)
             width: histo_width

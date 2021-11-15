@@ -60,7 +60,7 @@ window.AutoGrowTextArea = ReactiveComponent
     if !@local.height
       @local.height = @props.min_height
 
-    @transferPropsTo TEXTAREA
+    TEXTAREA _.extend {}, @props, 
       className: 'AutoGrowTextArea'
       onChange: @onChange
       rows: 1
@@ -94,7 +94,7 @@ window.CharacterCountTextInput = ReactiveComponent
           characters_left: @props.maxLength - @local.count
           "{characters_left, plural, one {# character} other {# characters}} left"
 
-      @transferPropsTo TEXTAREA
+      TEXTAREA _.extend {}, @props,
         ref: 'input' 
         className: class_name
         onChange: =>
@@ -112,7 +112,7 @@ window.WysiwygEditor = ReactiveComponent
   displayName: 'WysiwygEditor'
 
   render : ->
-    my_data = fetch @props.key
+    my_data = fetch @props.editor_key
     subdomain = fetch '/subdomain'
     wysiwyg_editor = fetch 'wysiwyg_editor'
 
@@ -163,7 +163,7 @@ window.WysiwygEditor = ReactiveComponent
         onClick: => @local.edit_code = true; save @local
 
     DIV 
-      id: @props.key
+      id: @props.editor_key
       style: 
         position: 'relative'
 
@@ -178,9 +178,9 @@ window.WysiwygEditor = ReactiveComponent
           style: 
             width: '100%'
             fontSize: 18
-          defaultValue: fetch(@props.key).html
+          defaultValue: fetch(@props.editor_key).html
           onChange: (e) => 
-            my_data = fetch(@props.key)
+            my_data = fetch(@props.editor_key)
             my_data.html = e.target.value
             save my_data
 
@@ -207,7 +207,7 @@ window.WysiwygEditor = ReactiveComponent
                 left: if !toolbar_horizontal then -32
                 top: if toolbar_horizontal then -25 else 0
                 display: 'block'
-                visibility: if wysiwyg_editor.showing != @props.key then 'hidden'
+                visibility: if wysiwyg_editor.showing != @props.editor_key then 'hidden'
 
               onFocus: (e) => 
                 if !@local.focused_toolbar_item && !@local.just_unfocused
@@ -282,7 +282,7 @@ window.WysiwygEditor = ReactiveComponent
 
           DIV 
             style: _.defaults {}, @props.container_style, 
-              outline: if fetch('wysiwyg_editor').showing == @props.key then "2px solid #{focus_color()}"
+              outline: if fetch('wysiwyg_editor').showing == @props.editor_key then "2px solid #{focus_color()}"
             className: 'wysiwyg_text' # for formatting like proposals 
           
             DIV 
@@ -296,7 +296,7 @@ window.WysiwygEditor = ReactiveComponent
                 # in the same way that clicking outside a point closes it. 
                 # See Root.resetSelection.
                 wysiwyg_editor = fetch 'wysiwyg_editor'
-                wysiwyg_editor.showing = @props.key
+                wysiwyg_editor.showing = @props.editor_key
                 save wysiwyg_editor
 
               onBlur: => 
@@ -331,7 +331,7 @@ window.WysiwygEditor = ReactiveComponent
     delete keyboard.bindings[9]    # 9 is the key code for tab; restore tabbing for accessibility
 
     @editor.on 'text-change', (delta, old_contents, source) =>
-      my_data = fetch @props.key
+      my_data = fetch @props.editor_key
       my_data.html = getHTML()
 
       if source == 'user' && my_data.html.indexOf(' style') > -1

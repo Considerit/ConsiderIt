@@ -113,7 +113,7 @@ window.EditProposal = ReactiveComponent
             translator("engage.edit_proposal.description_label", "Details") + ':'
           
           WysiwygEditor
-            key:"description-#{proposal.key}"
+            editor_key:"description-#{proposal.key}"
             style: _.extend {}, input_style,
               minHeight: 20
             html: if @props.fresh then null else proposal.description

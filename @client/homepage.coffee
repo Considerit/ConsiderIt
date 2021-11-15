@@ -271,6 +271,7 @@ window.HomepageTabs = ReactiveComponent
               _.extend tab_wrapper_style, @props.hovering_tab_wrapper_style
 
             LI 
+              key: tab.name
               className: if current then 'selected' else if hovering then 'hovered'
               tabIndex: 0
               role: 'tab'

@@ -339,19 +339,20 @@
                  components[this.local_key] = this
 
                  // You can pass an object in as a key if you want:
-                 if (this.props.key && this.props.key.key)
-                     this.props.key = this.props.key.key
+                 if (this._currentElement.key && this._currentElement.key.key)
+                     this._currentElement.key = this._currentElement.key.key
 
                  // XXX Putting this into WillMount probably won't let you use the
                  // mounted_key inside getInitialState!  But you should be using
                  // activerest state anyway, right?
-                 this.mounted_key = this.props.key
+                 this.mounted_key = this._currentElement.key
 
                  // STEP 2: Create shortcuts e.g. `this.foo' for all parents up the
                  // tree, and this component's local key
                  
                  function add_shortcut (obj, shortcut_name, to_key) {
-                     //console.log('Giving '+obj.name+' shorcut @'+shortcut_name+'='+to_key)
+                     // console.log('Giving '+obj.name+' shorcut @'+shortcut_name+'='+to_key)
+                     // console.log('shortcut', obj, shortcut_name, to_key)
                      delete obj[name]
                      Object.defineProperty(obj, shortcut_name, {
                          get: function () {
@@ -371,7 +372,7 @@
                  var parents = this.props.parents.concat([this.local_key])
                  for (var i=0; i<parents.length; i++) {
                      var name = components[parents[i]].name
-                     var key = components[parents[i]].props.key
+                     var key = components[parents[i]]._currentElement.key
                      if (!key && cache[name] !== undefined)
                          key = name
                      add_shortcut(this, name, key)
@@ -394,7 +395,9 @@
         })
 
         wrap(component, 'componentDidMount')
-        wrap(component, 'componentDidUpdate')
+        wrap(component, 'componentDidUpdate', function(previousProps) {
+            this.getDOMNode().setAttribute('data-widget', component.displayName)
+        })
         wrap(component, 'getDefaultProps')
         //wrap(component, 'componentWillReceiveProps')
         wrap(component, 'componentWillUnmount', function () {
@@ -442,7 +445,7 @@
 
         // Now create the actual React class with this definition, and
         // return it.
-        var react_class = React.createClass(component)
+        var react_class = React.createFactory(React.createClass(component))
         var result = function (props, children) {
             props = props || {}
             props.parents = execution_context.slice()
@@ -451,6 +454,7 @@
         // Give it the same prototype as the original class so that it
         // passes React.isValidClass() inspection
         result.prototype = react_class.prototype
+
         return result
     }
 

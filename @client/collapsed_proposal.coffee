@@ -200,33 +200,37 @@ window.CollapsedProposal = ReactiveComponent
 
 
                 if customization('discussion_enabled', proposal, subdomain)
-                    A 
-                      href: proposal_url(proposal)
-                      style: 
-                        #fontWeight: 500
-                        cursor: 'pointer'
+                  A 
+                    key: 'proposal-link'
+                    href: proposal_url(proposal)
+                    style: 
+                      #fontWeight: 500
+                      cursor: 'pointer'
 
-                      TRANSLATE
-                        id: "engage.point_count"
-                        cnt: proposal.point_count
+                    TRANSLATE
+                      key: 'point-count'
+                      id: "engage.point_count"
+                      cnt: proposal.point_count
 
-                        "{cnt, plural, one {# pro or con} other {# pros and cons}}"
+                      "{cnt, plural, one {# pro or con} other {# pros and cons}}"
 
-                      if proposal.active && permit('create point', proposal, subdomain) > 0
-                        [
-                          SPAN 
-                            style: 
-                              padding: '0 8px'
-                            '|'
+                    if proposal.active && permit('create point', proposal, subdomain) > 0
+                      [
+                        SPAN 
+                          key: 'divider'
+                          style: 
+                            padding: '0 8px'
+                          '|'
 
-                          SPAN 
-                            style: 
-                              textDecoration: 'underline'
-                            TRANSLATE
-                              id: "engage.add_your_own"
+                        SPAN 
+                          key: 'share-thoughts'
+                          style: 
+                            textDecoration: 'underline'
+                          TRANSLATE
+                            id: "engage.add_your_own"
 
-                              "share your thoughts"
-                        ]
+                            "share your thoughts"
+                      ]
 
 
 

@@ -373,6 +373,8 @@ window.AuthForm =
     
     DIV 
       className: 'AUTH_field_wrapper'
+      style: 
+        opacity: if opts.disabled then .5
 
       LABEL
         className: 'AUTH_field_label'

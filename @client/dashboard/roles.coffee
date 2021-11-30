@@ -368,7 +368,7 @@ AddRolesAndInvite = ReactiveComponent
 
               style: 
                 display: 'inline-block'
-              '+'
+              'add'
 
 
 
@@ -426,11 +426,14 @@ AddRolesAndInvite = ReactiveComponent
         style: 
           display: if !@local.expanded then 'none'
           marginTop: 12
+          opacity: if @local.added.length == 0 then 0.5
 
         BUTTON
           className: 'btn'
+          disabled: @local.added.length == 0
           style: 
             backgroundColor: focus_color()
+            cursor: if @local.added.length == 0 then 'default'
 
 
           onKeyDown: (e) => 

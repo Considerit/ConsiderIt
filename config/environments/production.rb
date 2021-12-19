@@ -38,6 +38,9 @@ ConsiderIt::Application.configure do
   # Enable serving of images, stylesheets, and javascripts from an asset server
   # config.action_controller.asset_host = "//#{APP_CONFIG[:aws][:cloudfront]}.cloudfront.net"
 
+
+  config.active_job.queue_adapter = :delayed_job
+
   # Enable S3/Cloudfront storage for Paperclip
   #Paperclip::Attachment.default_options.merge!({
   #  :path => "system/:attachment/:id/:style/:filename",

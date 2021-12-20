@@ -112,7 +112,8 @@ window.AuthTransition = ReactiveComponent
     # and execute any callbacks
     if (!@local.logged_in_last_render && current_user.logged_in) || \
        (auth.form == 'verify email' && current_user.verified) || \
-       (auth.form == 'user questions' && !current_user.needs_to_complete_profile)
+       (auth.form == 'user questions' && !current_user.needs_to_complete_profile) || \
+       (auth.form == 'create account via invitation' && !current_user.needs_to_complete_profile)
       auth.after?()
       reset_key auth
 
@@ -417,6 +418,8 @@ window.AuthForm =
     
     DIV 
       className: 'AUTH_field_wrapper'
+      style: 
+        opacity: if opts.disabled then .5
 
       LABEL
         className: 'AUTH_field_label'

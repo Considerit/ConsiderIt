@@ -36,6 +36,7 @@ public/system/pics
 public/system/banners
 
 lib/tasks/client_data/*
+lib/tasks/cap_analysis.rake
 
 test/data/test.sql.bz2
 test/data/test.sql

@@ -51,13 +51,19 @@ window.Modal =
     @scroll_Y = window.scrollY
 
   componentDidMount: ->
+    @componentDidUpdate()
+    
+  componentDidUpdate: ->
+    modal = @refs?.dialog?.getDOMNode() or document.querySelector '[role=dialog]'
+    return if !modal || @mounted
+    @mounted = true
+
     @focused_element_before_opening = document.activeElement
 
     ######################################
     # For capturing focus inside the modal
     # add all the elements inside modal which you want to make focusable
     focusable_elements = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    modal = @refs?.dialog?.getDOMNode() or document.querySelector '[role=dialog]'
 
     # select the modal by it's id
     @first_focusable_element = modal.querySelectorAll(focusable_elements)[0]
@@ -69,7 +75,7 @@ window.Modal =
     document.addEventListener 'keydown', @accessibility_on_keydown
 
     try 
-      modal.querySelector('input').focus()
+      modal.querySelector('input:not([disabled])').focus()
     catch e 
       console.error e
 

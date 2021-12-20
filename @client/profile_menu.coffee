@@ -27,7 +27,7 @@ window.ProfileMenu = ReactiveComponent
 
     menu_options = _.compact menu_options
 
-    light_background = loc.url.match('/dashboard/') or is_light_background() 
+    light_background = loc.url != '/' || is_light_background() 
 
     DIV
       id: 'user_nav'

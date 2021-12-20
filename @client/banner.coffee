@@ -1185,7 +1185,6 @@ window.ShortHeader = (opts) ->
 
   opts ||= {}
   _.defaults opts, (customization('forum_header') or {}),
-    background: customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
     text: customization('banner')?.title or subdomain.name
     external_link: subdomain.external_project_url
     logo_src: customization('banner')?.logo?.url
@@ -1194,7 +1193,9 @@ window.ShortHeader = (opts) ->
     padding: '8px 0'
     padding_left_icon: 20
 
-  background_is_light = is_light_background(opts.background)
+
+  opts.background = '#fff'
+  background_is_light = true
 
   DIV 
     style:

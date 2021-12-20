@@ -921,7 +921,7 @@ EditableTitle = ReactiveComponent
                 style: 
                   position: 'absolute'
                   left: -tw - 20
-                  top: 12
+                  top: if is_collapsed then 3 else 9
                   paddingRight: 20
                   paddingTop: 12
                   display: 'inline-block'

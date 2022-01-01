@@ -135,7 +135,7 @@ def permit(action, object = nil, user = nil)
   when 'set category'
     list_key = "list/#{object}"
     customizations = subdomain.customization_json()
-    if customizations.has_key?(list_key) && customizations[list_key].has_key?("list_permit_new_items")
+    if !user.is_admin?(subdomain) && customizations.has_key?(list_key) && customizations[list_key].has_key?("list_permit_new_items")
       allowed = customizations[list_key]["list_permit_new_items"]
     else
       allowed = permit('create proposal')

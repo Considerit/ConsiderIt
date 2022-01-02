@@ -189,10 +189,10 @@ window.Proposal = ReactiveComponent
         else 
           H1
             style: _.defaults {}, customization('list_title_style'),
-              fontSize: 36
-              fontWeight: 700
+              fontSize: 32
+              fontWeight: 500
               textAlign: 'center'
-              marginTop: 48
+              marginTop: 18
 
             if mode == 'crafting' || (just_you && current_user.logged_in)
               TRANSLATE
@@ -442,7 +442,7 @@ window.Proposal = ReactiveComponent
 
 
       if mode == 'results'
-        w = 600
+        w = HOMEPAGE_WIDTH()
         DIV   
           style: 
             margin: '70px auto 48px auto'
@@ -484,117 +484,203 @@ ProposalDescription = ReactiveComponent
   render : ->    
     current_user = fetch('/current_user')
     subdomain = fetch '/subdomain'
+    proposal = fetch (@props.proposal or @proposal)
 
-    @max_description_height = customization('collapse_proposal_description_at', @proposal)
+    @max_description_height = customization('collapse_proposal_description_at', proposal)
 
-    editor = proposal_editor(@proposal)
+    editor = proposal_editor(proposal)
 
 
-    title = @proposal.name 
-    body = @proposal.description 
+    title = proposal.name 
+    body = proposal.description 
 
     title_style = _.defaults {}, customization('list_title_style'),
-      fontSize: 36
+      fontSize: 32
       fontWeight: 700
+      textAlign: if title.length < 45 then 'center'
+      marginBottom: 24
 
     body_style = 
-      paddingTop: '1em'
+      padding: '1em 0px'
       position: 'relative'
       maxHeight: if @local.description_collapsed then @max_description_height
       overflow: if @local.description_collapsed then 'hidden'
-      fontSize: 18
 
     wrapper_style = {}
-    if @proposal.banner
+    if proposal.banner
       wrapper_style = 
-        background: "url(#{@proposal.banner}) no-repeat center top fixed"
+        background: "url(#{proposal.banner}) no-repeat center top fixed"
         backgroundSize: 'cover'
         paddingTop: 240
     else 
       wrapper_style = 
-        paddingTop: 36
+        paddingTop: 24
+        #backgroundColor: '#ffffff'
+        # opacity: 0.2
+        #backgroundImage:  "radial-gradient(circle at center center, #fafafa, #ffffff), repeating-radial-gradient(circle at center center, #fafafa, #fafafa, 8px, transparent 16px, transparent 8px)"
+        paddingBottom: 16
+        #backgroundBlendMode: "multiply"
+        # background: "linear-gradient(0deg, rgb(255, 255, 255), rgb(236, 236, 236), rgb(255, 255, 255))"
+
+    anonymized = !customization('show_proposer_icon', "list/#{proposal.cluster}") || customization('anonymize_everything')
+    show_proposal_meta_data = customization('show_proposal_meta_data')
 
 
-    anonymized = !customization('show_proposer_icon', "list/#{@proposal.cluster}") || customization('anonymize_everything')
-    show_proposal_meta_data = customization('show_proposal_meta_data') && !customization('anonymize_everything')
+    list_key = "list/#{proposal.cluster or 'proposals'}"
+    list = get_list_title list_key, true, subdomain
+
+    for lst in proposals_in_lists()
+      if lst.key == list_key 
+        other_proposals = lst.proposals
+
+
+    if other_proposals?.length > 1
+      curr_pos_in_list = null
+      for pr, idx in other_proposals
+        if pr.key == proposal.key
+          curr_pos_in_list = idx 
+          break
+
+      prev_proposal = curr_pos_in_list - 1
+      if prev_proposal < 0
+        prev_proposal = other_proposals.length - 1
+      next_proposal = curr_pos_in_list + 1 
+      if next_proposal > other_proposals.length - 1
+        next_proposal = 0
+
+
+
+
+
 
     DIV 
       style: wrapper_style
+
+      DIV 
+        style: 
+          textAlign: 'center'
+          #color: "#666"
+          margin: "0 auto 8px auto"
+          width: HOMEPAGE_WIDTH()
+
+
+        SPAN 
+          style:  
+            position: 'relative'
+
+
+          list or 'proposals'
+
+          if other_proposals.length > 1
+
+            A
+              style: 
+                textDecoration: 'none'
+                position: 'absolute'
+                left: -70
+              href: "/#{other_proposals[prev_proposal].slug}?results=true"
+              ChevronLeft(24)
+
+          if other_proposals.length > 1
+
+            A
+              style: 
+                textDecoration: 'none'
+                position: 'absolute'
+                right: -70
+              href: "/#{other_proposals[next_proposal].slug}?results=true"
+              ChevronRight(24)
 
       DIV           
         style: 
           width: HOMEPAGE_WIDTH()
           position: 'relative'
-          margin: '0px auto 12px auto'
-          fontSize: 18
+          margin: 'auto'
+          padding: "24px 36px 12px 36px"
           marginBottom: 18 
+          backgroundColor: considerit_gray #'white'
+          boxShadow: "0 8px 6px -2px rgb(0 0 0 / 15%)" #"0 1px 3px rgba(0,0,0,.3)"
+          borderRadius: 8
 
-             
-
-        BUBBLE_WRAP 
-          user: if !@proposal.pic && !customization('anonymize_everything') then editor
-          pic: if @proposal.pic then @proposal.pic
-          width: HOMEPAGE_WIDTH()
-          mouth_style: 
-            width: 24
-            display: if anonymized then 'none'
-            bottom: 28
-            top: 'auto'
-            transform: 'rotate(-90deg)'
-          bubble_style: 
-            padding: '12px 24px'
-            borderRadius: 42
-          avatar_style: 
-            display: if anonymized then 'none'
-            width: 124
-            height: 124
-            left: -28 - 124
-            bottom: -30 
-            top: 'auto'
-            boxShadow: if @proposal.pic then 'none'
-          mouth_shadow:
-            dx: -3
-
+        if proposal.pic && !show_proposal_meta_data
+          IMG 
+            style:
+              position: 'absolute'
+              width: 124
+              height: 124
+              left: -28 - 124
+              top: 'auto'
+            src: proposal.pic
 
           
+        DIV 
+          style: 
+            wordWrap: 'break-word'
+
           DIV 
-            style: 
-              wordWrap: 'break-word'
+            style: _.defaults {}, (title_style or {}),
+              fontSize: POINT_FONT_SIZE()
+              lineHeight: 1.2
 
-            DIV 
-              style: _.defaults {}, (title_style or {}),
-                fontSize: POINT_FONT_SIZE()
-                lineHeight: 1.2
+            className: 'statement'
 
-              className: 'statement'
+            title
 
-              title
+          DIV null,
+            if show_proposal_meta_data
+              DIV 
+                style: 
+                  margin: "8px 0 18px 0"
+                  fontSize: 14
+                  color: "black"
+                  textAlign: 'center'
+                  display: 'flex'
+                  justifyContent: 'center'
+                  alignItems: 'center'
+
+                if proposal.pic || !anonymized
+
+                  DIV 
+                    style: 
+                      marginRight: 12
+
+                    if proposal.pic 
+                      IMG 
+                        style:
+                          width: 60
+                          height: 60
+                        src: proposal.pic
+                    else if !anonymized
+                      Avatar
+                        key: if !proposal.pic && !customization('anonymize_everything') then editor 
+                        style:
+                          width: 60
+                          height: 60
+                        hide_popover: false 
 
 
-            
-            DIV 
-              style: 
-                marginTop: 4
-                fontSize: 14
-                color: "black"
+                DIV null,
+                  DIV 
+                    style: 
+                      fontWeight: '600'
 
-              if @proposal.cluster 
-                SPAN null, 
-                  "##{@proposal.cluster or 'proposals'}"
+                    if !customization('anonymize_everything')                
+                      fetch(editor)?.name
+                    else
+                      translator('anonymous', 'Anonymous')
 
-                  if show_proposal_meta_data
-                    SPAN 
-                      style: 
-                        padding: '0 8px'
-                      '|'
-              if show_proposal_meta_data
-                TRANSLATE 
-                  id: "engage.proposal_meta_data"
-                  timestamp: prettyDate(@proposal.created_at)
-                  author: fetch(editor)?.name
-                  "submitted {timestamp} by {author}"
+                  DIV 
+                    style: 
+                      color: '#666'
+                    prettyDate(proposal.created_at)
 
-            if @proposal.under_review 
+                # TRANSLATE 
+                #   id: "engage.proposal_meta_data"
+                #   timestamp: prettyDate(proposal.created_at)
+                #   author: fetch(editor)?.name
+                #   "submitted {timestamp} by {author}"
+
+            if proposal.under_review 
               DIV 
                 style: 
                   color: 'white'
@@ -609,85 +695,84 @@ ProposalDescription = ReactiveComponent
                   'Under review (like all new proposals)'
 
 
-            DIV 
-              className: 'wysiwyg_text'
-              style:
-                maxHeight: if @local.description_collapsed then @max_description_height
-                overflowY: if @local.description_collapsed then 'hidden'
+          DIV 
+            className: 'wysiwyg_text'
+            style:
+              maxHeight: if @local.description_collapsed then @max_description_height
+              overflowY: if @local.description_collapsed then 'hidden'
 
-              if body 
+            if body 
 
-                DIV 
-                  className: "statement"
+              DIV 
+                className: "statement"
 
-                  style: _.defaults {}, (body_style or {}),
-                    wordWrap: 'break-word'
-                    marginTop: '0.5em'
-                    fontSize: POINT_FONT_SIZE()
-                    #fontWeight: 300
+                style: _.defaults {}, (body_style or {}),
+                  wordWrap: 'break-word'
+                  marginTop: '0.5em'
+                  #fontWeight: 300
 
-                  if cust_desc = customization('proposal_description')
-                    if typeof(cust_desc) == 'function'
-                      cust_desc(@proposal)
-                    else if cust_desc[@proposal.cluster] # is associative, indexed by list name
+                if cust_desc = customization('proposal_description')
+                  if typeof(cust_desc) == 'function'
+                    cust_desc(proposal)
+                  else if cust_desc[proposal.cluster] # is associative, indexed by list name
 
 
-                      result = cust_desc[@proposal.cluster] {proposal: @proposal} # assumes ReactiveComponent. No good reason for the assumption.
+                    result = cust_desc[proposal.cluster] {proposal: proposal} # assumes ReactiveComponent. No good reason for the assumption.
 
-                      if typeof(result) == 'function' && /^function \(props, children\)/.test(Function.prototype.toString.call(result))  
-                                       # if this is a ReactiveComponent; this code is bad partially
-                                       # because of customizations backwards compatibility. Hopefully 
-                                       # cleanup after refactoring.
-                        result = cust_desc[@proposal.cluster]() {proposal: @proposal}
-                      else 
-                        result
-
+                    if typeof(result) == 'function' && /^function \(props, children\)/.test(Function.prototype.toString.call(result))  
+                                     # if this is a ReactiveComponent; this code is bad partially
+                                     # because of customizations backwards compatibility. Hopefully 
+                                     # cleanup after refactoring.
+                      result = cust_desc[proposal.cluster]() {proposal: proposal}
                     else 
-                      DIV dangerouslySetInnerHTML:{__html: body}
+                      result
 
                   else 
                     DIV dangerouslySetInnerHTML:{__html: body}
 
+                else 
+                  DIV dangerouslySetInnerHTML:{__html: body}
 
-            if @local.description_collapsed
-              BUTTON
-                id: 'expand_full_text'
-                style:
-                  textDecoration: 'underline'
-                  cursor: 'pointer'
-                  padding: '24px 0 10px 0'
-                  fontWeight: 600
-                  textAlign: 'left'
-                  border: 'none'
-                  width: '100%'
-                  backgroundColor: 'transparent'
 
-                onMouseDown: => 
+          if @local.description_collapsed
+            BUTTON
+              id: 'expand_full_text'
+              style:
+                textDecoration: 'underline'
+                cursor: 'pointer'
+                padding: '24px 0px 10px 0px'
+                fontWeight: 600
+                textAlign: 'left'
+                border: 'none'
+                width: '100%'
+                backgroundColor: 'transparent'
+
+              onMouseDown: => 
+                @local.description_collapsed = false
+                save(@local)
+
+              onKeyDown: (e) =>
+                if e.which == 13 || e.which == 32 # ENTER or SPACE
                   @local.description_collapsed = false
+                  e.preventDefault()
+                  document.activeElement.blur()
                   save(@local)
 
-                onKeyDown: (e) =>
-                  if e.which == 13 || e.which == 32 # ENTER or SPACE
-                    @local.description_collapsed = false
-                    e.preventDefault()
-                    document.activeElement.blur()
-                    save(@local)
-
-                TRANSLATE 
-                  id: 'engage.show_full_proposal_description'
-                  'Expand full text'
+              TRANSLATE 
+                id: 'engage.show_full_proposal_description'
+                'Show full text'
 
 
 
 
-        if permit('update proposal', @proposal) > 0
+        if permit('update proposal', proposal) > 0
           DIV
             style: 
               marginTop: 5
 
 
             A 
-              href: "#{@proposal.key}/edit"
+              href: "#{proposal.key}/edit"
               style:
                 marginRight: 10
                 color: '#999'
@@ -696,7 +781,7 @@ ProposalDescription = ReactiveComponent
                 padding: 0
               TRANSLATE 'engage.edit_button', 'edit'
 
-            if permit('delete proposal', @proposal) > 0
+            if permit('delete proposal', proposal) > 0
               BUTTON
                 style:
                   marginRight: 10
@@ -707,28 +792,32 @@ ProposalDescription = ReactiveComponent
 
                 onClick: => 
                   if confirm('Delete this proposal forever?')
-                    destroy(@proposal.key)
+                    destroy(proposal.key)
                     loadPage('/')
                 TRANSLATE 'engage.delete_button', 'delete'
 
 
 
   componentDidMount : ->
-    if (@proposal.description and @max_description_height and @local.description_collapsed == undefined \
-        and $('.wysiwyg_text').height() > @max_description_height)
-      @local.description_collapsed = true; save(@local)
+    if (fetch(@props.proposal or @proposal).description && @max_description_height && !@local.description_collapsed? \
+        && $('.wysiwyg_text').height() > @max_description_height)
+      @local.description_collapsed = true 
+      save(@local)
 
   componentDidUpdate : ->
-    if (@proposal.description and @max_description_height and @local.description_collapsed == undefined \
-        and $('.wysiwyg_text').height() > @max_description_height)
-      @local.description_collapsed = true; save(@local)
+    if (fetch(@props.proposal or @proposal).description && @max_description_height && !@local.description_collapsed? \
+        && $('.wysiwyg_text').height() > @max_description_height)
+      @local.description_collapsed = true
+      save(@local)
+
+
 
 ParticipationStatus = ReactiveComponent
   displayName: 'ParticipationStatus'
   render: -> 
     can_opine = @props.can_opine
 
-    return SPAN null if can_opine > 0 || can_opine == Permission.NOT_LOGGED_IN
+    return SPAN null if can_opine > 0 || can_opine == Permission.NOT_LOGGED_IN || can_opine == Permission.DISABLED
 
     DIV 
       style: 

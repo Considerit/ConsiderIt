@@ -2,7 +2,7 @@ require './questionaire'
 
 window.styles += """
   .LIST-header {
-    font-size: 36px;
+    font-size: 33px;
     font-weight: 700;
     text-align: left;     
     padding: 0; 

@@ -725,7 +725,7 @@ OpinionViews = ReactiveComponent
                 className: 'custom_view_triangle'
                 style: 
                   left: triangle_left
-                  bottom: if browser.is_mobile then -25 else -24
+                  bottom: if browser.is_mobile then -27 else -26
                 dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="#979797"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
 
 
@@ -743,7 +743,7 @@ OpinionViews = ReactiveComponent
           if has_other_filters 
             width = @props.style.width + @props.additional_width 
           else 
-            width = Math.min(660, @props.style.width + @props.additional_width)
+            width = Math.min(720, @props.style.width + @props.additional_width)
 
         DIV
           style: 
@@ -1135,6 +1135,7 @@ InteractiveOpinionViews = ReactiveComponent
               LI 
                 style: 
                   marginRight: 8
+                  marginBottom: 1
                   display: 'inline-block'
 
                 BUTTON 
@@ -1622,7 +1623,7 @@ styles += """
   button.opinion_view_button.weight {
     width: 100%;
     display: flex;
-    padding: 4px 12px 4px 12px;
+    padding: 4px 4px 4px 12px;
     text-align: left;
     align-items: center;
     margin-right: 12px;
@@ -1745,7 +1746,7 @@ styles += """
     padding-left: 8px;
     font-size: 12px;
     font-weight: 400;
-    font-family: 'Fira Sans Condensed';
+    letter-spacing: -1px;
   }
 
   .opinion-date-filter {

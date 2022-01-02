@@ -232,8 +232,8 @@ customizations.default =
 
   user_tags: {}
 
-  font: "'Open Sans', 'Open Sans', 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
-  header_font: "'Fira Sans Condensed', 'Avenir Next Condensed', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
+  font: "Montserrat, 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
+  header_font: "Montserrat, 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
 
   SiteHeader : PhotoBanner
   SiteFooter : DefaultFooter

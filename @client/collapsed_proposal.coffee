@@ -276,7 +276,7 @@ window.CollapsedProposal = ReactiveComponent
                             TRANSLATE
                               id: "engage.add_your_own"
 
-                              "share your thoughts"
+                              "give your opinion"
                         ]
 
 
@@ -357,7 +357,7 @@ window.CollapsedProposal = ReactiveComponent
           opinions: opinions
           width: col_sizes.second
           height: 40
-          enable_individual_selection: !browser.is_mobile
+          enable_individual_selection: !@props.disable_selection && !browser.is_mobile
           enable_range_selection: !just_you && !browser.is_mobile
           draw_base: true
           draw_base_labels: !slider_regions
@@ -724,7 +724,7 @@ window.ProposalScoresPopover =  ReactiveComponent
               DIV 
                 style: 
                   fontWeight: if insert_separator then 400 else 700
-                  fontFamily: 'Fira Sans Condensed'
+                  letterSpacing: -1
                   textAlign: if insert_separator then 'right'
 
                 if !insert_separator

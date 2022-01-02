@@ -82,8 +82,8 @@ window.AvatarPopover = ReactiveComponent
           
 
           DIV 
-            style: 
-              fontFamily: 'Fira Sans Condensed'
+            style:
+              letterSpacing: -1
               fontSize: 18  
               fontWeight: 'bold'       
             name
@@ -122,7 +122,7 @@ window.AvatarPopover = ReactiveComponent
 
                   SPAN 
                     style: 
-                      fontFamily: 'Fira Sans Condensed'
+                      letterSpacing: -1
                       fontSize: 10
                       display: 'inline-block'
                       paddingRight: 8 

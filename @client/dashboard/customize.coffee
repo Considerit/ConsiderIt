@@ -23,7 +23,7 @@ window.CustomizationsDash = ReactiveComponent
     for sub in subdomains.subs when sub.customizations && sub.name != subdomain.name
       other_subs.push [sub.name.toLowerCase(), sub.customizations]
       if sub.name.toLowerCase() == @local.compare_to
-        compare_to = JSON.stringify(sub.customizations or "\n\n\n\n\n\n\n", null, 2)
+        compare_to = sub.customizations or "{}"
 
     other_subs.sort (a,b) -> 
       if a[0] < b[0]
@@ -40,6 +40,7 @@ window.CustomizationsDash = ReactiveComponent
       return SPAN null
 
     @local.stringified_current_value ?= JSON.stringify(subdomain.customizations or "\n\n\n\n\n\n\n", null, 2)
+
     @local.customization_filter ?= ''
     @local.property_changes ?= {}
 
@@ -127,16 +128,13 @@ window.CustomizationsDash = ReactiveComponent
             style: 
               width: '100%'
             placeholder: 'Filter to forums with customization containing...'
-            ref: 'customization_filter'
             type: 'text'
             defaultValue: ''
             onKeyUp: (e) => 
-              @local.customization_filter = @refs.customization_filter.getDOMNode().value
+              @local.customization_filter = e.target.value
               save @local
 
-          DIV 
-            style: 
-              fontStyle: 'italic'
+          DIV null,
             "Compare to "
             SELECT 
               value: @local.compare_to
@@ -146,17 +144,28 @@ window.CustomizationsDash = ReactiveComponent
                 @local.compare_to = ev.target.value 
                 save @local
 
-              for [forum, cust] in other_subs when @local.customization_filter.length == 0 || JSON.stringify(cust).toLowerCase().indexOf(@local.customization_filter.toLowerCase()) > -1
-                OPTION 
-                  value: forum
-                  forum 
+              for [forum, cust] in other_subs
+                if @local.customization_filter.length == 0 || JSON.stringify(cust).toLowerCase().indexOf(@local.customization_filter.toLowerCase()) > -1
+                  if @local.customization_filter.length > 0 
+                    console.log JSON.stringify(cust).toLowerCase(), @local.customization_filter.toLowerCase(), JSON.stringify(cust).toLowerCase().indexOf(@local.customization_filter.toLowerCase()) > -1
+
+                  OPTION 
+                    value: forum
+                    forum 
             ".consider.it:"
 
           if !!compare_to
-            CodeMirrorTextArea 
-              key: compare_to
-              id: 'comparison'
-              default_value: compare_to
+
+            JSONEditorTextArea          
+              id: 'json'
+              key: JSON.stringify compare_to
+              json: compare_to
+              onChange: (val) -> false 
+
+            # CodeMirrorTextArea 
+            #   key: compare_to
+            #   id: 'comparison'
+            #   default_value: compare_to
 
 
       if code_properties.length > 0 

@@ -38,7 +38,7 @@ window.Header = ReactiveComponent
           position: 'relative'
           zIndex: 2
           margin: '0 auto'
-          backgroundColor: 'white'
+          # backgroundColor: 'white'
 
 
         ProfileMenu()

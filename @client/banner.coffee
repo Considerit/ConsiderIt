@@ -964,7 +964,7 @@ window.PhotoBanner = (opts) ->
         // }
 
         .PhotoBanner > .wrapper .CustomizeTitle .banner_title {
-          font-size: 56px;
+          font-size: 48px;
           font-weight: 700;
           font-family: #{header_font()};
           text-align: center;
@@ -979,13 +979,13 @@ window.PhotoBanner = (opts) ->
         }
         .PhotoBanner #tabs > ul > li {
           background-color: #{tab_background_color};
-          margin: 0 6px;
+          margin: 2px 6px 0px 6px;
         }          
         .PhotoBanner #tabs > ul > li > h4 {
-          text-transform: uppercase;
+          //text-transform: uppercase;
           font-family: #{header_font()};
           font-weight: 600;
-          font-size: 20px;
+          font-size: 17px;
           padding: 10px 16px 4px;
         }
         .dark .PhotoBanner #tabs > ul > li > h4 {
@@ -1194,7 +1194,7 @@ window.ShortHeader = (opts) ->
     padding_left_icon: 20
 
 
-  opts.background = '#fff'
+  opts.background = 'transparent'
   background_is_light = true
 
   DIV 

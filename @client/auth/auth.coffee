@@ -25,7 +25,7 @@ window.AuthCallout = ReactiveComponent
     current_user = fetch '/current_user'
     subdomain = fetch '/subdomain'
 
-    return SPAN null if current_user.logged_in
+    return SPAN null if current_user.logged_in || customization('contribution_phase') == 'frozen'
 
     create_account_button_style = 
                     backgroundColor: selected_color

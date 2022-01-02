@@ -222,6 +222,8 @@ task :migrate_translations => :environment do
   delete_translation "engage.re-sort_list"
 
   delete_translation "engage.save_opinion_button"
+  delete_translation "engage.proposal_meta_data"
+  
 
   sync_keys_with_english
   execute_translation_migration

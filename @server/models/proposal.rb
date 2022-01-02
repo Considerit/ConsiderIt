@@ -55,21 +55,73 @@ class Proposal < ApplicationRecord
 
     proposals_obj = {
       key: '/proposals',
-      proposals: proposals.map {|p| p.as_json }
     }
 
-    if all_points 
-      points = []
-      proposals.each do |proposal|
-        if subdomain.moderation_policy == 1
-          moderation_status_check = 'moderation_status=1'
-        else 
-          moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
-        end
+    proposals_map = {}
+    proposals.each do |p|
+      proposals_map[p.id] = true
+    end
 
-        points.concat proposal.points.where("(published=1 AND #{moderation_status_check})").public_fields.map {|p| p.as_json}
+    if subdomain.moderation_policy == 1
+      moderation_status_check = 'moderation_status=1'
+    else 
+      moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
+    end
+
+    points = subdomain.points.where("(published=1 AND #{moderation_status_check})").select {|pnt| proposals_map.has_key?(pnt.proposal_id)}
+    points_by_proposals = {}
+    points.each do |pnt|
+      if !points_by_proposals.has_key?(pnt.proposal_id)
+        points_by_proposals[pnt.proposal_id] = []
+      end 
+      points_by_proposals[pnt.proposal_id].push pnt
+    end
+
+    opinions = ActiveRecord::Base.connection.execute """\
+      SELECT created_at, id, point_inclusions, proposal_id, 
+      stance, user_id, updated_at, explanation
+          FROM opinions 
+          WHERE subdomain_id=#{subdomain.id} AND
+                published=1;
+      """
+    opinions_by_proposal = {}
+    opinions.each do |o|
+      proposal_id = o[3]
+      if !opinions_by_proposal.has_key?(proposal_id)
+        opinions_by_proposal[proposal_id] = []
       end
-      proposals_obj[:points] = points
+
+      op = {
+        key: "/opinion/#{o[1]}",
+        # created_at: o[0],
+        updated_at: o[6],
+        # proposal: "/proposal/#{o[3]}",
+        user: "/user/#{o[5]}",
+        # published: true,
+        stance: o[4].to_f        
+      }
+
+      if o[7]
+        op['explanation'] = o[7]
+      end
+
+      if o[2] && o[2] != '[]'
+        op[:point_inclusions] = Oj.load(o[2]).map! {|p| "/point/#{p}"}
+      end 
+
+      opinions_by_proposal[proposal_id].push op 
+    end 
+
+    proposals_obj[:proposals] = proposals.map do |p|
+      options = {
+        :points => (points_by_proposals[p.id] or []),
+        :opinions => (opinions_by_proposal[p.id] or [])
+      }
+      p.as_json options
+    end 
+
+    if all_points 
+      proposals_obj[:points] = points.public_fields.map {|p| p.as_json}
     end
 
     proposals_obj
@@ -98,19 +150,39 @@ class Proposal < ApplicationRecord
   end
 
   def as_json(options={})
-    options[:only] ||= Proposal.my_public_fields
-    json = super(options)
+    # options[:only] ||= Proposal.my_public_fields
+    # json = super(options)
+
+    json = {
+      "id" => self.id, 
+      "slug" => self.slug, 
+      "cluster" => self.cluster, 
+      "user_id" => self.user_id, 
+      "created_at" => self.created_at, 
+      "updated_at" => self.updated_at, 
+      "name" => self.name, 
+      "description" => self.description, 
+      "active" => self.active, 
+      "hide_on_homepage" => self.hide_on_homepage, 
+      "published" => self.published, 
+      "subdomain_id" => self.subdomain_id, 
+      "json" => self.json
+    }
 
     # Find an existing opinion for this user
-    user = current_user
-    if current_user.logged_in?
-      your_opinion = self.opinions.where(:user_id => user.id).order('id DESC')
-      if your_opinion.length > 1
-        pp "Duplicate opinions for user #{current_user}: #{your_opinion.map {|o| o.id} }!"
-      end      
-      your_opinion = your_opinion.first
+    if !options.has_key?(:opinions)
+      if current_user.logged_in?
+        your_opinion = self.opinions.where(:user_id => current_user.id).order('id DESC')
+        if your_opinion.length > 1
+          pp "Duplicate opinions for user #{current_user}: #{your_opinion.map {|o| o.id} }!"
+        end      
+        your_opinion = your_opinion.first
+      else 
+        your_opinion = nil 
+      end
     else 
-      your_opinion = nil 
+      user_key = "/user/#{current_user.id}"
+      options[:opinions].find { |o| o[:user] == user_key }
     end
 
     if your_opinion
@@ -123,39 +195,43 @@ class Proposal < ApplicationRecord
         proposal: "/proposal/#{self.id}",
         published: false
       }
-
     end
 
-    o = ActiveRecord::Base.connection.execute """\
-      SELECT created_at, id, point_inclusions, proposal_id, 
-      stance, user_id, updated_at, explanation
-          FROM opinions 
-          WHERE subdomain_id=#{self.subdomain_id} AND
-                proposal_id=#{self.id} AND 
-                published=1;
-      """
+    if !options.has_key?(:opinions)
 
-    json['opinions'] = o.map do |op|
-      r = {
-        key: "/opinion/#{op[1]}",
-        # created_at: op[0],
-        updated_at: op[6],
-        # proposal: "/proposal/#{op[3]}",
-        user: "/user/#{op[5]}",
-        # published: true,
-        stance: op[4].to_f
+      o = ActiveRecord::Base.connection.execute """\
+        SELECT created_at, id, point_inclusions, proposal_id, 
+        stance, user_id, updated_at, explanation
+            FROM opinions 
+            WHERE subdomain_id=#{self.subdomain_id} AND
+                  proposal_id=#{self.id} AND 
+                  published=1;
+        """
 
-      }
-      if op[7]
-        r['explanation'] = op[7]
-      end
+      json['opinions'] = o.map do |op|
+        r = {
+          key: "/opinion/#{op[1]}",
+          # created_at: op[0],
+          updated_at: op[6],
+          # proposal: "/proposal/#{op[3]}",
+          user: "/user/#{op[5]}",
+          # published: true,
+          stance: op[4].to_f
 
-      if op[2] && op[2] != '[]'
-        r[:point_inclusions] = Oj.load(op[2]).map! {|p| "/point/#{p}"}
+        }
+        if op[7]
+          r['explanation'] = op[7]
+        end
+
+        if op[2] && op[2] != '[]'
+          r[:point_inclusions] = Oj.load(op[2]).map! {|p| "/point/#{p}"}
+        end 
+
+        r 
       end 
-
-      r 
-    end 
+    else
+      json['opinions'] = options[:opinions]
+    end
 
 
     json['json'] = json['json'] || {}
@@ -188,7 +264,11 @@ class Proposal < ApplicationRecord
       moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
     end
 
-    json['point_count'] = self.points.where("(published=1 AND #{moderation_status_check} AND json_length(includers) > 0) OR user_id=#{current_user.id}").count
+    if options[:points]
+      json['point_count'] = options[:points].length
+    else 
+      json['point_count'] = self.points.where("(published=1 AND #{moderation_status_check} AND json_length(includers) > 0) OR user_id=#{current_user.id}").count
+    end 
 
     json
   end

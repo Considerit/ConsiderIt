@@ -264,6 +264,10 @@ Root = ReactiveComponent
 
   render : -> 
     loc = fetch('location')
+    app = fetch('/application')
+    page = fetch("/page#{loc.url}")
+    return ProposalsLoading() if !app.web_worker
+
     subdomain = fetch '/subdomain'
     current_user = fetch('/current_user')
 

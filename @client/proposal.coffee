@@ -147,7 +147,7 @@ window.Proposal = ReactiveComponent
     # if there aren't community_points, then we won't bother showing them
     community_points = fetch("/page/#{@proposal.slug}").points or []
     if mode == 'crafting'
-      included_points = your_opinion.point_inclusions
+      included_points = your_opinion.point_inclusions or []
       community_points = (pnt for pnt in community_points when !_.contains(included_points, pnt.key) )
     has_community_points = community_points.length > 0 
 
@@ -336,8 +336,6 @@ window.Proposal = ReactiveComponent
                   paddingBottom: '4em' #padding instead of margin for docking
                   margin: "#{if draw_handle && !TWO_COL() then '24px' else '0'} auto 0 auto"
                   display: if !customization('discussion_enabled', @proposal) then 'none'
-
-
 
                 H2
                   className: 'hidden'
@@ -900,7 +898,7 @@ DecisionBoard = ReactiveComponent
     # if there aren't points in the wings, then we won't bother showing 
     # the drop target
     wing_points = fetch("/page/#{@proposal.slug}").points or [] 
-    included_points = your_opinion.point_inclusions
+    included_points = your_opinion.point_inclusions or []
     wing_points = (pnt for pnt in wing_points when !_.contains(included_points, pnt.key) )
     are_points_in_wings = wing_points.length > 0 
     
@@ -1027,7 +1025,7 @@ DecisionBoard = ReactiveComponent
                 points_editable: true
                 points_draggable: true
                 drop_target: are_points_in_wings
-                points: (p for p in your_opinion.point_inclusions \
+                points: (p for p in your_opinion.point_inclusions or [] \
                               when fetch(p).is_pro)
 
               PointsList 
@@ -1037,7 +1035,7 @@ DecisionBoard = ReactiveComponent
                 points_editable: true
                 points_draggable: true
                 drop_target: are_points_in_wings
-                points: (p for p in your_opinion.point_inclusions \
+                points: (p for p in your_opinion.point_inclusions or [] \
                               when !fetch(p).is_pro)
 
 
@@ -1151,6 +1149,7 @@ DecisionBoard = ReactiveComponent
           your_opinion = @proposal.your_opinion
           your_opinion.key ?= "/new/opinion"
           your_opinion.published = true
+          your_opinion.point_inclusions ?= []
           your_opinion.point_inclusions.push(
             ui.draggable.parent().data('id'))
           save(your_opinion)
@@ -1370,7 +1369,7 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
 
 
 
-  included_points = proposal.your_opinion.point_inclusions
+  included_points = proposal.your_opinion.point_inclusions or []
   if filter_included
     points = (pnt for pnt in points when !_.contains(included_points, pnt.key) )
   else 
@@ -1511,7 +1510,8 @@ PointsList = ReactiveComponent
           marginBottom: 18
           marginTop: 7
           height: header_height
-        heading 
+        heading
+
 
       UL 
         'aria-labelledby': @local.key.replace('/','-')
@@ -1531,6 +1531,15 @@ PointsList = ReactiveComponent
                 rendered_as: @props.rendered_as
                 your_points_key: @props.key
                 enable_dragging: @props.points_draggable
+
+        else if points.length == 0 && @props.rendered_as == 'community_point' && mode == "results"
+          DIV 
+            style: 
+              fontStyle: 'italic'
+              textAlign: 'center'
+              color: '#777'
+              marginLeft: -20
+            "Be the first to add a #{get_point_label(@props.valence.substring(0, @props.valence.length - 1), @proposal)}"
 
 
       if @props.drop_target && permit('create point', @proposal) > 0

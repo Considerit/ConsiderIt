@@ -290,17 +290,42 @@ window.Slider = ReactiveComponent
         has_focus: @local.has_focus
 
       if @props.draw_helpers
-        for support in [true, false]
-          DIV 
-            style: 
-              right: if support then -15
-              left: if !support then -15
-              position: 'absolute'
-              top: 4
-              color: focus_color()
-              fontSize: 12
-              pointerEvents: 'none'
-            if support then '>' else '<'   
+        DIV null,
+          for support in [true, false]
+            DIV 
+              style: 
+                right: if support then -21
+                left: if !support then -21
+                position: 'absolute'
+                top: 7.5
+                color: 'white'
+                pointerEvents: 'none'
+
+              if support then ChevronRight(15) else ChevronLeft(15)
+
+          for support in [true, false]
+            DIV 
+              style: 
+                right: if support then -19
+                left: if !support then -19
+                position: 'absolute'
+                top: 7.5
+                color: 'white'
+                pointerEvents: 'none'
+
+              if support then ChevronRight(15) else ChevronLeft(15)
+
+          for support in [true, false]
+            DIV 
+              style: 
+                right: if support then -20
+                left: if !support then -20
+                position: 'absolute'
+                top: 7.5
+                color: focus_color()
+                pointerEvents: 'none'
+
+              if support then ChevronRight(15) else ChevronLeft(15)
 
 
   # Kick off sliding 

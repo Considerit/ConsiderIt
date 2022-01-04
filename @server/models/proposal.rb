@@ -182,7 +182,7 @@ class Proposal < ApplicationRecord
       end
     else 
       user_key = "/user/#{current_user.id}"
-      options[:opinions].find { |o| o[:user] == user_key }
+      your_opinion = options[:opinions].find { |o| o[:user] == user_key }
     end
 
     if your_opinion

@@ -1252,7 +1252,6 @@ window.ShortHeader = (opts) ->
               color: if !background_is_light && !opts.logo_src then 'white'
               fontSize: 18
               fontWeight: 600
-              display: 'inline'
 
             , TRANSLATE("engage.navigate_back_to_homepage" , 'homepage')
 

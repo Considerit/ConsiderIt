@@ -104,8 +104,11 @@ window.back_to_homepage_button = (style, text) ->
         fontSize: 43
         visibility: if homepage || !customization('has_homepage') then 'hidden' else 'visible'
         color: 'black'
+        display: 'flex'
+        alignItems: 'center'
 
-      '<'
+
+      ChevronLeft(20)
 
       if text 
         SPAN 

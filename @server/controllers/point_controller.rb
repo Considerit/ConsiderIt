@@ -42,7 +42,6 @@ class PointController < ApplicationController
     # Set private values
     point['proposal'] = proposal = Proposal.find(key_id(point['proposal']))
     point['comment_count'] = 0
-    point['published'] = true
     point['user_id'] = current_user && current_user.id || nil
 
     authorize! 'create point', proposal
@@ -66,8 +65,8 @@ class PointController < ApplicationController
       point.save
       point.publish
 
-      # Include into the user's opinion
       opinion.include(point)
+      # Include into the user's opinion
       if !opinion.published
         opinion.publish
       end

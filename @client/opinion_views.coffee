@@ -260,10 +260,10 @@ default_weights = ->
       name: translator 'opinion_views.weights_tradeoffs', 'Tradeoffs recognized'
       label: translator 'opinion_views.weights_tradeoffs_label', 'Add weight to opinions that acknowledge both pro and con tradeoffs.'
       weight: (u, opinion, proposal) ->
-        point_inclusions = opinion.point_inclusions
+        point_inclusions = opinion.point_inclusions or []
         pros = 0 
         cons = 0  
-        for inc in point_inclusions or []
+        for inc in point_inclusions
           pnt = fetch(inc)
           if pnt.is_pro 
             pros += 1

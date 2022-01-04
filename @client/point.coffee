@@ -472,6 +472,7 @@ window.Point = ReactiveComponent
 
   included: -> 
     your_opinion = @proposal.your_opinion
+    your_opinion.point_inclusions ?= []
     your_opinion.point_inclusions.indexOf(@props.key) > -1
 
   remove: -> 
@@ -484,6 +485,7 @@ window.Point = ReactiveComponent
     if !validate_first || confirm('Are you sure you want to remove your point? It will be gone forever.')
 
       your_opinion = @proposal.your_opinion
+      your_opinion.point_inclusions ?= []
       your_opinion.point_inclusions = _.without your_opinion.point_inclusions, \
                                                 @props.key
 
@@ -503,6 +505,7 @@ window.Point = ReactiveComponent
     your_opinion.key ?= "/new/opinion"
 
     your_opinion.published = true 
+    your_opinion.point_inclusions ?= []
     your_opinion.point_inclusions.push @data().key
     save(your_opinion)
 
@@ -742,6 +745,7 @@ window.Discussion = ReactiveComponent
     your_opinion = proposal.your_opinion
     if your_opinion.key 
       fetch your_opinion
+    your_opinion.point_inclusions ?= []
     point_included = _.contains(your_opinion.point_inclusions, point.key)
     in_wings = get_proposal_mode() == 'crafting' && !point_included
 

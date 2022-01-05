@@ -36,6 +36,9 @@ window.styles += """
 
 """
 
+list_link = (list_key) ->
+  list_key.substring(5).toLowerCase().replace(/ /g, '_')
+
 window.List = ReactiveComponent
   displayName: 'List'
 
@@ -65,9 +68,9 @@ window.List = ReactiveComponent
       id: list_key.substring(5).toLowerCase()
       style: 
         marginBottom: if !is_collapsed then 40
-        position: 'relative'        
+        position: 'relative'
 
-      A name: list_key.substring(5).toLowerCase().replace(/ /g, '_')
+      A name: list_link(list_key)
 
 
       ListHeader 
@@ -254,7 +257,10 @@ EditList = ReactiveComponent
 
       save edit_list
 
-    admin_actions = [{action: 'edit', label: t('edit')}, {action: 'delete', label: t('delete')}, {action: 'close', label: translator('engage.list-configuration.close', 'close to participation')}]
+    admin_actions = [{action: 'edit', label: t('edit')}, 
+                     {action: 'delete', label: t('delete')}, 
+                     {action: 'close', label: translator('engage.list-configuration.close', 'close to participation')}, 
+                     {action: 'copy_link', label: translator('engage.list-configuration.copy_link', 'copy link')}]
 
     if !edit_list.editing 
 
@@ -372,6 +378,14 @@ EditList = ReactiveComponent
               # customizations[list_key].list_description += "<DIV style='font-style:italic'>Participation was closed by the host on #{new Date().toDateString()}</div>" 
 
               save subdomain
+          else if option.action == 'copy_link'
+            link = "#{location.origin}#{location.search}##{list_link(list_key)}"
+            navigator.clipboard.writeText(link).then -> 
+              show_flash("Link copied to clipboard")
+            , (err) ->
+              show_flash_error("Problem copying link to clipboard")
+
+
             
     else 
 

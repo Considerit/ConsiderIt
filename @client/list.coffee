@@ -198,7 +198,7 @@ EditList = ReactiveComponent
       customizations[list_key] ?= {}
       list_config = customizations[list_key]
 
-      fields = ['list_title', 'list_description', 'list_permit_new_items', 'list_category', 'slider_pole_labels', 'list_opinions_title']
+      fields = ['list_title', 'list_description', 'list_permit_new_items', 'list_category', 'slider_pole_labels', 'list_opinions_title', 'discussion_enabled', 'list_is_archived']
 
       for f in fields
         val = edit_list[f]
@@ -456,6 +456,9 @@ window.ListHeader = ReactiveComponent
         marginTop: -36
         padding: "36px 36px"
         width: HOMEPAGE_WIDTH() + 36 * 2
+
+    edit_list.discussion_enabled ?= customization('discussion_enabled', list_key)
+    edit_list.list_is_archived ?= customization('list_is_archived', list_key)
 
     DIV 
       style: wrapper_style 
@@ -761,6 +764,50 @@ window.ListHeader = ReactiveComponent
                             position: 'absolute'
                             right: 0
                           option.support
+
+            if !@props.combines_these_lists
+
+              DIV 
+                style:
+                  marginTop: 36
+
+                DIV null, 
+                  LABEL 
+                    style: {}
+
+                    INPUT 
+                      type: 'checkbox'
+                      defaultChecked: !edit_list.discussion_enabled
+                      name: 'discussion_enabled'
+                      onChange: (e) =>
+                        edit_list.discussion_enabled = !edit_list.discussion_enabled
+                        save edit_list
+
+                    SPAN 
+                      style: 
+                        paddingLeft: 4
+                      translator 'engage.list-config-discussion-enabled', 'Disable commenting. Spectrums only.'
+
+                DIV null, 
+
+                  LABEL 
+                    style: {}
+
+                    INPUT 
+                      type: 'checkbox'
+                      defaultChecked: edit_list.list_is_archived
+                      name: 'list_is_archived'
+                      onChange: (e) =>
+                        edit_list.list_is_archived = !edit_list.list_is_archived
+                        save edit_list
+
+                    SPAN 
+                      style: 
+                        paddingLeft: 4
+                      translator 'engage.list-config-archived', 'List is closed by default on page load. Useful for archiving past issues.'
+
+
+
 
       if @props.allow_editing
         EditList

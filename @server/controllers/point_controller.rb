@@ -43,6 +43,7 @@ class PointController < ApplicationController
     point['proposal'] = proposal = Proposal.find(key_id(point['proposal']))
     point['comment_count'] = 0
     point['user_id'] = current_user && current_user.id || nil
+    point['published'] = false
 
     authorize! 'create point', proposal
 
@@ -50,7 +51,7 @@ class PointController < ApplicationController
     errors = validate_input point, proposal, nil
 
     if errors.length == 0
-
+      pnt = point
       point = Point.new point
 
       opinion = Opinion.get_or_make(proposal)
@@ -63,6 +64,7 @@ class PointController < ApplicationController
       end
 
       point.save
+
       point.publish
 
       opinion.include(point)

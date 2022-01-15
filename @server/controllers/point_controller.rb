@@ -1,10 +1,15 @@
 class PointController < ApplicationController
 
   def show
-    point = Point.find params[:id]
+    begin
+      point = Point.find params[:id]
+    rescue 
+      render :json => []
+      return
+    end 
     authorize! 'read point', point
-
     dirty_key "/point/#{params[:id]}"
+
     render :json => []
   end
 
@@ -37,8 +42,8 @@ class PointController < ApplicationController
     # Set private values
     point['proposal'] = proposal = Proposal.find(key_id(point['proposal']))
     point['comment_count'] = 0
-    point['published'] = false
     point['user_id'] = current_user && current_user.id || nil
+    point['published'] = false
 
     authorize! 'create point', proposal
 
@@ -46,7 +51,7 @@ class PointController < ApplicationController
     errors = validate_input point, proposal, nil
 
     if errors.length == 0
-
+      pnt = point
       point = Point.new point
 
       opinion = Opinion.get_or_make(proposal)
@@ -58,26 +63,28 @@ class PointController < ApplicationController
         raise "Error! No opinion for user #{current_user.id} and proposal #{proposal.id}"
       end
 
-      if opinion.published
-        point.publish
-      else
-        point.save
-      end
+      point.save
 
-      # Include into the user's opinion
+      point.publish
+
       opinion.include(point)
+      # Include into the user's opinion
+      if !opinion.published
+        opinion.publish
+      end
 
       original_id = key_id(params[:key])
       result = point.as_json
       result['key'] = "/point/#{point.id}?original_id=#{original_id}"
 
       dirty_key "/page/#{proposal.slug}"
-
+      dirty_key "/proposal/#{proposal.id}"
       write_to_log({
         :what => 'wrote new point',
         :where => request.fullpath,
         :details => {:point => "/point/#{point.id}"}
       })
+
     else 
       result = {
         :key => params[:key],
@@ -143,7 +150,7 @@ class PointController < ApplicationController
     end
 
     dirty_key("/page/#{proposal.slug}") #because /points is changed...
-
+    dirty_key("/proposal/#{proposal.id}")
     render :json => []
   end
  

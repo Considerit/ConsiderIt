@@ -394,7 +394,9 @@
         })
 
         wrap(component, 'componentDidMount')
-        wrap(component, 'componentDidUpdate')
+        wrap(component, 'componentDidUpdate', function () {
+            this.getDOMNode().setAttribute('data-widget', component.displayName)
+        })
         wrap(component, 'getDefaultProps')
         //wrap(component, 'componentWillReceiveProps')
         wrap(component, 'componentWillUnmount', function () {

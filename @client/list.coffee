@@ -2,7 +2,7 @@ require './questionaire'
 
 window.styles += """
   .LIST-header {
-    font-size: 36px;
+    font-size: 33px;
     font-weight: 700;
     text-align: left;     
     padding: 0; 
@@ -36,6 +36,9 @@ window.styles += """
 
 """
 
+list_link = (list_key) ->
+  list_key.substring(5).toLowerCase().replace(/ /g, '_')
+
 window.List = ReactiveComponent
   displayName: 'List'
 
@@ -65,9 +68,9 @@ window.List = ReactiveComponent
       id: list_key.substring(5).toLowerCase()
       style: 
         marginBottom: if !is_collapsed then 40
-        position: 'relative'        
+        position: 'relative'
 
-      A name: list_key.substring(5).toLowerCase().replace(/ /g, '_')
+      A name: list_link(list_key)
 
 
       ListHeader 
@@ -195,7 +198,7 @@ EditList = ReactiveComponent
       customizations[list_key] ?= {}
       list_config = customizations[list_key]
 
-      fields = ['list_title', 'list_description', 'list_permit_new_items', 'list_category', 'slider_pole_labels', 'list_opinions_title']
+      fields = ['list_title', 'list_description', 'list_permit_new_items', 'list_category', 'slider_pole_labels', 'list_opinions_title', 'discussion_enabled', 'list_is_archived']
 
       for f in fields
         val = edit_list[f]
@@ -254,7 +257,10 @@ EditList = ReactiveComponent
 
       save edit_list
 
-    admin_actions = [{action: 'edit', label: t('edit')}, {action: 'delete', label: t('delete')}, {action: 'close', label: translator('engage.list-configuration.close', 'close to participation')}]
+    admin_actions = [{action: 'edit', label: t('edit')}, 
+                     {action: 'delete', label: t('delete')}, 
+                     {action: 'close', label: translator('engage.list-configuration.close', 'close to participation')}, 
+                     {action: 'copy_link', label: translator('engage.list-configuration.copy_link', 'copy link')}]
 
     if !edit_list.editing 
 
@@ -372,6 +378,14 @@ EditList = ReactiveComponent
               # customizations[list_key].list_description += "<DIV style='font-style:italic'>Participation was closed by the host on #{new Date().toDateString()}</div>" 
 
               save subdomain
+          else if option.action == 'copy_link'
+            link = "#{location.origin}#{location.search}##{list_link(list_key)}"
+            navigator.clipboard.writeText(link).then -> 
+              show_flash("Link copied to clipboard")
+            , (err) ->
+              show_flash_error("Problem copying link to clipboard")
+
+
             
     else 
 
@@ -442,6 +456,9 @@ window.ListHeader = ReactiveComponent
         marginTop: -36
         padding: "36px 36px"
         width: HOMEPAGE_WIDTH() + 36 * 2
+
+    edit_list.discussion_enabled ?= customization('discussion_enabled', list_key)
+    edit_list.list_is_archived ?= customization('list_is_archived', list_key)
 
     DIV 
       style: wrapper_style 
@@ -748,6 +765,50 @@ window.ListHeader = ReactiveComponent
                             right: 0
                           option.support
 
+            if !@props.combines_these_lists
+
+              DIV 
+                style:
+                  marginTop: 36
+
+                DIV null, 
+                  LABEL 
+                    style: {}
+
+                    INPUT 
+                      type: 'checkbox'
+                      defaultChecked: !edit_list.discussion_enabled
+                      name: 'discussion_enabled'
+                      onChange: (e) =>
+                        edit_list.discussion_enabled = !edit_list.discussion_enabled
+                        save edit_list
+
+                    SPAN 
+                      style: 
+                        paddingLeft: 4
+                      translator 'engage.list-config-discussion-enabled', 'Disable commenting. Spectrums only.'
+
+                DIV null, 
+
+                  LABEL 
+                    style: {}
+
+                    INPUT 
+                      type: 'checkbox'
+                      defaultChecked: edit_list.list_is_archived
+                      name: 'list_is_archived'
+                      onChange: (e) =>
+                        edit_list.list_is_archived = !edit_list.list_is_archived
+                        save edit_list
+
+                    SPAN 
+                      style: 
+                        paddingLeft: 4
+                      translator 'engage.list-config-archived', 'List is closed by default on page load. Useful for archiving past issues.'
+
+
+
+
       if @props.allow_editing
         EditList
           list: @props.list
@@ -867,7 +928,7 @@ EditableTitle = ReactiveComponent
                 style: 
                   fontWeight: 700
 
-            "<span>Title [optional].</span> Usually an open-ended question like \"What are your ideas?\" or a list label like \"Recommended actions for mitigation\"."
+            "<span>Title.</span> Usually an open-ended question like \"What are your ideas?\" or a list label like \"Recommended actions for mitigation\"."
 
       H1 
         className: 'LIST-header'
@@ -921,7 +982,7 @@ EditableTitle = ReactiveComponent
                 style: 
                   position: 'absolute'
                   left: -tw - 20
-                  top: 12
+                  top: if is_collapsed then 3 else 9
                   paddingRight: 20
                   paddingTop: 12
                   display: 'inline-block'

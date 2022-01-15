@@ -64,7 +64,7 @@ class CurrentUserController < ApplicationController
             end
 
             current_user.add_to_active_in
-            dirty_if_any_private_proposals current_user
+            dirty_proposals current_user
 
             current_user.update_roles_and_permissions
 
@@ -115,7 +115,7 @@ class CurrentUserController < ApplicationController
             current_user.add_to_active_in
             current_user.update_roles_and_permissions
 
-            dirty_if_any_private_proposals current_user
+            dirty_proposals current_user
 
             if user.is_admin?
               dirty_key '/subdomain'
@@ -160,7 +160,7 @@ class CurrentUserController < ApplicationController
               current_user.verified = true
               current_user.save
             end
-            dirty_if_any_private_proposals current_user
+            dirty_proposals current_user
 
             log('sign in by password reset')
 
@@ -209,7 +209,7 @@ class CurrentUserController < ApplicationController
         if current_user && current_user.logged_in?
           #puts("Logging out.")
           dirty_key '/page/'
-          dirty_if_any_private_proposals current_user
+          dirty_proposals current_user
           new_current_user()
           log('logged out')
         end
@@ -225,7 +225,7 @@ class CurrentUserController < ApplicationController
 
           user = User.find key_id(params[:switch_to])
           if user
-            dirty_if_any_private_proposals current_user
+            dirty_proposals current_user
             set_current_user(user)
             dirty_key '/application'
           else
@@ -254,7 +254,7 @@ class CurrentUserController < ApplicationController
 
       when 'verify email'
         verify_user(current_user.email, params[:verification_code])
-        dirty_if_any_private_proposals current_user
+        dirty_proposals current_user
         log('verifying email')
 
       when 'send_verification_token'

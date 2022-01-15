@@ -86,7 +86,7 @@ permit = (action) ->
       if phase == 'opinions-only'
         can_add_to_list = false
 
-      if !current_user.is_admin && !matchEmail(subdomain.roles.proposer) && !can_add_to_list
+      if !current_user.is_admin && (!matchEmail(subdomain.roles.proposer) || !can_add_to_list)
         return Permission.INSUFFICIENT_PRIVILEGES 
       return Permission.NOT_LOGGED_IN if !current_user.logged_in
 
@@ -121,15 +121,11 @@ permit = (action) ->
     when 'create point'
       proposal = fetch arguments[1]
 
-      return Permission.DISABLED if phase == 'ideas-only'
-
-      return Permission.DISABLED if !proposal.active
-      if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'participant'])
-        if !current_user.logged_in
-          return Permission.NOT_LOGGED_IN  
-        else 
-          return Permission.INSUFFICIENT_PRIVILEGES 
-
+      return Permission.DISABLED if phase == 'ideas-only' || !proposal.active
+      return Permission.NOT_LOGGED_IN if !current_user.logged_in
+        
+      return Permission.INSUFFICIENT_PRIVILEGES if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'participant'])
+          
     when 'update point'
       # Is an author allowed to edit a point after someone else has included it?
       point = fetch arguments[1]

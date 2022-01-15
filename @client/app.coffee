@@ -26,6 +26,7 @@ require './opinion_slider'
 require './state_dash'
 require './tooltip'
 require './popover'
+require './flash'
 require './development'
 require './su'
 require './edit_point'
@@ -41,8 +42,7 @@ require './viewport_visibility_sensor'
 ## ########################
 ## Initialize defaults for client data
 
-fetch 'root',
-  opinions_to_publish : []
+fetch 'root'
 
 
 AccessibilitySupport = ReactiveComponent 
@@ -265,6 +265,10 @@ Root = ReactiveComponent
 
   render : -> 
     loc = fetch('location')
+    app = fetch('/application')
+    page = fetch("/page#{loc.url}")
+    return ProposalsLoading() if !app.web_worker
+
     subdomain = fetch '/subdomain'
     current_user = fetch('/current_user')
 
@@ -304,6 +308,7 @@ Root = ReactiveComponent
           }
           .content h1, .content h2, .content h3, .content h1 button, .content h2 button, .content h3 button, .content h4 button {
             font-family: #{header_fonts};
+            letter-spacing: -1px;
           }
         """
 
@@ -315,7 +320,7 @@ Root = ReactiveComponent
 
         DIV 
           style:
-            backgroundColor: 'white'
+            # backgroundColor: 'white'
             overflowX: 'hidden'
 
           if fetch('auth').form
@@ -327,6 +332,7 @@ Root = ReactiveComponent
 
       Tooltip()
       Popover()
+      Flash()
 
 
       do -> 

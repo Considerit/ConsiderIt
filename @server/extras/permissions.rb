@@ -171,12 +171,11 @@ def permit(action, object = nil, user = nil)
     proposal = object
     return Permission::DISABLED if !proposal.active
 
+    return Permission::NOT_LOGGED_IN if !user.registered
+      
+
     if !user.is_admin?(subdomain) && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'participant'], user)
-      if !user.registered
-        return Permission::NOT_LOGGED_IN  
-      else 
-        return Permission::INSUFFICIENT_PRIVILEGES 
-      end
+      return Permission::INSUFFICIENT_PRIVILEGES 
     end
 
   when 'update point'

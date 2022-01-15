@@ -101,7 +101,8 @@ class SubdomainController < ApplicationController
         user: current_user,
         subdomain_id: new_subdomain.id, 
         proposal: proposal,
-        stance: 0.0
+        stance: 0.0,
+        point_inclusions: []
       })
       current_user.add_to_active_in new_subdomain
 

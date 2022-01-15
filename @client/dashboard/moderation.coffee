@@ -1,6 +1,6 @@
 window.moderation_options = [
     {
-      label: "No content moderation"
+      label: "No moderation"
       value: 0
     }
     
@@ -146,7 +146,7 @@ window.ModerationDash = ReactiveComponent
           listStyle: 'none'
           marginTop: 48
 
-        for model in ['Proposal', 'Point', 'Comment']
+        for model in ['Proposal', 'Point', 'Comment', 'Ban']
           select_class = (model) => @local.model = model; save @local
 
           do (model) => 
@@ -173,68 +173,79 @@ window.ModerationDash = ReactiveComponent
                 onKeyPress: (e) => 
                   if e.which in [13, 32]
                     select_class(model); e.preventDefault()
-                "Review #{model}s"
+                "#{if model == 'Proposal' then 'Review ' else ''}#{model}s"
 
-                SPAN 
-                  style: 
-                    fontSize: 12
-                    verticalAlign: 'top'
-                    paddingLeft: 8
-                  "[#{all_items[model].pending?.items?.length or 0}]"
-
-
-
-      DIV 
-        style: 
-          borderTop: '1px solid #bbb'
+                if model != 'Ban'
+                  SPAN 
+                    style: 
+                      fontSize: 12
+                      verticalAlign: 'top'
+                      paddingLeft: 8
+                    "[#{all_items[model].pending?.items?.length or 0}]"
 
 
-        UL 
+
+
+      if @local.model == 'Ban'
+        DIV 
           style: 
-            listStyle: 'none'
-            margin: '12px 0 12px 10px'
+            borderTop: '1px solid #bbb'
 
-          for category, definition of items
-            do (definition) =>
-              active = category == @local.show_category
-              LI  
-                key: category
-                style:
-                  display: 'inline'
-                  marginLeft: 18
-
-                BUTTON
-                  className: 'like_link'
-                  style: 
-                    fontSize: 14
-                    fontWeight: if active then 700
-                    color: if active then 'black' else '#666'
-
-                  onKeyPress: (e) => 
-                    if e.which in [13, 32]
-                      e.target.click()
-                      e.preventDefault()
-
-                  onClick: => 
-                    @local.show_category = definition.name 
-                    save @local 
-
-                  category
-
-                SPAN
-                  style: 
-                    fontSize: 10
-                    paddingLeft: 4
-                    color: '#666'
-                  "[#{definition.items?.length or 0}]"
+          BanHammer {all_items}
 
 
-        UL 
+      else 
+        DIV 
           style: 
-            marginLeft: 0 #-66
-          for item in items[@local.show_category].items
-            ModerateItem 
-              key: item.key
+            borderTop: '1px solid #bbb'
+
+
+          UL 
+            style: 
+              listStyle: 'none'
+              margin: '12px 0 12px 10px'
+
+            for category, definition of items
+              do (definition) =>
+                active = category == @local.show_category
+                LI  
+                  key: category
+                  style:
+                    display: 'inline'
+                    marginLeft: 18
+
+                  BUTTON
+                    className: 'like_link'
+                    style: 
+                      fontSize: 14
+                      fontWeight: if active then 700
+                      color: if active then 'black' else '#666'
+
+                    onKeyPress: (e) => 
+                      if e.which in [13, 32]
+                        e.target.click()
+                        e.preventDefault()
+
+                    onClick: => 
+                      @local.show_category = definition.name 
+                      save @local 
+
+                    category
+
+                  SPAN
+                    style: 
+                      fontSize: 10
+                      paddingLeft: 4
+                      color: '#666'
+                    "[#{definition.items?.length or 0}]"
+
+
+          UL 
+            style: 
+              marginLeft: 0 #-66
+            for item in items[@local.show_category].items
+              ModerateItem 
+                key: item.key
 
 
 
@@ -480,6 +491,158 @@ ModerateItem = ReactiveComponent
             SPAN style: {}, "Quarantined by #{if item.user then fetch(item.user).name else 'Unknown'} on #{new Date(item.updated_at).toDateString()}"
           else if item.status == 0
             SPAN style: {}, "Failed by #{if item.user then fetch(item.user).name else 'Unknown'} on #{new Date(item.updated_at).toDateString()}"
+
+
+
+
+
+BanHammer = ReactiveComponent
+  displayName: 'BanHammer'
+
+  render: ->
+    users = fetch '/users'
+    subdomain = fetch '/subdomain'
+
+    bans = subdomain.customizations.shadow_bans or []
+
+    ban_user = (user) =>
+      bans = (u.key or u for u in bans)
+      bans.push user.key
+      subdomain.customizations.shadow_bans = bans
+      save subdomain
+
+
+
+      # fail all posts by this account
+      for model, categories of @props.all_items
+        for moderation_status, items of categories when moderation_status != 'failed'
+          for item in items.items
+            if fetch(item.moderatable).user == user.key
+              item.status = 0
+              save item
+
+    filtered_users = _.filter users.users, (u) =>  
+                        bans.indexOf(u.key) < 0 &&
+                         (!@local.filtered || 
+                          "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1)
+
+    ban_explanation = """
+       If you are having insurmountable difficulties with a particular registered account, you can shadow ban them.
+       A shadow ban will not prevent them from accessing the forum, nor will it block them from leaving opinions.
+       It will automatically fail all their existing posts as well as any they might make in the future (e.g. new proposals, pro/con points, and comments).
+       Their posts will not show up in activity digest emails. 
+       It is a "shadow" ban because it will appear to them as if their posts are being publicly posted, when in reality the posts are only visible
+       to them (unless they log out or access the forum from a different device). Shadow banning helps reduce the chance you will get into an 
+       escalating conflict. 
+    """
+
+
+    DIV null,
+
+
+      DIV 
+        style: 
+          position: 'relative'
+          padding: '18px 24px'
+          backgroundColor: '#f1f1f1'
+          marginTop: 24
+
+
+        LABEL 
+          style: {}
+          "Select an account to shadow ban: "
+
+          SPAN null, 
+
+            DropMenu
+              options: filtered_users
+              open_menu_on: 'activation'
+
+              selection_made_callback: (user) =>
+
+                if confirm("Are you sure you want to shadow ban '#{user.name}'? Their existing posts will be failed. This action is irrevocable.")
+                  ban_user(user)
+                  @local.filtered = null
+                  save @local
+
+              render_anchor: (menu_showing) =>
+                INPUT 
+                  id: 'filter'
+                  type: 'text'
+                  style: {fontSize: 18, width: 350, padding: '3px 6px'}
+                  autoComplete: 'off'
+                  placeholder: "Name or email..."
+                  
+                  onChange: => 
+                    @local.filtered = document.getElementById('filter').value
+                    save @local
+                  
+              render_option: (user) ->
+                [
+                  SPAN 
+                    style: 
+                      fontWeight: 600
+                    user.name 
+
+                  SPAN
+                    style: 
+                      opacity: .7
+                      paddingLeft: 8
+
+                    user.email  
+                ]
+     
+              wrapper_style: 
+                display: 'inline-block'
+              menu_style: 
+                backgroundColor: '#ddd'
+                border: '1px solid #ddd'
+
+              option_style: 
+                padding: '4px 12px'
+                fontSize: 18
+                cursor: 'pointer'
+                display: 'block'
+
+              active_option_style:
+                backgroundColor: '#eee'
+
+
+
+      if bans.length > 0
+
+        DIV 
+          style:
+            marginTop: 24
+            marginLeft: 24
+
+          "Accounts already banned:"
+
+          DIV 
+            style:
+              marginTop: 8
+
+            for user, idx in bans
+
+              Avatar 
+                key: user
+                style: 
+                  width: 35
+                  height: 35
+                  marginRight: 6
+
+
+
+
+      DIV 
+        style: 
+          fontSize: 16
+          width: 600
+          marginTop: 36
+          marginLeft: 24
+        ban_explanation
+
+
 
 
 

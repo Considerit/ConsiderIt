@@ -96,8 +96,7 @@ window.HistogramTester = ReactiveComponent
             marginTop: 40
 
           DIV 
-            style:
-              fontFamily: 'Fira Sans Condensed' 
+            style: 
               fontWeight: 700
               fontSize: 28
               # width: 825

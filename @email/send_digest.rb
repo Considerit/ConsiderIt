@@ -1,8 +1,8 @@
 require Rails.root.join('@server', 'extras', 'translations')
 
 def send_digest(subdomain, user, subscription_settings, deliver = true, since = nil, force = false)
-  send_emails = subscription_settings['send_emails']
 
+  send_emails = subscription_settings['send_emails']
 
   return if !send_emails || \
             (!force && !due_for_notification(user, subdomain)) || \
@@ -13,7 +13,7 @@ def send_digest(subdomain, user, subscription_settings, deliver = true, since = 
     if last_digest_sent_at
       since = last_digest_sent_at
     else 
-      since = user.created_at
+      since = user.created_at.to_s
     end
   end 
 
@@ -34,18 +34,26 @@ def send_digest(subdomain, user, subscription_settings, deliver = true, since = 
 
 end
 
+
+NOTIFICATION_LAG = 15.minutes
+
 def get_new_activity(subdomain, user, since)
 
+
+  start_period = Time.parse(since) - NOTIFICATION_LAG
+  end_period = Time.now() - NOTIFICATION_LAG
+
+  pp "#{since}: <#{start_period}, #{end_period}>"
   new_proposals = {}
-  subdomain.proposals.where("created_at > '#{since}'").each do |proposal|
+  subdomain.proposals.where("created_at > '#{start_period}' AND created_at < '#{end_period}'").each do |proposal|
     if proposal.user && proposal.opinions.published.where(:user_id => user.id).count == 0 
       new_proposals[proposal.id] = proposal 
     end 
   end 
 
-  new_points   = subdomain.points.published.named.where("created_at > '#{since}' AND user_id != #{user.id} AND last_inclusion != -1")
-  new_opinions = subdomain.opinions.published.where("created_at > '#{since}' AND user_id != #{user.id}")
-  new_comments = subdomain.comments.where("created_at > '#{since}' AND user_id != #{user.id}")
+  new_points   = subdomain.points.published.named.where("created_at > '#{start_period}' AND created_at < '#{end_period}' AND user_id != #{user.id} AND last_inclusion != -1")
+  new_opinions = subdomain.opinions.published.where("created_at > '#{start_period}' AND created_at < '#{end_period}' AND user_id != #{user.id}")
+  new_comments = subdomain.comments.where("created_at > '#{start_period}' AND created_at < '#{end_period}' AND user_id != #{user.id}")
 
   your_proposals = {}
   active_proposals = {}
@@ -128,7 +136,7 @@ def get_new_activity(subdomain, user, since)
   end 
 
   user.points.published.where(:subdomain_id => subdomain.id).each do |pnt|
-    pnt.inclusions.where("created_at > '#{since}' AND user_id != #{user.id}").each do |inclusion|
+    pnt.inclusions.where("created_at > '#{start_period}' AND created_at < '#{end_period}' AND user_id != #{user.id}").each do |inclusion|
       pnt = inclusion.point
       proposal = pnt.proposal
       next if !proposal.user || new_proposals.key?(proposal.id) || proposal.opinions.published.where(:user_id => inclusion.user_id).count == 0

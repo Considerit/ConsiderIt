@@ -15,8 +15,8 @@ window.Header = ReactiveComponent
 
     loc = fetch('location')
     is_homepage = loc.url == '/'
-    is_dashboard = loc.url.match 'dashboard/'
     editing_banner = fetch('edit_banner').editing
+
 
     HEADER 
       className: if !is_light_background() then 'dark'
@@ -38,7 +38,7 @@ window.Header = ReactiveComponent
           position: 'relative'
           zIndex: 2
           margin: '0 auto'
-          backgroundColor: 'white'
+          # backgroundColor: 'white'
 
 
         ProfileMenu()
@@ -53,16 +53,13 @@ window.Header = ReactiveComponent
 
 
 
-        if is_homepage && customization('HomepageHeader')
-          customization('HomepageHeader').apply(@)
-        else if is_dashboard
+        if is_homepage && (customization('HomepageHeader') or customization('SiteHeader'))
+          (customization('HomepageHeader') or customization('SiteHeader')).apply(@)
+        else
           ShortHeader
             background: 'white'
             text: ''
             logo_src: false
-
-        else 
-          customization('SiteHeader').apply(@)
 
         DIV 
           style: 

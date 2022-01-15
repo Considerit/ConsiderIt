@@ -136,7 +136,7 @@ window.GroupedProposalNavigation = (args) ->
                               style: cssTriangle (if is_collapsed then 'right' else 'bottom'), (heading_style.color or 'black'), tw, th,
                                 position: 'absolute'
                                 left: -tw - 20
-                                top: if is_collapsed then 10 else 13
+                                top: if is_collapsed then 8 else 13
                                 width: tw
                                 height: th
                                 # display: if @local.hover_label or is_collapsed then 'inline-block' else 'none'
@@ -182,11 +182,12 @@ window.GroupedProposalNavigation = (args) ->
                                 hide_icons: true
                                 hide_metadata: true
                                 show_category: false
+                                disable_selection: true
                                 name_style: 
                                   fontSize: 16
                                 wrapper_style: 
                                   backgroundColor: if active then "#eee"
-                                icon: if proposal.your_opinion.published
+                                icon: if proposal.your_opinion?.published
                                         -> 
                                           SPAN 
                                             style: 

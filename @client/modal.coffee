@@ -47,6 +47,9 @@ window.Modal =
 
     return
 
+  componentWillMount: ->
+    @scroll_Y = window.scrollY
+
   componentDidMount: ->
     @componentDidUpdate()
     
@@ -81,8 +84,8 @@ window.Modal =
     # all while making it seem like the whole page is scrollable. 
     _.extend modal.style,
       position: 'fixed'
-      top: 0
-      left: 0
+      top: "0px"
+      left: "0px"
       width: '100vw'
       height: '100vh'
       overflow: 'auto'
@@ -94,6 +97,10 @@ window.Modal =
       marginRight: scroll_bar_width
       overflow: 'hidden'
       position: 'fixed'
+      top: "-#{@scroll_Y}px"
+
+
+
   
   componentWillUnmount: -> 
     # return the focus to the element that had focus when the modal was launched
@@ -105,5 +112,9 @@ window.Modal =
       marginRight: null
       overflow: null
       position: null
+      top: 0
+
+    # restore scroll position
+    window.scroll(0, @scroll_Y)
 
 

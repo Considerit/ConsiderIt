@@ -112,7 +112,7 @@ window.Dashboard = ReactiveComponent
         title = 'Data Import & Export'
         Widget = DataDash
       when '/dashboard/moderate'
-        title = 'Content Moderation'
+        title = 'Moderation'
         Widget = ModerationDash
       when '/dashboard/application'
         title = 'Forum Settings'

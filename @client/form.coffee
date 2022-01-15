@@ -94,12 +94,16 @@ window.CharacterCountTextInput = ReactiveComponent
           characters_left: @props.maxLength - @local.count
           "{characters_left, plural, one {# character} other {# characters}} left"
 
-      @transferPropsTo TEXTAREA 
+      @transferPropsTo TEXTAREA
+        ref: 'input' 
         className: class_name
         onChange: =>
          @local.count = $(@getDOMNode()).find('textarea').val().length
          save(@local)
 
+  componentDidMount: ->
+    if @props.focus_on_mount
+      @refs.input.getDOMNode().focus()
 
 
 # Quill = require './vendor/quill-1.0.js'

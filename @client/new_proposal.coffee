@@ -89,8 +89,8 @@ window.NewProposal = ReactiveComponent
           else 
             e.stopPropagation()
             reset_key 'auth', 
-              form: 'login'
-              goal: 'add a new proposal'
+              form: 'create account'
+              goal: 'Introduce yourself to add a new proposal'
         
         A name: "new_#{list_name}"
         bullet 
@@ -98,7 +98,7 @@ window.NewProposal = ReactiveComponent
         if permitted
           translator "engage.add_new_proposal_to_list", 'add new'
         else 
-          translator "engage.login_to_add_new_proposal", 'Log in to share an idea'
+          translator "engage.login_to_add_new_proposal", 'Create an account to share an idea'
 
     else 
 
@@ -141,6 +141,7 @@ window.NewProposal = ReactiveComponent
             'aria-label': translator("engage.edit_proposal.summary.placeholder", 'Clear and concise summary')
             placeholder: translator("engage.edit_proposal.summary.placeholder", 'Clear and concise summary')
             required: 'required'
+            focus_on_mount: true
 
             count_style: 
               position: 'absolute'

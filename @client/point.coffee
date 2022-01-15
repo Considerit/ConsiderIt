@@ -308,7 +308,9 @@ window.Point = ReactiveComponent
 
 
       if TWO_COL() || (!TWO_COL() && @props.enable_dragging)
-        your_opinion = fetch @proposal.your_opinion
+        your_opinion = @proposal.your_opinion
+        if your_opinion.key 
+          fetch your_opinion
         if your_opinion?.published
           can_opine = permit 'update opinion', @proposal, your_opinion
         else
@@ -469,7 +471,8 @@ window.Point = ReactiveComponent
         disabled: !@props.enable_dragging
 
   included: -> 
-    your_opinion = fetch(@proposal.your_opinion)
+    your_opinion = @proposal.your_opinion
+    your_opinion.point_inclusions ?= []
     your_opinion.point_inclusions.indexOf(@props.key) > -1
 
   remove: -> 
@@ -481,9 +484,12 @@ window.Point = ReactiveComponent
 
     if !validate_first || confirm('Are you sure you want to remove your point? It will be gone forever.')
 
-      your_opinion = fetch(@proposal.your_opinion)
+      your_opinion = @proposal.your_opinion
+      your_opinion.point_inclusions ?= []
       your_opinion.point_inclusions = _.without your_opinion.point_inclusions, \
                                                 @props.key
+
+      your_opinion.key ?= "/new/opinion"
       save(your_opinion)
       window.writeToLog
         what: 'removed point'
@@ -495,8 +501,11 @@ window.Point = ReactiveComponent
       $point_content.css 'top', '-11px'
 
   include: -> 
-    your_opinion = fetch(@proposal.your_opinion)
+    your_opinion = @proposal.your_opinion
+    your_opinion.key ?= "/new/opinion"
 
+    your_opinion.published = true 
+    your_opinion.point_inclusions ?= []
     your_opinion.point_inclusions.push @data().key
     save(your_opinion)
 
@@ -733,7 +742,10 @@ window.Discussion = ReactiveComponent
     proposal = fetch point.proposal
     is_pro = point.is_pro
 
-    your_opinion = fetch(proposal.your_opinion)
+    your_opinion = proposal.your_opinion
+    if your_opinion.key 
+      fetch your_opinion
+    your_opinion.point_inclusions ?= []
     point_included = _.contains(your_opinion.point_inclusions, point.key)
     in_wings = get_proposal_mode() == 'crafting' && !point_included
 

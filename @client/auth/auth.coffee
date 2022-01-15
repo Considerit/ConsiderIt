@@ -17,6 +17,77 @@ require '../shared'
 require '../modal'
 
 
+
+window.AuthCallout = ReactiveComponent
+  displayName: 'AuthCallout'
+
+  render: ->
+    current_user = fetch '/current_user'
+    subdomain = fetch '/subdomain'
+
+    return SPAN null if current_user.logged_in || customization('contribution_phase') == 'frozen'
+
+    create_account_button_style = 
+                    backgroundColor: selected_color
+                    marginRight: 8
+                    # border: 'none'
+                    # fontWeight: 700
+                    # padding: "4px 18px"
+                    # color: 'white'   
+                    # borderRadius: 16   
+    DIV  
+      style: 
+        width: '100%'
+
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+          margin: 'auto'
+          padding: 12
+          backgroundColor: '#f1f1f1'
+        
+        DIV 
+          style: 
+            fontSize: 20
+            fontWeight: 600
+            textAlign: 'center'
+
+          if subdomain.SSO_domain
+
+            TRANSLATE
+              id: 'create_account.call_out'
+              BUTTON1: 
+                component: A 
+                args: 
+                  className: "btn create_account"
+                  href: '/login_via_saml'
+                  treat_as_external_link: true
+                  style: create_account_button_style
+                    
+
+              "<BUTTON1>Create an Account</BUTTON1> to share your thoughts"
+          else 
+            TRANSLATE
+              id: 'create_account.call_out'
+              BUTTON1: 
+                component: BUTTON 
+                args: 
+                  'data-action': 'create'
+                  onClick: (e) =>
+                    reset_key 'auth',
+                      form: 'create account'
+                  style: create_account_button_style
+                  className: "btn create_account"
+              "<BUTTON1>Create an Account</BUTTON1> to share your thoughts"
+
+          if '*' not in subdomain.roles.participant
+            DIV 
+              style: 
+                fontSize: 12
+                marginTop: 4
+              translator 'engage.permissions.only_some_participate', 'Only some accounts are authorized to participate.'
+        @props.children
+
 # AuthTransition doesn't actually render anything.  It just handles state
 # transitions for current_user, e.g. for CSRF and logging in and out.
 window.AuthTransition = ReactiveComponent
@@ -38,41 +109,14 @@ window.AuthTransition = ReactiveComponent
       current_user.errors = []
 
     # Once the user logs in, we will stop showing the log-in screen 
-    # and transition if needed
+    # and execute any callbacks
     if (!@local.logged_in_last_render && current_user.logged_in) || \
        (auth.form == 'verify email' && current_user.verified) || \
        (auth.form == 'user questions' && !current_user.needs_to_complete_profile) || \
        (auth.form == 'create account via invitation' && !current_user.needs_to_complete_profile)
-      if auth.after == 'transition to proposal results'
-        setTimeout -> 
-          updateProposalMode('results', 'after_save')
-        , 700
+      auth.after?()
       reset_key auth
 
-    # Publish pending opinions if we can
-    if @root.opinions_to_publish.length > 0
-
-      remaining_opinions = []
-
-      for opinion_key in @root.opinions_to_publish
-        opinion = fetch(opinion_key)
-        can_opine = permit('publish opinion', opinion.proposal)
-
-        if can_opine > 0 && !opinion.published
-          opinion.published = true
-          save opinion
-        else 
-          remaining_opinions.push opinion_key
-
-          # TODO: show some kind of prompt to user indicating that despite 
-          #       creating an account, they still aren't permitted to publish 
-          #       their opinion.
-          # if can_opine == Permission.INSUFFICIENT_PRIVILEGES
-          #   ...
-
-      if remaining_opinions.length != @root.opinions_to_publish.length
-        @root.opinions_to_publish = remaining_opinions
-        save @root
 
     # users following an email invitation need to complete 
     # registration (name + password)
@@ -263,10 +307,10 @@ window.styles += """
 window.AuthForm =
 
   Draw: (options, children) -> 
-    docked_node_height = @refs.dialog?.getDOMNode().offsetHeight
-    if @local.docked_node_height != docked_node_height
-      @local.docked_node_height = docked_node_height
-      save @local 
+    # docked_node_height = @refs.dialog?.getDOMNode().offsetHeight
+    # if @local.docked_node_height != docked_node_height
+    #   @local.docked_node_height = docked_node_height
+    #   save @local 
 
     cancel_modal = (e) ->
       options.before_cancel?()

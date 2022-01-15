@@ -964,7 +964,7 @@ window.PhotoBanner = (opts) ->
         // }
 
         .PhotoBanner > .wrapper .CustomizeTitle .banner_title {
-          font-size: 56px;
+          font-size: 48px;
           font-weight: 700;
           font-family: #{header_font()};
           text-align: center;
@@ -979,13 +979,13 @@ window.PhotoBanner = (opts) ->
         }
         .PhotoBanner #tabs > ul > li {
           background-color: #{tab_background_color};
-          margin: 0 6px;
+          margin: 2px 6px 0px 6px;
         }          
         .PhotoBanner #tabs > ul > li > h4 {
-          text-transform: uppercase;
+          //text-transform: uppercase;
           font-family: #{header_font()};
           font-weight: 600;
-          font-size: 20px;
+          font-size: 17px;
           padding: 10px 16px 4px;
         }
         .dark .PhotoBanner #tabs > ul > li > h4 {
@@ -1185,7 +1185,6 @@ window.ShortHeader = (opts) ->
 
   opts ||= {}
   _.defaults opts, (customization('forum_header') or {}),
-    background: customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
     text: customization('banner')?.title or subdomain.name
     external_link: subdomain.external_project_url
     logo_src: customization('banner')?.logo?.url
@@ -1194,7 +1193,9 @@ window.ShortHeader = (opts) ->
     padding: '8px 0'
     padding_left_icon: 20
 
-  background_is_light = is_light_background(opts.background)
+
+  opts.background = 'transparent'
+  background_is_light = true
 
   DIV 
     style:
@@ -1251,7 +1252,6 @@ window.ShortHeader = (opts) ->
               color: if !background_is_light && !opts.logo_src then 'white'
               fontSize: 18
               fontWeight: 600
-              display: 'inline'
 
             , TRANSLATE("engage.navigate_back_to_homepage" , 'homepage')
 

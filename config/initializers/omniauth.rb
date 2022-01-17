@@ -33,15 +33,18 @@ OAUTH_SETUP_PROC = lambda do |env|
   end
   host = host.join('.').intern
 
+  provider_key = "oauth_#{provider}_client".intern
+  provider_secret = "oauth_#{provider}_secret".intern
+
   pp conf
 
-  if !conf["oauth_#{provider}_client"] || !conf["oauth_#{provider}_secret"]
+  if !conf.has_key?(provider_key) || !conf.has_key?(provider_secret)
     raise "#{host} is not a configured host for third party authentication with #{provider}."
   end
 
 
-  env['omniauth.strategy'].options[key] = conf["oauth_#{provider}_client"]
-  env['omniauth.strategy'].options[secret] = conf["oauth_#{provider}_secret"]
+  env['omniauth.strategy'].options[key] = conf[provider_key]
+  env['omniauth.strategy'].options[secret] = conf[provider_secret]
 
   # In order to support wildcard subdomains without manually 
   # entering all valid subdomains into google dev console, 

@@ -1,4 +1,6 @@
 require './auth'
+require './third_party'
+
 
 window.styles += """
 """
@@ -65,7 +67,7 @@ toggle_modes = ->
 
 window.Login = ReactiveComponent
   displayName: 'Login'
-  mixins: [AuthForm, Modal]
+  mixins: [AuthForm, Modal, OAuthLogin]
 
   render: -> 
     i18n = @i18n()
@@ -158,7 +160,7 @@ window.Login = ReactiveComponent
 
 window.CreateAccount = ReactiveComponent
   displayName: 'CreateAccount'
-  mixins: [AuthForm, Modal]
+  mixins: [AuthForm, Modal, OAuthLogin]
 
   render: ->     
     i18n = @i18n()
@@ -265,6 +267,8 @@ window.CreateAccount = ReactiveComponent
                     htmlFor: "pledge-#{idx}"
                     dangerouslySetInnerHTML: __html: pledge
 
+        @RenderOAuthProviders()
+
         @ConsideritTerms()
 
         @ShowErrors()
@@ -323,5 +327,6 @@ window.CreateAccount = ReactiveComponent
         color: '#444'
 
       dangerouslySetInnerHTML: __html: terms
+
 
 

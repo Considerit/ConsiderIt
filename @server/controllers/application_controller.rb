@@ -99,7 +99,11 @@ protected
     rq = request
     candidate_subdomain = nil 
 
-    if rq.subdomain && rq.subdomain.length > 0 
+    if rq.subdomain == 'googleoauth'
+      # This is for the reverse proxy for handling the response from google after oauth. 
+      # Part of the scheme for enabling google auth via wildcard subdomains
+      candidate_subdomain = Subdomain.find_by_name(params['state'])
+    elsif rq.subdomain && rq.subdomain.length > 0 
       candidate_subdomain = Subdomain.find_by_name(rq.subdomain)
     end
 

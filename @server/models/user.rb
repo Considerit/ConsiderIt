@@ -61,7 +61,11 @@ class User < ApplicationRecord
                                 #happens for users that were created via email invitation
       needs_to_verify: ['bitcoin', 'bitcoinclassic', 'bch'].include?(current_subdomain.name) && \
                                self.registered && !self.verified,
-      completed_host_questions: has_answered_all_required_host_questions
+      completed_host_questions: has_answered_all_required_host_questions,
+
+      # facebook_uid: facebook_uid,
+      # google_uid: google_uid
+
     }
 
     data
@@ -180,6 +184,17 @@ class User < ApplicationRecord
     # Logged-in now means that the current user account is registered
     self.registered
   end
+
+  def third_party_authenticated
+    if !!self.facebook_uid
+      'Facebook' 
+    elsif !!self.google_uid
+      'Google'
+    else
+      nil
+    end
+  end
+
 
   def add_to_active_in(subdomain=nil)
     subdomain ||= current_subdomain

@@ -414,7 +414,7 @@ class CurrentUserController < ApplicationController
 
   def update_via_third_party
     pp 'UPDATE VIA THIRD PARTY'
-    access_token = env["omniauth.auth"]
+    access_token = request.env["omniauth.auth"]
 
     ######
     # Try to find an existing user that matches the credentials 
@@ -581,7 +581,7 @@ class CurrentUserController < ApplicationController
   # when something goes wrong in an oauth transation, this method gets called
   def failure
     # TODO: handle this gracefully for the user
-    raise env['omniauth.error.type']
+    raise request.env['omniauth.error.type']
   end
 
 end

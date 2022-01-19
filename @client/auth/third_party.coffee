@@ -31,7 +31,11 @@ class ThirdPartyAuthHandler
     coords = @getCenteredCoords(450,500)  
     openidpopup.moveTo(coords[0],coords[1])
     @polling_interval = setInterval => 
-      @pollLoginPopup()
+      try 
+        @pollLoginPopup()
+      catch e
+        console.log "Could not access popup", e
+
     , 200
 
     openidpopup

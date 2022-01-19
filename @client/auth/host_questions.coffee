@@ -11,13 +11,16 @@ window.HostQuestions = ReactiveComponent
     current_user = fetch '/current_user'
 
     @Draw
-      task: translator 'auth.additional_info.heading', 'Your host requests more info'
-      disallow_cancel: disallow_cancel()
+      task: translator 'auth.additional_info.heading', 'Questions from your host'
+      disallow_cancel: true
       goal: if auth.goal then translator "auth.login_goal.#{auth.goal.toLowerCase()}", auth.goal
       on_submit: (ev) =>
         @Submit ev, 
           action: 'user questions'
           has_host_questions: true
+          onSuccess: -> 
+            auth.show_user_questions_after_account_creation = false
+            save auth
 
       ShowHostQuestions()      
 
@@ -32,8 +35,10 @@ window.HostQuestions = ReactiveComponent
       @ShowErrors()
 
 
+window.forum_has_host_questions = ->
+  (tag for tag in (customization('user_tags') or []) when tag.self_report).length > 0
+
 window.errors_in_host_questions = (responses) -> 
-  questions = customization('auth_questions')
   errors = []
 
   for vals in (customization('user_tags') or [])
@@ -47,7 +52,7 @@ window.errors_in_host_questions = (responses) ->
         errors.push translator 
                        id: 'auth.validation.missing_answer'
                        question: question.question
-                       "\"{question}\" is required!" 
+                       "\"{question}\" is required." 
 
       is_valid_input = true
       if question.validation
@@ -64,9 +69,7 @@ window.errors_in_host_questions = (responses) ->
 
 styles += """
   #SHOWHOSTQUESTIONS {
-    margin-left: -32px;
-    padding: 24px 33px;
-    background-color: #eee;
+    padding: 12px 33px;
     margin-top: 18px;
   }
 """
@@ -84,22 +87,23 @@ window.ShowHostQuestions = ReactiveComponent
 
     DIV
       id: 'SHOWHOSTQUESTIONS'
+
       style: 
-        width: AUTH_WIDTH() - 18 * 2
+        padding: "0px 36px" 
 
       DIV 
         style: 
           marginBottom: 12     
 
-        LABEL
-          className: 'AUTH_field_label' 
-          translator('auth.host_questions.heading', 'Questions from the forum host') 
+        # LABEL
+        #   className: 'AUTH_field_label' 
+        #   translator('auth.host_questions.heading', 'Questions from the forum host') 
 
         if host_framing 
           DIV 
             style: 
               fontSize: 14
-              marginTop: 8
+              marginTop: 0
             dangerouslySetInnerHTML: __html: host_framing
 
 
@@ -108,7 +112,7 @@ window.ShowHostQuestions = ReactiveComponent
           padding: "6px 0px"
           listStyle: 'none'
 
-        for [label, render] in host_questions
+        for [label, render, question] in host_questions
           field_id = render?.props?.id or render?[0]?.props?.id
           LI 
             style: 
@@ -119,17 +123,40 @@ window.ShowHostQuestions = ReactiveComponent
               style:
                 display: 'block'
                 fontWeight: 600
+                
 
-              dangerouslySetInnerHTML: __html: label 
+              SPAN
+                style: 
+                  paddingRight: if !question.required then 8 
+                dangerouslySetInnerHTML: __html: label 
+
+
+              if !question.required
+                SPAN 
+                  style: 
+                    fontSize: 12
+                    fontWeight: 400
+                    fontStyle: 'italic'
+                    color: selected_color
+
+                  translator('auth.optional_field', 'optional') 
+              else 
+                SPAN 
+                  title: translator('auth.required_field', 'required') 
+                  "*"
+
 
 
             render
+
 
 
   ####
   # HostQuestionInputs
   #
   # Creates the ui inputs for answering user questions for this subdomain
+
+
   HostQuestionInputs : -> 
     subdomain = fetch('/subdomain')
     current_user = fetch('/current_user')
@@ -219,6 +246,8 @@ window.ShowHostQuestions = ReactiveComponent
             for option in question.options
               key = "#{question.tag}-#{option}"
 
+              options_checked = (opt.split(OTHER_SEPARATOR)[0] for opt in current_user.tags[question.tag]?.split(CHECKLIST_SEPARATOR) or [])
+              is_checked = options_checked.indexOf(option) > -1
               DIV null,
 
                 INPUT
@@ -230,53 +259,106 @@ window.ShowHostQuestions = ReactiveComponent
                     fontSize: 24
                     verticalAlign: 'baseline'
                     marginLeft: 0
-                  checked: current_user.tags[question.tag]?.split(',').indexOf(option) > -1
+                  checked: is_checked
                   onChange: do(question, option) => (event) =>
                     @local.tags = @local.tags or {}
 
-                    currently_checked = current_user.tags[question.tag]?.split(',') or []
-
                     if event.target.checked
-                      currently_checked.push option
+                      options_checked.push option
                     else 
-                      idx = currently_checked.indexOf(option)
+                      idx = options_checked.indexOf(option)
                       if idx > -1
-                        currently_checked.splice idx, 1
+                        options_checked.splice idx, 1
                     
-                    @local.tags[question.tag] = current_user.tags[question.tag] = currently_checked.join(',')
+                    @local.tags[question.tag] = current_user.tags[question.tag] = options_checked.join(CHECKLIST_SEPARATOR)
                     save @local
+
+                    if question.open_text_option == option && event.target.checked
+                      int = setInterval =>
+                        if @refs["open_value-#{question.tag}"] && !@refs["open_value-#{question.tag}"].getDOMNode().getAttribute('disabled')
+                          @refs["open_value-#{question.tag}"].getDOMNode().focus()
+                          clearInterval(int)
+                      , 10
 
                 LABEL 
                   htmlFor: slugify("#{key}-inputBox")
                   style: 
-                    display: 'inline-block'
-                    width: '90%'
+                    display: 'inline'
                     paddingLeft: 8
                   dangerouslySetInnerHTML: __html: option
 
+                if question.open_text_option == option
+                  idx = options_checked.indexOf(option)
+                  INPUT 
+                    ref: "open_value-#{question.tag}"
+                    disabled: !is_checked 
+                    defaultValue: current_user.tags[question.tag]?.split(CHECKLIST_SEPARATOR)[idx]?.split(OTHER_SEPARATOR)[1] or ""
+                    style: 
+                      display: 'inline-block'
+                      marginLeft: 12
+                    type: 'text'
+                    onChange: do(question, option) => (event) =>
+                      
+                      full_vals = options_checked.slice()
+                      full_vals[idx] = "#{full_vals[idx]}#{OTHER_SEPARATOR}#{event.target.value}"
+                      @local.tags[question.tag] = current_user.tags[question.tag] = full_vals.join(CHECKLIST_SEPARATOR)
+                      save @local
+                      
+                      
+
+
         when 'dropdown'
-          input = SELECT
-            id: slugify("#{question.tag}inputBox")
-            key: "#{question.tag}_inputBox"            
-            style: _.defaults question.input_style or {},
-              fontSize: 18
-              marginTop: 4
-              maxWidth: '100%'
-            value: @local.tags[question.tag] or ''
-            onChange: do(question) => (event) =>
-              @local.tags = @local.tags or {}
-              @local.tags[question.tag] = current_user.tags[question.tag] = event.target.value
-              save @local
-            [
-              OPTION 
-                value: ''
-                disabled: true 
-                hidden: true
-              for value in question.options
-                OPTION  
-                  value: value
-                  value
-            ]
+          console.log question.open_text_option, @local.tags[question.tag]?.split(OTHER_SEPARATOR)[0]
+          input = DIV null,
+
+            SELECT
+              id: slugify("#{question.tag}inputBox")
+              key: "#{question.tag}_inputBox"            
+              style: _.defaults question.input_style or {},
+                fontSize: 18
+                marginTop: 4
+                maxWidth: '100%'
+                marginRight: 12
+              defaultValue: (@local.tags[question.tag] or '').split(OTHER_SEPARATOR)[0]
+              onChange: do(question) => (event) =>
+                @local.tags = @local.tags or {}
+                @local.tags[question.tag] = current_user.tags[question.tag] = event.target.value
+                save @local
+
+                if question.open_text_option == event.target.value
+                  int = setInterval =>
+                    if @refs["open_value-#{question.tag}"] && !@refs["open_value-#{question.tag}"].getDOMNode().getAttribute('disabled')
+                      @refs["open_value-#{question.tag}"].getDOMNode().focus()
+                      clearInterval(int)
+                  , 10
+
+
+              [
+                OPTION 
+                  value: ''
+                  disabled: true 
+                  hidden: true
+                for value in question.options
+                  OPTION  
+                    value: value
+                    value
+              ]
+
+            if question.open_text_option && question.open_text_option == @local.tags[question.tag]?.split(OTHER_SEPARATOR)[0]
+              INPUT 
+                ref: "open_value-#{question.tag}"
+                defaultValue: current_user.tags[question.tag]?.split(OTHER_SEPARATOR)[1] or ""
+                style: 
+                  display: 'inline-block'
+                type: 'text'
+                onChange: do(question) => (event) =>
+                  new_val = "#{@local.tags[question.tag].split(OTHER_SEPARATOR)[0]}#{OTHER_SEPARATOR}#{event.target.value}"
+                  @local.tags[question.tag] = current_user.tags[question.tag] = new_val
+
+                  console.log "updated to", @local.tags[question.tag], current_user.tags[question.tag]
+                  save @local
+
+
 
         else
           throw "Unsupported question type: #{question.input} for #{question.tag}"
@@ -290,5 +372,10 @@ window.ShowHostQuestions = ReactiveComponent
 
       #   label = [op, label] 
 
-      inputs.push [label,input]
+      inputs.push [label, input, question]
     inputs
+
+
+CHECKLIST_SEPARATOR = ' ;;; ' # the separator for different options selected by the user for checklists
+OTHER_SEPARATOR = ' :: '    # the separator for "other" fields that require text entry for checklists and dropdowns
+

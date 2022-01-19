@@ -74,7 +74,21 @@ window.EditProfile = ReactiveComponent
 
         AvatarInput()
 
-      ShowHostQuestions()
+      if forum_has_host_questions()
+        DIV 
+          style: 
+            backgroundColor: considerit_gray
+            marginBottom: 24
+            marginTop: 12
+
+          H4 
+            style: 
+              marginBottom: 12
+              padding: '8px 36px'
+
+            translator 'auth.additional_info.heading', 'Questions from your host'
+
+          ShowHostQuestions()
 
       BUTTON 
         className: "btn #{if @local.submitting then 'disabled' else ''}"

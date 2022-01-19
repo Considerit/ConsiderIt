@@ -110,9 +110,9 @@ window.AuthTransition = ReactiveComponent
 
     # Once the user logs in, we will stop showing the log-in screen 
     # and execute any callbacks
-    if (!@local.logged_in_last_render && current_user.logged_in) || \
+    if (!@local.logged_in_last_render && current_user.logged_in && !auth.show_user_questions_after_account_creation) || \
        (auth.form == 'verify email' && current_user.verified) || \
-       (auth.form == 'user questions' && !current_user.needs_to_complete_profile) || \
+       (auth.form == 'user questions' && (current_user.completed_host_questions && !auth.show_user_questions_after_account_creation)) || \
        (auth.form == 'create account via invitation' && !current_user.needs_to_complete_profile)
       auth.after?()
       reset_key auth
@@ -132,10 +132,11 @@ window.AuthTransition = ReactiveComponent
         loadPage '/dashboard/edit_profile'
         
     # there's a required question this user has yet to answer
-    else if current_user.logged_in && !current_user.completed_host_questions && !auth.form
+    else if current_user.logged_in && ((!current_user.completed_host_questions && !auth.form) || auth.show_user_questions_after_account_creation) 
       reset_key 'auth',
         form: 'user questions'
-        goal: 'To participate, please answer these questions from the forum host.'
+        goal: ''
+        show_user_questions_after_account_creation: auth.show_user_questions_after_account_creation
 
 
     else if current_user.needs_to_verify && !window.send_verification_token
@@ -229,7 +230,7 @@ window.styles += """
   }
 
   #AUTH_task {
-    font-size: 44px;
+    font-size: 38px;
     font-weight: 600;
     white-space: nowrap;
   }
@@ -237,7 +238,7 @@ window.styles += """
   .AUTH_body_wrapper {
     padding: 1.5em 50px 2em 50px;
     font-size: 16px;
-    box-shadow: 0 2px 4px rgba(0,0,0,.4);
+    box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 0 100px rgb(255 255 255 / 40%);
     background-color: white;
     position: relative;
     border-radius: 16px;
@@ -272,6 +273,7 @@ window.styles += """
     margin-top: 20px;
     border-radius: 16px;
     padding: .8rem 1.5rem .8rem;
+    background-color: #{selected_color};
   }
 
   .AUTH_field_wrapper {
@@ -336,7 +338,7 @@ window.AuthForm =
         DIV 
           id: 'AUTH_wrapper'
           style:
-            width: AUTH_WIDTH()
+            maxWidth: AUTH_WIDTH()
 
           if !options.disallow_cancel
 
@@ -387,7 +389,10 @@ window.AuthForm =
                   e.target.click()
                   e.preventDefault()
               
-              options.submit_button or @i18n().submit_button      
+              options.submit_button or @i18n().submit_button 
+
+            if options.under_submit
+              options.under_submit   
 
             # if !options.disallow_cancel
             #   DIV 
@@ -477,6 +482,8 @@ window.AuthForm =
         @local.saved_successfully = current_user.errors.length + @local.errors.length == 0
         @local.submitting = false
         save @local
+        if @local.saved_successfully
+          opts.onSuccess?()
 
       if opts.has_avatar_upload
         upload_avatar()
@@ -513,7 +520,7 @@ window.AuthForm =
     code_label: translator('auth.code_entry', 'Code')
     successful_update: translator("auth.successful_update", "Updated successfully")
     verification_sent_message: translator('auth.verification_sent', 'We just emailed you a verification code. Copy / paste it below.')
-    submit_button: translator("auth.submit", 'Submit')
+    submit_button: translator("auth.submit", 'Done')
 
 
 

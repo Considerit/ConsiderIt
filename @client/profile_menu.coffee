@@ -1,6 +1,13 @@
 require './customizations'
 require './drop_menu'
 
+
+styles += """
+  button.create_account {
+    background-color: #{selected_color};
+  }
+"""
+
 window.ProfileMenu = ReactiveComponent
   displayName: 'ProfileMenu'
 
@@ -132,7 +139,7 @@ window.ProfileMenu = ReactiveComponent
         else 
           DIV 
             style: 
-              fontSize: 22  
+              fontSize: 18  
 
             BUTTON
               className: 'btn create_account'
@@ -153,6 +160,7 @@ window.ProfileMenu = ReactiveComponent
               style: 
                 color: if !light_background then 'white'
                 fontWeight: 700
+                fontSize: 18
                 marginLeft: 20
                 position: 'relative'
                 top: 4

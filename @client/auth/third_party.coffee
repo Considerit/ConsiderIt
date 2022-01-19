@@ -73,15 +73,15 @@ window.OAuthLogin =
         # the pledge.  The server tells us this via the existence of a
         # `user' object in current_user.
 
-        current_user = fetch '/current_user'
-        if current_user.logged_in
-          # We are logged in!  The user has completed registration.
-          @authCompleted()
+        # current_user = fetch '/current_user'
+        # if current_user.logged_in
+        #   # We are logged in!  The user has completed registration.
+        #   @authCompleted()
 
-        else 
-          # We still need to show the pledge!
-          root.auth_mode = 'register'
-          save(root)
+        # else 
+        #   # We still need to show the pledge!
+        #   root.auth_mode = 'register'
+        #   save(root)
 
   RenderOAuthProviders: -> 
     current_user = fetch '/current_user'

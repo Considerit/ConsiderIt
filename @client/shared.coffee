@@ -928,7 +928,7 @@ button.like_link {
   color: white;
   border: 0;
   font-weight: 700;
-  padding: .225rem 1.5rem .3rem;
+  padding: .325rem 1.5rem .4rem;
   line-height: 1.5;
   text-align: center;
   text-decoration: none;

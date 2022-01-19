@@ -3,6 +3,10 @@ require './third_party'
 
 
 window.styles += """
+  button.toggle_auth {
+    color: #{selected_color};
+    font-weight: 700;
+  }
 """
 
 window.disallow_cancel = ->
@@ -38,16 +42,7 @@ toggle_modes = ->
       
       " "
       BUTTON
-        className: 'toggle_auth'
-        style:
-          display: 'inline-block'
-          color: focus_blue
-          textDecoration: 'underline'
-          fontWeight: 700
-          fontSize: 16
-          backgroundColor: 'transparent'
-          border: 'none'
-          padding: 0
+        className: 'toggle_auth like_link'
         onClick: (e) =>
           current_user = fetch('/current_user')
           auth.form = if auth.form == 'create account' then 'login' else 'create account'
@@ -176,10 +171,15 @@ window.CreateAccount = ReactiveComponent
 
     on_submit = (ev) =>
       current_user.signed_pledge = document.querySelectorAll('.pledge-input').length == document.querySelectorAll('.pledge-input:checked').length
+      
+
+      if forum_has_host_questions()
+        auth.show_user_questions_after_account_creation = true 
+        save auth
 
       @Submit ev, 
         action: form_name
-        has_host_questions: true
+        has_host_questions: false
         has_avatar_upload: true
 
     @Draw
@@ -192,6 +192,7 @@ window.CreateAccount = ReactiveComponent
       on_submit: on_submit
       render_below_title: if !@props.by_invitation then toggle_modes
       submit_button: translator "shared.auth.sign_up", "Sign up"
+      under_submit: @ConsideritTerms()
 
       DIV null,
         @RenderInput
@@ -224,7 +225,7 @@ window.CreateAccount = ReactiveComponent
 
             avatar_field
 
-        ShowHostQuestions()
+        # ShowHostQuestions()
 
         if pledges.length > 0 
         
@@ -269,8 +270,6 @@ window.CreateAccount = ReactiveComponent
 
         @RenderOAuthProviders()
 
-        @ConsideritTerms()
-
         @ShowErrors()
 
         if customization('auth_footer')
@@ -309,11 +308,11 @@ window.CreateAccount = ReactiveComponent
       as_html: true
       privacy_link: 
         component: "a"
-        args: "href='/privacy_policy' style='font-weight: 700; color: #{focus_blue};' target='_blank'"
+        args: "href='/privacy_policy' style='font-weight: 700; color: #{selected_color};' target='_blank'"
 
       terms_link:
         component: "a" 
-        args: "href='/terms_of_service' style='font-weight: 700; color: #{focus_blue};' target='_blank'"
+        args: "href='/terms_of_service' style='font-weight: 700; color: #{selected_color};' target='_blank'"
 
       "By signing up, you agree to the Consider.it <privacy_link>Privacy Policy</privacy_link> and <terms_link>Terms of Service</terms_link>."
 
@@ -322,9 +321,10 @@ window.CreateAccount = ReactiveComponent
 
     DIV 
       style: 
-        margin: '18px 0 8px 0'
+        marginTop: 12
         fontSize: 13
         color: '#444'
+        textAlign: 'center'
 
       dangerouslySetInnerHTML: __html: terms
 

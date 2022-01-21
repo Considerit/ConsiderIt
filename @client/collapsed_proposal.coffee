@@ -199,7 +199,7 @@ window.CollapsedProposal = ReactiveComponent
 
           if customization('proposal_show_description_on_homepage', null, subdomain)
             if proposal.description?.length > 700
-              desc = proposal.description(0,700) + " (...)" # this might cause weird HTML formatting issues
+              desc = proposal.description.substring(0,700) + " (...)" # this might cause weird HTML formatting issues
             else 
               desc = proposal.description
             DIV 

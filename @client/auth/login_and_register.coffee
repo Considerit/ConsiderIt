@@ -223,6 +223,16 @@ window.CreateAccount = ReactiveComponent
               className: 'AUTH_field_label'
               i18n.pic_prompt
 
+              SPAN 
+                style: 
+                  fontSize: 12
+                  color: "#666"
+                  textTransform: 'lowercase'
+                  marginLeft: 4
+                  display: 'inline-block'
+
+                " (#{translator('optional')})"
+
             avatar_field
 
         # ShowHostQuestions()
@@ -233,9 +243,9 @@ window.CreateAccount = ReactiveComponent
             style: 
               marginTop: 18
 
-            LABEL
-              className: 'AUTH_field_label'
-              translator('auth.create.pledge_heading', 'Participation Pledge') 
+            # LABEL
+            #   className: 'AUTH_field_label'
+            #   translator('auth.create.pledge_heading', 'Participation Pledge') 
 
             UL 
               style: 
@@ -297,8 +307,9 @@ window.CreateAccount = ReactiveComponent
     else if customization('pledge')
       return customization('pledge')
     else 
-      return [translator('auth.create.pledge.one_account', 'I will use only one account'), 
-                 translator('auth.create.pledge.no_attacks', 'I will not attack or mock others')]
+      return [translator('auth.create.pledge.combined', 'I pledge to be civil and to use only one account')]      
+      # return [translator('auth.create.pledge.one_account', 'I will use only one account'), 
+      #            translator('auth.create.pledge.no_attacks', 'I will not attack or mock others')]
 
   ConsideritTerms: -> 
     current_user = fetch '/current_user'

@@ -308,7 +308,6 @@ window.ShowHostQuestions = ReactiveComponent
 
 
         when 'dropdown'
-          console.log question.open_text_option, @local.tags[question.tag]?.split(OTHER_SEPARATOR)[0]
           input = DIV null,
 
             SELECT

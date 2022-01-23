@@ -334,7 +334,6 @@ class CurrentUserController < ApplicationController
       new_tags = {}
 
       new_params[:tags].each do |tag, val|  
-        pp tag, user_tags.has_key?(tag),user_tags.has_key?(tag) && user_tags[tag].has_key?('self_report') 
         if user_tags.has_key?(tag) && user_tags[tag].has_key?('self_report') 
           new_tags[tag] = new_params[:tags].fetch(tag, nil)
         end
@@ -534,7 +533,7 @@ class CurrentUserController < ApplicationController
       "<div>Unfortunately, a bug in the iPad & iPhone prevents this window from closing automatically." +
       "<div>Sorry for the inconvenience.</div></div>" +
       "<script type=\"text/javascript\">" +
-      (document_domain ? "document.domain = #{document_domain};\n" : '') + 
+      # (document_domain ? "document.domain = #{document_domain};\n" : '') + 
       "  window.current_user_hash = #{response.to_json};  " +
       "</script>"
   end
@@ -559,7 +558,7 @@ class CurrentUserController < ApplicationController
       "<html>" +
       "<body>" +
       "<script type=\"text/javascript\">" +
-      (document_domain ? "document.domain = #{document_domain};\n" : '') + 
+      # (document_domain ? "document.domain = #{document_domain};\n" : '') + 
       "var form = document.createElement(\"form\");\n" +
       "form.method = \"POST\";\n" + 
       "form.action = '#{request.original_url}';\n" +  

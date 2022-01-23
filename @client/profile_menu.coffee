@@ -163,7 +163,7 @@ window.ProfileMenu = ReactiveComponent
                 fontSize: 18
                 marginLeft: 20
                 position: 'relative'
-                top: 4
+                top: 0
 
 
               translator "auth.log_in", "Log in"

@@ -36,8 +36,6 @@ OAUTH_SETUP_PROC = lambda do |env|
   provider_key = "oauth_#{provider}_client".intern
   provider_secret = "oauth_#{provider}_secret".intern
 
-  pp conf
-
   if !conf.has_key?(provider_key) || !conf.has_key?(provider_secret)
     raise "#{host} is not a configured host for third party authentication with #{provider}."
   end

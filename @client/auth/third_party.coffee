@@ -6,11 +6,11 @@ class ThirdPartyAuthHandler
     if provider == 'google'
       provider = 'google_oauth2'
 
-    vanity_url = location.host.split('.').length == 1
-    if !vanity_url
-      document.domain = location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1') 
-    else 
-      document.domain = document.domain # make sure it is explitly set
+    # vanity_url = location.host.split('.').length == 1 || location.host.split(':')[0] == '127.0.0.1'
+    # if !vanity_url
+    #   document.domain = location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1') 
+    # else 
+    #   document.domain = document.domain # make sure it is explitly set
 
     @callback = callback
     @popup = @openPopupWindow "/auth/#{provider}"
@@ -112,12 +112,7 @@ window.OAuthLogin =
             I className: "fa fa-#{provider}"
             SPAN null, provider
 
-      DIV 
-        style: 
-          fontWeight: 700
-          paddingTop: '1em'
-          color: "rgba(36,120,204,0.1)"
-        dangerouslySetInnerHTML:{__html: "&mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;  <label style=\"padding: 0 18px; color: #{focus_blue}\">or</label>  &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;"}
+
 
 styles += """
 .third_party_option {

@@ -137,7 +137,7 @@ setInterval ->
   dependent_keys = []
   proposals = false 
   for key of arest.components_4_key.hash
-    if key[0] == '/' && arest.components_4_key.get(key).length > 0 && \
+    if key[0] == '/' && arest.components_4_key.get(key).length > 0 && \
        !key.match(/\/(current_user|user|opinion|point|subdomain|application|translations)/)
 
       if key.match(/\/proposal\/|\/proposals\//)
@@ -149,6 +149,30 @@ setInterval ->
     arest.serverFetch('/proposals')
 
 , LIVE_UPDATE_INTERVAL 
+
+
+# To help reduce the chance of clobbering forum customizations when multiple admins have windows open,
+# we live update the subdomains object periodically for admins after they've been idle for a little while.
+# This doesn't work if both admins are concurrently editing the configuration. 
+do ->
+  idle_time_before_subdomain_fetch = 30 * 60 * 1000
+
+  reload_subdomain = ->
+    # console.log "Idle for #{idle_time_before_subdomain_fetch / 1000}s, fetching subdomain"
+    arest.serverFetch '/subdomain'
+
+  time = 0
+  resetTimer = ->
+    # console.log('resetting timer')
+    if time
+      clearTimeout(time)
+    time = setTimeout(reload_subdomain, idle_time_before_subdomain_fetch)
+
+  window.addEventListener('load', resetTimer, true)
+  for event in ['mousedown', 'mousemove', 'keydown', 'touchstart']
+    document.addEventListener(event, resetTimer, true)
+
+
 
 window.POINT_MOUTH_WIDTH = 17
 

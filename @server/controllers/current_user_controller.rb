@@ -412,7 +412,6 @@ class CurrentUserController < ApplicationController
 
   def update_via_third_party
     access_token = request.env["omniauth.auth"]
-
     ######
     # Try to find an existing user that matches the credentials 
     # provided in the access token
@@ -512,8 +511,8 @@ class CurrentUserController < ApplicationController
     response.concat(compile_dirty_objects())
 
     render :inline =>
-      "<div style='font-weight:600; font-size: 36px; color: #414141'>Please close this window</div>" +
-      "<div style='font-size: 24px'><div>You've logged in successfully!</div>" + 
+      "<div style='font-weight:600; font-size: 24px; color: #414141'>Please close this window</div>" +
+      "<div style='font-size: 16px'><div>You've logged in successfully!</div>" + 
       "<div>Unfortunately, a bug in the iPad & iPhone prevents this window from closing automatically." +
       "<div>Sorry for the inconvenience.</div></div>" +
       "<script type=\"text/javascript\">" +

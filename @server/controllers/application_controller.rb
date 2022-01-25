@@ -140,11 +140,13 @@ protected
 
 
   def init_thread_globals
+    Rails.logger.level = 0
+
     # Make things to remember changes
     Thread.current[:dirtied_keys] = {}
     Thread.current[:subdomain] = ActsAsTenant.current_tenant
 
-    Rails.logger.debug("In before: is there a current user? '#{session[:current_user_id]}'")
+    logger.debug("In before: is there a current user? '#{session[:current_user_id]}'")
     # First, reset the thread's current_user values from the session
     Thread.current[:current_user_id] = session[:current_user_id]
     Thread.current[:current_user] = nil
@@ -152,7 +154,7 @@ protected
     if !current_user()
       # If not, let's make a new one, which will replace the old
       # values in the session and thread
-      Rails.logger.debug("That current_user '#{session[:current_user_id]}' is bad. Making a new one.")
+      logger.debug("That current_user '#{session[:current_user_id]}' is bad. Making a new one.")
       new_current_user
     end
   end
@@ -173,7 +175,7 @@ protected
     ## TODO: delete the existing current user if there's nothing
     ##       important in it
 
-    Rails.logger.debug("Setting current user to #{user.id}")
+    logger.debug("Setting current user to #{user.id}")
     session[:current_user_id] = user.id
     Thread.current[:current_user_id] = user.id
     Thread.current[:current_user]    = user

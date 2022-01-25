@@ -1,4 +1,4 @@
-class ThirdPartyAuthHandler 
+class OAuthHandler 
   constructor : (options = {}) ->
     provider = options.provider
     callback = options.callback
@@ -64,7 +64,7 @@ window.OAuthLogin =
 
   startThirdPartyAuth : (provider) ->
     root = @root
-    new ThirdPartyAuthHandler
+    new OAuthHandler
       provider : provider
       callback : (new_data) => 
         # Yay we got a new current_user object!  But this hasn't gone
@@ -72,22 +72,36 @@ window.OAuthLogin =
         # sneakily with updateCache()
         arest.updateCache(new_data)
 
-        # We know that the user has authenticated, but we don't know
-        # whether they've completed OUR registration process including
-        # the pledge.  The server tells us this via the existence of a
-        # `user' object in current_user.
 
-        # current_user = fetch '/current_user'
-        # if current_user.logged_in
-        #   # We are logged in!  The user has completed registration.
-        #   @authCompleted()
+        # poll the server until we have an avatar
+        poll_until_avatar_arrives()
 
-        # else 
-        #   # We still need to show the pledge!
-        #   root.auth_mode = 'register'
-        #   save(root)
 
-  RenderOAuthProviders: -> 
+
+
+
+  WrapOAuth: (form, children) -> 
+    DIV 
+      style: 
+        display: 'flex' 
+
+      DIV 
+        style: 
+          flexGrow: 4
+        children
+
+      DIV 
+        style: 
+          flexGrow: 0
+          marginLeft: 40
+          borderLeft: "1px dashed #ccc"
+          padding: "15px 0 0 40px"
+
+        @RenderOAuthProviders(form)
+
+
+
+  RenderOAuthProviders: (form) -> 
     current_user = fetch '/current_user'
     root = fetch 'root'
 
@@ -97,10 +111,15 @@ window.OAuthLogin =
     return SPAN(null) if current_user.provider || third_party_authenticated
 
 
-    DIV className: 'third_party_auth',
-      LABEL 
-        style: {marginRight: 18}
-        'Instantly:'
+    DIV 
+      className: 'third_party_auth',
+      LABEL null, 
+        if form == 'create_account'
+          translator 'auth.oauth.options_create-account', 'Or sign up using:'
+        else 
+          translator 'auth.oauth.options_login', 'Or log in using:'
+
+      
       for provider in OAuth_providers
         do (provider) =>
           BUTTON 
@@ -109,47 +128,82 @@ window.OAuthLogin =
             onClick: => 
               @startThirdPartyAuth(provider)
 
-            I className: "fa fa-#{provider}"
+            if provider == 'google'
+              google_icon(22)
+            else 
+              I className: "fa fa-#{provider}"
             SPAN null, provider
 
 
 
 styles += """
+.third_party_auth {
+  max-width: 75px;
+}
+.third_party_auth label {
+  font-size: 12px;
+  margin-bottom: 12px;
+  display: block;
+  white-space: nowrap;
+}
+.third_party_option.facebook span {
+  position: relative; 
+  left: 12px;
+}
 .third_party_option {
-  border: 1px solid #777777;
-  border-color: rgba(0, 0, 0, 0.2);
-  border-bottom-color: rgba(0, 0, 0, 0.4);
-  color: white;
-  box-shadow: inset 0 0.1em 0 rgba(255, 255, 255, 0.4), inset 0 0 0.1em rgba(255, 255, 255, 0.9);
-  display: inline-block;
-  padding: 3px 9px 3px 34px;
-  margin: 0 4px;
+  border: 1px solid #bbb;
+  color: black;
+  width: 120px;
+  padding: 8px 0px;
+  margin-bottom: 12px;
   text-align: center;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
-  border-radius: 0.3em;
+  border-radius: 4px;
   position: relative;
-  background-color: #{focus_blue}; }
-.third_party_option:hover {
-  background-color: #19528b; }
-.third_party_option:before {
-  border-right: 0.075em solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0.075em 0 0 rgba(255, 255, 255, 0.25);
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 25px;
-  height: 100%;
-  width: 1px; }
+  font-size: 11px;
+  text-transform: capitalize;
+  background-color: transparent;
+}
+
+.third_party_option svg {
+  vertical-align: middle;
+  position: relative; 
+  left: -14px;
+}
+
 .third_party_option i {
-  margin-right: 18px;
   display: inline-block;
-  font-size: 16px;
-  position: absolute;
-  left: 9px; }
-.third_party_option span {
-  font-weight: 600;
-  font-size: 12px; }
+}
+
+.third_party_option i.fa-facebook {
+  color: #3C5997;
+  font-size: 24px;
+  position: relative;
+  left: -8px;
+  vertical-align: middle;
+}
 
 """
+
+
+google_icon = (size) ->
+  SVG 
+    width: "#{size}px" 
+    height: "#{size}px" 
+    viewBox: "0 0 39 39" 
+
+    dangerouslySetInnerHTML: __html: """
+      <g id="auth" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+          <g id="btn_google_light_normal_ios" transform="translate(-24.000000, -23.000000)">
+              <g id="logo_googleg_48dp" transform="translate(24.000000, 23.000000)">
+                  <path d="M38.22,19.9431818 C38.22,18.5604546 38.0959091,17.2309091 37.8654545,15.9545454 L19.5,15.9545454 L19.5,23.4975 L29.9945455,23.4975 C29.5425,25.935 28.1686364,28.0002272 26.1034091,29.3829545 L26.1034091,34.2756819 L32.4054545,34.2756819 C36.0927272,30.8809092 38.22,25.8818181 38.22,19.9431818 L38.22,19.9431818 Z" id="Shape" fill="#4285F4" fill-rule="nonzero"></path>
+                  <path d="M19.5,39 C24.765,39 29.1790908,37.2538636 32.4054545,34.2756819 L26.1034091,29.3829545 C24.3572728,30.5529545 22.1236364,31.2443181 19.5,31.2443181 C14.4211364,31.2443181 10.1222727,27.8140908 8.58886364,23.205 L2.07409091,23.205 L2.07409091,28.2572728 C5.28272728,34.6302272 11.8772727,39 19.5,39 L19.5,39 Z" id="Shape" fill="#34A853" fill-rule="nonzero"></path>
+                  <path d="M8.58886364,23.205 C8.19886364,22.035 7.97727272,20.7852273 7.97727272,19.5 C7.97727272,18.2147727 8.19886364,16.965 8.58886364,15.795 L8.58886364,10.7427273 L2.07409091,10.7427273 C0.753409091,13.3752273 0,16.3534091 0,19.5 C0,22.6465908 0.753409091,25.6247728 2.07409091,28.2572728 L8.58886364,23.205 L8.58886364,23.205 Z" id="Shape" fill="#FBBC05" fill-rule="nonzero"></path>
+                  <path d="M19.5,7.75568181 C22.3629545,7.75568181 24.9334092,8.73954545 26.9543181,10.6718182 L32.5472728,5.07886364 C29.1702272,1.93227273 24.7561364,0 19.5,0 C11.8772727,0 5.28272728,4.36977272 2.07409091,10.7427273 L8.58886364,15.795 C10.1222727,11.1859091 14.4211364,7.75568181 19.5,7.75568181 L19.5,7.75568181 Z" id="Shape" fill="#EA4335" fill-rule="nonzero"></path>
+                  <polygon id="Shape" points="0 0 39 0 39 39 0 39"></polygon>
+              </g>
+          </g>
+      </g>
+    """
+
 
 

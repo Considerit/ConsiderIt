@@ -84,7 +84,7 @@ class User < ApplicationRecord
 
     my_tags = self.tags || {}
     user_tags.each do |tag, vals|
-      if vals.has_key?('self_report') && vals['self_report'].fetch('required', false) && !(['boolean', 'checklist'].index(vals['self_report']['input']))
+      if vals.has_key?('self_report') && vals['self_report'].fetch('required', false) && !(['checklist'].index(vals['self_report']['input']))
         has_filled_required_fields = has_filled_required_fields && !!my_tags.fetch(tag, false)
       end
     end 

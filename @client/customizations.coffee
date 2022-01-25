@@ -223,7 +223,6 @@ customizations.default =
 
   # Other options
   auth_footer: false
-  auth_require_pledge: false
   has_homepage: true
 
   auth_callout: true

@@ -84,11 +84,14 @@ window.EditProfile = ReactiveComponent
           H4 
             style: 
               marginBottom: 12
-              padding: '8px 36px'
+              padding: '24px 36px 8px 36px'
+              fontSize: 22
+              fontWeight: 400
 
             translator 'auth.additional_info.heading', 'Questions from your host'
 
-          ShowHostQuestions()
+          ShowHostQuestions
+            disable_unchecking_required_booleans: true
 
       BUTTON 
         className: "btn #{if @local.submitting then 'disabled' else ''}"

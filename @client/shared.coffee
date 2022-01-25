@@ -137,7 +137,7 @@ setInterval ->
   dependent_keys = []
   proposals = false 
   for key of arest.components_4_key.hash
-    if key[0] == '/' && arest.components_4_key.get(key).length > 0 && \
+    if key[0] == '/' && arest.components_4_key.get(key).length > 0 && \
        !key.match(/\/(current_user|user|opinion|point|subdomain|application|translations)/)
 
       if key.match(/\/proposal\/|\/proposals\//)

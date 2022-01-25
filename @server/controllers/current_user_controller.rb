@@ -24,6 +24,7 @@ class CurrentUserController < ApplicationController
     render :json => []
   end  
 
+
   # handles auth (login, new accounts, and login via reset password token) and updating user info
   def update
 
@@ -48,7 +49,6 @@ class CurrentUserController < ApplicationController
 
 
       when 'create account', 'create account via invitation'
-
         update_user_attrs 'create account', errors
         try_update_password 'create account', errors 
         if !current_user.registered || trying_to == 'create account via invitation'
@@ -57,10 +57,9 @@ class CurrentUserController < ApplicationController
 
           has_name = current_user.name && current_user.name.length > 0
           ok_email = current_user.email && current_user.email.length > 0
-          signed_pledge = params[:signed_pledge]
           ok_password = third_party_authenticated || (params[:password] && params[:password].length >= @min_pass)
 
-          if has_name && ok_email && signed_pledge && ok_password
+          if has_name && ok_email && ok_password
             current_user.registered = true
             if !current_user.save
               raise "Error registering this uesr"
@@ -83,13 +82,13 @@ class CurrentUserController < ApplicationController
           else
             errors.append(translator({id: "errors.user.password_length", length: @min_pass}, "Password needs to be at least {length} letters")) if !ok_password
             errors.append(translator("errors.user.blank_name", 'Name cannot be blank')) if !has_name
-            errors.append(translator("errors.user.pledge_required", 'Community pledge required')) if !signed_pledge
             if (!params[:email] || params[:email].length == 0) && errors.length == 0
               errors.append(translator("errors.user.blank_email", 'Email address cannot be blank'))
             end
           end
 
         end
+
 
       when 'login'
         # puts("Signing in by email and password")
@@ -412,7 +411,6 @@ class CurrentUserController < ApplicationController
 
 
   def update_via_third_party
-    pp 'UPDATE VIA THIRD PARTY'
     access_token = request.env["omniauth.auth"]
 
     ######
@@ -443,87 +441,76 @@ class CurrentUserController < ApplicationController
       end
     end
 
+    case provider
+      when 'google'
+        avatar_url = access_token.info.image
+      when 'facebook'
+        avatar_url = 'https://graph.facebook.com/' + access_token.uid + '/picture?type=large'
+    end 
 
-    # If a registered user is associated with this third party, just log them in
-    if user && user.registered
-      # Then the user registration is complete.
-      replace_user current_user, user
-      set_current_user(user)
+    # create this user if it doesn't exist
+    if !user 
+      attrs = { 
+        'name' => access_token.info.name,
+        'email' => access_token.info.email,
+        'registered' => true,
+        'verified' => true,
+        'password' => SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] 
+            # this prevents a bcrypt hashing problem in the scenario where 
+            # a user creates an account via third party, forgets, and tries
+            # to enter an email and password. In that case, password can't be null.
+      }
 
-      current_user.add_to_active_in
-
-      dirty_key '/proposals'
-      if user.is_admin?
-        dirty_key '/subdomain'
-        dirty_key '/users'
-      end
-
-      # third party user's emails are automatically verified
-      if !current_user.verified 
-        current_user.verified = true
-        current_user.save
-      end
-
-      write_to_log({
-        :what => 'logged in through 3rd party',
-        :where => '/current_user',
-        :details => {:provider => user.third_party_authenticated}
-      })
-
-    else
-      # Then the user still needs to complete the pledge.  
-      if user
-        replace_user current_user, user
-        set_current_user(user)
-        current_user.add_to_active_in
-      end      
-
-      # We'll use the oauth access_token to fill in some of the user's data
       case provider
 
         when 'google'
-          third_party_params = {
-            'google_uid' => access_token.uid,
-            'email' => access_token.info.email,
-            'avatar_url' => access_token.info.image,
-          }        
+          attrs['google_uid'] = access_token.uid
+          attrs['avatar_url'] = avatar_url
 
         when 'facebook'
-          third_party_params = {
-            'facebook_uid' => access_token.uid,
-            'email' => access_token.info.email,
-            #'url' => access_token.info.urls.Website ? access_token.info.urls.Website : nil, #TODO: fix this for facebook
-            'avatar_url' => 'https://graph.facebook.com/' + access_token.uid + '/picture?type=large'
-          }
+          attrs['facebook_uid'] = access_token.uid
+          attrs['avatar_url'] = avatar_url
 
         else
           raise 'Unsupported provider'
+        
       end
 
-      third_party_params['name'] = access_token.info.name
+      current_user.update_attributes! attrs
+      user = current_user
 
-      if !current_user.encrypted_password
-        # this prevents a bcrypt hashing problem in the scenario where 
-        # a user creates an account via third party, forgets, and tries
-        # to enter an email and password. In that case, password
-        # can't be null.
-        third_party_params['password'] = SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] 
-      end
-
-
-      # third party user's emails are automatically verified
-      if !current_user.verified 
-        third_party_params['verified'] = true
-      end
-
-      current_user.update_attributes! third_party_params
-
+    elsif !user.avatar_file_name
+      user.avatar_url = avatar_url
+      user.save
     end
+
+
+    replace_user current_user, user
+    set_current_user(user)
+
+    current_user.add_to_active_in
+
+    dirty_key '/proposals'
+    if user.is_admin?
+      dirty_key '/subdomain'
+      dirty_key '/users'
+    end
+
+    # third party user's emails are automatically verified
+    if !current_user.verified 
+      current_user.verified = true
+      current_user.save
+    end
+
+    write_to_log({
+      :what => 'logged in through 3rd party',
+      :where => '/current_user',
+      :details => {:provider => user.third_party_authenticated}
+    })
 
     response = [current_user.current_user_hash(form_authenticity_token)]
     response.concat(compile_dirty_objects())
 
-    document_domain = nil
     vanity_url = request.host.split('.').length == 1
     document_domain = vanity_url ? "document.domain" : "location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1')"
 

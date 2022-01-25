@@ -99,6 +99,9 @@ protected
     rq = request
     candidate_subdomain = nil 
 
+    Rails.logger.level = 0
+    logger.debug "rq.subdomain = #{rq.subdomain}"
+
     if rq.subdomain && rq.subdomain.length > 0 
       candidate_subdomain = Subdomain.find_by_name(rq.subdomain)
     end
@@ -106,9 +109,6 @@ protected
     if params[:domain]
       session[:default_subdomain] = Subdomain.find_by_name(params[:domain]).id
     end 
-
-    default_subdomain = session.fetch(:default_subdomain, 1)
-
 
     if !candidate_subdomain 
 
@@ -118,6 +118,7 @@ protected
 
       if !candidate_subdomain 
         begin
+          default_subdomain = session.fetch(:default_subdomain, 1)
           candidate_subdomain = Subdomain.find(default_subdomain)
         rescue ActiveRecord::RecordNotFound
           # create a subdomain if one doesn't yet exist

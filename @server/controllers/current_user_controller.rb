@@ -516,7 +516,6 @@ class CurrentUserController < ApplicationController
       "<div>Unfortunately, a bug in the iPad & iPhone prevents this window from closing automatically." +
       "<div>Sorry for the inconvenience.</div></div>" +
       "<script type=\"text/javascript\">" +
-      "  window.current_user_hash = #{response.to_json};  " +
       "  window.opener.postMessage(#{response.to_json}, '*');  " + 
       "  window.close(); " + 
       "</script>"

@@ -154,9 +154,7 @@ window.CustomizationTransition = ReactiveComponent
         customizations_signature.signature = signature
         load_customization subdomain
         save customizations_signature
-        subdomain.customization_loaded ?= 0
-        subdomain.customization_loaded += 1
-        save subdomain 
+        re_render(['/subdomain']) # rerender all the components that depend on /subdomain, without saving it to the server
 
     # we need to wait for the server to return if there is still a pending /subdomain save otherwise weird stuff happens
     ck = setInterval ->

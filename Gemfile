@@ -9,6 +9,11 @@ gem 'activerecord-session_store'  # Because CookieStore has race conditions w/ c
 # AUTHENTICATION
 gem "bcrypt"
 gem 'ruby-saml', '~> 1.11'
+gem 'omniauth-oauth2'
+gem 'omniauth-facebook'
+gem 'omniauth-google-oauth2'
+gem 'omniauth-rails_csrf_protection'
+
 
 #############
 # DATABASE & DATABASE MIDDLEWARE

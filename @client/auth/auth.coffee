@@ -218,7 +218,7 @@ window.styles += """
 
   .AUTH_header {
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: 48px;
   }
 
   #AUTH_goal {
@@ -231,12 +231,13 @@ window.styles += """
 
   #AUTH_task {
     font-size: 38px;
-    font-weight: 600;
+    font-weight: 700;
     white-space: nowrap;
+    margin-bottom: 18px;
   }
 
   .AUTH_body_wrapper {
-    padding: 1.5em 50px 2em 50px;
+    padding: 3.5em 125px 4em 125px;
     font-size: 16px;
     box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 0 100px rgb(255 255 255 / 40%);
     background-color: white;
@@ -299,6 +300,7 @@ window.styles += """
 
 
 """
+
 
 
 

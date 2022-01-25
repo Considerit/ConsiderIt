@@ -25,6 +25,24 @@ ConsiderIt::Application.routes.draw do
   ## Development dashboard
   get '/change_subdomain/:id' => 'developer#change_subdomain'
 
+  ###########
+  # Third party oauth routes. These go before 
+  # the html controller non-json catch all because 
+  # oauth submits an HTML GET request back to the server 
+  # with the user data, which is handled by 
+  # CurrentUserController#update_via_third_party.
+  match "/auth/:provider",
+    constraints: { provider: /google_oauth2|facebook|twitter/},
+    to: "current_user#passthru",
+    as: :user_omniauth_authorize,
+    via: [:get, :post]
+
+  match "/auth/:action/callback",
+    constraints: { action: /google_oauth2|facebook|twitter/ },
+    to: "current_user#update_via_third_party",
+    as: :user_omniauth_callback,
+    via: [:get, :post]
+  ###################
 
   get '/oembed(.:format)' => 'oembed#show'
   get '/embed/proposal/:slug' => 'oembed#proposal_embed', :constraints => NotJSON.new

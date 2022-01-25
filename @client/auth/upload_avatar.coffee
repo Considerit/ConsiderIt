@@ -94,12 +94,22 @@ window.upload_avatar = ->
         # are cached on the server and the image is processed in a background task. 
         # Therefore, we'll wait until the image is available and then make it available
         # in the avatar cache.  
-        time_between = 1000
-        update_user = -> 
-          arest.serverFetch '/current_user'
-          time_between *= 2
-          if time_between < 100000
-            setTimeout update_user, time_between 
-        update_user()
+        poll_until_avatar_arrives()
       error: (problem) ->
         console.error "Error uploading avatar", problem  
+
+
+window.poll_until_avatar_arrives = ->
+
+  time_between = 500
+  update_user = -> 
+    current_user = fetch '/current_user'
+    user = fetch (current_user.user or '/current_user')
+
+    if !user.avatar_file_name
+      arest.serverFetch '/current_user'
+      time_between *= 1.5
+      if time_between < 100000
+        setTimeout update_user, time_between 
+
+  update_user()

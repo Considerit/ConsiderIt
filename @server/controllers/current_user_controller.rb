@@ -511,17 +511,15 @@ class CurrentUserController < ApplicationController
     response = [current_user.current_user_hash(form_authenticity_token)]
     response.concat(compile_dirty_objects())
 
-    vanity_url = request.host.split('.').length == 1
-    document_domain = vanity_url ? "document.domain" : "location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1')"
-
     render :inline =>
       "<div style='font-weight:600; font-size: 36px; color: #414141'>Please close this window</div>" +
       "<div style='font-size: 24px'><div>You've logged in successfully!</div>" + 
       "<div>Unfortunately, a bug in the iPad & iPhone prevents this window from closing automatically." +
       "<div>Sorry for the inconvenience.</div></div>" +
       "<script type=\"text/javascript\">" +
-      # (document_domain ? "document.domain = #{document_domain};\n" : '') + 
       "  window.current_user_hash = #{response.to_json};  " +
+      "  window.opener.postMessage(#{response.to_json}, '*');  " + 
+      "  window.close(); " + 
       "</script>"
   end
 
@@ -537,15 +535,11 @@ class CurrentUserController < ApplicationController
   end
 
   def passthru
-    document_domain = nil
-    vanity_url = request.host.split('.').length == 1
-    document_domain = vanity_url ? "document.domain" : "location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1')"
 
     render :inline =>
       "<html>" +
       "<body>" +
       "<script type=\"text/javascript\">" +
-      # (document_domain ? "document.domain = #{document_domain};\n" : '') + 
       "var form = document.createElement(\"form\");\n" +
       "form.method = \"POST\";\n" + 
       "form.action = '#{request.original_url}';\n" +  

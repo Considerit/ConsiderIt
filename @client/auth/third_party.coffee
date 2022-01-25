@@ -6,38 +6,21 @@ class OAuthHandler
     if provider == 'google'
       provider = 'google_oauth2'
 
-    # vanity_url = location.host.split('.').length == 1 || location.host.split(':')[0] == '127.0.0.1'
-    # if !vanity_url
-    #   document.domain = location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1') 
-    # else 
-    #   document.domain = document.domain # make sure it is explitly set
-
     @callback = callback
     @popup = @openPopupWindow "/auth/#{provider}"
-
-  pollLoginPopup : ->
-    # try
-    if @popup? && @popup.document && window.document && window.document.domain == @popup.document.domain && @popup.current_user_hash?
-      @callback @popup.current_user_hash
-      @popup.close()
-      @popup = null
-      clearInterval(@polling_interval)
-    # catch e
-    #   console.error e
 
   openPopupWindow : (url) ->
     openidpopup = window.open(url, 'openid_popup', 'width=450,height=500,location=1,status=1,resizable=yes')
     openidpopup.current_user_hash = null
     coords = @getCenteredCoords(450,500)  
     openidpopup.moveTo(coords[0],coords[1])
-    @polling_interval = setInterval => 
-      try 
-        @pollLoginPopup()
-      catch e
-        console.log "Could not access popup", e
 
-    , 200
+    cb = (event) =>
+      return if event.source != openidpopup
+      @callback event.data
+      window.removeEventListener "message", cb
 
+    window.addEventListener "message", cb, false
     openidpopup
 
   getCenteredCoords : (width, height) ->

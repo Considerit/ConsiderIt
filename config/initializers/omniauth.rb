@@ -3,7 +3,6 @@ require "omniauth-facebook"
 # require "omniauth-twitter" 
 
 OAUTH_SETUP_PROC = lambda do |env|
-  pp "IN OAUTH"
   case env['omniauth.strategy'].name()
   when 'google_oauth2'
     provider = :google
@@ -46,7 +45,7 @@ OAUTH_SETUP_PROC = lambda do |env|
 
   # In order to support wildcard subdomains without manually 
   # entering all valid subdomains into google dev console, 
-  # we have a reverse proxied subdomain (googleoauth) that simply acts as a recipient
+  # we have a reverse proxied subdomain (oauth-callback) that simply acts as a recipient
   # of google auth requests. 
 
   # Note that the provider_ignores_state option below is insecure, leaving open the possibility of a CSRF attack. 
@@ -58,7 +57,7 @@ OAUTH_SETUP_PROC = lambda do |env|
 
   if env['omniauth.strategy'].name() == 'google_oauth2' && Rails.env.production? && subdomain
     env['omniauth.strategy'].options['state'] = subdomain
-    env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://googleoauth.#{host}/auth/google_oauth2/callback"
+    env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://oauth-callback.#{host}/auth/google_oauth2/callback"
   end
 end
 
@@ -76,7 +75,7 @@ OMNIAUTH_SETUP_PROC = lambda do |env|
   host = host.join('.').intern
 
   if env['omniauth.strategy'].name() == 'google_oauth2' && Rails.env.production? && subdomain
-    "#{request.scheme}://googleoauth.#{host}"
+    "#{request.scheme}://oauth-callback.#{host}"
   else 
     "#{request.scheme}://#{request.host_with_port}"
   end

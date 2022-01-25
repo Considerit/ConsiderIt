@@ -99,9 +99,6 @@ protected
     rq = request
     candidate_subdomain = nil 
 
-    Rails.logger.level = 0
-    logger.debug "rq.subdomain = #{rq.subdomain}"
-
     if rq.subdomain && rq.subdomain.length > 0 
       candidate_subdomain = Subdomain.find_by_name(rq.subdomain)
     end

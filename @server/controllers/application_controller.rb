@@ -146,7 +146,7 @@ protected
     Thread.current[:dirtied_keys] = {}
     Thread.current[:subdomain] = ActsAsTenant.current_tenant
 
-    logger.debug("In before: is there a current user? '#{session[:current_user_id]}'")
+    logger.debug("In before: is there a current user? '#{session[:current_user_id]}', session #{session.id}")
     # First, reset the thread's current_user values from the session
     Thread.current[:current_user_id] = session[:current_user_id]
     Thread.current[:current_user] = nil
@@ -175,7 +175,7 @@ protected
     ## TODO: delete the existing current user if there's nothing
     ##       important in it
 
-    logger.debug("Setting current user to #{user.id}")
+    logger.debug("Setting current user to #{user.id}, session #{session.id}")
     session[:current_user_id] = user.id
     Thread.current[:current_user_id] = user.id
     Thread.current[:current_user]    = user

@@ -39,7 +39,7 @@ class OAuthHandler
 
 
 
-OAuth_providers = ['google'] #['facebook', 'google']
+OAuth_providers = ['facebook', 'google']
 
 
 # Mixin for authenticating via OAuth

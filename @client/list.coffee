@@ -23,15 +23,16 @@ window.styles += """
     outline-color: #ccc;
     line-height: 1.4;
     padding: 8px 12px;
-    margin-top: -9px;
+    // margin-top: -9px;
     margin-left: -13px;
 
   }
 
   .LIST-field-edit-label {
     font-size: 14px;
-    margin-bottom: 12px;
+    display: inline-block;
     font-weight: 400;
+    margin-top: 18px;
   }
 
 """
@@ -224,15 +225,37 @@ EditList = ReactiveComponent
         delete customizations[list_key]
 
         # if tabs are enabled, add it to the current tab
-        if customizations['homepage_tabs'] 
+        if customizations.homepage_tabs
           current_tab = fetch('homepage_tabs').filter
           found_tab = false 
-          for tab in customizations['homepage_tabs']
+          for tab in customizations.homepage_tabs
             if tab.name == current_tab
               tab.lists.push new_key
               break
           if !found_tab 
             console.error "Cannot add the list to the current tab #{current_tab}"
+
+      if customizations.homepage_tabs
+        current_tab = fetch('homepage_tabs').filter
+
+        console.log edit_list.assign_to_tab
+        if edit_list.assign_to_tab && edit_list.assign_to_tab != current_tab
+          tab_config = customizations.homepage_tabs
+          tab_names = (t.name for t in tab_config)
+
+          idx_source = tab_names.indexOf current_tab
+          idx_target = tab_names.indexOf edit_list.assign_to_tab
+
+          if idx_source > -1 && idx_target > -1
+            tab_config[idx_source].lists.splice tab_config[idx_source].lists.indexOf(list_key), 1
+            tab_config[idx_target].lists.push list_key 
+            subdomain.customizations.homepage_tabs = tab_config
+            console.log subdomain.customizations
+          else 
+            console.error "Could not move list from #{current_tab} to #{edit_list.assign_to_tab}"
+
+
+
 
       save subdomain, => 
         if subdomain.errors
@@ -454,7 +477,7 @@ window.ListHeader = ReactiveComponent
         backgroundColor: '#f3f3f3'
         marginLeft: -36
         marginTop: -36
-        padding: "36px 36px"
+        padding: "18px 36px 36px 36px"
         width: HOMEPAGE_WIDTH() + 36 * 2
 
     edit_list.discussion_enabled ?= customization('discussion_enabled', list_key)
@@ -771,7 +794,9 @@ window.ListHeader = ReactiveComponent
                 style:
                   marginTop: 36
 
-                DIV null, 
+                DIV 
+                  style:
+                    marginBottom: 6
                   LABEL 
                     style: {}
 
@@ -788,8 +813,9 @@ window.ListHeader = ReactiveComponent
                         paddingLeft: 4
                       translator 'engage.list-config-discussion-enabled', 'Disable commenting. Spectrums only.'
 
-                DIV null, 
-
+                DIV                   
+                  style:
+                    marginBottom: 6
                   LABEL 
                     style: {}
 
@@ -804,7 +830,45 @@ window.ListHeader = ReactiveComponent
                     SPAN 
                       style: 
                         paddingLeft: 4
-                      translator 'engage.list-config-archived', 'List is closed by default on page load. Useful for archiving past issues.'
+                      translator 'engage.list-config-archived', 'Close list by default on page load. Useful for archiving past issues.'
+
+
+                if customization('homepage_tabs')
+                  tabs = get_tabs()
+                  
+                  current = null 
+                  for a_tab in tabs 
+                    if list_key in a_tab.lists 
+                      current = a_tab.name
+
+                  tab_names = (t.name for t in tabs)
+
+                  DIV 
+                    style:
+                      marginBottom: 6
+                      marginTop: 24
+                      display: 'flex'
+                      alignItems: 'center'
+
+                    LABEL 
+                      style: 
+                        marginRight: 8
+
+                      "Assign to tab"
+
+                    SELECT 
+                      defaultValue: current
+                      onChange: (e) =>
+                        edit_list.assign_to_tab = e.target.value
+                        save edit_list 
+
+                      for tab in tab_names when !customization('homepage_tab_views')?[tab]
+                        OPTION 
+                          value: tab
+                          tab
+
+
+
 
 
 
@@ -1175,7 +1239,7 @@ EditableDescription = ReactiveComponent
               id: 'edit_description'
               style:
                 marginLeft: -13
-                marginTop: -12
+                # marginTop: -12
                 width: HOMEPAGE_WIDTH() + 13 * 2
 
               STYLE

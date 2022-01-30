@@ -128,7 +128,7 @@ window.DropMenu = ReactiveComponent
           # if the focus isn't still on an element inside of this menu, 
           # then we should close the menu
           if @refs.menu_wrap && $(document.activeElement).closest(@refs.menu_wrap?.getDOMNode()).length == 0
-            @local.sort_menu = false; save @local
+            @local.show_menu = false; save @local
         , 0
 
       onKeyDown: (e) => 

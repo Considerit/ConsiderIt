@@ -7,11 +7,11 @@ window.styles += """
     color: #8F8F8F;
     text-transform: uppercase;
     margin-bottom: 2px;
-    margin-top: 4px;
+    margin-top: 8px;
   }
   #EDITPROFILE input.AUTH_text_input {
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 16px;
   }
 
   #EDITPROFILE #SHOWHOSTQUESTIONS {
@@ -79,7 +79,7 @@ window.EditProfile = ReactiveComponent
           style: 
             backgroundColor: considerit_gray
             marginBottom: 24
-            marginTop: 12
+            marginTop: 52
 
           H4 
             style: 

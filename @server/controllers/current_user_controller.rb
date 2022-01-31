@@ -359,7 +359,7 @@ class CurrentUserController < ApplicationController
       end
       
     else
-      raise StandardError 'Had trouble manipulating this user!', new_params
+      raise "Had trouble manipulating #{current_user.id} user! #{new_params.to_s}"
     end
 
     # Update their email address.  First, check if they gave us a new address

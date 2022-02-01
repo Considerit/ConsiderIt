@@ -764,7 +764,9 @@ styles += """
   padding-left: 20px;
   margin-left: 20px; }
 .wysiwyg_text a, .description_field a {
-  text-decoration: underline; }
+  text-decoration: underline; 
+  font-weight: 700;
+}
 .wysiwyg_text blockquote, .description_field blockquote {
   opacity: 0.7;
   padding: 10px 20px; }

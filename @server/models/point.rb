@@ -12,10 +12,6 @@ class Point < ApplicationRecord
 
 
   before_validation do 
-    #self.nutshell = sanitize_helper self.nutshell
-    #self.text = sanitize_helper self.text
-
-
     if self.nutshell.length > 180 
       self.text = self.text ? "#{self.nutshell[179..-1]} #{self.text}" : self.nutshell[179..-1]
       self.nutshell = self.nutshell[0..179]
@@ -27,6 +23,13 @@ class Point < ApplicationRecord
     end
 
   end
+
+  before_save do 
+    self.nutshell = sanitize_helper(self.nutshell) if self.nutshell
+    self.text = sanitize_helper(self.text) if self.text
+    self.includers = sanitize_json(self.includers) if self.includers
+  end
+
 
   acts_as_tenant :subdomain
 

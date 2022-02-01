@@ -158,6 +158,20 @@ class SubdomainController < ApplicationController
       attrs['plan'] = params['plan'].to_i
     end 
 
+    sanitize_fields = ['lang', 'about_page_url', 'external_project_url', 'google_analytics_code']
+    sanitize_fields.each do |field| 
+      if attrs.has_key?(field)
+        attrs[field] = sanitize_helper(attrs[field])
+      end      
+    end
+
+    sanitize_json = ['roles', 'customizations']
+    sanitize_json.each do |field| 
+      if attrs.has_key?(field)
+        attrs[field] = sanitize_json(attrs[field], subdomain[field])
+      end      
+    end
+
     current_user.add_to_active_in
     current_subdomain.update_attributes! attrs
 

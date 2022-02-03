@@ -263,7 +263,7 @@ window.ForumSettingsDash = ReactiveComponent
         key = "#{subdomain.name}-pledge_taken"
 
         question_index = ->
-          for tag, idx in subdomain.customizations.user_tags
+          for tag, idx in (subdomain.customizations.user_tags or [])
             if tag.key == key
               return idx
           return null

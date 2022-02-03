@@ -413,7 +413,7 @@ class User < ApplicationRecord
   def update_roles_and_permissions
     ActsAsTenant.without_tenant do 
       for cls in [Subdomain, Proposal]
-        objs_with_user_in_role = cls.where("roles LIKE", "%\"#{self.email}\"%") 
+        objs_with_user_in_role = cls.where("roles LIKE ?", "%\"#{self.email}\"%") 
                                          # this is case insensitive
 
         for obj in objs_with_user_in_role

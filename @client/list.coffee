@@ -238,7 +238,6 @@ EditList = ReactiveComponent
       if customizations.homepage_tabs
         current_tab = fetch('homepage_tabs').filter
 
-        console.log edit_list.assign_to_tab
         if edit_list.assign_to_tab && edit_list.assign_to_tab != current_tab
           tab_config = customizations.homepage_tabs
           tab_names = (t.name for t in tab_config)
@@ -250,7 +249,6 @@ EditList = ReactiveComponent
             tab_config[idx_source].lists.splice tab_config[idx_source].lists.indexOf(list_key), 1
             tab_config[idx_target].lists.push list_key 
             subdomain.customizations.homepage_tabs = tab_config
-            console.log subdomain.customizations
           else 
             console.error "Could not move list from #{current_tab} to #{edit_list.assign_to_tab}"
 

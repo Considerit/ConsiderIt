@@ -1,3 +1,5 @@
+require './tabs'
+
 ###########################
 # HOMEPAGE HEADER TEMPLATES
 

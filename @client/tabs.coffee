@@ -69,6 +69,17 @@ styles += """
 
 
 window.get_tabs = -> customization('homepage_tabs')
+window.get_current_tab_name = -> fetch('homepage_tabs').filter
+window.get_current_tab_view = ->
+  custom_view = customization('homepage_tab_views')?[get_current_tab_name()]
+  if custom_view
+    view = custom_view()
+    if typeof(view) == 'function'
+      view = view()
+    view
+  else
+    SimpleHomepage()
+
 
 
 

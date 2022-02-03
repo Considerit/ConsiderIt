@@ -18,7 +18,6 @@ window.Homepage = ReactiveComponent
   render: ->
     doc = fetch 'document'
     subdomain = fetch '/subdomain'
-    homepage_tabs = fetch 'homepage_tabs'
 
     return SPAN null if !subdomain.name
 
@@ -80,13 +79,7 @@ window.Homepage = ReactiveComponent
         if !fetch('/proposals').proposals
           ProposalsLoading()   
         else 
-          if customization('homepage_tab_views')?[homepage_tabs.filter]
-            view = customization('homepage_tab_views')[homepage_tabs.filter]()
-            if typeof(view) == 'function'
-              view = view()
-            view
-          else
-            SimpleHomepage()
+          get_current_tab_view()
 
   typeset : -> 
     subdomain = fetch('/subdomain')
@@ -121,8 +114,7 @@ window.TagHomepage = ReactiveComponent
   render: -> 
     current_user = fetch('/current_user')
 
-    homepage_tabs = fetch 'homepage_tabs'
-    aggregate_list_key = homepage_tabs.filter
+    aggregate_list_key = get_current_tab_name()
 
     List
       key: aggregate_list_key
@@ -144,9 +136,8 @@ window.SimpleHomepage = ReactiveComponent
 
   render : ->
     current_user = fetch('/current_user')
-    homepage_tabs = fetch 'homepage_tabs'
-
-    lists = lists_for_tab(homepage_tabs.filter)
+    current_tab = get_current_tab_name()
+    lists = lists_for_tab(current_tab)
 
     DIV null, 
       for list, index in lists or []
@@ -154,7 +145,7 @@ window.SimpleHomepage = ReactiveComponent
           key: list.key
           list: list 
 
-      if current_user.is_admin && homepage_tabs.filter not in ['About', 'FAQ']
+      if current_user.is_admin && current_tab not in ['About', 'FAQ']
         NewList()
           
 

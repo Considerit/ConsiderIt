@@ -226,7 +226,7 @@ EditList = ReactiveComponent
 
         # if tabs are enabled, add it to the current tab
         if customizations.homepage_tabs
-          current_tab = fetch('homepage_tabs').filter
+          current_tab = get_current_tab_name()
           found_tab = false 
           for tab in customizations.homepage_tabs
             if tab.name == current_tab
@@ -235,8 +235,8 @@ EditList = ReactiveComponent
           if !found_tab 
             console.error "Cannot add the list to the current tab #{current_tab}"
 
-      if customizations.homepage_tabs
-        current_tab = fetch('homepage_tabs').filter
+      if customizations.homepage_tabs?.length > 1
+        current_tab = get_current_tab_name()
 
         if edit_list.assign_to_tab && edit_list.assign_to_tab != current_tab
           tab_config = customizations.homepage_tabs
@@ -349,7 +349,7 @@ EditList = ReactiveComponent
               # if tabs are enabled, remove it from the current tab
               if customizations['homepage_tabs']
                 tabs = fetch('homepage_tabs')
-                current_tab = fetch('homepage_tabs').filter
+                current_tab = get_current_tab_name()
                 tab_idx = null 
                 for tab in customizations['homepage_tabs']
                   if tab.name == current_tab
@@ -1478,7 +1478,7 @@ window.lists_for_tab = (tab) ->
 
   eligible_lists = null
   if !tab || !tabs_config
-    tab = homepage_tabs.filter
+    tab = get_current_tab_name()
     eligible_lists = homepage_tabs.clusters
   else 
     for a_tab in tabs_config

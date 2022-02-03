@@ -256,6 +256,75 @@ window.ForumSettingsDash = ReactiveComponent
             ' The authors of proposals, points, and comments are still shown, but opinions of others are hidden. Hosts, like you, however, will be able to see the opinions of everyone.'
 
 
+      ########################
+      # Participation pledge
+
+      do =>
+        key = "#{subdomain.name}-pledge_taken"
+
+        question_index = ->
+          for tag, idx in subdomain.customizations.user_tags
+            if tag.key == key
+              return idx
+          return null
+
+        DIV className: 'input_group checkbox',
+
+          LABEL 
+            className: 'toggle_switch'
+
+            INPUT 
+              id: 'enable_civility_pledge'
+              type: 'checkbox'
+              name: 'enable_civility_pledge'
+              defaultChecked: question_index() != null
+              onChange: (ev) -> 
+                subdomain.customizations ||= {}
+                subdomain.customizations.user_tags ?= []
+                if ev.target.checked
+                  pledge =
+                    key: key
+                    no_opinion_view: true
+                    visibility: "host-only"
+                    self_report: 
+                      input: "boolean"
+                      question: 'I pledge to be civil and to use only one account'
+                      required: true
+                  subdomain.customizations.user_tags.push pledge
+                else 
+                  idx = question_index()
+                  if idx != null
+                    subdomain.customizations.user_tags.splice(idx, 1)
+                    if subdomain.customizations.user_tags.length == 0
+                      delete subdomain.customizations.user_tags
+
+                save subdomain
+
+
+            SPAN 
+              className: 'toggle_switch_circle'
+          
+
+          LABEL 
+            className: 'indented'
+
+            htmlFor: 'enable_civility_pledge'
+            B null, 
+              'Enable civility pledge.'
+            DIV 
+              className: 'explanation'
+              ' Newly registered participants must agree to be civil and to use only one account.'
+              
+            
+
+
+
+
+          
+
+
+
+
 
       #####################
       # CONTRIBUTION PHASE

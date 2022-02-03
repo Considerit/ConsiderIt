@@ -28,6 +28,16 @@ class Proposal < ApplicationRecord
   scope :active, -> {where( :active => true, :published => true )}
 
   before_validation :strip_html
+
+  before_save do 
+    self.name = sanitize_helper(self.name) if self.name
+    self.description = sanitize_helper(self.description) if self.description
+    self.cluster = sanitize_helper(self.cluster) if self.cluster
+
+    self.roles = sanitize_json(self.roles) if self.roles
+    self.json = sanitize_json(self.json) if self.json
+  end
+
   before_save :set_slug
 
   def self.all_proposals_for_subdomain(subdomain = nil)
@@ -129,7 +139,6 @@ class Proposal < ApplicationRecord
   end
 
   def full_data
-
     if self.subdomain.moderation_policy == 1
       moderation_status_check = 'moderation_status=1'
     else 

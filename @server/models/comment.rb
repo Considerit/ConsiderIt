@@ -16,6 +16,12 @@ class Comment < ApplicationRecord
 
   acts_as_tenant :subdomain
 
+
+  before_save do 
+    self.body = sanitize_helper(self.body) if self.body
+  end
+
+
   def as_json(options={})
     options[:only] ||= Comment.my_public_fields
     result = super(options)

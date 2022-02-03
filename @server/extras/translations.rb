@@ -36,8 +36,16 @@ def clear_translation_context
 end    
 
 
+query = 'SELECT * FROM users WHERE id = ? OR first_name = ?'
+id = 1
+name = 'Alice'
+
+
+
+
+
 def get_translations(k)
-  trans = ActiveRecord::Base.connection.execute("SELECT v FROM datastore WHERE k='#{k}'").to_a()[0]
+  trans = sanitize_and_execute_query(["SELECT v FROM datastore WHERE k = ?", k]).to_a()[0]
   if !trans 
     if k == '/translations'
       init = {
@@ -55,8 +63,8 @@ def get_translations(k)
       init = {key: k}
     end 
     insert_to_translations(k, init)
-    trans = ActiveRecord::Base.connection.execute("SELECT v FROM datastore WHERE k='#{k}'").to_a()[0]
 
+    trans = sanitize_and_execute_query(["SELECT v FROM datastore WHERE k = ?", k]).to_a()[0]
   end
   trans = trans[0].gsub("''", "'")
   Oj.load(trans)
@@ -64,12 +72,13 @@ end
 
 def update_translations(k,v)
   v = escape_json(v)
-  ActiveRecord::Base.connection.execute("UPDATE datastore SET v='#{JSON.dump(v)}' WHERE k='#{k}'")
+  sanitize_and_execute_query(["UPDATE datastore SET v = ? WHERE k = ?", JSON.dump(v), k])
 end
 
 def insert_to_translations(k,v)
   v = escape_json(v) 
-  ActiveRecord::Base.connection.execute("INSERT into datastore(k,v) VALUES ('#{k}', '#{JSON.dump(v)}')")
+
+  sanitize_and_execute_query(["INSERT into datastore(k,v) VALUES ( ? , ? )", k, JSON.dump(v)])
 end
 
 def escape_json(json)

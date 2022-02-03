@@ -300,9 +300,9 @@ window.HomepageTabs = ReactiveComponent
 
                 translator
                   id: "homepage_tab.#{tab_name}"
-                  key: "/translations/#{subdomain.name}"
+                  key: if tab_name != 'Show all' then "/translations/#{subdomain.name}"
                   tab_name
-
+                  
               if featured 
                 @props.featured_insertion?()
 

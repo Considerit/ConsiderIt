@@ -521,7 +521,7 @@ CustomizeBackground = ReactiveComponent
               fontSize: 14
               color: color
               marginBottom: 12
-            translator 'banner.upload_background_label', 'Upload background'
+            translator 'banner.upload_background_label', 'Add background pic'
 
         DIV 
           style: 

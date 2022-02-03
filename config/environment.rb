@@ -8,6 +8,89 @@ def sanitize_helper(str)
   Loofah.fragment(str).scrub!(:strip).to_s
 end
 
+# primarily for sanitizing forum customizations object
+def sanitize_json(obj, old=nil)
+  if old
+    stringified = old.to_s
+  else 
+    stringified = nil
+  end
+
+  if obj.is_a? Hash 
+    _sanitize_hash(obj, stringified)
+  elsif obj.is_a? Array 
+    _sanitize_array(obj, stringified)
+  elsif obj.is_a? String
+    _sanitize_str(obj, stringified)
+  else
+    obj
+  end 
+end
+
+def _sanitize_hash(obj, old)
+  sanz = {}
+  obj.each do |k,v|
+    if v.is_a? Hash
+      sanz[k] = _sanitize_hash(v, old)
+    elsif v.is_a? Array
+      sanz[k] = _sanitize_array(v, old)
+    elsif v.is_a? String
+      sanz[k] = _sanitize_str(v, old)
+    else 
+      sanz[k] = v
+    end
+  end
+  sanz
+end 
+
+def _sanitize_array(arr, old) 
+  sanz = []
+  arr.each do |el|
+    if el.is_a? Hash
+      sanz.push _sanitize_hash(el, old)
+    elsif el.is_a? Array 
+      sanz.push _sanitize_array(el, old)
+    elsif el.is_a? String
+      sanz.push _sanitize_str(el, old)
+    else 
+      sanz.push el      
+    end 
+  end
+  sanz
+end
+
+def _sanitize_str(str, old)
+  adjusted_str = {:v=>str}.to_s["{:v=>\"".length...-"\"}".length] # matching encodings...ugly, I know
+
+  if old && old.index(adjusted_str) != nil # no change, or previously checked as safe elsewhere
+    return str 
+  elsif current_user.super_admin
+    return str
+  elsif str.start_with?("#javascript")
+    pp '********sanitizing unsafe javascript', str
+    return "**sanitized unsafe**#javascrip7#{str["#javascript".length..-1]}"  
+  else 
+    sanitized_str = sanitize_helper(str)
+    if str != sanitized_str
+      pp "SANITIZED"
+      pp "**old"
+      pp old
+      pp "**adjusted"
+      pp adjusted_str
+    end
+    return sanitized_str
+  end
+end
+
+
+def sanitize_and_execute_query(query_and_params)
+  sanitized_query = ActiveRecord::Base.sanitize_sql_array query_and_params
+  ActiveRecord::Base.connection.execute(sanitized_query)
+end
+
+
+
+
 def stubify_field(hash, name)
   id = hash[name + '_id']
   hash[name] = (id && "/#{name}/#{id}")

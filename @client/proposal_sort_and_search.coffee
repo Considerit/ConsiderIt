@@ -342,7 +342,7 @@ sort_options = [
     description: "Sort alphabetically by the item's title"
   }, 
   {
-    name: 'Random'
+    name: 'Randomized'
     description: "Item order is randomized on each page load."
 
     order: (proposals) -> 

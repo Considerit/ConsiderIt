@@ -51,7 +51,7 @@ styles += """
 question_index = (question) -> 
   subdomain = fetch '/subdomain'
   qidx = null
-  for q, idx in subdomain.customizations.user_tags
+  for q, idx in (subdomain.customizations.user_tags or [])
     if q.self_report.question == question.self_report.question
       qidx = idx
       break 
@@ -93,6 +93,8 @@ window.IntakeQuestions = ReactiveComponent
     current_user = fetch '/current_user'
 
     intake_q_state = fetch 'intake-questions'
+
+    subdomain.customizations.user_tags ?= []
 
     questions = (q for q in subdomain.customizations.user_tags when q.self_report)
 

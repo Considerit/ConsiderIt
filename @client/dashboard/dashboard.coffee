@@ -178,7 +178,7 @@ window.Dashboard = ReactiveComponent
             draw_menu_option {href: '/dashboard/roles', label: 'Permissions & Roles', icon: 'lock'} 
           ]
 
-        if is_admin && fetch('/subdomain').plan 
+        if (is_admin && fetch('/subdomain').plan) || is_super 
           draw_menu_option {href: '/dashboard/intake_questions', label: 'Intake Questions', icon: 'survey'}      
 
         if is_super 

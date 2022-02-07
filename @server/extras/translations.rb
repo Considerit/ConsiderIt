@@ -58,7 +58,7 @@ def get_translations(k)
 
     trans = sanitize_and_execute_query(["SELECT v FROM datastore WHERE k = ?", k]).to_a()[0]
   end
-  trans = trans[0].gsub("''", "'")
+  trans = trans[0].gsub("''", "'").gsub(/[^\\]"/, '\"')
   Oj.load(trans)
 end 
 
@@ -67,7 +67,7 @@ def update_translations(k,v)
 end
 
 def insert_to_translations(k,v)
-  sanitize_and_execute_query(["INSERT into datastore(k,v) VALUES ( ? , ? )", k, JSON.dump(v)])
+  sanitize_and_execute_query(["INSERT into datastore (k,v) VALUES ( ? , ? )", k, JSON.dump(v)])
 end
 
 def translator(args, native_text = nil)

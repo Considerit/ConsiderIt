@@ -22,6 +22,12 @@ class TranslationsController < ApplicationController
 
 
     key = params[:key]
+
+
+    if !key.start_with?('/translations')
+      return
+    end 
+    
     exclude = {'authenticity_token' => 1, 'subdomain' => 1, 'action' => 1, 'controller' => 1}
     updated = params.select{|k,v| !exclude.has_key?(k)}.to_h
 

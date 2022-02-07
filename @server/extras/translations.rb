@@ -36,14 +36,6 @@ def clear_translation_context
 end    
 
 
-query = 'SELECT * FROM users WHERE id = ? OR first_name = ?'
-id = 1
-name = 'Alice'
-
-
-
-
-
 def get_translations(k)
   trans = sanitize_and_execute_query(["SELECT v FROM datastore WHERE k = ?", k]).to_a()[0]
   if !trans 
@@ -71,37 +63,11 @@ def get_translations(k)
 end 
 
 def update_translations(k,v)
-  v = escape_json(v)
   sanitize_and_execute_query(["UPDATE datastore SET v = ? WHERE k = ?", JSON.dump(v), k])
 end
 
 def insert_to_translations(k,v)
-  v = escape_json(v) 
-
   sanitize_and_execute_query(["INSERT into datastore(k,v) VALUES ( ? , ? )", k, JSON.dump(v)])
-end
-
-def escape_json(json)
-  return json if (json[:key] || json["key"]) == '/translations'
-  escaped = {}
-
-  for k,v in json 
-    if k == :key || k == "key"
-      escaped[k] = v  
-      next 
-    end 
-    new_k = k.gsub('"', '\"').gsub("'", "''").gsub("\n", " ")
-    if v["txt"]
-      v["txt"] = v["txt"].gsub('"', '\"').gsub("'", "''").gsub("\n", " ")
-    end 
-    if v["proposals"]
-      for proposal in v["proposals"]
-        proposal["txt"] = proposal["txt"].gsub('"', '\"').gsub("'", "''").gsub("\n", " ")
-      end
-    end
-    escaped[new_k] = v
-  end
-  escaped
 end
 
 def translator(args, native_text = nil)

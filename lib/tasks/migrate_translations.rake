@@ -1,6 +1,38 @@
 require Rails.root.join('@server', 'extras', 'translations')
 
 
+task :fix_translations_escaping => :environment do 
+  base_translations = get_translations '/translations'
+  base_translations["available_languages"].each do |langcode, lang| 
+    pp "",""
+    pp "Migrating #{lang} (#{langcode})"
+    pp ""
+
+
+    lang_key = "/translations/#{langcode}"
+    trans = get_translations lang_key
+
+
+    to_fix = {}
+    trans.each do |key,val|
+      if val['txt'] && val['txt'].index('\\\"')
+        pp key, val # val['txt'].gsub(/(\\{2,}")/, "\"")
+
+        to_fix[key] = val['txt'].gsub(/(\\{2,}")/, "\"")
+      end
+    end
+
+    to_fix.each do |key,val|
+      trans[key]['txt'] = val
+    end
+
+    update_translations lang_key, trans
+
+  end
+
+
+end
+
 task :migrate_translations => :environment do 
 
   $to_delete = {}

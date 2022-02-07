@@ -48,7 +48,7 @@ window.loadPage = (url, query_params) ->
     # after it is processed. 
     loc.seek_to_hash = hash
 
-  loc.url = decodeURI(url_parts.pathname)
+  loc.url = decodeURIComponent(url_parts.pathname)
   loc.hash = hash
 
   save loc
@@ -190,9 +190,11 @@ window.BrowserLocation = ReactiveComponent
 relativeURLFromLocation = -> 
   # location.search returns query parameters
 
+
   # fix url encoding of /
   search = location.search?.replace(/\%2[fF]/g, '/')
   loc = location.pathname?.replace(/\%20/g, ' ')
+
   "#{loc}#{search}#{location.hash}"
 
 relativeURLFromStatebus = ->  
@@ -200,8 +202,9 @@ relativeURLFromStatebus = ->
 
   relative_url = loc.url 
   if _.keys(loc.query_params).length > 0
-    query_params = ("#{k}=#{v}" for own k,v of loc.query_params)
+    query_params = ("#{k}=#{encodeURIComponent(v)}" for own k,v of loc.query_params)
     relative_url += "?#{query_params.join('&')}" 
+
   if loc.hash?.length > 0
     relative_url += "##{loc.hash}"
   relative_url

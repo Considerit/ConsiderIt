@@ -20,6 +20,23 @@ window.styles += """
   height: 100vh;
   z-index: 99999;
 }
+
+#modal-wrapper {
+  margin: 0 auto;
+  position: relative;
+  z-index: 0;
+  padding: 3em 0;
+}
+
+#modal-body {
+  padding: 3.5em 125px 4em 125px;
+  font-size: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 0 100px rgb(255 255 255 / 40%);
+  background-color: #f1f1f1;
+  position: relative;
+  border-radius: 16px;
+}
+
 """
 
 window.Modal =
@@ -77,7 +94,7 @@ window.Modal =
     document.addEventListener 'keydown', @accessibility_on_keydown
 
     try 
-      modal.querySelector('input:not([disabled])').focus()
+      modal.querySelector('input:not([disabled])')?.focus()
     catch e 
       console.error e
 
@@ -119,4 +136,28 @@ window.Modal =
     # restore scroll position
     window.scroll(0, @scroll_Y)
 
+
+window.wrap_in_modal = (children) -> 
+  DIV null,
+
+    DIV 
+      id: 'lightbox'
+
+    DIV
+      id: 'modal'
+      ref: 'dialog'
+      role: 'dialog'
+      # 'aria-labeledby': 'AUTH_task'
+      # 'aria-describedby': if options.goal then 'AUTH_goal'
+
+
+      DIV
+        id: 'modal-wrapper'
+        style: 
+          maxWidth: AUTH_WIDTH() 
+
+        DIV
+          id: 'modal-body'
+
+          children
 

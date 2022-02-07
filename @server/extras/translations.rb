@@ -64,7 +64,8 @@ def get_translations(k)
 end 
 
 def update_translations(k,v)
-  sanitize_and_execute_query(["UPDATE datastore SET v = ? WHERE k = ?", JSON.dump(v), k])
+  v = JSON.dump(v).gsub(/\\{3,}"/, '\\\"')
+  sanitize_and_execute_query(["UPDATE datastore SET v = ? WHERE k = ?", v, k])
 end
 
 def insert_to_translations(k,v)

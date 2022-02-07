@@ -18,7 +18,7 @@ task :fix_translations_escaping => :environment do
       if val['txt'] && val['txt'].index('\\\"')
         pp key, val # val['txt'].gsub(/(\\{2,}")/, "\"")
 
-        to_fix[key] = val['txt'].gsub(/(\\{2,}")/, "\"")
+        to_fix[key] = val['txt'].gsub(/(\\{3,}")/, "\"")
       end
     end
 

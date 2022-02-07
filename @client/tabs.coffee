@@ -3,27 +3,25 @@ window.HomepageTabTransition = ReactiveComponent
   displayName: "HomepageTabTransition"
 
   render: -> 
-    if customization('homepage_tabs')
+    if get_tabs()
       loc = fetch 'location'
       tab_state = fetch 'homepage_tabs'
       default_tab = customization('homepage_default_tab') or 'Show all'
 
-      if !tab_state.filter? || (loc.query_params.tab && loc.query_params.tab != tab_state.filter)
+      if !tab_state.active_tab? || (loc.query_params.tab && loc.query_params.tab != tab_state.active_tab)
+
         if loc.query_params.tab
-          tab_state.filter = decodeURI loc.query_params.tab
+          tab_state.active_tab = decodeURIComponent loc.query_params.tab
         else 
-          tab_state.filter = default_tab
-        for tab in get_tabs() 
-          if tab.name == tab_state.filter
-            tab_state.clusters = tab.lists
-            break 
+          tab_state.active_tab = default_tab
+
         save tab_state
 
       if loc.url != '/' && loc.query_params.tab
         delete loc.query_params.tab
         save loc
-      else if loc.url == '/' && loc.query_params.tab != tab_state.filter 
-        loc.query_params.tab = tab_state.filter
+      else if loc.url == '/' && loc.query_params.tab != tab_state.active_tab 
+        loc.query_params.tab = tab_state.active_tab
         save loc
 
     SPAN null
@@ -68,10 +66,23 @@ styles += """
 """
 
 
-window.get_tabs = -> customization('homepage_tabs')
-window.get_current_tab_name = -> fetch('homepage_tabs').filter
+window.get_tabs = -> 
+  if customization('homepage_tabs')?.length > 0
+    fetch('/subdomain').customizations.homepage_tabs
+  else 
+    null
+
+window.get_tab = (name) -> 
+  name ?= get_current_tab_name()
+  for tab in (get_tabs() or [])
+    if tab.name == name 
+      return tab
+  return null
+
+window.get_current_tab_name = -> fetch('homepage_tabs').active_tab
 window.get_current_tab_view = ->
-  custom_view = customization('homepage_tab_views')?[get_current_tab_name()]
+  custom_view = get_tab()?.render_page or customization('render_page')
+
   if custom_view
     view = custom_view()
     if typeof(view) == 'function'
@@ -106,7 +117,7 @@ window.HomepageTabs = ReactiveComponent
         for tab, idx in get_tabs() 
           do (tab) =>
             tab_name = tab.name
-            current = homepage_tabs.filter == tab_name 
+            current = homepage_tabs.active_tab == tab_name 
             hovering = @local.hovering == tab_name
             featured = @props.featured == tab_name
 
@@ -130,7 +141,7 @@ window.HomepageTabs = ReactiveComponent
               'aria-selected': current
 
               onMouseEnter: => 
-                if homepage_tabs.filter != tab_name 
+                if homepage_tabs.active_tab != tab_name 
                   @local.hovering = tab_name 
                   save @local 
               onMouseLeave: => 

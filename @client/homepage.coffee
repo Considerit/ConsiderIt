@@ -32,6 +32,7 @@ window.Homepage = ReactiveComponent
       doc.title = title
       save doc
 
+
     messages = []
     phase = customization('contribution_phase')
     if phase == 'frozen'
@@ -60,7 +61,7 @@ window.Homepage = ReactiveComponent
 
       DIV
         id: 'homepagetab'
-        role: if customization('homepage_tabs') then "tabpanel"
+        role: if get_tabs() then "tabpanel"
 
         if customization('auth_callout')
           DIV 
@@ -137,7 +138,8 @@ window.SimpleHomepage = ReactiveComponent
   render : ->
     current_user = fetch('/current_user')
     current_tab = get_current_tab_name()
-    lists = lists_for_tab(current_tab)
+    
+    lists = lists_for_page(current_tab)
 
     DIV null, 
       for list, index in lists or []

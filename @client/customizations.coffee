@@ -199,9 +199,7 @@ customizations.default =
   homepage_show_search_and_sort: true
 
   list_permit_new_items: true
-
   homepage_show_new_proposal_button: true
-  homepage_default_sort_order: 'trending'
 
   show_crafting_page_first: false
 
@@ -225,8 +223,6 @@ customizations.default =
 
   auth_callout: true
 
-  homepage_list_order: []
-
   user_tags: {}
 
   font: "Montserrat, 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
@@ -240,8 +236,6 @@ customizations.default =
    description: translator("engage.edit_proposal.description_label", "Details") + " (#{translator('optional')})" 
    additional_fields: []
    create_description: (fields) -> fields.description
-
-
 
 
 

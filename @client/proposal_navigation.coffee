@@ -11,9 +11,9 @@ window.GroupedProposalNavigation = (args) ->
     textAlign: 'center'
     marginBottom: 18
 
-  sections = get_tabs() 
-  if !sections or sections.length == 0
-    sections = [{
+  tabs = get_tabs() 
+  if !tabs or tabs.length == 0
+    tabs = [{
       name: 'all' 
       lists: get_all_lists()
     }]
@@ -32,7 +32,7 @@ window.GroupedProposalNavigation = (args) ->
   loc = fetch 'location'
   hash = loc.url.split('/')[1].replace('-', '_')
 
-  current_section = null
+  current_tab = null
 
   DIV 
     style: {}
@@ -54,18 +54,17 @@ window.GroupedProposalNavigation = (args) ->
           listStyle: 'none'
           padding: 0
 
-        for section in sections 
-          name = section.name
-          lists = section.lists
-          active_section = false 
+        for tab in tabs 
+          name = tab.name
+          active_tab = false 
 
-          lists = lists_for_tab(name)
+          lists = lists_for_page(name)
 
           total_proposals = 0
           for list in lists
             if active_list == list.key
-              active_section = true 
-              current_section = name
+              active_tab = true 
+              current_tab = name
             total_proposals += (list.proposals or []).length            
 
           continue if total_proposals == 0 || name == 'Show all'
@@ -75,7 +74,7 @@ window.GroupedProposalNavigation = (args) ->
               marginBottom: 24
 
 
-            if sections.length > 1
+            if tabs.length > 1
               H3
                 style: {} 
                   
@@ -94,7 +93,7 @@ window.GroupedProposalNavigation = (args) ->
 
                   name
 
-            if active_section
+            if active_tab
 
               UL 
                 style: 
@@ -115,7 +114,7 @@ window.GroupedProposalNavigation = (args) ->
                       style: {}
 
 
-                      if lists.length > 1 || sections.length == 1
+                      if lists.length > 1 || tabs.length == 1
                         H4 
                           style: 
                             marginBottom: 12 
@@ -217,7 +216,7 @@ window.GroupedProposalNavigation = (args) ->
         link: 
           component: A 
           args: 
-            href: if current_section && current_section != 'all' then "/?tab=#{encodeURIComponent(current_section)}##{hash}" else "/##{hash}"
+            href: if current_tab && current_tab != 'all' then "/?tab=#{encodeURIComponent(current_tab)}##{hash}" else "/##{hash}"
             style: 
               textDecoration: 'underline'
               fontWeight: 600

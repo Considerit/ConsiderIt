@@ -271,21 +271,6 @@ window.IntakeQuestions = ReactiveComponent
 
 
 styles += """
-  [data-widget="EditIntakeQuestion"] #modal-wrapper {
-    margin: 0 auto;
-    position: relative;
-    z-index: 0;
-    padding: 3em 0;
-  }
-
-  [data-widget="EditIntakeQuestion"] #modal-body {
-    padding: 3.5em 125px 4em 125px;
-    font-size: 16px;
-    box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 0 100px rgb(255 255 255 / 40%);
-    background-color: #f1f1f1;
-    position: relative;
-    border-radius: 16px;
-  }
 
   [data-widget="EditIntakeQuestion"] .field {
     margin-bottom: 24px;
@@ -335,29 +320,6 @@ window.EditIntakeQuestion = ReactiveComponent
     if intake_q_state.editing  
       idx = question_index question
 
-    wrap_in_modal = (children) -> 
-      DIV null,
-
-        DIV 
-          id: 'lightbox'
-
-        DIV
-          id: 'modal'
-          ref: 'dialog'
-          role: 'dialog'
-          # 'aria-labeledby': 'AUTH_task'
-          # 'aria-describedby': if options.goal then 'AUTH_goal'
-
-
-          DIV
-            id: 'modal-wrapper'
-            style: 
-              maxWidth: AUTH_WIDTH() 
-
-            DIV
-              id: 'modal-body'
-
-              children
 
 
     save_question = => 
@@ -614,7 +576,7 @@ window.EditIntakeQuestion = ReactiveComponent
 
 
 
-drag_icon = (height, color) ->
+window.drag_icon = (height, color) ->
   width = height * 14 / 20
   SVG 
     viewBox: "0 0 14 20" 
@@ -635,7 +597,7 @@ drag_icon = (height, color) ->
       """
 
 
-edit_icon = (width, height, color) ->
+window.edit_icon = (width, height, color) ->
   SVG 
     viewBox: "0 0 24 24" 
     stroke: color
@@ -647,7 +609,7 @@ edit_icon = (width, height, color) ->
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
       """
 
-trash_icon = (width, height, color) ->
+window.trash_icon = (width, height, color) ->
   SVG 
     viewBox: "0 0 24 24" 
     stroke: color

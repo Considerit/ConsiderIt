@@ -193,7 +193,7 @@ Page = ReactiveComponent
         role: 'main'
         style: 
           position: 'relative'
-          zIndex: 1
+          # zIndex: 1
           margin: 'auto'
 
 

@@ -19,8 +19,6 @@ task :send_email_notifications => :environment do
     begin
       subdomains = Subdomain.where('digest_triggered_for is not null').to_a
       subdomains.each do |subdomain|
-        pp subdomain.digest_triggered_for
-
         begin 
 
           triggered_users = subdomain.digest_triggered_for.clone

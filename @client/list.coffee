@@ -1,4 +1,5 @@
-require './questionaire'
+require './modal'
+
 
 window.styles += """
   .LIST-header {
@@ -173,7 +174,42 @@ ListItems = ReactiveComponent
               combines_these_lists: @props.combines_these_lists
 
 
+delete_list = (list) ->
+  subdomain = fetch '/subdomain'
+  remove_list = -> 
+    customizations = subdomain.customizations
+    delete customizations[list.key] 
 
+    # if tabs are enabled, remove it from the current tab
+    if get_tabs()
+      tabs = fetch('homepage_tabs')
+      current_tab = get_current_tab_name()
+      tab_idx = null 
+      for tab in get_tabs()
+        if tab.name == current_tab
+          tab.lists.splice tab.lists.indexOf(list.key), 1
+          break
+    else if ol = customizations.ordered_lists
+      ol.splice ol.indexOf(list.key), 1
+      if ol.length == 0
+        delete customizations.ordered_lists
+          
+    save subdomain
+
+  if list.proposals?.length > 0 
+    has_permission = true 
+    for proposal in list.proposals 
+      has_permission &&= permit('delete proposal', proposal) > 0 
+
+    if !has_permission
+      alert "You apparently don't have permission to delete one or more of the proposals in this list"
+    else if has_permission && confirm(translator('engage.list-config-delete-confirm', 'Are you sure you want to delete this list? All of the proposals in it will also be permanently deleted. If you want to get rid of the list, but not delete the proposals, you could move the proposals first.'))
+      for proposal in list.proposals
+        destroy proposal.key
+      remove_list()
+
+  else 
+    remove_list()  
 
 EditList = ReactiveComponent
   displayName: 'EditList'
@@ -211,8 +247,6 @@ EditList = ReactiveComponent
       if description == "<p><br></p>"
         description = ""
 
-
-
       list_config.list_description = description
 
       if @props.fresh
@@ -225,17 +259,19 @@ EditList = ReactiveComponent
         delete customizations[list_key]
 
         # if tabs are enabled, add it to the current tab
-        if customizations.homepage_tabs
-          current_tab = get_current_tab_name()
-          found_tab = false 
-          for tab in customizations.homepage_tabs
-            if tab.name == current_tab
-              tab.lists.push new_key
-              break
-          if !found_tab 
+        if get_tabs()
+          tab = get_tab() 
+          if tab
+            tab.lists.push new_key
+          else
             console.error "Cannot add the list to the current tab #{current_tab}"
+        else 
+          customizations.ordered_lists ?= ['*']
+          if customizations.ordered_lists.indexOf('*') == -1 
+            customizations.ordered_lists.push new_key
 
-      if customizations.homepage_tabs?.length > 1
+
+      if get_tabs()
         current_tab = get_current_tab_name()
 
         if edit_list.assign_to_tab && edit_list.assign_to_tab != current_tab
@@ -251,7 +287,6 @@ EditList = ReactiveComponent
             subdomain.customizations.homepage_tabs = tab_config
           else 
             console.error "Could not move list from #{current_tab} to #{edit_list.assign_to_tab}"
-
 
 
 
@@ -278,171 +313,154 @@ EditList = ReactiveComponent
 
       save edit_list
 
-    admin_actions = [{action: 'edit', label: t('edit')}, 
-                     {action: 'delete', label: t('delete')}, 
+    admin_actions = [{action: 'edit', label: translator('edit')}, 
+                     {action: 'list_order', label: translator('engage.list-configuration.copy_link', 'reorder lists')},
+                     {action: 'delete', label: translator('delete')}, 
                      {action: 'close', label: translator('engage.list-configuration.close', 'close to participation')}, 
                      {action: 'copy_link', label: translator('engage.list-configuration.copy_link', 'copy link')}]
 
-    if !edit_list.editing 
+    DIV null,
+      if edit_list.change_list_order
+        ChangeListOrder {list_key}
 
-      DropMenu
-        options: admin_actions
-        open_menu_on: 'activation'
+      if !edit_list.editing 
 
-        wrapper_style: 
-          position: 'absolute'
-          right: -42
-          top: 16
+        DropMenu
+          options: admin_actions
+          open_menu_on: 'activation'
 
-        anchor_style: {}
+          wrapper_style: 
+            position: 'absolute'
+            right: -42
+            top: 16
 
-        menu_style: 
-          backgroundColor: '#eee'
-          border: "1px solid #{focus_color()}"
-          right: -9999
-          top: 18
-          borderRadius: 8
-          fontWeight: 400
-          overflow: 'hidden'
-          boxShadow: '0 1px 2px rgba(0,0,0,.3)'
-          fontSize: 18
-          fontStyle: 'normal'
+          anchor_style: {}
 
-        menu_when_open_style: 
-          right: 0
+          menu_style: 
+            backgroundColor: '#eee'
+            border: "1px solid #{focus_color()}"
+            right: -9999
+            top: 18
+            borderRadius: 8
+            fontWeight: 400
+            overflow: 'hidden'
+            boxShadow: '0 1px 2px rgba(0,0,0,.3)'
+            fontSize: 18
+            fontStyle: 'normal'
+            width: 220
 
-        option_style: 
-          padding: '6px 12px'
-          borderBottom: "1px solid #ddd"
-          display: 'block'
+          menu_when_open_style: 
+            right: 0
 
-        active_option_style: 
-          color: 'white'
-          backgroundColor: focus_color()
+          option_style: 
+            padding: '6px 12px'
+            borderBottom: "1px solid #ddd"
+            display: 'block'
 
-        render_anchor: ->
-          SPAN 
-            "data-tooltip": translator "engage.list-config-icon-tooltip", "Configure list settings" 
-            GearIcon
-              size: 20
-              fill: '#888'
-
-        render_option: (option, is_active) ->
-          SPAN null, 
-            option.label
-
-
-        selection_made_callback: (option) =>
-          if option.action == 'edit' 
-            edit_list.editing = true 
-            save edit_list
-
-            setTimeout => 
-              @refs.input?.getDOMNode().focus()
-              @refs.input?.getDOMNode().setSelectionRange(-1, -1) # put cursor at end
-
-          else if option.action == 'delete'
-            remove_list = -> 
-              customizations = subdomain.customizations
-              delete customizations[list_key] 
-
-              # if tabs are enabled, remove it from the current tab
-              if customizations['homepage_tabs']
-                tabs = fetch('homepage_tabs')
-                current_tab = get_current_tab_name()
-                tab_idx = null 
-                for tab in customizations['homepage_tabs']
-                  if tab.name == current_tab
-                    tab.lists.splice tab.lists.indexOf(list_key), 1
-                    break                  
-                    
-              save subdomain
-
-            if list.proposals?.length > 0 
-              has_permission = true 
-              for proposal in list.proposals 
-                has_permission &&= permit('delete proposal', proposal) > 0 
-
-              if !has_permission
-                alert "You apparently don't have permission to delete one or more of the proposals in this list"
-              else if has_permission && confirm(translator('engage.list-config-delete-confirm', 'Are you sure you want to delete this list? All of the proposals in it will also be permanently deleted. If you want to get rid of the list, but not delete the proposals, you could move the proposals first.'))
-                for proposal in list.proposals
-                  destroy proposal.key
-                remove_list()
-
-            else 
-              remove_list()
-          else if option.action == 'close'
-            if confirm(translator('engage.list-config-close-confirm', 'Are you sure you want to close this list to participation? Any proposals in it will also be closed to further participation, though all existing dialogue will remain visible.'))
-              
-              # close existing proposals to further participation
-              if list.proposals?.length > 0 
-                has_permission = true 
-                for proposal in list.proposals 
-                  has_permission &&= permit('update proposal', proposal) > 0 
-                if !has_permission
-                  alert "You apparently don't have permission to close one or more of the proposals in this list"
-                else 
-                  for proposal in list.proposals 
-                    proposal.active = false 
-                    save proposal 
-
-              customizations = subdomain.customizations
-
-              # don't show a new button for this list anymore
-              customizations[list_key].list_permit_new_items = false 
-
-              # # add a note in the description that the list was closed to participation
-              # customizations[list_key].list_description ?= ''
-              # if customizations[list_key].list_description?.length > 0 
-              #   customizations[list_key].list_description += "<br>" 
-              # customizations[list_key].list_description += "<DIV style='font-style:italic'>Participation was closed by the host on #{new Date().toDateString()}</div>" 
-
-              save subdomain
-          else if option.action == 'copy_link'
-            link = "#{location.origin}#{location.search}##{list_link(list_key)}"
-            navigator.clipboard.writeText(link).then -> 
-              show_flash("Link copied to clipboard")
-            , (err) ->
-              show_flash_error("Problem copying link to clipboard")
-
-
-            
-    else 
-
-      DIV 
-        style: 
-          marginTop: 24
-
-
-        BUTTON 
-          className: 'btn'
-          style: 
+          active_option_style: 
+            color: 'white'
             backgroundColor: focus_color()
 
-          onClick: submit
-          onKeyDown: (e) =>
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              @submit(e)  
-              e.preventDefault()
+          render_anchor: ->
+            SPAN 
+              "data-tooltip": translator "engage.list-config-icon-tooltip", "Configure list settings" 
+              GearIcon
+                size: 20
+                fill: '#888'
 
-          translator 'engage.save_changes_button', 'Save'
+          render_option: (option, is_active) ->
+            SPAN null, 
+              option.label
 
-        BUTTON
-          className: 'like_link'
+
+          selection_made_callback: (option) =>
+            if option.action == 'edit' 
+              edit_list.editing = true 
+              save edit_list
+
+              setTimeout => 
+                @refs.input?.getDOMNode().focus()
+                @refs.input?.getDOMNode().setSelectionRange(-1, -1) # put cursor at end
+
+            else if option.action == 'list_order'
+              edit_list.change_list_order = true 
+              save edit_list
+
+            else if option.action == 'delete'
+            
+              delete_list list
+
+            else if option.action == 'close'
+              if confirm(translator('engage.list-config-close-confirm', 'Are you sure you want to close this list to participation? Any proposals in it will also be closed to further participation, though all existing dialogue will remain visible.'))
+                
+                # close existing proposals to further participation
+                if list.proposals?.length > 0 
+                  has_permission = true 
+                  for proposal in list.proposals 
+                    has_permission &&= permit('update proposal', proposal) > 0 
+                  if !has_permission
+                    alert "You apparently don't have permission to close one or more of the proposals in this list"
+                  else 
+                    for proposal in list.proposals 
+                      proposal.active = false 
+                      save proposal 
+
+                customizations = subdomain.customizations
+
+                # don't show a new button for this list anymore
+                customizations[list_key].list_permit_new_items = false 
+
+                # # add a note in the description that the list was closed to participation
+                # customizations[list_key].list_description ?= ''
+                # if customizations[list_key].list_description?.length > 0 
+                #   customizations[list_key].list_description += "<br>" 
+                # customizations[list_key].list_description += "<DIV style='font-style:italic'>Participation was closed by the host on #{new Date().toDateString()}</div>" 
+
+                save subdomain
+            else if option.action == 'copy_link'
+              link = "#{location.origin}#{location.search}##{list_link(list_key)}"
+              navigator.clipboard.writeText(link).then -> 
+                show_flash("Link copied to clipboard")
+              , (err) ->
+                show_flash_error("Problem copying link to clipboard")
+
+
+              
+      else 
+
+        DIV 
           style: 
-            color: '#777'
-            fontSize: 18
-            marginLeft: 12
-            position: 'relative'
-            top: 2
-          onClick: cancel_edit
-          onKeyDown: (e) =>
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              cancel_edit(e)  
-              e.preventDefault()
+            marginTop: 24
 
-          translator 'shared.cancel_button', 'cancel'
+
+          BUTTON 
+            className: 'btn'
+            style: 
+              backgroundColor: focus_color()
+
+            onClick: submit
+            onKeyDown: (e) =>
+              if e.which == 13 || e.which == 32 # ENTER or SPACE
+                @submit(e)  
+                e.preventDefault()
+
+            translator 'engage.save_changes_button', 'Save'
+
+          BUTTON
+            className: 'like_link'
+            style: 
+              color: '#777'
+              fontSize: 18
+              marginLeft: 12
+              position: 'relative'
+              top: 2
+            onClick: cancel_edit
+            onKeyDown: (e) =>
+              if e.which == 13 || e.which == 32 # ENTER or SPACE
+                cancel_edit(e)  
+                e.preventDefault()
+
+            translator 'shared.cancel_button', 'cancel'
 
 
 
@@ -502,9 +520,8 @@ window.ListHeader = ReactiveComponent
 
 
           if edit_list.editing || !is_collapsed
-
             DIV null, 
-              if description?.length > 0 || edit_list.editing
+              if description?.length > 0 || typeof(description) == 'function' || edit_list.editing
                 EditableDescription
                   list: @props.list
                   fresh: @props.fresh
@@ -831,16 +848,7 @@ window.ListHeader = ReactiveComponent
                       translator 'engage.list-config-archived', 'Close list by default on page load. Useful for archiving past issues.'
 
 
-                if customization('homepage_tabs')
-                  tabs = get_tabs()
-                  
-                  current = null 
-                  for a_tab in tabs 
-                    if list_key in a_tab.lists 
-                      current = a_tab.name
-
-                  tab_names = (t.name for t in tabs)
-
+                if get_tabs()           
                   DIV 
                     style:
                       marginBottom: 6
@@ -855,12 +863,12 @@ window.ListHeader = ReactiveComponent
                       "Assign to tab"
 
                     SELECT 
-                      defaultValue: current
+                      defaultValue: get_tab().name
                       onChange: (e) =>
                         edit_list.assign_to_tab = e.target.value
                         save edit_list 
 
-                      for tab in tab_names when !customization('homepage_tab_views')?[tab]
+                      for tab in get_tabs() when !tab.render_page
                         OPTION 
                           value: tab
                           tab
@@ -1206,6 +1214,7 @@ EditableDescription = ReactiveComponent
 
     description_style = customization 'list_description_style', list_key
 
+
     DIV
       style: _.defaults {}, (description_style or {}),
         # fontSize: 18
@@ -1358,6 +1367,281 @@ window.list_actions = (props) ->
 
 
 
+styles += """
+  [data-widget="ChangeListOrder"] .radio_group {
+    margin-top: 24px;
+    margin-left: 0;
+  }
+  [data-widget="ChangeListOrder"] .field_explanation {
+    font-size: 15px;
+    margin-top: 3px;
+    margin-left: 8px;
+  }
+  [data-widget="ChangeListOrder"] label {
+    font-size: 18px;
+    font-weight: 700;
+    margin-left: 8px;
+  }
+
+  [data-widget="ChangeListOrder"] .draggable-list {
+    background-color: #DDD;
+    border: 1px solid #bbb;
+    padding: 12px 10px 12px 38px;
+    border-radius: 16px;
+    margin: 8px 0;
+    display: flex;
+    align-items: start;
+    position: relative;
+  }
+
+  [data-widget="ChangeListOrder"] .draggable-list button {
+    flex-shrink: 0;
+    flex-grow: 0;
+    display: inline-block;
+    margin-left: 24px;
+    background-color: transparent;
+    border: none;
+  }
+  [data-widget="ChangeListOrder"] .draggable-list .name {
+    font-size: 16px; 
+    font-weight: 500;
+    padding-right: 60px;
+    flex-grow: 1;
+    cursor: move;
+  }
+   
+"""
+
+window.ChangeListOrder = ReactiveComponent
+  displayName: "ChangeListOrder"
+
+  mixins: [Modal]
+
+  render: -> 
+    subdomain = fetch '/subdomain'
+    edit_list = fetch "edit-#{@props.list_key}"
+
+    save_list_order = =>         
+
+      if get_tabs()
+        config = get_tab()
+        has_wildcard = config.lists.indexOf("*") > -1
+        has_agglomerator = config.lists.indexOf("*-") > -1
+        config.lists = (lst.key for lst in @local.ordered_lists)
+        if has_wildcard
+          config.lists.push '*'    
+        if has_agglomerator
+          config.lists.push '*-'        
+
+      else 
+        config = subdomain.customizations
+        has_wildcard = config.ordered_lists?.indexOf("*") > -1
+        has_agglomerator = config.ordered_lists?.indexOf("*-") > -1
+
+        config.ordered_lists = (lst.key for lst in @local.ordered_lists)
+        if has_wildcard
+          config.ordered_lists.push '*'
+        if has_agglomerator
+          config.ordered_lists.push '*-'        
+
+      config.list_sort_method = @list_sort_method if @list_sort_method
+      save subdomain
+      close_modal()
+
+    close_modal = -> 
+      edit_list.change_list_order = false 
+      save edit_list
+
+
+    list_orderings = [
+      {value: 'newest_item', label: 'Order by most recent activity', explanation: 'The lists with the most recent activity are shown first.'}
+      {value: 'randomized', label: 'Randomized', explanation: 'Lists are show in a random order on page load.'}
+      {value: 'fixed', label: 'Fixed order', explanation: 'Specify list order below. Drag & drop to re-order.'}
+    ]
+
+
+    @local.ordered_lists ?= lists_for_page()
+
+    current_value = get_list_sort_method()
+
+    wrap_in_modal DIV null,
+
+
+      H1 
+        style: 
+          fontSize: 24
+          marginLeft: 8
+        "Order Lists"
+
+      # DIV
+      #   className: 'explanation'
+
+      #   """"""
+
+
+      FIELDSET null,
+
+        for option in list_orderings
+          DIV null,
+
+            DIV 
+              className: 'radio_group'
+              style: 
+                cursor: 'pointer'
+
+              onChange: do (option) => (ev) => 
+                @list_sort_method = option.value
+
+
+              INPUT 
+                style: 
+                  cursor: 'pointer'
+                type: 'radio'
+                name: "list_sort_order"
+                id: "list_sort_order#{option.value}"
+                defaultChecked: current_value == option.value
+
+              LABEL 
+                style: 
+                  cursor: 'pointer'
+                  display: 'block'
+                htmlFor: "list_sort_order#{option.value}"
+                
+                option.label
+
+
+            if option.explanation
+              DIV 
+                className: 'explanation field_explanation'
+                option.explanation
+
+
+      DIV 
+        style: 
+          marginLeft: 8
+          marginTop: 18
+          marginBottom: 24
+
+        UL 
+          style: 
+            listStyle: 'none'
+            opacity: if current_value != 'fixed' then .5
+            pointerEvents: if current_value != 'fixed' then 'none'
+
+          for lst, idx in @local.ordered_lists
+            do (lst, idx) =>
+
+              LI 
+                "data-idx": idx
+                "data-list-key": lst.key
+                className: "draggable-list"
+                draggable: true
+
+                SPAN
+                  className: 'name'
+
+                  get_list_title lst.key, true, subdomain
+
+
+                BUTTON 
+                  style: 
+                    cursor: 'move'
+
+                  drag_icon 23, '#888'
+
+                BUTTON 
+                  style:
+                    position: 'absolute'
+                    right: -36
+                    cursor: 'pointer'
+                  onClick: -> delete_list(lst)
+                  onKeyPress: (e) -> 
+                    if e.which == 13 || e.which == 32 # ENTER or SPACE
+                      e.preventDefault()
+                      delete_list(lst)
+                  trash_icon 23, 23, '#888'
+
+
+
+      DIV 
+        style:
+          display: 'flex'
+          marginTop: 36
+
+        BUTTON 
+          className: 'btn'
+          onClick: save_list_order
+          style: 
+            marginRight: 12
+
+          onKeyPress: (e) -> 
+            if e.which == 13 || e.which == 32 # ENTER or SPACE
+              e.preventDefault()
+              save_list_order()
+          'Save'
+
+
+        BUTTON 
+          className: 'like_link'
+          onClick: close_modal
+          onKeyPress: (e) -> 
+            if e.which == 13 || e.which == 32 # ENTER or SPACE
+              e.preventDefault()
+              close_modal()
+          'cancel'
+
+  componentDidMount: ->
+    @makeListsDraggable()
+
+  componentDidUpdate: -> 
+    @makeListsDraggable()
+
+  makeListsDraggable: ->
+
+    @onDragOver ?= (e) =>
+      e.preventDefault()
+      @draggedOver = e.currentTarget.getAttribute('data-idx')
+
+    @onDragStart ?= (e) =>
+      @dragging = e.currentTarget.getAttribute('data-idx')
+
+    @onDrop ?= (e) =>
+      reorder_list_position @dragging, @draggedOver
+
+    for list in @getDOMNode().querySelectorAll('.draggable-list')
+      list.removeEventListener('dragstart', @onDragStart) 
+      list.removeEventListener('dragover', @onDragOver)
+      list.removeEventListener('drop', @onDrop) 
+
+      list.addEventListener('dragstart', @onDragStart) 
+      list.addEventListener('dragover', @onDragOver)
+      list.addEventListener('drop', @onDrop) 
+
+
+
+    reorder_list_position = (from, to) => 
+      subdomain = fetch '/subdomain'
+
+      moving = @local.ordered_lists[from]
+
+      @local.ordered_lists.splice from, 1
+      @local.ordered_lists.splice to, 0, moving
+
+      save @local
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 window.get_list_title = (list_key, include_category_value, subdomain) -> 
   edit_list = fetch "edit-#{list_key}"
 
@@ -1407,104 +1691,157 @@ GearIcon = (opts) ->
 
 
 window.get_all_lists = ->
-  proposals = fetch '/proposals'
-  all_lists = ("list/#{(p.cluster or 'Proposals').trim()}" for p in proposals.proposals)
+  all_lists = []
+
+  # Give primacy to specified order of lists in tab config or ordered_list customization
+  subdomain = fetch('/subdomain')
+  if get_tabs()
+    for tab in get_tabs()
+      all_lists = all_lists.concat (l for l in tab.lists when l != '*' && l != '*-')
+  else if customization 'ordered_lists'
+    all_lists = customization('ordered_lists').slice()
 
   # lists might also just be defined as a customization, without any proposals in them yet
-  subdomain = fetch('/subdomain')
   subdomain_name = subdomain.name?.toLowerCase()
   config = customizations[subdomain_name]
   for k,v of config 
     if k.match( /list\// )
       all_lists.push k
 
+  proposals = fetch '/proposals'
+  all_lists = all_lists.concat("list/#{(p.cluster or 'Proposals').trim()}" for p in proposals.proposals)
+
   all_lists = _.uniq all_lists
   all_lists
 
 
+get_list_sort_method = (tab) ->
+  tab ?= get_current_tab_name()
+  get_tab(tab)?.list_sort_method or customization('list_sort_method') or \
+    (if customization('ordered_lists') || get_tabs() then 'fixed' else 'newest_item')
+
 
 lists_ordered_by_most_recent_update = {}
+lists_ordered_by_randomized = {}
+
+window.lists_for_page = (tab) -> 
+  homepage_tabs = fetch 'homepage_tabs'
+  tab ?= get_current_tab_name()
+  tabs_config = get_tabs(tab)
+
+  if tabs_config
+    eligible_lists = get_tab(tab).lists
+  else
+    eligible_lists = customization 'ordered_lists'
+    if eligible_lists && '*-' in eligible_lists
+      console.error "Illegal wildcard *- in ordered_lists customization"
+      
+
+  if !eligible_lists
+    eligible_lists = ['*']
+
+  ##################################################
+  # lists_in_tab will be the list_keys for the tab, in the specified 
+  # fixed order, with wildcards substituted
+
+  lists_in_tab = []
+
+  for list in eligible_lists
+
+    if list == '*' || (list == '*-' && !tabs_config)
+      for ll in get_all_lists()
+        if ll not in eligible_lists
+          lists_in_tab.push ll      
+
+    # '*-' matches all lists that are not already referenced in other tabs
+    else if list == '*-'
+      referenced_elsewhere = {}
+
+      for a_tab in tabs_config
+        continue if a_tab.name == tab
+        for ll in a_tab.lists 
+          if ll != '*' && ll != '*-'
+            referenced_elsewhere[ll] = true
+
+      for ll in get_all_lists()
+        if ll not of referenced_elsewhere && ll not in eligible_lists
+          lists_in_tab.push ll
+
+    else 
+      lists_in_tab.push list
 
 
-window.proposals_in_lists = -> 
+
+  ######################################################
+  # now we'll flesh the lists out with proposals
   proposals = fetch '/proposals'
-  homepage_list_order = customization 'homepage_list_order'
-  if homepage_list_order.length == 0 && customization('homepage_tabs')
-    homepage_list_order = []
-    for tab in get_tabs()
-      homepage_list_order = homepage_list_order.concat tab.lists
+  lists_with_proposals = {}
 
-  # By default sort proposals by the newest of the proposals.
-  # But we'll only do this on page load, so that clusters don't move
-  # around when someone adds a new proposal.
-  if Object.keys(lists_ordered_by_most_recent_update).length == 0
-    for proposal in proposals.proposals 
-      list_key = "list/#{(proposal.cluster or 'Proposals').trim()}"
-      time = (new Date(proposal.created_at).getTime())
-      if !lists_ordered_by_most_recent_update[list_key] || time > lists_ordered_by_most_recent_update[list_key]
-        lists_ordered_by_most_recent_update[list_key] = time 
-
-  lists = {}
-  sort_order = {}
-
-  for list_key in get_all_lists()
-    sort = homepage_list_order.indexOf list_key
-    if sort < 0 
-      if lists_ordered_by_most_recent_update[list_key]
-        sort = homepage_list_order.length + ((new Date()).getTime() - lists_ordered_by_most_recent_update[list_key])
-      else 
-        sort = 9999999999999
-
-    sort_order[list_key] = sort
-
-    lists[list_key] = 
+  for list_key in lists_in_tab
+    lists_with_proposals[list_key] = 
       key: list_key
       proposals: []
 
   for proposal in proposals.proposals 
     list_key = "list/#{(proposal.cluster or 'Proposals').trim()}"
-    lists[list_key].proposals.push proposal
-
-  # order
-  ordered_lists = _.values lists 
-  ordered_lists.sort (a,b) -> sort_order[a.key] - sort_order[b.key]
-  ordered_lists 
+    if list_key of lists_with_proposals
+      lists_with_proposals[list_key].proposals.push proposal
 
 
-window.lists_for_tab = (tab) -> 
-  all_lists = proposals_in_lists()
-  homepage_tabs = fetch 'homepage_tabs'
-  tabs_config = get_tabs()
+  ######################################################
+  # ...and finally, let's sort the lists if there's a different sorted order other than fixed
 
-  eligible_lists = null
-  if !tab || !tabs_config
-    tab = get_current_tab_name()
-    eligible_lists = homepage_tabs.clusters
-  else 
-    for a_tab in tabs_config
-      if a_tab.name == tab  
-        eligible_lists = a_tab.lists
+  list_sort_method = get_list_sort_method(tab)
 
-  if !eligible_lists && tab != 'Show all'
-    console.error "No eligible lists found for #{tab}"
+  lists_in_order = (lists_with_proposals[list_key] for list_key in lists_in_tab) # this is already fixed sort
 
-  if tab == 'Show all' || !tab
-    lists_in_tab = all_lists
+  if list_sort_method == 'newest_item'
 
-  else
-    lists_in_tab = []
-    for list in all_lists or []
-      ineligible = tab && (eligible_lists != '*' && !(list.key in (eligible_lists or [])) )
+    # Sort lists by the newest of its proposals.
+    # But we'll only do this on page load or if the number of lists has changed, 
+    # so that lists don't move around when someone adds a new proposal.
+    lists_ordered_by_most_recent_update[tab] ?= {}
+    by_recency = lists_ordered_by_most_recent_update[tab]
 
-      if ineligible && ('*' in (eligible_lists or []))
-        in_others = []
-        for a_tab in tabs_config
-          in_others = in_others.concat a_tab.lists
-        ineligible &&= list.key in in_others
-      if !ineligible
-        lists_in_tab.push list 
+    if Object.keys(by_recency).length != lists_in_order.length
+      for lst in lists_in_order 
+        by_recency[lst.key] = -1 # in case there aren't any proposals in it
+        for proposal in lst.proposals 
+          time = (new Date(proposal.created_at).getTime())
+          if !by_recency[lst.key] || time > by_recency[lst.key]
+            by_recency[lst.key] = time 
 
-  lists_in_tab
+    for lst in lists_in_order
+      if by_recency[lst.key] && by_recency[lst.key] > 0
+        lst.order = (new Date()).getTime() - by_recency[lst.key]
+      else 
+        lst.order = 9999999999999
+
+    lists_in_order.sort (a,b) -> a.order - b.order
+
+  else if list_sort_method == 'randomized'
+    lists_ordered_by_randomized[tab] ?= {}
+    by_random = lists_ordered_by_randomized[tab]
+    if Object.keys(by_random).length != lists_in_order.length
+      for lst in lists_in_order
+        by_random[lst.key] = Math.random()
+
+    for lst in lists_in_order
+      if by_random[lst.key]
+        lst.order = by_random[lst.key]
+      else 
+        lst.order = 9999999999999
+
+    lists_in_order.sort (a,b) -> a.order - b.order
+
+
+  lists_in_order
+
+
+window.proposals_in_list = (list_key) -> 
+  proposals = fetch '/proposals'
+
+  (p for p in proposals.proposals when "list/#{(p.cluster or 'Proposals').trim()}" == list_key)
 
 
 window.lists_current_user_can_add_to = (lists) -> 
@@ -1513,6 +1850,17 @@ window.lists_current_user_can_add_to = (lists) ->
     if permit('create proposal', list_key) > 0
       appendable.push list_key 
   appendable
+
+
+
+
+
+
+
+
+
+
+
 
 
 

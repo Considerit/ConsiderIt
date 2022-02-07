@@ -1045,7 +1045,7 @@ window.PhotoBanner = (opts) ->
             minHeight: 20
             fontSize: 18
 
-      if customization('homepage_tabs')
+      if get_tabs()
         HomepageTabs(opts)
 
 
@@ -1163,7 +1163,7 @@ window.MediaBanner = ->
 
       CustomizeTitle()
 
-      if customization('homepage_tabs')
+      if get_tabs()
         HomepageTabs()
 
     if has_image_background
@@ -1424,7 +1424,7 @@ window.HawaiiHeader = (opts) ->
           if !subtitle_is_html
             opts.subtitle       
 
-      if homepage && customization('homepage_tabs')
+      if homepage && get_tabs()
         DIV 
           style: 
             position: 'relative'
@@ -1639,7 +1639,7 @@ window.SeattleHeader = (opts) ->
             "The comment period is now closed. Thank you for your input!"
 
 
-      if customization('homepage_tabs')
+      if get_tabs()
         active_style = _.defaults {}, opts.tab_active_style or {},
           opacity: 1,
           borderColor: seattle_vars.teal,

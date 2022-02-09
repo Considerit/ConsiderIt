@@ -355,11 +355,22 @@ class CurrentUserController < ApplicationController
     if current_user.update_attributes(new_params)
       # puts("Updating params. #{new_params}")
       if !current_user.save
-        raise 'Error saving basic current_user parameters!'
+        raise "Error saving basic current_user parameters! #{current_user.errors.messages.inspect.to_s}"
       end
       
     else
-      raise "Had trouble manipulating #{current_user.id} user! #{new_params.to_s}"
+      errors = current_user.errors.messages
+      if errors.has_key?(:avatar) && errors[:avatar].index('is invalid')
+        new_params[:avatar] = nil
+        if current_user.update_attributes(new_params)
+          # puts("Updating params. #{new_params}")
+          if !current_user.save
+            raise "Error saving basic current_user parameters! #{current_user.errors.messages.inspect.to_s}"
+          end
+        else 
+          raise "Had trouble manipulating #{current_user.id} user! #{new_params.to_s}; #{current_user.errors.messages.inspect.to_s}"
+        end 
+      end
     end
 
     # Update their email address.  First, check if they gave us a new address

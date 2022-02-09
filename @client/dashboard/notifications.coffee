@@ -72,8 +72,8 @@ window.Notifications = ReactiveComponent
             defaultChecked: !!prefs['send_emails']
             onChange: (e) => 
 
-              if prefs['send_emails'] 
-                current_user.subscriptions['send_emails'] = null
+              if current_user.subscriptions['send_emails']
+                current_user.subscriptions['send_emails'] = false
               else
                 current_user.subscriptions['send_emails'] = settings['default_subscription']
               save current_user

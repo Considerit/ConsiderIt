@@ -24,7 +24,6 @@ class User < ApplicationRecord
 
     self.tags = sanitize_json(self.tags) if self.tags
     self.subscriptions = sanitize_json(self.subscriptions) if self.subscriptions
-
   end
 
   after_create :add_token
@@ -312,7 +311,7 @@ class User < ApplicationRecord
   def update_subscriptions(new_settings, subdomain = nil)
     subdomain ||= current_subdomain
 
-    subs = subscriptions || {}
+    self.subscriptions ||= {}
 
     notifier_config = Notifier::config(subdomain)
 
@@ -334,9 +333,9 @@ class User < ApplicationRecord
 
     end
 
-    subs[subdomain.id.to_s] = settings_for_subdomain
+    self.subscriptions[subdomain.id.to_s] = settings_for_subdomain
 
-    subs
+    self.subscriptions
   end
 
   def avatar_url_provided?

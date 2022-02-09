@@ -860,7 +860,7 @@ window.ListHeader = ReactiveComponent
                       style: 
                         marginRight: 8
 
-                      "Assign to tab"
+                      "Move to tab"
 
                     SELECT 
                       defaultValue: get_tab().name
@@ -870,8 +870,8 @@ window.ListHeader = ReactiveComponent
 
                       for tab in get_tabs() when !tab.render_page
                         OPTION 
-                          value: tab
-                          tab
+                          value: tab.name
+                          tab.name
 
 
 

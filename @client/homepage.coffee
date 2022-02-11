@@ -77,10 +77,21 @@ window.Homepage = ReactiveComponent
             message
 
 
+
         if !fetch('/proposals').proposals
           ProposalsLoading()   
         else 
-          get_current_tab_view()
+
+          if fetch('edit_forum').editing
+            for page in get_tabs() or [null]
+              DIV 
+                style: 
+                  marginBottom: 80
+
+                ChangeListOrder
+                  page_name: page?.name
+          else 
+            get_current_tab_view()
 
   typeset : -> 
     subdomain = fetch('/subdomain')

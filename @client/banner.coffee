@@ -8,7 +8,7 @@ CustomizeTitle = ReactiveComponent
 
   render : ->
     subdomain = fetch '/subdomain'
-    edit_forum = fetch '/edit_forum'
+    edit_forum = fetch 'edit_forum'
     edit_banner = fetch 'edit_banner'
     title = edit_banner.title or customization('banner')?.title or @props.title
 

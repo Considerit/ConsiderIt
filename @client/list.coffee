@@ -320,8 +320,6 @@ EditList = ReactiveComponent
                      {action: 'copy_link', label: translator('engage.list-configuration.copy_link', 'copy link')}]
 
     DIV null,
-      if edit_list.change_list_order
-        ChangeListOrder {list_key}
 
       if !edit_list.editing 
 
@@ -383,8 +381,9 @@ EditList = ReactiveComponent
                 @refs.input?.getDOMNode().setSelectionRange(-1, -1) # put cursor at end
 
             else if option.action == 'list_order'
-              edit_list.change_list_order = true 
-              save edit_list
+              ef = fetch 'edit_forum'
+              ef.editing = true 
+              save ef 
 
             else if option.action == 'delete'
             
@@ -1412,46 +1411,48 @@ styles += """
    
 """
 
+
 window.ChangeListOrder = ReactiveComponent
   displayName: "ChangeListOrder"
 
-  mixins: [Modal]
+  componentDidUpdate: -> 
+    @makeListsDraggable()
+
+  componentDidMount: -> 
+    @makeListsDraggable()    
+    register_forum_editing_handler "edit_lists-#{@props.page_name}", 
+      before_save_callback: @prepare_for_save
+
+  componentWillUnmount: -> 
+    clear_forum_editing_handler "edit_lists-#{@props.page_name}"
+
+  prepare_for_save: (customizations) ->
+    if get_tabs()
+      config = get_tab(@props.page_name)
+      has_wildcard = config.lists.indexOf("*") > -1
+      has_agglomerator = config.lists.indexOf("*-") > -1
+      config.lists = (lst.key for lst in @local.ordered_lists)
+      if has_wildcard
+        config.lists.push '*'
+      if has_agglomerator
+        config.lists.push '*-'
+
+    else 
+      config = customizations
+      has_wildcard = config.ordered_lists?.indexOf("*") > -1
+      has_agglomerator = config.ordered_lists?.indexOf("*-") > -1
+
+      config.ordered_lists = (lst.key for lst in @local.ordered_lists)
+      if has_wildcard
+        config.ordered_lists.push '*'
+      if has_agglomerator
+        config.ordered_lists.push '*-'        
+
+    config.list_sort_method = @list_sort_method if @list_sort_method
 
   render: -> 
     subdomain = fetch '/subdomain'
-    edit_list = fetch "edit-#{@props.list_key}"
-
-    save_list_order = =>         
-
-      if get_tabs()
-        config = get_tab()
-        has_wildcard = config.lists.indexOf("*") > -1
-        has_agglomerator = config.lists.indexOf("*-") > -1
-        config.lists = (lst.key for lst in @local.ordered_lists)
-        if has_wildcard
-          config.lists.push '*'    
-        if has_agglomerator
-          config.lists.push '*-'        
-
-      else 
-        config = subdomain.customizations
-        has_wildcard = config.ordered_lists?.indexOf("*") > -1
-        has_agglomerator = config.ordered_lists?.indexOf("*-") > -1
-
-        config.ordered_lists = (lst.key for lst in @local.ordered_lists)
-        if has_wildcard
-          config.ordered_lists.push '*'
-        if has_agglomerator
-          config.ordered_lists.push '*-'        
-
-      config.list_sort_method = @list_sort_method if @list_sort_method
-      save subdomain
-      close_modal()
-
-    close_modal = -> 
-      edit_list.change_list_order = false 
-      save edit_list
-
+    edit_forum = fetch "edit_forum"
 
     list_orderings = [
       {value: 'newest_item', label: 'Order by most recent activity', explanation: 'The lists with the most recent activity are shown first.'}
@@ -1460,11 +1461,13 @@ window.ChangeListOrder = ReactiveComponent
     ]
 
 
-    @local.ordered_lists ?= lists_for_page()
+    @local.ordered_lists ?= lists_for_page(@props.page_name)
 
-    current_value = get_list_sort_method()
+    current_value = get_list_sort_method(@props.page_name)
 
-    wrap_in_modal DIV null,
+    return DIV null if @props.page_name != get_current_tab_name()
+
+    DIV null,
 
 
       H1 
@@ -1563,38 +1566,33 @@ window.ChangeListOrder = ReactiveComponent
 
 
 
-      DIV 
-        style:
-          display: 'flex'
-          marginTop: 36
+      # DIV 
+      #   style:
+      #     display: 'flex'
+      #     marginTop: 36
 
-        BUTTON 
-          className: 'btn'
-          onClick: save_list_order
-          style: 
-            marginRight: 12
+      #   BUTTON 
+      #     className: 'btn'
+      #     onClick: save_list_order
+      #     style: 
+      #       marginRight: 12
 
-          onKeyPress: (e) -> 
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              e.preventDefault()
-              save_list_order()
-          'Save'
+      #     onKeyPress: (e) -> 
+      #       if e.which == 13 || e.which == 32 # ENTER or SPACE
+      #         e.preventDefault()
+      #         save_list_order()
+      #     'Save'
 
 
-        BUTTON 
-          className: 'like_link'
-          onClick: close_modal
-          onKeyPress: (e) -> 
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              e.preventDefault()
-              close_modal()
-          'cancel'
+      #   BUTTON 
+      #     className: 'like_link'
+      #     onClick: close_modal
+      #     onKeyPress: (e) -> 
+      #       if e.which == 13 || e.which == 32 # ENTER or SPACE
+      #         e.preventDefault()
+      #         close_modal()
+      #     'cancel'
 
-  componentDidMount: ->
-    @makeListsDraggable()
-
-  componentDidUpdate: -> 
-    @makeListsDraggable()
 
   makeListsDraggable: ->
 
@@ -1620,8 +1618,6 @@ window.ChangeListOrder = ReactiveComponent
 
 
     reorder_list_position = (from, to) => 
-      subdomain = fetch '/subdomain'
-
       moving = @local.ordered_lists[from]
 
       @local.ordered_lists.splice from, 1

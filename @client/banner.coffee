@@ -8,6 +8,7 @@ CustomizeTitle = ReactiveComponent
 
   render : ->
     subdomain = fetch '/subdomain'
+    edit_forum = fetch '/edit_forum'
     edit_banner = fetch 'edit_banner'
     title = edit_banner.title or customization('banner')?.title or @props.title
 
@@ -36,7 +37,7 @@ CustomizeTitle = ReactiveComponent
 
         """
 
-      if is_admin && edit_banner.editing
+      if is_admin && edit_forum.editing
 
         AutoGrowTextArea 
           ref: 'primary_input'
@@ -54,7 +55,7 @@ CustomizeTitle = ReactiveComponent
           style: @props.style
           dangerouslySetInnerHTML: __html: title
           onDoubleClick: if is_admin then => 
-            edit_banner.editing = true 
+            edit_forum.editing = true 
             save edit_banner
             setTimeout => 
               @refs.primary_input?.getDOMNode().focus()
@@ -66,6 +67,8 @@ CustomizeDescription = ReactiveComponent
 
   render : ->
     edit_banner = fetch 'edit_banner'
+    edit_forum = fetch 'edit_forum'
+
     is_admin = fetch('/current_user').is_admin
 
     description = fetch("forum-description").html or customization('banner')?.description
@@ -76,7 +79,7 @@ CustomizeDescription = ReactiveComponent
     focus_on_mount = @local.focus_on_mount
     @local.focus_on_mount = false
 
-    if is_admin && edit_banner.editing
+    if is_admin && edit_forum.editing
       DIV 
         id: 'edit_banner'
         className: 'CustomizeDescription'
@@ -110,7 +113,7 @@ CustomizeDescription = ReactiveComponent
               padding: '6px 8px'
             dangerouslySetInnerHTML: __html: description
             onDoubleClick: if is_admin then => 
-              edit_banner.editing = true 
+              edit_forum.editing = true 
               @local.focus_on_mount = true
               save edit_banner
               setTimeout => 
@@ -137,7 +140,8 @@ UploadFileSVG = (opts) ->
 
 UploadableLogo = (opts) ->
   edit_banner = fetch 'edit_banner'
-  editing = edit_banner.editing
+  edit_forum = fetch 'edit_forum'
+  editing = edit_forum.editing
   has_logo = edit_banner.logo_preview != '*delete*' && (edit_banner.logo_preview || customization('banner')?.logo?.url)
 
   icon_height = 50
@@ -242,10 +246,11 @@ CustomizeLogo = ReactiveComponent
   displayName: 'CustomizeLogo'
   render : ->
     edit_banner = fetch 'edit_banner'
+    edit_forum = fetch 'edit_forum'
     has_logo = edit_banner.logo_preview != '*delete*' && (edit_banner.logo_preview || customization('banner')?.logo?.url)
     has_masthead = edit_banner.masthead_preview != '*delete*' && (edit_banner.masthead_preview or customization('banner')?.background_image_url)
 
-    return SPAN(null) if !has_logo && !edit_banner.editing
+    return SPAN(null) if !has_logo && !edit_forum.editing
 
     src = edit_banner.logo_preview or customization('banner')?.logo?.url
 
@@ -259,7 +264,7 @@ CustomizeLogo = ReactiveComponent
       left: left 
       top: top
       position: 'absolute'
-      cursor: if edit_banner.editing then 'move'
+      cursor: if edit_forum.editing then 'move'
       height: height + 2
       width: if !has_logo then 150
       zIndex: if @local.moving || @local.resizing then '999'
@@ -331,7 +336,7 @@ CustomizeLogo = ReactiveComponent
 
 
     # todo: add touch events
-    if edit_banner.editing
+    if edit_forum.editing
       _.extend style, 
         borderStyle: if !has_logo then 'dashed' else 'solid'
         borderColor: if is_light then "rgba(0,0,0,.7)" else 'rgba(255,255,255,.7)'
@@ -343,11 +348,11 @@ CustomizeLogo = ReactiveComponent
       style: _.defaults {}, style,
         opacity: if !has_logo then 1
 
-      onMouseUp:   if edit_banner.editing then onMouseUp        
-      onMouseDown: if edit_banner.editing then onMouseDown
-      onMouseMove: if edit_banner.editing then onMouseMove
+      onMouseUp:   if edit_forum.editing then onMouseUp        
+      onMouseDown: if edit_forum.editing then onMouseDown
+      onMouseMove: if edit_forum.editing then onMouseMove
 
-      if has_logo || edit_banner.editing
+      if has_logo || edit_forum.editing
         UploadableLogo 
           trigger_upload: 'input#logo'
           trigger_delete: 'button#delete_logo'
@@ -355,7 +360,7 @@ CustomizeLogo = ReactiveComponent
           image_style: 
             height: height
 
-      if edit_banner.editing
+      if edit_forum.editing
         DIV 
           style: 
             position: 'absolute'
@@ -389,7 +394,7 @@ CustomizeLogo = ReactiveComponent
               translator 'banner.change_logo', 'change'
 
 
-      if edit_banner.editing
+      if edit_forum.editing
         DIV 
           style: 
             backgroundColor: if has_masthead && !has_logo then (if !is_light then 'rgba(0,0,0,.4)' else 'rgba(255,255,255,.4)')
@@ -400,10 +405,10 @@ CustomizeLogo = ReactiveComponent
             height: '100%'
             pointerEvents: 'none'
 
-      if has_logo && edit_banner.editing
+      if has_logo && edit_forum.editing
         DIV # cut triangle in bottom right corner for dragging to resize
-          onMouseDown: if edit_banner.editing then onMouseDownResize
-          onMouseMove: if edit_banner.editing then onMouseMoveResize
+          onMouseDown: if edit_forum.editing then onMouseDownResize
+          onMouseMove: if edit_forum.editing then onMouseMoveResize
 
           style: 
             backgroundColor: if is_light then "black" else "white"
@@ -422,9 +427,9 @@ CustomizeTextBlock = ReactiveComponent
   displayName: 'CustomizeTextBlock'
   render : ->
     edit_banner = fetch 'edit_banner'
-
+    edit_forum = fetch 'edit_forum'
     has_masthead = edit_banner.masthead_preview != '*delete*' && (edit_banner.masthead_preview or customization('banner')?.background_image_url)    
-    return SPAN null if !edit_banner.editing || !has_masthead
+    return SPAN null if !edit_forum.editing || !has_masthead
 
     DIV 
       style: 
@@ -474,10 +479,11 @@ CustomizeBackground = ReactiveComponent
   displayName: 'CustomizeBackground'
   render : ->
     edit_banner = fetch 'edit_banner'
+    edit_forum = fetch 'edit_forum'
     src = edit_banner.masthead_preview or customization('banner')?.background_image_url
     has_masthead = edit_banner.masthead_preview != '*delete*' && src
 
-    editing = edit_banner.editing 
+    editing = edit_forum.editing 
     
     return SPAN(null) if !editing
 
@@ -604,40 +610,6 @@ window.EditBanner = ReactiveComponent
 
     is_light = is_light_background()
 
-    if !edit_banner.editing
-      enter_edit = (e) ->
-        edit_banner.editing = true 
-        save edit_banner
-      return DIV 
-        style: 
-          position: 'absolute'
-          left: "50%"
-          top: 8
-          zIndex: 2
-          marginLeft: -52
-
-        BUTTON
-          style: 
-            border: 'none'
-
-            # backgroundColor: if is_light then "rgba(255,255,255,.2)" else "rgba(0,0,0,.2)"
-            # color: if is_light then 'rgba(0,0,0,.6)' else 'rgba(255,255,255,.6)'
-
-            backgroundColor: if is_light then "rgba(0,0,0,.8)" else "rgba(255,255,255,.8)"
-            color: if !is_light then 'black' else 'white'
-
-            padding: '4px 8px'
-            borderRadius: 8
-            cursor: 'pointer'
-          onClick: enter_edit
-          onKeyDown: (e) =>
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              enter_edit(e)  
-              e.preventDefault()
-
-          translator 'banner.edit_button', 'edit banner'
-
-
 
     delete_masthead = (e) =>
       edit_banner.masthead_preview = '*delete*' 
@@ -652,67 +624,12 @@ window.EditBanner = ReactiveComponent
       save edit_banner
 
 
-    DIV 
-      style: 
-        position: 'absolute'
-        left: "50%"
-        marginLeft: -80 - 8*2
-        top: 0
-        padding: "4px 8px"
-        zIndex: 2
-        backgroundColor: if !is_light then "rgba(0,0,0,.3)" else "rgba(255,255,255,.3)"
 
-      DIV null,
-        BUTTON 
-          style: 
-            backgroundColor: if is_light then "rgba(0,0,0,.8)" else "rgba(255,255,255,.8)"
-            color: if !is_light then 'black' else 'white'
-            border: 'none'
-            borderRadius: 8
-            padding: '4px 8px'
-          onClick: @submit
-          onKeyDown: (e) =>
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              @submit(e)  
-              e.preventDefault()
+    DIV null, 
+      EditForum()
 
-          translator 'shared.save_changes_button', 'Save changes'
-
-        BUTTON
-          style: 
-            backgroundColor: 'transparent'
-            border: 'none'
-            textDecoration: 'underline'
-            color: if is_light then 'black' else 'white'
-          onClick: @exit_edit
-          onKeyDown: (e) =>
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              @exit_edit(e)  
-              e.preventDefault()
-
-          translator 'shared.cancel_button', 'cancel'
-
-        if @local.file_errors
-          DIV style: {color: 'red'}, 'Error uploading files!'
-
-        if @local.errors
-          if @local.errors && @local.errors.length > 0
-            DIV 
-              style: 
-                borderRadius: 8
-                margin: 20
-                padding: 20
-                backgroundColor: '#FFE2E2'
-
-              H1 style: {fontSize: 18}, 'Ooops!'
-
-              for error in @local.errors
-                DIV 
-                  style: 
-                    marginTop: 10
-                  error
-
-
+      if @local.file_errors
+        DIV style: {color: 'red'}, 'Error uploading files!'
 
       FORM 
         id: 'banner_files'
@@ -781,7 +698,7 @@ window.EditBanner = ReactiveComponent
             delete_masthead(e)  
             e.preventDefault()
 
-      if edit_banner.logo_preview != '*delete*' && (edit_banner.logo_preview || customization('banner').logo?.url)
+      if edit_banner.logo_preview != '*delete*' && (edit_banner.logo_preview || customization('banner')?.logo?.url)
 
         BUTTON 
           id: 'delete_logo'
@@ -806,19 +723,15 @@ window.EditBanner = ReactiveComponent
     save wysiwyg_description
     save edit_banner
 
-  submit : -> 
-    submit_masthead = @refs.masthead_file_input.getDOMNode().files?.length > 0
-    submit_logo =     @refs.logo_file_input.getDOMNode().files?.length > 0
-    file_uploads = submit_masthead || submit_logo || @delete_logo || @delete_masthead
+  prepare_for_save : (customizations) -> 
 
-    subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 
     edit_banner = fetch 'edit_banner'
 
     fields = ['title', 'background_css', 'text_background_css', 'text_background_css_opacity']
     logo_fields = ['logo_height', 'logo_left', 'logo_top']
-    customizations = subdomain.customizations
+
     customizations.banner ?= {}
     customizations.banner.logo ?= {}
     for f in fields.concat(logo_fields)
@@ -832,33 +745,51 @@ window.EditBanner = ReactiveComponent
     description = fetch("forum-description").html
     customizations.banner.description = description
 
-    @local.file_errors = false
-    save @local
 
-    save subdomain, => 
-      if subdomain.errors
-        @local.errors = subdomain.errors
+  has_files_to_submit: -> 
+    submit_masthead = @refs.masthead_file_input.getDOMNode().files?.length > 0
+    submit_logo =     @refs.logo_file_input.getDOMNode().files?.length > 0
+    
+    submit_masthead || submit_logo || @delete_logo || @delete_masthead
+    
+
+  submit_files: (cb) ->
+    subdomain = fetch '/subdomain'
+    current_user = fetch '/current_user'
+
+
+    data = 
+      authenticity_token: current_user.csrf
+    
+    if @delete_logo
+      data.logo = '*delete*'
+    
+    if @delete_masthead
+      data.masthead = '*delete*'
+
+    ajax_submit_files_in_form
+      form: '#banner_files' 
+      type: 'PUT'
+      additional_data: data
+      success: =>
+        cb?(true)
+      error: => 
+        @local.file_errors = true
         save @local
+        cb?(false)
 
-      if !file_uploads
-        @exit_edit()
-      else 
-        data = 
-          authenticity_token: current_user.csrf
-        if @delete_logo
-          data.logo = '*delete*'
-        if @delete_masthead
-          data.masthead = '*delete*'
+  componentDidMount: -> 
+    register_forum_editing_handler 'edit_banner', 
+      before_save_callback: @prepare_for_save
+      has_files_to_submit: @has_files_to_submit
+      image_save_callback: @submit_files
+      cleanup_callback: @exit_edit
 
-        ajax_submit_files_in_form
-          form: '#banner_files' 
-          type: 'PUT'
-          additional_data: data
-          success: =>
-            location.reload()
-          error: => 
-            @local.file_errors = true
-            save @local
+  componentWillUnmount: -> 
+    clear_forum_editing_handler 'edit_banner'
+
+
+
 
 
 window.PhotoBanner = (opts) -> 
@@ -867,8 +798,9 @@ window.PhotoBanner = (opts) ->
   homepage = fetch('location').url == '/'
   subdomain = fetch '/subdomain'
   edit_banner = fetch 'edit_banner'
+  edit_forum = fetch 'edit_forum'
 
-  tab_background_color = (if edit_banner.editing then edit_banner.text_background_css) or customization('banner')?.text_background_css or '#666'
+  tab_background_color = (if edit_forum.editing then edit_banner.text_background_css) or customization('banner')?.text_background_css or '#666'
 
   if !homepage
     return  DIV
@@ -970,7 +902,7 @@ window.PhotoBanner = (opts) ->
           font-weight: 700;
           font-family: #{header_font()};
           text-align: center;
-          margin-bottom: #{if has_description || edit_banner.editing then 28 else 0}px;
+          margin-bottom: #{if has_description || edit_forum.editing then 28 else 0}px;
         }
 
         .PhotoBanner #tabs {

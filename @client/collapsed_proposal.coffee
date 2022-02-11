@@ -7,6 +7,23 @@ require './bubblemouth'
 require './popover'
 
 
+
+styles += """
+  a.proposal_homepage_name {
+    font-weight: 600;
+    text-decoration: underline;
+    color: #000;
+    font-size: 20px;
+  }
+
+  .description_on_homepage {
+    font-size: 14px;
+    color: #444;
+    margin-bottom: 4px;    
+  }
+
+"""
+
 pad = (num, len) -> 
   str = num
   dec = str.split('.')
@@ -186,12 +203,7 @@ window.CollapsedProposal = ReactiveComponent
 
           A
             className: 'proposal proposal_homepage_name'
-            style: _.defaults {}, (@props.name_style or {}),
-              fontWeight: 600
-              textDecoration: 'underline'
-              #borderBottom: "1px solid #444"  
-              color: '#000'            
-              fontSize: 20
+            style: @props.name_style or {}
               
             href: proposal_url(proposal, just_you && current_user.logged_in)
 
@@ -207,10 +219,7 @@ window.CollapsedProposal = ReactiveComponent
             else 
               desc = proposal.description
             DIV 
-              style: 
-                fontSize: 14
-                color: '#444'
-                marginBottom: 4
+              className: 'description_on_homepage'
               dangerouslySetInnerHTML: __html: desc  
 
           DIV 

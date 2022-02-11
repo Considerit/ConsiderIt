@@ -57,7 +57,7 @@ OAUTH_SETUP_PROC = lambda do |env|
 
   if Rails.env.production? && subdomain
     env['omniauth.strategy'].options['state'] = subdomain
-    env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://oauth-callback.#{host}/auth/#{env['omniauth.strategy'].name()}/callback"
+    env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://#{APP_CONFIG[:oauth_callback_subdomain]}.#{host}/auth/#{env['omniauth.strategy'].name()}/callback"
   end
 end
 
@@ -75,7 +75,7 @@ OMNIAUTH_SETUP_PROC = lambda do |env|
   host = host.join('.').intern
 
   if Rails.env.production? && subdomain
-    "#{request.scheme}://oauth-callback.#{host}"
+    "#{request.scheme}://#{APP_CONFIG[:oauth_callback_subdomain]}.#{host}"
   else 
     "#{request.scheme}://#{request.host_with_port}"
   end

@@ -58,7 +58,7 @@ window.GroupedProposalNavigation = (args) ->
           name = tab.name
           active_tab = false 
 
-          lists = lists_for_page(name)
+          lists = get_lists_for_page(name)
 
           total_proposals = 0
           for list in lists

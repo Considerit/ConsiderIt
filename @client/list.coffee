@@ -174,42 +174,75 @@ ListItems = ReactiveComponent
               combines_these_lists: @props.combines_these_lists
 
 
-delete_list = (list) ->
+
+
+__remove_this_list = (list_key, page) ->
   subdomain = fetch '/subdomain'
-  remove_list = -> 
-    customizations = subdomain.customizations
-    delete customizations[list.key] 
+  list_key = list_key.key or list_key
+  tabs = get_tabs()
 
-    # if tabs are enabled, remove it from the current tab
-    if get_tabs()
-      tabs = fetch('homepage_tabs')
-      current_tab = get_current_tab_name()
-      tab_idx = null 
-      for tab in get_tabs()
-        if tab.name == current_tab
-          tab.lists.splice tab.lists.indexOf(list.key), 1
-          break
-    else if ol = customizations.ordered_lists
-      ol.splice ol.indexOf(list.key), 1
-      if ol.length == 0
-        delete customizations.ordered_lists
+  customizations = subdomain.customizations
+
+  if tabs
+    page ?= get_current_tab_name()
+    for tab in tabs
+      if tab.name == page
+        tab.lists.splice tab.lists.indexOf(list_key), 1
+        break
+  else if ol = customizations.ordered_lists
+    ol.splice ol.indexOf(list_key), 1
+    if ol.length == 0
+      delete customizations.ordered_lists
+
+  list_in_other_pages = false
+  if tabs
+    for tab in tabs
+      if tab.lists.indexOf(list_key) > -1 
+        list_in_other_pages = true 
+        break
+
+  if !list_in_other_pages
+    delete customizations[list_key] 
           
-    save subdomain
+  save subdomain
 
-  if list.proposals?.length > 0 
-    has_permission = true 
-    for proposal in list.proposals 
-      has_permission &&= permit('delete proposal', proposal) > 0 
 
-    if !has_permission
-      alert "You apparently don't have permission to delete one or more of the proposals in this list"
-    else if has_permission && confirm(translator('engage.list-config-delete-confirm', 'Are you sure you want to delete this list? All of the proposals in it will also be permanently deleted. If you want to get rid of the list, but not delete the proposals, you could move the proposals first.'))
-      for proposal in list.proposals
-        destroy proposal.key
-      remove_list()
+window.delete_list = (list_key, page, suppress_confirmation) ->
+  subdomain = fetch '/subdomain'
 
+  list_key = list_key.key or list_key
+
+  tabs = get_tabs()
+
+  list_in_num_pages = 0
+  if tabs
+    for tab in tabs
+      if tab.lists.indexOf(list_key) > -1 
+        list_in_num_pages += 1
   else 
-    remove_list()  
+    list_in_num_pages = 1 
+
+  if list_in_num_pages <= 1
+
+    proposals = get_proposals_in_list(list_key)
+
+    if proposals?.length > 0 
+      has_permission = true 
+      for proposal in proposals 
+        has_permission &&= permit('delete proposal', proposal) > 0 
+
+      if !has_permission
+        alert "You apparently don't have permission to delete one or more of the proposals in this list"
+      else if has_permission && (suppress_confirmation || confirm(translator('engage.list-config-delete-confirm', 'Are you sure you want to delete this list? All of the proposals in it will also be permanently deleted. If you want to get rid of the list, but not delete the proposals, you could move the proposals first.')))
+        for proposal in proposals
+          destroy proposal.key
+        __remove_this_list(list_key, page)  
+
+    else if suppress_confirmation || confirm(translator('engage.list-config-delete-confirm-when-no-proposals', 'Are you sure you want to remove this list?'))
+      __remove_this_list(list_key, page)  
+
+  else if suppress_confirmation || confirm(translator('engage.list-config-delete-confirm-when-no-proposals', 'Are you sure you want to remove this list?'))
+    __remove_this_list(list_key, page)  
 
 EditList = ReactiveComponent
   displayName: 'EditList'
@@ -1367,44 +1400,76 @@ window.list_actions = (props) ->
 
 
 styles += """
-  [data-widget="ChangeListOrder"] .radio_group {
+  [data-widget="EditPage"] .radio_group {
     margin-top: 24px;
     margin-left: 0;
   }
-  [data-widget="ChangeListOrder"] .field_explanation {
+  [data-widget="EditPage"] .field_explanation {
     font-size: 15px;
     margin-top: 3px;
-    margin-left: 8px;
   }
-  [data-widget="ChangeListOrder"] label {
+  [data-widget="EditPage"] .radio_group label {
     font-size: 18px;
     font-weight: 700;
-    margin-left: 8px;
   }
 
-  [data-widget="ChangeListOrder"] .draggable-list {
-    background-color: #DDD;
-    border: 1px solid #bbb;
-    padding: 12px 10px 12px 38px;
+  [data-widget="EditPage"] .draggable-list {
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    padding: 12px 24px 12px 12px;
     border-radius: 16px;
-    margin: 8px 0;
+    margin: 4px 0;
     display: flex;
     align-items: start;
     position: relative;
+    cursor: move;
   }
 
-  [data-widget="ChangeListOrder"] .draggable-list button {
+  [data-widget="EditPage"] .draggable-list.dragging {
+    height: 6px;
+    padding: 0;
+    border: none;
+  }
+
+  [data-widget="EditPage"] .draggable-list.dragging * {
+    display: none;
+  }
+
+
+  [data-widget="EditPage"] .draggable-wrapper::after, [data-widget="EditPage"] .draggable-wrapper::before {
+    // border: 2px dotted #888;
+    border-radius: 16px;
+    // padding-bottom: 60px;
+    height: 0px;
+    display: block;
+    content: "";
+    margin: 0;
+    transition: height 1s;
+  }
+
+  [data-widget="EditPage"] .draggable-wrapper.draggedOver.from_above::after, [data-widget="EditPage"] .draggable-wrapper.draggedOver.from_below::before {
+    height: 60px;
+    outline: 1px dotted #888;
+
+  }
+
+
+  [data-widget="EditPage"] .wildcard .draggable-list {
+    background-color: #E3EDE0;
+    border: 1px solid #CEDACA;
+  }
+
+  [data-widget="EditPage"] .draggable-list button {
     flex-shrink: 0;
     flex-grow: 0;
     display: inline-block;
-    margin-left: 24px;
     background-color: transparent;
     border: none;
   }
-  [data-widget="ChangeListOrder"] .draggable-list .name {
+  [data-widget="EditPage"] .draggable-list .name {
     font-size: 16px; 
     font-weight: 500;
-    padding-right: 60px;
+    padding-left: 24px;
     flex-grow: 1;
     cursor: move;
   }
@@ -1412,8 +1477,8 @@ styles += """
 """
 
 
-window.ChangeListOrder = ReactiveComponent
-  displayName: "ChangeListOrder"
+window.EditPage = ReactiveComponent
+  displayName: "EditPage"
 
   componentDidUpdate: -> 
     @makeListsDraggable()
@@ -1427,142 +1492,252 @@ window.ChangeListOrder = ReactiveComponent
     clear_forum_editing_handler "edit_lists-#{@props.page_name}"
 
   prepare_for_save: (customizations) ->
+    edit_forum = fetch 'edit_forum'
+
+    ordered_lists = edit_forum.list_order?[@props.page_name]
+
     if get_tabs()
       config = get_tab(@props.page_name)
-      has_wildcard = config.lists.indexOf("*") > -1
-      has_agglomerator = config.lists.indexOf("*-") > -1
-      config.lists = (lst.key for lst in @local.ordered_lists)
-      if has_wildcard
-        config.lists.push '*'
-      if has_agglomerator
-        config.lists.push '*-'
+      if ordered_lists
+        config.lists = ordered_lists.slice()
+        if config.lists.indexOf("*-") > -1
+          config.lists.push '*-'
 
     else 
       config = customizations
-      has_wildcard = config.ordered_lists?.indexOf("*") > -1
-      has_agglomerator = config.ordered_lists?.indexOf("*-") > -1
+      if ordered_lists
+        config.ordered_lists = ordered_lists.slice()
+        if config.ordered_lists?.indexOf("*-") > -1
+          config.ordered_lists.push '*-'        
 
-      config.ordered_lists = (lst.key for lst in @local.ordered_lists)
-      if has_wildcard
-        config.ordered_lists.push '*'
-      if has_agglomerator
-        config.ordered_lists.push '*-'        
-
-    config.list_sort_method = @list_sort_method if @list_sort_method
+    config.list_sort_method = @local.list_sort_method if @local.list_sort_method
+    config.page_preamble = @preamble if @preamble
 
   render: -> 
+
     subdomain = fetch '/subdomain'
     edit_forum = fetch "edit_forum"
 
     list_orderings = [
+      {value: 'fixed', label: 'Fixed order', explanation: 'Lists always ordered as specified above.'}
       {value: 'newest_item', label: 'Order by most recent activity', explanation: 'The lists with the most recent activity are shown first.'}
       {value: 'randomized', label: 'Randomized', explanation: 'Lists are show in a random order on page load.'}
-      {value: 'fixed', label: 'Fixed order', explanation: 'Specify list order below. Drag & drop to re-order.'}
     ]
 
+    current_list_sort_method = get_list_sort_method(@props.page_name)
+    current_preamble = get_page_preamble(@props.page_name)
 
-    @local.ordered_lists ?= lists_for_page(@props.page_name)
+    is_a_tab = !!get_tabs()
 
-    current_value = get_list_sort_method(@props.page_name)
+    edit_forum.list_order ?= {}
+
+    if is_a_tab
+      edit_forum.list_order[@props.page_name] ?= get_tab(@props.page_name).lists.slice()
+    else
+      edit_forum.list_order[@props.page_name] ?= (customization('ordered_lists') or ['*']).slice()
+
+    ordered_lists = edit_forum.list_order[@props.page_name]
 
     return DIV null if @props.page_name != get_current_tab_name()
 
     DIV null,
 
-
-      H1 
-        style: 
-          fontSize: 24
-          marginLeft: 8
-        "Order Lists"
-
-      # DIV
-      #   className: 'explanation'
-
-      #   """"""
-
-
-      FIELDSET null,
-
-        for option in list_orderings
-          DIV null,
-
-            DIV 
-              className: 'radio_group'
-              style: 
-                cursor: 'pointer'
-
-              onChange: do (option) => (ev) => 
-                @list_sort_method = option.value
-
-
-              INPUT 
-                style: 
-                  cursor: 'pointer'
-                type: 'radio'
-                name: "list_sort_order"
-                id: "list_sort_order#{option.value}"
-                defaultChecked: current_value == option.value
-
-              LABEL 
-                style: 
-                  cursor: 'pointer'
-                  display: 'block'
-                htmlFor: "list_sort_order#{option.value}"
-                
-                option.label
-
-
-            if option.explanation
-              DIV 
-                className: 'explanation field_explanation'
-                option.explanation
-
-
       DIV 
         style: 
-          marginLeft: 8
-          marginTop: 18
+          marginTop: 36
           marginBottom: 24
 
         UL 
           style: 
             listStyle: 'none'
-            opacity: if current_value != 'fixed' then .5
-            pointerEvents: if current_value != 'fixed' then 'none'
+            # opacity: if current_list_sort_method != 'fixed' then .5
+            # pointerEvents: if current_list_sort_method != 'fixed' then 'none'
 
-          for lst, idx in @local.ordered_lists
+          for lst, idx in ordered_lists
             do (lst, idx) =>
+              wildcard = lst in ['*', '*-']
+
+              handle_delete = => 
+                if wildcard 
+                  @refs.aggregate_checkbox.getDOMNode().click()
+                else 
+                  ordered_lists.splice( ordered_lists.indexOf(lst), 1  )
+
+                  edit_forum.deleted_lists ?= {}
+                  edit_forum.deleted_lists[@props.page_name] ?= {}
+                  edit_forum.deleted_lists[@props.page_name][lst] = true
+                  save edit_forum
+
+
+                  # delete_list(lst)
+
+
 
               LI 
                 "data-idx": idx
-                "data-list-key": lst.key
-                className: "draggable-list"
-                draggable: true
-
-                SPAN
-                  className: 'name'
-
-                  get_list_title lst.key, true, subdomain
+                "data-list-key": lst
+                className: "draggable-wrapper #{if wildcard then 'wildcard'}"
 
 
-                BUTTON 
-                  style: 
-                    cursor: 'move'
+                DIV 
+                  className: "draggable-list"
+                  draggable: true
+                  
 
-                  drag_icon 23, '#888'
+                  BUTTON 
+                    style: 
+                      cursor: 'move'
 
-                BUTTON 
-                  style:
-                    position: 'absolute'
-                    right: -36
-                    cursor: 'pointer'
-                  onClick: -> delete_list(lst)
-                  onKeyPress: (e) -> 
-                    if e.which == 13 || e.which == 32 # ENTER or SPACE
-                      e.preventDefault()
-                      delete_list(lst)
-                  trash_icon 23, 23, '#888'
+                    drag_icon 15, '#888'
+
+                  DIV
+                    className: 'name'
+
+                    if wildcard
+                      SPAN 
+                        style: 
+                          fontStyle: 'italic'
+                        'All of the rest of the lists'
+                    else 
+                      get_list_title lst, true, subdomain
+
+
+                  if wildcard 
+                    lists_to_add = (ag_lst for ag_lst in get_all_lists() \
+                                       when ag_lst not in ordered_lists)
+
+                    if lists_to_add.length > 0 
+                      disaggregate_wildcard = => 
+                        for ag_lst in lists_to_add
+                          ordered_lists.splice idx, 0, ag_lst
+                        save edit_forum
+                                  
+                      BUTTON 
+                        className: 'disaggregate like_link'
+                        onClick: disaggregate_wildcard
+                        onKeyPress: (e) -> 
+                          if e.which == 13 || e.which == 32 # ENTER or SPACE
+                            e.preventDefault()
+                            e.target.click()
+
+                        'disaggregate'
+
+
+                  BUTTON 
+                    style:
+                      position: 'absolute'
+                      right: -36
+                      cursor: 'pointer'
+                    onClick: handle_delete
+                    onKeyPress: (e) -> 
+                      if e.which == 13 || e.which == 32 # ENTER or SPACE
+                        e.preventDefault()
+                        handle_delete()
+                    #trash_icon 23, 23, '#888'
+                    'x'
+
+      if is_a_tab
+        LABEL 
+          style: 
+            display: 'flex'
+            marginLeft: 14
+            alignItems: 'center'
+
+          INPUT 
+            ref: 'aggregate_checkbox'
+            className: 'bigger'
+            type: 'checkbox'
+            defaultChecked: '*' in ordered_lists
+            onChange: (e) =>
+              if e.target.checked
+                if '*' not in ordered_lists
+                  ordered_lists.push '*'
+                  save edit_forum
+              else 
+                if (idx = ordered_lists.indexOf('*')) > -1  || (idx = ordered_lists.indexOf('*-')) > -1
+                  ordered_lists.splice idx, 1 
+                  save edit_forum
+
+          SPAN 
+            style: 
+              paddingLeft: 12
+
+            "Aggregate all lists from this forum. Useful for a \"Show all\" tab." 
+
+
+
+      FIELDSET 
+        style: 
+          marginLeft: 0
+          marginTop: 32
+
+        LABEL 
+          style: 
+            fontSize: 17
+            marginTop: 36
+            fontWeight: 700
+            marginRight: 12
+
+          "List order:"
+
+
+        SELECT
+          defaultValue: current_list_sort_method
+          style: 
+            fontSize: 18
+          onChange: (e) => 
+            @local.list_sort_method = e.target.value
+            save @local
+
+          for option in list_orderings
+            OPTION
+              value: option.value
+              option.label 
+
+        if option.explanation
+          for option in list_orderings
+            if option.value == (@local.list_sort_method or current_list_sort_method)
+              DIV 
+                className: 'explanation field_explanation'
+                option.explanation
+
+
+      FIELDSET 
+        style: 
+          marginTop: 36
+        B
+          style: 
+            display: 'inline-block'
+            fontSize: 17
+          "Preamble"
+
+        SPAN 
+          style: 
+            fontSize: 14
+            fontWeight: 400
+            paddingLeft: 6
+          "optional"
+
+        AutoGrowTextArea
+          style: 
+            width: '100%'
+            fontSize: 16
+          onChange: (e) =>
+            @preamble = e.target.value
+          defaultValue: current_preamble
+          min_height: 60
+
+        DIV 
+          style: 
+            fontSize: 14
+          """Optional text shown at the top of this page. To create an \“About\” page, fill 
+             in the preamble without adding any lists. The preamble supports HTML, though 
+             with no scripts, and only inline styles."""   
+
+
+
+
+
 
 
 
@@ -1596,42 +1771,131 @@ window.ChangeListOrder = ReactiveComponent
 
   makeListsDraggable: ->
 
+    return if @props.page_name != get_current_tab_name() || @initialized
+    @initialized = true
+
+    reorder_list_position = (from, to) => 
+      edit_forum = fetch('edit_forum')
+      ordered_lists = edit_forum.list_order[@props.page_name]
+      moving = ordered_lists[from]
+
+      ordered_lists.splice from, 1
+      ordered_lists.splice to, 0, moving
+
+      save edit_forum
+
     @onDragOver ?= (e) =>
       e.preventDefault()
-      @draggedOver = e.currentTarget.getAttribute('data-idx')
 
-    @onDragStart ?= (e) =>
-      @dragging = e.currentTarget.getAttribute('data-idx')
+      idx = parseInt e.currentTarget.getAttribute('data-idx')
+      
+      # if idx != @dragging
+      @draggedOver = idx
+      if !e.currentTarget.classList.contains('draggedOver')
+        e.currentTarget.classList.add('draggedOver')
+        if @dragging < idx
+          e.currentTarget.classList.remove('from_below')
+          e.currentTarget.classList.add('from_above')
+        else 
+          e.currentTarget.classList.remove('from_above')            
+          e.currentTarget.classList.add('from_below')
+
+    @onDragLeave ?= (e) =>
+      e.preventDefault()
+      if e.currentTarget.classList.contains('draggedOver')
+        e.currentTarget.classList.remove('draggedOver')
 
     @onDrop ?= (e) =>
       reorder_list_position @dragging, @draggedOver
+      if e.currentTarget.classList.contains('draggedOver')
+        e.currentTarget.classList.remove('draggedOver')
+      if e.currentTarget.classList.contains('from_above')
+        e.currentTarget.classList.remove('from_above')
+      if e.currentTarget.classList.contains('from_below')
+        e.currentTarget.classList.remove('from_below')
 
-    for list in @getDOMNode().querySelectorAll('.draggable-list')
+      document.body.classList.remove('dragging-list')
+
+    @onDragStart ?= (e) =>
+      @dragging = parseInt e.currentTarget.parentElement.getAttribute('data-idx')
+      edit_forum = fetch 'edit_forum'
+      edit_forum.dragging_list = true
+      save edit_forum
+      document.body.classList.add('dragging-list')
+      el = e.currentTarget
+      setTimeout ->
+        if !el.classList.contains('dragging')
+          el.classList.add('dragging')
+
+    @onDragEnd ?= (e) =>
+      edit_forum = fetch 'edit_forum'
+      edit_forum.dragging_list = false
+      save edit_forum
+      document.body.classList.remove('dragging-list')
+      if e.currentTarget.classList.contains('dragging')
+        e.currentTarget.classList.remove('dragging')
+
+    for list in @getDOMNode().querySelectorAll('[draggable]')
       list.removeEventListener('dragstart', @onDragStart) 
+      list.removeEventListener('dragend', @onDragEnd) 
+      list.addEventListener('dragstart', @onDragStart) 
+      list.addEventListener('dragend', @onDragEnd)       
+
+    for list in @getDOMNode().querySelectorAll('[data-idx]')
       list.removeEventListener('dragover', @onDragOver)
+      list.removeEventListener('dragleave', @onDragLeave)      
       list.removeEventListener('drop', @onDrop) 
 
-      list.addEventListener('dragstart', @onDragStart) 
       list.addEventListener('dragover', @onDragOver)
+      list.addEventListener('dragleave', @onDragLeave)      
       list.addEventListener('drop', @onDrop) 
 
+    reassign_list_to_page = (source, target, dragging) =>
+      edit_forum = fetch('edit_forum')
+
+      source = edit_forum.list_order[source]
+      target = edit_forum.list_order[target]
+
+      list_key = source[dragging]
+
+      if source && target
+        source.splice dragging, 1
+        target.push list_key 
+        save edit_forum
+      else 
+        console.error "Could not move list #{list_key} from #{source} to #{target}"
 
 
-    reorder_list_position = (from, to) => 
-      moving = @local.ordered_lists[from]
+    if get_tabs()
+      @onDragOverTab ?= (e) =>
+        e.preventDefault()
 
-      @local.ordered_lists.splice from, 1
-      @local.ordered_lists.splice to, 0, moving
+        if !e.currentTarget.classList.contains('draggedOver')
+          e.currentTarget.classList.add('draggedOver')
 
-      save @local
-
-
-
-
-
-
+      @onDragLeaveTab ?= (e) =>
+        e.preventDefault()
+        if e.currentTarget.classList.contains('draggedOver')
+          e.currentTarget.classList.remove('draggedOver')
 
 
+      @onDropTab ?= (e) =>
+        return if get_current_tab_name() != @props.page_name        
+        console.log "GOT TAB DROP! #{get_current_tab_name()} #{@dragging} #{@props.page_name} (#{@local.key})"
+        reassign_list_to_page @props.page_name, e.currentTarget.getAttribute('data-tab'), @dragging
+
+        if e.currentTarget.classList.contains('draggedOver')
+          e.currentTarget.classList.remove('draggedOver')
+        document.body.classList.remove('dragging-list')
+
+      for tab in document.querySelectorAll('#tabs [data-tab]')
+        tab.removeEventListener('dragover', @onDragOverTab)
+        tab.removeEventListener('dragleave', @onDragLeaveTab)      
+        tab.removeEventListener('drop', @onDropTab) 
+
+        tab.addEventListener('dragover', @onDragOverTab)
+        tab.addEventListener('dragleave', @onDragLeaveTab)      
+        tab.addEventListener('drop', @onDropTab) 
 
 
 
@@ -1717,13 +1981,14 @@ get_list_sort_method = (tab) ->
     (if customization('ordered_lists') || get_tabs() then 'fixed' else 'newest_item')
 
 
+
 lists_ordered_by_most_recent_update = {}
 lists_ordered_by_randomized = {}
 
-window.lists_for_page = (tab) -> 
+window.get_lists_for_page = (tab) -> 
   homepage_tabs = fetch 'homepage_tabs'
   tab ?= get_current_tab_name()
-  tabs_config = get_tabs(tab)
+  tabs_config = get_tabs()
 
   if tabs_config
     eligible_lists = get_tab(tab).lists
@@ -1834,7 +2099,7 @@ window.lists_for_page = (tab) ->
   lists_in_order
 
 
-window.proposals_in_list = (list_key) -> 
+window.get_proposals_in_list = (list_key) -> 
   proposals = fetch '/proposals'
 
   (p for p in proposals.proposals when "list/#{(p.cluster or 'Proposals').trim()}" == list_key)

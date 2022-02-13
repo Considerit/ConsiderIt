@@ -26,6 +26,37 @@ window.EditForum = ReactiveComponent
     customizations = subdomain.customizations
     edit_forum = fetch 'edit_forum'
 
+
+    # Deleting lists is fraught because they might have proposals in them. 
+    # We need to figure out which lists are actually being deleted, vs 
+    # just moved around.  
+    if edit_forum.deleted_lists
+      deleting_lists_with_proposals = false 
+
+      for page, deletions of edit_forum.deleted_lists
+        
+        for list_key, __ of deletions
+
+          # if the list has just been moved to another page, no problem
+          in_some_other_page = false 
+          for  pg, lists of edit_forum.list_order
+            in_some_other_page ||= lists.indexOf(list_key) > -1
+
+          if !in_some_other_page
+            deleting_lists_with_proposals ||= get_proposals_in_list(list_key)?.length > 0
+          
+      if deleting_lists_with_proposals
+        if !confirm(translator('engage.list-config-save-all-delete-confirm', 'You\'ve made changes that will result in one or more lists that contain proposals to be deleted. Those proposals will be lost forever. Are you sure you want to proceed?'))
+          for key in Object.keys(edit_forum) when key != 'key'
+            delete edit_forum[key]
+          save edit_forum
+          return
+
+      for page, deletions of edit_forum.deleted_lists        
+        for list_key, __ of deletions
+          delete_list list_key, page, true
+
+
     # each registered forum editing handler gets a turn at updating the customizations object
     for name, {before_save_callback} of __forum_editing_handlers
       before_save_callback?(customizations)
@@ -47,7 +78,8 @@ window.EditForum = ReactiveComponent
       else
         for name, {cleanup_callback} of __forum_editing_handlers
           cleanup_callback?()
-        edit_forum.editing = false 
+        for key in Object.keys(edit_forum) when key != 'key'
+          delete edit_forum[key]
         save edit_forum
 
 
@@ -67,7 +99,8 @@ window.EditForum = ReactiveComponent
       save edit_forum
 
     exit_edit = (e) ->
-      edit_forum.editing = false 
+      for key in Object.keys(edit_forum) when key != 'key'
+        delete edit_forum[key]
       save edit_forum
 
 

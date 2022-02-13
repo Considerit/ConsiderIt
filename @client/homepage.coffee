@@ -63,19 +63,6 @@ window.Homepage = ReactiveComponent
         id: 'homepagetab'
         role: if get_tabs() then "tabpanel"
 
-        if customization('auth_callout')
-          DIV 
-            style: 
-              marginBottom: 36
-            AuthCallout()
-
-        for message in messages
-          DIV 
-            style: 
-              marginBottom: 24 
-              fontStyle: 'italic'
-            message
-
 
 
         if !fetch('/proposals').proposals
@@ -84,14 +71,31 @@ window.Homepage = ReactiveComponent
 
           if fetch('edit_forum').editing
             for page in get_tabs() or [null]
-              DIV 
-                style: 
-                  marginBottom: 80
-
-                ChangeListOrder
-                  page_name: page?.name
+              EditPage
+                page_name: page?.name
           else 
-            get_current_tab_view()
+
+            DIV null, 
+              if customization('auth_callout')
+                DIV 
+                  style: 
+                    marginBottom: 36
+                  AuthCallout()
+
+              for message in messages
+                DIV 
+                  style: 
+                    marginBottom: 24 
+                    fontStyle: 'italic'
+                  message
+
+              if preamble = get_page_preamble()
+                DIV
+                  style: 
+                    marginBottom: 24
+                  dangerouslySetInnerHTML: __html: preamble
+
+              get_current_tab_view()
 
   typeset : -> 
     subdomain = fetch('/subdomain')
@@ -150,7 +154,7 @@ window.SimpleHomepage = ReactiveComponent
     current_user = fetch('/current_user')
     current_tab = get_current_tab_name()
     
-    lists = lists_for_page(current_tab)
+    lists = get_lists_for_page(current_tab)
 
     DIV null, 
       for list, index in lists or []

@@ -936,8 +936,6 @@ window.PhotoBanner = (opts) ->
     DIV 
       className: "wrapper #{if has_image_background then 'with-image' else 'no-image'}"
 
-      EditBanner()
-
       CustomizeLogo()
 
       CustomizeBackground()
@@ -1086,8 +1084,6 @@ window.MediaBanner = ->
 
     DIV 
       className: 'upper_wrapper'
-
-      EditBanner()
 
       # CustomizeLogo() 
 

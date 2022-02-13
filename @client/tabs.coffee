@@ -47,7 +47,16 @@ styles += """
     display: inline-block;
     position: relative;
     outline: none;
-  }          
+  }  
+
+  .dragging-list #tabs > ul > li {
+    outline: 4px solid white;
+  }
+
+  .dragging-list #tabs > ul > li.draggedOver {
+    outline: 4px solid red;
+  }
+
   #tabs > ul > li > h4 {
     cursor: pointer;
     position: relative;
@@ -91,6 +100,11 @@ window.get_current_tab_view = ->
   else
     SimpleHomepage()
 
+window.get_page_preamble = (tab_name) -> 
+  if tab = get_tab(tab_name)
+    preamble = tab.page_preamble
+  else 
+    preamble = customization('page_preamble')
 
 
 
@@ -137,6 +151,8 @@ window.HomepageTabs = ReactiveComponent
               tabIndex: 0
               role: 'tab'
               style: tab_wrapper_style
+              'data-tab': tab.name
+              'data-idx': idx
               'aria-controls': 'homepagetab'
               'aria-selected': current
 

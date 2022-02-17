@@ -189,10 +189,10 @@ __remove_this_list = (list_key, page) ->
       if tab.name == page
         tab.lists.splice tab.lists.indexOf(list_key), 1
         break
-  else if ol = customizations.ordered_lists
+  else if ol = customizations.lists
     ol.splice ol.indexOf(list_key), 1
     if ol.length == 0
-      delete customizations.ordered_lists
+      delete customizations.lists
 
   list_in_other_pages = false
   if tabs
@@ -238,10 +238,10 @@ window.delete_list = (list_key, page, suppress_confirmation) ->
           destroy proposal.key
         __remove_this_list(list_key, page)  
 
-    else if suppress_confirmation || confirm(translator('engage.list-config-delete-confirm-when-no-proposals', 'Are you sure you want to remove this list?'))
+    else if suppress_confirmation || confirm(translator('engage.list-config-delete-confirm-when-no-proposals', 'Are you sure you want to delete this list? This is irreversable.'))
       __remove_this_list(list_key, page)  
 
-  else if suppress_confirmation || confirm(translator('engage.list-config-delete-confirm-when-no-proposals', 'Are you sure you want to remove this list?'))
+  else
     __remove_this_list(list_key, page)  
 
 EditList = ReactiveComponent
@@ -299,9 +299,9 @@ EditList = ReactiveComponent
           else
             console.error "Cannot add the list to the current tab #{current_tab}"
         else 
-          customizations.ordered_lists ?= ['*']
-          if customizations.ordered_lists.indexOf('*') == -1 
-            customizations.ordered_lists.push new_key
+          customizations.lists ?= ['*']
+          if customizations.lists.indexOf('*') == -1 
+            customizations.lists.push new_key
 
 
       if get_tabs()
@@ -341,7 +341,7 @@ EditList = ReactiveComponent
     exit_edit = => 
       edit_list.editing = false 
       for k,v of edit_list
-        if k != 'key'
+        if k != 'key' && k != 'editing'
           delete edit_list[k]
 
       save edit_list
@@ -473,7 +473,7 @@ EditList = ReactiveComponent
             onClick: submit
             onKeyDown: (e) =>
               if e.which == 13 || e.which == 32 # ENTER or SPACE
-                @submit(e)  
+                e.target.click()
                 e.preventDefault()
 
             translator 'engage.save_changes_button', 'Save'
@@ -489,7 +489,7 @@ EditList = ReactiveComponent
             onClick: cancel_edit
             onKeyDown: (e) =>
               if e.which == 13 || e.which == 32 # ENTER or SPACE
-                cancel_edit(e)  
+                e.target.click()
                 e.preventDefault()
 
             translator 'shared.cancel_button', 'cancel'
@@ -924,6 +924,23 @@ window.ListHeader = ReactiveComponent
           fresh: @props.fresh
 
 
+
+window.ModalNewList = ReactiveComponent
+  displayName: 'ModalNewList'
+  mixins: [Modal]
+
+  render: -> 
+
+    close_modal = -> 
+    save_question = ->
+
+    validated = true   
+
+
+    wrap_in_modal DIV null,
+      NewList(@props)
+
+
 window.NewList = ReactiveComponent
   displayName: 'NewList'
 
@@ -939,12 +956,21 @@ window.NewList = ReactiveComponent
     list_key = list.key
     edit_list = fetch "edit-#{list_key}"
 
+    if @props.edit_immediately
+      
+      console.log 'still editing?', edit_list.editing 
+      if edit_list.editing == false 
+        @props.done_callback?()
+
+      edit_list.editing ?= true
+
+
     @local.hovering ?= false
 
     if edit_list.editing
       List 
         fresh: true
-        list: list 
+        list: list
 
     else 
       BUTTON 
@@ -1473,6 +1499,10 @@ styles += """
     flex-grow: 1;
     cursor: move;
   }
+
+  [data-widget="EditPage"] H2.list_header {
+    font-size: 22px;
+  }
    
 """
 
@@ -1480,38 +1510,7 @@ styles += """
 window.EditPage = ReactiveComponent
   displayName: "EditPage"
 
-  componentDidUpdate: -> 
-    @makeListsDraggable()
-
-  componentDidMount: -> 
-    @makeListsDraggable()    
-    register_forum_editing_handler "edit_lists-#{@props.page_name}", 
-      before_save_callback: @prepare_for_save
-
-  componentWillUnmount: -> 
-    clear_forum_editing_handler "edit_lists-#{@props.page_name}"
-
-  prepare_for_save: (customizations) ->
-    edit_forum = fetch 'edit_forum'
-
-    ordered_lists = edit_forum.list_order?[@props.page_name]
-
-    if get_tabs()
-      config = get_tab(@props.page_name)
-      if ordered_lists
-        config.lists = ordered_lists.slice()
-        if config.lists.indexOf("*-") > -1
-          config.lists.push '*-'
-
-    else 
-      config = customizations
-      if ordered_lists
-        config.ordered_lists = ordered_lists.slice()
-        if config.ordered_lists?.indexOf("*-") > -1
-          config.ordered_lists.push '*-'        
-
-    config.list_sort_method = @local.list_sort_method if @local.list_sort_method
-    config.page_preamble = @preamble if @preamble
+  mixins: [SubdomainSaveRateLimiter]
 
   render: -> 
 
@@ -1534,7 +1533,7 @@ window.EditPage = ReactiveComponent
     if is_a_tab
       edit_forum.list_order[@props.page_name] ?= get_tab(@props.page_name).lists.slice()
     else
-      edit_forum.list_order[@props.page_name] ?= (customization('ordered_lists') or ['*']).slice()
+      edit_forum.list_order[@props.page_name] ?= (customization('lists') or ['*']).slice()
 
     ordered_lists = edit_forum.list_order[@props.page_name]
 
@@ -1547,6 +1546,54 @@ window.EditPage = ReactiveComponent
           marginTop: 36
           marginBottom: 24
 
+
+        H2
+          className: "list_header"
+
+          "Lists" 
+
+        if @local.add_new_list
+          ModalNewList
+            edit_immediately: true
+            done_callback: => 
+              @local.add_new_list = false 
+              save @local
+
+        else 
+          BUTTON
+            onClick: =>
+              @local.add_new_list = true 
+              save @local
+            onKeyPress: (e) => 
+              if e.which == 13 || e.which == 32 # ENTER or SPACE
+                e.preventDefault()
+                e.target.click()
+            "+ add new"
+
+
+
+        if ordered_lists.length > 0 
+          DIV 
+            style: 
+              fontSize: 14
+
+            if ordered_lists.length > 1 && current_list_sort_method == 'fixed'
+              "Drag lists to reorder them. "
+
+            if get_tabs()?.length > 1 
+              "Lists can be dragged to a different tab to move them."
+
+
+        if ordered_lists.length == 0
+          DIV 
+            style: 
+              textAlign: 'center'
+              padding: '36px 24px'
+              border: '1px dotted #eee'
+              backgroundColor: '#f1f1f1'
+
+            "There are no lists here yet."
+
         UL 
           style: 
             listStyle: 'none'
@@ -1556,22 +1603,9 @@ window.EditPage = ReactiveComponent
           for lst, idx in ordered_lists
             do (lst, idx) =>
               wildcard = lst in ['*', '*-']
-
-              handle_delete = => 
-                if wildcard 
-                  @refs.aggregate_checkbox.getDOMNode().click()
-                else 
-                  ordered_lists.splice( ordered_lists.indexOf(lst), 1  )
-
-                  edit_forum.deleted_lists ?= {}
-                  edit_forum.deleted_lists[@props.page_name] ?= {}
-                  edit_forum.deleted_lists[@props.page_name][lst] = true
-                  save edit_forum
-
-
-                  # delete_list(lst)
-
-
+              if wildcard
+                lists_to_add = (ag_lst for ag_lst in get_all_lists() \
+                                       when ag_lst not in ordered_lists)
 
               LI 
                 "data-idx": idx
@@ -1597,15 +1631,12 @@ window.EditPage = ReactiveComponent
                       SPAN 
                         style: 
                           fontStyle: 'italic'
-                        'All of the rest of the lists'
+                        "All of the rest of the lists (#{lists_to_add.length} total)"
                     else 
                       get_list_title lst, true, subdomain
 
 
                   if wildcard 
-                    lists_to_add = (ag_lst for ag_lst in get_all_lists() \
-                                       when ag_lst not in ordered_lists)
-
                     if lists_to_add.length > 0 
                       disaggregate_wildcard = => 
                         for ag_lst in lists_to_add
@@ -1628,11 +1659,18 @@ window.EditPage = ReactiveComponent
                       position: 'absolute'
                       right: -36
                       cursor: 'pointer'
-                    onClick: handle_delete
-                    onKeyPress: (e) -> 
+                    onClick: (e) =>
+                      if wildcard 
+                        @refs.aggregate_checkbox.getDOMNode().click()
+                      else 
+                        ordered_lists.splice( ordered_lists.indexOf(lst), 1  )
+                        delete_list(lst)
+
+
+                    onKeyPress: (e) => 
                       if e.which == 13 || e.which == 32 # ENTER or SPACE
                         e.preventDefault()
-                        handle_delete()
+                        e.target.click()
                     #trash_icon 23, 23, '#888'
                     'x'
 
@@ -1647,7 +1685,7 @@ window.EditPage = ReactiveComponent
             ref: 'aggregate_checkbox'
             className: 'bigger'
             type: 'checkbox'
-            defaultChecked: '*' in ordered_lists
+            checked: '*' in ordered_lists
             onChange: (e) =>
               if e.target.checked
                 if '*' not in ordered_lists
@@ -1662,7 +1700,7 @@ window.EditPage = ReactiveComponent
             style: 
               paddingLeft: 12
 
-            "Aggregate all lists from this forum. Useful for a \"Show all\" tab." 
+            "Aggregate all lists from throughout this forum. Useful for a \"Show all\" tab." 
 
 
 
@@ -1723,14 +1761,17 @@ window.EditPage = ReactiveComponent
             width: '100%'
             fontSize: 16
           onChange: (e) =>
-            @preamble = e.target.value
+            @local.page_preamble = e.target.value
+            save @local
+
           defaultValue: current_preamble
           min_height: 60
 
         DIV 
           style: 
             fontSize: 14
-          """Optional text shown at the top of this page. To create an \“About\” page, fill 
+          """Optional text shown at the top of this page. If you're on a paid plan, you
+             can create an \“About\” page by filling 
              in the preamble without adding any lists. The preamble supports HTML, though 
              with no scripts, and only inline styles."""   
 
@@ -1769,58 +1810,79 @@ window.EditPage = ReactiveComponent
       #     'cancel'
 
 
-  makeListsDraggable: ->
 
-    return if @props.page_name != get_current_tab_name() || @initialized
-    @initialized = true
+
+  saveIfChanged: ->
+    edit_forum = fetch 'edit_forum'
+    customizations = fetch('/subdomain').customizations
+
+    fields = ['list_sort_method', 'page_preamble']
+
+    if get_tabs()
+      config = get_tab(@props.page_name)
+    else 
+      config = customizations
+
+    if !config
+      console.error "Could not find a config, and thus could not save possible page changes #{@props.page_name}"
+      return
+
+      
+    ordered_lists = edit_forum.list_order?[@props.page_name]
+    lists_changed = false
+    if ordered_lists
+
+      if config.lists?.indexOf("*-") > -1 && ordered_lists.lists.indexOf("*-") == -1
+        ordered_lists.lists.push '*-'
+
+      lists_changed = JSON.stringify(config.lists) != JSON.stringify(ordered_lists)
+      if lists_changed  
+        config.lists = ordered_lists.slice()
+
+    @save_customization_with_rate_limit {fields, config, force_save: lists_changed}
+
+  componentDidUpdate: ->
+    @makeListsDraggable()
+    @saveIfChanged()
+
+  componentDidMount: -> 
+    @makeListsDraggable()    
+
+  makeListsDraggable: ->
+    if @initialized && @props.page_name != get_current_tab_name()
+      @initialized = false
+
+    return if @props.page_name != get_current_tab_name() || @initialized == @props.page_name
+    @initialized = @props.page_name
 
     reorder_list_position = (from, to) => 
       edit_forum = fetch('edit_forum')
       ordered_lists = edit_forum.list_order[@props.page_name]
       moving = ordered_lists[from]
+      to = ordered_lists[to]
 
-      ordered_lists.splice from, 1
-      ordered_lists.splice to, 0, moving
+      if to == '*'
+        agglomerate = confirm 'Absorb this list back into the aggregation? If you cancel, the list will just be reordered.'
+
+      if to != '*' || !agglomerate
+        ordered_lists.splice from, 1
+        ordered_lists.splice to, 0, moving
+      else 
+        ordered_lists.splice from, 1
 
       save edit_forum
 
-    @onDragOver ?= (e) =>
-      e.preventDefault()
+    drag_data = fetch 'list/tab_drag'
 
-      idx = parseInt e.currentTarget.getAttribute('data-idx')
-      
-      # if idx != @dragging
-      @draggedOver = idx
-      if !e.currentTarget.classList.contains('draggedOver')
-        e.currentTarget.classList.add('draggedOver')
-        if @dragging < idx
-          e.currentTarget.classList.remove('from_below')
-          e.currentTarget.classList.add('from_above')
-        else 
-          e.currentTarget.classList.remove('from_above')            
-          e.currentTarget.classList.add('from_below')
-
-    @onDragLeave ?= (e) =>
-      e.preventDefault()
-      if e.currentTarget.classList.contains('draggedOver')
-        e.currentTarget.classList.remove('draggedOver')
-
-    @onDrop ?= (e) =>
-      reorder_list_position @dragging, @draggedOver
-      if e.currentTarget.classList.contains('draggedOver')
-        e.currentTarget.classList.remove('draggedOver')
-      if e.currentTarget.classList.contains('from_above')
-        e.currentTarget.classList.remove('from_above')
-      if e.currentTarget.classList.contains('from_below')
-        e.currentTarget.classList.remove('from_below')
-
-      document.body.classList.remove('dragging-list')
 
     @onDragStart ?= (e) =>
-      @dragging = parseInt e.currentTarget.parentElement.getAttribute('data-idx')
-      edit_forum = fetch 'edit_forum'
-      edit_forum.dragging_list = true
-      save edit_forum
+
+      _.extend drag_data,
+        type: 'list'
+        source_page: @props.page_name
+        id: e.currentTarget.parentElement.getAttribute('data-idx')
+      save drag_data
+
       document.body.classList.add('dragging-list')
       el = e.currentTarget
       setTimeout ->
@@ -1828,12 +1890,54 @@ window.EditPage = ReactiveComponent
           el.classList.add('dragging')
 
     @onDragEnd ?= (e) =>
-      edit_forum = fetch 'edit_forum'
-      edit_forum.dragging_list = false
-      save edit_forum
+
+      delete drag_data.type
+      delete drag_data.source_page
+      delete drag_data.id
+      save drag_data
+
       document.body.classList.remove('dragging-list')
       if e.currentTarget.classList.contains('dragging')
         e.currentTarget.classList.remove('dragging')
+
+
+    @onDragOver ?= (e) =>
+
+      if drag_data.type == 'list'
+
+        e.preventDefault()
+
+        idx = parseInt e.currentTarget.getAttribute('data-idx')
+        
+        @draggedOver = idx
+        if !e.currentTarget.classList.contains('draggedOver')
+          e.currentTarget.classList.add('draggedOver')
+          if drag_data.id < idx
+            e.currentTarget.classList.remove('from_below')
+            e.currentTarget.classList.add('from_above')
+          else 
+            e.currentTarget.classList.remove('from_above')            
+            e.currentTarget.classList.add('from_below')
+
+    @onDragLeave ?= (e) =>
+      if drag_data.type == 'list'       
+        e.preventDefault()
+        if e.currentTarget.classList.contains('draggedOver')
+          e.currentTarget.classList.remove('draggedOver')
+
+    @onDrop ?= (e) =>
+      if drag_data.type == 'list'
+
+        reorder_list_position drag_data.id, @draggedOver
+        if e.currentTarget.classList.contains('draggedOver')
+          e.currentTarget.classList.remove('draggedOver')
+        if e.currentTarget.classList.contains('from_above')
+          e.currentTarget.classList.remove('from_above')
+        if e.currentTarget.classList.contains('from_below')
+          e.currentTarget.classList.remove('from_below')
+
+      document.body.classList.remove('dragging-list')
+
 
     for list in @getDOMNode().querySelectorAll('[draggable]')
       list.removeEventListener('dragstart', @onDragStart) 
@@ -1850,54 +1954,21 @@ window.EditPage = ReactiveComponent
       list.addEventListener('dragleave', @onDragLeave)      
       list.addEventListener('drop', @onDrop) 
 
-    reassign_list_to_page = (source, target, dragging) =>
-      edit_forum = fetch('edit_forum')
-
-      source = edit_forum.list_order[source]
-      target = edit_forum.list_order[target]
-
-      list_key = source[dragging]
-
-      if source && target
-        source.splice dragging, 1
-        target.push list_key 
-        save edit_forum
-      else 
-        console.error "Could not move list #{list_key} from #{source} to #{target}"
 
 
-    if get_tabs()
-      @onDragOverTab ?= (e) =>
-        e.preventDefault()
 
-        if !e.currentTarget.classList.contains('draggedOver')
-          e.currentTarget.classList.add('draggedOver')
+  componentWillUnmount: -> 
+    if @initialized
+      for list in @getDOMNode().querySelectorAll('[draggable]')
+        list.removeEventListener('dragstart', @onDragStart) 
+        list.removeEventListener('dragend', @onDragEnd) 
+        list.addEventListener('dragstart', @onDragStart) 
+        list.addEventListener('dragend', @onDragEnd)       
 
-      @onDragLeaveTab ?= (e) =>
-        e.preventDefault()
-        if e.currentTarget.classList.contains('draggedOver')
-          e.currentTarget.classList.remove('draggedOver')
-
-
-      @onDropTab ?= (e) =>
-        return if get_current_tab_name() != @props.page_name        
-        console.log "GOT TAB DROP! #{get_current_tab_name()} #{@dragging} #{@props.page_name} (#{@local.key})"
-        reassign_list_to_page @props.page_name, e.currentTarget.getAttribute('data-tab'), @dragging
-
-        if e.currentTarget.classList.contains('draggedOver')
-          e.currentTarget.classList.remove('draggedOver')
-        document.body.classList.remove('dragging-list')
-
-      for tab in document.querySelectorAll('#tabs [data-tab]')
-        tab.removeEventListener('dragover', @onDragOverTab)
-        tab.removeEventListener('dragleave', @onDragLeaveTab)      
-        tab.removeEventListener('drop', @onDropTab) 
-
-        tab.addEventListener('dragover', @onDragOverTab)
-        tab.addEventListener('dragleave', @onDragLeaveTab)      
-        tab.addEventListener('drop', @onDropTab) 
-
-
+      for list in @getDOMNode().querySelectorAll('[data-idx]')
+        list.removeEventListener('dragover', @onDragOver)
+        list.removeEventListener('dragleave', @onDragLeave)      
+        list.removeEventListener('drop', @onDrop) 
 
 
 
@@ -1958,8 +2029,8 @@ window.get_all_lists = ->
   if get_tabs()
     for tab in get_tabs()
       all_lists = all_lists.concat (l for l in tab.lists when l != '*' && l != '*-')
-  else if customization 'ordered_lists'
-    all_lists = customization('ordered_lists').slice()
+  else if customization 'lists'
+    all_lists = (l for l in customization('lists') when l != '*' && l != '*-')
 
   # lists might also just be defined as a customization, without any proposals in them yet
   subdomain_name = subdomain.name?.toLowerCase()
@@ -1978,7 +2049,7 @@ window.get_all_lists = ->
 get_list_sort_method = (tab) ->
   tab ?= get_current_tab_name()
   get_tab(tab)?.list_sort_method or customization('list_sort_method') or \
-    (if customization('ordered_lists') || get_tabs() then 'fixed' else 'newest_item')
+    (if customization('lists') || get_tabs() then 'fixed' else 'newest_item')
 
 
 
@@ -1993,9 +2064,9 @@ window.get_lists_for_page = (tab) ->
   if tabs_config
     eligible_lists = get_tab(tab).lists
   else
-    eligible_lists = customization 'ordered_lists'
+    eligible_lists = customization 'lists'
     if eligible_lists && '*-' in eligible_lists
-      console.error "Illegal wildcard *- in ordered_lists customization"
+      console.error "Illegal wildcard *- in lists customization"
       
 
   if !eligible_lists

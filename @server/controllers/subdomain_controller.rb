@@ -234,6 +234,8 @@ class SubdomainController < ApplicationController
     if masthead = params['masthead']
       if masthead == '*delete*'
         attrs['masthead'] = nil
+        current_subdomain.customizations.fetch('banner', {}).delete('background_image_url')
+        current_subdomain.save        
       else 
         attrs['masthead'] = masthead
       end 
@@ -246,7 +248,7 @@ class SubdomainController < ApplicationController
       end
     end
 
-    current_tenant.update_attributes attrs
+    current_subdomain.update_attributes attrs
     dirty_key '/subdomain'
     render :json => []
   end

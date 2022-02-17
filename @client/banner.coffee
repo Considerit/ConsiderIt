@@ -1,16 +1,31 @@
 require './tabs'
 
+
+
+
+
+
+
 ###########################
 # HOMEPAGE HEADER TEMPLATES
 
 CustomizeTitle = ReactiveComponent
   displayName: 'CustomizeTitle'
+  mixins: [SubdomainSaveRateLimiter]
+
+  componentDidUpdate: ->
+    @save_customization_with_rate_limit
+      fields: ['title']
+      config: fetch('/subdomain').customizations.banner
 
   render : ->
     subdomain = fetch '/subdomain'
     edit_forum = fetch 'edit_forum'
-    edit_banner = fetch 'edit_banner'
-    title = edit_banner.title or customization('banner')?.title or @props.title
+
+    subdomain.customizations.banner ?= {}
+    banner_config = subdomain.customizations.banner
+
+    title = banner_config.title or @props.title
 
     is_admin = fetch('/current_user').is_admin
 
@@ -44,9 +59,10 @@ CustomizeTitle = ReactiveComponent
           className: 'banner_title'
           defaultValue: title
           style: @props.style
-          onChange: (e) ->
-            edit_banner.title = e.target.value 
-            save edit_banner
+          onChange: (e) =>
+            @local.title = e.target.value
+            save @local
+
           placeholder: translator('banner.title.placeholder', 'A pithy title for your forum.')
 
       else 
@@ -56,7 +72,7 @@ CustomizeTitle = ReactiveComponent
           dangerouslySetInnerHTML: __html: title
           onDoubleClick: if is_admin then => 
             edit_forum.editing = true 
-            save edit_banner
+            save edit_forum
             setTimeout => 
               @refs.primary_input?.getDOMNode().focus()
               @refs.primary_input?.getDOMNode().setSelectionRange(-1, -1) # put cursor at end
@@ -64,14 +80,20 @@ CustomizeTitle = ReactiveComponent
 
 CustomizeDescription = ReactiveComponent
   displayName: 'CustomizeDescription'
+  mixins: [SubdomainSaveRateLimiter]
+
+  componentDidUpdate: ->
+    @local.description = fetch("forum-description").html
+    @save_customization_with_rate_limit
+      fields: ['description']
+      config: fetch('/subdomain').customizations.banner
 
   render : ->
-    edit_banner = fetch 'edit_banner'
     edit_forum = fetch 'edit_forum'
 
     is_admin = fetch('/current_user').is_admin
 
-    description = fetch("forum-description").html or customization('banner')?.description
+    description = customization('banner')?.description
     has_description = description?.trim().length > 0 && description.trim() != '<p><br></p>'
 
     is_light = is_light_background()
@@ -81,12 +103,12 @@ CustomizeDescription = ReactiveComponent
 
     if is_admin && edit_forum.editing
       DIV 
-        id: 'edit_banner'
+        id: 'edit_banner_description'
         className: 'CustomizeDescription'
 
         STYLE
           dangerouslySetInnerHTML: __html: """
-            #edit_banner .ql-editor {
+            #edit_banner_description .ql-editor {
               min-height: 48px;
             }
             .wrapper.with-image .CustomizeDescription .ql-editor.ql-blank::before {
@@ -98,7 +120,7 @@ CustomizeDescription = ReactiveComponent
           key: "forum-description"
           style: @props.style
           horizontal: true
-          html: customization('banner')?.description
+          html: description
           placeholder: translator("banner.description.label", "Let people know about this forum! What is its purpose? Who it is for? How long it will be open?")
           focus_on_mount: focus_on_mount
           button_style: 
@@ -115,7 +137,7 @@ CustomizeDescription = ReactiveComponent
             onDoubleClick: if is_admin then => 
               edit_forum.editing = true 
               @local.focus_on_mount = true
-              save edit_banner
+              save edit_forum
               setTimeout => 
                 @refs.primary_input?.getDOMNode().focus()
                 @refs.primary_input?.getDOMNode().setSelectionRange(-1, -1) # put cursor at end
@@ -139,10 +161,10 @@ UploadFileSVG = (opts) ->
       'enable-background': "new 0 0 100 100" 
 
 UploadableLogo = (opts) ->
-  edit_banner = fetch 'edit_banner'
   edit_forum = fetch 'edit_forum'
   editing = edit_forum.editing
-  has_logo = edit_banner.logo_preview != '*delete*' && (edit_banner.logo_preview || customization('banner')?.logo?.url)
+
+  has_logo = customization('banner')?.logo?.url
 
   icon_height = 50
 
@@ -244,9 +266,19 @@ UploadableLogo = (opts) ->
 
 CustomizeLogo = ReactiveComponent
   displayName: 'CustomizeLogo'
+  mixins: [SubdomainSaveRateLimiter]
+
+  componentDidUpdate: ->
+    @save_customization_with_rate_limit
+      fields: ['height', 'left', 'top']
+      config: fetch('/subdomain').customizations.banner.logo
+
+
+
   render : ->
-    edit_banner = fetch 'edit_banner'
     edit_forum = fetch 'edit_forum'
+    edit_banner = fetch 'edit_banner'
+
     has_logo = edit_banner.logo_preview != '*delete*' && (edit_banner.logo_preview || customization('banner')?.logo?.url)
     has_masthead = edit_banner.masthead_preview != '*delete*' && (edit_banner.masthead_preview or customization('banner')?.background_image_url)
 
@@ -254,9 +286,9 @@ CustomizeLogo = ReactiveComponent
 
     src = edit_banner.logo_preview or customization('banner')?.logo?.url
 
-    height = if has_logo then parseInt(edit_banner.logo_height or customization('banner').logo?.height or 150) else 150
-    left = edit_banner.logo_left or customization('banner').logo?.left or 50
-    top  = edit_banner.logo_top  or customization('banner').logo?.top  or 50
+    height = if has_logo then parseInt(@local.height or customization('banner').logo?.height or 150) else 150
+    left = @local.left or customization('banner').logo?.left or 50
+    top  = @local.top  or customization('banner').logo?.top  or 50
 
     is_light = is_light_background()
 
@@ -280,8 +312,8 @@ CustomizeLogo = ReactiveComponent
         l += el.offsetLeft
         el = el.offsetParent
 
-      @local.left = ev.pageX - l
-      @local.top = ev.pageY - t
+      @local.start_left = ev.pageX - l
+      @local.start_top = ev.pageY - t
       @local.moving = true 
       save @local 
 
@@ -306,10 +338,15 @@ CustomizeLogo = ReactiveComponent
         while el 
           banner_top += el.offsetTop
           el = el.offsetParent
-        edit_banner.logo_left = Math.max 0, ev.pageX - @local.left 
-        edit_banner.logo_top = Math.max 0, ev.pageY - banner_top - @local.top
+        @local.left = Math.max 0, ev.pageX - @local.start_left
+        if isNaN(@local.left)
+          @local.left = 50 
 
-        save edit_banner
+        @local.top = Math.max 0, ev.pageY - banner_top - @local.start_top
+        if isNaN(@local.top)
+          @local.top = 50
+
+        save @local
         ev.stopPropagation()
         ev.preventDefault()
 
@@ -327,8 +364,8 @@ CustomizeLogo = ReactiveComponent
 
     onMouseMoveResize = (ev) =>
       if @local.resizing
-        edit_banner.logo_height = @local.start_height + (ev.pageY - @local.startY)
-        save edit_banner
+        @local.height = @local.start_height + (ev.pageY - @local.startY)
+        save @local
 
         ev.stopPropagation()        
         ev.preventDefault()
@@ -425,10 +462,18 @@ DEFAULT_TEXT_BLOCK_COLOR = "#000000"
 DEFAULT_TEXT_BLOCK_OPACITY = 255 * .8
 CustomizeTextBlock = ReactiveComponent
   displayName: 'CustomizeTextBlock'
+
+  mixins: [SubdomainSaveRateLimiter]
+
+  componentDidUpdate: ->
+    @save_customization_with_rate_limit
+      fields: ['text_background_css', 'text_background_css_opacity']
+      config: fetch('/subdomain').customizations.banner
+
+
   render : ->
-    edit_banner = fetch 'edit_banner'
     edit_forum = fetch 'edit_forum'
-    has_masthead = edit_banner.masthead_preview != '*delete*' && (edit_banner.masthead_preview or customization('banner')?.background_image_url)    
+    has_masthead = customization('banner')?.background_image_url
     return SPAN null if !edit_forum.editing || !has_masthead
 
     DIV 
@@ -447,8 +492,8 @@ CustomizeTextBlock = ReactiveComponent
           width: '100%'
           display: 'block'
         onChange: (e) =>
-          edit_banner.text_background_css = e.target.value
-          save edit_banner
+          @local.text_background_css = e.target.value
+          save @local
 
       INPUT 
         id: 'text_background_css_opacity'
@@ -462,8 +507,8 @@ CustomizeTextBlock = ReactiveComponent
           width: '100%'
           display: 'block'
         onChange: (e) =>
-          edit_banner.text_background_css_opacity = e.target.value
-          save edit_banner
+          @local.text_background_css_opacity = e.target.value
+          save @local
 
 UploadBackgroundImageSVG = (opts) ->
   SVG 
@@ -477,9 +522,20 @@ UploadBackgroundImageSVG = (opts) ->
 
 CustomizeBackground = ReactiveComponent
   displayName: 'CustomizeBackground'
+
+  mixins: [SubdomainSaveRateLimiter]
+
+  componentDidUpdate: ->
+    @save_customization_with_rate_limit
+      fields: ['background_css']
+      config: fetch('/subdomain').customizations.banner
+      wait_for: 10
+
+
   render : ->
-    edit_banner = fetch 'edit_banner'
     edit_forum = fetch 'edit_forum'
+    edit_banner = fetch 'edit_banner'
+
     src = edit_banner.masthead_preview or customization('banner')?.background_image_url
     has_masthead = edit_banner.masthead_preview != '*delete*' && src
 
@@ -505,6 +561,8 @@ CustomizeBackground = ReactiveComponent
         DIV
           style: 
             cursor: 'pointer'
+            display: 'flex'
+            alignItems: 'center'
             
           onClick: ->
             document.querySelector('input#masthead').click()
@@ -529,7 +587,11 @@ CustomizeBackground = ReactiveComponent
               fontSize: 14
               color: color
               marginBottom: 12
-            translator 'banner.upload_background_label', 'Add background pic'
+              marginLeft: 8
+            if has_masthead
+              translator 'banner.change_background_label', 'Change background pic'
+            else 
+              translator 'banner.upload_background_label', 'Add background pic'
 
         DIV 
           style: 
@@ -537,37 +599,52 @@ CustomizeBackground = ReactiveComponent
             position: 'relative'
             left: if has_masthead then -20
 
+
           if has_masthead
-            INPUT 
-              id: 'background_color'
-              type: 'checkbox'
-              name: 'background_color'
-              checked: is_light
-              onChange: (e) =>
-                edit_banner.background_css = if e.target.checked then "rgb(255,255,255)" else 'rgb(0,0,0)'
-                save edit_banner
+
+            LABEL 
+              style: 
+                color: color
+                marginRight: 4
+                display: 'flex'
+                marginTop: 4
+              htmlFor: "background_color"
 
 
-          LABEL 
-            style: 
-              color: color
-              marginRight: 4
-            htmlFor: "background_color"
+              INPUT 
+                id: 'background_color'
+                type: 'checkbox'
+                name: 'background_color'
+                checked: is_light
+                style:
+                  marginRight: 8
+                onChange: (e) =>
+                  @local.background_css = if e.target.checked then "rgb(255,255,255)" else 'rgb(0,0,0)'
+                  save @local
 
-            if has_masthead
               translator "banner.background_css_is_light.label", "Background is light colored"
-            else 
+          else 
+            LABEL 
+              style: 
+                color: color
+                marginRight: 8
+                display: 'flex'
+                marginTop: 4
+                alignItems: 'center'
+              htmlFor: "background_color"
+
               translator("banner.background_css.label", "...or set to color") + ':'
 
-          if !has_masthead
-            INPUT 
-              id: 'background_color'
-              type: 'color'
-              name: 'background_color'
-              value: edit_banner.background_css or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
-              onChange: (e) =>
-                edit_banner.background_css = e.target.value
-                save edit_banner
+              INPUT 
+                id: 'background_color'
+                type: 'color'
+                style: 
+                  marginLeft: 4
+                name: 'background_color'
+                value: @local.background_css or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
+                onChange: (e) =>
+                  @local.background_css = e.target.value
+                  save @local
 
 
         if has_masthead
@@ -582,11 +659,12 @@ CustomizeBackground = ReactiveComponent
               fontSize: 14
               display: 'block'
               marginTop: 12
+              marginLeft: 4
               textDecoration: 'underline'
 
-            onClick: ->
-              edit_banner.background_css = DEFAULT_BACKGROUND_COLOR
-              save edit_banner
+            onClick: =>
+              @local.background_css = DEFAULT_BACKGROUND_COLOR
+              save @local
               document.querySelector('button#delete_masthead').click()
 
             onKeyDown: (e) => 
@@ -609,7 +687,6 @@ window.EditBanner = ReactiveComponent
       return DIV null 
 
     is_light = is_light_background()
-
 
     delete_masthead = (e) =>
       edit_banner.masthead_preview = '*delete*' 
@@ -707,7 +784,7 @@ window.EditBanner = ReactiveComponent
             display: 'none'
           onKeyDown: (e) =>
             if e.which == 13 || e.which == 32 # ENTER or SPACE
-              delete_logo(e)  
+              e.target.click()
               e.preventDefault()
 
   exit_edit: ->
@@ -723,47 +800,24 @@ window.EditBanner = ReactiveComponent
     save wysiwyg_description
     save edit_banner
 
-  prepare_for_save : (customizations) -> 
 
-    current_user = fetch '/current_user'
-
-    edit_banner = fetch 'edit_banner'
-
-    fields = ['title', 'background_css', 'text_background_css', 'text_background_css_opacity']
-    logo_fields = ['logo_height', 'logo_left', 'logo_top']
-
-    customizations.banner ?= {}
-    customizations.banner.logo ?= {}
-    for f in fields.concat(logo_fields)
-      val = edit_banner[f]
-      if val?
-        if f in fields
-          customizations.banner[f] = val
-        else if f in logo_fields
-          customizations.banner.logo[f.split('logo_')[1]] = val
+  componentDidUpdate: -> 
+    submit_masthead = @refs.masthead_file_input?.getDOMNode().files?.length > 0
+    submit_logo =     @refs.logo_file_input?.getDOMNode().files?.length > 0
     
-    description = fetch("forum-description").html
-    customizations.banner.description = description
-
-
-  has_files_to_submit: -> 
-    submit_masthead = @refs.masthead_file_input.getDOMNode().files?.length > 0
-    submit_logo =     @refs.logo_file_input.getDOMNode().files?.length > 0
-    
-    submit_masthead || submit_logo || @delete_logo || @delete_masthead
-    
+    if submit_masthead || submit_logo || @delete_logo || @delete_masthead
+      @submit_files()
 
   submit_files: (cb) ->
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
-
 
     data = 
       authenticity_token: current_user.csrf
     
     if @delete_logo
       data.logo = '*delete*'
-    
+
     if @delete_masthead
       data.masthead = '*delete*'
 
@@ -771,22 +825,26 @@ window.EditBanner = ReactiveComponent
       form: '#banner_files' 
       type: 'PUT'
       additional_data: data
-      success: =>
+      success: (response) =>
+        @delete_logo = false 
+        @delete_masthead = false     
+        @refs.masthead_file_input?.getDOMNode().value = null
+        @refs.logo_file_input?.getDOMNode().value = null
+
+        try 
+          resp = JSON.parse(response)
+        catch 
+          console.error "Could not parse server response", response
+          resp = []
+
+        for obj in resp
+          arest.updateCache(obj)
         cb?(true)
       error: => 
         @local.file_errors = true
         save @local
         cb?(false)
 
-  componentDidMount: -> 
-    register_forum_editing_handler 'edit_banner', 
-      before_save_callback: @prepare_for_save
-      has_files_to_submit: @has_files_to_submit
-      image_save_callback: @submit_files
-      cleanup_callback: @exit_edit
-
-  componentWillUnmount: -> 
-    clear_forum_editing_handler 'edit_banner'
 
 
 
@@ -912,9 +970,12 @@ window.PhotoBanner = (opts) ->
         .PhotoBanner #tabs > ul {
         }
         .PhotoBanner #tabs > ul > li {
-          background-color: #{tab_background_color};
           margin: 2px 6px 0px 6px;
+          background-color: #{tab_background_color};          
         }          
+        .PhotoBanner #tabs > ul > li.selected {
+          background-color: white;
+        }
         .PhotoBanner #tabs > ul > li > h4 {
           //text-transform: uppercase;
           font-family: #{header_font()};
@@ -924,12 +985,8 @@ window.PhotoBanner = (opts) ->
         }
         .dark .PhotoBanner #tabs > ul > li > h4 {
         }
-        .PhotoBanner #tabs > ul > li.selected > h4, .PhotoBanner #tabs > ul > li.hovered > h4 {
-          background-color: white;
-          color: black;        
-        }
-        .PhotoBanner #tabs > ul > li.selected, .PhotoBanner #tabs > ul > li.hovered {
-          background-color: #{tab_background_color};
+        .PhotoBanner #tabs > ul > li.selected > h4, .PhotoBanner #tabs > ul > li.selected > h4 {
+          // color: black;        
         }
         """
 
@@ -975,8 +1032,9 @@ window.PhotoBanner = (opts) ->
             minHeight: 20
             fontSize: 18
 
-      if get_tabs()
-        HomepageTabs(opts)
+
+
+      HomepageTabs(opts)
 
 
 
@@ -1072,8 +1130,11 @@ window.MediaBanner = ->
         .dark .MediaBanner #tabs > ul > li > h4 {
           color: white;
         }
-        .MediaBanner #tabs > ul > li.selected > h4, .MediaBanner #tabs > ul > li.hovered > h4 {
+
+        .MediaBanner #tabs > ul > li.selected > h4, .MediaBanner #tabs > ul > li.hovered {
           background-color: white;
+        }
+        .MediaBanner #tabs > ul > li.selected > h4, .MediaBanner #tabs > ul > li.hovered > h4 {
           color: black;
           text-decoration: underline;
         }
@@ -1091,8 +1152,7 @@ window.MediaBanner = ->
 
       CustomizeTitle()
 
-      if get_tabs()
-        HomepageTabs()
+      HomepageTabs()
 
     if has_image_background
       DIV 
@@ -1352,11 +1412,11 @@ window.HawaiiHeader = (opts) ->
           if !subtitle_is_html
             opts.subtitle       
 
-      if homepage && get_tabs()
+      if homepage
         DIV 
           style: 
             position: 'relative'
-            margin: '62px auto 0 auto'
+            margin: if get_tabs() then '62px auto 0 auto'
             width: HOMEPAGE_WIDTH()
             
 
@@ -1567,14 +1627,14 @@ window.SeattleHeader = (opts) ->
             "The comment period is now closed. Thank you for your input!"
 
 
-      if get_tabs()
+      if true
         active_style = _.defaults {}, opts.tab_active_style or {},
           opacity: 1,
-          borderColor: seattle_vars.teal,
+          borderColor: named_colors.teal,
           backgroundColor: 'white'
         DIV
           style: 
-            borderBottom: "1px solid " + active_style.borderColor
+            borderBottom: if get_tabs() then "1px solid " + active_style.borderColor
 
           DIV
             style:
@@ -1584,7 +1644,7 @@ window.SeattleHeader = (opts) ->
             HomepageTabs
               tab_style: _.defaults {}, opts.tab_style or {},
                 padding: '10px 30px 0px 30px',
-                color: seattle_vars.teal,
+                color: named_colors.teal,
                 border: '1px solid',
                 borderBottom: 'none',
                 borderColor: 'transparent',

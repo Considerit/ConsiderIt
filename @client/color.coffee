@@ -157,7 +157,7 @@ window.is_image_mostly_light = (image_data, width, height) ->
 
   light_pixels >= hsp_sample_size * hsp_sample_size / 2
 
-named_colors =
+window.named_colors =
   'aliceblue': '#f0f8ff'
   'antiquewhite': '#faebd7'
   'aqua': '#00ffff'

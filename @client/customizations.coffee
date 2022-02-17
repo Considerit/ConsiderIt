@@ -32,12 +32,13 @@ convert_customization = (obj) ->
 __convert = (obj, path) ->
   if Array.isArray(obj)
     return (__convert(vv, path) for vv in obj)
-
+  else if obj == null 
+    return null
   else if typeof(obj) == 'object' 
     tree = {}
-    for k,v of obj 
+    for k,v of obj
       p = path.slice()
-      p.push k 
+      p.push k
       tree[k] = __convert(v,p)
     return tree
 
@@ -161,6 +162,7 @@ window.CustomizationTransition = ReactiveComponent
       if !arest.pending_saves['/subdomain']
         check_update_customizations_object()
         clearInterval ck
+
     , 1
 
 

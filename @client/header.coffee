@@ -52,7 +52,8 @@ window.Header = ReactiveComponent
             GoogleTranslate()
 
 
-        EditBanner()
+        if is_homepage
+          EditBanner()
 
         if is_homepage && (customization('HomepageHeader') or customization('SiteHeader'))
           (customization('HomepageHeader') or customization('SiteHeader')).apply(@)

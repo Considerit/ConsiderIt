@@ -70,7 +70,7 @@ window.Homepage = ReactiveComponent
         else 
 
           if fetch('edit_forum').editing
-            for page in get_tabs() or [null]
+            for page in get_tabs() or [{name: null}]
               EditPage
                 page_name: page?.name
           else 

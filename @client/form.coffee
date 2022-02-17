@@ -18,6 +18,14 @@ window.Button = (props, text, callback) ->
   BUTTON props, text
 
 
+# moving cursor to end of input
+window.moveCursorToEnd = (el) ->
+  return if !el
+
+  end = el.value.length
+  el.setSelectionRange(end, end)
+  el.focus()
+
 
 
 window.styles += """
@@ -132,6 +140,8 @@ window.WysiwygEditor = ReactiveComponent
       @local.initialized = true
       save @local; save my_data
 
+      @initial_html = @props.html
+
     toolbar_horizontal = @props.horizontal
 
     toolbar_items = [
@@ -178,7 +188,7 @@ window.WysiwygEditor = ReactiveComponent
           style: 
             width: '100%'
             fontSize: 18
-          defaultValue: fetch(@props.key).html
+          defaultValue: my_data.html
           onChange: (e) => 
             my_data = fetch(@props.key)
             my_data.html = e.target.value
@@ -287,7 +297,7 @@ window.WysiwygEditor = ReactiveComponent
           
             DIV 
               id: 'editor'
-              dangerouslySetInnerHTML:{__html: @props.html}
+              dangerouslySetInnerHTML:{__html: @initial_html}
               onFocus: (e) => 
                 # Show the toolbar on focus
                 # showing is global state for the toolbar to be 

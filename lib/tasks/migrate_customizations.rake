@@ -14,9 +14,14 @@ task :migrate_lists_and_tabs => :environment do
     if customizations['homepage_list_order'] && customizations['homepage_tabs']
       customizations.delete 'homepage_list_order' # already manually migrated
     elsif customizations['homepage_list_order']
-      customizations['ordered_lists'] = customizations['homepage_list_order']
+      customizations['lists'] = customizations['homepage_list_order']
       customizations.delete 'homepage_list_order'
       # pp "Migrated list order for #{subdomain.name}", customizations['default_page']
+    end
+
+    if customizations['ordered_lists']
+      customizations['lists'] = customizations['ordered_lists']
+      customizations.delete 'ordered_lists'
     end
 
 

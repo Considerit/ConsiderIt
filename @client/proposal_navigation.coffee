@@ -14,7 +14,7 @@ window.GroupedProposalNavigation = (args) ->
   tabs = get_tabs() 
   if !tabs or tabs.length == 0
     tabs = [{
-      name: 'all' 
+      name: 'all'
       lists: get_all_lists()
     }]
 

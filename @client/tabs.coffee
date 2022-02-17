@@ -1,3 +1,31 @@
+window.SubdomainSaveRateLimiter =  
+
+  save_customization_with_rate_limit: ({fields, config, force_save, on_save_callback, wait_for}) ->
+    subdomain = fetch '/subdomain'
+
+    config ?= subdomain.customizations
+    fields ?= []
+    
+    changed = force_save
+    for f in fields
+      val = @local[f]
+      if val? && val != config[f]
+        config[f] = val
+        changed = true
+
+    if changed
+      @save_in = wait_for or 1000
+      @save_interval ?= setInterval =>
+        @save_in -= 500
+        if @save_in <= 0
+          console.log "SAVING SUBDOMAIN", fields
+          save subdomain, =>
+            on_save_callback?()
+          clearInterval(@save_interval)
+          @save_interval = undefined
+      , 500
+
+
 # handles tab query parameter based on tabs state
 window.HomepageTabTransition = ReactiveComponent
   displayName: "HomepageTabTransition"
@@ -6,25 +34,116 @@ window.HomepageTabTransition = ReactiveComponent
     if get_tabs()
       loc = fetch 'location'
       tab_state = fetch 'homepage_tabs'
-      default_tab = customization('homepage_default_tab') or 'Show all'
+      default_tab = customization('homepage_default_tab') or get_tabs()[0]?.name or 'Show all'
 
       if !tab_state.active_tab? || (loc.query_params.tab && loc.query_params.tab != tab_state.active_tab)
 
-        if loc.query_params.tab
-          tab_state.active_tab = decodeURIComponent loc.query_params.tab
+        if loc.query_params.tab && get_tab(decodeURIComponent(loc.query_params.tab))
+          tab_state.active_tab = decodeURIComponent(loc.query_params.tab)
         else 
           tab_state.active_tab = default_tab
+
+
 
         save tab_state
 
       if loc.url != '/' && loc.query_params.tab
         delete loc.query_params.tab
         save loc
-      else if loc.url == '/' && loc.query_params.tab != tab_state.active_tab 
+      else if loc.url == '/' && loc.query_params.tab != tab_state.active_tab
         loc.query_params.tab = tab_state.active_tab
         save loc
 
     SPAN null
+
+
+
+
+
+
+
+window.get_tabs = -> 
+  if customization('homepage_tabs')?.length > 0
+    fetch('/subdomain').customizations.homepage_tabs
+  else 
+    null
+
+window.get_tab = (name) -> 
+  name ?= get_current_tab_name()
+  for tab in (get_tabs() or [])
+    if tab.name == name 
+      return tab
+  return null
+
+window.get_current_tab_name = -> fetch('homepage_tabs').active_tab or null
+window.get_current_tab_view = ->
+  tabs = customization('homepage_tabs') 
+  if !tabs
+    return SimpleHomepage()
+
+  custom_view = null
+  for tab in tabs
+    if tab.name == get_current_tab_name()
+      if tab.render_page
+        custom_view = tab.render_page
+      break
+  if !custom_view
+    custom_view = customization('render_page')
+
+  if custom_view
+    view = custom_view()
+    if typeof(view) == 'function'
+      view = view()
+    view
+  else
+    SimpleHomepage()
+
+window.get_page_preamble = (tab_name) -> 
+  if tab = get_tab(tab_name)
+    preamble = tab.page_preamble
+  else 
+    preamble = customization('page_preamble')
+
+
+window.create_new_tab = (tab_name) ->
+  subdomain = fetch('/subdomain')
+
+  tabs = get_tabs()
+  if !tabs
+    tabs = subdomain.customizations.homepage_tabs = []
+
+
+  new_tab =
+    name: tab_name
+    lists: []
+
+  if tabs.length == 0
+    new_tab.lists.push '*'
+
+  tabs.push new_tab 
+  save subdomain
+
+window.delete_tab = (tab_name, skip_confirmation) ->
+  subdomain = fetch('/subdomain')
+
+  if skip_confirmation || confirm translator "homepage_tab.confirm-tab-deletion", "Are you sure you want to delete this tab? None of the lists in it will be deleted."
+    idx = -1
+    for tab,idx in (get_tabs() or [])
+      if tab.name == tab_name 
+        break
+
+
+    if get_current_tab_name() == tab_name
+      tab_state = fetch 'homepage_tabs'
+      tab_state.active_tab = null 
+      save tab_state
+
+    subdomain.customizations.homepage_tabs.splice idx, 1
+
+    if subdomain.customizations.homepage_tabs.length == 0
+      delete subdomain.customizations.homepage_tabs
+
+    save subdomain
 
 
 
@@ -43,80 +162,52 @@ styles += """
     list-style: none;
     width: 900px;
   }
-  #tabs > ul > li {
-    display: inline-block;
-    position: relative;
-    outline: none;
-  }  
 
-  .dragging-list #tabs > ul > li {
-    outline: 4px solid white;
+  #tabs.demo > ul {
+    border: 2px dashed #666;
+    border-bottom: none;
+    padding-top: 8px;
   }
-
-  .dragging-list #tabs > ul > li.draggedOver {
-    outline: 4px solid red;
+  .dark #tabs.demo > ul {
+    border-color: white;
   }
 
-  #tabs > ul > li > h4 {
-    cursor: pointer;
-    position: relative;
-    font-size: 16px;
-    font-weight: 600;        
-    color: white;
-    padding: 10px 20px 4px 20px;
-  }
-  #tabs > ul > li.selected > h4 {
-    background-color: rgba(255,255,255,.2);
-    opacity: 1;
-  }
-  #tabs > ul > li.hovering > h4 {
-    opacity: 1;
-  }
 """
-
-
-window.get_tabs = -> 
-  if customization('homepage_tabs')?.length > 0
-    fetch('/subdomain').customizations.homepage_tabs
-  else 
-    null
-
-window.get_tab = (name) -> 
-  name ?= get_current_tab_name()
-  for tab in (get_tabs() or [])
-    if tab.name == name 
-      return tab
-  return null
-
-window.get_current_tab_name = -> fetch('homepage_tabs').active_tab
-window.get_current_tab_view = ->
-  custom_view = get_tab()?.render_page or customization('render_page')
-
-  if custom_view
-    view = custom_view()
-    if typeof(view) == 'function'
-      view = view()
-    view
-  else
-    SimpleHomepage()
-
-window.get_page_preamble = (tab_name) -> 
-  if tab = get_tab(tab_name)
-    preamble = tab.page_preamble
-  else 
-    preamble = customization('page_preamble')
-
-
 
 window.HomepageTabs = ReactiveComponent
   displayName: 'HomepageTabs'
 
   render: -> 
     homepage_tabs = fetch 'homepage_tabs'
-    subdomain = fetch('/subdomain')
+
+    edit_forum = fetch 'edit_forum'
+    subdomain = fetch '/subdomain'
+
+    tabs = get_tabs()?.slice()
+
+    return DIV null if !edit_forum.editing && !tabs
+
+    return DIV null if edit_forum.editing && !fetch('/current_user').is_super_admin && !subdomain.plan
+
+
+    demo = false 
+    if edit_forum.editing 
+
+      if !tabs || tabs.length == 0
+        demo = true
+        tabs ?= []
+        tabs.push {name: "Tabs", demo: true}
+        tabs.push {name: "Help Organize", demo: true}
+        tabs.push {name: "Your Engagement", demo: true, default: true}
+        tabs.push {name: "enable tabs", demo: true, add_new: true}
+      else 
+        tabs.push {name: "add new tab", add_new: true}
+        tabs.push {name: "disable tabs", disable: true}
+
 
     DIV 
       id: 'tabs'
+      className: if demo then 'demo'
       style: @props.wrapper_style
 
       A 
@@ -128,58 +219,406 @@ window.HomepageTabs = ReactiveComponent
           width: @props.width
 
 
-        for tab, idx in get_tabs() 
-          do (tab) =>
-            tab_name = tab.name
-            current = homepage_tabs.active_tab == tab_name 
-            hovering = @local.hovering == tab_name
-            featured = @props.featured == tab_name
+        for tab, idx in tabs
 
-            tab_style = _.extend {}, @props.tab_style
-            tab_wrapper_style = _.extend {}, @props.tab_wrapper_style
+          Tab
+            key: tab.name
+            tab: tab
+            idx: idx
+            current: homepage_tabs.active_tab == tab.name || (demo && tab.default)
+            tab_style: @props.tab_style 
+            tab_wrapper_style: @props.tab_wrapper_style
+            active_style: @props.active_style
+            active_tab_wrapper_style: @props.active_tab_wrapper_style
+            hovering_tab_wrapper_style: @props.hovering_tab_wrapper_style
+            featured: @props.featured == tab.name            
+            featured_insertion: @props.featured_insertion
 
-            if current
-              _.extend tab_style, @props.active_style
-              _.extend tab_wrapper_style, @props.active_tab_wrapper_style
+
+
+styles += """
+  #tabs > ul > li {
+    display: inline-block;
+    position: relative;
+    outline: none;
+  }  
+
+  .dragging-list #tabs > ul > li[draggable="true"] {
+    outline: 4px solid black;
+  }
+
+  .dragging-list .dark #tabs > ul > li[draggable="true"] {
+    outline: 4px solid white;
+  }
+
+  .dragging-list #tabs > ul > li.draggedOver-by_list[draggable="true"] {
+    outline: 4px solid red;
+  }
+
+  #tabs > ul > li[draggable="false"].demo:not(.add_new):not(.selected) {
+    opacity: .5;
+    pointer-events: none;
+  }
+
+
+  #tabs > ul > li > h4 {
+    cursor: pointer;
+    position: relative;
+    padding: 10px 20px 4px 20px;
+    font-size: 16px;
+    font-weight: 600;        
+    color: white;
+  }
+  #tabs > ul > li.selected > h4 {
+    background-color: rgba(255,255,255,.2);
+    opacity: 1;
+    color: black;
+  }
+  #tabs > ul > li.hovering > h4 {
+    opacity: 1;
+  }
+
+  #tabs > ul > li > h4 > input {
+    background-color: transparent;
+    border: 1px solid #ccc;
+    letter-spacing: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+    font-style: inherit;
+    min-width: 50px;
+    padding: 2px 4px;
+  }
+
+  #tabs >ul > li.disable_tabs {
+    background-color: transparent;
+  }
+
+  #tabs >ul > li.disable_tabs button {
+    text-decoration: none;
+    opacity: .7;
+    margin-left: 20px;
+    color: black;
+  }
+
+  #tabs >ul > li.disable_tabs button {
+    color: white;
+  }
+
+  #tabs > ul > li[draggable="false"].demo.add_new {
+    background-color: transparent;
+  }
+  #tabs > ul > li[draggable="false"].demo.add_new > h4 {
+    color: black;
+  }  
+  .dark #tabs > ul > li[draggable="false"].demo.add_new > h4 {
+    color: white;
+  }
+
+"""
+
+
+window.Tab = ReactiveComponent
+  displayName: 'Tab'
+  mixins: [SubdomainSaveRateLimiter]
+
+
+  render: -> 
+    subdomain = fetch('/subdomain')
+    edit_forum = fetch 'edit_forum'
+
+    tab = @props.tab
+    tab_name = tab.name
+
+    current = @props.current
+    hovering = @local.hovering == tab_name
+    featured = @props.featured
+
+    tab_style = _.extend {display: 'inline-block'}, @props.tab_style
+    tab_wrapper_style = _.extend {}, @props.tab_wrapper_style
+
+
+    if tab.disable
+      return LI
+          className: "disable_tabs"
+
+          BUTTON 
+            className: 'like_link'
+            onKeyDown: (e) => 
+              if e.which == 13 || e.which == 32 # ENTER or SPACE
+                e.currentTarget.click() 
+                e.preventDefault()
+            onClick: =>
+              if confirm(translator "homepage_tab.disable_confirmation", "Are you sure you want to disable tabs? Existing tabs will be deleted. All existing lists will still be visible.")
+                for tab in get_tabs()
+                  delete_tab(tab.name, true)
+            translator
+              id: "homepage_tab.disable"
+              tab_name
+      
+
+
+
+    if current
+      _.extend tab_style, @props.active_style
+      _.extend tab_wrapper_style, @props.active_tab_wrapper_style
+    
+    if hovering
+      _.extend tab_style, @props.hover_style or @props.active_style
+      _.extend tab_wrapper_style, @props.hovering_tab_wrapper_style
+
+
+    LI 
+      className: "#{if current then 'selected' else if hovering then 'hovered' else ''} #{if tab.demo then 'demo' else ''} #{if tab.add_new then 'add_new' else ''}"
+      tabIndex: 0
+      role: 'tab'
+      style: tab_wrapper_style
+      'data-tab': tab.name
+      'aria-controls': 'homepagetab'
+      'aria-selected': current
+      draggable: edit_forum.editing && !tab.add_new && !tab.demo
+
+      onMouseEnter: => 
+        return if tab.add_new || tab.demo
+        homepage_tabs = fetch 'homepage_tabs'
+        if homepage_tabs.active_tab != tab_name 
+          @local.hovering = tab_name 
+          save @local 
+      onMouseLeave: => 
+        @local.hovering = null 
+        save @local
+      onKeyDown: (e) => 
+        if e.which == 13 || e.which == 32 # ENTER or SPACE
+          e.currentTarget.click() 
+          e.preventDefault()
+      onClick: =>
+        return if tab.demo && !tab.add_new
+
+        loc = fetch 'location'
+
+        if tab.add_new
+          new_tab_name = if tab.demo then 'Show all' else 'new tab'
+          create_new_tab new_tab_name
+          loc.query_params.tab = new_tab_name
+        else 
+          loc.query_params.tab = tab_name 
+
+        save loc  
+        document.activeElement.blur()
+
+
+      if edit_forum.editing  && !tab.add_new && !tab.demo && get_tabs().length > 1
+        BUTTON 
+          style: 
+            cursor: 'move'
+            backgroundColor: 'transparent'
+            border: 'none'                    
+          drag_icon 15, '#888'
+
+      H4 
+        style: tab_style
+
+        if tab.add_new
+          SPAN null,
+            if !tab.demo
+              "+ "
+            SPAN 
+              style: 
+                textDecoration: 'underline'
+
+              translator
+                id: "homepage_tab.#{if get_tabs()?.length > 0 then "add_more" else "enable"}.#{tab_name}"
+                tab_name
+
+        else if edit_forum.editing && tab_name == get_current_tab_name()
+          INPUT
+            type: 'text'
+            defaultValue: tab_name
+            style: tab_style
             
-            if hovering
-              _.extend tab_style, @props.hover_style or @props.active_style
-              _.extend tab_wrapper_style, @props.hovering_tab_wrapper_style
+            # prevent dragging when editing the tab name
+            draggable: true
+            onDragStart: (e) =>
+              e.preventDefault()
+              e.stopPropagation()
 
-            LI 
-              className: if current then 'selected' else if hovering then 'hovered'
-              tabIndex: 0
-              role: 'tab'
-              style: tab_wrapper_style
-              'data-tab': tab.name
-              'data-idx': idx
-              'aria-controls': 'homepagetab'
-              'aria-selected': current
+            onKeyDown: (e) => 
+              e.stopPropagation()
 
-              onMouseEnter: => 
-                if homepage_tabs.active_tab != tab_name 
-                  @local.hovering = tab_name 
-                  save @local 
-              onMouseLeave: => 
-                @local.hovering = null 
-                save @local
-              onKeyDown: (e) => 
-                if e.which == 13 || e.which == 32 # ENTER or SPACE
-                  e.currentTarget.click() 
-                  e.preventDefault()
-              onClick: =>
-                loc = fetch 'location'
-                loc.query_params.tab = tab_name 
-                save loc  
-                document.activeElement.blur()
+            onClick: (e) =>
+              e.stopPropagation()
+              # e.preventDefault()
 
-              H4 
-                style: tab_style
+            # onChange: (e) =>
+            onBlur: (e) =>
+              if e.target.value != ""
+                tab.name = e.target.value
+                el = e.target
+                @save_customization_with_rate_limit 
+                  force_save: true
+                  wait_for: 10
+                  on_save_callback: => 
+                    loc = fetch 'location'
+                    loc.query_params.tab = tab.name 
+                    save loc
 
-                translator
-                  id: "homepage_tab.#{tab_name}"
-                  key: if tab_name != 'Show all' then "/translations/#{subdomain.name}"
-                  tab_name
-                  
-              if featured 
-                @props.featured_insertion?()
+
+        else 
+          translator
+            id: "homepage_tab.#{tab_name}"
+            key: if tab_name != 'Show all' then "/translations/#{subdomain.name}"
+            tab_name
+      
+      if edit_forum.editing && tab_name == get_current_tab_name() && !tab.demo
+        BUTTON 
+          style:
+            display: 'inline-block'
+            backgroundColor: 'transparent'
+            border: 'none'
+            cursor: 'pointer'
+          onClick: ->
+            delete_tab tab.name
+          onKeyPress: (e) -> 
+            if e.which == 13 || e.which == 32 # ENTER or SPACE
+              e.preventDefault()
+              e.target.click()
+          trash_icon 15, 15, '#888'
+
+      if featured 
+        @props.featured_insertion?()
+
+
+  makeTabDraggable: ->
+
+    return if @tab_draggable || !fetch('edit_forum').editing || @props.tab.add_new
+    @tab_draggable = true 
+
+    tab = @getDOMNode()
+
+    drag_data = fetch 'list/tab_drag'
+
+
+    reassign_list_to_page = (source, target, dragging) =>
+      edit_forum = fetch('edit_forum')
+
+      source = edit_forum.list_order[source]
+      target = edit_forum.list_order[target]
+
+      list_key = source[dragging]
+
+      if source && target
+        source.splice dragging, 1
+        if target.indexOf(list_key) == -1
+          target.push list_key 
+        save edit_forum
+      else 
+        console.error "Could not move list #{list_key} from #{source} to #{target}"
+
+    reorder_tab = (from, to) =>
+      subdomain = fetch '/subdomain'
+
+      tabs = subdomain.customizations.homepage_tabs
+      tabs.splice(to, 0, tabs.splice(from, 1)[0])
+
+      save subdomain
+
+
+
+    @onDragStartTab ?= (e) =>
+
+      _.extend drag_data,
+        type: 'tab'
+        id: @props.idx
+      save drag_data
+
+      document.body.classList.add('dragging-tab')
+      el = e.currentTarget
+      setTimeout ->
+        if !el.classList.contains('dragging')
+          el.classList.add('dragging')
+
+    @onDragEndTab ?= (e) =>
+
+      delete drag_data.type
+      delete drag_data.id
+      save drag_data
+
+      document.body.classList.remove('dragging-tab')
+      if e.currentTarget.classList.contains('dragging')
+        e.currentTarget.classList.remove('dragging')
+
+
+    @onDragOverTab ?= (e) =>
+      if drag_data.type == 'list'
+        e.preventDefault()
+        if !e.currentTarget.classList.contains('draggedOver-by_list')
+          e.currentTarget.classList.add('draggedOver-by_list')
+      else if drag_data.type == 'tab'
+        e.preventDefault()
+        if !e.currentTarget.classList.contains('draggedOver-by_tab')
+          e.currentTarget.classList.add('draggedOver-by_tab')
+
+    @onDragLeaveTab ?= (e) =>
+      if drag_data.type == 'list'
+        e.preventDefault()
+        if e.currentTarget.classList.contains('draggedOver-by_list')
+          e.currentTarget.classList.remove('draggedOver-by_list')
+      else if drag_data.type == 'tab'
+        e.preventDefault()
+        if !e.currentTarget.classList.contains('draggedOver-by_tab')
+          e.currentTarget.classList.remove('draggedOver-by_tab')
+
+
+    @onDropTab ?= (e) =>
+      if drag_data.type == 'list'
+        reassign_list_to_page drag_data.source_page, @props.tab.name, drag_data.id
+
+        delete drag_data.type
+        delete drag_data.source_page
+        delete drag_data.id
+        save drag_data
+
+        if e.currentTarget.classList.contains('draggedOver-by_list')
+          e.currentTarget.classList.remove('draggedOver-by_list')
+        document.body.classList.remove('dragging-list')
+      else if drag_data.type == 'tab'
+
+        reorder_tab drag_data.id, @props.idx
+
+        delete drag_data.type
+        delete drag_data.id
+        save drag_data
+
+        if !e.currentTarget.classList.contains('draggedOver-by_tab')
+          e.currentTarget.classList.remove('draggedOver-by_tab')
+        document.body.classList.remove('dragging-tab')
+
+
+    tab.addEventListener('dragstart', @onDragStartTab) 
+    tab.addEventListener('dragend', @onDragEndTab) 
+    tab.addEventListener('dragover', @onDragOverTab)
+    tab.addEventListener('dragleave', @onDragLeaveTab)      
+    tab.addEventListener('drop', @onDropTab) 
+
+  removeTabDraggability: -> 
+    return if !@tab_draggable || fetch('edit_forum').editing || @props.tab.add_new
+    @tab_draggable = false
+    tab = @getDOMNode()
+
+
+    tab.removeEventListener('dragstart', @onDragStartTab) 
+    tab.removeEventListener('dragend', @onDragEndTab) 
+
+
+    tab.removeEventListener('dragover', @onDragOverTab)
+    tab.removeEventListener('dragleave', @onDragLeaveTab)      
+    tab.removeEventListener('drop', @onDropTab) 
+
+  componentDidMount: -> 
+    @makeTabDraggable()
+  componentDidUpdate: -> 
+    @makeTabDraggable()
+  componentWillUnmount: -> 
+    @removeTabDraggability()
+
+

@@ -3,7 +3,7 @@ require './modal'
 
 window.styles += """
   .LIST-header {
-    font-size: 33px;
+    font-size: 28px;
     font-weight: 700;
     text-align: left;     
     padding: 0; 
@@ -49,6 +49,10 @@ window.List = ReactiveComponent
   render: -> 
     current_user = fetch '/current_user'
     list = @props.list
+    if !list.key?
+      list = get_list(@props.list)
+
+
     list_key = list.key
 
     # subscribe to a key that will alert us to when sort order has changed
@@ -81,12 +85,10 @@ window.List = ReactiveComponent
         proposals_count: proposals.length
         fresh: @props.fresh
         allow_editing: !@props.allow_editing? || @props.allow_editing
+        edit_immediately: @props.edit_immediately
+        done_callback: @props.done_callback
 
-      if customization('questionaire', list_key) && !is_collapsed
-        Questionaire 
-          list_key: list_key
-
-      else if !is_collapsed && !@props.fresh
+      if !is_collapsed && !@props.fresh && !@edit_immediately
         
         permitted = permit('create proposal', list_key)
         DIV null, 
@@ -248,17 +250,28 @@ EditList = ReactiveComponent
   displayName: 'EditList'
 
   render: ->     
-    list = @props.list 
+    list = @props.list
+
     list_key = list.key
 
     current_user = fetch '/current_user'
     edit_list = fetch "edit-#{list_key}"
     subdomain = fetch '/subdomain'
 
-    if @props.fresh && !edit_list.editing
-      edit_list.editing = true
 
     return SPAN null if !current_user.is_admin
+
+    if (@props.fresh || (@props.edit_immediately && !@initialized)) && !edit_list.editing
+      edit_list.editing = true
+      save edit_list
+
+    if @props.edit_immediately
+      @initialized = true
+      if edit_list.editing == false 
+        @props.done_callback?()
+      edit_list.editing ?= true
+
+
 
     submit = =>
 
@@ -282,6 +295,7 @@ EditList = ReactiveComponent
 
       list_config.list_description = description
 
+
       if @props.fresh
         new_name = "#{slugify(list_config.list_title or list_config.list_category or 'Proposals')}-#{Math.round(Math.random() * 100)}"
         new_key = "list/#{new_name}"
@@ -299,28 +313,10 @@ EditList = ReactiveComponent
           else
             console.error "Cannot add the list to the current tab #{current_tab}"
         else 
-          customizations.lists ?= ['*']
-          if customizations.lists.indexOf('*') == -1 
+          customizations.lists ?= get_all_lists()
+          if customizations.lists.indexOf('*') == -1 && customizations.lists.indexOf(new_key) == -1
             customizations.lists.push new_key
-
-
-      if get_tabs()
-        current_tab = get_current_tab_name()
-
-        if edit_list.assign_to_tab && edit_list.assign_to_tab != current_tab
-          tab_config = customizations.homepage_tabs
-          tab_names = (t.name for t in tab_config)
-
-          idx_source = tab_names.indexOf current_tab
-          idx_target = tab_names.indexOf edit_list.assign_to_tab
-
-          if idx_source > -1 && idx_target > -1
-            tab_config[idx_source].lists.splice tab_config[idx_source].lists.indexOf(list_key), 1
-            tab_config[idx_target].lists.push list_key 
-            subdomain.customizations.homepage_tabs = tab_config
-          else 
-            console.error "Could not move list from #{current_tab} to #{edit_list.assign_to_tab}"
-
+          console.log 'NEW CUSTOMZIATION', customizations.lists, new_key
 
 
       save subdomain, => 
@@ -409,10 +405,6 @@ EditList = ReactiveComponent
               edit_list.editing = true 
               save edit_list
 
-              setTimeout => 
-                @refs.input?.getDOMNode().focus()
-                @refs.input?.getDOMNode().setSelectionRange(-1, -1) # put cursor at end
-
             else if option.action == 'list_order'
               ef = fetch 'edit_forum'
               ef.editing = true 
@@ -469,7 +461,7 @@ EditList = ReactiveComponent
             className: 'btn'
             style: 
               backgroundColor: focus_color()
-
+            disabled: !(edit_list.list_title?.length > 0)
             onClick: submit
             onKeyDown: (e) =>
               if e.which == 13 || e.which == 32 # ENTER or SPACE
@@ -520,13 +512,16 @@ window.ListHeader = ReactiveComponent
       marginBottom: 16 #24
       position: 'relative'
 
-    if edit_list.editing
+    if edit_list.editing 
       _.extend wrapper_style, 
         backgroundColor: '#f3f3f3'
-        marginLeft: -36
-        marginTop: -36
-        padding: "18px 36px 36px 36px"
+        marginLeft: if !@props.edit_immediately then -36
+        marginTop: if !@props.edit_immediately then -36
+        padding: if !@props.edit_immediately then "18px 36px 36px 36px"
         width: HOMEPAGE_WIDTH() + 36 * 2
+
+      if @props.edit_immediately
+        wrapper_style.width -= 250
 
     edit_list.discussion_enabled ?= customization('discussion_enabled', list_key)
     edit_list.list_is_archived ?= customization('list_is_archived', list_key)
@@ -543,13 +538,13 @@ window.ListHeader = ReactiveComponent
 
         DIV 
           style: 
-            width: HOMEPAGE_WIDTH()
-            margin: 'auto'
+            width:  if !@props.edit_immediately then HOMEPAGE_WIDTH()
+            margin:  if !@props.edit_immediately then 'auto'
 
           EditableTitle
             list: @props.list
             fresh: @props.fresh
-
+            edit_immediately: @props.edit_immediately
 
           if edit_list.editing || !is_collapsed
             DIV null, 
@@ -557,6 +552,7 @@ window.ListHeader = ReactiveComponent
                 EditableDescription
                   list: @props.list
                   fresh: @props.fresh
+                  edit_immediately: @props.edit_immediately
 
           # if edit_list.editing || !is_collapsed
           #   DIV 
@@ -576,17 +572,207 @@ window.ListHeader = ReactiveComponent
         if edit_list.editing
 
           option_block = 
-            # marginLeft: 8
             marginTop: 8
 
           DIV null, 
 
             if !@props.combines_these_lists
+              slider_input_style = 
+                paddingTop: 2
+                position: 'absolute'
+                border: 'none'
+                outline: 'none'
+                color: '#444'
+                fontSize: if browser.is_mobile then 16 else 12
+
               DIV 
                 style: 
                   padding: '12px 0'
-                  width: column_sizes().first
-                  display: 'inline-block'
+
+                LABEL
+                  className: 'LIST-field-edit-label'
+
+
+                  TRANSLATE
+                    id: "engage.list-config-spectrum"
+                    span: 
+                      component: SPAN 
+                      args: 
+                        style: 
+                          fontWeight: 700
+
+                    "<span>Slider.</span> On what spectrum is each item evaluated?"
+
+
+                DIV 
+                  ref: 'slider_config'
+                  style: 
+                    padding: '18px 24px 0px 24px'
+                    position: 'relative'
+                    marginTop: 8
+                    left: -24 - 1
+
+                  DIV 
+                    style: 
+                      position: 'relative'
+                      width: column_sizes().second
+
+
+                    SPAN 
+                      style: 
+                        display: 'block'
+                        width: '100%'
+                        borderBottom: '1px solid'
+                        borderColor: '#999'
+                    
+                    INPUT 
+                      type: 'text'
+                      style: _.extend {}, slider_input_style, 
+                        left: 0
+                        textAlign: 'left'
+
+                      ref: 'oppose_slider'
+                      defaultValue: customization('slider_pole_labels', list_key, subdomain).oppose 
+                      placeholder: translator 'engage.slider_config.negative-pole-placeholder', 'Negative pole'
+                      onChange: (e) ->
+                        edit_list.slider_pole_labels ?= {}
+                        edit_list.slider_pole_labels.oppose = e.target.value 
+                        save edit_list
+
+                    INPUT
+                      type: 'text'
+                      style: _.extend {}, slider_input_style, 
+                        textAlign: 'right'
+                        right: 0
+
+                      ref: 'support_slider'
+                      defaultValue: customization('slider_pole_labels', list_key, subdomain).support
+                      onChange: (e) ->
+                        edit_list.slider_pole_labels ?= {}
+                        edit_list.slider_pole_labels.support = e.target.value 
+                        save edit_list
+                      placeholder: translator 'engage.slider_config.positive-pole-placeholder', 'Positive pole'
+
+
+                  DropMenu
+                    options: [{support: '', oppose: ''}].concat (v for k,v of slider_labels)
+                    open_menu_on: 'activation'
+
+                    wrapper_style: 
+                      left: 390
+                      top: -8
+
+                    anchor_style: 
+                      color: 'inherit' #focus_color() #'inherit'
+                      height: '100%'
+                      padding: '4px 4px'
+                      position: 'relative'
+                      right: 0
+                      cursor: 'pointer'
+
+                    menu_style: 
+                      width: column_sizes().second + 24 * 2
+                      backgroundColor: '#fff'
+                      border: "1px solid #aaa"
+                      left: -99999
+                      left: 'auto'
+                      top: 24
+                      fontWeight: 400
+                      overflow: 'hidden'
+                      boxShadow: '0 1px 2px rgba(0,0,0,.3)'
+                      textAlign: 'left'
+
+                    menu_when_open_style: 
+                      left: 0
+
+                    option_style: 
+                      padding: '6px 0px'
+                      display: 'block'
+                      color: '#888'
+
+                    active_option_style: 
+                      color: 'black'
+                      backgroundColor: '#efefef'
+
+
+                    selection_made_callback: (option) => 
+                      @refs.oppose_slider.getDOMNode().value = option.oppose
+                      @refs.support_slider.getDOMNode().value = option.support
+
+
+                      edit_list.slider_pole_labels = 
+                        support: option.support 
+                        oppose: option.oppose 
+                      save edit_list
+
+
+                      setTimeout =>
+                        $(@refs.slider_config.getDOMNode()).ensureInView()
+
+                        if option.oppose == ''
+                          moveCursorToEnd @refs.oppose_slider.getDOMNode()
+
+                      , 100
+
+
+                    render_anchor: ->
+                      SPAN null, 
+                        LABEL 
+                          style: 
+                            color: focus_color()
+                            fontSize: 14
+                            marginRight: 12
+                            cursor: 'pointer'
+                          translator 'engage.list-config-spectrum-select', 'change spectrum'
+
+                        SPAN style: _.extend cssTriangle 'bottom', focus_color(), 15, 9,
+                          display: 'inline-block'
+
+                    render_option: (option, is_active) ->
+                      if option.oppose == ''
+                        return  DIV 
+                                  style: 
+                                    fontSize: 16
+                                    borderBottom: '1px dashed #ccc'
+                                    textAlign: 'center'
+                                    padding: '12px 0'
+
+                                  translator "engage.list-config-custom-spectrum", "Custom Spectrum"
+
+                      DIV 
+                        style: 
+                          margin: "12px 24px"
+                          position: 'relative'
+                          fontSize: 12
+
+                        SPAN 
+                          style: 
+                            display: 'inline-block'
+                            width: '100%'
+                            borderBottom: '1px solid'
+                            borderColor: '#666'
+
+                        BR null
+                        SPAN
+                          style: 
+                            position: 'relative'
+                            left: 0
+
+                          option.oppose 
+
+                        SPAN
+                          style: 
+                            position: 'absolute'
+                            right: 0
+                          option.support
+
+
+
+
+            if !@props.combines_these_lists
+              DIV 
+                style: 
+                  padding: '12px 0'
 
                 LABEL
                   className: 'LIST-field-edit-label'
@@ -641,199 +827,6 @@ window.ListHeader = ReactiveComponent
 
                     translator "engage.list-config-who-can-add-only-hosts", "Only forum hosts or those granted permission"
 
-            if !@props.combines_these_lists
-              slider_input_style = 
-                paddingTop: 2
-                position: 'absolute'
-                border: 'none'
-                outline: 'none'
-                color: '#444'
-                fontSize: if browser.is_mobile then 16 else 12
-
-              DIV 
-                style: 
-                  padding: '12px 0'
-                  width: column_sizes().second
-                  display: 'inline-block'
-                  float: 'right'
-
-                DIV 
-                  style: 
-                    textAlign: 'right'
-                  LABEL
-                    className: 'LIST-field-edit-label'
-
-
-                    TRANSLATE
-                      id: "engage.list-config-spectrum"
-                      span: 
-                        component: SPAN 
-                        args: 
-                          style: 
-                            fontWeight: 700
-
-                      "<span>Slider.</span> On what spectrum is each item evaluated?"
-
-
-                DIV 
-                  ref: 'slider_config'
-                  style: 
-                    padding: '24px 24px 32px 24px'
-                    position: 'relative'
-                    width: column_sizes().second + 24 * 2
-                    marginTop: 8
-                    left: -24 - 1
-
-                  DIV 
-                    style: 
-                      position: 'relative'
-                      width: column_sizes().second
-
-
-                    SPAN 
-                      style: 
-                        display: 'block'
-                        width: '100%'
-                        borderBottom: '1px solid'
-                        borderColor: '#999'
-                    
-                    INPUT 
-                      type: 'text'
-                      style: _.extend {}, slider_input_style, 
-                        left: 0
-                        textAlign: 'left'
-
-                      ref: 'oppose_slider'
-                      defaultValue: customization('slider_pole_labels', list_key, subdomain).oppose 
-                      placeholder: translator 'engage.slider_config.negative-pole-placeholder', 'Negative pole'
-                      onChange: (e) ->
-                        edit_list.slider_pole_labels ?= {}
-                        edit_list.slider_pole_labels.oppose = e.target.value 
-                        save edit_list
-
-                    INPUT
-                      type: 'text'
-                      style: _.extend {}, slider_input_style, 
-                        textAlign: 'right'
-                        right: 0
-
-                      ref: 'support_slider'
-                      defaultValue: customization('slider_pole_labels', list_key, subdomain).support
-                      onChange: (e) ->
-                        edit_list.slider_pole_labels ?= {}
-                        edit_list.slider_pole_labels.support = e.target.value 
-                        save edit_list
-                      placeholder: translator 'engage.slider_config.positive-pole-placeholder', 'Positive pole'
-
-
-                DIV 
-                  style: 
-                    position: 'relative'
-                    right: 0
-
-                  DropMenu
-                    options: [{support: '', oppose: ''}].concat (v for k,v of slider_labels)
-                    open_menu_on: 'activation'
-
-                    wrapper_style:
-                      textAlign: 'right'
-
-                    anchor_style: 
-                      color: 'inherit' #focus_color() #'inherit'
-                      height: '100%'
-                      padding: '4px 4px'
-                      position: 'relative'
-                      right: 0
-                      cursor: 'pointer'
-
-                    menu_style: 
-                      width: column_sizes().second + 24 * 2
-                      backgroundColor: '#fff'
-                      border: "1px solid #aaa"
-                      right: -99999
-                      left: 'auto'
-                      top: 24
-                      fontWeight: 400
-                      overflow: 'hidden'
-                      boxShadow: '0 1px 2px rgba(0,0,0,.3)'
-                      textAlign: 'left'
-
-                    menu_when_open_style: 
-                      right: -24
-
-                    option_style: 
-                      padding: '6px 0px'
-                      display: 'block'
-                      color: '#888'
-
-                    active_option_style: 
-                      color: 'black'
-                      backgroundColor: '#efefef'
-
-
-                    selection_made_callback: (option) => 
-                      @refs.oppose_slider.getDOMNode().value = option.oppose
-                      @refs.support_slider.getDOMNode().value = option.support
-                      edit_list.slider_pole_labels = 
-                        support: option.support 
-                        oppose: option.oppose 
-                      save edit_list
-
-                      setTimeout =>
-                        $(@refs.slider_config.getDOMNode()).ensureInView()
-                      , 0
-
-
-                    render_anchor: ->
-                      SPAN null, 
-                        LABEL 
-                          style: 
-                            color: focus_color()
-                            fontSize: 14
-                            marginRight: 12
-                            cursor: 'pointer'
-                          translator 'engage.list-config-spectrum-select', 'change spectrum'
-
-                        SPAN style: _.extend cssTriangle 'bottom', focus_color(), 15, 9,
-                          display: 'inline-block'
-
-                    render_option: (option, is_active) ->
-                      if option.oppose == ''
-                        return  DIV 
-                                  style: 
-                                    fontSize: 16
-                                    borderBottom: '1px dashed #ccc'
-                                    textAlign: 'center'
-                                    padding: '12px 0'
-
-                                  translator "engage.list-config-custom-spectrum", "Custom Spectrum"
-
-                      DIV 
-                        style: 
-                          margin: "12px 24px"
-                          position: 'relative'
-                          fontSize: 12
-
-                        SPAN 
-                          style: 
-                            display: 'inline-block'
-                            width: '100%'
-                            borderBottom: '1px solid'
-                            borderColor: '#666'
-
-                        BR null
-                        SPAN
-                          style: 
-                            position: 'relative'
-                            left: 0
-
-                          option.oppose 
-
-                        SPAN
-                          style: 
-                            position: 'absolute'
-                            right: 0
-                          option.support
 
             if !@props.combines_these_lists
 
@@ -880,41 +873,13 @@ window.ListHeader = ReactiveComponent
                       translator 'engage.list-config-archived', 'Close list by default on page load. Useful for archiving past issues.'
 
 
-                if get_tabs()           
-                  DIV 
-                    style:
-                      marginBottom: 6
-                      marginTop: 24
-                      display: 'flex'
-                      alignItems: 'center'
-
-                    LABEL 
-                      style: 
-                        marginRight: 8
-
-                      "Move to tab"
-
-                    SELECT 
-                      defaultValue: get_tab().name
-                      onChange: (e) =>
-                        edit_list.assign_to_tab = e.target.value
-                        save edit_list 
-
-                      for tab in get_tabs() when !tab.render_page
-                        OPTION 
-                          value: tab.name
-                          tab.name
-
-
-
-
-
-
 
       if @props.allow_editing
         EditList
           list: @props.list
           fresh: @props.fresh
+          edit_immediately: @props.edit_immediately
+          done_callback: @props.done_callback
 
       if !edit_list.editing && @props.proposals_count > 0 && !customization('questionaire', list_key, subdomain) && !is_collapsed && !customization('list_no_filters', list_key, subdomain)
         list_actions
@@ -924,21 +889,23 @@ window.ListHeader = ReactiveComponent
           fresh: @props.fresh
 
 
+styles += """
+  [data-widget="ModalNewList"] .LIST-fat-header-field {
+    margin-left: 0;
+  }
 
+"""
 window.ModalNewList = ReactiveComponent
   displayName: 'ModalNewList'
   mixins: [Modal]
 
   render: -> 
-
-    close_modal = -> 
-    save_question = ->
-
-    validated = true   
-
-
-    wrap_in_modal DIV null,
-      NewList(@props)
+    children = DIV null,
+      if @props.list
+        List @props
+      else 
+        NewList @props
+    wrap_in_modal children, HOMEPAGE_WIDTH() + 72
 
 
 window.NewList = ReactiveComponent
@@ -958,7 +925,6 @@ window.NewList = ReactiveComponent
 
     if @props.edit_immediately
       
-      console.log 'still editing?', edit_list.editing 
       if edit_list.editing == false 
         @props.done_callback?()
 
@@ -971,6 +937,7 @@ window.NewList = ReactiveComponent
       List 
         fresh: true
         list: list
+        edit_immediately: @props.edit_immediately
 
     else 
       BUTTON 
@@ -1071,7 +1038,7 @@ EditableTitle = ReactiveComponent
             focus_on_mount: true
             style: _.defaults {}, customization('list_label_style', list_key, subdomain) or {}, 
               fontFamily: header_font()
-              width: HOMEPAGE_WIDTH() + 24
+              width: HOMEPAGE_WIDTH() + (if @props.edit_immediately then -200 else 24)
 
             defaultValue: if !@props.fresh then title
             onChange: (e) ->
@@ -1110,7 +1077,7 @@ EditableTitle = ReactiveComponent
                 style: 
                   position: 'absolute'
                   left: -tw - 20
-                  top: if is_collapsed then 3 else 9
+                  top: if is_collapsed then 0 else 3
                   paddingRight: 20
                   paddingTop: 12
                   display: 'inline-block'
@@ -1124,6 +1091,20 @@ EditableTitle = ReactiveComponent
                     outline: 'none'
                     display: 'inline-block'
                     verticalAlign: 'top'
+
+  componentDidMount: -> @setFocusOnTitle()
+
+  componentDidUpdate: -> @setFocusOnTitle()
+
+  setFocusOnTitle: ->
+    edit_list = fetch "edit-#{@props.list.key}"
+    focus_now = @last_edit_state != edit_list.editing && edit_list.editing
+    @last_edit_state = edit_list.editing
+
+    if focus_now
+      setTimeout =>
+        moveCursorToEnd @refs.input?.getDOMNode()
+        
 
 
 # EditableListCategory = ReactiveComponent
@@ -1256,6 +1237,16 @@ EditableTitle = ReactiveComponent
 #             opinion_title
 
 
+styles += """
+  .LIST-description {
+    font-size: 16px;
+    font-weight: 400;
+    color: black;
+    margin-top: 8px;
+  }
+
+"""
+
 EditableDescription = ReactiveComponent
   displayName: 'EditableDescription'
   render: -> 
@@ -1274,11 +1265,8 @@ EditableDescription = ReactiveComponent
 
 
     DIV
-      style: _.defaults {}, (description_style or {}),
-        # fontSize: 18
-        fontWeight: 400 
-        color: '#222'
-        marginTop: 6
+      style: _.defaults {}, (description_style or {})
+      className: 'LIST-description'
 
       if typeof description == 'function'
         description()        
@@ -1303,9 +1291,9 @@ EditableDescription = ReactiveComponent
             DIV 
               id: 'edit_description'
               style:
-                marginLeft: -13
+                marginLeft:  if !@props.edit_immediately then -13
                 # marginTop: -12
-                width: HOMEPAGE_WIDTH() + 13 * 2
+                width:  HOMEPAGE_WIDTH() +  if !@props.edit_immediately then 13 * 2 else -200
 
               STYLE
                 dangerouslySetInnerHTML: __html: """
@@ -1448,6 +1436,9 @@ styles += """
     display: flex;
     align-items: start;
     position: relative;
+  }
+
+  [data-widget="EditPage"] .draggable-list[draggable="true"] {
     cursor: move;
   }
 
@@ -1503,43 +1494,83 @@ styles += """
   [data-widget="EditPage"] H2.list_header {
     font-size: 22px;
   }
+
+  [data-widget="EditPage"] button.convert_page, [data-widget="EditPage"] button.add_new_list {
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-top: 12px;
+  }
    
 """
 
+window.PAGE_TYPES =
+  ABOUT: 'about'
+  ALL: 'all'
+  DEFAULT: 'default'
 
 window.EditPage = ReactiveComponent
   displayName: "EditPage"
 
   mixins: [SubdomainSaveRateLimiter]
 
-  render: -> 
-
+  drawAboutPage: -> 
     subdomain = fetch '/subdomain'
-    edit_forum = fetch "edit_forum"
-
-    list_orderings = [
-      {value: 'fixed', label: 'Fixed order', explanation: 'Lists always ordered as specified above.'}
-      {value: 'newest_item', label: 'Order by most recent activity', explanation: 'The lists with the most recent activity are shown first.'}
-      {value: 'randomized', label: 'Randomized', explanation: 'Lists are show in a random order on page load.'}
-    ]
-
-    current_list_sort_method = get_list_sort_method(@props.page_name)
-    current_preamble = get_page_preamble(@props.page_name)
-
-    is_a_tab = !!get_tabs()
-
-    edit_forum.list_order ?= {}
-
-    if is_a_tab
-      edit_forum.list_order[@props.page_name] ?= get_tab(@props.page_name).lists.slice()
-    else
-      edit_forum.list_order[@props.page_name] ?= (customization('lists') or ['*']).slice()
-
-    ordered_lists = edit_forum.list_order[@props.page_name]
 
     return DIV null if @props.page_name != get_current_tab_name()
 
-    DIV null,
+    DIV null, 
+      I null, 
+        "This is an About page."
+      @renderPreamble()
+
+  drawShowAllPage: -> 
+    subdomain = fetch '/subdomain'
+
+    return DIV null if @props.page_name != get_current_tab_name()
+
+    DIV null, 
+      I null, 
+        "This page displays all lists shown on other pages in this forum."
+      @renderPreamble()
+      @renderSortOrder()
+
+
+
+  drawDefaultPage: -> 
+    subdomain = fetch '/subdomain'
+
+    is_a_tab = !!get_tabs()
+
+    edit_forum = fetch "edit_forum"
+
+    if is_a_tab
+      @ordered_lists = get_tab(@props.page_name)?.lists
+      if !@ordered_lists
+        console.error "No lists for tab. Returning"
+        return DIV null
+    else
+      subdomain.customizations.lists ?= get_all_lists()
+      @ordered_lists = subdomain.customizations.lists
+
+    return DIV null if @props.page_name != get_current_tab_name()
+
+    current_list_sort_method = get_list_sort_method(@props.page_name)
+
+
+    drag_capabilities = ""
+    if @ordered_lists.length > 1 && current_list_sort_method == 'fixed'
+      drag_capabilities += "Drag lists to reorder them. "
+
+    if get_tabs()?.length > 1 
+      drag_capabilities += "Lists can be dragged to a different tab to move them."
+
+
+
+    DIV {style: position: 'relative'},
+
+
+
 
       DIV 
         style: 
@@ -1552,39 +1583,8 @@ window.EditPage = ReactiveComponent
 
           "Lists" 
 
-        if @local.add_new_list
-          ModalNewList
-            edit_immediately: true
-            done_callback: => 
-              @local.add_new_list = false 
-              save @local
 
-        else 
-          BUTTON
-            onClick: =>
-              @local.add_new_list = true 
-              save @local
-            onKeyPress: (e) => 
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                e.preventDefault()
-                e.target.click()
-            "+ add new"
-
-
-
-        if ordered_lists.length > 0 
-          DIV 
-            style: 
-              fontSize: 14
-
-            if ordered_lists.length > 1 && current_list_sort_method == 'fixed'
-              "Drag lists to reorder them. "
-
-            if get_tabs()?.length > 1 
-              "Lists can be dragged to a different tab to move them."
-
-
-        if ordered_lists.length == 0
+        if @ordered_lists.length == 0
           DIV 
             style: 
               textAlign: 'center'
@@ -1594,18 +1594,26 @@ window.EditPage = ReactiveComponent
 
             "There are no lists here yet."
 
+        else if @ordered_lists.length > 0 
+          DIV 
+            style: 
+              fontSize: 14
+
+            drag_capabilities
+
         UL 
           style: 
+            marginTop: 24
             listStyle: 'none'
             # opacity: if current_list_sort_method != 'fixed' then .5
             # pointerEvents: if current_list_sort_method != 'fixed' then 'none'
 
-          for lst, idx in ordered_lists
+          for lst, idx in @ordered_lists
             do (lst, idx) =>
               wildcard = lst in ['*', '*-']
               if wildcard
                 lists_to_add = (ag_lst for ag_lst in get_all_lists() \
-                                       when ag_lst not in ordered_lists)
+                                       when ag_lst not in @ordered_lists)
 
               LI 
                 "data-idx": idx
@@ -1615,14 +1623,16 @@ window.EditPage = ReactiveComponent
 
                 DIV 
                   className: "draggable-list"
-                  draggable: true
+                  draggable: drag_capabilities.length > 0 
                   
 
-                  BUTTON 
-                    style: 
-                      cursor: 'move'
+                  if drag_capabilities.length > 0 
+                    BUTTON 
+                      "data-tooltip": drag_capabilities
+                      style: 
+                        cursor: 'move'
 
-                    drag_icon 15, '#888'
+                      drag_icon 15, '#888'
 
                   DIV
                     className: 'name'
@@ -1640,7 +1650,7 @@ window.EditPage = ReactiveComponent
                     if lists_to_add.length > 0 
                       disaggregate_wildcard = => 
                         for ag_lst in lists_to_add
-                          ordered_lists.splice idx, 0, ag_lst
+                          @ordered_lists.splice idx, 0, ag_lst
                         save edit_forum
                                   
                       BUTTON 
@@ -1655,15 +1665,35 @@ window.EditPage = ReactiveComponent
 
 
                   BUTTON 
+                    style: 
+                      cursor: 'pointer'
+                    "data-tooltip": "Edit list"
+                    onClick: (e) =>
+                      e.preventDefault()
+                      e.stopPropagation()
+                      @local.edit_list = lst
+                      save @local
+
+                    onKeyPress: (e) -> 
+                      if e.which == 13 || e.which == 32 # ENTER or SPACE
+                        e.preventDefault()
+                        e.target.click()
+
+                    edit_icon 18, 18, '#888'
+
+
+
+                  BUTTON 
                     style:
                       position: 'absolute'
                       right: -36
                       cursor: 'pointer'
+                    "data-tooltip": "Delete list"
                     onClick: (e) =>
                       if wildcard 
                         @refs.aggregate_checkbox.getDOMNode().click()
                       else 
-                        ordered_lists.splice( ordered_lists.indexOf(lst), 1  )
+                        @ordered_lists.splice( @ordered_lists.indexOf(lst), 1  )
                         delete_list(lst)
 
 
@@ -1671,145 +1701,237 @@ window.EditPage = ReactiveComponent
                       if e.which == 13 || e.which == 32 # ENTER or SPACE
                         e.preventDefault()
                         e.target.click()
-                    #trash_icon 23, 23, '#888'
-                    'x'
+                    trash_icon 23, 23, '#888'
 
-      if is_a_tab
-        LABEL 
-          style: 
-            display: 'flex'
-            marginLeft: 14
-            alignItems: 'center'
 
-          INPUT 
-            ref: 'aggregate_checkbox'
-            className: 'bigger'
-            type: 'checkbox'
-            checked: '*' in ordered_lists
-            onChange: (e) =>
-              if e.target.checked
-                if '*' not in ordered_lists
-                  ordered_lists.push '*'
-                  save edit_forum
-              else 
-                if (idx = ordered_lists.indexOf('*')) > -1  || (idx = ordered_lists.indexOf('*-')) > -1
-                  ordered_lists.splice idx, 1 
-                  save edit_forum
+        if @local.add_new_list || @local.edit_list
+          ModalNewList
+            list: @local.edit_list
+            edit_immediately: true
+            done_callback: => 
+              @local.add_new_list = @local.edit_list = false 
+              save @local
 
-          SPAN 
-            style: 
-              paddingLeft: 12
+        else 
+          BUTTON
+            className: "add_new_list"
+            "data-tooltip": "Create a new List"
+            onClick: =>
+              @local.add_new_list = true 
+              save @local
+            onKeyPress: (e) => 
+              if e.which == 13 || e.which == 32 # ENTER or SPACE
+                e.preventDefault()
+                e.target.click()
+            "+ add new list"
 
-            "Aggregate all lists from throughout this forum. Useful for a \"Show all\" tab." 
+      @renderSortOrder()
+      @renderPreamble()
+
+      @renderPageType()
 
 
 
-      FIELDSET 
+  renderPageType: -> 
+    is_a_tab = !!get_tabs()
+    return SPAN null if !is_a_tab
+
+    FIELDSET 
+      style: 
+        marginLeft: 0
+        marginTop: 42
+        border: "1px solid #ccc"
+        padding: "0px 24px 18px 24px"
+
+      LABEL 
         style: 
-          marginLeft: 0
-          marginTop: 32
-
-        LABEL 
-          style: 
-            fontSize: 17
-            marginTop: 36
-            fontWeight: 700
-            marginRight: 12
-
-          "List order:"
-
-
-        SELECT
-          defaultValue: current_list_sort_method
-          style: 
-            fontSize: 18
-          onChange: (e) => 
-            @local.list_sort_method = e.target.value
-            save @local
-
-          for option in list_orderings
-            OPTION
-              value: option.value
-              option.label 
-
-        if option.explanation
-          for option in list_orderings
-            if option.value == (@local.list_sort_method or current_list_sort_method)
-              DIV 
-                className: 'explanation field_explanation'
-                option.explanation
-
-
-      FIELDSET 
-        style: 
+          fontSize: 17
           marginTop: 36
-        B
-          style: 
-            display: 'inline-block'
-            fontSize: 17
-          "Preamble"
+          fontWeight: 700
+          marginBottom: 24
+          backgroundColor: 'white'
+          padding: "4px 8px"
+          position: 'relative'
+          top: -12
 
-        SPAN 
-          style: 
-            fontSize: 14
-            fontWeight: 400
-            paddingLeft: 6
-          "optional"
+        "Convert this page (irreversable)"
 
-        AutoGrowTextArea
-          style: 
-            width: '100%'
-            fontSize: 16
-          onChange: (e) =>
-            @local.page_preamble = e.target.value
-            save @local
+      DIV null,
 
-          defaultValue: current_preamble
-          min_height: 60
+        DIV
+          style: 
+            marginTop: 0
+
+          BUTTON 
+            className: 'convert_page'
+            onClick: => 
+              if @ordered_lists.length == 0 || confirm "Are you sure you want to convert this page? You may want to move the existing lists to a different tab first."
+                @ordered_lists.splice(0,@ordered_lists.length) 
+                @ordered_lists.push '*'
+
+                @local.type = PAGE_TYPES.ALL
+                save @local
+                save edit_forum
+
+            onKeyDown: (e) =>
+              if e.which == 13 || e.which == 32 # ENTER or SPACE
+                e.target.click()
+                e.preventDefault()
+            "Change to a \"Show all\" page"
+
+          DIV 
+            style: 
+              fontSize: 14
+            "All lists, such as those in other tabs, are shown on this page too."
 
         DIV 
           style: 
-            fontSize: 14
-          """Optional text shown at the top of this page. If you're on a paid plan, you
-             can create an \“About\” page by filling 
-             in the preamble without adding any lists. The preamble supports HTML, though 
-             with no scripts, and only inline styles."""   
+            marginTop: 18
+
+          BUTTON
+            className: 'convert_page'
+            onClick: => 
+              if @ordered_lists.length == 0 || confirm "Are you sure you want to convert this page? You may want to move the existing lists to a different tab first."            
+                @local.type = PAGE_TYPES.ABOUT
+                save @local
+                @ordered_lists.splice(0, @ordered_lists.length)
+                save edit_forum()
+
+            onKeyDown: (e) =>
+              if e.which == 13 || e.which == 32 # ENTER or SPACE
+                e.target.click()
+                e.preventDefault()
+            "Change to an \"About\" page"    
+          DIV 
+            style: 
+              fontSize: 14
+            "An About Page can help give participants additional background about the engagement."
 
 
+  renderSortOrder: -> 
+    current_list_sort_method = get_list_sort_method(@props.page_name)
+
+    if @local.type == PAGE_TYPES.DEFAULT
+      list_orderings = [
+        {value: 'fixed', label: 'Fixed order', explanation: 'Lists always ordered as specified above.'}
+        {value: 'newest_item', label: 'Order by most recent activity', explanation: 'The lists with the most recent activity are shown first.'}
+        {value: 'randomized', label: 'Randomized', explanation: 'Lists are show in a random order on page load.'}
+      ]
+    else if @local.type == PAGE_TYPES.ALL
+      list_orderings = [
+        {value: 'by_tab', label: 'Fixed order', explanation: 'Lists ordered as they are in the other tabs.'}
+        {value: 'newest_item', label: 'Order by most recent activity', explanation: 'The lists with the most recent activity are shown first.'}
+        {value: 'randomized', label: 'Randomized', explanation: 'Lists are show in a random order on page load.'}
+      ]
+    else 
+      list_orderings = null
+
+    FIELDSET 
+      style: 
+        marginLeft: 0
+        marginTop: 32
+
+      LABEL 
+        style: 
+          fontSize: 17
+          marginTop: 36
+          fontWeight: 700
+          marginRight: 12
+
+        "List order:"
 
 
+      SELECT
+        defaultValue: current_list_sort_method
+        style: 
+          fontSize: 18
+        onChange: (e) => 
+          @local.list_sort_method = e.target.value
+          save @local
+
+        for option in list_orderings
+          OPTION
+            value: option.value
+            option.label 
+
+      if option.explanation
+        for option in list_orderings
+          if option.value == (@local.list_sort_method or current_list_sort_method)
+            DIV 
+              className: 'explanation field_explanation'
+              option.explanation
 
 
+  renderPreamble: -> 
+    current_preamble = get_page_preamble(@props.page_name)
+    preamble_text = fetch "#{@props.page_name}-preamble"
+
+    if preamble_text.html? && preamble_text.html != @local.page_preamble
+      @local.page_preamble = preamble_text.html
+      save @local
+
+    FIELDSET 
+      style: 
+        marginTop: 36
+      B
+        style: 
+          display: 'inline-block'
+          fontSize: 17
+
+        if @local.type == PAGE_TYPES.ABOUT
+          "Background Information"
+        else 
+          "Preamble"
+
+      SPAN 
+        style: 
+          fontSize: 14
+          fontWeight: 400
+          paddingLeft: 6
+        "optional"
 
 
-      # DIV 
-      #   style:
-      #     display: 'flex'
-      #     marginTop: 36
-
-      #   BUTTON 
-      #     className: 'btn'
-      #     onClick: save_list_order
-      #     style: 
-      #       marginRight: 12
-
-      #     onKeyPress: (e) -> 
-      #       if e.which == 13 || e.which == 32 # ENTER or SPACE
-      #         e.preventDefault()
-      #         save_list_order()
-      #     'Save'
-
-
-      #   BUTTON 
-      #     className: 'like_link'
-      #     onClick: close_modal
-      #     onKeyPress: (e) -> 
-      #       if e.which == 13 || e.which == 32 # ENTER or SPACE
-      #         e.preventDefault()
-      #         close_modal()
-      #     'cancel'
+      WysiwygEditor
+        key: "#{@props.page_name}-preamble"
+        horizontal: true
+        html: current_preamble
+        # placeholder: if !@props.fresh then translator("engage.list_description", "(optional) Description")
+        toolbar_style: 
+          right: 0
+        container_style: 
+          borderRadius: 8
+          minHeight: 60
+          width: '100%'     
+          border: '1px solid #ccc'  
+          marginTop: 4   
+          padding: '8px 12px'
+        style: 
+          fontSize: 16
 
 
+      DIV 
+        style: 
+          fontSize: 14
+          marginTop: 2
+
+        """This field supports HTML, with the exception of <script>, <iframe> and <style> tags (use inline styles instead)."""
+        if @local.type == PAGE_TYPES.ABOUT
+        
+          """ If you need to embed a video, please contact help@consider.it."""
+
+
+  render: -> 
+
+    @local.type ?= get_tab(@props.page_name)?.type or PAGE_TYPES.DEFAULT
+    
+    console.assert !get_tabs() || @props.page_name, @props.page_name, @local
+
+    if @local.type == PAGE_TYPES.DEFAULT
+      @drawDefaultPage()
+    else if @local.type == PAGE_TYPES.ALL
+      @drawShowAllPage()
+    else if @local.type == PAGE_TYPES.ABOUT
+      @drawAboutPage()
 
 
   saveIfChanged: ->
@@ -1818,8 +1940,18 @@ window.EditPage = ReactiveComponent
 
     fields = ['list_sort_method', 'page_preamble']
 
+    changed_here = false
+
     if get_tabs()
       config = get_tab(@props.page_name)
+
+      if !config # this is usually fine
+        console.error "Config not found, can't save subdomain"
+        return
+
+      if (config.type || @local.type != 'default') && @local.type != config.type
+        config.type = @local.type
+        changed_here = true
     else 
       config = customizations
 
@@ -1827,19 +1959,7 @@ window.EditPage = ReactiveComponent
       console.error "Could not find a config, and thus could not save possible page changes #{@props.page_name}"
       return
 
-      
-    ordered_lists = edit_forum.list_order?[@props.page_name]
-    lists_changed = false
-    if ordered_lists
-
-      if config.lists?.indexOf("*-") > -1 && ordered_lists.lists.indexOf("*-") == -1
-        ordered_lists.lists.push '*-'
-
-      lists_changed = JSON.stringify(config.lists) != JSON.stringify(ordered_lists)
-      if lists_changed  
-        config.lists = ordered_lists.slice()
-
-    @save_customization_with_rate_limit {fields, config, force_save: lists_changed}
+    @save_customization_with_rate_limit {fields, config, force_save: changed_here}
 
   componentDidUpdate: ->
     @makeListsDraggable()
@@ -1849,26 +1969,14 @@ window.EditPage = ReactiveComponent
     @makeListsDraggable()    
 
   makeListsDraggable: ->
-    if @initialized && @props.page_name != get_current_tab_name()
-      @initialized = false
-
-    return if @props.page_name != get_current_tab_name() || @initialized == @props.page_name
-    @initialized = @props.page_name
+    return if @props.page_name != get_current_tab_name()
 
     reorder_list_position = (from, to) => 
       edit_forum = fetch('edit_forum')
-      ordered_lists = edit_forum.list_order[@props.page_name]
-      moving = ordered_lists[from]
-      to = ordered_lists[to]
+      moving = @ordered_lists[from]
 
-      if to == '*'
-        agglomerate = confirm 'Absorb this list back into the aggregation? If you cancel, the list will just be reordered.'
-
-      if to != '*' || !agglomerate
-        ordered_lists.splice from, 1
-        ordered_lists.splice to, 0, moving
-      else 
-        ordered_lists.splice from, 1
+      @ordered_lists.splice from, 1
+      @ordered_lists.splice to, 0, moving
 
       save edit_forum
 
@@ -1976,7 +2084,9 @@ window.EditPage = ReactiveComponent
 window.get_list_title = (list_key, include_category_value, subdomain) -> 
   edit_list = fetch "edit-#{list_key}"
 
-  title = (edit_list.editing and edit_list.list_title)
+  if edit_list.editing
+    title = edit_list.list_title
+
   title ?= customization('list_title', list_key, subdomain)
   if include_category_value
     title ?= category_value list_key, null, subdomain
@@ -2175,6 +2285,11 @@ window.get_proposals_in_list = (list_key) ->
 
   (p for p in proposals.proposals when "list/#{(p.cluster or 'Proposals').trim()}" == list_key)
 
+
+window.get_list = (list_key) ->
+  lst = _.extend {}, customization(list_key),
+    key: list_key
+    proposals: get_proposals_in_list(list_key)
 
 window.lists_current_user_can_add_to = (lists) -> 
   appendable = []

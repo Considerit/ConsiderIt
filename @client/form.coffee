@@ -23,7 +23,8 @@ window.moveCursorToEnd = (el) ->
   return if !el
 
   end = el.value.length
-  el.setSelectionRange(end, end)
+  if end > 0
+    el.setSelectionRange(end, end)
   el.focus()
 
 

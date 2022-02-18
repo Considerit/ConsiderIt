@@ -137,7 +137,7 @@ window.Modal =
     window.scroll(0, @scroll_Y)
 
 
-window.wrap_in_modal = (children) -> 
+window.wrap_in_modal = (children, width) -> 
   DIV null,
 
     DIV 
@@ -154,7 +154,7 @@ window.wrap_in_modal = (children) ->
       DIV
         id: 'modal-wrapper'
         style: 
-          maxWidth: AUTH_WIDTH() 
+          maxWidth: width or AUTH_WIDTH()
 
         DIV
           id: 'modal-body'

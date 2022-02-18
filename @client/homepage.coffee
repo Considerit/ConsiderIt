@@ -72,6 +72,7 @@ window.Homepage = ReactiveComponent
           if fetch('edit_forum').editing
             for page in get_tabs() or [{name: null}]
               EditPage
+                key: "#{page?.name}-#{!!get_tabs()}"
                 page_name: page?.name
           else 
 
@@ -162,7 +163,7 @@ window.SimpleHomepage = ReactiveComponent
           key: list.key
           list: list 
 
-      if current_user.is_admin && current_tab not in ['About', 'FAQ']
+      if current_user.is_admin && current_tab not in ['About', 'FAQ'] && get_tab(current_tab).type != PAGE_TYPES.ABOUT
         NewList()
           
 

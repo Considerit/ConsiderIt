@@ -85,8 +85,6 @@ class Subdomain < ApplicationRecord
       config['banner'].delete('background_image_url')
     end 
 
-
-    pp 'RETURNING', config['banner']
     config
 
   end

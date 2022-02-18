@@ -13,7 +13,7 @@ styles += """
     font-weight: 600;
     text-decoration: underline;
     color: #000;
-    font-size: 20px;
+    font-size: 19px;
   }
 
   .description_on_homepage {

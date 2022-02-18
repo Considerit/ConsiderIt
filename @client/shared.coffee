@@ -924,6 +924,9 @@ button.like_link {
   transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
   margin: 0;
   background-color: #{focus_blue}; 
+} .btn[disabled="true"], .btn[disabled] {
+  cursor: default;
+  opacity: .5;
 }
 
 

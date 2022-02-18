@@ -310,7 +310,7 @@ Root = ReactiveComponent
           }
           .content h1, .content h2, .content h3, .content h1 button, .content h2 button, .content h3 button, .content h4 button {
             font-family: #{header_fonts};
-            letter-spacing: -1px;
+            // letter-spacing: -1px;
           }
         """
 

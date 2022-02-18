@@ -109,29 +109,45 @@ window.create_new_tab = (tab_name) ->
   subdomain = fetch('/subdomain')
 
   tabs = get_tabs()
+
+  idx = 2
+  new_tab_name = tab_name
+
+  while !!get_tab(new_tab_name)
+    new_tab_name = "#{tab_name}-#{idx}"
+    idx += 1
+
   if !tabs
     tabs = subdomain.customizations.homepage_tabs = []
 
 
   new_tab =
-    name: tab_name
+    name: new_tab_name
     lists: []
 
   if tabs.length == 0
-    new_tab.lists.push '*'
+    new_tab.lists = get_all_lists()
+
 
   tabs.push new_tab 
-  save subdomain
+  save subdomain, ->
+    setTimeout ->
+      loc = fetch 'location'
+      loc.query_params.tab = new_tab_name
+      save loc 
+
 
 window.delete_tab = (tab_name, skip_confirmation) ->
   subdomain = fetch('/subdomain')
 
-  if skip_confirmation || confirm translator "homepage_tab.confirm-tab-deletion", "Are you sure you want to delete this tab? None of the lists in it will be deleted."
+  if skip_confirmation || \
+     (get_tab(tab_name).type in [null, undefined, PAGE_TYPES.DEFAULT] && get_lists_for_page(tab_name)?.length == 0) || \
+     confirm translator "homepage_tab.confirm-tab-deletion", "Are you sure you want to delete this tab? None of the lists in it will be deleted."
+    
     idx = -1
     for tab,idx in (get_tabs() or [])
       if tab.name == tab_name 
         break
-
 
     if get_current_tab_name() == tab_name
       tab_state = fetch 'homepage_tabs'
@@ -350,7 +366,7 @@ window.Tab = ReactiveComponent
                 e.preventDefault()
             onClick: =>
               if confirm(translator "homepage_tab.disable_confirmation", "Are you sure you want to disable tabs? Existing tabs will be deleted. All existing lists will still be visible.")
-                for tab in get_tabs()
+                for tab in get_tabs()?.slice() or []
                   delete_tab(tab.name, true)
             translator
               id: "homepage_tab.disable"
@@ -397,9 +413,12 @@ window.Tab = ReactiveComponent
         loc = fetch 'location'
 
         if tab.add_new
-          new_tab_name = if tab.demo then 'Show all' else 'new tab'
+          new_tab_name = 'Tab'
           create_new_tab new_tab_name
           loc.query_params.tab = new_tab_name
+          if tab.demo && subdomain.customizations.lists?
+            delete subdomain.customizations.lists
+            save subdomain
         else 
           loc.query_params.tab = tab_name 
 
@@ -432,6 +451,7 @@ window.Tab = ReactiveComponent
 
         else if edit_forum.editing && tab_name == get_current_tab_name()
           INPUT
+            className: "tab_name_input"
             type: 'text'
             defaultValue: tab_name
             style: tab_style
@@ -501,8 +521,9 @@ window.Tab = ReactiveComponent
     reassign_list_to_page = (source, target, dragging) =>
       edit_forum = fetch('edit_forum')
 
-      source = edit_forum.list_order[source]
-      target = edit_forum.list_order[target]
+      dragging = parseInt(dragging)
+      source = get_tab(source).lists
+      target = get_tab(target).lists
 
       list_key = source[dragging]
 

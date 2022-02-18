@@ -972,7 +972,7 @@ window.NewList = ReactiveComponent
 
         H1
           style: 
-            fontSize: 36
+            fontSize: 28
             fontWeight: 700
             color: if @local.hovering then '#444' else '#666'
 

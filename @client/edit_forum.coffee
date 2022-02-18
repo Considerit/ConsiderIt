@@ -30,7 +30,7 @@ window.EditForum = ReactiveComponent
           left: "50%"
           top: 8
           zIndex: 2
-          marginLeft: -52
+          marginLeft: -142
 
         BUTTON
           style: 
@@ -51,7 +51,7 @@ window.EditForum = ReactiveComponent
               enter_edit(e)  
               e.preventDefault()
 
-          translator 'forum.edit_button', 'Edit Forum'
+          translator 'forum.edit_button', 'Edit Banner & Forum Structure'
     else 
       DIV 
         style: 

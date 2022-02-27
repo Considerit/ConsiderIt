@@ -85,10 +85,8 @@ window.List = ReactiveComponent
         proposals_count: proposals.length
         fresh: @props.fresh
         allow_editing: !@props.allow_editing? || @props.allow_editing
-        edit_immediately: @props.edit_immediately
-        done_callback: @props.done_callback
 
-      if !is_collapsed && !@props.fresh && !@props.edit_immediately
+      if !is_collapsed && !@props.fresh
         
         permitted = permit('create proposal', list_key)
         DIV null, 
@@ -246,6 +244,16 @@ window.delete_list = (list_key, page, suppress_confirmation) ->
   else
     __remove_this_list(list_key, page)  
 
+
+
+
+
+
+
+
+
+
+
 EditList = ReactiveComponent
   displayName: 'EditList'
 
@@ -261,86 +269,7 @@ EditList = ReactiveComponent
 
     return SPAN null if !current_user.is_admin
 
-    if (@props.fresh || (@props.edit_immediately && !@initialized)) && !edit_list.editing
-      edit_list.editing = true
-      save edit_list
 
-    if @props.edit_immediately
-      @initialized = true
-      if edit_list.editing == false 
-        @props.done_callback?()
-      edit_list.editing ?= true
-
-
-
-    submit = =>
-
-
-      customizations = subdomain.customizations
-
-      customizations[list_key] ?= {}
-      list_config = customizations[list_key]
-
-      fields = ['list_title', 'list_description', 'list_permit_new_items', 'list_category', 'slider_pole_labels', 'list_opinions_title', 'discussion_enabled', 'list_is_archived']
-
-      for f in fields
-        val = edit_list[f]
-
-        if val?
-          list_config[f] = val
-
-      description = fetch("#{list_key}-description").html
-      if description == "<p><br></p>"
-        description = ""
-
-      list_config.list_description = description
-
-
-      if @props.fresh
-        new_name = "#{slugify(list_config.list_title or list_config.list_category or 'Proposals')}-#{Math.round(Math.random() * 100)}"
-        new_key = "list/#{new_name}"
-        customizations[new_key] = customizations[list_key]
-        _.defaults customizations[new_key], 
-          created_by: current_user.user 
-          created_at: Date.now()
-        delete customizations[list_key]
-
-        # if tabs are enabled, add it to the current tab
-        if get_tabs()
-          tab = get_tab() 
-          if tab
-            tab.lists.push new_key
-          else
-            console.error "Cannot add the list to the current tab #{current_tab}"
-        else 
-          customizations.lists ?= get_all_lists()
-          if customizations.lists.indexOf('*') == -1 && customizations.lists.indexOf(new_key) == -1
-            customizations.lists.push new_key
-          console.log 'NEW CUSTOMZIATION', customizations.lists, new_key
-
-
-      save subdomain, => 
-        if subdomain.errors
-          console.error "Failed to save list changes", subdomain.errors
-
-        exit_edit()
-
-    cancel_edit = => 
-      customizations = subdomain.customizations
-
-      if @props.fresh && list_key of customizations
-        delete customizations[list_key] 
-        save subdomain
-      else 
-        exit_edit()
-
-    exit_edit = => 
-      edit_list.editing = false 
-      for k,v of edit_list
-        if k != 'key' && k != 'editing'
-          delete edit_list[k]
-
-      save edit_list
 
     admin_actions = [{action: 'edit', label: translator('edit')}, 
                      {action: 'list_order', label: translator('engage.list-configuration.copy_link', 'reorder lists')},
@@ -447,44 +376,24 @@ EditList = ReactiveComponent
                 show_flash("Link copied to clipboard")
               , (err) ->
                 show_flash_error("Problem copying link to clipboard")
-
-
-              
       else 
+        ModalNewList
+          list: list
+          fresh: false
+          combines_these_lists: @props.combines_these_lists
 
-        DIV 
-          style: 
-            marginTop: 24
+  componentDidMount: -> @setFocusOnTitle()
 
+  componentDidUpdate: -> @setFocusOnTitle()
 
-          BUTTON 
-            className: 'btn'
-            style: 
-              backgroundColor: focus_color()
-            disabled: !(edit_list.list_title?.length > 0)
-            onClick: submit
-            onKeyDown: (e) =>
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                e.target.click()
-                e.preventDefault()
+  setFocusOnTitle: ->
+    edit_list = fetch "edit-#{@props.list.key}"
+    focus_now = @last_edit_state != edit_list.editing && edit_list.editing
+    @last_edit_state = edit_list.editing
 
-            translator 'engage.save_changes_button', 'Save'
-
-          BUTTON
-            className: 'like_link'
-            style: 
-              color: '#777'
-              fontSize: 18
-              marginLeft: 12
-              position: 'relative'
-              top: 2
-            onClick: cancel_edit
-            onKeyDown: (e) =>
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                e.target.click()
-                e.preventDefault()
-
-            translator 'shared.cancel_button', 'cancel'
+    if focus_now
+      setTimeout =>
+        moveCursorToEnd @refs.input?.getDOMNode()
 
 
 
@@ -515,13 +424,10 @@ window.ListHeader = ReactiveComponent
     if edit_list.editing 
       _.extend wrapper_style, 
         backgroundColor: '#f3f3f3'
-        marginLeft: if !@props.edit_immediately then -36
-        marginTop: if !@props.edit_immediately then -36
-        padding: if !@props.edit_immediately then "18px 36px 36px 36px"
+        marginLeft: -36
+        marginTop: -36
+        padding: "18px 36px 36px 36px"
         width: HOMEPAGE_WIDTH() + 36 * 2
-
-      if @props.edit_immediately
-        wrapper_style.width -= 250
 
     edit_list.discussion_enabled ?= customization('discussion_enabled', list_key)
     edit_list.list_is_archived ?= customization('list_is_archived', list_key)
@@ -538,13 +444,12 @@ window.ListHeader = ReactiveComponent
 
         DIV 
           style: 
-            width:  if !@props.edit_immediately then HOMEPAGE_WIDTH()
-            margin:  if !@props.edit_immediately then 'auto'
+            width:  HOMEPAGE_WIDTH()
+            margin:  'auto'
 
           EditableTitle
             list: @props.list
             fresh: @props.fresh
-            edit_immediately: @props.edit_immediately
 
           if edit_list.editing || !is_collapsed
             DIV null, 
@@ -552,27 +457,299 @@ window.ListHeader = ReactiveComponent
                 EditableDescription
                   list: @props.list
                   fresh: @props.fresh
-                  edit_immediately: @props.edit_immediately
 
-          # if edit_list.editing || !is_collapsed
-          #   DIV 
-          #     style: 
-          #       position: 'relative'
-          #       marginTop: if get_list_title(list_key, null, subdomain)?.length > 0 || edit_list.editing then  18
-          #       display: if !edit_list.editing && category_value(list_key, null, subdomain).length + histo_title(list_key).length == 0 then 'none'
 
-          #     EditableListCategory
-          #       list: @props.list
-          #       fresh: @props.fresh
+      if @props.allow_editing
+        EditList
+          list: @props.list
+          fresh: @props.fresh
+          combines_these_lists: @props.combines_these_lists
 
-          #     EditableOpinionLabel
-          #       list: @props.list
-          #       fresh: @props.fresh
+      if !edit_list.editing && @props.proposals_count > 0 && !customization('questionaire', list_key, subdomain) && !is_collapsed && !customization('list_no_filters', list_key, subdomain)
+        list_actions
+          list: @props.list
+          add_new: !@props.combines_these_lists && customization('list_permit_new_items', list_key, subdomain) && !is_collapsed && @props.proposals_count > 4
+          can_sort: customization('homepage_show_search_and_sort', null, subdomain) && @props.proposals_count > 1 
+          fresh: @props.fresh
 
-        if edit_list.editing
 
-          option_block = 
-            marginTop: 8
+
+window.NewList = ReactiveComponent
+  displayName: 'NewList'
+
+  render: -> 
+    subdomain = fetch '/subdomain'
+
+    if !@local.edit_key
+      @local.edit_key = "list/new-list-#{Math.round(Math.random() * 1000)}"
+    
+    list = 
+      key: @local.edit_key 
+
+    list_key = list.key
+    edit_list = fetch "edit-#{list_key}"
+
+    @local.hovering ?= false
+
+    if edit_list.editing || @props.edit_immediately
+      ModalNewList 
+        fresh: true
+        list: list
+        done_callback: @props.done_callback
+
+    else 
+      BUTTON 
+        style: 
+          textAlign: 'left'
+          marginTop: 35
+          display: 'block'
+          padding: '18px 24px'
+          position: 'relative'
+          left: -24
+          width: '100%'
+          borderRadius: 8
+          backgroundColor: if @local.hovering then '#eaeaea' else '#efefef'
+          border: '1px solid'
+          borderColor: if @local.hovering then '#bbb' else '#ddd'
+
+        onMouseEnter: =>
+          @local.hovering = true 
+          save @local 
+        onMouseLeave: => 
+          @local.hovering = false
+          save @local 
+
+        onClick: =>
+          edit_list.editing = true
+          save edit_list
+
+        onKeyDown: (e) => 
+          if e.which == 13 || e.which == 32 # ENTER or SPACE
+            e.target.click()
+            e.preventDefault()              
+
+        H1
+          style: 
+            fontSize: 28
+            fontWeight: 700
+            color: if @local.hovering then '#444' else '#666'
+
+          translator 'engage.create_new_list_button', "Create a new list"
+
+        DIV 
+          style: 
+            fontSize: 14
+            marginTop: 4
+          'A list defines a category like "Recommendations" or poses an open-ended question like "What are your ideas?"'
+
+
+
+
+styles += """
+  [data-widget="ModalNewList"] .LIST-fat-header-field {
+    margin-left: 0;
+  }
+
+"""
+window.ModalNewList = ReactiveComponent
+  displayName: 'ModalNewList'
+  mixins: [Modal]
+
+  render: -> 
+    list = @props.list
+    list_key = list.key
+
+    current_user = fetch '/current_user'
+    edit_list = fetch "edit-#{list_key}"
+    subdomain = fetch '/subdomain'
+
+
+    return SPAN null if !current_user.is_admin
+
+
+ 
+
+    submit = =>
+
+
+      customizations = subdomain.customizations
+
+      customizations[list_key] ?= {}
+      list_config = customizations[list_key]
+
+      fields = ['list_title', 'list_description', 'list_permit_new_items', 'list_category', 'slider_pole_labels', 'list_opinions_title', 'discussion_enabled', 'list_is_archived']
+
+      for f in fields
+        val = edit_list[f]
+
+        if val?
+          list_config[f] = val
+
+      description = fetch("#{list_key}-description").html
+      if description == "<p><br></p>"
+        description = ""
+
+      list_config.list_description = description
+
+
+      if @props.fresh
+        new_name = "#{slugify(list_config.list_title or list_config.list_category or 'Proposals')}-#{Math.round(Math.random() * 100)}"
+        new_key = "list/#{new_name}"
+        customizations[new_key] = customizations[list_key]
+        _.defaults customizations[new_key], 
+          created_by: current_user.user 
+          created_at: Date.now()
+        delete customizations[list_key]
+
+        # if tabs are enabled, add it to the current tab
+        if get_tabs()
+          tab = get_tab() 
+          if tab
+            tab.lists.push new_key
+          else
+            console.error "Cannot add the list to the current tab #{current_tab}"
+        else 
+          customizations.lists ?= get_all_lists()
+          if customizations.lists.indexOf('*') == -1 && customizations.lists.indexOf(new_key) == -1
+            customizations.lists.push new_key
+          console.log 'NEW CUSTOMZIATION', customizations.lists, new_key
+
+
+      save subdomain, => 
+        if subdomain.errors
+          console.error "Failed to save list changes", subdomain.errors
+
+        exit_edit()
+
+    cancel_edit = => 
+      customizations = subdomain.customizations
+
+      if @props.fresh && list_key of customizations
+        delete customizations[list_key] 
+        save subdomain
+      else 
+        exit_edit()
+
+    exit_edit = => 
+      edit_list.editing = false 
+      for k,v of edit_list
+        if k != 'key' && k != 'editing'
+          delete edit_list[k]
+
+      save edit_list
+
+      @props.done_callback?()
+
+    edit_list.discussion_enabled ?= customization('discussion_enabled', list_key)
+    edit_list.list_is_archived ?= customization('list_is_archived', list_key)
+
+    title = get_list_title list_key, true, subdomain
+    description = edit_list.description or customization('list_description', list_key, subdomain)
+    if Array.isArray(description)
+      description = description.join('\n')
+
+    description_style = customization 'list_description_style', list_key
+
+    option_block = 
+      marginTop: 8
+
+    children = \ 
+        DIV 
+          style: 
+            marginTop: 24
+
+          DIV null, 
+            DIV 
+              className: 'LIST-field-edit-label'
+
+              TRANSLATE
+                id: "engage.list-config-title"
+                span: 
+                  component: SPAN 
+                  args: 
+                    style: 
+                      fontWeight: 700
+
+                "<span>Title.</span> Usually an open-ended question like \"What are your ideas?\" or a list label like \"Recommended actions for mitigation\"."
+
+            H1 
+              className: 'LIST-header'
+
+              AutoGrowTextArea
+                id: "title-#{list_key}"
+                className: 'LIST-header LIST-fat-header-field'
+                ref: 'input'
+                focus_on_mount: true
+                style: _.defaults {}, customization('list_label_style', list_key, subdomain) or {}, 
+                  fontFamily: header_font()
+                  width: HOMEPAGE_WIDTH() + -200
+
+                defaultValue: if !@props.fresh then title
+                onChange: (e) ->
+                  edit_list.list_title = e.target.value 
+                  save edit_list
+
+
+          DIV null, 
+            if description?.length > 0 || typeof(description) == 'function' || edit_list.editing
+
+
+              DIV
+                style: _.defaults {}, (description_style or {})
+                className: 'LIST-description'
+
+                if typeof description == 'function'
+                  description()        
+                else 
+
+                  DIV null,
+
+                    DIV 
+                      className: 'LIST-field-edit-label'
+
+                      TRANSLATE
+                        id: "engage.list-config-description"
+                        span: 
+                          component: SPAN 
+                          args: 
+                            style: 
+                              fontWeight: 700
+
+                        "<span>Description [optional].</span> Give any additional information or direction here."
+
+                    DIV 
+                      id: 'edit_description'
+                      style:
+                        # marginTop: -12
+                        width:  HOMEPAGE_WIDTH() - 200
+
+                      STYLE
+                        dangerouslySetInnerHTML: __html: """
+                          #edit_description .ql-editor {
+                            min-height: 48px;
+                            padding: 12px 12px;
+                            border: 1px solid #eaeaea;
+                            border-radius: 8px;
+                            background-color: white;
+
+                          }
+                        """
+
+                      WysiwygEditor
+                        key: "#{list_key}-description"
+                        horizontal: true
+                        html: customization('list_description', list_key)
+                        # placeholder: if !@props.fresh then translator("engage.list_description", "(optional) Description")
+                        toolbar_style: 
+                          right: 0
+                        container_style: 
+                          borderRadius: 8
+                        style: 
+                          fontSize: if browser.is_mobile then 32
+
+
+
+
 
           DIV null, 
 
@@ -897,115 +1074,50 @@ window.ListHeader = ReactiveComponent
 
 
 
-      if @props.allow_editing
-        EditList
-          list: @props.list
-          fresh: @props.fresh
-          edit_immediately: @props.edit_immediately
-          done_callback: @props.done_callback
-
-      if !edit_list.editing && @props.proposals_count > 0 && !customization('questionaire', list_key, subdomain) && !is_collapsed && !customization('list_no_filters', list_key, subdomain)
-        list_actions
-          list: @props.list
-          add_new: !@props.combines_these_lists && customization('list_permit_new_items', list_key, subdomain) && !is_collapsed && @props.proposals_count > 4
-          can_sort: customization('homepage_show_search_and_sort', null, subdomain) && @props.proposals_count > 1 
-          fresh: @props.fresh
 
 
-styles += """
-  [data-widget="ModalNewList"] .LIST-fat-header-field {
-    margin-left: 0;
-  }
 
-"""
-window.ModalNewList = ReactiveComponent
-  displayName: 'ModalNewList'
-  mixins: [Modal]
 
-  render: -> 
-    children = DIV null,
-      if @props.list
-        List @props
-      else 
-        NewList @props
+
+          BUTTON 
+            className: 'btn'
+            style: 
+              backgroundColor: focus_color()
+            disabled: !(edit_list.list_title?.length > 0)
+            onClick: submit
+            onKeyDown: (e) =>
+              if e.which == 13 || e.which == 32 # ENTER or SPACE
+                e.target.click()
+                e.preventDefault()
+
+            translator 'engage.save_changes_button', 'Save'
+
+          BUTTON
+            className: 'like_link'
+            style: 
+              color: '#777'
+              fontSize: 18
+              marginLeft: 12
+              position: 'relative'
+              top: 2
+            onClick: cancel_edit
+            onKeyDown: (e) =>
+              if e.which == 13 || e.which == 32 # ENTER or SPACE
+                e.target.click()
+                e.preventDefault()
+
+            translator 'shared.cancel_button', 'cancel'
+
+
+
+
+
+
+
+
+
+
     wrap_in_modal children, HOMEPAGE_WIDTH() + 72
-
-
-window.NewList = ReactiveComponent
-  displayName: 'NewList'
-
-  render: -> 
-    subdomain = fetch '/subdomain'
-
-    if !@local.edit_key
-      @local.edit_key = "list/new-list-#{Math.round(Math.random() * 1000)}"
-    
-    list = 
-      key: @local.edit_key 
-
-    list_key = list.key
-    edit_list = fetch "edit-#{list_key}"
-
-    if @props.edit_immediately
-      
-      if edit_list.editing == false 
-        @props.done_callback?()
-
-      edit_list.editing ?= true
-
-
-    @local.hovering ?= false
-
-    if edit_list.editing
-      List 
-        fresh: true
-        list: list
-        edit_immediately: @props.edit_immediately
-
-    else 
-      BUTTON 
-        style: 
-          textAlign: 'left'
-          marginTop: 35
-          display: 'block'
-          padding: '18px 24px'
-          position: 'relative'
-          left: -24
-          width: '100%'
-          borderRadius: 8
-          backgroundColor: if @local.hovering then '#eaeaea' else '#efefef'
-          border: '1px solid'
-          borderColor: if @local.hovering then '#bbb' else '#ddd'
-
-        onMouseEnter: =>
-          @local.hovering = true 
-          save @local 
-        onMouseLeave: => 
-          @local.hovering = false
-          save @local 
-
-        onClick: =>
-          edit_list.editing = true
-          save edit_list
-
-        onKeyDown: (e) => 
-          if e.which == 13 || e.which == 32 # ENTER or SPACE
-            e.target.click()
-            e.preventDefault()              
-
-        H1
-          style: 
-            fontSize: 28
-            fontWeight: 700
-            color: if @local.hovering then '#444' else '#666'
-
-          translator 'engage.create_new_list_button', "Create a new list"
-
-        DIV 
-          style: 
-            fontSize: 14
-            marginTop: 4
-          'A list defines a category like "Recommendations" or poses an open-ended question like "What are your ideas?"'
 
 
 
@@ -1022,7 +1134,6 @@ EditableTitle = ReactiveComponent
     list_state = fetch list_key
     is_collapsed = list_state.collapsed
 
-    edit_list = fetch "edit-#{list_key}"
     subdomain = fetch '/subdomain'
 
     title = get_list_title list_key, true, subdomain
@@ -1040,230 +1151,58 @@ EditableTitle = ReactiveComponent
 
 
     DIV null, 
-      if edit_list.editing 
-        DIV 
-          className: 'LIST-field-edit-label'
-
-          TRANSLATE
-            id: "engage.list-config-title"
-            span: 
-              component: SPAN 
-              args: 
-                style: 
-                  fontWeight: 700
-
-            "<span>Title.</span> Usually an open-ended question like \"What are your ideas?\" or a list label like \"Recommended actions for mitigation\"."
 
       H1 
         className: 'LIST-header'
         style: # ugly...we only want to show the expand/collapse icon
-          fontSize: if !edit_list.editing && title.replace(/^\s+|\s+$/g, '').length == 0 then 0
+          fontSize: if title.replace(/^\s+|\s+$/g, '').length == 0 then 0
 
-        if edit_list.editing
-          AutoGrowTextArea
-            id: "title-#{list_key}"
-            className: 'LIST-header LIST-fat-header-field'
-            ref: 'input'
-            focus_on_mount: true
-            style: _.defaults {}, customization('list_label_style', list_key, subdomain) or {}, 
-              fontFamily: header_font()
-              width: HOMEPAGE_WIDTH() + (if @props.edit_immediately then -200 else 24)
+        TITLE_WRAPPER
+          tabIndex: if !list_uncollapseable then 0
+          'aria-label': "#{title}. #{translator('Expand or collapse list.')}"
+          'aria-pressed': !is_collapsed
+          onMouseEnter: => @local.hover_label = true; save @local 
+          onMouseLeave: => @local.hover_label = false; save @local
+          className: 'LIST-header'          
+          style: _.defaults {}, customization('list_label_style', list_key, subdomain) or {}, 
+            fontFamily: header_font()              
+            cursor: if !list_uncollapseable then 'pointer'
+            position: 'relative'
+            textAlign: 'left'
+            outline: 'none'
 
-            defaultValue: if !@props.fresh then title
-            onChange: (e) ->
-              edit_list.list_title = e.target.value 
-              save edit_list
-
-        else 
-
-          TITLE_WRAPPER
-            tabIndex: if !list_uncollapseable then 0
-            'aria-label': "#{title}. #{translator('Expand or collapse list.')}"
-            'aria-pressed': !is_collapsed
-            onMouseEnter: => @local.hover_label = true; save @local 
-            onMouseLeave: => @local.hover_label = false; save @local
-            className: 'LIST-header'          
-            style: _.defaults {}, customization('list_label_style', list_key, subdomain) or {}, 
-              fontFamily: header_font()              
-              cursor: if !list_uncollapseable then 'pointer'
-              position: 'relative'
-              textAlign: 'left'
-              outline: 'none'
-
-            onKeyDown: if !list_uncollapseable then (e) -> 
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                toggle_list()
-                e.preventDefault()
-            onClick: if !list_uncollapseable then (e) -> 
+          onKeyDown: if !list_uncollapseable then (e) -> 
+            if e.which == 13 || e.which == 32 # ENTER or SPACE
               toggle_list()
-              document.activeElement.blur()
+              e.preventDefault()
+          onClick: if !list_uncollapseable then (e) -> 
+            toggle_list()
+            document.activeElement.blur()
 
-            title 
+          title 
 
-            if !list_uncollapseable
+          if !list_uncollapseable
+            SPAN 
+              'aria-hidden': true
+              style: 
+                position: 'absolute'
+                left: -tw - 20
+                top: if is_collapsed then 0 else 3
+                paddingRight: 20
+                paddingTop: 12
+                display: 'inline-block'
+
               SPAN 
-                'aria-hidden': true
-                style: 
-                  position: 'absolute'
-                  left: -tw - 20
-                  top: if is_collapsed then 0 else 3
-                  paddingRight: 20
-                  paddingTop: 12
+                
+                style: cssTriangle (if is_collapsed then 'right' else 'bottom'), ((customization('list_label_style', list_key, subdomain) or {}).color or 'black'), tw, th,
+                  width: tw
+                  height: th
+                  opacity: if @local.hover_label or is_collapsed then 1 else .1
+                  outline: 'none'
                   display: 'inline-block'
+                  verticalAlign: 'top'
 
-                SPAN 
-                  
-                  style: cssTriangle (if is_collapsed then 'right' else 'bottom'), ((customization('list_label_style', list_key, subdomain) or {}).color or 'black'), tw, th,
-                    width: tw
-                    height: th
-                    opacity: if @local.hover_label or is_collapsed then 1 else .1
-                    outline: 'none'
-                    display: 'inline-block'
-                    verticalAlign: 'top'
-
-  componentDidMount: -> @setFocusOnTitle()
-
-  componentDidUpdate: -> @setFocusOnTitle()
-
-  setFocusOnTitle: ->
-    edit_list = fetch "edit-#{@props.list.key}"
-    focus_now = @last_edit_state != edit_list.editing && edit_list.editing
-    @last_edit_state = edit_list.editing
-
-    if focus_now
-      setTimeout =>
-        moveCursorToEnd @refs.input?.getDOMNode()
         
-
-
-# EditableListCategory = ReactiveComponent
-#   displayName: 'EditableListCategory'
-#   render: -> 
-#     subdomain = fetch '/subdomain'
-#     current_user = fetch '/current_user'
-
-#     list = @props.list
-#     list_key = list.key
-#     list_state = fetch list_key
-#     edit_list = fetch "edit-#{list_key}"
-
-#     category = category_value list_key, @props.fresh, subdomain
-
-#     has_title = customization('list_description', list_key)?.length > 0 || customization('list_title', list_key)?.length > 0
-#     heading_style = _.defaults {}, customization('list_label_style', list_key),
-#       fontSize: if !has_title then 44 else 36
-#       fontWeight: if !has_title then 700 else 500
-#       fontFamily: header_font()
-
-#     show_opinion_header = edit_list.editing || widthWhenRendered(category, heading_style) <= column_sizes().first + column_sizes().gutter
-
-#     DIV 
-#       style: 
-#         width: if show_opinion_header then column_sizes().first else '100%'
-#         display: 'inline-block'
-
-#       if edit_list.editing 
-#         DIV 
-#           className: 'LIST-field-edit-label'
-
-#           TRANSLATE
-#             id: "engage.list-config-category"
-#             span: 
-#               component: SPAN 
-#               args: 
-#                 style: 
-#                   fontWeight: 700
-
-#             "<span>Category.</span> e.g. \"Ideas\", \"Policies\", \"Questions\", \"Strategies\"."
-
-#       H1 null,
-
-#         if edit_list.editing
-#           AutoGrowTextArea
-#             id: "category-#{list_key}"
-#             ref: 'input'
-#             className: "LIST-header LIST-fat-header-field #{if has_title then 'LIST-smaller-header'}"
-#             style: _.defaults {}, customization('list_label_style', list_key) or {}, 
-#               fontFamily: header_font()
-#               width: column_sizes().first + 24
-
-#             defaultValue: category
-#             onChange: (e) ->
-#               edit_list.list_category = e.target.value 
-#               save edit_list
-#         else 
-#           SPAN 
-#             className: if !has_title then 'LIST-header' else 'LIST-header LIST-smaller-header'          
-#             style: _.defaults {}, customization('list_label_style', list_key) or {}
-#             category
-
-
-# EditableOpinionLabel = ReactiveComponent
-#   displayName: 'EditableOpinionLabel'
-#   render: -> 
-#     subdomain = fetch '/subdomain'
-#     current_user = fetch '/current_user'
-
-#     list = @props.list
-#     list_key = list.key
-#     list_state = fetch list_key
-#     edit_list = fetch "edit-#{list_key}"
-
-#     opinion_title = histo_title list_key
-
-#     has_title = customization('list_description', list_key)?.length > 0 || customization('list_title', list_key)?.length > 0
-#     heading_style = _.defaults {}, customization('list_label_style', list_key),
-#       fontSize: if !has_title then 44 else 36
-#       fontWeight: if !has_title then 700 else 500
-#       fontFamily: header_font()
-
-#     show = edit_list.editing || widthWhenRendered(category_value(list_key, null, subdomain), heading_style) <= column_sizes().first + column_sizes().gutter
-    
-#     DIV 
-#       style: 
-#         width: column_sizes().second
-#         display: if show then 'inline-block' else 'none'
-#         marginLeft: column_sizes().gutter
-#         textAlign: 'center'
-
-#       if edit_list.editing 
-#         DIV 
-#           className: 'LIST-field-edit-label'
-#           style: 
-#             textAlign: 'right'
-
-#           TRANSLATE
-#             id: "engage.list-config-opinion-title"
-#             span: 
-#               component: SPAN 
-#               args: 
-#                 style: 
-#                   fontWeight: 700
-
-#             "<span>Opinion title.</span> e.g. \"Ratings\", \"Gut checks\"."
-
-
-#       H1 null,
-#         if edit_list.editing
-#           AutoGrowTextArea
-#             id: "list_opinions_title-#{list_key}"
-#             ref: 'input'
-#             className: "LIST-header LIST-fat-header-field #{if has_title then 'LIST-smaller-header'}"
-#             style: _.defaults {}, customization('list_label_style', list_key) or {},  
-#               fontFamily: header_font()
-#               width: column_sizes().second + 24
-#               textAlign: 'right'
-
-#             defaultValue: opinion_title
-#             onChange: (e) ->
-#               edit_list.list_opinions_title = e.target.value 
-#               save edit_list
-
-#         else 
-#           SPAN 
-#             className: if !has_title then 'LIST-header' else 'LIST-header LIST-smaller-header'
-#             style: _.defaults {}, customization('list_label_style', list_key) or {}
-#             opinion_title
 
 
 styles += """
@@ -1284,9 +1223,7 @@ EditableDescription = ReactiveComponent
     list = @props.list 
     list_key = list.key
 
-    edit_list = fetch "edit-#{list_key}"
-
-    description = edit_list.list_description or customization('list_description', list_key)
+    description = customization('list_description', list_key)
     if Array.isArray(description)
       description = description.join('\n')
 
@@ -1300,65 +1237,16 @@ EditableDescription = ReactiveComponent
       if typeof description == 'function'
         description()        
       else 
+        desc = description
+        if typeof desc == 'string'
+          desc = [description]
 
-        if current_user.is_admin && edit_list.editing
-          DIV null,
-
-            DIV 
-              className: 'LIST-field-edit-label'
-
-              TRANSLATE
-                id: "engage.list-config-description"
-                span: 
-                  component: SPAN 
-                  args: 
-                    style: 
-                      fontWeight: 700
-
-                "<span>Description [optional].</span> Give any additional information or direction here."
-
-            DIV 
-              id: 'edit_description'
-              style:
-                marginLeft:  if !@props.edit_immediately then -13
-                # marginTop: -12
-                width:  HOMEPAGE_WIDTH() +  if !@props.edit_immediately then 13 * 2 else -200
-
-              STYLE
-                dangerouslySetInnerHTML: __html: """
-                  #edit_description .ql-editor {
-                    min-height: 48px;
-                    padding: 12px 12px;
-                    border: 1px solid #eaeaea;
-                    border-radius: 8px;
-                    background-color: white;
-
-                  }
-                """
-
-              WysiwygEditor
-                key: "#{list_key}-description"
-                horizontal: true
-                html: customization('list_description', list_key)
-                # placeholder: if !@props.fresh then translator("engage.list_description", "(optional) Description")
-                toolbar_style: 
-                  right: 0
-                container_style: 
-                  borderRadius: 8
-                style: 
-                  fontSize: if browser.is_mobile then 32
-
-        else 
-          desc = description
-          if typeof desc == 'string'
-            desc = [description]
-
-          for para, idx in desc
-            DIV 
-              key: idx
-              style:
-                marginBottom: 10
-              dangerouslySetInnerHTML: {__html: para}
+        for para, idx in desc
+          DIV 
+            key: idx
+            style:
+              marginBottom: 10
+            dangerouslySetInnerHTML: {__html: para}
 
 
 window.list_actions = (props) -> 
@@ -1740,9 +1628,9 @@ window.EditPage = ReactiveComponent
 
 
         if @local.add_new_list || @local.edit_list
-          ModalNewList
-            list: @local.edit_list
+          NewList
             edit_immediately: true
+            list: @local.edit_list
             done_callback: => 
               @local.add_new_list = @local.edit_list = false 
               save @local

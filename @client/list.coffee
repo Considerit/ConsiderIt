@@ -88,7 +88,7 @@ window.List = ReactiveComponent
         edit_immediately: @props.edit_immediately
         done_callback: @props.done_callback
 
-      if !is_collapsed && !@props.fresh && !@edit_immediately
+      if !is_collapsed && !@props.fresh && !@props.edit_immediately
         
         permitted = permit('create proposal', list_key)
         DIV null, 
@@ -832,45 +832,68 @@ window.ListHeader = ReactiveComponent
 
               DIV 
                 style:
-                  marginTop: 36
+                  marginTop: 24
+                  marginBottom: 12
 
-                DIV 
-                  style:
-                    marginBottom: 6
-                  LABEL 
-                    style: {}
 
-                    INPUT 
-                      type: 'checkbox'
-                      defaultChecked: !edit_list.discussion_enabled
-                      name: 'discussion_enabled'
-                      onChange: (e) =>
-                        edit_list.discussion_enabled = !edit_list.discussion_enabled
-                        save edit_list
 
-                    SPAN 
-                      style: 
-                        paddingLeft: 4
-                      translator 'engage.list-config-discussion-enabled', 'Disable commenting. Spectrums only.'
+                if !@local.show_all_options 
+                  BUTTON 
+                    className: 'like_link'
+                    style: 
+                      textDecoration: 'underline'
+                      fontWeight: 700
+                      color: '#666'
+                      fontSize: 14
+                    onClick: (e) => 
+                      @local.show_all_options = true 
+                      save @local
+                    onKeyPress: (e) => 
+                      if e.which == 13 || e.which == 32 # ENTER or SPACE
+                        e.preventDefault()
+                        e.target.click()
+                    'Show more options'
+                else 
+                  DIV null, 
 
-                DIV                   
-                  style:
-                    marginBottom: 6
-                  LABEL 
-                    style: {}
 
-                    INPUT 
-                      type: 'checkbox'
-                      defaultChecked: edit_list.list_is_archived
-                      name: 'list_is_archived'
-                      onChange: (e) =>
-                        edit_list.list_is_archived = !edit_list.list_is_archived
-                        save edit_list
+                    DIV 
+                      style:
+                        marginBottom: 6
+                      LABEL 
+                        style: {}
 
-                    SPAN 
-                      style: 
-                        paddingLeft: 4
-                      translator 'engage.list-config-archived', 'Close list by default on page load. Useful for archiving past issues.'
+                        INPUT 
+                          type: 'checkbox'
+                          defaultChecked: !edit_list.discussion_enabled
+                          name: 'discussion_enabled'
+                          onChange: (e) =>
+                            edit_list.discussion_enabled = !edit_list.discussion_enabled
+                            save edit_list
+
+                        SPAN 
+                          style: 
+                            paddingLeft: 4
+                          translator 'engage.list-config-discussion-enabled', 'Disable commenting. Spectrums only.'
+
+                    DIV                   
+                      style:
+                        marginBottom: 6
+                      LABEL 
+                        style: {}
+
+                        INPUT 
+                          type: 'checkbox'
+                          defaultChecked: edit_list.list_is_archived
+                          name: 'list_is_archived'
+                          onChange: (e) =>
+                            edit_list.list_is_archived = !edit_list.list_is_archived
+                            save edit_list
+
+                        SPAN 
+                          style: 
+                            paddingLeft: 4
+                          translator 'engage.list-config-archived', 'Close list by default on page load. Useful for archiving past issues.'
 
 
 
@@ -976,7 +999,13 @@ window.NewList = ReactiveComponent
             fontWeight: 700
             color: if @local.hovering then '#444' else '#666'
 
-          translator 'engage.create_new_list_button', "Create new list"
+          translator 'engage.create_new_list_button', "Create a new list"
+
+        DIV 
+          style: 
+            fontSize: 14
+            marginTop: 4
+          'A list defines a category like "Recommendations" or poses an open-ended question like "What are your ideas?"'
 
 
 
@@ -1581,7 +1610,13 @@ window.EditPage = ReactiveComponent
         H2
           className: "list_header"
 
-          "Lists" 
+          'Lists'
+
+          DIV 
+            style:
+              fontSize: 14
+              fontWeight: 400
+            'A list defines a category like "Recommendations" or poses an open-ended question like "What are your ideas?"'
 
 
         if @ordered_lists.length == 0
@@ -1725,6 +1760,7 @@ window.EditPage = ReactiveComponent
                 e.target.click()
             "+ add new list"
 
+
       @renderSortOrder()
       @renderPreamble()
 
@@ -1754,7 +1790,7 @@ window.EditPage = ReactiveComponent
           position: 'relative'
           top: -12
 
-        "Convert this page (irreversable)"
+        "Convert this page"
 
       DIV null,
 

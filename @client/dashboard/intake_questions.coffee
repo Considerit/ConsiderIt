@@ -105,7 +105,7 @@ window.IntakeQuestions = ReactiveComponent
 
       P null,
         """
-          Intake questions enable you to collect information from new participants during account 
+          Sign-up questions enable you to collect information from new participants during account 
           registration (e.g. demographics). This information is then available to you in exploratory 
           data analysis, as well as in data export. 
         """
@@ -235,7 +235,7 @@ window.IntakeQuestions = ReactiveComponent
         DIV 
           style: 
             fontSize: 14
-          "Message shown to participants before they answer your intake questions."
+          "Message shown to participants before they answer your sign-up questions."
 
         if intake_q_state.editing || intake_q_state.new_question
           EditIntakeQuestion()
@@ -287,6 +287,11 @@ styles += """
     text-transform: uppercase;
     margin-bottom: 4px;
     // color: #666;
+  }
+
+  [data-widget="EditIntakeQuestion"] .field label .required {
+    font-size: 12px;
+    vertical-align: super;
   }
 
   [data-widget="EditIntakeQuestion"] input[type="text"], [data-widget="EditIntakeQuestion"] textarea {
@@ -382,6 +387,10 @@ window.EditIntakeQuestion = ReactiveComponent
           htmlFor: "#name"
           'Name'
 
+          SPAN 
+            className: 'required'
+            '*'
+
         INPUT
           id: '#name'
           type: 'text'
@@ -398,6 +407,9 @@ window.EditIntakeQuestion = ReactiveComponent
           htmlFor: "#question"
 
           'Your Question'
+          SPAN 
+            className: 'required'
+            '*'
 
         INPUT
           id: '#question'
@@ -414,6 +426,9 @@ window.EditIntakeQuestion = ReactiveComponent
           htmlFor: "#question_type"
 
           'Question type'
+          SPAN 
+            className: 'required'
+            '*'
 
         SELECT
           id: '#question_type'
@@ -453,7 +468,7 @@ window.EditIntakeQuestion = ReactiveComponent
             style: 
               fontSize: 12
               color: '#373737'
-            'To add an open-ended response option, include a response named “Other”'
+            'To enable an open-ended response option, include a response named “Other”'
 
 
 

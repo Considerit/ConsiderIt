@@ -1,3 +1,11 @@
+
+window.stop_editing_forum = ->
+  edit_forum = fetch 'edit_forum'  
+  for key in Object.keys(edit_forum) when key != 'key'
+    delete edit_forum[key]
+  save edit_forum
+
+
 window.EditForum = ReactiveComponent
   displayName: 'EditForum'
 
@@ -14,11 +22,6 @@ window.EditForum = ReactiveComponent
       edit_forum.editing = true 
       save edit_forum
 
-    exit_edit = (e) ->
-      for key in Object.keys(edit_forum) when key != 'key'
-        delete edit_forum[key]
-      save edit_forum
-
 
     is_light = is_light_background()
 
@@ -26,20 +29,17 @@ window.EditForum = ReactiveComponent
 
       DIV 
         style: 
-          position: 'absolute'
+          position: 'fixed'
           left: "50%"
           top: 8
-          zIndex: 2
+          zIndex: 99999
           marginLeft: -142
 
         BUTTON
           style: 
             border: 'none'
 
-            # backgroundColor: if is_light then "rgba(255,255,255,.2)" else "rgba(0,0,0,.2)"
-            # color: if is_light then 'rgba(0,0,0,.6)' else 'rgba(255,255,255,.6)'
-
-            backgroundColor: if is_light then "rgba(0,0,0,.8)" else "rgba(255,255,255,.8)"
+            backgroundColor: if is_light then "rgba(0,0,0,.9)" else "rgba(220, 220, 220, 0.9)"
             color: if !is_light then 'black' else 'white'
 
             padding: '4px 8px'
@@ -71,10 +71,10 @@ window.EditForum = ReactiveComponent
               border: 'none'
               borderRadius: 8
               padding: '4px 8px'
-            onClick: exit_edit
+            onClick: stop_editing_forum
             onKeyDown: (e) =>
               if e.which == 13 || e.which == 32 # ENTER or SPACE
-                exit_edit(e)  
+                stop_editing_forum()  
                 e.preventDefault()
 
             translator 'shared.done_editing', 'Done Editing Forum'

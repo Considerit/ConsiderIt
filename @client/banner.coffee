@@ -121,7 +121,7 @@ CustomizeDescription = ReactiveComponent
           style: @props.style
           horizontal: true
           html: description
-          placeholder: translator("banner.description.label", "Let people know about this forum! What is its purpose? Who it is for? How long it will be open?")
+          placeholder: translator("banner.description.label", "Let people know about this forum! What is its purpose? Who it is for? How long will it be open?")
           focus_on_mount: focus_on_mount
           button_style: 
             backgroundColor: 'white'  
@@ -550,9 +550,10 @@ CustomizeBackground = ReactiveComponent
 
     DIV
       style: 
-        position: 'absolute'
-        bottom: 50
-        right: 50
+        position: 'relative'
+        # bottom: 50
+        width: 280
+        float: 'right'
         backgroundColor: if is_light then 'rgba(255,255,255,.4)' else 'rgba(0,0,0,.4)'
         padding: '12px 24px'
         zIndex: 9
@@ -964,7 +965,7 @@ window.PhotoBanner = (opts) ->
         }
 
         .PhotoBanner #tabs {
-          margin-top: 80px;
+          margin-top: 130px;
           top: 0;
         }
         .PhotoBanner #tabs > ul {
@@ -995,7 +996,6 @@ window.PhotoBanner = (opts) ->
 
       CustomizeLogo()
 
-      CustomizeBackground()
 
       if customization('google_translate_style')?.prominent
         trns = customization('google_translate_style')
@@ -1032,6 +1032,7 @@ window.PhotoBanner = (opts) ->
             minHeight: 20
             fontSize: 18
 
+      CustomizeBackground()
 
 
       HomepageTabs(opts)
@@ -1148,9 +1149,10 @@ window.MediaBanner = ->
 
       # CustomizeLogo() 
 
-      CustomizeBackground()
 
       CustomizeTitle()
+
+      CustomizeBackground()
 
       HomepageTabs()
 

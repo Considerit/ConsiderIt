@@ -122,7 +122,7 @@ window.Dashboard = ReactiveComponent
         title = 'Customizations'
         Widget = CustomizationsDash
       when '/dashboard/intake_questions'
-        title = 'Intake Questions'
+        title = 'Sign-up Questions'
         Widget = IntakeQuestions        
       when '/dashboard/roles'
         title = 'Permissions & Roles'
@@ -179,7 +179,7 @@ window.Dashboard = ReactiveComponent
           ]
 
         if (is_admin && fetch('/subdomain').plan) || is_super 
-          draw_menu_option {href: '/dashboard/intake_questions', label: 'Intake Questions', icon: 'survey'}      
+          draw_menu_option {href: '/dashboard/intake_questions', label: 'Sign-up Questions', icon: 'survey'}      
 
         if is_super 
           draw_menu_option {href: '/dashboard/customizations', label: 'Customizations', icon: 'coding'}      

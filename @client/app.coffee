@@ -156,6 +156,11 @@ LocationTransition = ReactiveComponent
       if auth.form
         reset_key auth
 
+
+      edit_forum = fetch 'edit_forum'
+      if edit_forum.editing && loc.url != '/'
+        stop_editing_forum()
+        
       #######
 
       @last_location = loc.url

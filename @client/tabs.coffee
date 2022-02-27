@@ -179,13 +179,8 @@ styles += """
     width: 900px;
   }
 
-  #tabs.demo > ul {
-    border: 2px dashed #666;
-    border-bottom: none;
-    padding-top: 8px;
-  }
-  .dark #tabs.demo > ul {
-    border-color: white;
+  #tabs.editing > ul {
+    padding-top: 26px;
   }
 
 """
@@ -205,6 +200,8 @@ window.HomepageTabs = ReactiveComponent
 
     return DIV null if edit_forum.editing && !fetch('/current_user').is_super_admin && !subdomain.plan
 
+    is_light = is_light_background()
+
 
     demo = false 
     if edit_forum.editing 
@@ -214,17 +211,68 @@ window.HomepageTabs = ReactiveComponent
         tabs ?= []
         tabs.push {name: "Tabs", demo: true}
         tabs.push {name: "Help Organize", demo: true}
-        tabs.push {name: "Your Engagement", demo: true, default: true}
-        tabs.push {name: "enable tabs", demo: true, add_new: true}
+        tabs.push {name: "Your Forum", demo: true, default: true}
       else 
         tabs.push {name: "add new tab", add_new: true}
-        tabs.push {name: "disable tabs", disable: true}
-
 
     DIV 
       id: 'tabs'
-      className: if demo then 'demo'
+      className: "#{if demo then 'demo' else ''} #{if edit_forum.editing then 'editing' else ''}" 
       style: @props.wrapper_style
+
+
+      if edit_forum.editing 
+        DIV 
+          style:
+            display: 'flex'
+            justifyContent: 'center'
+
+          
+          LABEL 
+            className: 'toggle_switch'
+
+            INPUT 
+              id: 'enable_tabs'
+              type: 'checkbox'
+              name: 'enable_tabs'
+              checked: !!get_tabs()
+              onChange: (ev) -> 
+                if ev.target.checked
+                  loc = fetch 'location'
+                  new_tab_name = prompt("What is the name of the first tab? You'll be able to add more later.")
+                  create_new_tab new_tab_name
+                  loc.query_params.tab = new_tab_name
+                  if subdomain.customizations.lists?
+                    delete subdomain.customizations.lists
+                    save subdomain
+                else
+                  if confirm(translator "homepage_tab.disable_confirmation", "Are you sure you want to disable tabs? Existing tabs will be deleted. All existing lists will still be visible.")
+                    for tab in get_tabs()?.slice() or []
+                      delete_tab(tab.name, true)
+
+                
+            
+            SPAN 
+              className: 'toggle_switch_circle'
+
+
+          LABEL 
+            style:
+              paddingLeft: 18
+              cursor: 'pointer'
+              backgroundColor: if is_light then 'rgba(255,255,255,.4)' else 'rgba(0,0,0,.4)'
+
+            htmlFor: 'enable_tabs'
+            B null,
+              'Enable Tabs.'
+            
+            DIV 
+              style:
+                fontSize: 14
+
+              "Tabs help organize your forum into different pages."
+
+
 
       A 
         name: 'active_tab'
@@ -306,21 +354,6 @@ styles += """
     padding: 2px 4px;
   }
 
-  #tabs >ul > li.disable_tabs {
-    background-color: transparent;
-  }
-
-  #tabs >ul > li.disable_tabs button {
-    text-decoration: none;
-    opacity: .7;
-    margin-left: 20px;
-    color: black;
-  }
-
-  #tabs >ul > li.disable_tabs button {
-    color: white;
-  }
-
   #tabs > ul > li[draggable="false"].demo.add_new {
     background-color: transparent;
   }
@@ -352,27 +385,6 @@ window.Tab = ReactiveComponent
 
     tab_style = _.extend {display: 'inline-block'}, @props.tab_style
     tab_wrapper_style = _.extend {}, @props.tab_wrapper_style
-
-
-    if tab.disable
-      return LI
-          className: "disable_tabs"
-
-          BUTTON 
-            className: 'like_link'
-            onKeyDown: (e) => 
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                e.currentTarget.click() 
-                e.preventDefault()
-            onClick: =>
-              if confirm(translator "homepage_tab.disable_confirmation", "Are you sure you want to disable tabs? Existing tabs will be deleted. All existing lists will still be visible.")
-                for tab in get_tabs()?.slice() or []
-                  delete_tab(tab.name, true)
-            translator
-              id: "homepage_tab.disable"
-              tab_name
-      
-
 
 
     if current
@@ -413,15 +425,12 @@ window.Tab = ReactiveComponent
         loc = fetch 'location'
 
         if tab.add_new
-          new_tab_name = 'Tab'
+          tab_name = new_tab_name = prompt("What is the name of the tab?")
           create_new_tab new_tab_name
-          loc.query_params.tab = new_tab_name
-          if tab.demo && subdomain.customizations.lists?
-            delete subdomain.customizations.lists
-            save subdomain
         else 
-          loc.query_params.tab = tab_name 
+          tab_name = tab.name
 
+        loc.query_params.tab = tab_name
         save loc  
         document.activeElement.blur()
 

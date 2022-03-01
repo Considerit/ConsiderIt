@@ -134,7 +134,7 @@ window.Dashboard = ReactiveComponent
         title = 'Language Translation'
         Widget = TranslationsDash
       else 
-        title = "No Dashboard at #{loc.url}"
+        return DIV null, "No Dashboard at #{loc.url}"
 
 
 

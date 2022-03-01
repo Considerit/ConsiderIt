@@ -298,9 +298,11 @@ window.EditPage = ReactiveComponent
 
 
         if @local.add_new_list || @local.edit_list
-          NewList
-            edit_immediately: true
+
+          ModalNewList
             list: @local.edit_list
+            fresh: @local.add_new_list
+            combines_these_lists: @props.combines_these_lists
             done_callback: => 
               @local.add_new_list = @local.edit_list = false 
               save @local
@@ -320,9 +322,34 @@ window.EditPage = ReactiveComponent
 
 
       @renderSortOrder()
-      @renderPreamble()
 
-      @renderPageType()
+
+      DIV 
+        style:
+          marginTop: 36
+
+
+        if !@local.show_all_options 
+          BUTTON 
+            className: 'like_link'
+            style: 
+              textDecoration: 'underline'
+              fontWeight: 700
+              color: '#666'
+            onClick: (e) => 
+              @local.show_all_options = true 
+              save @local
+            onKeyPress: (e) => 
+              if e.which == 13 || e.which == 32 # ENTER or SPACE
+                e.preventDefault()
+                e.target.click()
+            'Show more options'
+        else 
+          DIV null, 
+
+            @renderPreamble()
+
+            @renderPageType()
 
 
 

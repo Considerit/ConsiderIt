@@ -67,9 +67,6 @@ window.List = ReactiveComponent
 
     is_collapsed = list_state.collapsed
 
-    edit_list = fetch "edit-#{list_key}"
-
-
     ARTICLE
       key: list_key
       id: list_key.substring(5).toLowerCase()
@@ -99,8 +96,7 @@ window.List = ReactiveComponent
             show_first_num_items: if list_state.show_all_proposals then 999999 else list_state.show_first_num_items
             combines_these_lists: @props.combines_these_lists
             show_new_button: (list_state.show_all_proposals || proposals.length <= list_state.show_first_num_items) && \
-               ((@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || (permitted > 0 || permitted == Permission.NOT_LOGGED_IN) ) && \
-                !edit_list.editing
+               ((@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || (permitted > 0 || permitted == Permission.NOT_LOGGED_IN) )
 
           if !list_state.show_all_proposals && proposals.length > list_state.show_first_num_items 
             BUTTON
@@ -255,146 +251,6 @@ window.delete_list = (list_key, page, suppress_confirmation) ->
 
 
 
-EditList = ReactiveComponent
-  displayName: 'EditList'
-
-  render: ->     
-    list = @props.list
-
-    list_key = list.key
-
-    current_user = fetch '/current_user'
-    edit_list = fetch "edit-#{list_key}"
-    subdomain = fetch '/subdomain'
-
-
-    return SPAN null if !current_user.is_admin
-
-
-
-    admin_actions = [{action: 'edit', label: translator('edit')}, 
-                     {action: 'list_order', label: translator('engage.list-configuration.copy_link', 'reorder lists')},
-                     {action: 'delete', label: translator('delete')}, 
-                     {action: 'close', label: translator('engage.list-configuration.close', 'close to participation')}, 
-                     {action: 'copy_link', label: translator('engage.list-configuration.copy_link', 'copy link')}]
-
-    DIV null,
-
-      if !edit_list.editing 
-
-        DropMenu
-          options: admin_actions
-          open_menu_on: 'activation'
-
-          wrapper_style: 
-            position: 'absolute'
-            right: -42
-            top: 16
-
-          anchor_style: {}
-
-          menu_style: 
-            backgroundColor: '#eee'
-            border: "1px solid #{focus_color()}"
-            right: -9999
-            top: 18
-            borderRadius: 8
-            fontWeight: 400
-            overflow: 'hidden'
-            boxShadow: '0 1px 2px rgba(0,0,0,.3)'
-            fontSize: 18
-            fontStyle: 'normal'
-            width: 220
-
-          menu_when_open_style: 
-            right: 0
-
-          option_style: 
-            padding: '6px 12px'
-            borderBottom: "1px solid #ddd"
-            display: 'block'
-
-          active_option_style: 
-            color: 'white'
-            backgroundColor: focus_color()
-
-          render_anchor: ->
-            SPAN 
-              "data-tooltip": translator "engage.list-config-icon-tooltip", "Configure list settings" 
-              GearIcon
-                size: 20
-                fill: '#888'
-
-          render_option: (option, is_active) ->
-            SPAN null, 
-              option.label
-
-
-          selection_made_callback: (option) =>
-            if option.action == 'edit' 
-              edit_list.editing = true 
-              save edit_list
-
-            else if option.action == 'list_order'
-              ef = fetch 'edit_forum'
-              ef.editing = true 
-              save ef 
-
-            else if option.action == 'delete'
-            
-              delete_list list
-
-            else if option.action == 'close'
-              if confirm(translator('engage.list-config-close-confirm', 'Are you sure you want to close this list to participation? Any proposals in it will also be closed to further participation, though all existing dialogue will remain visible.'))
-                
-                # close existing proposals to further participation
-                if list.proposals?.length > 0 
-                  has_permission = true 
-                  for proposal in list.proposals 
-                    has_permission &&= permit('update proposal', proposal) > 0 
-                  if !has_permission
-                    alert "You apparently don't have permission to close one or more of the proposals in this list"
-                  else 
-                    for proposal in list.proposals 
-                      proposal.active = false 
-                      save proposal 
-
-                customizations = subdomain.customizations
-
-                # don't show a new button for this list anymore
-                customizations[list_key].list_permit_new_items = false 
-
-                # # add a note in the description that the list was closed to participation
-                # customizations[list_key].list_description ?= ''
-                # if customizations[list_key].list_description?.length > 0 
-                #   customizations[list_key].list_description += "<br>" 
-                # customizations[list_key].list_description += "<DIV style='font-style:italic'>Participation was closed by the host on #{new Date().toDateString()}</div>" 
-
-                save subdomain
-            else if option.action == 'copy_link'
-              link = "#{location.origin}#{location.search}##{list_link(list_key)}"
-              navigator.clipboard.writeText(link).then -> 
-                show_flash("Link copied to clipboard")
-              , (err) ->
-                show_flash_error("Problem copying link to clipboard")
-      else 
-        ModalNewList
-          list: list
-          fresh: false
-          combines_these_lists: @props.combines_these_lists
-
-  componentDidMount: -> @setFocusOnTitle()
-
-  componentDidUpdate: -> @setFocusOnTitle()
-
-  setFocusOnTitle: ->
-    edit_list = fetch "edit-#{@props.list.key}"
-    focus_now = @last_edit_state != edit_list.editing && edit_list.editing
-    @last_edit_state = edit_list.editing
-
-    if focus_now
-      setTimeout =>
-        moveCursorToEnd @refs.input?.getDOMNode()
 
 
 
@@ -407,13 +263,11 @@ window.ListHeader = ReactiveComponent
     list_key = list.key
     list_state = fetch list_key
 
-    edit_list = fetch "edit-#{list_key}"
-
     is_collapsed = list_state.collapsed
 
     subdomain = fetch '/subdomain'
 
-    description = edit_list.description or customization('list_description', list_key, subdomain)
+    description = customization('list_description', list_key, subdomain)
 
     DIVIDER = customization 'list_divider', list_key, subdomain
 
@@ -421,17 +275,6 @@ window.ListHeader = ReactiveComponent
       width: HOMEPAGE_WIDTH()
       marginBottom: 16 #24
       position: 'relative'
-
-    if edit_list.editing 
-      _.extend wrapper_style, 
-        backgroundColor: '#f3f3f3'
-        marginLeft: -36
-        marginTop: -36
-        padding: "18px 36px 36px 36px"
-        width: HOMEPAGE_WIDTH() + 36 * 2
-
-    edit_list.discussion_enabled ?= customization('discussion_enabled', list_key)
-    edit_list.list_is_archived ?= customization('list_is_archived', list_key)
 
     DIV 
       style: wrapper_style 
@@ -452,9 +295,9 @@ window.ListHeader = ReactiveComponent
             list: @props.list
             fresh: @props.fresh
 
-          if edit_list.editing || !is_collapsed
+          if !is_collapsed
             DIV null, 
-              if description?.length > 0 || typeof(description) == 'function' || edit_list.editing
+              if description?.length > 0 || typeof(description) == 'function'
                 EditableDescription
                   list: @props.list
                   fresh: @props.fresh
@@ -466,7 +309,7 @@ window.ListHeader = ReactiveComponent
           fresh: @props.fresh
           combines_these_lists: @props.combines_these_lists
 
-      if !edit_list.editing && @props.proposals_count > 0 && !customization('questionaire', list_key, subdomain) && !is_collapsed && !customization('list_no_filters', list_key, subdomain)
+      if @props.proposals_count > 0 && !customization('questionaire', list_key, subdomain) && !is_collapsed && !customization('list_no_filters', list_key, subdomain)
         list_actions
           list: @props.list
           add_new: !@props.combines_these_lists && customization('list_permit_new_items', list_key, subdomain) && !is_collapsed && @props.proposals_count > 4
@@ -481,22 +324,15 @@ window.NewList = ReactiveComponent
   render: -> 
     subdomain = fetch '/subdomain'
 
-    if !@local.edit_key
-      @local.edit_key = "list/new-list-#{Math.round(Math.random() * 1000)}"
-    
-    list = 
-      key: @local.edit_key 
-
-    list_key = list.key
-    edit_list = fetch "edit-#{list_key}"
-
     @local.hovering ?= false
 
-    if edit_list.editing || @props.edit_immediately
+    if @local.editing
       ModalNewList 
         fresh: true
-        list: list
-        done_callback: @props.done_callback
+        done_callback: =>
+          @local.editing = false 
+          save @local
+
 
     else 
       BUTTON 
@@ -521,8 +357,8 @@ window.NewList = ReactiveComponent
           save @local 
 
         onClick: =>
-          edit_list.editing = true
-          save edit_list
+          @local.editing = true 
+          save @local
 
         onKeyDown: (e) => 
           if e.which == 13 || e.which == 32 # ENTER or SPACE
@@ -653,7 +489,7 @@ EditableDescription = ReactiveComponent
 
     description_style = customization 'list_description_style', list_key
 
-
+    return SPAN null if !description
     DIV
       style: _.defaults {}, (description_style or {})
       className: 'LIST-description'
@@ -755,12 +591,7 @@ window.list_actions = (props) ->
 
 
 window.get_list_title = (list_key, include_category_value, subdomain) -> 
-  edit_list = fetch "edit-#{list_key}"
-
-  if edit_list.editing
-    title = edit_list.list_title
-
-  title ?= customization('list_title', list_key, subdomain)
+  title = customization('list_title', list_key, subdomain)
   if include_category_value
     title ?= category_value list_key, null, subdomain
 
@@ -774,34 +605,11 @@ window.get_list_title = (list_key, include_category_value, subdomain) ->
 
 category_value = (list_key, fresh, subdomain) -> 
 
-  edit_list = fetch "edit-#{list_key}"
-  category = if edit_list.editing then edit_list.list_category
-  category ?= customization('list_category', list_key, subdomain)
+  category = customization('list_category', list_key, subdomain)
   if !category && !customization(list_key, null, subdomain) && !fresh # if we haven't customized this list, take the proposal category
     category ?= list_key.substring(5)
   category ?= translator 'engage.default_proposals_list', 'Proposals'
   category
-
-
-histo_title = (list_key) -> 
-  edit_list = fetch "edit-#{list_key}"
-  opinion_title = if edit_list.editing then edit_list.list_opinions_title
-  if !opinion_title? 
-    opinion_title = customization('list_opinions_title', list_key)
-  if !opinion_title?
-    opinion_title = translator 'engage.header.Opinions', 'Opinions'
-  opinion_title
-
-
-GearIcon = (opts) ->
-  SVG 
-    height: opts.size or '100px' 
-    width: opts.size or '100px'  
-    fill: opts.fill or "#888" 
-    x: "0px" 
-    y: "0px" 
-    viewBox: "0 0 100 100"  
-    dangerouslySetInnerHTML: __html: '<path d="M95.784,59.057c1.867,0,3.604-1.514,3.858-3.364c0,0,0.357-2.6,0.357-5.692c0-3.092-0.357-5.692-0.357-5.692  c-0.255-1.851-1.991-3.364-3.858-3.364h-9.648c-1.868,0-3.808-1.191-4.31-2.646s-1.193-6.123,0.128-7.443l6.82-6.82  c1.32-1.321,1.422-3.575,0.226-5.01L80.976,11c-1.435-1.197-3.688-1.095-5.01,0.226l-6.82,6.82c-1.32,1.321-3.521,1.853-4.888,1.183  c-1.368-0.67-5.201-3.496-5.201-5.364V4.217c0-1.868-1.514-3.604-3.364-3.859c0,0-2.6-0.358-5.692-0.358s-5.692,0.358-5.692,0.358  c-1.851,0.254-3.365,1.991-3.365,3.859v9.648c0,1.868-1.19,3.807-2.646,4.31c-1.456,0.502-6.123,1.193-7.444-0.128l-6.82-6.82  C22.713,9.906,20.459,9.804,19.025,11L11,19.025c-1.197,1.435-1.095,3.689,0.226,5.01l6.819,6.82  c1.321,1.321,1.854,3.521,1.183,4.888s-3.496,5.201-5.364,5.201H4.217c-1.868,0-3.604,1.514-3.859,3.364c0,0-0.358,2.6-0.358,5.692  c0,3.093,0.358,5.692,0.358,5.692c0.254,1.851,1.991,3.364,3.859,3.364h9.648c1.868,0,3.807,1.19,4.309,2.646  c0.502,1.455,1.193,6.122-0.128,7.443l-6.819,6.819c-1.321,1.321-1.423,3.575-0.226,5.01L19.025,89  c1.435,1.196,3.688,1.095,5.009-0.226l6.82-6.82c1.321-1.32,3.521-1.853,4.889-1.183c1.368,0.67,5.201,3.496,5.201,5.364v9.648  c0,1.867,1.514,3.604,3.365,3.858c0,0,2.599,0.357,5.692,0.357s5.692-0.357,5.692-0.357c1.851-0.255,3.364-1.991,3.364-3.858v-9.648  c0-1.868,1.19-3.808,2.646-4.31s6.123-1.192,7.444,0.128l6.819,6.82c1.321,1.32,3.575,1.422,5.01,0.226L89,80.976  c1.196-1.435,1.095-3.688-0.227-5.01l-6.819-6.819c-1.321-1.321-1.854-3.521-1.183-4.889c0.67-1.368,3.496-5.201,5.364-5.201H95.784  z M50,68.302c-10.108,0-18.302-8.193-18.302-18.302c0-10.107,8.194-18.302,18.302-18.302c10.108,0,18.302,8.194,18.302,18.302  C68.302,60.108,60.108,68.302,50,68.302z"></path>'
 
 
 window.get_all_lists = ->

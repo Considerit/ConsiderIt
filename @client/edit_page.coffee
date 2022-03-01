@@ -111,6 +111,8 @@ window.EditPage = ReactiveComponent
         "This is an About page."
       @renderPreamble()
 
+      @renderMakeDefaultPage()
+
   drawShowAllPage: -> 
     subdomain = fetch '/subdomain'
 
@@ -121,6 +123,7 @@ window.EditPage = ReactiveComponent
         "This page displays all lists shown on other pages in this forum."
       @renderPreamble()
       @renderSortOrder()
+      @renderMakeDefaultPage()
 
 
 
@@ -349,7 +352,11 @@ window.EditPage = ReactiveComponent
 
             @renderPreamble()
 
+            @renderMakeDefaultPage()
+
             @renderPageType()
+
+
 
 
 
@@ -539,6 +546,56 @@ window.EditPage = ReactiveComponent
         if @local.type == PAGE_TYPES.ABOUT
         
           """ If you need to embed a video, please contact help@consider.it."""
+
+  renderMakeDefaultPage: -> 
+    default_tab = customization('homepage_default_tab') # or get_tabs()[0]?.name or 'Show all'
+
+    FIELDSET 
+      style: 
+        marginLeft: 0
+        marginTop: 42
+        border: "1px solid #ccc"
+        padding: "0px 24px 18px 24px"
+
+      LABEL 
+        style: 
+          fontSize: 17
+          marginTop: 36
+          fontWeight: 700
+          marginBottom: 24
+          backgroundColor: 'white'
+          padding: "4px 8px"
+          position: 'relative'
+          top: -12
+
+        "Default page"
+
+      DIV null, 
+
+        if @props.page_name == default_tab
+          DIV 
+            style: 
+              fontStyle: 'italic'
+            "This page is already the default"
+
+        BUTTON 
+          className: 'convert_page'
+          disabled: @props.page_name == default_tab
+          onClick: => 
+            subdomain = fetch '/subdomain'
+            subdomain.customizations.homepage_default_tab = @props.page_name
+            save subdomain
+
+          onKeyDown: (e) =>
+            if e.which == 13 || e.which == 32 # ENTER or SPACE
+              e.target.click()
+              e.preventDefault()
+          "Set to default landing page"
+
+        DIV 
+          style: 
+            fontSize: 14
+          "The default landing page is shown when someone arrives at #{location.origin}."
 
 
   render: -> 

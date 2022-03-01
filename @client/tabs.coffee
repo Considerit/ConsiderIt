@@ -154,6 +154,9 @@ window.delete_tab = (tab_name, skip_confirmation) ->
       tab_state.active_tab = null 
       save tab_state
 
+    if subdomain.customizations.homepage_default_tab == tab_name
+      delete subdomain.customizations.homepage_default_tab
+
     subdomain.customizations.homepage_tabs.splice idx, 1
 
     if subdomain.customizations.homepage_tabs.length == 0

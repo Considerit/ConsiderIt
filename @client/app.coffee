@@ -40,6 +40,7 @@ require './legal'
 require './statement'
 require './proposal'
 require './viewport_visibility_sensor'
+require './icons'
 
 
 

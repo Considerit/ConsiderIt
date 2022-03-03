@@ -9,9 +9,15 @@ window.SubdomainSaveRateLimiter =
     changed = force_save
     for f in fields
       val = @local[f]
-      if val? && val != config[f]
-        config[f] = val
-        changed = true
+
+      if val? && JSON.stringify(val) != JSON.stringify(config[f])
+        if val == '*delete*'
+          if config[f]?
+            delete config[f] 
+            changed = true 
+        else 
+          config[f] = val
+          changed = true
 
     if changed
       @save_in = wait_for or 1000

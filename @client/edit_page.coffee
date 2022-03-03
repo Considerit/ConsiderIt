@@ -259,45 +259,41 @@ window.EditPage = ReactiveComponent
 
                         'disaggregate'
 
-
-                  BUTTON 
-                    style: 
-                      cursor: 'pointer'
-                    "data-tooltip": "Edit list"
-                    onClick: (e) =>
-                      e.preventDefault()
-                      e.stopPropagation()
-                      @local.edit_list = lst
-                      save @local
-
-                    onKeyPress: (e) -> 
-                      if e.which == 13 || e.which == 32 # ENTER or SPACE
+                  if !wildcard 
+                    BUTTON 
+                      style: 
+                        cursor: 'pointer'
+                      "data-tooltip": "Edit list"
+                      onClick: (e) =>
                         e.preventDefault()
-                        e.target.click()
+                        e.stopPropagation()
+                        @local.edit_list = lst
+                        save @local
 
-                    edit_icon 18, 18, '#888'
+                      onKeyPress: (e) -> 
+                        if e.which == 13 || e.which == 32 # ENTER or SPACE
+                          e.preventDefault()
+                          e.target.click()
+
+                      edit_icon 18, 18, '#888'
 
 
-
-                  BUTTON 
-                    style:
-                      position: 'absolute'
-                      right: -36
-                      cursor: 'pointer'
-                    "data-tooltip": "Delete list"
-                    onClick: (e) =>
-                      if wildcard 
-                        @refs.aggregate_checkbox.getDOMNode().click()
-                      else 
+                  if !wildcard 
+                    BUTTON 
+                      style:
+                        position: 'absolute'
+                        right: -36
+                        cursor: 'pointer'
+                      "data-tooltip": "Delete list"
+                      onClick: (e) =>
                         @ordered_lists.splice( @ordered_lists.indexOf(lst), 1  )
                         delete_list(lst)
 
-
-                    onKeyPress: (e) => 
-                      if e.which == 13 || e.which == 32 # ENTER or SPACE
-                        e.preventDefault()
-                        e.target.click()
-                    trash_icon 23, 23, '#888'
+                      onKeyPress: (e) => 
+                        if e.which == 13 || e.which == 32 # ENTER or SPACE
+                          e.preventDefault()
+                          e.target.click()
+                      trash_icon 23, 23, '#888'
 
 
         if @local.add_new_list || @local.edit_list

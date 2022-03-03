@@ -9,6 +9,117 @@ require './tabs'
 ###########################
 # HOMEPAGE HEADER TEMPLATES
 
+styles += """
+
+
+"""
+
+CustomizeGoogleTranslate = ReactiveComponent
+  displayName: 'CustomizeGoogleTranslate'
+  mixins: [SubdomainSaveRateLimiter]
+
+  componentDidUpdate: -> 
+
+    @save_customization_with_rate_limit
+      fields: ['google_translate_style']
+      config: fetch('/subdomain').customizations
+
+  render: -> 
+    is_light = is_light_background()
+    subdomain = fetch '/subdomain'
+
+    @local.google_translate_style ?= JSON.parse JSON.stringify(subdomain.customizations.google_translate_style or {})
+
+    edit_forum = fetch 'edit_forum'
+    is_admin = fetch('/current_user').is_admin
+
+
+    DIV null, 
+
+
+      if is_admin && edit_forum.editing   
+
+        DIV 
+          style:
+            display: 'flex'
+            justifyContent: 'center'
+            paddingTop: 48
+
+          
+          LABEL 
+            className: 'toggle_switch'
+
+            INPUT 
+              id: 'enable_google_translate'
+              type: 'checkbox'
+              name: 'enable_google_translate'
+              checked: !!@local.google_translate_style && @local.google_translate_style != '*delete*'
+              onChange: (ev) => 
+                if ev.target.checked
+                  @local.google_translate_style = 
+                    prominent: true
+                    callout: "¿No hablas ingles? Elige tu idioma:"
+                    textAlign: "center"
+                  save @local
+                else
+                  @local.google_translate_style = '*delete*'
+                  save @local
+
+            SPAN 
+              className: 'toggle_switch_circle'
+
+          LABEL 
+            style:
+              paddingLeft: 18
+              cursor: 'pointer'
+              backgroundColor: if is_light then 'rgba(255,255,255,.4)' else 'rgba(0,0,0,.4)'
+
+            htmlFor: 'enable_google_translate'
+            B null,
+              'Enable Google Translate.'
+            
+            DIV 
+              style:
+                fontSize: 14
+
+              "Helps support multi-lingual forums."
+
+
+      if subdomain.customizations.google_translate_style?.prominent
+        trns = subdomain.customizations.google_translate_style
+        DIV
+          className: "translator"
+
+
+          if trns.callout?
+            DIV 
+              style: 
+                marginBottom: 16
+                textAlign: 'center'
+                color: 'black'
+
+              if edit_forum.editing 
+                AutoGrowTextArea 
+                  className: 'banner_title'
+                  defaultValue: @local.google_translate_style?.callout
+                  style: 
+                    color: 'inherit'
+                    fontSize: 'inherit'
+                    backgroundColor: 'transparent'
+                    border: 'none'
+                    width: '100%'
+                  onChange: (e) =>
+                    @local.google_translate_style.callout = e.target.value
+                    save @local
+                    console.log 'saved', @local
+              else 
+                trns.callout
+
+          GoogleTranslate()   
+
+
+
+
 CustomizeTitle = ReactiveComponent
   displayName: 'CustomizeTitle'
   mixins: [SubdomainSaveRateLimiter]
@@ -922,15 +1033,15 @@ window.PhotoBanner = (opts) ->
           background-image: url(#{edit_banner.masthead_preview or customization('banner')?.background_image_url});
           background-size: cover;
           background-position: center;
-          padding-top: 140px;           
+          padding-top: 120px;           
         }
         .PhotoBanner > .wrapper.no-image {
           background: #{background_color};
         }
 
-        .PhotoBanner > .wrapper > .translator {
+        .PhotoBanner > .wrapper .translator {
           padding: 16px;
-          width: 300px;
+          width: 380px;
           margin: 0 auto 36px auto; 
           background-color: rgba(255,255,255,.8);
           position: relative; 
@@ -997,27 +1108,15 @@ window.PhotoBanner = (opts) ->
       CustomizeLogo()
 
 
-      if customization('google_translate_style')?.prominent
-        trns = customization('google_translate_style')
-        DIV
-          className: "translator"
+      CustomizeGoogleTranslate()
 
-
-          if trns.callout?
-            DIV 
-              style: 
-                marginBottom: 16
-                textAlign: 'center'
-                color: 'black'
-              trns.callout
-
-          GoogleTranslate()      
 
       DIV
         className: 'text_block'
         style: opts.header_style
 
         CustomizeTextBlock()
+
 
         CustomizeTitle
           title: opts.header
@@ -1149,7 +1248,7 @@ window.MediaBanner = ->
 
       # CustomizeLogo() 
 
-
+      CustomizeGoogleTranslate()
       CustomizeTitle()
 
       CustomizeBackground()

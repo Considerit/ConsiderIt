@@ -43,7 +43,10 @@ window.GoogleTranslate = ReactiveComponent
     loc = fetch 'location'
     homepage = loc.url == '/'
     style = if customization('google_translate_style') && homepage 
-              customization('google_translate_style')
+              s = customization('google_translate_style')
+              delete s.prominent if s.prominent
+              delete s.callout if s.callout
+              s
             else 
               _.defaults {}, @props.style, 
                 textAlign: 'center'

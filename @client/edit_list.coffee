@@ -258,9 +258,7 @@ window.ModalNewList = ReactiveComponent
       marginTop: 8
 
     children = \ 
-        DIV 
-          style: 
-            marginTop: 24
+        DIV null,
 
           DIV null, 
             DIV 
@@ -274,7 +272,7 @@ window.ModalNewList = ReactiveComponent
                     style: 
                       fontWeight: 700
 
-                "<span>Title.</span> Usually an open-ended question like \"What are your ideas?\" or a list label like \"Recommended actions for mitigation\"."
+                "<span>Title.</span> An open-ended question like \"What are your ideas?\" or a list label like \"Recommendations\"."
 
             H1 
               className: 'LIST-header'
@@ -624,6 +622,7 @@ window.ModalNewList = ReactiveComponent
                       fontWeight: 700
                       color: '#666'
                       fontSize: 14
+                      marginBottom: 24
                     onClick: (e) => 
                       @local.show_all_options = true 
                       save @local

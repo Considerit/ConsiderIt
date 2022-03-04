@@ -223,6 +223,8 @@ task :migrate_translations => :environment do
 
   delete_translation "engage.save_opinion_button"
   delete_translation "engage.proposal_meta_data"
+
+  delete_translation "footer.back_to_top_button"
   
 
   sync_keys_with_english

@@ -41,6 +41,7 @@ require './statement'
 require './proposal'
 require './viewport_visibility_sensor'
 require './icons'
+require './google_translate'
 
 
 
@@ -309,6 +310,8 @@ Root = ReactiveComponent
       LocationTransition()
       HomepageTabTransition()
       BrowserLocation()
+      GoogleTranslate()
+
 
 
       STYLE 

@@ -1,6 +1,13 @@
 # Unfortunately, google makes it so there can only be one Google Translate Widget 
 # rendered into a page. So we have to move around the same element, rather than 
 # embed it nicely where we want. 
+
+styles += """
+  .google-translate-candidate-container {
+    width: 158px;
+    height: 25px;
+  }
+"""
 window.GoogleTranslate = ReactiveComponent
   displayName: 'GoogleTranslate'
 
@@ -20,8 +27,10 @@ window.GoogleTranslate = ReactiveComponent
 
     DIV 
       style: 
-        display: if !customization('google_translate_style') then 'none'
-
+        position: 'absolute'
+        left: @local.left 
+        top: @local.top
+        zIndex: 999
       # SCRIPT 
       #   type: 'text/javascript'
       #   src: 'https://translate.google.com/translate_a/element.js' 
@@ -51,5 +60,17 @@ window.GoogleTranslate = ReactiveComponent
         clearInterval @int 
     , 20
 
+    # location of this element will shadow the position of the first instance
+    # of an element with a class of google-translate-candidate-container
+    @placer_int = setInterval =>
+      wrapper = document.querySelector '.google-translate-candidate-container'
+      coords = getCoords(wrapper)
+      if coords.left != @local.left || coords.top != @local.top
+        @local.left = coords.left
+        @local.top = coords.top
+        save @local
+    , 100
+
   componentWillUnmount: ->
     clearInterval @int
+    clearInterval @placer_int

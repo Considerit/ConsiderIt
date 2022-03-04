@@ -45,11 +45,11 @@ window.Header = ReactiveComponent
 
         if customization('google_translate_style') && !customization('google_translate_style').prominent && fetch('location').url == '/'
           DIV 
+            className: 'google-translate-candidate-container'
             style: 
               position: 'absolute'
               left: 40
               zIndex: 2
-            GoogleTranslate()
 
 
         if is_homepage

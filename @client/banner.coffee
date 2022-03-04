@@ -85,7 +85,7 @@ CustomizeGoogleTranslate = ReactiveComponent
               "Helps support multi-lingual forums."
 
 
-      if subdomain.customizations.google_translate_style?.prominent
+      if subdomain.customizations.google_translate_style?.prominent && fetch('location').url == '/'
         trns = subdomain.customizations.google_translate_style
         DIV
           className: "translator"
@@ -115,8 +115,10 @@ CustomizeGoogleTranslate = ReactiveComponent
               else 
                 trns.callout
 
-          GoogleTranslate()   
-
+          DIV 
+            className: 'google-translate-candidate-container'
+            style: 
+              margin: 'auto'
 
 
 
@@ -1231,9 +1233,6 @@ window.MediaBanner = ->
           color: white;
         }
 
-        .MediaBanner #tabs > ul > li.selected > h4, .MediaBanner #tabs > ul > li.hovered {
-          background-color: white;
-        }
         .MediaBanner #tabs > ul > li.selected > h4, .MediaBanner #tabs > ul > li.hovered > h4 {
           color: black;
           text-decoration: underline;

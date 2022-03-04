@@ -38,22 +38,24 @@ window.DefaultFooter = ReactiveComponent
 
     DIV null,
 
-      customization('footer_bonus')?()
 
       DIV 
-        style: 
-          paddingTop: 140
-          backgroundColor: 'white'
+        className: 'main_background'
+          
+        customization('footer_bonus')?()
+
 
       DIV 
         style:
           paddingTop: 80
           backgroundColor: "#F4F4F4"
-          borderTop: "1px solid ##{737373}"
+          borderTop: "1px solid #aaa"
           
           padding: '45px 0 15px 0'
           position: 'relative'
           zIndex: 3
+
+
 
         DIV 
           style: 
@@ -62,24 +64,24 @@ window.DefaultFooter = ReactiveComponent
 
           # buttons 
 
-          DIV 
-            style: 
-              position: 'relative'
-              margin: 'auto'
-              textAlign: 'center'
-              top: -70
+          # DIV 
+          #   style: 
+          #     position: 'relative'
+          #     margin: 'auto'
+          #     textAlign: 'center'
+          #     top: -70
 
-            BUTTON 
-              onClick: -> scrollTo 0, 0
-              onKeyPress: (e) -> 
-                if e.which == 13 || e.which == 32 # ENTER or SPACE
-                  e.preventDefault()
-                  scrollTo 0, 0
+          #   BUTTON 
+          #     onClick: -> scrollTo 0, 0
+          #     onKeyPress: (e) -> 
+          #       if e.which == 13 || e.which == 32 # ENTER or SPACE
+          #         e.preventDefault()
+          #         scrollTo 0, 0
 
-              style: _.extend {}, big_button(), 
-                backgroundColor: '#717171'
+          #     style: _.extend {}, big_button(), 
+          #       backgroundColor: '#717171'
 
-              translator 'footer.back_to_top_button', 'Back to top'
+          #     translator 'footer.back_to_top_button', 'Back to top'
 
 
           DIV 
@@ -110,7 +112,7 @@ window.DefaultFooter = ReactiveComponent
                     height: 18
                     paddingLeft: 6
                     verticalAlign: 'middle'
-              ' | '
+
 
               A 
                 href: 'https://consider.it'
@@ -120,6 +122,7 @@ window.DefaultFooter = ReactiveComponent
                   fontSize: 14
                   marginTop: 10
                   fontWeight: 600
+                  paddingLeft: 24
 
                 translator 
                   id: "footer.created_your_own_forum"
@@ -136,11 +139,13 @@ window.DefaultFooter = ReactiveComponent
               textAlign: 'center'
               marginTop: 20
 
-            SPAN null, 
+            SPAN 
+              style: 
+                display: 'flex'
+                alignItems: 'center'
+                justifyContent: 'center'
 
-              DIV 
-                style: 
-                  display: 'inline-block'
+              DIV null,
                 '© Consider.it LLC. All rights reserved. '
 
                 TRANSLATE
@@ -161,10 +166,9 @@ window.DefaultFooter = ReactiveComponent
 
                   "<privacy_link>Privacy</privacy_link> and <terms_link>Terms</terms_link>."
 
-              SPAN 
+              DIV 
                 style: 
                   marginLeft: 40
-                  display: 'inline-block'
 
                 TRANSLATE
                   id: "footer.bug_reports"
@@ -179,10 +183,9 @@ window.DefaultFooter = ReactiveComponent
 
               if !customization('google_translate_style') || fetch('location').url != '/'
                 DIV 
+                  className: 'google-translate-candidate-container'
                   style: 
                     marginLeft: 40
-                    display: 'inline-block'            
-                  GoogleTranslate()
 
 
 

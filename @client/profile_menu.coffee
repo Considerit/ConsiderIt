@@ -36,6 +36,11 @@ window.ProfileMenu = ReactiveComponent
 
     light_background = loc.url != '/' || is_light_background() 
 
+
+    edit_forum = fetch 'edit_forum'
+
+
+
     DIV
       id: 'user_nav'
       style: _.defaults {}, (customization('profile_menu_style') or {}), (@props.style or {}),
@@ -44,6 +49,8 @@ window.ProfileMenu = ReactiveComponent
         right: 30
         fontSize: 26
         top: 17
+
+
 
       if current_user.logged_in
         DropMenu
@@ -167,7 +174,36 @@ window.ProfileMenu = ReactiveComponent
 
 
               translator "auth.log_in", "Log in"
-    
+
+      if edit_forum.editing 
+        is_light = is_light_background()
+        color = if is_light then 'black' else 'white'
+        DIV 
+          style: 
+            fontSize: 14
+            fontWeight: 600
+            color: color
+            display: 'flex'
+            alignItems: 'center'
+            flexDirection: 'column'
+          SVG
+            style: 
+              # position: 'absolute'
+              top: 75
+              display: 'block'
+              transform: "scale(-1, 1)"
+            width: 14 
+            height: 43 
+            viewBox: "0 0 67 204"
+            
+            dangerouslySetInnerHTML: __html: """
+              <g fill="none">
+                <path stroke-width="4.761904761904762" stroke="#{color}" d="M1.62120606,0.112317888 C1.62120606,0.112317888 -3.81550783,47.7673271 15.7617242,109.624892 C35.3389562,171.482458 65.9279782,203.300407 65.9279782,203.300407">
+                </path>
+              </g>"""            
+
+          "More settings available"
+
   bitcoinVerification: -> 
     current_user = fetch('/current_user')
     subdomain = fetch('/subdomain')

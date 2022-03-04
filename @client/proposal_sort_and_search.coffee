@@ -561,7 +561,7 @@ SortProposalsMenu = ReactiveComponent
         display: 'flex'
       wrapper_style: 
         display: 'inline-block'
-
+        minWidth: 170
       menu_style: 
         minWidth: 350
         backgroundColor: '#fbfbfb'
@@ -595,7 +595,7 @@ ManualProposalResort = ReactiveComponent
   render: -> 
     sort = fetch 'sort_proposals'
 
-    if !stale_sort_order(@props.sort_key) 
+    if !stale_sort_order(@props.sort_key) || ONE_COL()
       return SPAN null 
 
     DIV

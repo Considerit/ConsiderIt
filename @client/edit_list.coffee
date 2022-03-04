@@ -20,7 +20,7 @@ window.EditList = ReactiveComponent
 
 
     admin_actions = [{action: 'edit', label: translator('edit')}, 
-                     {action: 'list_order', label: translator('engage.list-configuration.copy_link', 'reorder lists')},
+                     {action: 'list_order', label: translator('engage.list-configuration.copy_link', 'reorder topics')},
                      {action: 'delete', label: translator('delete')}, 
                      {action: 'close', label: translator('engage.list-configuration.close', 'close to participation')}, 
                      {action: 'copy_link', label: translator('engage.list-configuration.copy_link', 'copy link')}]
@@ -35,8 +35,8 @@ window.EditList = ReactiveComponent
 
           wrapper_style: 
             position: 'absolute'
-            right: -42
-            top: 16
+            right: -LIST_PADDING() + 10
+            top: -34
 
           anchor_style: {}
 
@@ -436,7 +436,7 @@ window.ModalNewList = ReactiveComponent
                     open_menu_on: 'activation'
 
                     wrapper_style: 
-                      left: 390
+                      left: column_sizes().second + 50
                       top: -8
 
                     anchor_style: 

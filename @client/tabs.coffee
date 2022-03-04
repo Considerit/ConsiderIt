@@ -343,7 +343,6 @@ styles += """
     color: white;
   }
   #tabs > ul > li.selected > h4 {
-    background-color: rgba(255,255,255,.2);
     opacity: 1;
     color: black;
   }
@@ -453,6 +452,7 @@ window.Tab = ReactiveComponent
           drag_icon 15, '#888'
 
       H4 
+        className: if current then 'main_background'
         style: tab_style
 
         if tab.add_new

@@ -13,6 +13,44 @@ require './tabs'
 
 
 
+# /* thin diagonals */
+# background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d6d6d6' fill-opacity='0.7' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");        
+
+
+# /* graph paper */
+# background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23d6d6d6' fill-opacity='0.7'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");    
+
+
+# /* beefy diagonals */    
+# background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d6d6d6' fill-opacity='0.7' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
+
+# /* wavy lines */
+# background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='30' viewBox='0 0 1000 120'%3E%3Cg fill='none' stroke='%23F9F9F9' stroke-width='5.9' %3E%3Cpath d='M-500 75c0 0 125-30 250-30S0 75 0 75s125 30 250 30s250-30 250-30s125-30 250-30s250 30 250 30s125 30 250 30s250-30 250-30'/%3E%3Cpath d='M-500 45c0 0 125-30 250-30S0 45 0 45s125 30 250 30s250-30 250-30s125-30 250-30s250 30 250 30s125 30 250 30s250-30 250-30'/%3E%3Cpath d='M-500 105c0 0 125-30 250-30S0 105 0 105s125 30 250 30s250-30 250-30s125-30 250-30s250 30 250 30s125 30 250 30s250-30 250-30'/%3E%3Cpath d='M-500 15c0 0 125-30 250-30S0 15 0 15s125 30 250 30s250-30 250-30s125-30 250-30s250 30 250 30s125 30 250 30s250-30 250-30'/%3E%3Cpath d='M-500-15c0 0 125-30 250-30S0-15 0-15s125 30 250 30s250-30 250-30s125-30 250-30s250 30 250 30s125 30 250 30s250-30 250-30'/%3E%3Cpath d='M-500 135c0 0 125-30 250-30S0 135 0 135s125 30 250 30s250-30 250-30s125-30 250-30s250 30 250 30s125 30 250 30s250-30 250-30'/%3E%3C/g%3E%3C/svg%3E");
+
+styles += """
+  .main_background {
+    background-color: #ffffff;
+    
+
+    /* texture */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23d6d6d6' fill-opacity='0.7' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
+
+    background-attachment: fixed;
+  }
+
+  .main_background.one-col, .main_background .one-col {
+    background-image: none;
+  }
+
+
+  #homepagetab {
+    margin: 0px auto;
+    position: relative;
+    padding: 24px 0px 140px 0;
+  }
+
+
+"""
 window.Homepage = ReactiveComponent
   displayName: 'Homepage'
   render: ->
@@ -45,24 +83,17 @@ window.Homepage = ReactiveComponent
     if customization('anonymize_everything')
       messages.push translator "engage.anonymize_message", "The forum host has set participation to anonymous, so you won't be able to see the identity of others at this time."
     if customization('hide_opinions')
-      messages.push translator "engage.hide_opinions_message", "The forum host has hidden the opinions of other participants, so you won't be able to see their specific opinions at this time."
+      messages.push translator "engage.hide_opinions_message", "The forum host has hidden the opinions of other participants."
 
     DIV 
       key: "homepage_#{subdomain.name}"      
-
-      STYLE 
-        dangerouslySetInnerHTML: __html: """
-            #homepagetab {
-              margin: 45px auto;
-              width: #{HOMEPAGE_WIDTH()}px;
-              position: relative;       
-            }
-          """
+      className: "main_background #{if ONE_COL() then 'one-col' else ''}"
 
       DIV
         id: 'homepagetab'
         role: if get_tabs() then "tabpanel"
-
+        style: 
+          width: HOMEPAGE_WIDTH() + LIST_PADDING() * 2
 
 
         if !fetch('/proposals').proposals
@@ -75,26 +106,29 @@ window.Homepage = ReactiveComponent
                 key: "#{page?.name}-#{!!get_tabs()}"
                 page_name: page?.name
           else 
+            DIV null,
+              DIV 
+                style: 
+                  padding: "0px #{LIST_PADDING() + LIST_PADDING() / 6}px 0px #{LIST_PADDING() - LIST_PADDING() / 6}px"
 
-            DIV null, 
-              if customization('auth_callout')
-                DIV 
-                  style: 
-                    marginBottom: 36
-                  AuthCallout()
+                if customization('auth_callout')
+                  DIV 
+                    style: 
+                      marginBottom: 36
+                    AuthCallout()
 
-              for message in messages
-                DIV 
-                  style: 
-                    marginBottom: 24 
-                    fontStyle: 'italic'
-                  message
+                for message in messages
+                  DIV 
+                    style: 
+                      marginBottom: 24 
+                      fontStyle: 'italic'
+                    message
 
-              if preamble = get_page_preamble()
-                DIV
-                  style: 
-                    marginBottom: 24
-                  dangerouslySetInnerHTML: __html: preamble
+                if preamble = get_page_preamble()
+                  DIV
+                    style: 
+                      marginBottom: 24
+                    dangerouslySetInnerHTML: __html: preamble
 
               get_current_tab_view()
 
@@ -116,13 +150,20 @@ window.proposal_editor = (proposal) ->
 
 window.column_sizes = (args) ->
   args ||= {}
-  width = args.width or HOMEPAGE_WIDTH()
+  width = args.width or HOMEPAGE_WIDTH() - 60
 
-  return {
-    first: width * .6 - 50
-    second: width * .4
-    gutter: 50
-  }
+  if !ONE_COL()
+    gutter = 50
+    score_w = 30
+    first = Math.min 500, Math.floor(width * .6) - gutter - score_w
+    second = Math.max 303, width - first -  gutter - score_w
+  else 
+    gutter = 58
+    score_w = 30
+    first = width - score_w # Math.floor(width * .6) - gutter - score_w
+    second = width - score_w # width - first -  gutter - score_w
+
+  {first, second, gutter, score_w}
 
 
 window.TagHomepage = ReactiveComponent

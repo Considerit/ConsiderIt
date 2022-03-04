@@ -3,19 +3,33 @@ require './edit_list'
 
 
 window.styles += """
-  .LIST-header {
-    font-size: 28px;
-    font-weight: 700;
-    text-align: left;     
-    padding: 0; 
-    margin: 0; 
+
+  [data-widget="List"], [data-widget="NewList"] {
+    background-color: white;
+    /* border: 1px solid #e1e1e1; */
     border: none;
-    background-color: transparent;
+    border-radius: 8px;
+    box-shadow: -1px 1px 2px rgb(0 0 0 / 15%);
+    border-top: 1px solid #f3f3f3;
   }
 
-  .LIST-header.LIST-smaller-header {
+  .one-col [data-widget="List"] {
+    border-top: none;
+    box-shadow: none;
+  }
+
+  .LIST-header {
     font-size: 32px;
     font-weight: 500;
+    text-align: left;     
+  }
+
+  .LIST-header button {
+    border: none;
+    background-color: transparent;
+    padding: 0; 
+    margin: 0; 
+    
   }
 
   .LIST-fat-header-field {
@@ -25,7 +39,7 @@ window.styles += """
     outline-color: #ccc;
     line-height: 1.4;
     padding: 8px 12px;
-    // margin-top: -9px;
+    /* margin-top: -9px; */
     margin-left: -13px;
 
   }
@@ -38,6 +52,15 @@ window.styles += """
   }
 
 """
+
+get_list_padding = ->
+  top = if ONE_COL() then 12 else 48
+  bottom = top 
+
+  right = LIST_PADDING() + LIST_PADDING() / 6
+  left = LIST_PADDING() - LIST_PADDING() / 6
+
+  "#{top}px #{right}px #{bottom}px #{left}px"
 
 list_link = (list_key) ->
   list_key.substring(5).toLowerCase().replace(/ /g, '_')
@@ -71,8 +94,9 @@ window.List = ReactiveComponent
       key: list_key
       id: list_key.substring(5).toLowerCase()
       style: 
-        marginBottom: if !is_collapsed then 40
+        marginBottom: 40
         position: 'relative'
+        padding: get_list_padding()
 
       A name: list_link(list_key)
 
@@ -103,7 +127,6 @@ window.List = ReactiveComponent
               style:
                 backgroundColor: '#f9f9f9'
                 width: HOMEPAGE_WIDTH()
-                textDecoration: 'underline'
                 cursor: 'pointer'
                 paddingTop: 10
                 paddingBottom: 10
@@ -114,11 +137,25 @@ window.List = ReactiveComponent
                 border: 'none'
                 fontSize: 22
 
-              onMouseDown: => 
+              onClick: => 
                 list_state.show_all_proposals = true
                 save list_state
 
-              translator "engage.show_hidden_proposals", 'Show all'
+              onKeyPress: (e) -> 
+                if e.which == 13 || e.which == 32 # ENTER or SPACE
+                  e.preventDefault()
+                  e.target.click()
+
+              SPAN 
+                style: 
+                  textDecoration: 'underline'
+
+                translator "engage.show_hidden_proposals", 'Show all'
+
+              SPAN 
+                style: 
+                  paddingLeft: 8
+                "(+#{proposals.length - list_state.show_first_num_items})"
 
 
       if customization('footer', list_key) && !is_collapsed
@@ -340,14 +377,14 @@ window.NewList = ReactiveComponent
           textAlign: 'left'
           marginTop: 35
           display: 'block'
-          padding: '18px 24px'
+          padding: get_list_padding()
           position: 'relative'
-          left: -24
+          # left: -24
           width: '100%'
           borderRadius: 8
-          backgroundColor: if @local.hovering then '#eaeaea' else '#efefef'
-          border: '1px solid'
-          borderColor: if @local.hovering then '#bbb' else '#ddd'
+          backgroundColor: if @local.hovering then '#eaeaea' # else 'white'
+          # border: '1px solid'
+          # borderColor: if @local.hovering then '#bbb' else '#ddd'
 
         onMouseEnter: =>
           @local.hovering = true 
@@ -366,18 +403,17 @@ window.NewList = ReactiveComponent
             e.preventDefault()              
 
         H1
+          className: 'LIST-header'
           style: 
-            fontSize: 28
-            fontWeight: 700
             color: if @local.hovering then '#444' else '#666'
-
-          translator 'engage.create_new_list_button', "Create a new list"
+            textDecoration: 'underline'
+          translator 'engage.create_new_list_button', "Create a new Topic"
 
         DIV 
           style: 
             fontSize: 14
             marginTop: 4
-          'A list defines a category like "Recommendations" or poses an open-ended question like "What are your ideas?"'
+          'A Topic collects proposals under a category like "Recommendations" or in response to an open-ended question like "What are your ideas?"'
 
 
 
@@ -399,10 +435,6 @@ EditableTitle = ReactiveComponent
     title = get_list_title list_key, true, subdomain
 
     list_uncollapseable = customization 'list_uncollapseable', list_key, subdomain
-    TITLE_WRAPPER = if list_uncollapseable then DIV else BUTTON
-
-    tw = if is_collapsed then 15 else 20
-    th = if is_collapsed then 20 else 15    
 
     toggle_list = ->
       if !list_uncollapseable
@@ -417,50 +449,48 @@ EditableTitle = ReactiveComponent
         style: # ugly...we only want to show the expand/collapse icon
           fontSize: if title.replace(/^\s+|\s+$/g, '').length == 0 then 0
 
-        TITLE_WRAPPER
-          tabIndex: if !list_uncollapseable then 0
-          'aria-label': "#{title}. #{translator('Expand or collapse list.')}"
-          'aria-pressed': !is_collapsed
+        DIV
           onMouseEnter: => @local.hover_label = true; save @local 
           onMouseLeave: => @local.hover_label = false; save @local
           className: 'LIST-header'          
           style: _.defaults {}, customization('list_label_style', list_key, subdomain) or {}, 
             fontFamily: header_font()              
-            cursor: if !list_uncollapseable then 'pointer'
             position: 'relative'
             textAlign: 'left'
             outline: 'none'
 
-          onKeyDown: if !list_uncollapseable then (e) -> 
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              toggle_list()
-              e.preventDefault()
-          onClick: if !list_uncollapseable then (e) -> 
-            toggle_list()
-            document.activeElement.blur()
 
           title 
 
           if !list_uncollapseable
-            SPAN 
+            tw = 15   
+
+            BUTTON 
+              tabIndex: if !list_uncollapseable then 0
+              'aria-label': "#{title}. #{translator('Expand or collapse list.')}"
+              'aria-pressed': !is_collapsed
+
+              onKeyDown: if !list_uncollapseable then (e) -> 
+                if e.which == 13 || e.which == 32 # ENTER or SPACE
+                  toggle_list()
+                  e.preventDefault()
+              onClick: if !list_uncollapseable then (e) -> 
+                toggle_list()
+                document.activeElement.blur()
+
               'aria-hidden': true
               style: 
                 position: 'absolute'
                 left: -tw - 20
-                top: if is_collapsed then 0 else 3
+                top: if is_collapsed then -14 else 5
                 paddingRight: 20
                 paddingTop: 12
                 display: 'inline-block'
+                cursor: 'pointer'
+                transform: if !is_collapsed then 'rotate(90deg)'
+                transition: 'transform .25s, top .25s'
 
-              SPAN 
-                
-                style: cssTriangle (if is_collapsed then 'right' else 'bottom'), ((customization('list_label_style', list_key, subdomain) or {}).color or 'black'), tw, th,
-                  width: tw
-                  height: th
-                  opacity: if @local.hover_label or is_collapsed then 1 else .1
-                  outline: 'none'
-                  display: 'inline-block'
-                  verticalAlign: 'top'
+              ChevronRight(tw)
 
         
 
@@ -471,6 +501,7 @@ styles += """
     font-weight: 400;
     color: black;
     margin-top: 8px;
+    font-style: italic;
   }
 
 """
@@ -490,9 +521,10 @@ EditableDescription = ReactiveComponent
     description_style = customization 'list_description_style', list_key
 
     return SPAN null if !description
+
     DIV
       style: _.defaults {}, (description_style or {})
-      className: 'LIST-description'
+      className: "LIST-description #{if typeof description != 'function' then 'wysiwyg_text' else ''}"
 
       if typeof description == 'function'
         description()        
@@ -533,11 +565,13 @@ window.list_actions = (props) ->
 
       if add_new
 
-        SPAN null, 
+        SPAN 
+          style: 
+            minWidth: 78
+            
           A
             style: 
-              textDecoration: 'underline'
-              fontSize: 20
+              fontSize: 14
               color: focus_color()
               fontFamily: customization('font')
               fontStyle: 'normal'
@@ -558,7 +592,12 @@ window.list_actions = (props) ->
 
               wait_for()
 
-            translator "engage.add_new_proposal_to_list", 'add new'
+            '+ '
+
+            SPAN 
+              style: 
+                textDecoration: 'underline'
+              translator "engage.add_new_proposal_to_list", 'add new'
 
       if props.can_sort && add_new
         SPAN 
@@ -582,7 +621,8 @@ window.list_actions = (props) ->
 
     OpinionViews
       style: 
-        width: column_sizes().second
+        width: if ONE_COL() then 400 else column_sizes().second
+
       more_views_positioning: 'right'
 
       additional_width: column_sizes().gutter + column_sizes().first

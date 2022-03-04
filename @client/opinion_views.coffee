@@ -741,7 +741,7 @@ OpinionViews = ReactiveComponent
         width = 0
         if needs_expansion 
           if has_other_filters 
-            width = @props.style.width + @props.additional_width 
+            width = if ONE_COL() then Math.min(720, @props.style.width) else @props.style.width + @props.additional_width 
           else 
             width = Math.min(720, @props.style.width + @props.additional_width)
 
@@ -1616,7 +1616,7 @@ styles += """
 
   .minimized_view {
     color: #1059a2;
-    # border: 1px solid #2478cc;
+    /* border: 1px solid #2478cc; */
     background-color: #e4edf7;
     width: fit-content;
     position: relative;

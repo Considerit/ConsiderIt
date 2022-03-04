@@ -9,11 +9,25 @@ require './popover'
 
 
 styles += """
-  a.proposal_homepage_name {
-    font-weight: 600;
+  [data-widget="CollapsedProposal"] {
+    min-height: 84px;
+    position: relative;
+    padding: 0px;
+    list-style: none;    
+  }
+
+  .one-col [data-widget="CollapsedProposal"] {
+    padding: 14px 0; 
+  }
+  .one-col [data-widget="CollapsedProposal"]:nth-child(even) {
+    background-color: #f4f7f9;
+  }
+
+  a.proposal_homepage_name, button.add_new_proposal {
+    font-weight: 700;
     text-decoration: underline;
     color: #000;
-    font-size: 19px;
+    font-size: 17px;
   }
 
   .description_on_homepage {
@@ -107,11 +121,7 @@ window.CollapsedProposal = ReactiveComponent
                                            # with letter. seeking to hash was failing 
                                            # on proposals whose name began with number.
       style: _.defaults {}, (@props.wrapper_style or {}),
-        minHeight: 84
-        position: 'relative'
         margin: "0 0 #{if can_edit then '0' else '15px'} 0"
-        padding: 0
-        listStyle: 'none'
 
 
       onMouseEnter: => 
@@ -133,6 +143,7 @@ window.CollapsedProposal = ReactiveComponent
           display: 'inline-block'
           verticalAlign: 'top'
           position: 'relative'
+          marginLeft: if icons then 40 + 18
 
         DIV 
           style: 
@@ -446,7 +457,7 @@ window.CollapsedProposal = ReactiveComponent
         DIV 
           style: 
             position: 'absolute'
-            left: "calc(100% + 22px)"
+            left: "calc(100%)"
             top: 9
 
           HistogramScores
@@ -465,7 +476,7 @@ window.HistogramScores = ReactiveComponent
     opinions = get_opinions_for_proposal opinions, proposal, weights
 
 
-    if opinions.length == 0 
+    if opinions.length == 0 || ONE_COL()
       return SPAN null
 
     all_groups = get_user_groups_from_views groups

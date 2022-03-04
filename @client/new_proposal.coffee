@@ -1,3 +1,15 @@
+styles += """
+  button.add_new_proposal {
+    cursor: pointer;
+    background-color: #e7e7e7;
+    border: none;
+    padding: 6px 36px 6px 16px;
+    border-radius: 8px;
+    margin-left: 14px;   
+  }
+
+"""
+
 
 window.NewProposal = ReactiveComponent
   displayName: 'NewProposal'
@@ -57,8 +69,6 @@ window.NewProposal = ReactiveComponent
                   style: 
                     marginRight: 7 + (if !adding then 6 else 0)
                     marginLeft: 6
-                    verticalAlign: 'top'
-                    paddingTop: 13
                   CIRCLE cx: 100, cy: 100, r: 80, fill: '#000000'
 
 
@@ -66,16 +76,7 @@ window.NewProposal = ReactiveComponent
       BUTTON  
         name: "new_#{list_name}"
         className: 'add_new_proposal'
-        style: 
-          cursor: 'pointer'
-          backgroundColor: '#e7e7e7'
-          border: 'none'
-          fontSize: 20
-          fontWeight: 600
-          padding: '6px 36px 6px 16px'
-          textDecoration: 'underline'
-          borderRadius: 8
-          marginLeft: -44
+
         
         onClick: (e) => 
           loc.query_params.new_proposal = list_key
@@ -108,7 +109,7 @@ window.NewProposal = ReactiveComponent
         style:
           position: 'relative'
           padding: '6px 8px'
-          marginLeft: if customization('show_proposer_icon', list_key) then -76 else -36
+          marginLeft: if customization('show_proposer_icon', list_key) then -76 + 68 else -36 + 68
 
         A name: "new_#{list_name}"
 

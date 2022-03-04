@@ -45,7 +45,7 @@ setResponsive = ->
   document_width = Math.max(900, w)
 
   # There will be at least 80px of whitespace on either side of the document
-  gutter = Math.max(80, w / 10)
+  gutter = Math.max(80, w / 14)
   content_width = document_width - 2 * gutter
 
   whitespace = Math.max(100, w / 10)
@@ -72,14 +72,14 @@ setResponsive = ->
 
   point_font_size = 14
 
-  homepage_width = Math.min content_width, 900
+  homepage_width = Math.min content_width, 1100
   homepage_width = 60 * Math.floor(homepage_width / 60)
 
-  full_width = Math.max 550, Math.min(1120, w - 2 * 40)
     
   if browser.is_mobile && portrait
     point_font_size += 4
 
+  one_col = w < 900
   new_vals = 
     
     DOCUMENT_WIDTH: document_width
@@ -94,12 +94,13 @@ setResponsive = ->
     POINT_FONT_SIZE: point_font_size
     AUTH_WIDTH: if browser.is_mobile then content_width else Math.max decision_board_width, 820
     TWO_COL: two_col
+    ONE_COL: one_col
     SLIDER_HANDLE_SIZE: if two_col then 65 else 36
     CONTENT_WIDTH: content_width
     PORTRAIT_MOBILE: portrait && browser.is_mobile
     LANDSCAPE_MOBILE: !portrait && browser.is_mobile
     HOMEPAGE_WIDTH: homepage_width
-    SAAS_PAGE_WIDTH: full_width
+    LIST_PADDING: if one_col then 12 else 80
 
   # only update if we have a change
   # (something like this should go into statebus)

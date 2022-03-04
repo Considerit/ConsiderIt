@@ -150,10 +150,10 @@ window.EditPage = ReactiveComponent
 
     drag_capabilities = ""
     if @ordered_lists.length > 1 && current_list_sort_method == 'fixed'
-      drag_capabilities += "Drag lists to reorder them. "
+      drag_capabilities += "Drag topics to reorder them. "
 
     if get_tabs()?.length > 1 
-      drag_capabilities += "Lists can be dragged to a different tab to move them."
+      drag_capabilities += "Topics can be dragged to a different tab to move them."
 
 
 
@@ -171,13 +171,13 @@ window.EditPage = ReactiveComponent
         H2
           className: "list_header"
 
-          'Lists'
+          'Topics'
 
           DIV 
             style:
               fontSize: 14
               fontWeight: 400
-            'A list defines a category like "Recommendations" or poses an open-ended question like "What are your ideas?"'
+            'A Topic collects proposals under a category like "Recommendations" or in response to an open-ended question like "What are your ideas?"'
 
 
         if @ordered_lists.length == 0
@@ -188,7 +188,7 @@ window.EditPage = ReactiveComponent
               border: '1px dotted #eee'
               backgroundColor: '#f1f1f1'
 
-            "There are no lists here yet."
+            "There are no topics here yet."
 
         else if @ordered_lists.length > 0 
           DIV 
@@ -309,7 +309,7 @@ window.EditPage = ReactiveComponent
         else 
           BUTTON
             className: "add_new_list"
-            "data-tooltip": "Create a new List"
+            "data-tooltip": "Create a new Topic"
             onClick: =>
               @local.add_new_list = true 
               save @local
@@ -317,7 +317,7 @@ window.EditPage = ReactiveComponent
               if e.which == 13 || e.which == 32 # ENTER or SPACE
                 e.preventDefault()
                 e.target.click()
-            "+ add new list"
+            "+ add new topic"
 
 
       @renderSortOrder()
@@ -368,12 +368,12 @@ window.EditPage = ReactiveComponent
         padding: "0px 24px 18px 24px"
 
       LABEL 
+        className: 'main_background'
         style: 
           fontSize: 17
           marginTop: 36
           fontWeight: 700
           marginBottom: 24
-          backgroundColor: 'white'
           padding: "4px 8px"
           position: 'relative'
           top: -12
@@ -437,15 +437,15 @@ window.EditPage = ReactiveComponent
 
     if @local.type == PAGE_TYPES.DEFAULT
       list_orderings = [
-        {value: 'fixed', label: 'Fixed order', explanation: 'Lists always ordered as specified above.'}
+        {value: 'fixed', label: 'Fixed order', explanation: 'Topics always ordered as specified above.'}
         {value: 'newest_item', label: 'Order by most recent activity', explanation: 'The lists with the most recent activity are shown first.'}
-        {value: 'randomized', label: 'Randomized', explanation: 'Lists are show in a random order on page load.'}
+        {value: 'randomized', label: 'Randomized', explanation: 'Topics are show in a random order on page load.'}
       ]
     else if @local.type == PAGE_TYPES.ALL
       list_orderings = [
-        {value: 'by_tab', label: 'Fixed order', explanation: 'Lists ordered as they are in the other tabs.'}
-        {value: 'newest_item', label: 'Order by most recent activity', explanation: 'The lists with the most recent activity are shown first.'}
-        {value: 'randomized', label: 'Randomized', explanation: 'Lists are show in a random order on page load.'}
+        {value: 'by_tab', label: 'Fixed order', explanation: 'Topics ordered as they are in the other tabs.'}
+        {value: 'newest_item', label: 'Order by most recent activity', explanation: 'The Topics with the most recent activity are shown first.'}
+        {value: 'randomized', label: 'Randomized', explanation: 'Topics are show in a random order on page load.'}
       ]
     else 
       list_orderings = null
@@ -462,7 +462,7 @@ window.EditPage = ReactiveComponent
           fontWeight: 700
           marginRight: 12
 
-        "List order:"
+        "Topic order:"
 
 
       SELECT
@@ -519,6 +519,7 @@ window.EditPage = ReactiveComponent
         key: "#{@props.page_name}-preamble"
         horizontal: true
         html: current_preamble
+        allow_html: true
         # placeholder: if !@props.fresh then translator("engage.list_description", "(optional) Description")
         toolbar_style: 
           right: 0
@@ -529,8 +530,10 @@ window.EditPage = ReactiveComponent
           border: '1px solid #ccc'  
           marginTop: 4   
           padding: '8px 12px'
+          backgroundColor: 'white'
         style: 
           fontSize: 16
+
 
 
       DIV 
@@ -538,7 +541,7 @@ window.EditPage = ReactiveComponent
           fontSize: 14
           marginTop: 2
 
-        """This field supports HTML, with the exception of <script>, <iframe> and <style> tags (use inline styles instead)."""
+        """To use HTML, click </> in the upper right. <script>, <iframe> and <style> tags are not allowed (use inline styles instead)."""
         if @local.type == PAGE_TYPES.ABOUT
         
           """ If you need to embed a video, please contact help@consider.it."""
@@ -554,12 +557,12 @@ window.EditPage = ReactiveComponent
         padding: "0px 24px 18px 24px"
 
       LABEL 
+        className: "main_background"
         style: 
           fontSize: 17
           marginTop: 36
           fontWeight: 700
           marginBottom: 24
-          backgroundColor: 'white'
           padding: "4px 8px"
           position: 'relative'
           top: -12

@@ -221,10 +221,12 @@ __remove_this_list = (list_key, page) ->
     page ?= get_current_tab_name()
     for tab in tabs
       if tab.name == page
-        tab.lists.splice tab.lists.indexOf(list_key), 1
+        if (idx = tab.lists.indexOf(list_key)) > -1
+          tab.lists.splice idx, 1
         break
-  else if ol = customizations.lists
-    ol.splice ol.indexOf(list_key), 1
+
+  else if ol = customizations.lists && (idx = ol.indexOf(list_key)) > -1
+    ol.splice idx, 1
     if ol.length == 0
       delete customizations.lists
 
@@ -559,7 +561,7 @@ window.list_actions = (props) ->
 
     DIV 
       style: 
-        width: column_sizes().first
+        width: column_sizes().first + 58
         marginRight: column_sizes().gutter
         display: 'flex'
 
@@ -568,7 +570,7 @@ window.list_actions = (props) ->
         SPAN 
           style: 
             minWidth: 78
-            
+
           A
             style: 
               fontSize: 14

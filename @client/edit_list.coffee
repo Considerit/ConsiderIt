@@ -296,7 +296,6 @@ window.ModalNewList = ReactiveComponent
 
             DIV
               style: _.defaults {}, (description_style or {})
-              className: 'LIST-description'
 
               if typeof description == 'function'
                 description()        
@@ -319,6 +318,7 @@ window.ModalNewList = ReactiveComponent
 
                   DIV 
                     id: 'edit_description'
+
                     style:
                       # marginTop: -12
                       width:  HOMEPAGE_WIDTH() - 200
@@ -336,6 +336,7 @@ window.ModalNewList = ReactiveComponent
                       """
 
                     WysiwygEditor
+
                       key: "#{list_key}-description"
                       horizontal: true
                       html: customization('list_description', list_key)

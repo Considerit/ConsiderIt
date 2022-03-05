@@ -21,7 +21,7 @@ styles += """
     border-radius: 16px;
     margin: 4px 0;
     display: flex;
-    align-items: start;
+    align-items: center; /* start; */
     position: relative;
   }
 
@@ -71,8 +71,8 @@ styles += """
     border: none;
   }
   [data-widget="EditPage"] .draggable-list .name {
-    font-size: 16px; 
-    font-weight: 500;
+    /* font-size: 16px; 
+    font-weight: 500; */
     padding-left: 24px;
     flex-grow: 1;
     cursor: move;
@@ -81,8 +81,16 @@ styles += """
   [data-widget="EditPage"] H2.list_header {
     font-size: 22px;
   }
+  [data-widget="EditPage"] button.add_new_list {
+    border: none;
+    background-color: transparent;
+    margin-top: 12px;
+    padding: 8px 16px;
+    font-size: 24px;
+    margin-left: 26px;
+  }
 
-  [data-widget="EditPage"] button.convert_page, [data-widget="EditPage"] button.add_new_list {
+  [data-widget="EditPage"] button.convert_page {
     padding: 8px 16px;
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -231,7 +239,7 @@ window.EditPage = ReactiveComponent
                       drag_icon 15, '#888'
 
                   DIV
-                    className: 'name'
+                    className: 'name LIST-header'
 
                     if wildcard
                       SPAN 
@@ -317,7 +325,11 @@ window.EditPage = ReactiveComponent
               if e.which == 13 || e.which == 32 # ENTER or SPACE
                 e.preventDefault()
                 e.target.click()
-            "+ add new topic"
+            "+ "  
+            SPAN 
+              style: 
+                textDecoration: 'underline'
+              translator 'engage.create_new_list_button', "Create a new Topic"
 
 
       @renderSortOrder()

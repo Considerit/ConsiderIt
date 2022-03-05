@@ -706,7 +706,7 @@ OpinionViews = ReactiveComponent
             minWidth: 290
 
           if opinion_views_ui.active == 'custom' 
-            triangle_left = (document.querySelector('[data-view-state="custom"]')?.offsetLeft or 60) + 35 - (if needs_expansion then (@props.style.width + @props.additional_width - width ) else 0)
+            triangle_left = (@local.view_state_left or 60) + 35
 
             if @local.minimized
               if user_has_set_a_view()
@@ -812,7 +812,16 @@ OpinionViews = ReactiveComponent
         else 
           translator 'opinion_views.minimize_minimize', 'minimize'
 
+  shadow_view_state_offset: ->
+    console.log 'shadowing'
+    left = document.querySelector('[data-view-state="custom"]')?.offsetLeft    
+    
+    if left != @local.view_state_left
+      @local.view_state_left = left 
+      save @local
 
+  componentDidUpdate: -> @shadow_view_state_offset()
+  componentDidMount: -> @shadow_view_state_offset()
 
 
 

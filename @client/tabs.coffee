@@ -316,15 +316,15 @@ styles += """
     outline: none;
   }  
 
-  .dragging-list #tabs > ul > li[draggable="true"] {
+  .dragging-list #tabs > ul > li[data-accepts-lists="true"] {
     outline: 4px solid black;
   }
 
-  .dragging-list .dark #tabs > ul > li[draggable="true"] {
+  .dragging-list .dark #tabs > ul > li[data-accepts-lists="true"] {
     outline: 4px solid white;
   }
 
-  .dragging-list #tabs > ul > li.draggedOver-by_list[draggable="true"] {
+  .dragging-list #tabs > ul > li.draggedOver-by_list[data-accepts-lists="true"] {
     outline: 4px solid red;
   }
 
@@ -403,6 +403,7 @@ window.Tab = ReactiveComponent
       _.extend tab_style, @props.hover_style or @props.active_style
       _.extend tab_wrapper_style, @props.hovering_tab_wrapper_style
 
+    accepts_lists = @props.tab.type not in [PAGE_TYPES.ABOUT, PAGE_TYPES.ALL] && !tab.demo && !tab.add_new
 
     LI 
       className: "#{if current then 'selected' else if hovering then 'hovered' else ''} #{if tab.demo then 'demo' else ''} #{if tab.add_new then 'add_new' else ''}"
@@ -412,7 +413,8 @@ window.Tab = ReactiveComponent
       'data-tab': tab.name
       'aria-controls': 'homepagetab'
       'aria-selected': current
-      draggable: edit_forum.editing && !tab.add_new && !tab.demo
+      draggable: edit_forum.editing && !tab.add_new && !tab.demo 
+      'data-accepts-lists': accepts_lists
 
       onMouseEnter: => 
         return if tab.add_new || tab.demo
@@ -537,19 +539,19 @@ window.Tab = ReactiveComponent
 
 
     reassign_list_to_page = (source, target, dragging) =>
-      edit_forum = fetch('edit_forum')
+      subdomain = fetch '/subdomain'
 
       dragging = parseInt(dragging)
-      source = get_tab(source).lists
-      target = get_tab(target).lists
+      source_lists = get_tab(source).lists
+      target_lists = get_tab(target).lists
 
-      list_key = source[dragging]
+      list_key = source_lists[dragging]
 
-      if source && target
-        source.splice dragging, 1
-        if target.indexOf(list_key) == -1
-          target.push list_key 
-        save edit_forum
+      if source_lists && target_lists
+        source_lists.splice dragging, 1
+        if target_lists.indexOf(list_key) == -1
+          target_lists.push list_key 
+        save subdomain
       else 
         console.error "Could not move list #{list_key} from #{source} to #{target}"
 
@@ -562,6 +564,8 @@ window.Tab = ReactiveComponent
       save subdomain
 
 
+
+    accepts_lists = @props.tab.type not in [PAGE_TYPES.ABOUT, PAGE_TYPES.ALL] && !tab.demo && !tab.add_new
 
     @onDragStartTab ?= (e) =>
 
@@ -588,9 +592,9 @@ window.Tab = ReactiveComponent
 
 
     @onDragOverTab ?= (e) =>
-      if drag_data.type == 'list'
+      if drag_data.type == 'list' && accepts_lists
         e.preventDefault()
-        if !e.currentTarget.classList.contains('draggedOver-by_list')
+        if !e.currentTarget.classList.contains('draggedOver-by_list') 
           e.currentTarget.classList.add('draggedOver-by_list')
       else if drag_data.type == 'tab'
         e.preventDefault()
@@ -598,7 +602,7 @@ window.Tab = ReactiveComponent
           e.currentTarget.classList.add('draggedOver-by_tab')
 
     @onDragLeaveTab ?= (e) =>
-      if drag_data.type == 'list'
+      if drag_data.type == 'list' && accepts_lists
         e.preventDefault()
         if e.currentTarget.classList.contains('draggedOver-by_list')
           e.currentTarget.classList.remove('draggedOver-by_list')
@@ -609,7 +613,7 @@ window.Tab = ReactiveComponent
 
 
     @onDropTab ?= (e) =>
-      if drag_data.type == 'list'
+      if drag_data.type == 'list' && accepts_lists
         reassign_list_to_page drag_data.source_page, @props.tab.name, drag_data.id
 
         delete drag_data.type

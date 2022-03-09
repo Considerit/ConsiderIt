@@ -250,11 +250,12 @@ window.HomepageTabs = ReactiveComponent
                 if ev.target.checked
                   loc = fetch 'location'
                   new_tab_name = prompt("What is the name of the first tab? You'll be able to add more later.")
-                  create_new_tab new_tab_name
-                  loc.query_params.tab = new_tab_name
-                  if subdomain.customizations.lists?
-                    delete subdomain.customizations.lists
-                    save subdomain
+                  if new_tab_name
+                    create_new_tab new_tab_name
+                    loc.query_params.tab = new_tab_name
+                    if subdomain.customizations.lists?
+                      delete subdomain.customizations.lists
+                      save subdomain
                 else
                   if confirm(translator "homepage_tab.disable_confirmation", "Are you sure you want to disable tabs? Existing tabs will be deleted. All existing lists will still be visible.")
                     for tab in get_tabs()?.slice() or []

@@ -665,168 +665,168 @@ CustomizeBackground = ReactiveComponent
 
     compressed = CONTENT_WIDTH() < 1036
 
-    DIV
+    DIV 
       style: 
-        position: 'relative'
-        # bottom: 50
-        # width: 218
-        float: if !compressed then 'right'
-        backgroundColor: if is_light then 'rgba(255,255,255,.4)' else 'rgba(0,0,0,.4)'
-        padding: '12px 24px'
-        zIndex: 9
-        marginTop: if compressed then 12 else if has_masthead && !compressed then -120 else -100
-        display: 'inline-block'
-
-      DIV 
+        textAlign: if compressed then 'right'
+      DIV
         style: 
-          display: 'flex'
-          flexDirection: 'column'
-        
+          position: 'relative'
+          # bottom: 50
+          # width: 218
+          float: if !compressed then 'right'
+          backgroundColor: if is_light then 'rgba(255,255,255,.4)' else 'rgba(0,0,0,.4)'
+          padding: '12px 24px'
+          zIndex: 9
+          marginTop: if compressed then 12 else if has_masthead && !compressed then -120 else -100
+          display: 'inline-block'
 
-
-        DIV
+        DIV 
           style: 
-            cursor: 'pointer'
             display: 'flex'
-            alignItems: 'center'
             flexDirection: 'column'
-            padding: 4
-            border: "1px dashed #{if is_light then 'black' else 'white'}"
-            borderRadius: 4
+          
 
-            
-          onClick: ->
-            document.querySelector('input#masthead').click()
-
-          onKeyDown: (e) => 
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              e.target.click()
-              e.preventDefault()
 
           DIV
             style: 
-              margin: 'auto'
-              height: icon_height
-              width: icon_height
+              cursor: 'pointer'
+              display: 'flex'
+              alignItems: 'center'
+              flexDirection: 'column'
+              padding: 4
+              border: "1px dashed #{if is_light then 'black' else 'white'}"
+              borderRadius: 4
 
-            UploadBackgroundImageSVG
-              height: icon_height
-              fill: if is_light then 'black' else 'white'
+              
+            onClick: ->
+              document.querySelector('input#masthead').click()
+
+            onKeyDown: (e) => 
+              if e.which == 13 || e.which == 32 # ENTER or SPACE
+                e.target.click()
+                e.preventDefault()
+
+            DIV
+              style: 
+                margin: 'auto'
+                height: icon_height
+                width: icon_height
+
+              UploadBackgroundImageSVG
+                height: icon_height
+                fill: if is_light then 'black' else 'white'
+
+            DIV 
+              style: 
+                fontSize: 14
+                color: color
+                marginBottom: 4
+
+
+              if has_masthead
+                DIV 
+                  style: 
+                    display: 'flex'
+
+                  BUTTON 
+                    className: 'like_link'
+                    style: 
+                      color: color
+                      fontSize: 12
+                    'change'
+
+                  SPAN 
+                    style: 
+                      padding: '0px 4px'
+                    '•'
+
+                  BUTTON 
+                    className: 'like_link'
+                    style: 
+                      cursor: 'pointer'
+                      zIndex: 1
+                      color: color
+                      fontSize: 12
+                      # marginTop: 12
+                      # marginLeft: 4
+
+                    onClick: (e) =>
+                      e.stopPropagation()
+                      e.preventDefault()
+                      @local.background_css = DEFAULT_BACKGROUND_COLOR
+                      save @local
+                      document.querySelector('button#delete_masthead').click()
+
+                    onKeyDown: (e) => 
+                      if e.which == 13 || e.which == 32 # ENTER or SPACE
+                        e.target.click()
+                        e.stopPropagation()
+                        e.preventDefault()
+
+                    'remove'
+
+              else 
+                translator 'banner.upload_background_label', 'Set background pic'
 
           DIV 
             style: 
               fontSize: 14
-              color: color
-              marginBottom: 4
+              position: 'relative'
 
 
             if has_masthead
-              DIV 
+
+              LABEL 
                 style: 
+                  color: color
+                  marginRight: 4
                   display: 'flex'
+                  marginTop: 4
+                  justifyContent: 'center'
 
-                BUTTON 
-                  className: 'like_link'
-                  style: 
-                    color: color
-                    fontSize: 12
-                  'change'
+                htmlFor: "background_color"
 
-                SPAN 
-                  style: 
-                    padding: '0px 4px'
-                  '•'
+                SELECT 
+                  id: 'background_color'
+                  type: 'dropdown'
+                  name: 'background_color'
+                  value: is_light
 
-                BUTTON 
-                  className: 'like_link'
-                  style: 
-                    cursor: 'pointer'
-                    zIndex: 1
-                    color: color
-                    fontSize: 12
-                    # marginTop: 12
-                    # marginLeft: 4
-
-                  onClick: (e) =>
-                    e.stopPropagation()
-                    e.preventDefault()
-                    @local.background_css = DEFAULT_BACKGROUND_COLOR
+                  onChange: (e) =>
+                    @local.background_css = if e.target.value == 'true' then "rgb(255,255,255)" else 'rgb(0,0,0)'
                     save @local
-                    document.querySelector('button#delete_masthead').click()
 
-                  onKeyDown: (e) => 
-                    if e.which == 13 || e.which == 32 # ENTER or SPACE
-                      e.target.click()
-                      e.stopPropagation()
-                      e.preventDefault()
-
-                  'remove'
-
-
-
+                  OPTION 
+                    value: true
+                    'background is light'
+                  OPTION 
+                    value: false
+                    'background is dark'
+            
 
             else 
-              translator 'banner.upload_background_label', 'Set background pic'
-
-        DIV 
-          style: 
-            fontSize: 14
-            position: 'relative'
-
-
-          if has_masthead
-
-            LABEL 
-              style: 
-                color: color
-                marginRight: 4
-                display: 'flex'
-                marginTop: 4
-                justifyContent: 'center'
-
-              htmlFor: "background_color"
-
-              SELECT 
-                id: 'background_color'
-                type: 'dropdown'
-                name: 'background_color'
-                value: is_light
-
-                onChange: (e) =>
-                  @local.background_css = if e.target.value == 'true' then "rgb(255,255,255)" else 'rgb(0,0,0)'
-                  save @local
-
-                OPTION 
-                  value: true
-                  'background is light'
-                OPTION 
-                  value: false
-                  'background is dark'
-          
-
-          else 
-            LABEL 
-              style: 
-                color: color
-                marginRight: 8
-                display: 'flex'
-                marginTop: 4
-                alignItems: 'center'
-                justifyContent: 'center'
-              htmlFor: "background_color"
-
-              translator("banner.background_css.label", "...or set to color") + ':'
-
-              INPUT 
-                id: 'background_color'
-                type: 'color'
+              LABEL 
                 style: 
-                  marginLeft: 4
-                name: 'background_color'
-                value: @local.background_css or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
-                onChange: (e) =>
-                  @local.background_css = e.target.value
-                  save @local
+                  color: color
+                  marginRight: 8
+                  display: 'flex'
+                  marginTop: 4
+                  alignItems: 'center'
+                  justifyContent: 'center'
+                htmlFor: "background_color"
+
+                translator("banner.background_css.label", "...or set to color") + ':'
+
+                INPUT 
+                  id: 'background_color'
+                  type: 'color'
+                  style: 
+                    marginLeft: 4
+                  name: 'background_color'
+                  value: @local.background_css or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
+                  onChange: (e) =>
+                    @local.background_css = e.target.value
+                    save @local
 
 
 

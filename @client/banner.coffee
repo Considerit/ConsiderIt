@@ -28,7 +28,9 @@ CustomizeGoogleTranslate = ReactiveComponent
     is_light = is_light_background()
     subdomain = fetch '/subdomain'
 
-    @local.google_translate_style ?= JSON.parse JSON.stringify(subdomain.customizations.google_translate_style or {})
+    if subdomain.customizations.google_translate_style
+      @local.google_translate_style ?= JSON.parse JSON.stringify subdomain.customizations.google_translate_style
+
 
     edit_forum = fetch 'edit_forum'
     is_admin = fetch('/current_user').is_admin
@@ -661,22 +663,37 @@ CustomizeBackground = ReactiveComponent
     icon_height = 50
     color = if is_light then 'rgba(0,0,0,1)' else 'rgba(255,255,255,1)'
 
+    compressed = CONTENT_WIDTH() < 1036
+
     DIV
       style: 
         position: 'relative'
         # bottom: 50
-        width: 280
-        float: 'right'
+        # width: 218
+        float: if !compressed then 'right'
         backgroundColor: if is_light then 'rgba(255,255,255,.4)' else 'rgba(0,0,0,.4)'
         padding: '12px 24px'
         zIndex: 9
+        marginTop: if compressed then 12 else if has_masthead && !compressed then -120 else -100
+        display: 'inline-block'
 
-      DIV null,
+      DIV 
+        style: 
+          display: 'flex'
+          flexDirection: 'column'
+        
+
+
         DIV
           style: 
             cursor: 'pointer'
             display: 'flex'
             alignItems: 'center'
+            flexDirection: 'column'
+            padding: 4
+            border: "1px dashed #{if is_light then 'black' else 'white'}"
+            borderRadius: 4
+
             
           onClick: ->
             document.querySelector('input#masthead').click()
@@ -700,18 +717,61 @@ CustomizeBackground = ReactiveComponent
             style: 
               fontSize: 14
               color: color
-              marginBottom: 12
-              marginLeft: 8
+              marginBottom: 4
+
+
             if has_masthead
-              translator 'banner.change_background_label', 'Change background pic'
+              DIV 
+                style: 
+                  display: 'flex'
+
+                BUTTON 
+                  className: 'like_link'
+                  style: 
+                    color: color
+                    fontSize: 12
+                  'change'
+
+                SPAN 
+                  style: 
+                    padding: '0px 4px'
+                  '•'
+
+                BUTTON 
+                  className: 'like_link'
+                  style: 
+                    cursor: 'pointer'
+                    zIndex: 1
+                    color: color
+                    fontSize: 12
+                    # marginTop: 12
+                    # marginLeft: 4
+
+                  onClick: (e) =>
+                    e.stopPropagation()
+                    e.preventDefault()
+                    @local.background_css = DEFAULT_BACKGROUND_COLOR
+                    save @local
+                    document.querySelector('button#delete_masthead').click()
+
+                  onKeyDown: (e) => 
+                    if e.which == 13 || e.which == 32 # ENTER or SPACE
+                      e.target.click()
+                      e.stopPropagation()
+                      e.preventDefault()
+
+                  'remove'
+
+
+
+
             else 
-              translator 'banner.upload_background_label', 'Add background pic'
+              translator 'banner.upload_background_label', 'Set background pic'
 
         DIV 
           style: 
             fontSize: 14
             position: 'relative'
-            left: if has_masthead then -20
 
 
           if has_masthead
@@ -722,21 +782,28 @@ CustomizeBackground = ReactiveComponent
                 marginRight: 4
                 display: 'flex'
                 marginTop: 4
+                justifyContent: 'center'
+
               htmlFor: "background_color"
 
-
-              INPUT 
+              SELECT 
                 id: 'background_color'
-                type: 'checkbox'
+                type: 'dropdown'
                 name: 'background_color'
-                checked: is_light
-                style:
-                  marginRight: 8
+                value: is_light
+
                 onChange: (e) =>
-                  @local.background_css = if e.target.checked then "rgb(255,255,255)" else 'rgb(0,0,0)'
+                  @local.background_css = if e.target.value == 'true' then "rgb(255,255,255)" else 'rgb(0,0,0)'
                   save @local
 
-              translator "banner.background_css_is_light.label", "Background is light colored"
+                OPTION 
+                  value: true
+                  'background is light'
+                OPTION 
+                  value: false
+                  'background is dark'
+          
+
           else 
             LABEL 
               style: 
@@ -745,6 +812,7 @@ CustomizeBackground = ReactiveComponent
                 display: 'flex'
                 marginTop: 4
                 alignItems: 'center'
+                justifyContent: 'center'
               htmlFor: "background_color"
 
               translator("banner.background_css.label", "...or set to color") + ':'
@@ -761,32 +829,6 @@ CustomizeBackground = ReactiveComponent
                   save @local
 
 
-        if has_masthead
-          BUTTON 
-            style: 
-              border: 'none'
-              background: 'none'
-              cursor: 'pointer'
-              padding: 0
-              zIndex: 1
-              color: color
-              fontSize: 14
-              display: 'block'
-              marginTop: 12
-              marginLeft: 4
-              textDecoration: 'underline'
-
-            onClick: =>
-              @local.background_css = DEFAULT_BACKGROUND_COLOR
-              save @local
-              document.querySelector('button#delete_masthead').click()
-
-            onKeyDown: (e) => 
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                e.target.click()
-                e.preventDefault()
-
-            'remove background'
 
 
 window.EditBanner = ReactiveComponent
@@ -996,8 +1038,13 @@ window.PhotoBanner = (opts) ->
     else 
       parseInt(value).toString(16)
 
-  description = fetch("forum-description").html or customization('banner')?.description or opts.supporting_text
+  banner_config = subdomain.customizations.banner
+
+  description = fetch("forum-description").html or banner_config?.description or opts.supporting_text
   has_description = opts.supporting_text || (description?.trim().length > 0 && description.trim() != '<p><br></p>')
+
+  has_title = (banner_config.title or opts.title)?.length > 0 
+
 
   background_color = edit_banner.background_css or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
 
@@ -1113,25 +1160,27 @@ window.PhotoBanner = (opts) ->
       CustomizeGoogleTranslate()
 
 
-      DIV
-        className: 'text_block'
-        style: opts.header_style
+      if has_description || has_title || edit_forum.editing
 
-        CustomizeTextBlock()
+        DIV
+          className: 'text_block'
+          style: opts.header_style
+
+          CustomizeTextBlock()
 
 
-        CustomizeTitle
-          title: opts.header
-          style: opts.header_text_style
+          CustomizeTitle
+            title: opts.header
+            style: opts.header_text_style
 
-        CustomizeDescription
-          key: 'editable_description'
-          opts: opts
-          style: 
-            border: if !has_description then (if has_image_background || is_dark_theme then '1px solid rgba(255,255,255,.5)' else '1px solid rgba(0,0,0,.5)')
-            padding: "6px 8px"
-            minHeight: 20
-            fontSize: 18
+          CustomizeDescription
+            key: 'editable_description'
+            opts: opts
+            style: 
+              border: if !has_description then (if has_image_background || is_dark_theme then '1px solid rgba(255,255,255,.5)' else '1px solid rgba(0,0,0,.5)')
+              padding: "6px 8px"
+              minHeight: 20
+              fontSize: 18
 
       CustomizeBackground()
 

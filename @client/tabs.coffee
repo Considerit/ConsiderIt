@@ -1,3 +1,4 @@
+
 window.SubdomainSaveRateLimiter =  
 
   save_customization_with_rate_limit: ({fields, config, force_save, on_save_callback, wait_for}) ->
@@ -207,7 +208,7 @@ window.HomepageTabs = ReactiveComponent
 
     return DIV null if !edit_forum.editing && !tabs
 
-    return DIV null if edit_forum.editing && !fetch('/current_user').is_super_admin && !subdomain.plan
+    return DIV style:{paddingBottom:36} if edit_forum.editing && !fetch('/current_user').is_super_admin && !subdomain.plan
 
     is_light = is_light_background()
 
@@ -474,7 +475,12 @@ window.Tab = ReactiveComponent
             className: "tab_name_input"
             type: 'text'
             defaultValue: tab_name
-            style: tab_style
+            style: 
+              fontSize: 'inherit'
+              color: 'inherit'
+              fontWeight: 'inherit'
+              fontDecoration: 'inherit'
+              fontStyle: 'inherit'
             
             # prevent dragging when editing the tab name
             draggable: true
@@ -492,6 +498,9 @@ window.Tab = ReactiveComponent
             # onChange: (e) =>
             onBlur: (e) =>
               if e.target.value != ""
+                if subdomain.customizations.homepage_default_tab == tab.name
+                  subdomain.customizations.homepage_default_tab = e.target.value
+
                 tab.name = e.target.value
                 el = e.target
                 @save_customization_with_rate_limit 

@@ -25,6 +25,9 @@ window.EditForum = ReactiveComponent
 
     is_light = is_light_background()
 
+    show_dash_modal = fetch 'show_dash_modal'
+    return SPAN null if show_dash_modal.showing
+
     if !edit_forum.editing
 
       DIV 
@@ -52,7 +55,7 @@ window.EditForum = ReactiveComponent
               e.preventDefault()
 
           translator 'forum.edit_button', 'Edit Banner & Forum Structure'
-    else 
+    else
       DIV 
         style: 
           position: 'fixed'

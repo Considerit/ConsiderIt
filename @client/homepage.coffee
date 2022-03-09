@@ -150,18 +150,19 @@ window.proposal_editor = (proposal) ->
 
 window.column_sizes = (args) ->
   args ||= {}
-  width = args.width or HOMEPAGE_WIDTH() - 60
+  width = args.width or HOMEPAGE_WIDTH()
 
   if !ONE_COL()
+    width -= 58
     gutter = 50
-    score_w = 30
+    score_w = 48
     first = Math.min 500, Math.floor(width * .6) - gutter - score_w
     second = Math.max 303, width - first -  gutter - score_w
   else 
     gutter = 58
-    score_w = 30
-    first = width - score_w # Math.floor(width * .6) - gutter - score_w
-    second = width - score_w # width - first -  gutter - score_w
+    score_w = 0 
+    first = width - gutter # Math.floor(width * .6) - gutter - score_w
+    second = width - gutter # width - first -  gutter - score_w
 
   {first, second, gutter, score_w}
 

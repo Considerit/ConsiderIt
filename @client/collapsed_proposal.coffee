@@ -386,7 +386,7 @@ window.CollapsedProposal = ReactiveComponent
           width: col_sizes.second
           height: 40
           enable_individual_selection: !@props.disable_selection && !browser.is_mobile
-          enable_range_selection: !just_you && !browser.is_mobile
+          enable_range_selection: !just_you && !browser.is_mobile && !ONE_COL()
           draw_base: true
           draw_base_labels: !slider_regions
 

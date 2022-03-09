@@ -565,7 +565,7 @@ window.ModalNewList = ReactiveComponent
                         style: 
                           fontWeight: 700
 
-                    "<span>Permissions.</span> Who can add items to this list?"
+                    "<span>Permissions.</span> Who can add proposals in response to this Topic?"
 
                 DIV 
                   style: option_block
@@ -653,11 +653,11 @@ window.ModalNewList = ReactiveComponent
                         SPAN 
                           style: 
                             paddingLeft: 4
-                          translator 'engage.list-config-discussion-enabled', 'Disable commenting. Spectrums only.'
+                          translator 'engage.list-config-discussion-enabled', 'Disable pro/con commenting on each proposal. Spectrums only.'
 
                     DIV                   
                       style:
-                        marginBottom: 6
+                        marginBottom: 24
                       LABEL 
                         style: {}
 
@@ -672,7 +672,7 @@ window.ModalNewList = ReactiveComponent
                         SPAN 
                           style: 
                             paddingLeft: 4
-                          translator 'engage.list-config-archived', 'Close list by default on page load. Useful for archiving past issues.'
+                          translator 'engage.list-config-archived', 'This Topic should be closed by default. Useful for archiving old topics and proposals.'
 
 
           BUTTON 
@@ -706,7 +706,7 @@ window.ModalNewList = ReactiveComponent
 
 
 
-    wrap_in_modal children, HOMEPAGE_WIDTH() + 72
+    wrap_in_modal HOMEPAGE_WIDTH() + 72, cancel_edit, children
 
 
 

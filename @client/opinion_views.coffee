@@ -813,7 +813,6 @@ OpinionViews = ReactiveComponent
           translator 'opinion_views.minimize_minimize', 'minimize'
 
   shadow_view_state_offset: ->
-    console.log 'shadowing'
     left = document.querySelector('[data-view-state="custom"]')?.offsetLeft    
     
     if left != @local.view_state_left

@@ -378,7 +378,7 @@ window.EditIntakeQuestion = ReactiveComponent
 
     validated = @local.view_name?.length > 0 && @local.question?.length > 0 && @local.input_type?.length > 0 && (@local.input_type == 'text' || @local.options?.length > 0)
 
-    wrap_in_modal DIV null,
+    wrap_in_modal null, close_modal, DIV null,
 
       DIV 
         className: 'field'

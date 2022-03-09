@@ -137,7 +137,7 @@ window.Modal =
     window.scroll(0, @scroll_Y)
 
 
-window.wrap_in_modal = (children, width) -> 
+window.wrap_in_modal = (width, click_lightbox_callback, children) -> 
   DIV null,
 
     DIV 
@@ -150,11 +150,15 @@ window.wrap_in_modal = (children, width) ->
       # 'aria-labeledby': 'AUTH_task'
       # 'aria-describedby': if options.goal then 'AUTH_goal'
 
+      onClick: if click_lightbox_callback then click_lightbox_callback
 
       DIV
         id: 'modal-wrapper'
         style: 
           maxWidth: width or AUTH_WIDTH()
+
+        onClick: if click_lightbox_callback then (e) ->
+          e.stopPropagation()
 
         DIV
           id: 'modal-body'

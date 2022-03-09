@@ -90,6 +90,59 @@ window.styles += """
 
 """
 
+
+get_dash_widget = (url) -> 
+  switch url
+    when '/dashboard/edit_profile'
+      EditProfile
+    when '/dashboard/email_notifications'
+      Notifications
+    when '/dashboard/data_import_export'
+      DataDash
+    when '/dashboard/moderate'
+      ModerationDash
+    when '/dashboard/application'
+      ForumSettingsDash
+    when '/dashboard/customizations'
+      CustomizationsDash
+    when '/dashboard/intake_questions'
+      IntakeQuestions        
+    when '/dashboard/roles'
+      SubdomainRoles
+    when '/dashboard/tags'
+      UserTags
+    when '/dashboard/translations'
+      'Language Translation'
+      TranslationsDash
+    else 
+      null
+get_dash_title = (url) ->
+  switch url
+    when '/dashboard/edit_profile'
+      title = 'Your Profile'
+    when '/dashboard/email_notifications'
+      title = 'Notifications'
+    when '/dashboard/data_import_export'
+      title = 'Data Import & Export'
+    when '/dashboard/moderate'
+      title = 'Moderation'
+    when '/dashboard/application'
+      title = 'Forum Settings'
+    when '/dashboard/customizations'
+      title = 'Customizations'
+    when '/dashboard/intake_questions'
+      title = 'Sign-up Questions'
+    when '/dashboard/roles'
+      title = 'Permissions & Roles'
+    when '/dashboard/tags'
+      title = 'User Tags'
+    when '/dashboard/translations'
+      title = 'Language Translation'
+    else 
+      null
+  title
+
+
 window.Dashboard = ReactiveComponent
   displayName: 'Dashboard'
   render: -> 
@@ -102,41 +155,13 @@ window.Dashboard = ReactiveComponent
 
     loc = fetch 'location'
 
-    switch loc.url
-      when '/dashboard/edit_profile'
-        title = 'Your Profile'
-        Widget = EditProfile
-      when '/dashboard/email_notifications'
-        title = 'Notifications'
-        Widget = Notifications
-      when '/dashboard/data_import_export'
-        title = 'Data Import & Export'
-        Widget = DataDash
-      when '/dashboard/moderate'
-        title = 'Moderation'
-        Widget = ModerationDash
-      when '/dashboard/application'
-        title = 'Forum Settings'
-        Widget = ForumSettingsDash
-      when '/dashboard/customizations'
-        title = 'Customizations'
-        Widget = CustomizationsDash
-      when '/dashboard/intake_questions'
-        title = 'Sign-up Questions'
-        Widget = IntakeQuestions        
-      when '/dashboard/roles'
-        title = 'Permissions & Roles'
-        Widget = SubdomainRoles
-      when '/dashboard/tags'
-        title = 'User Tags'
-        Widget = UserTags
-      when '/dashboard/translations'
-        title = 'Language Translation'
-        Widget = TranslationsDash
-      else 
-        return DIV null, "No Dashboard at #{loc.url}"
+    title = get_dash_title loc.url
+        
 
+    if title == null 
+      return DIV null, "No Dashboard at #{loc.url}"
 
+    Widget = get_dash_widget(loc.url)
 
     draw_menu_option = (opts) ->
       active = opts.href == loc.url
@@ -207,6 +232,48 @@ window.Dashboard = ReactiveComponent
           TRANSLATE "dashboard.#{title}.header",  title
 
         Widget? key: "/page#{loc.url}"
+
+
+
+
+
+window.styles += """
+  #modal #DASHBOARD-main {
+    padding: 0px;
+  }
+"""
+
+window.ModalDash = ReactiveComponent
+  displayName: 'ModalDash'
+  mixins: [Modal]
+
+  render: ->
+    Widget = get_dash_widget(@props.url)
+    title = get_dash_title @props.url
+
+    wrap_in_modal null, @props.done_callback, DIV 
+      id: 'DASHBOARD-main' 
+
+      H1
+        style: 
+          fontSize: 28
+          marginBottom: 36
+
+        translator "dashboard.section_title.#{title}", title 
+
+      Widget()
+
+      BUTTON 
+        className: 'btn'
+        style: 
+          marginTop: 36
+        onClick: @props.done_callback
+        onKeyPress: (e) -> 
+          if e.which == 13 || e.which == 32 # ENTER or SPACE
+            e.preventDefault()
+            e.target.click()
+
+        'Done'
 
 
 

@@ -225,10 +225,14 @@ __remove_this_list = (list_key, page) ->
           tab.lists.splice idx, 1
         break
 
-  else if ol = customizations.lists && (idx = ol.indexOf(list_key)) > -1
-    ol.splice idx, 1
-    if ol.length == 0
-      delete customizations.lists
+  else 
+    ol = customizations.lists
+    if ol 
+      idx = ol.indexOf(list_key)
+      if idx > -1
+        ol.splice idx, 1
+        if ol.length == 0
+          delete customizations.lists
 
   list_in_other_pages = false
   if tabs

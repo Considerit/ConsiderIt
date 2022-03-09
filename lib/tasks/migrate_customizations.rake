@@ -1,3 +1,59 @@
+task :migrate_lists_and_tabs => :environment do 
+  Subdomain.all.each do |subdomain|
+    next if !subdomain.customizations
+
+    customizations = subdomain.customizations
+
+    if customizations['homepage_tabs']
+      tabs = customizations['homepage_tabs']
+      tabs.each do |tab|
+
+      end 
+    end
+
+    if customizations['homepage_list_order'] && customizations['homepage_tabs']
+      customizations.delete 'homepage_list_order' # already manually migrated
+    elsif customizations['homepage_list_order']
+      customizations['lists'] = customizations['homepage_list_order']
+      customizations.delete 'homepage_list_order'
+      # pp "Migrated list order for #{subdomain.name}", customizations['default_page']
+    end
+
+    if customizations['ordered_lists']
+      customizations['lists'] = customizations['ordered_lists']
+      customizations.delete 'ordered_lists'
+    end
+
+
+
+    if customizations['homepage_tab_views']
+      views = customizations['homepage_tab_views']
+      tabs = customizations['homepage_tabs']
+      tabs.each do |tab|
+        if views.has_key?(tab['name'])
+          tab['render_page'] = views[tab['name']]
+        end
+      end 
+
+      # pp "Migrated tab_views for #{subdomain.name}", tabs
+      customizations.delete 'homepage_tab_views'
+    end
+
+    if customizations['homepage_default_sort_order']
+      customizations['default_proposal_sort_order'] = customizations['homepage_default_sort_order']
+      customizations.delete 'homepage_default_sort_order'
+
+      # pp "Migrated default_sort order for #{subdomain.name}", customizations['default_page']
+    end
+
+
+    subdomain.save
+
+
+  end
+end
+
+
 task :migrate_pledges => :environment do 
   Subdomain.all.each do |subdomain|
     next if !subdomain.customizations

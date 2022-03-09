@@ -36,90 +36,153 @@ window.ProfileMenu = ReactiveComponent
 
     light_background = loc.url != '/' || is_light_background() 
 
+
+    edit_forum = fetch 'edit_forum'
+
+
+
     DIV
       id: 'user_nav'
       style: _.defaults {}, (customization('profile_menu_style') or {}), (@props.style or {}),
         position: 'absolute'
-        zIndex: 5
+        zIndex: 99999999999
         right: 30
         fontSize: 26
         top: 17
 
+
+
       if current_user.logged_in
-        DropMenu
-          options: menu_options
-          
-          selection_made_callback: (option) ->
-            if option.label == 'Log out'
-              logout()
-          
-          render_anchor: (menu_showing) -> 
-            [
-              Avatar 
-                key: current_user.user
-                hide_popover: true
-                className: 'userbar_avatar'
-                style: 
-                  height: 35
-                  width: 35
-                  marginRight: 12
-                  marginTop: 1
 
-              SPAN 
-                style: 
-                  color: if menu_showing then '#777'
-                  fontSize: 18
-                  position: 'relative'
-                  top: -4
-                  paddingRight: 12
-                current_user.name
-              I 
-                className: 'fa fa-caret-down'
-                style: 
-                  visibility: if menu_showing then 'hidden'
-            ]            
-          render_option: (option) -> 
-            if option.label == 'Log out'
-              translator "auth.log_out", "Log out"
-            else 
-              translator "user_menu.option.#{option.label}", option.label
-          
-          anchor_style: 
-            color: if !light_background then 'white'
-            zIndex: 9999999999
-            backgroundColor: 'rgba(255,255,255, .1)'
-            # boxShadow: '0px 1px 1px rgba(0,0,0,.1)'
-            borderRadius: 8
-            padding: '3px 4px'
-            fontWeight: 600
-          
-          anchor_when_open_style: 
-            backgroundColor: 'transparent'
-            boxShadow: 'none'
-            color: '#666'
-          
-          menu_style: 
-            left: 'auto'
-            right: -9999
-            margin: '-42px 0 0 -8px'
-            padding: "56px 14px 8px 8px"
-            backgroundColor: '#eee'
-            textAlign: 'right'
-            minWidth: '100%'
-          
-          menu_when_open_style: 
-            right: 0
-          
-          option_style: 
-            color: focus_color()
-            position: 'relative'
-            bottom: 8
-            paddingLeft: 27
-            display: 'block'
-            whiteSpace: 'nowrap'  
+        if !edit_forum.editing
 
-          active_option_style: 
-            color: 'black'
+          DropMenu
+            options: menu_options
+            
+            selection_made_callback: (option) ->
+              if option.label == 'Log out'
+                logout()
+            
+            render_anchor: (menu_showing) -> 
+              [
+                Avatar 
+                  key: current_user.user
+                  hide_popover: true
+                  className: 'userbar_avatar'
+                  style: 
+                    height: 35
+                    width: 35
+                    marginRight: 12
+                    marginTop: 1
+
+                SPAN 
+                  style: 
+                    color: if menu_showing then '#777'
+                    fontSize: 18
+                    position: 'relative'
+                    top: -4
+                    paddingRight: 12
+                  current_user.name
+                I 
+                  className: 'fa fa-caret-down'
+                  style: 
+                    visibility: if menu_showing then 'hidden'
+              ]            
+            render_option: (option) -> 
+              if option.label == 'Log out'
+                translator "auth.log_out", "Log out"
+              else 
+                translator "user_menu.option.#{option.label}", option.label
+            
+            anchor_style: 
+              color: if !light_background then 'white'
+              zIndex: 9999999999
+              backgroundColor: 'rgba(255,255,255, .1)'
+              # boxShadow: '0px 1px 1px rgba(0,0,0,.1)'
+              borderRadius: 8
+              padding: '3px 4px'
+              fontWeight: 600
+            
+            anchor_when_open_style: 
+              backgroundColor: 'transparent'
+              boxShadow: 'none'
+              color: '#666'
+            
+            menu_style: 
+              left: 'auto'
+              right: -9999
+              margin: '-42px 0 0 -8px'
+              padding: "56px 14px 8px 8px"
+              backgroundColor: '#eee'
+              textAlign: 'right'
+              minWidth: '100%'
+            
+            menu_when_open_style: 
+              right: 0
+            
+            option_style: 
+              color: focus_color()
+              position: 'relative'
+              bottom: 8
+              paddingLeft: 27
+              display: 'block'
+              whiteSpace: 'nowrap'  
+
+            active_option_style: 
+              color: 'black'
+        else 
+          is_light = is_light_background()
+          color = if is_light then 'black' else 'white'
+          bg = if is_light then 'rgba(255,255,255,.4)' else 'rgba(0,0,0,.4)'
+
+          settings = [{name: 'Forum Settings', url: '/dashboard/application'}, {name: 'Permissions & Roles', url: '/dashboard/roles'}]
+          if is_admin && (subdomain.plan || is_super)
+            settings.push {name: 'Sign-up Questions', url: '/dashboard/intake_questions'}
+
+          show_dash_modal = fetch 'show_dash_modal'
+
+          DIV 
+            style: 
+              padding: '12px 24px'
+              backgroundColor: bg
+              fontSize: 14
+
+            if show_dash_modal.showing
+              ModalDash
+                url: show_dash_modal.showing.url
+                done_callback: =>
+                  show_dash_modal.showing = null 
+                  save show_dash_modal
+
+            UL 
+              style: 
+                listStyle: 'none'
+
+              for config in settings
+                LI 
+                  style: 
+                    marginBottom: 6
+
+                  BUTTON
+                    className: 'like_link'
+                    style: 
+                      textDecoration: 'underline'
+                      fontWeight: 700
+                      color: color
+                      fontSize: 14
+
+                    onClick: do(config) => => 
+                      show_dash_modal.showing = config
+                      save show_dash_modal
+
+                    onKeyPress: (e) -> 
+                      if e.which == 13 || e.which == 32 # ENTER or SPACE
+                        e.preventDefault()
+                        e.target.click()
+
+
+                    config.name
+
 
 
       else
@@ -147,6 +210,10 @@ window.ProfileMenu = ReactiveComponent
               onClick: (e) =>
                 reset_key 'auth',
                   form: 'create account'
+              onKeyPress: (e) -> 
+                if e.which == 13 || e.which == 32 # ENTER or SPACE
+                  e.preventDefault()
+                  e.target.click()
 
               translator "shared.auth.sign_up", "Sign up"
 
@@ -156,6 +223,10 @@ window.ProfileMenu = ReactiveComponent
               onClick: (e) =>
                 reset_key 'auth',
                   form: 'login'
+              onKeyPress: (e) -> 
+                if e.which == 13 || e.which == 32 # ENTER or SPACE
+                  e.preventDefault()
+                  e.target.click()
 
               style: 
                 color: if !light_background then 'white'
@@ -167,7 +238,11 @@ window.ProfileMenu = ReactiveComponent
 
 
               translator "auth.log_in", "Log in"
-    
+
+
+
+
+
   bitcoinVerification: -> 
     current_user = fetch('/current_user')
     subdomain = fetch('/subdomain')

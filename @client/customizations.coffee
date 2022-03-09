@@ -32,12 +32,13 @@ convert_customization = (obj) ->
 __convert = (obj, path) ->
   if Array.isArray(obj)
     return (__convert(vv, path) for vv in obj)
-
+  else if obj == null 
+    return null
   else if typeof(obj) == 'object' 
     tree = {}
-    for k,v of obj 
+    for k,v of obj
       p = path.slice()
-      p.push k 
+      p.push k
       tree[k] = __convert(v,p)
     return tree
 
@@ -161,6 +162,7 @@ window.CustomizationTransition = ReactiveComponent
       if !arest.pending_saves['/subdomain']
         check_update_customizations_object()
         clearInterval ck
+
     , 1
 
 
@@ -199,9 +201,7 @@ customizations.default =
   homepage_show_search_and_sort: true
 
   list_permit_new_items: true
-
   homepage_show_new_proposal_button: true
-  homepage_default_sort_order: 'trending'
 
   show_crafting_page_first: false
 
@@ -225,8 +225,6 @@ customizations.default =
 
   auth_callout: true
 
-  homepage_list_order: []
-
   user_tags: {}
 
   font: "Montserrat, 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
@@ -240,8 +238,6 @@ customizations.default =
    description: translator("engage.edit_proposal.description_label", "Details") + " (#{translator('optional')})" 
    additional_fields: []
    create_description: (fields) -> fields.description
-
-
 
 
 

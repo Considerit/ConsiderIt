@@ -17,6 +17,7 @@ window.Header = ReactiveComponent
     is_homepage = loc.url == '/'
     editing_banner = fetch('edit_banner').editing
 
+    header_bonus = customization('header_bonus') # currently used for things like inserting google font
 
     HEADER 
       className: if !is_light_background() then 'dark'
@@ -32,26 +33,25 @@ window.Header = ReactiveComponent
 
       #   "Consider.it server upgrade scheduled for 5:30pm - 6:00pm UTC"
       
-      customization('header_bonus')?()
+      header_bonus?()
       DIV 
         style: 
-          position: 'relative'
-          zIndex: 2
           margin: '0 auto'
-          # backgroundColor: 'white'
 
 
         ProfileMenu()
 
         if customization('google_translate_style') && !customization('google_translate_style').prominent && fetch('location').url == '/'
           DIV 
+            className: 'google-translate-candidate-container'
             style: 
               position: 'absolute'
               left: 40
               zIndex: 2
-            GoogleTranslate()
 
 
+        if is_homepage
+          EditBanner()
 
         if is_homepage && (customization('HomepageHeader') or customization('SiteHeader'))
           (customization('HomepageHeader') or customization('SiteHeader')).apply(@)

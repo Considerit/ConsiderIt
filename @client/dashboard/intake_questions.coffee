@@ -105,7 +105,7 @@ window.IntakeQuestions = ReactiveComponent
 
       P null,
         """
-          Intake questions enable you to collect information from new participants during account 
+          Sign-up questions enable you to collect information from new participants during account 
           registration (e.g. demographics). This information is then available to you in exploratory 
           data analysis, as well as in data export. 
         """
@@ -235,7 +235,7 @@ window.IntakeQuestions = ReactiveComponent
         DIV 
           style: 
             fontSize: 14
-          "Message shown to participants before they answer your intake questions."
+          "Message shown to participants before they answer your sign-up questions."
 
         if intake_q_state.editing || intake_q_state.new_question
           EditIntakeQuestion()
@@ -271,21 +271,6 @@ window.IntakeQuestions = ReactiveComponent
 
 
 styles += """
-  [data-widget="EditIntakeQuestion"] #modal-wrapper {
-    margin: 0 auto;
-    position: relative;
-    z-index: 0;
-    padding: 3em 0;
-  }
-
-  [data-widget="EditIntakeQuestion"] #modal-body {
-    padding: 3.5em 125px 4em 125px;
-    font-size: 16px;
-    box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 0 100px rgb(255 255 255 / 40%);
-    background-color: #f1f1f1;
-    position: relative;
-    border-radius: 16px;
-  }
 
   [data-widget="EditIntakeQuestion"] .field {
     margin-bottom: 24px;
@@ -302,6 +287,11 @@ styles += """
     text-transform: uppercase;
     margin-bottom: 4px;
     // color: #666;
+  }
+
+  [data-widget="EditIntakeQuestion"] .field label .required {
+    font-size: 12px;
+    vertical-align: super;
   }
 
   [data-widget="EditIntakeQuestion"] input[type="text"], [data-widget="EditIntakeQuestion"] textarea {
@@ -335,29 +325,6 @@ window.EditIntakeQuestion = ReactiveComponent
     if intake_q_state.editing  
       idx = question_index question
 
-    wrap_in_modal = (children) -> 
-      DIV null,
-
-        DIV 
-          id: 'lightbox'
-
-        DIV
-          id: 'modal'
-          ref: 'dialog'
-          role: 'dialog'
-          # 'aria-labeledby': 'AUTH_task'
-          # 'aria-describedby': if options.goal then 'AUTH_goal'
-
-
-          DIV
-            id: 'modal-wrapper'
-            style: 
-              maxWidth: AUTH_WIDTH() 
-
-            DIV
-              id: 'modal-body'
-
-              children
 
 
     save_question = => 
@@ -411,7 +378,7 @@ window.EditIntakeQuestion = ReactiveComponent
 
     validated = @local.view_name?.length > 0 && @local.question?.length > 0 && @local.input_type?.length > 0 && (@local.input_type == 'text' || @local.options?.length > 0)
 
-    wrap_in_modal DIV null,
+    wrap_in_modal null, close_modal, DIV null,
 
       DIV 
         className: 'field'
@@ -419,6 +386,10 @@ window.EditIntakeQuestion = ReactiveComponent
         LABEL 
           htmlFor: "#name"
           'Name'
+
+          SPAN 
+            className: 'required'
+            '*'
 
         INPUT
           id: '#name'
@@ -436,6 +407,9 @@ window.EditIntakeQuestion = ReactiveComponent
           htmlFor: "#question"
 
           'Your Question'
+          SPAN 
+            className: 'required'
+            '*'
 
         INPUT
           id: '#question'
@@ -452,6 +426,9 @@ window.EditIntakeQuestion = ReactiveComponent
           htmlFor: "#question_type"
 
           'Question type'
+          SPAN 
+            className: 'required'
+            '*'
 
         SELECT
           id: '#question_type'
@@ -491,7 +468,7 @@ window.EditIntakeQuestion = ReactiveComponent
             style: 
               fontSize: 12
               color: '#373737'
-            'To add an open-ended response option, include a response named “Other”'
+            'To enable an open-ended response option, include a response named “Other”'
 
 
 
@@ -613,51 +590,6 @@ window.EditIntakeQuestion = ReactiveComponent
 
 
 
-
-drag_icon = (height, color) ->
-  width = height * 14 / 20
-  SVG 
-    viewBox: "0 0 14 20" 
-    stroke: 'none'
-    fill: color
-    width: width
-    height: height 
-
-    dangerouslySetInnerHTML: __html: """
-      <g>
-          <circle id="Oval" cx="2" cy="2" r="2"></circle>
-          <circle id="Oval" cx="2" cy="10" r="2"></circle>
-          <circle id="Oval" cx="2" cy="18" r="2"></circle>
-          <circle id="Oval" cx="12" cy="18" r="2"></circle>
-          <circle id="Oval" cx="12" cy="10" r="2"></circle>
-          <circle id="Oval" cx="12" cy="2" r="2"></circle>
-      </g>
-      """
-
-
-edit_icon = (width, height, color) ->
-  SVG 
-    viewBox: "0 0 24 24" 
-    stroke: color
-    fill: 'none'
-    width: width
-    height: height 
-
-    dangerouslySetInnerHTML: __html: """
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-      """
-
-trash_icon = (width, height, color) ->
-  SVG 
-    viewBox: "0 0 24 24" 
-    stroke: color
-    fill: 'none'
-    width: width
-    height: height 
-
-    dangerouslySetInnerHTML: __html: """
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-      """
 
 
 

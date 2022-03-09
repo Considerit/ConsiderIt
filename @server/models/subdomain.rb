@@ -71,12 +71,12 @@ class Subdomain < ApplicationRecord
     end 
 
     config['banner'] ||= {}
+    config['banner']['logo'] ||= {}
 
     if self.logo_file_name
-      config['banner']['logo'] ||= {}
       config['banner']['logo']['url'] = self.logo.url
-    elsif config['banner'].has_key?('logo')
-      config['banner'].delete('logo')
+    elsif config['banner']['logo'].has_key?('url')
+      config['banner']['logo']['url'] = nil
     end 
 
     if self.masthead_file_name

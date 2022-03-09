@@ -59,6 +59,35 @@ window.ForumSettingsDash = ReactiveComponent
     DIV 
       className: 'FORUM_SETTINGS'
 
+
+      # DIV 
+      #   style: 
+      #     position: 'absolute'
+      #     fontSize: 14
+      #     fontStyle: 'italic'
+      #     top: 80
+
+      #   A 
+      #     href: '/dashboard/intake_questions'
+      #     style: 
+      #       textDecoration: 'underline'
+      #       fontWeight: 700
+      #     "Sign-up Questions"
+
+      #   " and "
+      #   A 
+      #     href: '/dashboard/roles'
+      #     style: 
+      #       textDecoration: 'underline'
+      #       fontWeight: 700
+      #     "Permissions & Roles"
+
+      #   " have their own settings page"
+
+      # DIV style: marginTop: 64
+
+
+
       ##################
       # LANGUAGE
       DIV className: 'input_group',

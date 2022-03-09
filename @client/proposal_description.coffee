@@ -53,9 +53,7 @@ window.ProposalDescription = ReactiveComponent
     list_key = "list/#{proposal.cluster or 'proposals'}"
     list = get_list_title list_key, true, subdomain
 
-    for lst in proposals_in_lists()
-      if lst.key == list_key 
-        other_proposals = lst.proposals
+    other_proposals = get_proposals_in_list(list_key)
 
 
     if other_proposals?.length > 1

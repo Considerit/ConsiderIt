@@ -7,6 +7,37 @@ require './bubblemouth'
 require './popover'
 
 
+
+styles += """
+  [data-widget="CollapsedProposal"] {
+    min-height: 84px;
+    position: relative;
+    padding: 0px;
+    list-style: none;    
+  }
+
+  .one-col [data-widget="CollapsedProposal"] {
+    padding: 14px 0; 
+  }
+  .one-col [data-widget="CollapsedProposal"]:nth-child(even) {
+    background-color: #f4f7f9;
+  }
+
+  a.proposal_homepage_name, button.add_new_proposal {
+    font-weight: 700;
+    text-decoration: underline;
+    color: #000;
+    font-size: 17px;
+  }
+
+  .description_on_homepage {
+    font-size: 14px;
+    color: #444;
+    margin-bottom: 4px;    
+  }
+
+"""
+
 pad = (num, len) -> 
   str = num
   dec = str.split('.')
@@ -90,11 +121,7 @@ window.CollapsedProposal = ReactiveComponent
                                            # with letter. seeking to hash was failing 
                                            # on proposals whose name began with number.
       style: _.defaults {}, (@props.wrapper_style or {}),
-        minHeight: 84
-        position: 'relative'
         margin: "0 0 #{if can_edit then '0' else '15px'} 0"
-        padding: 0
-        listStyle: 'none'
 
 
       onMouseEnter: => 
@@ -116,6 +143,7 @@ window.CollapsedProposal = ReactiveComponent
           display: 'inline-block'
           verticalAlign: 'top'
           position: 'relative'
+          marginLeft: if icons then 40 + 18
 
         DIV 
           style: 
@@ -186,12 +214,7 @@ window.CollapsedProposal = ReactiveComponent
 
           A
             className: 'proposal proposal_homepage_name'
-            style: _.defaults {}, (@props.name_style or {}),
-              fontWeight: 600
-              textDecoration: 'underline'
-              #borderBottom: "1px solid #444"  
-              color: '#000'            
-              fontSize: 20
+            style: @props.name_style or {}
               
             href: proposal_url(proposal, just_you && current_user.logged_in)
 
@@ -207,10 +230,7 @@ window.CollapsedProposal = ReactiveComponent
             else 
               desc = proposal.description
             DIV 
-              style: 
-                fontSize: 14
-                color: '#444'
-                marginBottom: 4
+              className: 'description_on_homepage'
               dangerouslySetInnerHTML: __html: desc  
 
           DIV 
@@ -366,7 +386,7 @@ window.CollapsedProposal = ReactiveComponent
           width: col_sizes.second
           height: 40
           enable_individual_selection: !@props.disable_selection && !browser.is_mobile
-          enable_range_selection: !just_you && !browser.is_mobile
+          enable_range_selection: !just_you && !browser.is_mobile && !ONE_COL()
           draw_base: true
           draw_base_labels: !slider_regions
 
@@ -437,7 +457,7 @@ window.CollapsedProposal = ReactiveComponent
         DIV 
           style: 
             position: 'absolute'
-            left: "calc(100% + 22px)"
+            left: "calc(100%)"
             top: 9
 
           HistogramScores
@@ -456,7 +476,7 @@ window.HistogramScores = ReactiveComponent
     opinions = get_opinions_for_proposal opinions, proposal, weights
 
 
-    if opinions.length == 0 
+    if opinions.length == 0 || ONE_COL()
       return SPAN null
 
     all_groups = get_user_groups_from_views groups

@@ -393,7 +393,9 @@
             }
         })
 
-        wrap(component, 'componentDidMount')
+        wrap(component, 'componentDidMount', function () {
+            this.getDOMNode().setAttribute('data-widget', component.displayName)
+        })
         wrap(component, 'componentDidUpdate', function () {
             this.getDOMNode().setAttribute('data-widget', component.displayName)
         })

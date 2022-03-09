@@ -110,7 +110,7 @@ class CurrentUserController < ApplicationController
             errors.append translator("errors.user.no_user_at_email", "No user exists at that email address. Maybe you should \"Create an Account\" instead.") 
 
           elsif !user.authenticate(params[:password])
-            errors.append translator("errors.user.bad_password", "Wrong password. Click \"I forgot my password\" if you are having problems.")
+            errors.append translator("errors.user.bad_password", 'Wrong password. Click "I forgot my password" if you are having problems.')
           else 
             replace_user(current_user, user)
             set_current_user(user)

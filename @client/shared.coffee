@@ -33,47 +33,7 @@ window.ajax_submit_files_in_form = (opts) ->
   xhr.send frm
 
 
-# Unfortunately, google makes it so there can only be one Google Translate Widget 
-# rendered into a page. So we have to move around the same element, rather than 
-# embed it nicely where we want. 
-window.GoogleTranslate = ReactiveComponent
-  displayName: 'GoogleTranslate'
 
-  render: -> 
-    loc = fetch 'location'
-    homepage = loc.url == '/'
-    style = if customization('google_translate_style') && homepage 
-              customization('google_translate_style')
-            else 
-              _.defaults {}, @props.style, 
-                textAlign: 'center'
-                marginBottom: 10
-
-    DIV 
-      key: "google_translate_element_#{@local.key}"
-      id: "google_translate_element_#{@local.key}"
-      style: style
-
-  insertTranslationWidget: -> 
-    subdomain = fetch '/subdomain'
-    new google.translate.TranslateElement {
-        pageLanguage: subdomain.lang
-        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-        multilanguagePage: true
-        # gaTrack: #{Rails.env.production?}
-        # gaId: 'UA-55365750-2'
-      }, "google_translate_element_#{@local.key}"
-
-  componentDidMount: -> 
-
-    @int = setInterval => 
-      if google?.translate?.TranslateElement?
-        @insertTranslationWidget()
-        clearInterval @int 
-    , 20
-
-  componentWillUnmount: ->
-    clearInterval @int
 
 
 window.pad = (num, len) -> 
@@ -197,45 +157,6 @@ window.HEARTBEAT = ReactiveComponent
 
 
 
-window.FB_SHARE = ReactiveComponent
-  displayName: 'FB_SHARE'
-
-  render: -> 
-    IFRAME 
-      src: "https://www.facebook.com/plugins/share_button.php?href=#{encodeURI(@props.href)}&layout=button&size=large&mobile_iframe=false&appId=#{@props.appId}&width=73&height=28" 
-      width: @props.width or "73" 
-      height: @props.height or "28" 
-      style: 
-        border: 'none'
-        overflow: 'hidden'
-      scrolling: "no" 
-      frameborder: "0" 
-      allowTransparency: "true"
-
-
-
-window.TWEET = ReactiveComponent
-  displayName: 'Tweet'
-
-  render: ->
-    url = """https://platform.twitter.com/widgets/tweet_button.html?size=l&count=none&id=twitter-widget-0&lang=en"""
-    for url_param in ['hashtags', 'original_referer', 'related', 'text', 'url']
-      if @props[url_param]
-        if url_param == 'url'
-          @props[url_param] = encodeURI(@props[url_param])
-        url += "&#{url_param}=#{@props[url_param]}"
-
-
-    IFRAME 
-      src: url
-      scrolling: "no"
-      frameBorder: "0"
-      allowTransparency: "true"
-      className: "twitter-share-button twitter-tweet-button twitter-share-button twitter-count-none"
-      style: 
-        width: 80
-        height: 28
-
 
 #### Layout
 
@@ -272,76 +193,6 @@ window.opinionsForProposal = (proposal) ->
   opinions = fetch(proposal).opinions || []
   opinions
 
-
-
-window.ChevronRight = (size) ->
-  size ?= 24
-  SVG 
-    width: size 
-    height: size
-    xmlns: "http://www.w3.org/2000/svg" 
-    viewBox: "0 0 24 24" 
-    stroke: "currentColor"
-
-    PATH 
-      strokeLinecap: "round" 
-      strokeLinejoin: "round" 
-      strokeWidth: "2" 
-      d: "M9 5l7 7-7 7"
-      fill: 'none'
-
-window.ChevronLeft = (size) ->
-  size ?= 24
-  SVG 
-    width: size 
-    height: size
-
-    xmlns: "http://www.w3.org/2000/svg" 
-    viewBox: "0 0 24 24" 
-    stroke: "currentColor"
-
-    PATH 
-      strokeLinecap: "round" 
-      strokeWidth: "2" 
-      d: "M15 19l-7-7 7-7"
-      fill: 'none'
-
-
-
-window.HelpIcon = (help_text, style) ->
-  style ?= {}
-
-  BUTTON 
-    "data-tooltip": help_text
-
-    style: _.defaults style or {}, 
-      backgroundColor: 'transparent'
-      border: 'none'
-      padding: 0
-      display: 'inline-block'
-      width: style.width or 17
-      height: style.height or 17
-
-    SVG 
-      width: style.width or 17
-      height: style.height or 17
-      viewBox: "0 0 17 17.0000094" 
-      style: 
-        pointerEvents: 'none'
-
-      G 
-        stroke: "none" 
-        strokeWidth: "1" 
-        fill: "none" 
-        fillRule: "evenodd"
-        G 
-          transform: "translate(0.000000, 0.000000)" 
-          fill: style.color or "#666" 
-          fillRule: "nonzero"
-          PATH 
-            d: "M8.5,2.833339 C7.71759653,2.833339 7.08333333,3.4676022 7.08333333,4.25000567 C7.08333333,5.03240913 7.71759653,5.66667233 8.5,5.66667233 C9.28240347,5.66667233 9.91666667,5.03240913 9.91666667,4.25000567 C9.91666667,3.4676022 9.28240347,2.833339 8.5,2.833339 Z M6.61111111,6.61111678 L7.55555556,7.55556122 L7.55555556,13.2222279 L6.61111111,13.2222279 L6.61111111,14.1666723 L10.3888889,14.1666723 L10.3888889,13.2222279 L9.44444444,13.2222279 L9.44444444,6.61111678 L7.55555556,6.61111678 L6.61111111,6.61111678 Z"
-          PATH 
-            d: "M8.5,2.14741805e-14 C3.81117296,2.14741805e-14 0,3.81117333 0,8.5 C0,13.1888361 3.81117296,17 8.5,17 C13.188827,17 17,13.1888361 17,8.5 C17,3.81117333 13.188827,2.14741805e-14 8.5,2.14741805e-14 Z M8.5,0.944444444 C12.6784115,0.944444444 16.0555556,4.32158889 16.0555556,8.49999056 C16.0555556,12.6784206 12.6784115,16.055565 8.5,16.055565 C4.32158851,16.055565 0.944444444,12.6784206 0.944444444,8.49999056 C0.944444444,4.32158889 4.32158851,0.944444444 8.5,0.944444444 Z"
 
 
 
@@ -963,6 +814,9 @@ button.like_link {
   transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
   margin: 0;
   background-color: #{focus_blue}; 
+} .btn[disabled="true"], .btn[disabled] {
+  cursor: default;
+  opacity: .5;
 }
 
 

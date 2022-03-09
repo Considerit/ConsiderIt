@@ -706,7 +706,7 @@ OpinionViews = ReactiveComponent
             minWidth: 290
 
           if opinion_views_ui.active == 'custom' 
-            triangle_left = (document.querySelector('[data-view-state="custom"]')?.offsetLeft or 60) + 35 - (if needs_expansion then (@props.style.width + @props.additional_width - width ) else 0)
+            triangle_left = (@local.view_state_left or 60) + 35
 
             if @local.minimized
               if user_has_set_a_view()
@@ -741,7 +741,7 @@ OpinionViews = ReactiveComponent
         width = 0
         if needs_expansion 
           if has_other_filters 
-            width = @props.style.width + @props.additional_width 
+            width = if ONE_COL() then Math.min(720, @props.style.width) else @props.style.width + @props.additional_width 
           else 
             width = Math.min(720, @props.style.width + @props.additional_width)
 
@@ -812,7 +812,15 @@ OpinionViews = ReactiveComponent
         else 
           translator 'opinion_views.minimize_minimize', 'minimize'
 
+  shadow_view_state_offset: ->
+    left = document.querySelector('[data-view-state="custom"]')?.offsetLeft    
+    
+    if left != @local.view_state_left
+      @local.view_state_left = left 
+      save @local
 
+  componentDidUpdate: -> @shadow_view_state_offset()
+  componentDidMount: -> @shadow_view_state_offset()
 
 
 
@@ -1346,103 +1354,6 @@ NonInteractiveOpinionViews = ReactiveComponent
                 'x'
 
 
-
-filter_icon = (height) -> 
-  height ?= 27
-  SVG 
-    className: 'opinion_view_class' 
-    width: 33 / 27 * height
-    height: height
-    viewBox: "0 0 33 27" 
-    dangerouslySetInnerHTML: __html: """
-      <g id="final-push,-filters,-weights,-group-by" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-          <g id="Artboard-Copy-47" transform="translate(-373.000000, -868.000000)">
-              <g id="Group-22" transform="translate(333.000000, 843.000000)">
-                  <g id="filter2" transform="translate(40.000000, 25.000000)">
-                      <circle id="Oval" fill-opacity="0.491815314" fill="#B0B0B0" cx="4.5" cy="4.5" r="4.5"></circle>
-                      <circle id="Oval" fill-opacity="0.491815314" fill="#B0B0B0" cx="15.5" cy="4.5" r="4.5"></circle>
-                      <circle id="Oval" fill="#5F5E5E" cx="15.5" cy="22.5" r="4.5"></circle>
-                      <circle id="Oval" fill-opacity="0.491815314" fill="#B0B0B0" cx="25.5" cy="4.5" r="4.5"></circle>
-                      <line x1="2.1744186" y1="13" x2="31.8255814" y2="13" id="Line" stroke="#757575" stroke-linecap="square" stroke-dasharray="0,2"></line>
-                  </g>
-              </g>
-          </g>
-      </g>
-    """    
-    
-group_by_icon = (height) ->
-  height ?= 19
-  SVG
-    className: 'opinion_view_class' 
-    width: 34/19 * height  
-    height: height
-    viewBox: "0 0 34 19" 
-
-    dangerouslySetInnerHTML: __html: """
-      <g id="final-push,-filters,-weights,-group-by" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-          <g id="Artboard-Copy-47" transform="translate(-371.000000, -937.000000)">
-              <g id="Group-22" transform="translate(333.000000, 843.000000)">
-                  <g id="weigh" transform="translate(39.000000, 94.000000)">
-                      <circle id="Oval" fill="#F09552" cx="6.45454545" cy="13.1818182" r="5"></circle>
-                      <circle id="Oval" fill="#F09552" cx="16.2727273" cy="13" r="5"></circle>
-                      <circle id="Oval" fill="#5E91E9" cx="10.8181818" cy="5" r="5"></circle>
-                      <circle id="Oval" fill="#BC62C4" cx="27.8181818" cy="13" r="5"></circle>
-                      <line x1="0.228571429" y1="18.4545455" x2="31.7714286" y2="18.4545455" id="Line" stroke="#A7A7A7" stroke-linecap="square"></line>
-                  </g>
-              </g>
-          </g>
-      </g>
-    """
-
-
-weigh_icon = (height) ->
-  height ?= 18
-  SVG
-    className: 'opinion_view_class' 
-    width: height * 34/18 
-    height: height
-    viewBox: "0 0 34 18" 
-
-    dangerouslySetInnerHTML: __html: """
-      <g id="final-push,-filters,-weights,-group-by" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-          <g id="Artboard-Copy-47" transform="translate(-372.000000, -759.000000)">
-              <g id="Group-22" transform="translate(333.000000, 602.000000)">
-                  <g id="weigh" transform="translate(40.000000, 157.000000)">
-                      <circle id="Oval" fill="#9C9C9C" cx="4.36363636" cy="13.0909091" r="2.90909091"></circle>
-                      <circle id="Oval" fill="#9C9C9C" cx="27.6363636" cy="13.0909091" r="4.36363636"></circle>
-                      <circle id="Oval" fill="#9C9C9C" cx="13.8181818" cy="8" r="8"></circle>
-                      <line x1="0.228571429" y1="17.4545455" x2="31.7714286" y2="17.4545455" id="Line" stroke="#A7A7A7" stroke-linecap="square"></line>
-                  </g>
-              </g>
-          </g>
-      </g>
-    """
-
-date_icon = (activated) ->
-  SVG 
-    width: 13
-    height: 12 
-    viewBox: "0 0 96 86"
-    dangerouslySetInnerHTML: __html: """
-
-    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g transform="translate(-234.000000, -823.000000)" fill="#{if activated then '#ffffff' else '#000000'}" fill-rule="nonzero">
-            <g transform="translate(234.500000, 823.000000)">
-                <path d="M84.3,5.7 L73.1,5.7 L73.1,2.9 C73.1,1.3 71.8,-1.77635684e-15 70.2,-1.77635684e-15 C68.6,-1.77635684e-15 67.3,1.3 67.3,2.9 L67.3,5.7 L50.4,5.7 L50.4,2.9 C50.4,1.3 49.1,-1.77635684e-15 47.5,-1.77635684e-15 C45.9,-1.77635684e-15 44.6,1.3 44.6,2.9 L44.6,5.7 L27.7,5.7 L27.7,2.9 C27.7,1.3 26.4,-1.77635684e-15 24.8,-1.77635684e-15 C23.2,-1.77635684e-15 21.9,1.3 21.9,2.9 L21.9,5.7 L10.7,5.7 C4.8,5.7 0,10.5 0,16.4 L0,75.2 C0,81.1 4.8,85.9 10.7,85.9 L84.4,85.9 C90.3,85.9 95.1,81.1 95.1,75.2 L95.1,16.4 C95,10.5 90.2,5.7 84.3,5.7 Z M89.2,75.1 C89.2,77.8 87,79.9 84.4,79.9 L10.7,79.9 C8,79.9 5.9,77.7 5.9,75.1 L5.9,16.4 C5.9,13.7 8.1,11.6 10.7,11.6 L21.9,11.6 L21.9,14.4 C21.9,16 23.2,17.3 24.8,17.3 C26.4,17.3 27.7,16 27.7,14.4 L27.7,11.6 L44.6,11.6 L44.6,14.4 C44.6,16 45.9,17.3 47.5,17.3 C49.1,17.3 50.4,16 50.4,14.4 L50.4,11.6 L67.3,11.6 L67.3,14.4 C67.3,16 68.6,17.3 70.2,17.3 C71.8,17.3 73.1,16 73.1,14.4 L73.1,11.6 L84.3,11.6 C87,11.6 89.1,13.8 89.1,16.4 L89.1,75.1 L89.2,75.1 Z" id="Shape"></path>
-                <path d="M29.9,27.9 L21.4,27.9 C19.8,27.9 18.6,29.2 18.6,30.7 C18.6,32.3 19.9,33.5 21.4,33.5 L29.9,33.5 C31.5,33.5 32.7,32.2 32.7,30.7 C32.8,29.2 31.5,27.9 29.9,27.9 Z" id="Path"></path>
-                <path d="M73.6,27.9 L65.1,27.9 C63.5,27.9 62.3,29.2 62.3,30.7 C62.3,32.3 63.6,33.5 65.1,33.5 L73.6,33.5 C75.2,33.5 76.4,32.2 76.4,30.7 C76.4,29.2 75.1,27.9 73.6,27.9 Z" id="Path"></path>
-                <path d="M51.7,27.9 L43.2,27.9 C41.6,27.9 40.4,29.2 40.4,30.7 C40.4,32.3 41.7,33.5 43.2,33.5 L51.7,33.5 C53.3,33.5 54.5,32.2 54.5,30.7 C54.6,29.2 53.3,27.9 51.7,27.9 Z" id="Path"></path>
-                <path d="M29.9,45.2 L21.4,45.2 C19.8,45.2 18.6,46.5 18.6,48 C18.6,49.6 19.9,50.8 21.4,50.8 L29.9,50.8 C31.5,50.8 32.7,49.5 32.7,48 C32.8,46.5 31.5,45.2 29.9,45.2 Z" id="Path"></path>
-                <path d="M73.6,45.2 L65.1,45.2 C63.5,45.2 62.3,46.5 62.3,48 C62.3,49.6 63.6,50.8 65.1,50.8 L73.6,50.8 C75.2,50.8 76.4,49.5 76.4,48 C76.4,46.5 75.1,45.2 73.6,45.2 Z" id="Path"></path>
-                <path d="M51.7,45.2 L43.2,45.2 C41.6,45.2 40.4,46.5 40.4,48 C40.4,49.6 41.7,50.8 43.2,50.8 L51.7,50.8 C53.3,50.8 54.5,49.5 54.5,48 C54.6,46.5 53.3,45.2 51.7,45.2 Z" id="Path"></path>
-                <path d="M29.9,62.5 L21.4,62.5 C19.8,62.5 18.6,63.8 18.6,65.3 C18.6,66.9 19.9,68.1 21.4,68.1 L29.9,68.1 C31.5,68.1 32.7,66.8 32.7,65.3 C32.8,63.8 31.5,62.5 29.9,62.5 Z" id="Path"></path>
-                <path d="M73.6,62.5 L65.1,62.5 C63.5,62.5 62.3,63.8 62.3,65.3 C62.3,66.9 63.6,68.1 65.1,68.1 L73.6,68.1 C75.2,68.1 76.4,66.8 76.4,65.3 C76.4,63.8 75.1,62.5 73.6,62.5 Z" id="Path"></path>
-                <path d="M51.7,62.5 L43.2,62.5 C41.6,62.5 40.4,63.8 40.4,65.3 C40.4,66.9 41.7,68.1 43.2,68.1 L51.7,68.1 C53.3,68.1 54.5,66.8 54.5,65.3 C54.6,63.8 53.3,62.5 51.7,62.5 Z" id="Path"></path>
-            </g>
-        </g>
-    </g>
-    """
-
 VerificationProcessExplanation = ReactiveComponent
   displayName: 'VerificationProcessExplanation'
   render: -> 
@@ -1713,7 +1624,7 @@ styles += """
 
   .minimized_view {
     color: #1059a2;
-    # border: 1px solid #2478cc;
+    /* border: 1px solid #2478cc; */
     background-color: #e4edf7;
     width: fit-content;
     position: relative;

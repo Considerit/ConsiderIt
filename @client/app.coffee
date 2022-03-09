@@ -8,6 +8,7 @@ require './element_viewport_positioning'
 require './activerest-m'
 require 'dashboard/dashboard'
 require './dock'
+require './edit_forum'
 require './auth/auth'
 require './avatar'
 require './browser_hacks'
@@ -15,11 +16,14 @@ require './browser_location'
 require './proposal_navigation'
 require './bubblemouth'
 require './edit_proposal'
+require './edit_list'
+require './edit_page'
 require './customizations'
 require './form'
 require './histogram'
 require './proposal_sort_and_search'
 require './opinion_views'
+require './tabs'
 require './homepage'
 require './shared'
 require './opinion_slider'
@@ -36,6 +40,8 @@ require './legal'
 require './statement'
 require './proposal'
 require './viewport_visibility_sensor'
+require './icons'
+require './google_translate'
 
 
 
@@ -154,6 +160,11 @@ LocationTransition = ReactiveComponent
       if auth.form
         reset_key auth
 
+
+      edit_forum = fetch 'edit_forum'
+      if edit_forum.editing && loc.url != '/'
+        stop_editing_forum()
+        
       #######
 
       @last_location = loc.url
@@ -192,7 +203,7 @@ Page = ReactiveComponent
         role: 'main'
         style: 
           position: 'relative'
-          zIndex: 1
+          # zIndex: 1
           margin: 'auto'
 
 
@@ -299,6 +310,8 @@ Root = ReactiveComponent
       LocationTransition()
       HomepageTabTransition()
       BrowserLocation()
+      GoogleTranslate()
+
 
 
       STYLE 
@@ -308,7 +321,7 @@ Root = ReactiveComponent
           }
           .content h1, .content h2, .content h3, .content h1 button, .content h2 button, .content h3 button, .content h4 button {
             font-family: #{header_fonts};
-            letter-spacing: -1px;
+            // letter-spacing: -1px;
           }
         """
 

@@ -10,7 +10,7 @@ window.Questionaire = ReactiveComponent
 
     groups = customization 'groups', cluster_key
 
-    ordered_lists = proposals_in_lists()
+    ordered_lists = get_proposals_in_lists()
     lists = {}
     for list in ordered_lists 
       lists[list.key] = list

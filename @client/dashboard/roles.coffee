@@ -68,7 +68,7 @@ window.InitializeProposalRoles = (proposal) ->
 
 window.styles += """
   .ROLES_label {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: bold;
     margin-bottom: 8px;
     display: block;
@@ -250,8 +250,53 @@ RadioWildcardRolesSection = (opts) ->
 AddRolesAndInvite = ReactiveComponent
   displayName: 'Invite'
 
+  mixins: [Modal]
+
+  render: ->
+
+    DIV 
+      style: 
+        position: 'relative'
+        padding: if @local.expanded then '18px 24px'
+        border: if @local.expanded then '1px solid #ccc' else '1px solid transparent'
+
+
+      if !@local.expanded 
+        BUTTON 
+          className: 'btn'
+          onClick: (e) => 
+            @local.expanded = true 
+            save @local
+            e.preventDefault()
+            e.stopPropagation()
+          onKeyPress: (e) ->
+            if e.which == 13 || e.which == 32 # ENTER or SPACE
+              e.preventDefault()
+              e.target.click()
+
+
+          @props.add_button
+
+      else
+        ModalAddRolesAndInvite
+          target: @props.target 
+          role: @props.role
+          add_button: @props.add_button
+          done_callback: =>
+            console.log "done callback"
+            @local.expanded = false
+            save @local
+
+
+
+ModalAddRolesAndInvite = ReactiveComponent
+  displayName: 'Invite'
+
+  mixins: [Modal]
+
   render: ->
     target = fetch @props.target
+
     users = fetch '/users'
 
     @local.added ?= []
@@ -277,105 +322,93 @@ AddRolesAndInvite = ReactiveComponent
                          (!@local.filtered || 
                           "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1)
 
+    console.log "HELLO!", @local.key
+    wrap_in_modal null, @props.done_callback, DIV null,
 
-    DIV 
-      style: 
-        position: 'relative'
-        padding: if @local.expanded then '18px 24px'
-        border: if @local.expanded then '1px solid #ccc' else '1px solid transparent'
+      H1
+        style: 
+          marginBottom: 24
+          fontSize: 24
+        @props.add_button
 
+      SPAN null, 
+        DropMenu
+          options: filtered_users
+          open_menu_on: 'activation'
 
+          selection_made_callback: (user) =>
+            @local.added.push user.key
+            processNewFolks()
+            @local.filtered = null
+            save @local
 
-      if !@local.expanded 
-        BUTTON 
-          className: 'btn'
-          onClick: => 
-            @local.expanded = true 
-            save @local 
-
-          @props.add_button
-
-      else
-
-
-        SPAN null, 
-          DropMenu
-            options: filtered_users
-            open_menu_on: 'activation'
-
-            selection_made_callback: (user) =>
-              @local.added.push user.key
-              processNewFolks()
-              @local.filtered = null
-              save @local
-
-            render_anchor: (menu_showing) =>
-              INPUT 
-                id: 'filter'
-                type: 'text'
-                style: {fontSize: 18, width: 350, padding: '3px 6px'}
-                autoComplete: 'off'
-                placeholder: "Name or email..."
-                
-                onChange: => 
-                  @local.filtered = document.getElementById('filter').value
-                  save @local
-                
-                onKeyDown: (e) =>
-                  # enter key pressed...
-                  if e.which == 13
-                    e.preventDefault()
-                    processNewFolks()
-
-            render_option: (user) ->
-              [
-                SPAN 
-                  style: 
-                    fontWeight: 600
-                  user.name 
-
-                SPAN
-                  style: 
-                    opacity: .7
-                    paddingLeft: 8
-
-                  user.email  
-              ]
-   
-            wrapper_style: 
-              display: 'inline-block'
-            menu_style: 
-              backgroundColor: '#ddd'
-              border: '1px solid #ddd'
-
-            option_style: 
-              padding: '4px 12px'
-              fontSize: 18
-              cursor: 'pointer'
-              display: 'block'
-
-            active_option_style:
-              backgroundColor: '#eee'
-
-          if @local.filtered && @local.filtered.length > 0 
-            BUTTON 
-              onClick: => 
-                processNewFolks()
-              onKeyDown: (e) => 
+          render_anchor: (menu_showing) =>
+            INPUT 
+              id: 'filter'
+              type: 'text'
+              style: {fontSize: 18, width: 350, padding: '3px 6px'}
+              autoComplete: 'off'
+              placeholder: "Name or email..."
+              
+              onChange: => 
+                @local.filtered = document.getElementById('filter').value
+                save @local
+              
+              onKeyDown: (e) =>
+                # enter key pressed...
                 if e.which == 13
-                  e.target.click()
                   e.preventDefault()
+                  processNewFolks()
 
-              style: 
-                display: 'inline-block'
-              'add'
+          render_option: (user) ->
+            [
+              SPAN 
+                style: 
+                  fontWeight: 600
+                user.name 
+
+              SPAN
+                style: 
+                  opacity: .7
+                  paddingLeft: 8
+
+                user.email  
+            ]
+ 
+          wrapper_style: 
+            display: 'inline-block'
+          menu_style: 
+            backgroundColor: '#ddd'
+            border: '1px solid #ddd'
+
+          option_style: 
+            padding: '4px 12px'
+            fontSize: 18
+            cursor: 'pointer'
+            display: 'block'
+
+          active_option_style:
+            backgroundColor: '#eee'
+
+        if @local.filtered && @local.filtered.length > 0 
+          BUTTON 
+            onClick: => 
+              processNewFolks()
+            onKeyDown: (e) => 
+              if e.which == 13
+                e.target.click()
+                e.preventDefault()
+
+            style: 
+              display: 'inline-block'
+            'add'
 
 
 
 
 
       # Show everyone queued for being added/invited to a role
-      if @local.added.length > 0 && @local.expanded
+      if @local.added.length > 0
         DIV 
           style:
             marginTop: 18
@@ -391,12 +424,14 @@ AddRolesAndInvite = ReactiveComponent
       DIV 
         style: 
           marginTop: 20
-          display: if !@local.expanded then 'none'
 
-        LABEL null, 
+        LABEL 
+          htmlFor: 'send_email_invite' 
 
           INPUT 
             type: 'checkbox'
+            id: 'send_email_invite'
+
             name: 'send_email_invite'
             className: 'bigger'
             style: 
@@ -411,6 +446,7 @@ AddRolesAndInvite = ReactiveComponent
                 e.target.click()
                 e.preventDefault()
 
+
           'Send email invitation'
 
         if @local.send_email_invite
@@ -424,9 +460,8 @@ AddRolesAndInvite = ReactiveComponent
       # Submit button
       DIV 
         style: 
-          display: if !@local.expanded then 'none'
-          marginTop: 12
-          opacity: if @local.added.length == 0 then 0.5
+          marginTop: 36
+          
 
         BUTTON
           className: 'btn'
@@ -434,7 +469,7 @@ AddRolesAndInvite = ReactiveComponent
           style: 
             backgroundColor: focus_color()
             cursor: if @local.added.length == 0 then 'default'
-
+            opacity: if @local.added.length == 0 then 0.5
 
           onKeyDown: (e) => 
             if e.which == 13 || e.which == 32 # ENTER or SPACE
@@ -459,14 +494,16 @@ AddRolesAndInvite = ReactiveComponent
               save target
               save @local
 
-          @props.add_button
+            @props.done_callback()
+
+          "Add"
 
 
         BUTTON 
           className: 'like_link'
           style: 
-            color: '#888'
-            marginLeft: 12
+            color: '#333'
+            marginLeft: 24
             position: 'relative'
             top: 2
 
@@ -474,10 +511,9 @@ AddRolesAndInvite = ReactiveComponent
             if e.which == 13 || e.which == 32 # ENTER or SPACE
               e.target.click()
               e.preventDefault()
-          onClick: => 
-            @local.expanded = false
-            save @local
+          onClick: @props.done_callback
           'cancel'
+
 
 
 UsersWithRole = ReactiveComponent

@@ -9,16 +9,53 @@ require './browser_location'
 require './collapsed_proposal'
 require './new_proposal'
 require './list'
+require './tabs'
 
 
 
+# /* thin diagonals */
+# background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d6d6d6' fill-opacity='0.7' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");        
 
+
+# /* graph paper */
+# background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23d6d6d6' fill-opacity='0.7'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");    
+
+
+# /* beefy diagonals */    
+# background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d6d6d6' fill-opacity='0.7' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
+
+# /* wavy lines */
+# background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='30' viewBox='0 0 1000 120'%3E%3Cg fill='none' stroke='%23F9F9F9' stroke-width='5.9' %3E%3Cpath d='M-500 75c0 0 125-30 250-30S0 75 0 75s125 30 250 30s250-30 250-30s125-30 250-30s250 30 250 30s125 30 250 30s250-30 250-30'/%3E%3Cpath d='M-500 45c0 0 125-30 250-30S0 45 0 45s125 30 250 30s250-30 250-30s125-30 250-30s250 30 250 30s125 30 250 30s250-30 250-30'/%3E%3Cpath d='M-500 105c0 0 125-30 250-30S0 105 0 105s125 30 250 30s250-30 250-30s125-30 250-30s250 30 250 30s125 30 250 30s250-30 250-30'/%3E%3Cpath d='M-500 15c0 0 125-30 250-30S0 15 0 15s125 30 250 30s250-30 250-30s125-30 250-30s250 30 250 30s125 30 250 30s250-30 250-30'/%3E%3Cpath d='M-500-15c0 0 125-30 250-30S0-15 0-15s125 30 250 30s250-30 250-30s125-30 250-30s250 30 250 30s125 30 250 30s250-30 250-30'/%3E%3Cpath d='M-500 135c0 0 125-30 250-30S0 135 0 135s125 30 250 30s250-30 250-30s125-30 250-30s250 30 250 30s125 30 250 30s250-30 250-30'/%3E%3C/g%3E%3C/svg%3E");
+
+styles += """
+  .main_background {
+    background-color: #ffffff;
+    
+
+    /* texture */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23d6d6d6' fill-opacity='0.7' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
+
+    background-attachment: fixed;
+  }
+
+  .main_background.one-col, .main_background .one-col {
+    background-image: none;
+  }
+
+
+  #homepagetab {
+    margin: 0px auto;
+    position: relative;
+    padding: 24px 0px 140px 0;
+  }
+
+
+"""
 window.Homepage = ReactiveComponent
   displayName: 'Homepage'
   render: ->
     doc = fetch 'document'
     subdomain = fetch '/subdomain'
-    homepage_tabs = fetch 'homepage_tabs'
 
     return SPAN null if !subdomain.name
 
@@ -33,6 +70,7 @@ window.Homepage = ReactiveComponent
       doc.title = title
       save doc
 
+
     messages = []
     phase = customization('contribution_phase')
     if phase == 'frozen'
@@ -45,48 +83,54 @@ window.Homepage = ReactiveComponent
     if customization('anonymize_everything')
       messages.push translator "engage.anonymize_message", "The forum host has set participation to anonymous, so you won't be able to see the identity of others at this time."
     if customization('hide_opinions')
-      messages.push translator "engage.hide_opinions_message", "The forum host has hidden the opinions of other participants, so you won't be able to see their specific opinions at this time."
+      messages.push translator "engage.hide_opinions_message", "The forum host has hidden the opinions of other participants."
 
     DIV 
       key: "homepage_#{subdomain.name}"      
-
-      STYLE 
-        dangerouslySetInnerHTML: __html: """
-            #homepagetab {
-              margin: 45px auto;
-              width: #{HOMEPAGE_WIDTH()}px;
-              position: relative;       
-            }
-          """
+      className: "main_background #{if ONE_COL() then 'one-col' else ''}"
 
       DIV
         id: 'homepagetab'
-        role: if customization('homepage_tabs') then "tabpanel"
-
-        if customization('auth_callout')
-          DIV 
-            style: 
-              marginBottom: 36
-            AuthCallout()
-
-        for message in messages
-          DIV 
-            style: 
-              marginBottom: 24 
-              fontStyle: 'italic'
-            message
+        role: if get_tabs() then "tabpanel"
+        style: 
+          width: HOMEPAGE_WIDTH() + LIST_PADDING() * 2
 
 
         if !fetch('/proposals').proposals
           ProposalsLoading()   
         else 
-          if customization('homepage_tab_views')?[homepage_tabs.filter]
-            view = customization('homepage_tab_views')[homepage_tabs.filter]()
-            if typeof(view) == 'function'
-              view = view()
-            view
-          else
-            SimpleHomepage()
+
+          if fetch('edit_forum').editing
+            for page in get_tabs() or [{name: null}]
+              EditPage
+                key: "#{page?.name}-#{!!get_tabs()}"
+                page_name: page?.name
+          else 
+            DIV null,
+              DIV 
+                style: 
+                  padding: "0px #{LIST_PADDING() + LIST_PADDING() / 6}px 0px #{LIST_PADDING() - LIST_PADDING() / 6}px"
+
+                if customization('auth_callout')
+                  DIV 
+                    style: 
+                      marginBottom: 36
+                    AuthCallout()
+
+                for message in messages
+                  DIV 
+                    style: 
+                      marginBottom: 24 
+                      fontStyle: 'italic'
+                    message
+
+                if preamble = get_page_preamble()
+                  DIV
+                    style: 
+                      marginBottom: 24
+                    dangerouslySetInnerHTML: __html: preamble
+
+              get_current_tab_view()
 
   typeset : -> 
     subdomain = fetch('/subdomain')
@@ -108,11 +152,19 @@ window.column_sizes = (args) ->
   args ||= {}
   width = args.width or HOMEPAGE_WIDTH()
 
-  return {
-    first: width * .6 - 50
-    second: width * .4
-    gutter: 50
-  }
+  if !ONE_COL()
+    width -= 58
+    gutter = 50
+    score_w = 48
+    first = Math.min 500, Math.floor(width * .6) - gutter - score_w
+    second = Math.max 303, width - first -  gutter - score_w
+  else 
+    gutter = 58
+    score_w = 0 
+    first = width - gutter # Math.floor(width * .6) - gutter - score_w
+    second = width - gutter # width - first -  gutter - score_w
+
+  {first, second, gutter, score_w}
 
 
 window.TagHomepage = ReactiveComponent
@@ -121,8 +173,7 @@ window.TagHomepage = ReactiveComponent
   render: -> 
     current_user = fetch('/current_user')
 
-    homepage_tabs = fetch 'homepage_tabs'
-    aggregate_list_key = homepage_tabs.filter
+    aggregate_list_key = get_current_tab_name()
 
     List
       key: aggregate_list_key
@@ -144,8 +195,9 @@ window.SimpleHomepage = ReactiveComponent
 
   render : ->
     current_user = fetch('/current_user')
-    homepage_tabs = fetch 'homepage_tabs'
-    lists = lists_for_tab(homepage_tabs.filter)
+    current_tab = get_current_tab_name()
+    
+    lists = get_lists_for_page(current_tab)
 
     DIV null, 
       for list, index in lists or []
@@ -153,158 +205,11 @@ window.SimpleHomepage = ReactiveComponent
           key: list.key
           list: list 
 
-      if current_user.is_admin && homepage_tabs.filter not in ['About', 'FAQ']
+      if current_user.is_admin && current_tab not in ['About', 'FAQ'] && get_tab(current_tab)?.type != PAGE_TYPES.ABOUT
         NewList()
           
 
 
-# handles tab query parameter based on tabs state
-window.HomepageTabTransition = ReactiveComponent
-  displayName: "HomepageTabTransition"
-
-  render: -> 
-    if customization('homepage_tabs')
-      loc = fetch 'location'
-      tab_state = fetch 'homepage_tabs'
-      default_tab = customization('homepage_default_tab') or 'Show all'
-
-      if !tab_state.filter? || (loc.query_params.tab && loc.query_params.tab != tab_state.filter)
-        if loc.query_params.tab
-          tab_state.filter = decodeURI loc.query_params.tab
-        else 
-          tab_state.filter = default_tab
-        for tab in get_tabs() 
-          if tab.name == tab_state.filter
-            tab_state.clusters = tab.lists
-            break 
-        save tab_state
-
-      if loc.url != '/' && loc.query_params.tab
-        delete loc.query_params.tab
-        save loc
-      else if loc.url == '/' && loc.query_params.tab != tab_state.filter 
-        loc.query_params.tab = tab_state.filter
-        save loc
-
-    SPAN null
-
-
-
-
-styles += """
-  #tabs {
-    width: 100%;
-    z-index: 2;
-    position: relative;
-    top: 2px;
-    margin-top: 20px;
-  }
-  #tabs > ul {
-    margin: auto;
-    text-align: center;
-    list-style: none;
-    width: 900px;
-  }
-  #tabs > ul > li {
-    display: inline-block;
-    position: relative;
-    outline: none;
-  }          
-  #tabs > ul > li > h4 {
-    cursor: pointer;
-    position: relative;
-    font-size: 16px;
-    font-weight: 600;        
-    color: white;
-    padding: 10px 20px 4px 20px;
-  }
-  #tabs > ul > li.selected > h4 {
-    background-color: rgba(255,255,255,.2);
-    opacity: 1;
-  }
-  #tabs > ul > li.hovering > h4 {
-    opacity: 1;
-  }
-"""
-
-
-window.get_tabs = -> customization('homepage_tabs')
-
-
-
-window.HomepageTabs = ReactiveComponent
-  displayName: 'HomepageTabs'
-
-  render: -> 
-    homepage_tabs = fetch 'homepage_tabs'
-    subdomain = fetch('/subdomain')
-
-    DIV 
-      id: 'tabs'
-      style: @props.wrapper_style
-
-      A 
-        name: 'active_tab'
-
-      UL 
-        role: 'tablist'
-        style: _.defaults {}, @props.list_style,
-          width: @props.width
-
-
-        for tab, idx in get_tabs() 
-          do (tab) =>
-            tab_name = tab.name
-            current = homepage_tabs.filter == tab_name 
-            hovering = @local.hovering == tab_name
-            featured = @props.featured == tab_name
-
-            tab_style = _.extend {}, @props.tab_style
-            tab_wrapper_style = _.extend {}, @props.tab_wrapper_style
-
-            if current
-              _.extend tab_style, @props.active_style
-              _.extend tab_wrapper_style, @props.active_tab_wrapper_style
-            
-            if hovering
-              _.extend tab_style, @props.hover_style or @props.active_style
-              _.extend tab_wrapper_style, @props.hovering_tab_wrapper_style
-
-            LI 
-              className: if current then 'selected' else if hovering then 'hovered'
-              tabIndex: 0
-              role: 'tab'
-              style: tab_wrapper_style
-              'aria-controls': 'homepagetab'
-              'aria-selected': current
-
-              onMouseEnter: => 
-                if homepage_tabs.filter != tab_name 
-                  @local.hovering = tab_name 
-                  save @local 
-              onMouseLeave: => 
-                @local.hovering = null 
-                save @local
-              onKeyDown: (e) => 
-                if e.which == 13 || e.which == 32 # ENTER or SPACE
-                  e.currentTarget.click() 
-                  e.preventDefault()
-              onClick: =>
-                loc = fetch 'location'
-                loc.query_params.tab = tab_name 
-                save loc  
-                document.activeElement.blur()
-
-              H4 
-                style: tab_style
-
-                translator
-                  id: "homepage_tab.#{tab_name}"
-                  key: if tab_name != 'Show all' then "/translations/#{subdomain.name}"
-                  tab_name
-                  
-              if featured 
-                @props.featured_insertion?()
 
 
 

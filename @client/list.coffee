@@ -1,19 +1,35 @@
-require './questionaire'
+require './modal'
+require './edit_list'
+
 
 window.styles += """
-  .LIST-header {
-    font-size: 33px;
-    font-weight: 700;
-    text-align: left;     
-    padding: 0; 
-    margin: 0; 
+
+  [data-widget="List"], [data-widget="NewList"] {
+    background-color: white;
+    /* border: 1px solid #e1e1e1; */
     border: none;
-    background-color: transparent;
+    border-radius: 8px;
+    box-shadow: -1px 1px 2px rgb(0 0 0 / 15%);
+    border-top: 1px solid #f3f3f3;
   }
 
-  .LIST-header.LIST-smaller-header {
+  .one-col [data-widget="List"] {
+    border-top: none;
+    box-shadow: none;
+  }
+
+  .LIST-header {
     font-size: 32px;
     font-weight: 500;
+    text-align: left;     
+  }
+
+  .LIST-header button {
+    border: none;
+    background-color: transparent;
+    padding: 0; 
+    margin: 0; 
+    
   }
 
   .LIST-fat-header-field {
@@ -23,7 +39,7 @@ window.styles += """
     outline-color: #ccc;
     line-height: 1.4;
     padding: 8px 12px;
-    // margin-top: -9px;
+    /* margin-top: -9px; */
     margin-left: -13px;
 
   }
@@ -37,6 +53,15 @@ window.styles += """
 
 """
 
+get_list_padding = ->
+  top = if ONE_COL() then 12 else 48
+  bottom = top 
+
+  right = LIST_PADDING() + LIST_PADDING() / 6
+  left = LIST_PADDING() - LIST_PADDING() / 6
+
+  "#{top}px #{right}px #{bottom}px #{left}px"
+
 list_link = (list_key) ->
   list_key.substring(5).toLowerCase().replace(/ /g, '_')
 
@@ -48,6 +73,10 @@ window.List = ReactiveComponent
   render: -> 
     current_user = fetch '/current_user'
     list = @props.list
+    if !list.key?
+      list = get_list(@props.list)
+
+
     list_key = list.key
 
     # subscribe to a key that will alert us to when sort order has changed
@@ -61,15 +90,13 @@ window.List = ReactiveComponent
 
     is_collapsed = list_state.collapsed
 
-    edit_list = fetch "edit-#{list_key}"
-
-
     ARTICLE
       key: list_key
       id: list_key.substring(5).toLowerCase()
       style: 
-        marginBottom: if !is_collapsed then 40
+        marginBottom: 40
         position: 'relative'
+        padding: get_list_padding()
 
       A name: list_link(list_key)
 
@@ -81,11 +108,7 @@ window.List = ReactiveComponent
         fresh: @props.fresh
         allow_editing: !@props.allow_editing? || @props.allow_editing
 
-      if customization('questionaire', list_key) && !is_collapsed
-        Questionaire 
-          list_key: list_key
-
-      else if !is_collapsed && !@props.fresh
+      if !is_collapsed && !@props.fresh
         
         permitted = permit('create proposal', list_key)
         DIV null, 
@@ -97,15 +120,13 @@ window.List = ReactiveComponent
             show_first_num_items: if list_state.show_all_proposals then 999999 else list_state.show_first_num_items
             combines_these_lists: @props.combines_these_lists
             show_new_button: (list_state.show_all_proposals || proposals.length <= list_state.show_first_num_items) && \
-               ((@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || (permitted > 0 || permitted == Permission.NOT_LOGGED_IN) ) && \
-                !edit_list.editing
+               ((@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || (permitted > 0 || permitted == Permission.NOT_LOGGED_IN) )
 
           if !list_state.show_all_proposals && proposals.length > list_state.show_first_num_items 
             BUTTON
               style:
                 backgroundColor: '#f9f9f9'
                 width: HOMEPAGE_WIDTH()
-                textDecoration: 'underline'
                 cursor: 'pointer'
                 paddingTop: 10
                 paddingBottom: 10
@@ -116,11 +137,25 @@ window.List = ReactiveComponent
                 border: 'none'
                 fontSize: 22
 
-              onMouseDown: => 
+              onClick: => 
                 list_state.show_all_proposals = true
                 save list_state
 
-              translator "engage.show_hidden_proposals", 'Show all'
+              onKeyPress: (e) -> 
+                if e.which == 13 || e.which == 32 # ENTER or SPACE
+                  e.preventDefault()
+                  e.target.click()
+
+              SPAN 
+                style: 
+                  textDecoration: 'underline'
+
+                translator "engage.show_hidden_proposals", 'Show all'
+
+              SPAN 
+                style: 
+                  paddingLeft: 8
+                "(+#{proposals.length - list_state.show_first_num_items})"
 
 
       if customization('footer', list_key) && !is_collapsed
@@ -175,276 +210,86 @@ ListItems = ReactiveComponent
 
 
 
-EditList = ReactiveComponent
-  displayName: 'EditList'
+__remove_this_list = (list_key, page) ->
+  subdomain = fetch '/subdomain'
+  list_key = list_key.key or list_key
+  tabs = get_tabs()
 
-  render: ->     
-    list = @props.list 
-    list_key = list.key
+  customizations = subdomain.customizations
 
-    current_user = fetch '/current_user'
-    edit_list = fetch "edit-#{list_key}"
-    subdomain = fetch '/subdomain'
+  if tabs
+    page ?= get_current_tab_name()
+    for tab in tabs
+      if tab.name == page
+        if (idx = tab.lists.indexOf(list_key)) > -1
+          tab.lists.splice idx, 1
+        break
 
-    if @props.fresh && !edit_list.editing
-      edit_list.editing = true
+  else if ol = customizations.lists && (idx = ol.indexOf(list_key)) > -1
+    ol.splice idx, 1
+    if ol.length == 0
+      delete customizations.lists
 
-    return SPAN null if !current_user.is_admin
+  list_in_other_pages = false
+  if tabs
+    for tab in tabs
+      if tab.lists.indexOf(list_key) > -1 
+        list_in_other_pages = true 
+        break
 
-    submit = =>
-
-
-      customizations = subdomain.customizations
-
-      customizations[list_key] ?= {}
-      list_config = customizations[list_key]
-
-      fields = ['list_title', 'list_description', 'list_permit_new_items', 'list_category', 'slider_pole_labels', 'list_opinions_title', 'discussion_enabled', 'list_is_archived']
-
-      for f in fields
-        val = edit_list[f]
-
-        if val?
-          list_config[f] = val
-
-      description = fetch("#{list_key}-description").html
-      if description == "<p><br></p>"
-        description = ""
+  if !list_in_other_pages
+    delete customizations[list_key] 
+          
+  save subdomain
 
 
+window.delete_list = (list_key, page, suppress_confirmation) ->
+  subdomain = fetch '/subdomain'
 
-      list_config.list_description = description
+  list_key = list_key.key or list_key
 
-      if @props.fresh
-        new_name = "#{slugify(list_config.list_title or list_config.list_category or 'Proposals')}-#{Math.round(Math.random() * 100)}"
-        new_key = "list/#{new_name}"
-        customizations[new_key] = customizations[list_key]
-        _.defaults customizations[new_key], 
-          created_by: current_user.user 
-          created_at: Date.now()
-        delete customizations[list_key]
+  tabs = get_tabs()
 
-        # if tabs are enabled, add it to the current tab
-        if customizations.homepage_tabs
-          current_tab = fetch('homepage_tabs').filter
-          found_tab = false 
-          for tab in customizations.homepage_tabs
-            if tab.name == current_tab
-              tab.lists.push new_key
-              break
-          if !found_tab 
-            console.error "Cannot add the list to the current tab #{current_tab}"
+  list_in_num_pages = 0
+  if tabs
+    for tab in tabs
+      if tab.lists.indexOf(list_key) > -1 
+        list_in_num_pages += 1
+  else 
+    list_in_num_pages = 1 
 
-      if customizations.homepage_tabs
-        current_tab = fetch('homepage_tabs').filter
+  if list_in_num_pages <= 1
 
-        console.log edit_list.assign_to_tab
-        if edit_list.assign_to_tab && edit_list.assign_to_tab != current_tab
-          tab_config = customizations.homepage_tabs
-          tab_names = (t.name for t in tab_config)
+    proposals = get_proposals_in_list(list_key)
 
-          idx_source = tab_names.indexOf current_tab
-          idx_target = tab_names.indexOf edit_list.assign_to_tab
+    if proposals?.length > 0 
+      has_permission = true 
+      for proposal in proposals 
+        has_permission &&= permit('delete proposal', proposal) > 0 
 
-          if idx_source > -1 && idx_target > -1
-            tab_config[idx_source].lists.splice tab_config[idx_source].lists.indexOf(list_key), 1
-            tab_config[idx_target].lists.push list_key 
-            subdomain.customizations.homepage_tabs = tab_config
-            console.log subdomain.customizations
-          else 
-            console.error "Could not move list from #{current_tab} to #{edit_list.assign_to_tab}"
+      if !has_permission
+        alert "You apparently don't have permission to delete one or more of the proposals in this list"
+      else if has_permission && (suppress_confirmation || confirm(translator('engage.list-config-delete-confirm', 'Are you sure you want to delete this list? All of the proposals in it will also be permanently deleted. If you want to get rid of the list, but not delete the proposals, you could move the proposals first.')))
+        for proposal in proposals
+          destroy proposal.key
+        __remove_this_list(list_key, page)  
+
+    else if suppress_confirmation || confirm(translator('engage.list-config-delete-confirm-when-no-proposals', 'Are you sure you want to delete this list? This is irreversable.'))
+      __remove_this_list(list_key, page)  
+
+  else
+    __remove_this_list(list_key, page)  
 
 
 
 
-      save subdomain, => 
-        if subdomain.errors
-          console.error "Failed to save list changes", subdomain.errors
-
-        exit_edit()
-
-    cancel_edit = => 
-      customizations = subdomain.customizations
-
-      if @props.fresh && list_key of customizations
-        delete customizations[list_key] 
-        save subdomain
-      else 
-        exit_edit()
-
-    exit_edit = => 
-      edit_list.editing = false 
-      for k,v of edit_list
-        if k != 'key'
-          delete edit_list[k]
-
-      save edit_list
-
-    admin_actions = [{action: 'edit', label: t('edit')}, 
-                     {action: 'delete', label: t('delete')}, 
-                     {action: 'close', label: translator('engage.list-configuration.close', 'close to participation')}, 
-                     {action: 'copy_link', label: translator('engage.list-configuration.copy_link', 'copy link')}]
-
-    if !edit_list.editing 
-
-      DropMenu
-        options: admin_actions
-        open_menu_on: 'activation'
-
-        wrapper_style: 
-          position: 'absolute'
-          right: -42
-          top: 16
-
-        anchor_style: {}
-
-        menu_style: 
-          backgroundColor: '#eee'
-          border: "1px solid #{focus_color()}"
-          right: -9999
-          top: 18
-          borderRadius: 8
-          fontWeight: 400
-          overflow: 'hidden'
-          boxShadow: '0 1px 2px rgba(0,0,0,.3)'
-          fontSize: 18
-          fontStyle: 'normal'
-
-        menu_when_open_style: 
-          right: 0
-
-        option_style: 
-          padding: '6px 12px'
-          borderBottom: "1px solid #ddd"
-          display: 'block'
-
-        active_option_style: 
-          color: 'white'
-          backgroundColor: focus_color()
-
-        render_anchor: ->
-          SPAN 
-            "data-tooltip": translator "engage.list-config-icon-tooltip", "Configure list settings" 
-            GearIcon
-              size: 20
-              fill: '#888'
-
-        render_option: (option, is_active) ->
-          SPAN null, 
-            option.label
 
 
-        selection_made_callback: (option) =>
-          if option.action == 'edit' 
-            edit_list.editing = true 
-            save edit_list
-
-            setTimeout => 
-              @refs.input?.getDOMNode().focus()
-              @refs.input?.getDOMNode().setSelectionRange(-1, -1) # put cursor at end
-
-          else if option.action == 'delete'
-            remove_list = -> 
-              customizations = subdomain.customizations
-              delete customizations[list_key] 
-
-              # if tabs are enabled, remove it from the current tab
-              if customizations['homepage_tabs']
-                tabs = fetch('homepage_tabs')
-                current_tab = fetch('homepage_tabs').filter
-                tab_idx = null 
-                for tab in customizations['homepage_tabs']
-                  if tab.name == current_tab
-                    tab.lists.splice tab.lists.indexOf(list_key), 1
-                    break                  
-                    
-              save subdomain
-
-            if list.proposals?.length > 0 
-              has_permission = true 
-              for proposal in list.proposals 
-                has_permission &&= permit('delete proposal', proposal) > 0 
-
-              if !has_permission
-                alert "You apparently don't have permission to delete one or more of the proposals in this list"
-              else if has_permission && confirm(translator('engage.list-config-delete-confirm', 'Are you sure you want to delete this list? All of the proposals in it will also be permanently deleted. If you want to get rid of the list, but not delete the proposals, you could move the proposals first.'))
-                for proposal in list.proposals
-                  destroy proposal.key
-                remove_list()
-
-            else 
-              remove_list()
-          else if option.action == 'close'
-            if confirm(translator('engage.list-config-close-confirm', 'Are you sure you want to close this list to participation? Any proposals in it will also be closed to further participation, though all existing dialogue will remain visible.'))
-              
-              # close existing proposals to further participation
-              if list.proposals?.length > 0 
-                has_permission = true 
-                for proposal in list.proposals 
-                  has_permission &&= permit('update proposal', proposal) > 0 
-                if !has_permission
-                  alert "You apparently don't have permission to close one or more of the proposals in this list"
-                else 
-                  for proposal in list.proposals 
-                    proposal.active = false 
-                    save proposal 
-
-              customizations = subdomain.customizations
-
-              # don't show a new button for this list anymore
-              customizations[list_key].list_permit_new_items = false 
-
-              # # add a note in the description that the list was closed to participation
-              # customizations[list_key].list_description ?= ''
-              # if customizations[list_key].list_description?.length > 0 
-              #   customizations[list_key].list_description += "<br>" 
-              # customizations[list_key].list_description += "<DIV style='font-style:italic'>Participation was closed by the host on #{new Date().toDateString()}</div>" 
-
-              save subdomain
-          else if option.action == 'copy_link'
-            link = "#{location.origin}#{location.search}##{list_link(list_key)}"
-            navigator.clipboard.writeText(link).then -> 
-              show_flash("Link copied to clipboard")
-            , (err) ->
-              show_flash_error("Problem copying link to clipboard")
 
 
-            
-    else 
-
-      DIV 
-        style: 
-          marginTop: 24
 
 
-        BUTTON 
-          className: 'btn'
-          style: 
-            backgroundColor: focus_color()
 
-          onClick: submit
-          onKeyDown: (e) =>
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              @submit(e)  
-              e.preventDefault()
-
-          translator 'engage.save_changes_button', 'Save'
-
-        BUTTON
-          className: 'like_link'
-          style: 
-            color: '#777'
-            fontSize: 18
-            marginLeft: 12
-            position: 'relative'
-            top: 2
-          onClick: cancel_edit
-          onKeyDown: (e) =>
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              cancel_edit(e)  
-              e.preventDefault()
-
-          translator 'shared.cancel_button', 'cancel'
 
 
 
@@ -457,13 +302,11 @@ window.ListHeader = ReactiveComponent
     list_key = list.key
     list_state = fetch list_key
 
-    edit_list = fetch "edit-#{list_key}"
-
     is_collapsed = list_state.collapsed
 
     subdomain = fetch '/subdomain'
 
-    description = edit_list.description or customization('list_description', list_key, subdomain)
+    description = customization('list_description', list_key, subdomain)
 
     DIVIDER = customization 'list_divider', list_key, subdomain
 
@@ -471,17 +314,6 @@ window.ListHeader = ReactiveComponent
       width: HOMEPAGE_WIDTH()
       marginBottom: 16 #24
       position: 'relative'
-
-    if edit_list.editing
-      _.extend wrapper_style, 
-        backgroundColor: '#f3f3f3'
-        marginLeft: -36
-        marginTop: -36
-        padding: "18px 36px 36px 36px"
-        width: HOMEPAGE_WIDTH() + 36 * 2
-
-    edit_list.discussion_enabled ?= customization('discussion_enabled', list_key)
-    edit_list.list_is_archived ?= customization('list_is_archived', list_key)
 
     DIV 
       style: wrapper_style 
@@ -495,395 +327,34 @@ window.ListHeader = ReactiveComponent
 
         DIV 
           style: 
-            width: HOMEPAGE_WIDTH()
-            margin: 'auto'
+            width:  HOMEPAGE_WIDTH()
+            margin:  'auto'
 
           EditableTitle
             list: @props.list
             fresh: @props.fresh
 
-
-          if edit_list.editing || !is_collapsed
-
+          if !is_collapsed
             DIV null, 
-              if description?.length > 0 || edit_list.editing
+              if description?.length > 0 || typeof(description) == 'function'
                 EditableDescription
                   list: @props.list
                   fresh: @props.fresh
-
-          # if edit_list.editing || !is_collapsed
-          #   DIV 
-          #     style: 
-          #       position: 'relative'
-          #       marginTop: if get_list_title(list_key, null, subdomain)?.length > 0 || edit_list.editing then  18
-          #       display: if !edit_list.editing && category_value(list_key, null, subdomain).length + histo_title(list_key).length == 0 then 'none'
-
-          #     EditableListCategory
-          #       list: @props.list
-          #       fresh: @props.fresh
-
-          #     EditableOpinionLabel
-          #       list: @props.list
-          #       fresh: @props.fresh
-
-        if edit_list.editing
-
-          option_block = 
-            # marginLeft: 8
-            marginTop: 8
-
-          DIV null, 
-
-            if !@props.combines_these_lists
-              DIV 
-                style: 
-                  padding: '12px 0'
-                  width: column_sizes().first
-                  display: 'inline-block'
-
-                LABEL
-                  className: 'LIST-field-edit-label'
-                  htmlFor: 'list_permit_new_items'
-
-
-                  TRANSLATE
-                    id: "engage.list-config-who-can-add"
-                    span: 
-                      component: SPAN 
-                      args: 
-                        style: 
-                          fontWeight: 700
-
-                    "<span>Permissions.</span> Who can add items to this list?"
-
-                DIV 
-                  style: option_block
-
-                  INPUT 
-                    id: 'any-participant'
-                    type: 'radio'
-                    name: 'list_permit_new_items'
-                    defaultChecked: customization('list_permit_new_items', list_key, subdomain)
-                    onChange: (e) =>
-                      edit_list.list_permit_new_items = true
-                      save edit_list
-
-                  LABEL
-                    style: 
-                      marginLeft: 4
-                    htmlFor: 'any-participant'
-
-                    translator "engage.list-config-who-can-add-anyone", "Any registered participant"
-
-                DIV
-                  style: option_block
-
-                  INPUT 
-                    id: 'host-only'
-                    type: 'radio'
-                    name: 'list_permit_new_items'
-                    defaultChecked: !customization('list_permit_new_items', list_key, subdomain)
-                    onChange: (e) =>
-                      edit_list.list_permit_new_items = false
-                      save edit_list
-
-                  LABEL
-                    style: 
-                      marginLeft: 4
-                    htmlFor: 'host-only'
-
-                    translator "engage.list-config-who-can-add-only-hosts", "Only forum hosts or those granted permission"
-
-            if !@props.combines_these_lists
-              slider_input_style = 
-                paddingTop: 2
-                position: 'absolute'
-                border: 'none'
-                outline: 'none'
-                color: '#444'
-                fontSize: if browser.is_mobile then 16 else 12
-
-              DIV 
-                style: 
-                  padding: '12px 0'
-                  width: column_sizes().second
-                  display: 'inline-block'
-                  float: 'right'
-
-                DIV 
-                  style: 
-                    textAlign: 'right'
-                  LABEL
-                    className: 'LIST-field-edit-label'
-
-
-                    TRANSLATE
-                      id: "engage.list-config-spectrum"
-                      span: 
-                        component: SPAN 
-                        args: 
-                          style: 
-                            fontWeight: 700
-
-                      "<span>Slider.</span> On what spectrum is each item evaluated?"
-
-
-                DIV 
-                  ref: 'slider_config'
-                  style: 
-                    padding: '24px 24px 32px 24px'
-                    position: 'relative'
-                    width: column_sizes().second + 24 * 2
-                    marginTop: 8
-                    left: -24 - 1
-
-                  DIV 
-                    style: 
-                      position: 'relative'
-                      width: column_sizes().second
-
-
-                    SPAN 
-                      style: 
-                        display: 'block'
-                        width: '100%'
-                        borderBottom: '1px solid'
-                        borderColor: '#999'
-                    
-                    INPUT 
-                      type: 'text'
-                      style: _.extend {}, slider_input_style, 
-                        left: 0
-                        textAlign: 'left'
-
-                      ref: 'oppose_slider'
-                      defaultValue: customization('slider_pole_labels', list_key, subdomain).oppose 
-                      placeholder: translator 'engage.slider_config.negative-pole-placeholder', 'Negative pole'
-                      onChange: (e) ->
-                        edit_list.slider_pole_labels ?= {}
-                        edit_list.slider_pole_labels.oppose = e.target.value 
-                        save edit_list
-
-                    INPUT
-                      type: 'text'
-                      style: _.extend {}, slider_input_style, 
-                        textAlign: 'right'
-                        right: 0
-
-                      ref: 'support_slider'
-                      defaultValue: customization('slider_pole_labels', list_key, subdomain).support
-                      onChange: (e) ->
-                        edit_list.slider_pole_labels ?= {}
-                        edit_list.slider_pole_labels.support = e.target.value 
-                        save edit_list
-                      placeholder: translator 'engage.slider_config.positive-pole-placeholder', 'Positive pole'
-
-
-                DIV 
-                  style: 
-                    position: 'relative'
-                    right: 0
-
-                  DropMenu
-                    options: [{support: '', oppose: ''}].concat (v for k,v of slider_labels)
-                    open_menu_on: 'activation'
-
-                    wrapper_style:
-                      textAlign: 'right'
-
-                    anchor_style: 
-                      color: 'inherit' #focus_color() #'inherit'
-                      height: '100%'
-                      padding: '4px 4px'
-                      position: 'relative'
-                      right: 0
-                      cursor: 'pointer'
-
-                    menu_style: 
-                      width: column_sizes().second + 24 * 2
-                      backgroundColor: '#fff'
-                      border: "1px solid #aaa"
-                      right: -99999
-                      left: 'auto'
-                      top: 24
-                      fontWeight: 400
-                      overflow: 'hidden'
-                      boxShadow: '0 1px 2px rgba(0,0,0,.3)'
-                      textAlign: 'left'
-
-                    menu_when_open_style: 
-                      right: -24
-
-                    option_style: 
-                      padding: '6px 0px'
-                      display: 'block'
-                      color: '#888'
-
-                    active_option_style: 
-                      color: 'black'
-                      backgroundColor: '#efefef'
-
-
-                    selection_made_callback: (option) => 
-                      @refs.oppose_slider.getDOMNode().value = option.oppose
-                      @refs.support_slider.getDOMNode().value = option.support
-                      edit_list.slider_pole_labels = 
-                        support: option.support 
-                        oppose: option.oppose 
-                      save edit_list
-
-                      setTimeout =>
-                        $(@refs.slider_config.getDOMNode()).ensureInView()
-                      , 0
-
-
-                    render_anchor: ->
-                      SPAN null, 
-                        LABEL 
-                          style: 
-                            color: focus_color()
-                            fontSize: 14
-                            marginRight: 12
-                            cursor: 'pointer'
-                          translator 'engage.list-config-spectrum-select', 'change spectrum'
-
-                        SPAN style: _.extend cssTriangle 'bottom', focus_color(), 15, 9,
-                          display: 'inline-block'
-
-                    render_option: (option, is_active) ->
-                      if option.oppose == ''
-                        return  DIV 
-                                  style: 
-                                    fontSize: 16
-                                    borderBottom: '1px dashed #ccc'
-                                    textAlign: 'center'
-                                    padding: '12px 0'
-
-                                  translator "engage.list-config-custom-spectrum", "Custom Spectrum"
-
-                      DIV 
-                        style: 
-                          margin: "12px 24px"
-                          position: 'relative'
-                          fontSize: 12
-
-                        SPAN 
-                          style: 
-                            display: 'inline-block'
-                            width: '100%'
-                            borderBottom: '1px solid'
-                            borderColor: '#666'
-
-                        BR null
-                        SPAN
-                          style: 
-                            position: 'relative'
-                            left: 0
-
-                          option.oppose 
-
-                        SPAN
-                          style: 
-                            position: 'absolute'
-                            right: 0
-                          option.support
-
-            if !@props.combines_these_lists
-
-              DIV 
-                style:
-                  marginTop: 36
-
-                DIV 
-                  style:
-                    marginBottom: 6
-                  LABEL 
-                    style: {}
-
-                    INPUT 
-                      type: 'checkbox'
-                      defaultChecked: !edit_list.discussion_enabled
-                      name: 'discussion_enabled'
-                      onChange: (e) =>
-                        edit_list.discussion_enabled = !edit_list.discussion_enabled
-                        save edit_list
-
-                    SPAN 
-                      style: 
-                        paddingLeft: 4
-                      translator 'engage.list-config-discussion-enabled', 'Disable commenting. Spectrums only.'
-
-                DIV                   
-                  style:
-                    marginBottom: 6
-                  LABEL 
-                    style: {}
-
-                    INPUT 
-                      type: 'checkbox'
-                      defaultChecked: edit_list.list_is_archived
-                      name: 'list_is_archived'
-                      onChange: (e) =>
-                        edit_list.list_is_archived = !edit_list.list_is_archived
-                        save edit_list
-
-                    SPAN 
-                      style: 
-                        paddingLeft: 4
-                      translator 'engage.list-config-archived', 'Close list by default on page load. Useful for archiving past issues.'
-
-
-                if customization('homepage_tabs')
-                  tabs = get_tabs()
-                  
-                  current = null 
-                  for a_tab in tabs 
-                    if list_key in a_tab.lists 
-                      current = a_tab.name
-
-                  tab_names = (t.name for t in tabs)
-
-                  DIV 
-                    style:
-                      marginBottom: 6
-                      marginTop: 24
-                      display: 'flex'
-                      alignItems: 'center'
-
-                    LABEL 
-                      style: 
-                        marginRight: 8
-
-                      "Assign to tab"
-
-                    SELECT 
-                      defaultValue: current
-                      onChange: (e) =>
-                        edit_list.assign_to_tab = e.target.value
-                        save edit_list 
-
-                      for tab in tab_names when !customization('homepage_tab_views')?[tab]
-                        OPTION 
-                          value: tab
-                          tab
-
-
-
-
-
 
 
       if @props.allow_editing
         EditList
           list: @props.list
           fresh: @props.fresh
+          combines_these_lists: @props.combines_these_lists
 
-      if !edit_list.editing && @props.proposals_count > 0 && !customization('questionaire', list_key, subdomain) && !is_collapsed && !customization('list_no_filters', list_key, subdomain)
+      if @props.proposals_count > 0 && !customization('questionaire', list_key, subdomain) && !is_collapsed && !customization('list_no_filters', list_key, subdomain)
         list_actions
           list: @props.list
           add_new: !@props.combines_these_lists && customization('list_permit_new_items', list_key, subdomain) && !is_collapsed && @props.proposals_count > 4
           can_sort: customization('homepage_show_search_and_sort', null, subdomain) && @props.proposals_count > 1 
           fresh: @props.fresh
+
 
 
 window.NewList = ReactiveComponent
@@ -892,21 +363,15 @@ window.NewList = ReactiveComponent
   render: -> 
     subdomain = fetch '/subdomain'
 
-    if !@local.edit_key
-      @local.edit_key = "list/new-list-#{Math.round(Math.random() * 1000)}"
-    
-    list = 
-      key: @local.edit_key 
-
-    list_key = list.key
-    edit_list = fetch "edit-#{list_key}"
-
     @local.hovering ?= false
 
-    if edit_list.editing
-      List 
+    if @local.editing
+      ModalNewList 
         fresh: true
-        list: list 
+        done_callback: =>
+          @local.editing = false 
+          save @local
+
 
     else 
       BUTTON 
@@ -914,14 +379,14 @@ window.NewList = ReactiveComponent
           textAlign: 'left'
           marginTop: 35
           display: 'block'
-          padding: '18px 24px'
+          padding: get_list_padding()
           position: 'relative'
-          left: -24
+          # left: -24
           width: '100%'
           borderRadius: 8
-          backgroundColor: if @local.hovering then '#eaeaea' else '#efefef'
-          border: '1px solid'
-          borderColor: if @local.hovering then '#bbb' else '#ddd'
+          backgroundColor: if @local.hovering then '#eaeaea' # else 'white'
+          # border: '1px solid'
+          # borderColor: if @local.hovering then '#bbb' else '#ddd'
 
         onMouseEnter: =>
           @local.hovering = true 
@@ -931,8 +396,8 @@ window.NewList = ReactiveComponent
           save @local 
 
         onClick: =>
-          edit_list.editing = true
-          save edit_list
+          @local.editing = true 
+          save @local
 
         onKeyDown: (e) => 
           if e.which == 13 || e.which == 32 # ENTER or SPACE
@@ -940,12 +405,17 @@ window.NewList = ReactiveComponent
             e.preventDefault()              
 
         H1
+          className: 'LIST-header'
           style: 
-            fontSize: 36
-            fontWeight: 700
             color: if @local.hovering then '#444' else '#666'
+            textDecoration: 'underline'
+          translator 'engage.create_new_list_button', "Create a new Topic"
 
-          translator 'engage.create_new_list_button', "Create new list"
+        DIV 
+          style: 
+            fontSize: 14
+            marginTop: 4
+          'A Topic collects proposals under a category like "Recommendations" or in response to an open-ended question like "What are your ideas?"'
 
 
 
@@ -962,16 +432,11 @@ EditableTitle = ReactiveComponent
     list_state = fetch list_key
     is_collapsed = list_state.collapsed
 
-    edit_list = fetch "edit-#{list_key}"
     subdomain = fetch '/subdomain'
 
     title = get_list_title list_key, true, subdomain
 
     list_uncollapseable = customization 'list_uncollapseable', list_key, subdomain
-    TITLE_WRAPPER = if list_uncollapseable then DIV else BUTTON
-
-    tw = if is_collapsed then 15 else 20
-    th = if is_collapsed then 20 else 15    
 
     toggle_list = ->
       if !list_uncollapseable
@@ -980,217 +445,68 @@ EditableTitle = ReactiveComponent
 
 
     DIV null, 
-      if edit_list.editing 
-        DIV 
-          className: 'LIST-field-edit-label'
-
-          TRANSLATE
-            id: "engage.list-config-title"
-            span: 
-              component: SPAN 
-              args: 
-                style: 
-                  fontWeight: 700
-
-            "<span>Title.</span> Usually an open-ended question like \"What are your ideas?\" or a list label like \"Recommended actions for mitigation\"."
 
       H1 
         className: 'LIST-header'
         style: # ugly...we only want to show the expand/collapse icon
-          fontSize: if !edit_list.editing && title.replace(/^\s+|\s+$/g, '').length == 0 then 0
+          fontSize: if title.replace(/^\s+|\s+$/g, '').length == 0 then 0
 
-        if edit_list.editing
-          AutoGrowTextArea
-            id: "title-#{list_key}"
-            className: 'LIST-header LIST-fat-header-field'
-            ref: 'input'
-            focus_on_mount: true
-            style: _.defaults {}, customization('list_label_style', list_key, subdomain) or {}, 
-              fontFamily: header_font()
-              width: HOMEPAGE_WIDTH() + 24
+        DIV
+          onMouseEnter: => @local.hover_label = true; save @local 
+          onMouseLeave: => @local.hover_label = false; save @local
+          className: 'LIST-header'          
+          style: _.defaults {}, customization('list_label_style', list_key, subdomain) or {}, 
+            fontFamily: header_font()              
+            position: 'relative'
+            textAlign: 'left'
+            outline: 'none'
 
-            defaultValue: if !@props.fresh then title
-            onChange: (e) ->
-              edit_list.list_title = e.target.value 
-              save edit_list
 
-        else 
+          title 
 
-          TITLE_WRAPPER
-            tabIndex: if !list_uncollapseable then 0
-            'aria-label': "#{title}. #{translator('Expand or collapse list.')}"
-            'aria-pressed': !is_collapsed
-            onMouseEnter: => @local.hover_label = true; save @local 
-            onMouseLeave: => @local.hover_label = false; save @local
-            className: 'LIST-header'          
-            style: _.defaults {}, customization('list_label_style', list_key, subdomain) or {}, 
-              fontFamily: header_font()              
-              cursor: if !list_uncollapseable then 'pointer'
-              position: 'relative'
-              textAlign: 'left'
-              outline: 'none'
+          if !list_uncollapseable
+            tw = 15   
 
-            onKeyDown: if !list_uncollapseable then (e) -> 
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
+            BUTTON 
+              tabIndex: if !list_uncollapseable then 0
+              'aria-label': "#{title}. #{translator('Expand or collapse list.')}"
+              'aria-pressed': !is_collapsed
+
+              onKeyDown: if !list_uncollapseable then (e) -> 
+                if e.which == 13 || e.which == 32 # ENTER or SPACE
+                  toggle_list()
+                  e.preventDefault()
+              onClick: if !list_uncollapseable then (e) -> 
                 toggle_list()
-                e.preventDefault()
-            onClick: if !list_uncollapseable then (e) -> 
-              toggle_list()
-              document.activeElement.blur()
+                document.activeElement.blur()
 
-            title 
+              'aria-hidden': true
+              style: 
+                position: 'absolute'
+                left: -tw - 20
+                top: if is_collapsed then -14 else 5
+                paddingRight: 20
+                paddingTop: 12
+                display: 'inline-block'
+                cursor: 'pointer'
+                transform: if !is_collapsed then 'rotate(90deg)'
+                transition: 'transform .25s, top .25s'
 
-            if !list_uncollapseable
-              SPAN 
-                'aria-hidden': true
-                style: 
-                  position: 'absolute'
-                  left: -tw - 20
-                  top: if is_collapsed then 3 else 9
-                  paddingRight: 20
-                  paddingTop: 12
-                  display: 'inline-block'
+              ChevronRight(tw)
 
-                SPAN 
-                  
-                  style: cssTriangle (if is_collapsed then 'right' else 'bottom'), ((customization('list_label_style', list_key, subdomain) or {}).color or 'black'), tw, th,
-                    width: tw
-                    height: th
-                    opacity: if @local.hover_label or is_collapsed then 1 else .1
-                    outline: 'none'
-                    display: 'inline-block'
-                    verticalAlign: 'top'
+        
 
 
-# EditableListCategory = ReactiveComponent
-#   displayName: 'EditableListCategory'
-#   render: -> 
-#     subdomain = fetch '/subdomain'
-#     current_user = fetch '/current_user'
+styles += """
+  .LIST-description {
+    font-size: 16px;
+    font-weight: 400;
+    color: black;
+    margin-top: 8px;
+    font-style: italic;
+  }
 
-#     list = @props.list
-#     list_key = list.key
-#     list_state = fetch list_key
-#     edit_list = fetch "edit-#{list_key}"
-
-#     category = category_value list_key, @props.fresh, subdomain
-
-#     has_title = customization('list_description', list_key)?.length > 0 || customization('list_title', list_key)?.length > 0
-#     heading_style = _.defaults {}, customization('list_label_style', list_key),
-#       fontSize: if !has_title then 44 else 36
-#       fontWeight: if !has_title then 700 else 500
-#       fontFamily: header_font()
-
-#     show_opinion_header = edit_list.editing || widthWhenRendered(category, heading_style) <= column_sizes().first + column_sizes().gutter
-
-#     DIV 
-#       style: 
-#         width: if show_opinion_header then column_sizes().first else '100%'
-#         display: 'inline-block'
-
-#       if edit_list.editing 
-#         DIV 
-#           className: 'LIST-field-edit-label'
-
-#           TRANSLATE
-#             id: "engage.list-config-category"
-#             span: 
-#               component: SPAN 
-#               args: 
-#                 style: 
-#                   fontWeight: 700
-
-#             "<span>Category.</span> e.g. \"Ideas\", \"Policies\", \"Questions\", \"Strategies\"."
-
-#       H1 null,
-
-#         if edit_list.editing
-#           AutoGrowTextArea
-#             id: "category-#{list_key}"
-#             ref: 'input'
-#             className: "LIST-header LIST-fat-header-field #{if has_title then 'LIST-smaller-header'}"
-#             style: _.defaults {}, customization('list_label_style', list_key) or {}, 
-#               fontFamily: header_font()
-#               width: column_sizes().first + 24
-
-#             defaultValue: category
-#             onChange: (e) ->
-#               edit_list.list_category = e.target.value 
-#               save edit_list
-#         else 
-#           SPAN 
-#             className: if !has_title then 'LIST-header' else 'LIST-header LIST-smaller-header'          
-#             style: _.defaults {}, customization('list_label_style', list_key) or {}
-#             category
-
-
-# EditableOpinionLabel = ReactiveComponent
-#   displayName: 'EditableOpinionLabel'
-#   render: -> 
-#     subdomain = fetch '/subdomain'
-#     current_user = fetch '/current_user'
-
-#     list = @props.list
-#     list_key = list.key
-#     list_state = fetch list_key
-#     edit_list = fetch "edit-#{list_key}"
-
-#     opinion_title = histo_title list_key
-
-#     has_title = customization('list_description', list_key)?.length > 0 || customization('list_title', list_key)?.length > 0
-#     heading_style = _.defaults {}, customization('list_label_style', list_key),
-#       fontSize: if !has_title then 44 else 36
-#       fontWeight: if !has_title then 700 else 500
-#       fontFamily: header_font()
-
-#     show = edit_list.editing || widthWhenRendered(category_value(list_key, null, subdomain), heading_style) <= column_sizes().first + column_sizes().gutter
-    
-#     DIV 
-#       style: 
-#         width: column_sizes().second
-#         display: if show then 'inline-block' else 'none'
-#         marginLeft: column_sizes().gutter
-#         textAlign: 'center'
-
-#       if edit_list.editing 
-#         DIV 
-#           className: 'LIST-field-edit-label'
-#           style: 
-#             textAlign: 'right'
-
-#           TRANSLATE
-#             id: "engage.list-config-opinion-title"
-#             span: 
-#               component: SPAN 
-#               args: 
-#                 style: 
-#                   fontWeight: 700
-
-#             "<span>Opinion title.</span> e.g. \"Ratings\", \"Gut checks\"."
-
-
-#       H1 null,
-#         if edit_list.editing
-#           AutoGrowTextArea
-#             id: "list_opinions_title-#{list_key}"
-#             ref: 'input'
-#             className: "LIST-header LIST-fat-header-field #{if has_title then 'LIST-smaller-header'}"
-#             style: _.defaults {}, customization('list_label_style', list_key) or {},  
-#               fontFamily: header_font()
-#               width: column_sizes().second + 24
-#               textAlign: 'right'
-
-#             defaultValue: opinion_title
-#             onChange: (e) ->
-#               edit_list.list_opinions_title = e.target.value 
-#               save edit_list
-
-#         else 
-#           SPAN 
-#             className: if !has_title then 'LIST-header' else 'LIST-header LIST-smaller-header'
-#             style: _.defaults {}, customization('list_label_style', list_key) or {}
-#             opinion_title
-
+"""
 
 EditableDescription = ReactiveComponent
   displayName: 'EditableDescription'
@@ -1200,83 +516,31 @@ EditableDescription = ReactiveComponent
     list = @props.list 
     list_key = list.key
 
-    edit_list = fetch "edit-#{list_key}"
-
-    description = edit_list.list_description or customization('list_description', list_key)
+    description = customization('list_description', list_key)
     if Array.isArray(description)
       description = description.join('\n')
 
     description_style = customization 'list_description_style', list_key
 
+    return SPAN null if !description
+
     DIV
-      style: _.defaults {}, (description_style or {}),
-        # fontSize: 18
-        fontWeight: 400 
-        color: '#222'
-        marginTop: 6
+      style: _.defaults {}, (description_style or {})
+      className: "LIST-description #{if typeof description != 'function' then 'wysiwyg_text' else ''}"
 
       if typeof description == 'function'
         description()        
       else 
+        desc = description
+        if typeof desc == 'string'
+          desc = [description]
 
-        if current_user.is_admin && edit_list.editing
-          DIV null,
-
-            DIV 
-              className: 'LIST-field-edit-label'
-
-              TRANSLATE
-                id: "engage.list-config-description"
-                span: 
-                  component: SPAN 
-                  args: 
-                    style: 
-                      fontWeight: 700
-
-                "<span>Description [optional].</span> Give any additional information or direction here."
-
-            DIV 
-              id: 'edit_description'
-              style:
-                marginLeft: -13
-                # marginTop: -12
-                width: HOMEPAGE_WIDTH() + 13 * 2
-
-              STYLE
-                dangerouslySetInnerHTML: __html: """
-                  #edit_description .ql-editor {
-                    min-height: 48px;
-                    padding: 12px 12px;
-                    border: 1px solid #eaeaea;
-                    border-radius: 8px;
-                    background-color: white;
-
-                  }
-                """
-
-              WysiwygEditor
-                key: "#{list_key}-description"
-                horizontal: true
-                html: customization('list_description', list_key)
-                # placeholder: if !@props.fresh then translator("engage.list_description", "(optional) Description")
-                toolbar_style: 
-                  right: 0
-                container_style: 
-                  borderRadius: 8
-                style: 
-                  fontSize: if browser.is_mobile then 32
-
-        else 
-          desc = description
-          if typeof desc == 'string'
-            desc = [description]
-
-          for para, idx in desc
-            DIV 
-              key: idx
-              style:
-                marginBottom: 10
-              dangerouslySetInnerHTML: {__html: para}
+        for para, idx in desc
+          DIV 
+            key: idx
+            style:
+              marginBottom: 10
+            dangerouslySetInnerHTML: {__html: para}
 
 
 window.list_actions = (props) -> 
@@ -1297,17 +561,19 @@ window.list_actions = (props) ->
 
     DIV 
       style: 
-        width: column_sizes().first
+        width: column_sizes().first + 58
         marginRight: column_sizes().gutter
         display: 'flex'
 
       if add_new
 
-        SPAN null, 
+        SPAN 
+          style: 
+            minWidth: 78
+
           A
             style: 
-              textDecoration: 'underline'
-              fontSize: 20
+              fontSize: 14
               color: focus_color()
               fontFamily: customization('font')
               fontStyle: 'normal'
@@ -1328,7 +594,12 @@ window.list_actions = (props) ->
 
               wait_for()
 
-            translator "engage.add_new_proposal_to_list", 'add new'
+            '+ '
+
+            SPAN 
+              style: 
+                textDecoration: 'underline'
+              translator "engage.add_new_proposal_to_list", 'add new'
 
       if props.can_sort && add_new
         SPAN 
@@ -1352,7 +623,8 @@ window.list_actions = (props) ->
 
     OpinionViews
       style: 
-        width: column_sizes().second
+        width: if ONE_COL() then 400 else column_sizes().second
+
       more_views_positioning: 'right'
 
       additional_width: column_sizes().gutter + column_sizes().first
@@ -1361,10 +633,7 @@ window.list_actions = (props) ->
 
 
 window.get_list_title = (list_key, include_category_value, subdomain) -> 
-  edit_list = fetch "edit-#{list_key}"
-
-  title = (edit_list.editing and edit_list.list_title)
-  title ?= customization('list_title', list_key, subdomain)
+  title = customization('list_title', list_key, subdomain)
   if include_category_value
     title ?= category_value list_key, null, subdomain
 
@@ -1378,136 +647,172 @@ window.get_list_title = (list_key, include_category_value, subdomain) ->
 
 category_value = (list_key, fresh, subdomain) -> 
 
-  edit_list = fetch "edit-#{list_key}"
-  category = if edit_list.editing then edit_list.list_category
-  category ?= customization('list_category', list_key, subdomain)
+  category = customization('list_category', list_key, subdomain)
   if !category && !customization(list_key, null, subdomain) && !fresh # if we haven't customized this list, take the proposal category
     category ?= list_key.substring(5)
   category ?= translator 'engage.default_proposals_list', 'Proposals'
   category
 
 
-histo_title = (list_key) -> 
-  edit_list = fetch "edit-#{list_key}"
-  opinion_title = if edit_list.editing then edit_list.list_opinions_title
-  if !opinion_title? 
-    opinion_title = customization('list_opinions_title', list_key)
-  if !opinion_title?
-    opinion_title = translator 'engage.header.Opinions', 'Opinions'
-  opinion_title
-
-
-GearIcon = (opts) ->
-  SVG 
-    height: opts.size or '100px' 
-    width: opts.size or '100px'  
-    fill: opts.fill or "#888" 
-    x: "0px" 
-    y: "0px" 
-    viewBox: "0 0 100 100"  
-    dangerouslySetInnerHTML: __html: '<path d="M95.784,59.057c1.867,0,3.604-1.514,3.858-3.364c0,0,0.357-2.6,0.357-5.692c0-3.092-0.357-5.692-0.357-5.692  c-0.255-1.851-1.991-3.364-3.858-3.364h-9.648c-1.868,0-3.808-1.191-4.31-2.646s-1.193-6.123,0.128-7.443l6.82-6.82  c1.32-1.321,1.422-3.575,0.226-5.01L80.976,11c-1.435-1.197-3.688-1.095-5.01,0.226l-6.82,6.82c-1.32,1.321-3.521,1.853-4.888,1.183  c-1.368-0.67-5.201-3.496-5.201-5.364V4.217c0-1.868-1.514-3.604-3.364-3.859c0,0-2.6-0.358-5.692-0.358s-5.692,0.358-5.692,0.358  c-1.851,0.254-3.365,1.991-3.365,3.859v9.648c0,1.868-1.19,3.807-2.646,4.31c-1.456,0.502-6.123,1.193-7.444-0.128l-6.82-6.82  C22.713,9.906,20.459,9.804,19.025,11L11,19.025c-1.197,1.435-1.095,3.689,0.226,5.01l6.819,6.82  c1.321,1.321,1.854,3.521,1.183,4.888s-3.496,5.201-5.364,5.201H4.217c-1.868,0-3.604,1.514-3.859,3.364c0,0-0.358,2.6-0.358,5.692  c0,3.093,0.358,5.692,0.358,5.692c0.254,1.851,1.991,3.364,3.859,3.364h9.648c1.868,0,3.807,1.19,4.309,2.646  c0.502,1.455,1.193,6.122-0.128,7.443l-6.819,6.819c-1.321,1.321-1.423,3.575-0.226,5.01L19.025,89  c1.435,1.196,3.688,1.095,5.009-0.226l6.82-6.82c1.321-1.32,3.521-1.853,4.889-1.183c1.368,0.67,5.201,3.496,5.201,5.364v9.648  c0,1.867,1.514,3.604,3.365,3.858c0,0,2.599,0.357,5.692,0.357s5.692-0.357,5.692-0.357c1.851-0.255,3.364-1.991,3.364-3.858v-9.648  c0-1.868,1.19-3.808,2.646-4.31s6.123-1.192,7.444,0.128l6.819,6.82c1.321,1.32,3.575,1.422,5.01,0.226L89,80.976  c1.196-1.435,1.095-3.688-0.227-5.01l-6.819-6.819c-1.321-1.321-1.854-3.521-1.183-4.889c0.67-1.368,3.496-5.201,5.364-5.201H95.784  z M50,68.302c-10.108,0-18.302-8.193-18.302-18.302c0-10.107,8.194-18.302,18.302-18.302c10.108,0,18.302,8.194,18.302,18.302  C68.302,60.108,60.108,68.302,50,68.302z"></path>'
-
-
 window.get_all_lists = ->
-  proposals = fetch '/proposals'
-  all_lists = ("list/#{(p.cluster or 'Proposals').trim()}" for p in proposals.proposals)
+  all_lists = []
+
+  # Give primacy to specified order of lists in tab config or ordered_list customization
+  subdomain = fetch('/subdomain')
+  if get_tabs()
+    for tab in get_tabs()
+      all_lists = all_lists.concat (l for l in tab.lists when l != '*' && l != '*-')
+  else if customization 'lists'
+    all_lists = (l for l in customization('lists') when l != '*' && l != '*-')
 
   # lists might also just be defined as a customization, without any proposals in them yet
-  subdomain = fetch('/subdomain')
   subdomain_name = subdomain.name?.toLowerCase()
   config = customizations[subdomain_name]
   for k,v of config 
     if k.match( /list\// )
       all_lists.push k
 
+  proposals = fetch '/proposals'
+  all_lists = all_lists.concat("list/#{(p.cluster or 'Proposals').trim()}" for p in proposals.proposals)
+
   all_lists = _.uniq all_lists
   all_lists
 
 
+window.get_list_sort_method = (tab) ->
+  tab ?= get_current_tab_name()
+  get_tab(tab)?.list_sort_method or customization('list_sort_method') or \
+    (if customization('lists') || get_tabs() then 'fixed' else 'newest_item')
+
+
 
 lists_ordered_by_most_recent_update = {}
+lists_ordered_by_randomized = {}
+
+window.get_lists_for_page = (tab) -> 
+  homepage_tabs = fetch 'homepage_tabs'
+  tab ?= get_current_tab_name()
+  tabs_config = get_tabs()
+
+  if tabs_config
+    eligible_lists = get_tab(tab).lists
+  else
+    eligible_lists = customization 'lists'
+    if eligible_lists && '*-' in eligible_lists
+      console.error "Illegal wildcard *- in lists customization"
+      
+
+  if !eligible_lists
+    eligible_lists = ['*']
+
+  ##################################################
+  # lists_in_tab will be the list_keys for the tab, in the specified 
+  # fixed order, with wildcards substituted
+
+  lists_in_tab = []
+
+  for list in eligible_lists
+
+    if list == '*' || (list == '*-' && !tabs_config)
+      for ll in get_all_lists()
+        if ll not in eligible_lists
+          lists_in_tab.push ll      
+
+    # '*-' matches all lists that are not already referenced in other tabs
+    else if list == '*-'
+      referenced_elsewhere = {}
+
+      for a_tab in tabs_config
+        continue if a_tab.name == tab
+        for ll in a_tab.lists 
+          if ll != '*' && ll != '*-'
+            referenced_elsewhere[ll] = true
+
+      for ll in get_all_lists()
+        if ll not of referenced_elsewhere && ll not in eligible_lists
+          lists_in_tab.push ll
+
+    else 
+      lists_in_tab.push list
 
 
-window.proposals_in_lists = -> 
+
+  ######################################################
+  # now we'll flesh the lists out with proposals
   proposals = fetch '/proposals'
-  homepage_list_order = customization 'homepage_list_order'
-  if homepage_list_order.length == 0 && customization('homepage_tabs')
-    homepage_list_order = []
-    for tab in get_tabs()
-      homepage_list_order = homepage_list_order.concat tab.lists
+  lists_with_proposals = {}
 
-  # By default sort proposals by the newest of the proposals.
-  # But we'll only do this on page load, so that clusters don't move
-  # around when someone adds a new proposal.
-  if Object.keys(lists_ordered_by_most_recent_update).length == 0
-    for proposal in proposals.proposals 
-      list_key = "list/#{(proposal.cluster or 'Proposals').trim()}"
-      time = (new Date(proposal.created_at).getTime())
-      if !lists_ordered_by_most_recent_update[list_key] || time > lists_ordered_by_most_recent_update[list_key]
-        lists_ordered_by_most_recent_update[list_key] = time 
-
-  lists = {}
-  sort_order = {}
-
-  for list_key in get_all_lists()
-    sort = homepage_list_order.indexOf list_key
-    if sort < 0 
-      if lists_ordered_by_most_recent_update[list_key]
-        sort = homepage_list_order.length + ((new Date()).getTime() - lists_ordered_by_most_recent_update[list_key])
-      else 
-        sort = 9999999999999
-
-    sort_order[list_key] = sort
-
-    lists[list_key] = 
+  for list_key in lists_in_tab
+    lists_with_proposals[list_key] = 
       key: list_key
       proposals: []
 
   for proposal in proposals.proposals 
     list_key = "list/#{(proposal.cluster or 'Proposals').trim()}"
-    lists[list_key].proposals.push proposal
-
-  # order
-  ordered_lists = _.values lists 
-  ordered_lists.sort (a,b) -> sort_order[a.key] - sort_order[b.key]
-  ordered_lists 
+    if list_key of lists_with_proposals
+      lists_with_proposals[list_key].proposals.push proposal
 
 
-window.lists_for_tab = (tab) -> 
-  all_lists = proposals_in_lists()
-  homepage_tabs = fetch 'homepage_tabs'
-  tabs_config = get_tabs()
+  ######################################################
+  # ...and finally, let's sort the lists if there's a different sorted order other than fixed
 
-  eligible_lists = null
-  if !tab || !tabs_config
-    tab = homepage_tabs.filter
-    eligible_lists = homepage_tabs.clusters
-  else 
-    for a_tab in tabs_config
-      if a_tab.name == tab  
-        eligible_lists = a_tab.lists
+  list_sort_method = get_list_sort_method(tab)
 
-  if !eligible_lists && tab != 'Show all'
-    console.error "No eligible lists found for #{tab}"
+  lists_in_order = (lists_with_proposals[list_key] for list_key in lists_in_tab) # this is already fixed sort
 
-  if tab == 'Show all' || !tab
-    lists_in_tab = all_lists
+  if list_sort_method == 'newest_item'
 
-  else
-    lists_in_tab = []
-    for list in all_lists or []
-      ineligible = tab && (eligible_lists != '*' && !(list.key in (eligible_lists or [])) )
+    # Sort lists by the newest of its proposals.
+    # But we'll only do this on page load or if the number of lists has changed, 
+    # so that lists don't move around when someone adds a new proposal.
+    lists_ordered_by_most_recent_update[tab] ?= {}
+    by_recency = lists_ordered_by_most_recent_update[tab]
 
-      if ineligible && ('*' in (eligible_lists or []))
-        in_others = []
-        for a_tab in tabs_config
-          in_others = in_others.concat a_tab.lists
-        ineligible &&= list.key in in_others
-      if !ineligible
-        lists_in_tab.push list 
+    if Object.keys(by_recency).length != lists_in_order.length
+      for lst in lists_in_order 
+        by_recency[lst.key] = -1 # in case there aren't any proposals in it
+        for proposal in lst.proposals 
+          time = (new Date(proposal.created_at).getTime())
+          if !by_recency[lst.key] || time > by_recency[lst.key]
+            by_recency[lst.key] = time 
 
-  lists_in_tab
+    for lst in lists_in_order
+      if by_recency[lst.key] && by_recency[lst.key] > 0
+        lst.order = (new Date()).getTime() - by_recency[lst.key]
+      else 
+        lst.order = 9999999999999
 
+    lists_in_order.sort (a,b) -> a.order - b.order
+
+  else if list_sort_method == 'randomized'
+    lists_ordered_by_randomized[tab] ?= {}
+    by_random = lists_ordered_by_randomized[tab]
+    if Object.keys(by_random).length != lists_in_order.length
+      for lst in lists_in_order
+        by_random[lst.key] = Math.random()
+
+    for lst in lists_in_order
+      if by_random[lst.key]
+        lst.order = by_random[lst.key]
+      else 
+        lst.order = 9999999999999
+
+    lists_in_order.sort (a,b) -> a.order - b.order
+
+
+  lists_in_order
+
+
+window.get_proposals_in_list = (list_key) -> 
+  proposals = fetch '/proposals'
+
+  (p for p in proposals.proposals when "list/#{(p.cluster or 'Proposals').trim()}" == list_key)
+
+
+window.get_list = (list_key) ->
+  lst = _.extend {}, customization(list_key),
+    key: list_key
+    proposals: get_proposals_in_list(list_key)
 
 window.lists_current_user_can_add_to = (lists) -> 
   appendable = []
@@ -1515,6 +820,17 @@ window.lists_current_user_can_add_to = (lists) ->
     if permit('create proposal', list_key) > 0
       appendable.push list_key 
   appendable
+
+
+
+
+
+
+
+
+
+
+
 
 
 

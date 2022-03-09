@@ -30,10 +30,7 @@ window.GoogleTranslate = ReactiveComponent
         position: 'absolute'
         left: @local.left 
         top: @local.top
-        zIndex: 999
-      # SCRIPT 
-      #   type: 'text/javascript'
-      #   src: 'https://translate.google.com/translate_a/element.js' 
+        zIndex: 9
            
       DIV 
         key: "google_translate_element_#{@local.key}"

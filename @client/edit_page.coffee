@@ -260,10 +260,6 @@ window.EditPage = ReactiveComponent
                       BUTTON 
                         className: 'disaggregate like_link'
                         onClick: disaggregate_wildcard
-                        onKeyPress: (e) -> 
-                          if e.which == 13 || e.which == 32 # ENTER or SPACE
-                            e.preventDefault()
-                            e.target.click()
 
                         'disaggregate'
 
@@ -277,11 +273,6 @@ window.EditPage = ReactiveComponent
                         e.stopPropagation()
                         @local.edit_list = lst
                         save @local
-
-                      onKeyPress: (e) -> 
-                        if e.which == 13 || e.which == 32 # ENTER or SPACE
-                          e.preventDefault()
-                          e.target.click()
 
                       edit_icon 18, 18, '#888'
 
@@ -297,10 +288,6 @@ window.EditPage = ReactiveComponent
                         @ordered_lists.splice( @ordered_lists.indexOf(lst), 1  )
                         delete_list(lst)
 
-                      onKeyPress: (e) => 
-                        if e.which == 13 || e.which == 32 # ENTER or SPACE
-                          e.preventDefault()
-                          e.target.click()
                       trash_icon 23, 23, '#888'
 
 
@@ -321,10 +308,6 @@ window.EditPage = ReactiveComponent
             onClick: =>
               @local.add_new_list = true 
               save @local
-            onKeyPress: (e) => 
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                e.preventDefault()
-                e.target.click()
             "+ "  
             SPAN 
               style: 
@@ -350,10 +333,6 @@ window.EditPage = ReactiveComponent
             onClick: (e) => 
               @local.show_all_options = true 
               save @local
-            onKeyPress: (e) => 
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                e.preventDefault()
-                e.target.click()
             'Show more options'
         else 
           DIV null, 
@@ -409,10 +388,6 @@ window.EditPage = ReactiveComponent
                 save @local
                 save edit_forum
 
-            onKeyDown: (e) =>
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                e.target.click()
-                e.preventDefault()
             "Change to a \"Show all\" page"
 
           DIV 
@@ -433,10 +408,6 @@ window.EditPage = ReactiveComponent
                 @ordered_lists.splice(0, @ordered_lists.length)
                 save edit_forum()
 
-            onKeyDown: (e) =>
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                e.target.click()
-                e.preventDefault()
             "Change to an \"About\" page"    
           DIV 
             style: 
@@ -597,10 +568,6 @@ window.EditPage = ReactiveComponent
             subdomain.customizations.homepage_default_tab = @props.page_name
             save subdomain
 
-          onKeyDown: (e) =>
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              e.target.click()
-              e.preventDefault()
           "Set to default landing page"
 
         DIV 

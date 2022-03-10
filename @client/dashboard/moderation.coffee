@@ -170,9 +170,7 @@ window.ModerationDash = ReactiveComponent
                   marginBottom: if active then -1
 
                 onClick: => select_class(model)
-                onKeyPress: (e) => 
-                  if e.which in [13, 32]
-                    select_class(model); e.preventDefault()
+
                 "#{if model == 'Proposal' then 'Review ' else ''}#{model}s"
 
                 if model != 'Ban'
@@ -220,11 +218,6 @@ window.ModerationDash = ReactiveComponent
                       fontSize: 14
                       fontWeight: if active then 700
                       color: if active then 'black' else '#666'
-
-                    onKeyPress: (e) => 
-                      if e.which in [13, 32]
-                        e.target.click()
-                        e.preventDefault()
 
                     onClick: => 
                       @local.show_category = definition.name 
@@ -685,9 +678,11 @@ DirectMessage = ReactiveComponent
           min_height: 75
           style: text_style
 
-      Button {}, 
+      BUTTON
+        className: "btn"
+        onClick: @submitMessage
         'Send'
-        @submitMessage
+        
       BUTTON 
         style: 
           marginLeft: 8

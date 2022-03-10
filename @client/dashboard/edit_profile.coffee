@@ -95,10 +95,6 @@ window.EditProfile = ReactiveComponent
 
       BUTTON 
         className: "btn #{if @local.submitting then 'disabled' else ''}"
-        onKeyPress: (event) =>
-          # submit on enter
-          if event.which == 13 # enter
-            on_submit(event)
         onClick: on_submit
 
         translator 'shared.save_changes_button', 'Save changes'

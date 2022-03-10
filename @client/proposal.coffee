@@ -431,10 +431,6 @@ window.Proposal = ReactiveComponent
                   onClick: => 
                     @local.show_all_points = true 
                     save @local
-                  onKeyPress: (e) => 
-                    if e.which in [13,32]
-                      @local.show_all_points = true 
-                      save @local
 
                   TRANSLATE
                     id: "engage.show_all_thoughts"
@@ -736,10 +732,6 @@ DecisionBoard = ReactiveComponent
             borderRadius: 16
             fontSize: 24
           onClick: => updateProposalMode('results', 'save_button') 
-          onKeyDown: (e) => 
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              updateProposalMode('results', 'save_button')  
-              e.preventDefault()
           'aria-label': translator 'engage.update_opinion_button', 'Show the results'
 
           translator 'engage.update_opinion_button', 'Show the results'
@@ -755,10 +747,6 @@ DecisionBoard = ReactiveComponent
             BUTTON 
               className:'cancel_opinion_button primary_cancel_button'
               onClick: => updateProposalMode('results', 'cancel_button')
-              onKeyDown: (e) => 
-                if e.which == 13 || e.which == 32 # ENTER or SPACE
-                  updateProposalMode('results', 'cancel_button')
-                  e.preventDefault()
 
               
 
@@ -777,10 +765,6 @@ DecisionBoard = ReactiveComponent
                 textDecoration: 'underline'
               className:'cancel_opinion_button primary_cancel_button'
               onClick: remove_opinion
-              onKeyDown: (e) => 
-                if e.which == 13 || e.which == 32 # ENTER or SPACE
-                  remove_opinion()
-                  e.preventDefault()
 
               translator "engage.remove_my_opinion", 'Remove my opinion'
 

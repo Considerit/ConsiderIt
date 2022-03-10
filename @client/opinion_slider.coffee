@@ -153,15 +153,12 @@ window.OpinionSlider = ReactiveComponent
         margin: 'auto'
         position: 'relative'
 
-      A 
+      BUTTON
+        className: 'like_link'
         style: _.extend style, 
           left: (slider.value + 1) / 2 * @props.width - s.width / 2 - 10
 
         onClick: => save_opinion(@proposal)
-        onKeyDown: (e) => 
-          if e.which == 13 || e.which == 32 # ENTER or SPACE
-            save_opinion(@proposal)
-            e.preventDefault()
 
         notice 
 

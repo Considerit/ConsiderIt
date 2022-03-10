@@ -174,10 +174,6 @@ window.AvatarPopover = ReactiveComponent
                   paddingLeft: 8 
                   # color: focus_color()
                 onClick: toggle_reasons
-                onKeyDown: (e) =>
-                  if e.which == 13 || e.which == 32 # ENTER or SPACE
-                    toggle_reasons(e)  
-                    e.preventDefault() 
                 if @local.show_reasons                 
                   translator 'avatar_popover.hide_reasons', 'Hide reasons'
                 else 

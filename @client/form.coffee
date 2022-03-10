@@ -6,16 +6,22 @@
 require './shared'
 require './dock'
 
-window.Button = (props, text, callback) ->
-  props.className = 'btn'
-  props.onClick = callback
-  props.onKeyDown = (e) -> 
-    if e.which == 13 || e.which == 32 # ENTER or SPACE
-      callback(e)
-      e.stopPropagation()
-      e.preventDefault()
 
-  BUTTON props, text
+old_BUTTON = BUTTON
+window.BUTTON = React.createClass
+  displayName: 'modified_BUTTON'
+  render: -> 
+    new_props = {}
+    for k,v of @props
+      new_props[k] = v
+
+    if new_props.onClick && !new_props.onKeyDown && !new_props.onKeyPress
+      new_props.onKeyPress = (e) -> 
+        if e.which == 13 || e.which == 32 # ENTER or SPACE
+          e.target.click()
+          e.stopPropagation()
+          e.preventDefault()
+    old_BUTTON new_props
 
 
 # moving cursor to end of input

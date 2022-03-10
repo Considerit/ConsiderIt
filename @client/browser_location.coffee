@@ -62,6 +62,7 @@ window.loadPage = (url, query_params) ->
 
 old_A = A
 window.A = React.createClass
+  displayName: 'modified_A'
   render : -> 
 
     props = @props

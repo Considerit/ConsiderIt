@@ -60,7 +60,7 @@ window.EditComment = ReactiveComponent
             if permitted == Permission.NOT_LOGGED_IN
               reset_key 'auth', 
                 form: 'login'
-                goal: 'To participate, please introduce yourself below.'
+                goal: ''
             else if permitted == Permission.UNVERIFIED_EMAIL
               reset_key 'auth', 
                 form: 'verify email'
@@ -130,17 +130,15 @@ window.EditComment = ReactiveComponent
 
       if permitted > 0
 
-        Button 
-        
+        BUTTON 
+          className: "btn"
           style: 
             marginLeft: 60
             padding: '8px 16px'
             fontSize: if browser.is_mobile then 24
           'data-action': 'save-comment'
-
-          translator "engage.save_comment_button", 'Save comment'
           
-          (e) =>
+          onClick: (e) =>
             e.stopPropagation()
             if @props.fresh
               comment =
@@ -166,3 +164,6 @@ window.EditComment = ReactiveComponent
                 $(@refs.comment_input.getDOMNode()).val('')            
                 @local.new_comment = null
                 save @local
+
+          translator "engage.save_comment_button", 'Save comment'
+

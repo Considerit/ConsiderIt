@@ -121,10 +121,6 @@ window.GroupedProposalNavigation = (args) ->
                             cursor: 'pointer'
                             position: 'relative'
 
-                          onKeyDown: (e) -> 
-                            if e.which == 13 || e.which == 32 # ENTER or SPACE
-                              toggle_list list.key
-                              e.preventDefault()
                           onClick: -> 
                             toggle_list list.key
                             document.activeElement.blur()

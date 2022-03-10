@@ -319,11 +319,6 @@ UploadableLogo = (opts) ->
           padding: 0
           zIndex: 1
 
-        onKeyDown: (e) => 
-          if e.which == 13 || e.which == 32 # ENTER or SPACE
-            e.target.click()
-            e.preventDefault()
-
         onClick: ->
           document.querySelector(opts.trigger_delete).click()
 
@@ -369,10 +364,6 @@ UploadableLogo = (opts) ->
           zIndex: 1
         onClick: ->
           document.querySelector(opts.trigger_upload).click()
-        onKeyDown: (e) => 
-          if e.which == 13 || e.which == 32 # ENTER or SPACE
-            e.target.click()
-            e.preventDefault()
 
         UploadFileSVG
           height: icon_height
@@ -538,11 +529,6 @@ CustomizeLogo = ReactiveComponent
               onClick: ->
                 document.querySelector('input#logo').click()
 
-              onKeyDown: (e) => 
-                if e.which == 13 || e.which == 32 # ENTER or SPACE
-                  e.target.click()
-                  e.preventDefault()
-
               translator 'banner.change_logo', 'change'
 
 
@@ -701,11 +687,6 @@ CustomizeBackground = ReactiveComponent
             onClick: ->
               document.querySelector('input#masthead').click()
 
-            onKeyDown: (e) => 
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                e.target.click()
-                e.preventDefault()
-
             DIV
               style: 
                 margin: 'auto'
@@ -756,12 +737,6 @@ CustomizeBackground = ReactiveComponent
                       @local.background_css = DEFAULT_BACKGROUND_COLOR
                       save @local
                       document.querySelector('button#delete_masthead').click()
-
-                    onKeyDown: (e) => 
-                      if e.which == 13 || e.which == 32 # ENTER or SPACE
-                        e.target.click()
-                        e.stopPropagation()
-                        e.preventDefault()
 
                     'remove'
 
@@ -926,10 +901,6 @@ window.EditBanner = ReactiveComponent
         id: 'delete_masthead'
         style: 
           display: 'none '
-        onKeyDown: (e) =>
-          if e.which == 13 || e.which == 32 # ENTER or SPACE
-            delete_masthead(e)  
-            e.preventDefault()
 
       if edit_banner.logo_preview != '*delete*' && (edit_banner.logo_preview || customization('banner')?.logo?.url)
 
@@ -938,10 +909,6 @@ window.EditBanner = ReactiveComponent
           onClick: delete_logo
           style: 
             display: 'none'
-          onKeyDown: (e) =>
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              e.target.click()
-              e.preventDefault()
 
   exit_edit: ->
     edit_banner = fetch 'edit_banner'

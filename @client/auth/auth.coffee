@@ -126,7 +126,7 @@ window.AuthTransition = ReactiveComponent
       reset_key 'auth',
         key: 'auth'
         form: if subdomain.SSO_domain then 'edit profile' else 'create account via invitation'
-        goal: 'To participate, please introduce yourself below.'
+        goal: ''
 
       if subdomain.SSO_domain
         loadPage '/dashboard/edit_profile'
@@ -346,12 +346,6 @@ window.AuthForm =
             BUTTON
               className: 'AUTH_cancel floating'
               title: translator 'shared.cancel_button', 'cancel'
-
-              onKeyDown: (e) => 
-                if e.which == 13 || e.which == 32 # ENTER or SPACE
-                  e.target.click()
-                  e.preventDefault()
-
               onClick: cancel_modal
 
               DIV 
@@ -385,10 +379,6 @@ window.AuthForm =
             BUTTON
               className: "btn AUTH_submit_button #{if @local.submitting then 'disabled'}"
               onClick: options.on_submit
-              onKeyDown: (e) => 
-                if e.which == 13 || e.which == 32 # ENTER or SPACE
-                  e.target.click()
-                  e.preventDefault()
               
               options.submit_button or @i18n().submit_button 
 
@@ -403,11 +393,6 @@ window.AuthForm =
             #       ref: 'cancel_dialog'
             #       className: 'AUTH_cancel embedded'
             #       title: translator 'shared.cancel_button', 'cancel'
-
-            #       onKeyDown: (e) => 
-            #         if e.which == 13 || e.which == 32 # ENTER or SPACE
-            #           e.target.click()
-            #           e.preventDefault()
 
             #       onClick: cancel_modal
 

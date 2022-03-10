@@ -50,10 +50,6 @@ toggle_modes = ->
           setTimeout =>
             $('#user_email')[0].focus()
           , 0
-        onKeyDown: (e) => 
-          if e.which == 13 || e.which == 32 # ENTER or SPACE
-            e.target.click()
-            e.preventDefault()
 
         toggle_to
 
@@ -149,11 +145,6 @@ window.Login = ReactiveComponent
           fontWeight: 700
 
         onClick: reset
-        onKeyDown: (e) =>
-          if e.which == 13 || e.which == 32 # ENTER or SPACE
-            reset(e)  
-            e.preventDefault()
-
 
         translator('auth.forgot_password.link', 'Help! I forgot my password') 
 

@@ -141,11 +141,6 @@ window.List = ReactiveComponent
                 list_state.show_all_proposals = true
                 save list_state
 
-              onKeyPress: (e) -> 
-                if e.which == 13 || e.which == 32 # ENTER or SPACE
-                  e.preventDefault()
-                  e.target.click()
-
               SPAN 
                 style: 
                   textDecoration: 'underline'
@@ -403,11 +398,6 @@ window.NewList = ReactiveComponent
           @local.editing = true 
           save @local
 
-        onKeyDown: (e) => 
-          if e.which == 13 || e.which == 32 # ENTER or SPACE
-            e.target.click()
-            e.preventDefault()              
-
         H1
           className: 'LIST-header'
           style: 
@@ -476,10 +466,6 @@ EditableTitle = ReactiveComponent
               'aria-label': "#{title}. #{translator('Expand or collapse list.')}"
               'aria-pressed': !is_collapsed
 
-              onKeyDown: if !list_uncollapseable then (e) -> 
-                if e.which == 13 || e.which == 32 # ENTER or SPACE
-                  toggle_list()
-                  e.preventDefault()
               onClick: if !list_uncollapseable then (e) -> 
                 toggle_list()
                 document.activeElement.blur()

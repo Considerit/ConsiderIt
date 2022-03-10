@@ -73,11 +73,6 @@ window.DefaultFooter = ReactiveComponent
 
           #   BUTTON 
           #     onClick: -> scrollTo 0, 0
-          #     onKeyPress: (e) -> 
-          #       if e.which == 13 || e.which == 32 # ENTER or SPACE
-          #         e.preventDefault()
-          #         scrollTo 0, 0
-
           #     style: _.extend {}, big_button(), 
           #       backgroundColor: '#717171'
 

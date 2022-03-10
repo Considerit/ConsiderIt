@@ -397,10 +397,6 @@ window.Point = ReactiveComponent
 
             onTouchEnd: includePoint
             onClick: includePoint
-            onKeyDown: (e) => 
-              if e.which == 13 || e.which == 32
-                includePoint(e)
-                e.preventDefault()
 
             I
               className: 'fa fa-thumbs-o-up'
@@ -828,9 +824,7 @@ window.Discussion = ReactiveComponent
       BUTTON
         'aria-label': 'close point' 
         onClick: close_point
-        onKeyDown: (e) -> 
-          if e.which == 13 || e.which == 32 
-            close_point(e)
+
 
         style: 
           position: 'absolute'

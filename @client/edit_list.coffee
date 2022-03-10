@@ -627,10 +627,6 @@ window.ModalNewList = ReactiveComponent
                     onClick: (e) => 
                       @local.show_all_options = true 
                       save @local
-                    onKeyPress: (e) => 
-                      if e.which == 13 || e.which == 32 # ENTER or SPACE
-                        e.preventDefault()
-                        e.target.click()
                     'Show more options'
                 else 
                   DIV null, 
@@ -681,10 +677,6 @@ window.ModalNewList = ReactiveComponent
               backgroundColor: focus_color()
             disabled: (edit_list.list_title or "").length == 0
             onClick: submit
-            onKeyDown: (e) =>
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                e.target.click()
-                e.preventDefault()
 
             translator 'engage.save_changes_button', 'Save'
 
@@ -697,10 +689,6 @@ window.ModalNewList = ReactiveComponent
               position: 'relative'
               top: 2
             onClick: cancel_edit
-            onKeyDown: (e) =>
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                e.target.click()
-                e.preventDefault()
 
             translator 'shared.cancel_button', 'cancel'
 

@@ -159,11 +159,6 @@ window.IntakeQuestions = ReactiveComponent
                   onClick: => 
                     intake_q_state.editing = q
                     save intake_q_state
-                  onKeyPress: (e) -> 
-                    if e.which == 13 || e.which == 32 # ENTER or SPACE
-                      e.preventDefault()
-                      intake_q_state.editing = q
-                      save intake_q_state
 
                   edit_icon 23, 23, '#888'
 
@@ -179,10 +174,6 @@ window.IntakeQuestions = ReactiveComponent
                     right: -36
                     cursor: 'pointer'
                   onClick: -> delete_question(q)
-                  onKeyPress: (e) -> 
-                    if e.which == 13 || e.which == 32 # ENTER or SPACE
-                      e.preventDefault()
-                      delete_question(q)
                   trash_icon 23, 23, '#888'
 
 
@@ -191,11 +182,6 @@ window.IntakeQuestions = ReactiveComponent
           onClick: -> 
             intake_q_state.new_question = true 
             save intake_q_state
-          onKeyPress: (e) -> 
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              e.preventDefault()
-              intake_q_state.new_question = true 
-              save intake_q_state
 
           "+ question"
 
@@ -562,20 +548,12 @@ window.EditIntakeQuestion = ReactiveComponent
             backgroundColor: if !validated then '#aaa'
             cursor: if !validated then 'not-allowed'
 
-          onKeyPress: (e) -> 
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              e.preventDefault()
-              save_question()
           'Save'
 
 
         BUTTON 
           className: 'like_link'
           onClick: close_modal
-          onKeyPress: (e) -> 
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              e.preventDefault()
-              close_modal()
           'cancel'
 
 

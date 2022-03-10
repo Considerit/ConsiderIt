@@ -175,12 +175,6 @@ window.ProfileMenu = ReactiveComponent
                       show_dash_modal.showing = config
                       save show_dash_modal
 
-                    onKeyPress: (e) -> 
-                      if e.which == 13 || e.which == 32 # ENTER or SPACE
-                        e.preventDefault()
-                        e.target.click()
-
-
                     config.name
 
 
@@ -210,10 +204,6 @@ window.ProfileMenu = ReactiveComponent
               onClick: (e) =>
                 reset_key 'auth',
                   form: 'create account'
-              onKeyPress: (e) -> 
-                if e.which == 13 || e.which == 32 # ENTER or SPACE
-                  e.preventDefault()
-                  e.target.click()
 
               translator "shared.auth.sign_up", "Sign up"
 
@@ -223,10 +213,6 @@ window.ProfileMenu = ReactiveComponent
               onClick: (e) =>
                 reset_key 'auth',
                   form: 'login'
-              onKeyPress: (e) -> 
-                if e.which == 13 || e.which == 32 # ENTER or SPACE
-                  e.preventDefault()
-                  e.target.click()
 
               style: 
                 color: if !light_background then 'white'

@@ -797,10 +797,6 @@ OpinionViews = ReactiveComponent
       BUTTON 
         className: 'like_link'
         onClick: toggle_expanded
-        onKeyDown: (e) => 
-          if e.which == 13 || e.which == 32 # ENTER or SPACE
-            toggle_expanded(e)
-            e.preventDefault()
         style: 
           fontSize: 12
           color: "#868686"
@@ -974,10 +970,6 @@ InteractiveOpinionViews = ReactiveComponent
                     title: if shortened then attribute.name
                     className: "filter opinion_view_button #{if opinion_views_ui.activated_attributes[attribute.key] then 'active' else ''}"
                     onClick: -> toggle_attribute_visibility(attribute)
-                    onKeyDown: (e) => 
-                      if e.which == 13 || e.which == 32 # ENTER or SPACE
-                        toggle_attribute_visibility(attribute)
-                        e.preventDefault()
 
                     if attribute.icon 
                       SPAN 
@@ -1053,10 +1045,6 @@ InteractiveOpinionViews = ReactiveComponent
             BUTTON
               className: 'attribute_close'
               onClick: -> toggle_attribute_visibility(attribute)
-              onKeyDown: (e) => 
-                if e.which == 13 || e.which == 32 # ENTER or SPACE
-                  toggle_attribute_visibility(attribute)
-                  e.preventDefault()
 
               'x'
 
@@ -1151,10 +1139,6 @@ InteractiveOpinionViews = ReactiveComponent
                   className: "weight opinion_view_button #{if activated_weights[weight.key] then 'active' else ''}"
                   onClick: ->
                     toggle_weight weight
-                  onKeyDown: (e) -> 
-                    if e.which == 13 || e.which == 32 # ENTER or SPACE
-                      toggle_weight weight
-                      e.preventDefault()
 
                   if weight.icon
                     weight.icon if activated_weights[weight.key] then 'white'
@@ -1344,12 +1328,6 @@ NonInteractiveOpinionViews = ReactiveComponent
                   mini.toggle()
                   if !user_has_set_a_view()
                     reset_to_all()
-                onKeyDown: (e) -> 
-                  if e.which == 13 || e.which == 32 # ENTER or SPACE
-                    mini.toggle()
-                    if !user_has_set_a_view()
-                      reset_to_all()
-                    e.preventDefault()
 
                 'x'
 
@@ -1761,10 +1739,6 @@ window.ToggleButtons = (items, view_state, style) ->
           BUTTON
             disabled: item.disabled 
             onClick: (e) -> toggled(e, item) 
-            onKeyDown: (e) -> 
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                toggled(e, item)
-                e.preventDefault()
 
             item.label
 

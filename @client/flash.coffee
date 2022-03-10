@@ -92,10 +92,6 @@ window.Flash = ReactiveComponent
 
           BUTTON 
             onClick: clear_flash
-            onKeyDown: (e) =>
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                clear_flash() 
-                e.preventDefault()
             'x'
 
 

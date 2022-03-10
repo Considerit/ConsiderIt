@@ -269,11 +269,6 @@ AddRolesAndInvite = ReactiveComponent
             save @local
             e.preventDefault()
             e.stopPropagation()
-          onKeyPress: (e) ->
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              e.preventDefault()
-              e.target.click()
-
 
           @props.add_button
 
@@ -394,11 +389,6 @@ ModalAddRolesAndInvite = ReactiveComponent
           BUTTON 
             onClick: => 
               processNewFolks()
-            onKeyDown: (e) => 
-              if e.which == 13
-                e.target.click()
-                e.preventDefault()
-
             style: 
               display: 'inline-block'
             'add'
@@ -441,10 +431,6 @@ ModalAddRolesAndInvite = ReactiveComponent
             onClick: =>
               @local.send_email_invite = !@local.send_email_invite
               save @local
-            onKeyDown: (e) => 
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                e.target.click()
-                e.preventDefault()
 
 
           'Send email invitation'
@@ -470,11 +456,6 @@ ModalAddRolesAndInvite = ReactiveComponent
             backgroundColor: focus_color()
             cursor: if @local.added.length == 0 then 'default'
             opacity: if @local.added.length == 0 then 0.5
-
-          onKeyDown: (e) => 
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              e.target.click()
-              e.preventDefault()
 
           onClick: (e) => 
 
@@ -507,10 +488,6 @@ ModalAddRolesAndInvite = ReactiveComponent
             position: 'relative'
             top: 2
 
-          onKeyDown: (e) => 
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              e.target.click()
-              e.preventDefault()
           onClick: @props.done_callback
           'cancel'
 

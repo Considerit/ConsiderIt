@@ -49,10 +49,6 @@ window.EditForum = ReactiveComponent
             borderRadius: 8
             cursor: 'pointer'
           onClick: enter_edit
-          onKeyDown: (e) =>
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              enter_edit(e)  
-              e.preventDefault()
 
           translator 'forum.edit_button', 'Edit Banner & Forum Structure'
     else
@@ -75,10 +71,6 @@ window.EditForum = ReactiveComponent
               borderRadius: 8
               padding: '4px 8px'
             onClick: stop_editing_forum
-            onKeyDown: (e) =>
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                stop_editing_forum()  
-                e.preventDefault()
 
             translator 'shared.done_editing', 'Done Editing Forum'
 

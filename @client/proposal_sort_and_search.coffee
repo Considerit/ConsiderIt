@@ -630,10 +630,6 @@ ManualProposalResort = ReactiveComponent
         'data-tooltip': if !browser.is_mobile then translator "engage.sort_order.out-of-order-tooltip", "A re-sort may be needed because someone else added or updated their opinion, or you selected an opinion view that filtered or weighed opinions differently."
 
         onClick: invalidate_proposal_sorts
-        onKeyDown: (e) => 
-          if e.which == 13 || e.which == 32 # ENTER or SPACE
-            invalidate_proposal_sorts()
-            e.preventDefault()
 
         SVG 
           width: 17

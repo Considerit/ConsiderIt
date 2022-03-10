@@ -427,10 +427,6 @@ window.Tab = ReactiveComponent
       onMouseLeave: => 
         @local.hovering = null 
         save @local
-      onKeyDown: (e) => 
-        if e.which == 13 || e.which == 32 # ENTER or SPACE
-          e.currentTarget.click() 
-          e.preventDefault()
       onClick: =>
         return if tab.demo && !tab.add_new
 
@@ -528,10 +524,6 @@ window.Tab = ReactiveComponent
             cursor: 'pointer'
           onClick: ->
             delete_tab tab.name
-          onKeyPress: (e) -> 
-            if e.which == 13 || e.which == 32 # ENTER or SPACE
-              e.preventDefault()
-              e.target.click()
           trash_icon 15, 15, '#888'
 
       if featured 

@@ -268,10 +268,6 @@ window.ModalDash = ReactiveComponent
         style: 
           marginTop: 36
         onClick: @props.done_callback
-        onKeyPress: (e) -> 
-          if e.which == 13 || e.which == 32 # ENTER or SPACE
-            e.preventDefault()
-            e.target.click()
 
         'Done'
 

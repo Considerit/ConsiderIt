@@ -721,9 +721,10 @@ time, mark, audio, video {
   font-family: FontAwesome;  
 }
 
-#content, body, html {
+#content, body, html, .full_height {
   height: 100%;
 }
+
 button {
   line-height: 1.4;
 }

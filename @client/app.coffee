@@ -190,8 +190,8 @@ Page = ReactiveComponent
     access_granted = @accessGranted()
 
     DIV
+      className: 'full_height'
       style: 
-        height: '100%'
         display: 'flex' # this flex stuff forces the height to at least be size of viewport
         flexDirection: 'column'
       'aria-hidden': if auth.form then true
@@ -293,6 +293,7 @@ Root = ReactiveComponent
     fonts = customization('font')
     header_fonts = customization('header_font') or fonts
     DIV 
+      className: 'full_height'
       # Track whether the user is currently swipping. Used to determine whether
       # a touchend event should trigger a click on a link.
       # TODO: I'd like to have this defined at a higher level  
@@ -305,7 +306,6 @@ Root = ReactiveComponent
 
       style: 
         width: DOCUMENT_WIDTH()
-        height: '100%'
 
       
       onClick: @resetSelection
@@ -340,9 +340,8 @@ Root = ReactiveComponent
         
 
         DIV 
-          style:
-            overflowX: 'hidden'
-            # height: '100%'
+          className: 'full_height'
+          
 
           if fetch('auth').form
             Auth()

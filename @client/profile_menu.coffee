@@ -45,7 +45,7 @@ window.ProfileMenu = ReactiveComponent
       id: 'user_nav'
       style: _.defaults {}, (customization('profile_menu_style') or {}), (@props.style or {}),
         position: 'absolute'
-        zIndex: 99999999999
+        zIndex: 999
         right: 30
         fontSize: 26
         top: 17

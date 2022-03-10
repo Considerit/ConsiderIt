@@ -61,6 +61,7 @@ window.GoogleTranslate = ReactiveComponent
     # of an element with a class of google-translate-candidate-container
     @placer_int = setInterval =>
       wrapper = document.querySelector '.google-translate-candidate-container'
+      return if !wrapper
       coords = getCoords(wrapper)
       if coords.left != @local.left || coords.top != @local.top
         @local.left = coords.left

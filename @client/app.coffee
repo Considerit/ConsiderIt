@@ -342,7 +342,7 @@ Root = ReactiveComponent
         DIV 
           style:
             overflowX: 'hidden'
-            height: '100%'
+            # height: '100%'
 
           if fetch('auth').form
             Auth()

@@ -721,7 +721,7 @@ time, mark, audio, video {
   font-family: FontAwesome;  
 }
 
-body, html {
+#content, body, html {
   height: 100%;
 }
 button {

@@ -190,6 +190,10 @@ Page = ReactiveComponent
     access_granted = @accessGranted()
 
     DIV
+      style: 
+        height: '100%'
+        display: 'flex' # this flex stuff forces the height to at least be size of viewport
+        flexDirection: 'column'
       'aria-hidden': if auth.form then true
       
       STYLE 
@@ -201,10 +205,13 @@ Page = ReactiveComponent
 
       MAIN 
         role: 'main'
+        className: if loc.url == '/' then 'main_background'
         style: 
           position: 'relative'
           # zIndex: 1
           margin: 'auto'
+          flexGrow: 1
+          width: '100%'
 
 
 
@@ -298,6 +305,7 @@ Root = ReactiveComponent
 
       style: 
         width: DOCUMENT_WIDTH()
+        height: '100%'
 
       
       onClick: @resetSelection
@@ -333,8 +341,8 @@ Root = ReactiveComponent
 
         DIV 
           style:
-            # backgroundColor: 'white'
             overflowX: 'hidden'
+            height: '100%'
 
           if fetch('auth').form
             Auth()

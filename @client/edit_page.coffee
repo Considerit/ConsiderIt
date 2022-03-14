@@ -386,7 +386,6 @@ window.EditPage = ReactiveComponent
 
                 @local.type = PAGE_TYPES.ALL
                 save @local
-                save edit_forum
 
             "Change to a \"Show all\" page"
 
@@ -404,9 +403,8 @@ window.EditPage = ReactiveComponent
             onClick: => 
               if @ordered_lists.length == 0 || confirm "Are you sure you want to convert this page? You may want to move the existing lists to a different tab first."            
                 @local.type = PAGE_TYPES.ABOUT
-                save @local
                 @ordered_lists.splice(0, @ordered_lists.length)
-                save edit_forum()
+                save @local
 
             "Change to an \"About\" page"    
           DIV 
@@ -591,7 +589,6 @@ window.EditPage = ReactiveComponent
 
 
   saveIfChanged: ->
-    edit_forum = fetch 'edit_forum'
     customizations = fetch('/subdomain').customizations
 
     fields = ['list_sort_method', 'page_preamble']

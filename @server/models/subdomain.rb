@@ -1,4 +1,5 @@
 class Subdomain < ApplicationRecord
+  belongs_to :user, :foreign_key => 'created_by'
   has_many :proposals, :dependent => :destroy
   has_many :points, :dependent => :destroy
   has_many :opinions, :dependent => :destroy

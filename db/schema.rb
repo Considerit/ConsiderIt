@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_15_232919) do
+ActiveRecord::Schema.define(version: 2022_03_12_030842) do
 
   create_table "comments", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "commentable_id", default: 0
@@ -110,7 +110,6 @@ ActiveRecord::Schema.define(version: 2021_04_15_232919) do
     t.boolean "is_pro"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer "num_inclusions"
     t.float "score"
     t.float "appeal"
     t.boolean "published", default: true
@@ -195,6 +194,8 @@ ActiveRecord::Schema.define(version: 2021_04_15_232919) do
     t.string "SSO_domain", collation: "utf8_general_ci"
     t.integer "moderation_policy", default: 0
     t.json "digest_triggered_for"
+    t.integer "created_by"
+    t.index ["created_by"], name: "fk_rails_46999ec1f4"
     t.index ["name"], name: "by_identifier", length: 10
   end
 
@@ -228,10 +229,12 @@ ActiveRecord::Schema.define(version: 2021_04_15_232919) do
     t.json "emails"
     t.boolean "complete_profile", default: false
     t.string "lang"
+    t.integer "paid_forums", default: 0
     t.index ["avatar_file_name"], name: "index_users_on_avatar_file_name"
     t.index ["email"], name: "index_users_on_email"
     t.index ["registered"], name: "index_users_on_registered"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", length: 3
   end
 
+  add_foreign_key "subdomains", "users", column: "created_by"
 end

@@ -31,8 +31,8 @@ gem 'kt-paperclip'
 #############
 # BACKGROUND PROCESSING / EMAIL
 gem 'whenever' # https://github.com/javan/whenever
-gem 'delayed_job', :git => 'git://github.com/collectiveidea/delayed_job.git' 
-gem 'delayed_job_active_record', :git => 'git://github.com/collectiveidea/delayed_job_active_record.git'
+gem 'delayed_job', :git => 'https://github.com/collectiveidea/delayed_job' 
+gem 'delayed_job_active_record', :git => 'https://github.com/collectiveidea/delayed_job_active_record'
 gem "daemons" # for the daemonize method used in bin/delayed_job
 gem 'rubyzip'
 

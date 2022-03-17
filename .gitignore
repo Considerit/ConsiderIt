@@ -54,5 +54,8 @@ lib/tasks/lists.csv
 lib/tasks/customizations
 lib/tasks/extract_customizations.rake
 
+@client/product_page
+@server/controllers/product_page_controller.rb
+
 package-lock.json
 *_scrap.*

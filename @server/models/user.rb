@@ -67,10 +67,7 @@ class User < ApplicationRecord
       needs_to_verify: ['bitcoin', 'bitcoinclassic', 'bch'].include?(current_subdomain.name) && \
                                self.registered && !self.verified,
       completed_host_questions: has_answered_all_required_host_questions,
-      paid_forums: if is_admin? then paid_forums else 0
-
-      # facebook_uid: facebook_uid,
-      # google_uid: google_uid
+      paid_forums: if is_admin? then paid_forums else 0 end
 
     }
 

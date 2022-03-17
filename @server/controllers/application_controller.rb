@@ -101,6 +101,8 @@ protected
 
     if rq.subdomain && rq.subdomain.length > 0 
       candidate_subdomain = Subdomain.find_by_name(rq.subdomain)
+    elsif APP_CONFIG[:product_page_installed]
+      candidate_subdomain = Subdomain.find_by_name 'homepage'
     end
 
     if params[:domain]
@@ -371,7 +373,9 @@ protected
   end
 
   def dirty_proposals(real_user)
-    dirty_key '/proposals'
+    if current_subdomain.name != 'homepage'
+      dirty_key '/proposals'
+    end
   end
 
   

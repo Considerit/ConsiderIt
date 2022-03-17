@@ -11,7 +11,6 @@
 # - user questions
 
 require '../browser_location' # for loadPage
-require '../bubblemouth'
 require '../customizations'
 require '../shared'
 require '../modal'

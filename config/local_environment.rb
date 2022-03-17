@@ -7,8 +7,13 @@ end
 
 def load_local_environment()
   local_config = YAML.load_file "config/local_environment.yml"
-  recursive_symbolize_keys! local_config
-  return local_config[:default]
+
+  if defined?(local_config.symbolize_keys!)
+    recursive_symbolize_keys! local_config
+    return local_config[:default]
+  else 
+    return local_config["default"]
+  end
 end
 
 APP_CONFIG = load_local_environment()

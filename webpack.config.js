@@ -30,7 +30,7 @@
 
 
 var fs = require('fs')
-
+var path = require('path')
 
 /////
 // Entry points
@@ -43,13 +43,23 @@ entry_points = {
   web_worker: './@client/web_worker'
 }
 
+var compile_product = fs.existsSync( path.resolve(__dirname, "@client", "product_page") ) 
+if (compile_product) {
+  entry_points.product_page = './@client/product_page/product_page.coffee'
+  entry_points.product_page_dependencies = './@client/_product_page_dependencies.coffee'  
+}
+
 ////////////////////////////////////////
 // Innards
 
 var webpack = require('webpack'),
-    path = require('path'), 
     is_dev = !JSON.parse(process.env.BUILD_PRODUCTION || 'false'),
     directory = __dirname;
+
+var loader_paths = [path.resolve(__dirname, "@client")]
+if (compile_product) {
+  loader_paths.push(fs.realpathSync(path.resolve(__dirname, "@client/product_page")))
+}
 
 config = {
 
@@ -67,17 +77,24 @@ config = {
     filename: is_dev ? "[name].js" : "[name].[chunkhash].js"
   },
 
+
   module: {
 
     // Enables compilation of coffee into javascript
     loaders: [
-      { test: /\.coffee$/, loader: 'coffee-loader', include: path.resolve(__dirname, "@client") },
+      { test: /\.coffee$/, loader: 'coffee-loader', include: loader_paths },
     ],
 
   },
 
   resolve: {
-    root: [directory, '@client'].join('/'),
+    root: [[directory, '@client'].join('/')],
+    extensions: ['', '.js', '.json', '.coffee'] 
+           // don't have to specify .js etc in requires statements
+  },
+
+  resolveLoader: {
+    root: [[directory, '@client'].join('/'), path.resolve(__dirname, "node_modules")],
     extensions: ['', '.js', '.json', '.coffee'] 
            // don't have to specify .js etc in requires statements
   },

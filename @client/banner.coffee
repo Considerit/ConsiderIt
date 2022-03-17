@@ -1374,60 +1374,6 @@ window.ShortHeader = (opts) ->
           opts.text
 
 
-# The old image banner + optional text description below
-window.LegacyImageHeader = (opts) ->
-  subdomain = fetch '/subdomain'   
-  loc = fetch 'location'    
-  homepage = loc.url == '/'
-
-  return SPAN null if !subdomain.name
-
-  opts ||= {}
-  _.defaults opts, 
-    background_color: customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
-    background_image_url: customization('banner')?.background_image_url
-    text: customization('banner')?.title
-    external_link: subdomain.external_project_url
-
-  if !opts.background_image_url
-    throw 'LegacyImageHeader can\'t be used without a masthead'
-
-  is_light = is_light_background()
-    
-  DIV null,
-
-    IMG 
-      alt: opts.background_image_alternative_text
-      src: opts.background_image_url
-      style: 
-        width: '100%'
-
-    if homepage && opts.external_link 
-      A
-        href: opts.external_link
-        style: 
-          display: 'block'
-          position: 'absolute'
-          left: 10
-          top: 17
-          color: if !is_light then 'white'
-          fontSize: 18
-
-        '< project homepage'
-
-    else 
-      back_to_homepage_button
-        position: 'relative'
-        marginLeft: 20
-        display: 'inline-block'
-        color: if !is_light then 'white'
-        verticalAlign: 'middle'
-        marginTop: 5
-
-     
-    if opts.text
-      H1 style: {color: 'white', margin: 'auto', fontSize: 60, fontWeight: 700, position: 'relative', top: 50}, 
-        opts.text
 
 
 window.HawaiiHeader = (opts) ->

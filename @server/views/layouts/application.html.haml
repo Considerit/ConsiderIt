@@ -1,5 +1,5 @@
 
-- cache ['application_layout', @app, @page, @is_search_bot, current_user.super_admin, current_subdomain] do 
+- cache ['application_layout', @app, @page, @is_search_bot, current_user.super_admin, current_user.is_admin?, current_subdomain] do 
 
   !!! 5
 
@@ -25,7 +25,7 @@
 
       %meta{ :content => 'text/html; charset=UTF-8', "http-equiv" => "Content-Type" }
 
-      %meta{ :name => "app", :content => 'franklin'}
+      %meta{ :name => "app", :content => @app}
 
       %meta{ :http_equiv => "X-UA-Compatible", :content => "IE=edge,chrome=1" }
 
@@ -41,18 +41,23 @@
       //android
       // %link{ :rel => "icon", :sizes => "196x196", :href => "#{Rails.application.config.action_controller.asset_host}/images/apple-touch-icon.png"} 
       
+      - if !@is_search_bot
+
+
+        %link{ :rel => "preconnect", :href => "https://fonts.gstatic.com" }
+        %link{ :rel => "preconnect", :href => "https://fonts.googleapis.com" }
+        %link{ :rel => "preconnect", :href => "https://fonts.gstatic.com", :crossorigin => ""}
+
+        - if @app == 'product_page'
+          %link{ :href => "https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:wght@200;400;700;800;900&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap", :rel => 'preload', :as => 'style' }
+
+          %link{ :href => "https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:wght@200;400;700;800;900&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap", :rel => 'stylesheet' }
+          
+        - else 
+          %link{ :href => "https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap", :rel => "stylesheet"}
 
       %link{:href => "https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css", :rel => "stylesheet"}
 
-      - if !@is_search_bot
-
-        %link{ :rel => "preconnect", :href => "https://fonts.googleapis.com" }
-        %link{ :rel => "preconnect", :href => "https://fonts.gstatic.com", :crossorigin => ""}
-        %link{ :href => "https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap", :rel => "stylesheet"}
-
-      /[if lte IE 8]
-        %script{:type => "text/javascript"}
-          window.location = "http://windows.microsoft.com/en-us/internet-explorer/download-ie";
 
 
       - if current_subdomain.name == 'RANDOM2015'
@@ -115,6 +120,9 @@
           }
         }
 
+      - if @js_dependencies
+        %script{:src => @js_dependencies, :type => 'text/javascript'}
+
       %script{:src => @js, :type => 'text/javascript'}
 
 
@@ -124,11 +132,6 @@
         %link{:rel => 'stylesheet', :href => 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/codemirror.min.css'}
         %script{:src => 'https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.5.3/jsoneditor.min.js', :type => 'text/javascript'}
         %link{:rel => 'stylesheet', :href => 'https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.5.3/jsoneditor.min.css'}
-
-
-
-
-
 
 
 
@@ -143,9 +146,9 @@
           m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
           })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-        - if APP_CONFIG[:google_analytics] != ''
+        - if @google_analytics_code != ''
           :javascript
-            ga('create', '#{APP_CONFIG[:google_analytics]}', 'consider.it', {'name': 'considerit'});
+            ga('create', '#{@google_analytics_code}', 'consider.it', {'name': 'considerit'});
             ga('considerit.send', 'pageview');
 
 
@@ -153,3 +156,7 @@
           :javascript
             ga('create', '#{current_subdomain.google_analytics_code}', 'auto', {'name': 'customer'});
             ga('customer.send', 'pageview');
+
+      - if current_user.is_admin? || current_user.super_admin
+        %script{:src => "https://js.stripe.com/v3/"}
+

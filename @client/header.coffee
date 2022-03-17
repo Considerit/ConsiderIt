@@ -53,8 +53,8 @@ window.Header = ReactiveComponent
         if is_homepage
           EditBanner()
 
-        if is_homepage && (customization('HomepageHeader') or customization('SiteHeader'))
-          (customization('HomepageHeader') or customization('SiteHeader')).apply(@)
+        if is_homepage
+          (customization('HomepageHeader') or customization('SiteHeader') or PhotoBanner).apply(@)
         else
           ShortHeader
             background: 'white'

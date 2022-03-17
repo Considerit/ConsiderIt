@@ -170,14 +170,12 @@ window.CustomizationTransition = ReactiveComponent
 
 
 
-require './color'
-require './logo'
+# require './color'
+# require './logo'
+# require './shared'
+
 require './browser_location' # for loadPage
-require './shared'
-require './footer'
 require './slider'
-require './header'
-require './homepage'
 require './customizations_helpers'
 
 
@@ -230,15 +228,11 @@ customizations.default =
   font: "Montserrat, 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
   header_font: "Montserrat, 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
 
-  SiteHeader : PhotoBanner
-  SiteFooter : DefaultFooter
-
   new_proposal_fields: -> 
    name:  translator("engage.edit_proposal.summary_label", "Summary")
    description: translator("engage.edit_proposal.description_label", "Details") + " (#{translator('optional')})" 
    additional_fields: []
    create_description: (fields) -> fields.description
-
 
 
 
@@ -256,6 +250,62 @@ masthead_only = ["kamakakoi","seattletimes","kevin","ihub","SilverLakeNC",\
                  "citySENS","alcala","MovilidadCDMX","deus_ex","neuwrite","bitesizebio","HowScienceIsMade","SABF", \
                  "engagedpublic","sabfteam","Tunisia","theartofco","SGU","radiolab","ThisLand", \
                  "Actuality", 'cimsec', 'sosh', 'swotconsultants']
+
+
+# The old image banner + optional text description below
+LegacyImageHeader = (opts) ->
+  subdomain = fetch '/subdomain'   
+  loc = fetch 'location'    
+  homepage = loc.url == '/'
+
+  return SPAN null if !subdomain.name
+
+  opts ||= {}
+  _.defaults opts, 
+    background_color: customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
+    background_image_url: customization('banner')?.background_image_url
+    text: customization('banner')?.title
+    external_link: subdomain.external_project_url
+
+  if !opts.background_image_url
+    throw 'LegacyImageHeader can\'t be used without a masthead'
+
+  is_light = is_light_background()
+    
+  DIV null,
+
+    IMG 
+      alt: opts.background_image_alternative_text
+      src: opts.background_image_url
+      style: 
+        width: '100%'
+
+    if homepage && opts.external_link 
+      A
+        href: opts.external_link
+        style: 
+          display: 'block'
+          position: 'absolute'
+          left: 10
+          top: 17
+          color: if !is_light then 'white'
+          fontSize: 18
+
+        '< project homepage'
+
+    else 
+      back_to_homepage_button
+        position: 'relative'
+        marginLeft: 20
+        display: 'inline-block'
+        color: if !is_light then 'white'
+        verticalAlign: 'middle'
+        marginTop: 5
+
+     
+    if opts.text
+      H1 style: {color: 'white', margin: 'auto', fontSize: 60, fontWeight: 700, position: 'relative', top: 50}, 
+        opts.text
 
 
 for sub in text_and_masthead

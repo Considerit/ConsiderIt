@@ -55,7 +55,18 @@ class HtmlController < ApplicationController
     manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})
 
     
-    @js = "/#{manifest['franklin']}"
+    if current_subdomain.name == 'homepage'
+      @app = "product_page"
+      @google_analytics_code = APP_CONFIG[:google_analytics_product]
+      @js_dependencies = "/#{manifest['product_page_dependencies']}"
+    else 
+      @app = "franklin"
+      @google_analytics_code = APP_CONFIG[:google_analytics]
+      @js_dependencies = nil
+    end 
+
+    @js = "/#{manifest[@app]}"
+
     @vendor = ''
 
     if Rails.application.config.action_controller.asset_host
@@ -90,12 +101,22 @@ class HtmlController < ApplicationController
     
     proposal = nil
     keywords = title = nil
-    google_verification = nil
+    google_verification = APP_CONFIG[:google_site_verification]
 
     @favicon = "/favicon.ico"
 
     # subdomain defaults
     case current_subdomain.name
+
+    when 'homepage'
+      title = 'Consider.it'
+      image = "#{request.protocol}#{view_context.asset_path('images/product_page/galacticfederation.png').gsub(/\/\//,'')}"
+      #image = "#{request.protocol}#{view_context.asset_path('images/product_page/logo.png').gsub(/\/\//,'')}"
+
+      description = "A web forum that elevates your community's opinions. Civil and organized discussion even when hundreds of stakeholders participate. "
+      keywords = "opinion visualization,community engagement,public engagement,public involvement,discussion,forum,feedback,decision making,governance,feedback,collect feedback,deliberation,impact assessment,strategic planning,process improvement,stakeholder committee,listening"
+      
+
     when 'newblueplan'
       title = 'New Blue Plan for Retaking Washington'
       image = "#{request.protocol}#{view_context.asset_path('images/wa-dems/activity.png').gsub(/\/\//,'')}"

@@ -50,7 +50,7 @@ class SubdomainController < ApplicationController
       errors.push "You must specify a forum name"
     end 
 
-    existing = Subdomain.find_by_name(subdomain)
+    existing = Subdomain.find_by_name(subdomain) || ['aeb', 'cs', 'de', 'en', 'es', 'fr', 'heb', 'hu', 'mi', 'nl', 'pt', 'sk'].index(subdomain) || subdomain.start_with?('oauth-')
     if existing
       errors.push "That forum already exists. Please choose a different name."
     end 
@@ -67,6 +67,7 @@ class SubdomainController < ApplicationController
       roles['admin'].push "/user/#{current_user.id}"
       roles['visitor'].push "*"
       new_subdomain.roles = roles
+      new_subdomain.created_by = current_user
 
       if params[:sso_domain]
         new_subdomain.SSO_domain = params[:sso_domain]
@@ -74,36 +75,57 @@ class SubdomainController < ApplicationController
       new_subdomain.save
 
       set_current_tenant new_subdomain
-
-      # Seed a new proposal
-      proposal = Proposal.new({
-        subdomain_id: new_subdomain.id, 
-        slug: 'considerit_can_help', 
-               # if you change the slug, be sure to update the 
-               # welcome_new_customer email template
-        name: 'Consider.it can help me',
-        description: '',
-        user: current_user,
-        cluster: 'Test question',
-        active: true,
-        published: true, 
-        moderation_status: 1,
-        roles: {
-          "editor": ["/user/#{current_user.id}"],
-          "participant":["*"],
-          "observer":["*"]
+      # create a sample list
+      customizations = {
+        "list/initial": {
+          "list_title": "How do you want Consider.it to help you?",
+          "list_description": "This is an example topic with a set of responses. Experiment with these however you want. When you’re done, you can delete the entire topic by accessing the gear icon above. Use the “Create new topic” button below to create more topics. And don't forget to edit the banner at the top of the page to introduce people to the forum and give it your desired look and feel!",
+          "list_category": "",
+          "list_opinions_title": "",
+          "slider_pole_labels": {
+            "support": 'Important to me',
+            "oppose": 'Unimportant'
+          },
+          "show_proposer_icon": false
         }
-      })
-      proposal.save
+      }
 
-      opinion = Opinion.create!({
-        published: true,         
-        user: current_user,
-        subdomain_id: new_subdomain.id, 
-        proposal: proposal,
-        stance: 0.0,
-        point_inclusions: []
-      })
+      new_subdomain.customizations = customizations
+
+      new_subdomain.save
+
+      set_current_tenant new_subdomain
+
+       # Seed new proposals in sample list       
+      proposals = ['Collect feedback from many stakeholders', 'Help me make decisions with peers', 'Talk with peers about things we care about', 'Help people get on the same page', 'Something else']
+
+      proposals.each do |proposal_name|
+        proposal = Proposal.new({
+          subdomain_id: new_subdomain.id, 
+          slug: proposal_name.gsub(' ', '-').downcase,
+          name: proposal_name,
+          description: '',
+          user: current_user,
+          cluster: 'initial',
+          active: true,
+          published: true, 
+          moderation_status: 1,
+          roles: {
+            "editor": ["/user/#{current_user.id}"]
+          }
+        })
+        proposal.save
+
+        opinion = Opinion.create!({
+          published: true,         
+          user: current_user,
+          subdomain_id: new_subdomain.id, 
+          proposal: proposal,
+          stance: 0.0
+        })
+      end 
+
+      
       current_user.add_to_active_in new_subdomain
 
       set_current_tenant(Subdomain.find_by_name('homepage'))

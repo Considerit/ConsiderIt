@@ -36,6 +36,7 @@ gem 'delayed_job_active_record', :git => 'https://github.com/collectiveidea/dela
 gem "daemons" # for the daemonize method used in bin/delayed_job
 gem 'rubyzip'
 
+
 #############
 # i18n
 gem 'message_format'
@@ -49,6 +50,17 @@ gem 'bootsnap', require: false
 
 # for importing from google sheets
 gem 'google-api-client'
+
+require "./config/local_environment.rb"
+APP_CONFIG = load_local_environment()
+
+if APP_CONFIG["product_page_installed"]
+  # for payments
+  gem 'stripe'
+
+  # for contact
+  gem 'mailgun-ruby'
+end 
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators

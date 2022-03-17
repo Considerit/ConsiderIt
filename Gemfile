@@ -51,10 +51,14 @@ gem 'bootsnap', require: false
 # for importing from google sheets
 gem 'google-api-client'
 
-require "./config/local_environment.rb"
-APP_CONFIG = load_local_environment()
 
-if APP_CONFIG["product_page_installed"]
+
+
+require 'yaml'
+
+local_config = YAML.load_file "./config/local_environment.yml"
+
+if local_config["default"]["product_page_installed"]
   # for payments
   gem 'stripe'
 

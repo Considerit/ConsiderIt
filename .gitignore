@@ -50,6 +50,10 @@ Vagrantfile
 public/images
 export.rake
 
+@client/product_page
+@server/controllers/product_page_controller.rb
+
+
 lib/tasks/lists.csv
 lib/tasks/customizations
 lib/tasks/extract_customizations.rake

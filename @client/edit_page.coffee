@@ -1,4 +1,4 @@
-
+require "./tabs"
 
 styles += """
   [data-widget="EditPage"] .radio_group {

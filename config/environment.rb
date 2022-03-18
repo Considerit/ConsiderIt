@@ -76,7 +76,7 @@ def _sanitize_str(str, old)
       pp "**old"
       pp old
       pp "**string"
-      pp string
+      pp str
       pp "**adjusted"
       pp adjusted_str
     end

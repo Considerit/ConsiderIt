@@ -298,19 +298,17 @@ window.ProposalDescription = ReactiveComponent
               style:
                 marginRight: 10
                 color: '#999'
-                backgroundColor: 'white'
                 border: 'none'
                 padding: 0
               TRANSLATE 'engage.edit_button', 'edit'
 
             if permit('delete proposal', proposal) > 0
               BUTTON
+                className: 'like_link'
                 style:
                   marginRight: 10
                   color: '#999'
-                  backgroundColor: 'white'
-                  border: 'none'
-                  padding: 0
+                  fontWeight: 600
 
                 onClick: => 
                   if confirm('Delete this proposal forever?')

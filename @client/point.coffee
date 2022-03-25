@@ -607,7 +607,10 @@ styles += """
 .point_details_tease a, .point_details a {
   text-decoration: underline;
   word-break: break-all; }
-.point_details a.select_point{text-decoration: none;}
+.point_details a.select_point{
+  text-decoration: none;
+  font-weight: 400;
+}
 
 .point_details {
   display: block; }
@@ -615,7 +618,9 @@ styles += """
 .point_details_tease {
   cursor: pointer; }
   .point_details_tease a.select_point {
-    text-decoration: none; }
+    text-decoration: none; 
+    font-weight: 400;    
+    }
     .point_details_tease a.select_point:hover {
       text-decoration: underline; }
 

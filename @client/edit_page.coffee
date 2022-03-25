@@ -632,6 +632,7 @@ window.EditPage = ReactiveComponent
       @ordered_lists.splice to, 0, moving
 
       save edit_forum
+      save fetch('/subdomain') # required to get the new order saved via @ordered_lists
 
     drag_data = fetch 'list/tab_drag'
 

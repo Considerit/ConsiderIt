@@ -95,40 +95,55 @@ protected
     end
   end
 
+
+  # Some cases to handle: 
+  #   1) looking up domain when a subdomain is set
+  #   2) defaulting to product domain when at the base domain name
+  #   3) changing subdomains via ?domain= parameter in development
+  #   4) defaulting to the previously used subdomain in development
+  #      where a subdomain in the request is absent
+  #   5) when trying to access a subdomain that doesn't exist, 
+  #      redirect to the product domain create-a-forum page
   def get_current_subdomain
     rq = request
     candidate_subdomain = nil 
+    subdomain_sought = nil 
 
-    if rq.subdomain && rq.subdomain.length > 0 
-      candidate_subdomain = Subdomain.find_by_name(rq.subdomain)
-    elsif APP_CONFIG[:product_page_installed]
-      candidate_subdomain = Subdomain.find_by_name 'homepage'
+    if rq.subdomain && rq.subdomain.length > 0  # case 1
+      subdomain_sought = rq.subdomain
+    elsif params[:domain] # case 3
+      subdomain_sought = params[:domain]
+    elsif !Rails.env.development? && APP_CONFIG[:product_page_installed]  # case 2
+      subdomain_sought = 'homepage'
+    elsif Rails.env.development? && session[:default_subdomain] # case 4
+      subdomain_sought = session[:default_subdomain]
     end
 
-    if params[:domain]
-      session[:default_subdomain] = Subdomain.find_by_name(params[:domain]).id
-    end 
+    candidate_subdomain = Subdomain.find_by_name(subdomain_sought)
 
-    if !candidate_subdomain 
 
-      if Rails.env.development? && rq.host.split('.').length > 1
-        candidate_subdomain = Subdomain.find_by_name(rq.host.split('.')[0])
-      end 
+    if !candidate_subdomain # case 5
 
-      if !candidate_subdomain 
-        begin
-          default_subdomain = session.fetch(:default_subdomain, 1)
-          candidate_subdomain = Subdomain.find(default_subdomain)
-        rescue ActiveRecord::RecordNotFound
+      if APP_CONFIG[:product_page_installed]
+        candidate_subdomain = Subdomain.find_by_name 'homepage'
+        set_current_tenant(candidate_subdomain) if candidate_subdomain
+
+        redirect_to "#{request.protocol}#{request.host_with_port}/create_forum?forum=#{subdomain_sought}"
+
+        if Rails.env.development?
+          session[:default_subdomain] = candidate_subdomain.name
+        end
+        
+      else
+        candidate_subdomain = Subdomain.first
+        if !candidate_subdomain
           # create a subdomain if one doesn't yet exist
-          if Subdomain.count == 0
-            new_subdomain = Subdomain.new name: "test"
-            new_subdomain.save
-          end
-          candidate_subdomain = Subdomain.first
+          new_subdomain = Subdomain.new name: "test"
+          new_subdomain.save
+          candidate_subdomain = new_subdomain
         end
       end
-    end
+    end 
 
     set_current_tenant(candidate_subdomain) if candidate_subdomain
     current_subdomain

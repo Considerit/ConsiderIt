@@ -23,7 +23,7 @@ ConsiderIt::Application.routes.draw do
 
   ######
   ## Development dashboard
-  get '/change_subdomain/:id' => 'developer#change_subdomain'
+  get '/change_subdomain/:name' => 'developer#change_subdomain'
 
   ###########
   # Third party oauth routes. These go before 

@@ -777,7 +777,8 @@ b, strong { font-weight: bold; }
 a {
   color: inherit;
   cursor: pointer;
-  text-decoration: none; }
+  text-decoration: underline; 
+  font-weight: 600;}
   a:focus {
   }
   a:active {

@@ -773,6 +773,7 @@ DecisionBoard = ReactiveComponent
   componentDidUpdate : ->
     @transition()
     @makeDroppable()
+    @update_reasons_height()
 
   componentDidMount : ->
     @transition()
@@ -817,8 +818,10 @@ DecisionBoard = ReactiveComponent
 
   update_reasons_height: -> 
     s = fetch('reasons_height_adjustment')
-    s.opinion_region_height = $(@getDOMNode()).height()
-    save s
+    h = $(@getDOMNode()).height()
+    if h != s.opinion_region_height
+      s.opinion_region_height = h
+      save s
 
   transition : -> 
     return if @is_waiting()

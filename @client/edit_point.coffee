@@ -189,6 +189,10 @@ window.EditPoint = ReactiveComponent
       $el.find('#nutshell').focus() if !browser.is_mobile # iOS messes this up
       $el.find('[data-action="submit-point"]').ensureInView {scroll: false, position: 'bottom'}
 
+      s = fetch('reasons_height_adjustment')
+      s.edit_point_height = $el.height()  
+      save s
+
   componentWillUnmount : -> 
     s = fetch('reasons_height_adjustment')
     s.edit_point_height = 0       

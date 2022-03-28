@@ -62,7 +62,7 @@ get_list_padding = ->
 
   "#{top}px #{right}px #{bottom}px #{left}px"
 
-list_link = (list_key) ->
+window.list_link = (list_key) ->
   list_key.substring(5).toLowerCase().replace(/ /g, '_')
 
 window.List = ReactiveComponent

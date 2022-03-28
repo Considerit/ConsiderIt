@@ -29,7 +29,7 @@ class ImportDataController < ApplicationController
         directly_extractable: ['name', 'email', 'tags']
       },
       'proposals' => {
-        required_fields: ['topic|title', 'user'],
+        required_fields: ['title'],
         directly_extractable: ['description', 'cluster', 'seo_title', 'seo_description', 'seo_keywords', 'json']
       },
       'opinions' => {
@@ -111,7 +111,7 @@ class ImportDataController < ApplicationController
           end
 
           # Find each required relational object
-          if config[:required_fields].include? 'user'
+          if config[:required_fields].include?('user') || row.has_key?('user')
             user = nil 
             if row['user']
               user = User.find_by_email(row['user'].downcase)
@@ -178,10 +178,25 @@ class ImportDataController < ApplicationController
 
           when 'proposals'
 
-            title = row.fetch('title', false) || row.fetch('topic', false)
-            list = row.fetch('list', false) || row.fetch('cluster', false)
+            title = row.fetch('title', false)
+            list = row.fetch('topic', false) || row.fetch('list', false) || row.fetch('cluster', false)
+
+            if !user 
+              user = current_user
+            end
 
             next if !title
+
+            if list
+              customizations = current_subdomain.customization_json
+              customizations.each do |k,v|
+                if k.match( /list\// )
+                  if v.has_key?('list_title') && v['list_title'] == list
+                    list = k.split('/')[-1]
+                  end
+                end
+              end
+            end
 
             slug = nil 
             if row.has_key? 'url'

@@ -45,6 +45,11 @@ require './viewport_visibility_sensor'
 require './icons'
 require './google_translate'
 
+try 
+  require './product_page/payment'
+catch
+  console.error 'no product page code'
+
 
 
 ## ########################
@@ -153,6 +158,18 @@ LocationTransition = ReactiveComponent
   displayName: 'locationTransition'
   render : -> 
     loc = fetch 'location'
+
+    if loc.url == '/' && loc.query_params.edit_forum
+      edit_forum = fetch 'edit_forum'
+      edit_forum.editing = true
+      save edit_forum      
+      delete loc.query_params.edit_forum
+      save loc
+
+
+    if loc.query_params.flash
+      show_flash loc.query_params.flash, 3000
+      delete loc.query_params.flash
 
     if @last_location != loc.url 
 
@@ -356,14 +373,15 @@ Root = ReactiveComponent
       Popover()
       Flash()
 
-
       do -> 
-        app = fetch('/application')      
-        if app.dev
-          Development()
+        app = fetch('/application')   
 
-        if current_user.is_super_admin || app.su
-          SU()
+        DIV null, 
+          if app.dev
+            Development()
+
+          if current_user.is_super_admin || app.su
+            SU()
 
   resetSelection: (e) ->
     # TODO: This is ugly. Perhaps it would be better to have components 

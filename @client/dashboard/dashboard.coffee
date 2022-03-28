@@ -17,11 +17,12 @@ require './intake_questions'
 window.styles += """
   #DASHBOARD-flex-container {
     display: flex;
-    flex-wrap: no-wrap;
+    flex-wrap: nowrap;
     border-top: 1px solid #EEEEEE;
   }
   #DASHBOARD-menu {
-    width: 265px;
+    /* width: 265px; */
+    flex-grow: 0;
     background: rgb(246,246,246);
     background: linear-gradient(180deg, rgba(246,246,246,1) 88%, rgba(255,255,255,1) 100%);
     padding-bottom: 70px;
@@ -168,8 +169,9 @@ window.Dashboard = ReactiveComponent
       A 
         className: if active then 'active'
         href: opts.href
-
-        if opts.icon 
+        style: 
+          paddingLeft: 44
+        if opts.icon && false
           SPAN
             className: 'icon'
             dangerouslySetInnerHTML: __html: dashboard_icons[opts.icon]( if active then 'white' else 'black')
@@ -178,6 +180,11 @@ window.Dashboard = ReactiveComponent
           className: 'label'
           translator "user_menu.option.#{opts.label}", opts.label
 
+        if opts.paid
+          UpgradeForumButton
+            tag: SPAN
+            style: 
+              backgroundColor: '#666'
 
 
     draw_menu_separator = (title) -> 
@@ -201,10 +208,9 @@ window.Dashboard = ReactiveComponent
             draw_menu_separator "forum setup"
             draw_menu_option {href: '/dashboard/application', label: 'Forum Settings', icon: 'forum'} 
             draw_menu_option {href: '/dashboard/roles', label: 'Permissions & Roles', icon: 'lock'} 
+            draw_menu_option {href: '/dashboard/intake_questions', label: 'Sign-up Questions', icon: 'survey', paid: true}      
           ]
 
-        if (is_admin && fetch('/subdomain').plan) || is_super 
-          draw_menu_option {href: '/dashboard/intake_questions', label: 'Sign-up Questions', icon: 'survey'}      
 
         if is_super 
           draw_menu_option {href: '/dashboard/customizations', label: 'Customizations', icon: 'coding'}      
@@ -213,7 +219,7 @@ window.Dashboard = ReactiveComponent
           [
             draw_menu_separator "administration"
             draw_menu_option {href: '/dashboard/moderate', label: 'Moderate', icon: 'moderation'} 
-            draw_menu_option {href: '/dashboard/data_import_export', label: 'Import / Export Data', icon: 'upload'}
+            draw_menu_option {href: '/dashboard/data_import_export', label: 'Import / Export Data', icon: 'upload', paid: true}
           ]
         
         if is_super 

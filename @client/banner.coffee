@@ -388,13 +388,19 @@ CustomizeLogo = ReactiveComponent
     has_logo = edit_banner.logo_preview != '*delete*' && (edit_banner.logo_preview || customization('banner')?.logo?.url)
     has_masthead = edit_banner.masthead_preview != '*delete*' && (edit_banner.masthead_preview or customization('banner')?.background_image_url)
 
-    return SPAN(null) if !has_logo && !edit_forum.editing
+    return SPAN null if !has_logo && !edit_forum.editing
+    return SPAN null if !fetch('/subdomain').name
 
     src = edit_banner.logo_preview or customization('banner')?.logo?.url
 
-    height = if has_logo then parseInt(@local.height or customization('banner').logo?.height or 150) else 150
-    left = @local.left or customization('banner').logo?.left or 50
-    top  = @local.top  or customization('banner').logo?.top  or 50
+    if has_logo
+      h = @local.height or customization('banner')?.logo?.height or 150
+      height = parseInt(h)
+    else 
+      height = 150
+
+    left = @local.left or customization('banner')?.logo?.left or 50
+    top  = @local.top  or customization('banner')?.logo?.top  or 50
 
     is_light = is_light_background()
 
@@ -981,6 +987,8 @@ window.PhotoBanner = (opts) ->
   edit_banner = fetch 'edit_banner'
   edit_forum = fetch 'edit_forum'
 
+  return SPAN null if !subdomain.name 
+
   tab_background_color = (if edit_forum.editing then edit_banner.text_background_css) or customization('banner')?.text_background_css or '#666'
 
   if !homepage
@@ -1160,6 +1168,8 @@ window.MediaBanner = ->
   homepage = fetch('location').url == '/'
   subdomain = fetch '/subdomain'
   edit_banner = fetch 'edit_banner'
+
+  return SPAN null if !subdomain.name 
 
   if !homepage
     return  DIV
@@ -1381,6 +1391,8 @@ window.HawaiiHeader = (opts) ->
   homepage = fetch('location').url == '/'
   subdomain = fetch '/subdomain'
 
+  return SPAN null if !subdomain.name 
+
   background_color = opts.background_color or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
   is_light = is_light_background(background_color)
 
@@ -1505,6 +1517,8 @@ window.SeattleHeader = (opts) ->
 
   homepage = fetch('location').url == '/'
   subdomain = fetch '/subdomain'
+
+  return SPAN null if !subdomain.name 
 
   opts ||= {}
   _.defaults opts, 

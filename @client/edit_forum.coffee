@@ -6,6 +6,19 @@ window.stop_editing_forum = ->
   save edit_forum
 
 
+styles += """
+  [data-widget="EditForum"] button {
+    border: none;
+    background-color: #{selected_color}; 
+    color: white; 
+    font-weight: 700;
+    padding: 8px 16px; 
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+"""
+
 window.EditForum = ReactiveComponent
   displayName: 'EditForum'
 
@@ -32,22 +45,14 @@ window.EditForum = ReactiveComponent
 
       DIV 
         style: 
-          position: 'fixed'
+          position: 'absolute'
           left: "50%"
           top: 8
           zIndex: 99999
           marginLeft: -142
 
-        BUTTON
-          style: 
-            border: 'none'
+        BUTTON 
 
-            backgroundColor: if is_light then "rgba(0,0,0,.9)" else "rgba(220, 220, 220, 0.9)"
-            color: if !is_light then 'black' else 'white'
-
-            padding: '4px 8px'
-            borderRadius: 8
-            cursor: 'pointer'
           onClick: enter_edit
 
           translator 'forum.edit_button', 'Edit Banner & Forum Structure'
@@ -57,19 +62,17 @@ window.EditForum = ReactiveComponent
           position: 'fixed'
           left: "50%"
           marginLeft: -80 - 8*2
-          top: 0
-          padding: "4px 8px"
-          zIndex: 99999999999
-          backgroundColor: if !is_light then "rgba(0,0,0,.3)" else "rgba(255,255,255,.3)"
+          # top: if subdomain.plan then 0 else 45 + 0
+          bottom: 12
+          zIndex: 99999
+          # backgroundColor: if !is_light then "rgba(0,0,0,.3)" else "rgba(255,255,255,.3)"
+          # backgroundColor: selected_color # if is_light then "rgba(0,0,0,.9)" else "rgba(220, 220, 220, 0.9)"
+          # color: 'white' # if !is_light then 'black' else 'white'
 
         DIV null,
           BUTTON 
             style: 
-              backgroundColor: if is_light then "rgba(0,0,0,.8)" else "rgba(255,255,255,.8)"
-              color: if !is_light then 'black' else 'white'
-              border: 'none'
-              borderRadius: 8
-              padding: '4px 8px'
+              boxShadow: '0 1px 2px rgba(0,0,0,.5)'
             onClick: stop_editing_forum
 
             translator 'shared.done_editing', 'Done Editing Forum'

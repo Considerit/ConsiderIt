@@ -165,17 +165,17 @@ window.Auth = ReactiveComponent
     auth = fetch('auth')
 
     if auth.form == 'reset password'
-      ResetPassword()
+      ResetPassword @props
     else if auth.form == 'verify email'
-      VerifyEmail()
+      VerifyEmail @props
     else if auth.form == 'login'
-      Login()
+      Login @props
     else if auth.form == 'create account'
-      CreateAccount()
+      CreateAccount @props
     else if auth.form == 'create account via invitation'
       CreateAccount by_invitation: true
     else if auth.form == 'user questions'
-      HostQuestions()
+      HostQuestions @props
     else 
       SPAN null 
 
@@ -236,7 +236,7 @@ window.styles += """
   }
 
   .AUTH_body_wrapper {
-    padding: 3.5em 125px 4em 125px;
+    padding: 3.5em 105px 4em 90px;
     font-size: 16px;
     box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 0 100px rgb(255 255 255 / 40%);
     background-color: white;
@@ -321,16 +321,19 @@ window.AuthForm =
         loadPage '/'
       reset_key 'auth'
 
+
+    console.log @props
     DIV 
       className: 'AUTH'
 
-      DIV 
-        id: 'lightbox'
+      if !@props.no_modal
+        DIV 
+          id: 'lightbox'
 
       DIV
-        id: 'modal'
-        ref: 'dialog'
-        role: 'dialog'
+        id: if !@props.no_modal then 'modal'
+        ref: if !@props.no_modal then 'dialog'
+        role: if !@props.no_modal then 'dialog'
         'aria-labeledby': 'AUTH_task'
         'aria-describedby': if options.goal then 'AUTH_goal'
 
@@ -340,7 +343,7 @@ window.AuthForm =
           style:
             maxWidth: AUTH_WIDTH()
 
-          if !options.disallow_cancel
+          if !options.disallow_cancel && !@props.disallow_cancel
 
             BUTTON
               className: 'AUTH_cancel floating'

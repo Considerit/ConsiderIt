@@ -117,6 +117,8 @@ window.Modal =
       overflow: 'hidden'
       position: 'fixed'
       top: "-#{@scroll_Y}px"
+      width: '100vw'
+
 
 
 
@@ -132,6 +134,7 @@ window.Modal =
       overflow: null
       position: null
       top: 0
+      width: null
 
     # restore scroll position
     window.scroll(0, @scroll_Y)

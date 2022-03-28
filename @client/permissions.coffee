@@ -159,6 +159,11 @@ permit = (action) ->
       if !current_user.is_admin && comment.user != fetch('/current_user').user
         return Permission.INSUFFICIENT_PRIVILEGES
 
+    when 'configure paid feature'
+      subdomain ?= fetch '/subdomain'
+
+      if !((current_user.is_admin && subdomain.plan) || current_user.is_super_admin)
+        return Permission.INSUFFICIENT_PRIVILEGES
     else
       console.error "Unrecognized action to permit: #{action}"
 

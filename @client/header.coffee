@@ -13,14 +13,21 @@ window.Header = ReactiveComponent
     # auth = fetch('auth')
     # return SPAN null if auth.form && auth.form not in ['edit profile']
 
+
+    return SPAN null if !subdomain.name 
+    
     loc = fetch('location')
     is_homepage = loc.url == '/'
-    editing_banner = fetch('edit_banner').editing
+    
+    edit_forum = fetch('edit_forum')
 
     header_bonus = customization('header_bonus') # currently used for things like inserting google font
 
     HEADER 
       className: if !is_light_background() then 'dark'
+
+      if current_user.is_admin && (edit_forum.editing || loc.url.startsWith('/dashboard')) && window.UpgradeForumBanner? && permit('configure paid feature') < 0
+        UpgradeForumBanner()
 
       # DIV 
       #   id: 'upgrade-message'

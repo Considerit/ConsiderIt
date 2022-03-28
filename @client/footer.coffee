@@ -203,7 +203,7 @@ window.TechnologyByConsiderit = ReactiveComponent
         onMouseLeave: => 
           @local.hover = false
           save @local
-        href: 'http://consider.it'
+        href: 'https://consider.it'
         target: '_blank'
         title: 'Consider.it\'s homepage'
         style: 

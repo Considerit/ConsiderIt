@@ -2,13 +2,12 @@ require 'mail'
 
 class UserMailer < Mailer
 
-  def welcome_new_customer(user, subdomain, plan)
+  def welcome_new_customer(user, subdomain)
     set_translation_context(user, subdomain)
 
     @user = user
     subject = translator("email.welcome.subject_line", "Welcome to Consider.it!")
     @subdomain = subdomain
-    @plan = plan
 
     to = format_email @user.email, @user.name
     from = format_email('admin@consider.it', 'Consider.it')

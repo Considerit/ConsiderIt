@@ -123,10 +123,23 @@ window.IntakeQuestions = ReactiveComponent
         """
 
 
+      if permit('configure paid feature') < 0
+        UpgradeForumButton
+          text: "Upgrade to enable sign-up questions"
+          style: 
+            fontSize: 13
+            marginLeft: 0
+            marginTop: 24
+            padding: '8px 14px'
+
+
+
 
       DIV 
         style: 
           marginTop: 36
+          pointerEvents: if permit('configure paid feature') < 0 then 'none'
+          opacity: if permit('configure paid feature') < 0 then .4
 
         H2 
           style: 
@@ -189,6 +202,8 @@ window.IntakeQuestions = ReactiveComponent
       DIV 
         style: 
           marginTop: 36
+          pointerEvents: if permit('configure paid feature') < 0 then 'none'
+          opacity: if permit('configure paid feature') < 0 then .4
 
         LABEL 
           style: {}

@@ -7,7 +7,7 @@ class SubdomainController < ApplicationController
 
   def index 
     ActsAsTenant.without_tenant do 
-      subdomains = Subdomain.where('name != "homepage"').map {|s| {:id => s.id, :name => s.name, :customizations => s.customizations, :activity => s.proposals.count > 1 || s.opinions.published.count > 1 || s.points.published.count > 0}}
+      subdomains = Subdomain.where('name != "homepage"').map {|s| {:id => s.id, :name => s.name, :customizations => s.customizations, :activity => s.points.published.count} }
       render :json => [{
         key: '/subdomains',
         subs: subdomains
@@ -67,11 +67,16 @@ class SubdomainController < ApplicationController
       roles['admin'].push "/user/#{current_user.id}"
       roles['visitor'].push "*"
       new_subdomain.roles = roles
-      new_subdomain.created_by = current_user
+      new_subdomain.created_by = current_user.id
 
       if params[:sso_domain]
         new_subdomain.SSO_domain = params[:sso_domain]
       end
+
+      if params[:upgrade] && current_user.paid_forums > Subdomain.where(:created_by => current_user).where("plan > 0").count
+        new_subdomain.plan = 1
+      end 
+
       new_subdomain.save
 
       set_current_tenant new_subdomain
@@ -131,13 +136,17 @@ class SubdomainController < ApplicationController
       set_current_tenant(Subdomain.find_by_name('homepage'))
 
       # Send welcome email to subdomain creator
-      UserMailer.welcome_new_customer(current_user, new_subdomain, params[:plan]).deliver_later
+      UserMailer.welcome_new_customer(current_user, new_subdomain).deliver_later
 
       if request.xhr?
         render :json => [{key: 'new_subdomain', name: new_subdomain.name, t: current_user.auth_token(new_subdomain)}]
       else 
         token = current_user.auth_token(new_subdomain)
-        redirect_to "#{request.protocol}#{new_subdomain.url}?u=#{current_user.email}&t=#{token}"
+        if Rails.env.development?
+          redirect_to "/?u=#{current_user.email}&t=#{token}&domain=#{new_subdomain.name}"
+        else
+          redirect_to "#{request.protocol}#{new_subdomain.url}?u=#{current_user.email}&t=#{token}"
+        end
       end
     end
   end

@@ -151,32 +151,17 @@ window.ForumSettingsDash = ReactiveComponent
 
       #######################
       # Google Analytics code
-      if subdomain.plan || current_user.is_super_admin
-        DIV className: 'input_group',
-          
-          LABEL htmlFor: 'google_analytics_code', "Google Analytics tracking code"
-          INPUT 
-            id: 'google_analytics_code'
-            type: 'text'
-            name: 'google_analytics_code'
-            defaultValue: subdomain.google_analytics_code
-            onChange: (ev) -> 
-              subdomain.google_analytics_code = ev.target.value
-              save subdomain
-
-      else 
-        DIV className: 'input_group',
-          LABEL htmlFor: 'google_analytics_code', "Google analytics tracking code"
-          DIV 
-            className: 'explanation'
-            "Only available for paid plans. Email "
-            A 
-              href: 'mailto:hello@consider.it'
-              style: 
-                textDecoration: 'underline'
-              'hello@consider.it'
-            ' to inquire further.'
-
+      DIV className: 'input_group',
+        
+        LABEL htmlFor: 'google_analytics_code', "Google Analytics tracking code"
+        INPUT 
+          id: 'google_analytics_code'
+          type: 'text'
+          name: 'google_analytics_code'
+          defaultValue: subdomain.google_analytics_code
+          onChange: (ev) -> 
+            subdomain.google_analytics_code = ev.target.value
+            save subdomain
 
 
 

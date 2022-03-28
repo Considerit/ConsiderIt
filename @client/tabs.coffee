@@ -178,8 +178,7 @@ styles += """
   #tabs {
     width: 100%;
     z-index: 2;
-    position: relative;
-    top: 2px;
+    margin-bottom: -2px;
     margin-top: 20px;
   }
   #tabs > ul {
@@ -208,7 +207,7 @@ window.HomepageTabs = ReactiveComponent
 
     return DIV null if !edit_forum.editing && !tabs
 
-    return DIV style:{paddingBottom:36} if edit_forum.editing && !fetch('/current_user').is_super_admin && !subdomain.plan
+    #return DIV style:{paddingBottom:36} if edit_forum.editing && !fetch('/current_user').is_super_admin && permit('configure paid feature') < 0
 
     is_light = is_light_background()
 
@@ -225,6 +224,8 @@ window.HomepageTabs = ReactiveComponent
       else 
         tabs.push {name: "add new tab", add_new: true}
 
+    paid = permit('configure paid feature') > 0
+
     DIV 
       id: 'tabs'
       className: "#{if demo then 'demo' else ''} #{if edit_forum.editing then 'editing' else ''}" 
@@ -240,6 +241,9 @@ window.HomepageTabs = ReactiveComponent
           
           LABEL 
             className: 'toggle_switch'
+            style: 
+              pointerEvents: if !paid then 'none'
+              opacity: if !paid then .5
 
             INPUT 
               id: 'enable_tabs'
@@ -270,12 +274,15 @@ window.HomepageTabs = ReactiveComponent
           LABEL 
             style:
               paddingLeft: 18
-              cursor: 'pointer'
+              cursor: if paid then 'pointer'
               backgroundColor: if is_light then 'rgba(255,255,255,.4)' else 'rgba(0,0,0,.4)'
-
-            htmlFor: 'enable_tabs'
+            htmlFor: if paid then 'enable_tabs'
             B null,
               'Enable Tabs.'
+
+            if !paid
+              UpgradeForumButton
+                text: 'upgrade'
             
             DIV 
               style:

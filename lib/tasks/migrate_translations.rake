@@ -260,6 +260,8 @@ task :migrate_translations => :environment do
   delete_translation "banner.background_css_is_light.label"
   delete_translation "banner.change_background_label"
 
+  delete_translation "engage.point_authoring.tip_review"
+
   sync_keys_with_english
   execute_translation_migration
 

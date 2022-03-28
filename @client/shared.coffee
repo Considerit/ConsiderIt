@@ -538,12 +538,14 @@ window.parseURL = (url) ->
     pathname = "/#{pathname}"
   searchObject = {}
 
-  queries = parser.search.replace(/^\?/, '').split('&')
+  alt_search = new URLSearchParams(parser.search)
+
+  queries = parser.search.replace(/^\?/, '').split('&')  
   i = 0
   while i < queries.length
     if queries[i].length > 0
       split = queries[i].split('=')
-      searchObject[split[0]] = split[1]
+      searchObject[split[0]] = alt_search.get(split[0])
     i++
 
   {
@@ -882,7 +884,7 @@ a.skip:hover {
 
 .content {
   position: relative;
-  font-size: 17px;
+  font-size: 16px;
   color: black;
   min-height: 100%; 
   font-weight: 400;

@@ -280,7 +280,6 @@ window.EditPoint = ReactiveComponent
           do ->
             tips = [translator({id: "engage.point_authoring.tip_single", pros_or_cons: capitalize(plural)}, "Make only one point. Add multiple {pros_or_cons} if you have more."),
                     translator("engage.point_authoring.tip_direct", "Be direct. The summary is your main point.")
-                    translator("engage.point_authoring.tip_review", "Review your language. Don’t be careless.")
                     translator("engage.point_authoring.tip_attacks", "No personal attacks.")
                    ]
 

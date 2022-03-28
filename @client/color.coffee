@@ -8,6 +8,7 @@ window.considerit_red = "#df6264"
 window.default_avatar_in_histogram_color = '#999'
 window.considerit_gray = '#f6f7f9'
 window.selected_color = "#e316ae" # magenta
+window.upgrade_color = '#16a1e3'
 window.attention_orange = "#fb7e26"
 
 window.parseCssRgb = (css_color_str) ->

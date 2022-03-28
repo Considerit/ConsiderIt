@@ -8,7 +8,6 @@ styles += """
     justify-content: center;
     z-index: 9999999;
     position: fixed;
-    bottom: 50px;    
     font-size: 15px;
   }
   #flash {
@@ -19,6 +18,7 @@ styles += """
     cursor: default;
     max-width: 400px;
     display: flex;
+    font-weight: 600;
   }
 
   #flash.error {
@@ -39,12 +39,25 @@ styles += """
     border: none;
     padding: 12px 24px;
   }
+
+
+  @keyframes flashfadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 50px; opacity: 1;}
+  }
+
+  @keyframes flashfadeout {
+    from {bottom: 50px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+  }
+
+
 """
 
-flash = fetch('flash')
 
 clear_flash = ->
-  flash.message = flash.args = null 
+  flash = fetch('flash')
+  flash.message = flash.time = flash.args = null 
   save flash
 
 window.show_flash_error = (message, time_in_ms) ->
@@ -57,8 +70,10 @@ window.show_flash = (message, time_in_ms, args) ->
 
   flash = fetch('flash')
   flash.message = message
+  flash.time = time_in_ms
   flash.args = args
   save flash
+
   setTimeout ->
     clear_flash()
   , time_in_ms
@@ -69,12 +84,16 @@ window.Flash = ReactiveComponent
 
   render : -> 
     flash = fetch('flash')
-    return SPAN(null) if !flash.message
   
     is_error = flash.args?.error 
 
     DIV
       id: "flash-container"
+      style: 
+        animation: if flash.message then "flashfadein 500ms, flashfadeout 500ms #{flash.time - 500}ms"
+        visibility: if flash.message then 'visible' else 'hidden'
+        opacity: if flash.message then 1 else 0 
+        bottom: if flash.message then 50 else 0
 
       DIV
         id: 'flash'
@@ -85,7 +104,7 @@ window.Flash = ReactiveComponent
 
         DIV 
           className: 'flash-message'
-          dangerouslySetInnerHTML: {__html: flash.message}
+          dangerouslySetInnerHTML: if flash.message then {__html: flash.message}
 
         DIV
           className: 'flash-close'

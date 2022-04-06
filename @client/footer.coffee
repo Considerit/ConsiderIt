@@ -1,4 +1,5 @@
 require './shared'
+require './customizations'
 
 window.Footer = ReactiveComponent
   displayName: 'Footer'

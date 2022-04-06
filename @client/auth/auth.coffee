@@ -322,7 +322,6 @@ window.AuthForm =
       reset_key 'auth'
 
 
-    console.log @props
     DIV 
       className: 'AUTH'
 

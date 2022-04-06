@@ -1,3 +1,19 @@
+window.checkmark = (size, color) ->
+  size ?= 24
+  color ?= "currentColor"
+  SVG 
+    width: size 
+    height: size
+    xmlns: "http://www.w3.org/2000/svg" 
+    viewBox: "0 0 700 700" 
+    fill: color
+
+    PATH 
+      # strokeLinecap: "round" 
+      # strokeLinejoin: "round" 
+      # strokeWidth: "2" 
+      d: d="m514.59 195.66-34.609-34.551-168.56 168.61-91.559-91.559-34.441 35.727 126 124.99z"
+      # fill: 'none'
 
 window.ChevronRight = (size) ->
   size ?= 24

@@ -1,11 +1,14 @@
 styles += """
   button.add_new_proposal {
     cursor: pointer;
-    background-color: #e7e7e7;
+    background-color: #{focus_blue};
     border: none;
-    padding: 6px 36px 6px 16px;
+    padding: 14px 36px 6px 9px;
     border-radius: 8px;
-    margin-left: 14px;   
+    margin-left: -9px;   
+    color: white;
+    text-decoration: none;
+    display: flex;
   }
 
 """
@@ -91,15 +94,32 @@ window.NewProposal = ReactiveComponent
             e.stopPropagation()
             reset_key 'auth', 
               form: 'create account'
-              goal: 'Introduce yourself to add a new proposal'
+              goal: 'Introduce yourself to share a response'
         
         A name: "new_#{list_name}"
-        bullet 
+        SVG
+          width: 30 
+          height: 30
+          style: 
+            marginRight: 23
+            marginLeft: 6
+          fill: 'white'
+          viewBox: "0 0 700 700" 
+
+          dangerouslySetInnerHTML: __html: """
+             <g>
+              <path d="m350 28c-66.836 0-130.93 26.551-178.19 73.809-47.258 47.258-73.809 111.36-73.809 178.19s26.551 130.93 73.809 178.19c47.258 47.258 111.36 73.809 178.19 73.809s130.93-26.551 178.19-73.809c47.258-47.258 73.809-111.36 73.809-178.19 0-44.234-11.645-87.691-33.762-126-22.117-38.309-53.93-70.121-92.238-92.238-38.309-22.117-81.766-33.762-126-33.762zm0 470.4c-57.922 0-113.47-23.008-154.43-63.965-40.957-40.961-63.965-96.512-63.965-154.43s23.008-113.47 63.965-154.43c40.961-40.957 96.512-63.965 154.43-63.965s113.47 23.008 154.43 63.965c40.957 40.961 63.965 96.512 63.965 154.43s-23.008 113.47-63.965 154.43c-40.961 40.957-96.512 63.965-154.43 63.965z"/>
+              <path d="m456.4 257.6h-84v-84h-44.797v84h-84v44.797h84v84h44.797v-84h84z"/>
+             </g>
+          """
+
+
+
 
         if permitted
-          translator "engage.add_new_proposal_to_list", 'add new'
+          translator "engage.add_new_proposal_to_list", 'Add new response'
         else 
-          translator "engage.login_to_add_new_proposal", 'Create an account to share an idea'
+          translator "engage.login_to_add_new_proposal", 'Create an account to share a response'
 
     else 
 

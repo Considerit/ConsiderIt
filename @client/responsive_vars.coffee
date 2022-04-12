@@ -45,7 +45,7 @@ setResponsive = ->
   document_width = Math.max(900, w)
 
   # There will be at least 80px of whitespace on either side of the document
-  gutter = Math.max(80, w / 14)
+  gutter = Math.max(80, w / 11)
   content_width = document_width - 2 * gutter
 
   whitespace = Math.max(100, w / 10)

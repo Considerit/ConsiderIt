@@ -500,7 +500,7 @@ window.AuthForm =
 
 
   i18n: ->
-    name_label: translator('auth.create.name_label', 'Your name')
+    name_label: translator('auth.create.name_label', 'Your name or pseudonym')
     email_label: translator('auth.login.email_label', 'Your email')
     password_label: translator('auth.login.password_label', 'Your password')
     pic_prompt: translator('auth.create.pic_prompt', 'Your picture')

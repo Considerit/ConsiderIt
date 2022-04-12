@@ -72,6 +72,7 @@ window.DropMenu = ReactiveComponent
     option_style = _.defaults {}, @props.option_style,
       cursor: 'pointer'
       outline: 'none'
+      textDecoration: 'none'
     active_option_style = _.defaults {}, @props.active_option_style, option_style
 
     options = @props.options

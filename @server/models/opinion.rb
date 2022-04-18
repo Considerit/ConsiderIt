@@ -179,30 +179,39 @@ class Opinion < ApplicationRecord
   # anymore, because the database shouldn't contain duplicate opinions
   # anymore.
   def self.remove_duplicate_opinions
-    User.find_each do |u|
+
+    User.registered.find_each do |u|
       proposals = u.opinions.map {|p| p.proposal_id}.uniq
       proposals.each do |prop|
         ops = u.opinions.where(:proposal_id => prop)
         # Let's find the most recent
         ops = ops.sort {|a,b| a.updated_at <=> b.updated_at}
         # And purge all but the last
-        pp("We found #{ops.length-1} duplicates for user #{u.id}")
         ops.each do |op|
+
           if op.id != ops.last.id
-            pp("We are deleting opinion #{op.id}, cause it is not the most recent: #{ops.last.id}.")
-            op.delete
+            pp("We found #{ops.length-1} duplicates for user #{u.name} #{u.id}")
+
+            pp("We are deleting opinion #{op.id} #{op.updated_at}, cause it is not the most recent: #{ops.last.id} #{ops.last.updated_at}.")
+            
+
+            pp "DELETING: #{op.id} #{op.updated_at} #{op.stance} #{op.inclusions.count} #{op.point_inclusions}"
+            pp "KEEPING: #{ops.last.id} #{ops.last.updated_at} #{ops.last.stance} #{ops.last.inclusions.count} #{ops.last.point_inclusions}" 
+
+            op.destroy!
+            ops.last.recache
           end
         end
       end
     end
 
     # And cause I want this too
-    Point.all.each do |p|
-      if p.published
-        puts("Fixing #{p.id}")
-      end
-      p.recache(true)
-    end
+    # Point.all.each do |p|
+    #   if p.published
+    #     puts("Fixing #{p.id}")
+    #   end
+    #   p.recache()
+    # end
     'done'
   end
 
@@ -218,6 +227,7 @@ class Opinion < ApplicationRecord
           pos.where('id != (?)', last.id).each do |p|
             p.published = false
             p.save
+            pp 'FOUND DUPLICATE OPINION', prop.subdomain.name, prop.name, p.user.email
           end
         end
       end

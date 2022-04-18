@@ -30,12 +30,18 @@ window.OpinionSlider = ReactiveComponent
     hist_selection = opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
     show_handle = @props.permitted && !hist_selection
 
+
+
+
     # Update the slider value when the server gets back to us
-    if slider.value != your_opinion.stance && !slider.has_moved 
+    if slider.value != your_opinion.stance && (!slider.has_moved || @opinion_key != your_opinion.key)
       slider.value = your_opinion.stance
       if your_opinion.stance
         slider.has_moved = true
       save slider
+      @opinion_key = your_opinion.key # handle case where opinion is deleted, we want the slider 
+                                      # value to reset
+
 
     ####
     # Define slider layout
@@ -59,13 +65,13 @@ window.OpinionSlider = ReactiveComponent
         key: @props.key
         width: @props.width
         handle_height: SLIDER_HANDLE_SIZE()
-        base_height: 0 # 6
-        base_color: 'transparent'
-        # base_color: if @props.focused 
-        #               'rgb(175, 215, 255)' 
-        #             else 
-        #               'rgb(200, 200, 200)'
-        base_endpoint: if slider.docked then 'square' else 'sharp'
+        base_height: 2 # 6
+        # base_color: 'transparent'
+        base_color: if slider.docked
+                      'rgb(175, 215, 255)' 
+                    else 
+                      'transparent'
+        # base_endpoint: if slider.docked then 'square' else 'sharp'
         regions: customization('slider_regions', @proposal)
         polarized: true
         draw_helpers: @props.focused && !slider.has_moved
@@ -78,7 +84,7 @@ window.OpinionSlider = ReactiveComponent
           detail: @props.focused
         handle_style: 
           transition: "transform #{TRANSITION_SPEED}ms"
-          transform: "scale(#{if !@props.focused || slider.docked then 1 else 1.75})"
+          transform: "scale(#{if !@props.focused then 1 else 1.75})"
           visibility: if !show_handle then 'hidden'
         
         onMouseUpCallback: @handleMouseUp
@@ -197,15 +203,15 @@ window.OpinionSlider = ReactiveComponent
     feedback_left = @props.width * (slider.value + 1) / 2
     feedback_width = widthWhenRendered(slider_feedback, feedback_style) + 10
 
-    if slider.docked 
-      if slider.value > 0
-        feedback_left = Math.min(@props.width - feedback_width/2, feedback_left)
-      else
-        feedback_left = Math.max(feedback_width/2, feedback_left)
+    # if slider.docked 
+    #   if slider.value > 0
+    #     feedback_left = Math.min(@props.width - feedback_width/2, feedback_left)
+    #   else
+    #     feedback_left = Math.max(feedback_width/2, feedback_left)
 
     _.extend feedback_style, 
       position: 'absolute'      
-      top: if slider.docked then -57 else if !TWO_COL() then -80 else 37
+      top: if !TWO_COL() then -80 else 37
       left: feedback_left
       marginLeft: -feedback_width / 2
       width: feedback_width

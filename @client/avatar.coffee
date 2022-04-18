@@ -40,8 +40,6 @@ window.AvatarPopover = ReactiveComponent
     anonymous = user.key != fetch('/current_user').user && (customization('anonymize_everything') || anon)      
     opinion_views = fetch 'opinion_views'
 
-    attributes = get_participant_attributes()
-    grouped_by = opinion_views.active_views.group_by
 
     name = user_name user, anonymous
 
@@ -89,7 +87,10 @@ window.AvatarPopover = ReactiveComponent
             name
 
 
-          if !anonymous && !user_is_organization_account(user)
+          if get_participant_attributes? && !anonymous && !user_is_organization_account(user)
+            attributes = get_participant_attributes()
+            grouped_by = opinion_views.active_views.group_by
+
             unreported = missing_attribute_info_label()
 
             UL 

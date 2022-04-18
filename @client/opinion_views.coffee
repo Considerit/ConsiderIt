@@ -601,7 +601,7 @@ OpinionViews = ReactiveComponent
 
 
     is_admin = fetch('/current_user').is_admin
-    show_others = !customization('hide_opinions') || is_admin
+    show_others = (!customization('hide_opinions') || is_admin) && !@props.disable_switching
     show_all_not_available = !show_others
 
     view_buttons = [ 
@@ -614,6 +614,7 @@ OpinionViews = ReactiveComponent
       {
         key: 'you'
         label: translator 'opinion_views.view_buttons_you', 'Just you'
+        disabled: @props.disable_switching
         callback: ->
           clear_all()
           toggle_opinion_filter just_you_filter
@@ -1699,7 +1700,7 @@ styles += """
   }
 
   .toggle_buttons button[disabled] {
-    opacity: .45;
+    opacity: .4;
     cursor: default;
   }
 

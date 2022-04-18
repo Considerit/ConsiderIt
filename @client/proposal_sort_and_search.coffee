@@ -535,6 +535,7 @@ SortProposalsMenu = ReactiveComponent
       render_option: (option, is_active) -> 
         [
           SPAN 
+            "data-sort": option.name
             style: 
               # fontWeight: 600
               fontSize: 16

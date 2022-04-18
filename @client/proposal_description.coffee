@@ -191,10 +191,12 @@ window.ProposalDescription = ReactiveComponent
                     else
                       translator('anonymous', 'Anonymous')
 
-                  DIV 
-                    style: 
-                      color: '#666'
-                    prettyDate(proposal.created_at)
+                  if !screencasting()
+                    DIV 
+                      style: 
+                        color: '#666'
+
+                      prettyDate(proposal.created_at)
 
                 # TRANSLATE 
                 #   id: "engage.proposal_meta_data"

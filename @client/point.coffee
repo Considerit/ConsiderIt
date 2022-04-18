@@ -241,9 +241,16 @@ window.Point = ReactiveComponent
             DIV 
               style: 
                 fontSize: 12
+                # fontFamily: mono_font()
+                color: '#666'
+                # textAlign: 'right'
 
-              prettyDate(point.created_at)
-              ', '                
+              if !screencasting()
+                [
+                  prettyDate(point.created_at)
+                  ', '                
+                ]
+
               SPAN 
                 key: 2 
                 style: {whiteSpace: 'nowrap'}

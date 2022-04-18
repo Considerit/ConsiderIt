@@ -211,6 +211,7 @@ window.OpinionSlider = ReactiveComponent
       width: feedback_width
 
     DIV
+      className: 'slider_feedback'
       'aria-hidden' : true
       style: feedback_style
       slider_feedback

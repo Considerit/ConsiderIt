@@ -15,7 +15,7 @@ window.get_proposal_mode = ->
   loc = fetch('location')
   if loc.url == '/'
     return null
-  else if loc.query_params?.results || TWO_COL()
+  else if (loc.query_params?.results && loc.query_params?.results != 'false') || TWO_COL()
     'results' 
   else 
     'crafting'
@@ -209,6 +209,7 @@ window.Proposal = ReactiveComponent
 
         OpinionViews
           more_views_positioning: 'centered'
+          disable_switching: mode == 'crafting'
           style: 
             width: if get_participant_attributes().length > 0 then HOMEPAGE_WIDTH() else Math.max(660,PROPOSAL_HISTO_WIDTH()) # REASONS_REGION_WIDTH()
             margin: '8px auto 20px auto'
@@ -226,7 +227,7 @@ window.Proposal = ReactiveComponent
                 position: 'absolute'
                 left: '100%'
                 marginLeft: 30
-                top: if fetch('histogram-dock').docked then 50 else 170
+                top: if fetch('histogram-dock').docked then 50 else if screencasting() then 120 else 170
 
               HistogramScores
                 proposal: @proposal
@@ -281,7 +282,7 @@ window.Proposal = ReactiveComponent
                 proposal: @proposal
                 opinions: opinionsForProposal(@proposal)
                 width: PROPOSAL_HISTO_WIDTH()
-                height: if fetch('histogram-dock').docked then 50 else 170
+                height: if fetch('histogram-dock').docked then 50 else if screencasting() then 120 else 170
                 enable_individual_selection: true
                 enable_range_selection: true
                 draw_base: if fetch('histogram-dock').docked then true else false
@@ -413,6 +414,7 @@ window.Proposal = ReactiveComponent
 
               if !show_all_points
                 BUTTON 
+                  id: "show_all_reasons"
                   style: 
                     backgroundColor: "#eee"
                     padding: '12px 0'
@@ -1179,13 +1181,21 @@ PointsList = ReactiveComponent
                 enable_dragging: @props.points_draggable
 
         else if points.length == 0 && @props.rendered_as == 'community_point' && mode == "results"
+          opinion_views = fetch 'opinion_views'
+          none_given = opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected          
+
           DIV 
             style: 
               fontStyle: 'italic'
               textAlign: 'center'
               color: '#777'
               marginLeft: -20
-            "Be the first to add a #{get_point_label(@props.valence.substring(0, @props.valence.length - 1), @proposal)}"
+
+            if none_given
+              "No #{get_point_label(@props.valence.substring(0, @props.valence.length - 1) + 's', @proposal)} given"
+
+            else               
+              "Be the first to add a #{get_point_label(@props.valence.substring(0, @props.valence.length - 1), @proposal)}"
 
 
       if @props.drop_target && permit('create point', @proposal) > 0

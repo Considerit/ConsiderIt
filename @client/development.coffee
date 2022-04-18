@@ -27,6 +27,9 @@ Development = ReactiveComponent
       # subdomains.sort((a,b) -> if a.name.toLowerCase() > b.name.toLowerCase() then 1 else -1)
       subdomains.sort((a,b) -> b.activity - a.activity)
 
+
+    return DIV null if screencasting()
+
     DIV 
       style: 
         position: 'absolute'

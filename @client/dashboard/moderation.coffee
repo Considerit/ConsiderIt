@@ -142,6 +142,7 @@ window.ModerationDash = ReactiveComponent
 
 
       UL 
+        className: 'moderation_tabs'
         style: 
           listStyle: 'none'
           marginTop: 48
@@ -156,6 +157,7 @@ window.ModerationDash = ReactiveComponent
                 display: 'inline-block'
 
               BUTTON 
+                "data-model": model 
                 style: 
                   backgroundColor: if active then 'white' else '#f0f0f0'
                   color: 'black'

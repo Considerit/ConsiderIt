@@ -225,6 +225,7 @@ window.Histogram = ReactiveComponent
 
 
     histo_height = @props.height + REGION_SELECTION_VERTICAL_PADDING
+    
     histogram_props = 
       tabIndex: if !@props.backgrounded then 0
 

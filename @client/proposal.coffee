@@ -121,7 +121,7 @@ window.Proposal = ReactiveComponent
 
     mode = get_proposal_mode()
 
-    if your_opinion.published
+    if your_opinion.key
       can_opine = permit 'update opinion', @proposal, your_opinion
     else
       can_opine = permit 'publish opinion', @proposal
@@ -130,7 +130,7 @@ window.Proposal = ReactiveComponent
     if mode == 'crafting' && 
         !(can_opine in [Permission.PERMITTED, Permission.UNVERIFIED_EMAIL, \
                         Permission.NOT_LOGGED_IN, Permission.INSUFFICIENT_INFORMATION] || 
-         (can_opine == Permission.DISABLED && your_opinion.published))
+         (can_opine == Permission.DISABLED && your_opinion.key))
       updateProposalMode('results', 'permission not granted for crafting')
     
 
@@ -358,7 +358,7 @@ window.Proposal = ReactiveComponent
                     dockable : => 
                       mode == 'crafting' && can_opine > 0
 
-                    start: -24
+                    start: 0 # -24
 
                     stop : -> 
                       $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
@@ -618,7 +618,6 @@ DecisionBoard = ReactiveComponent
         visibility: 'hidden'
 
 
-
     SECTION 
       className:'opinion_region'
       style:
@@ -644,9 +643,9 @@ DecisionBoard = ReactiveComponent
         onClick: => 
           if get_proposal_mode() == 'results' 
 
-            if your_opinion.published
+            if your_opinion.key
               can_opine = permit 'update opinion', @proposal, your_opinion
-            else
+            else 
               can_opine = permit 'publish opinion', @proposal
 
             if can_opine > 0
@@ -706,14 +705,16 @@ DecisionBoard = ReactiveComponent
             #     id: "engage.log_in_to_give_your_opinion_button"
             #     'Log in to Give your Opinion'
 
-            if your_opinion.published 
+            if your_opinion.key 
               translator 
                 id: "engage.update_your_opinion_button"
                 'Update your Opinion'
+
             else 
               translator 
                 id: "engage.give_your_opinion_button"
                 'Give your Opinion'
+
 
 
       DIV 
@@ -737,7 +738,7 @@ DecisionBoard = ReactiveComponent
           translator 'engage.update_opinion_button', 'Show the results'
 
         
-        if !your_opinion.published || (your_opinion.key && permit('update opinion', @proposal, your_opinion) < 0)
+        if !your_opinion.key || (your_opinion.key && permit('update opinion', @proposal, your_opinion) < 0)
 
           DIV 
             className: 'below_save'
@@ -750,7 +751,7 @@ DecisionBoard = ReactiveComponent
 
               
 
-        if your_opinion.published && permit('update opinion', @proposal, your_opinion) > 0
+        if your_opinion.key && permit('update opinion', @proposal, your_opinion) > 0
           remove_opinion = -> 
             your_opinion.stance = 0
             your_opinion.point_inclusions = []                   

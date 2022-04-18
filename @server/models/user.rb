@@ -37,6 +37,8 @@ class User < ApplicationRecord
 
   validates_attachment_content_type :avatar, :content_type => %w(image/jpeg image/jpg image/png image/gif)
 
+  scope :registered, -> {where( :registered => true )}
+
 
 
   # This will output the data for this user _as if this user is currently logged in_

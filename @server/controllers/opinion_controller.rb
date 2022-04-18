@@ -27,11 +27,25 @@ class OpinionController < ApplicationController
 
     updates['user_id'] = current_user.id 
     
-    opinion = Opinion.new updates 
+    existing_opinion = Opinion.where(:proposal_id => updates['proposal_id']).where(:user_id => current_user.id).first
+    if existing_opinion
+      opinion = existing_opinion
+      dirty_key "/opinion/#{opinion.id}"
+      opinion.update_attributes updates
+    else 
+      opinion = Opinion.new updates 
+    end
+
+    # opinion = Opinion.new updates 
+
     opinion.update_inclusions incs
 
     opinion.save 
-    opinion.publish()
+    if existing_opinion
+      opinion.recache
+    else 
+      opinion.publish()
+    end
     write_to_log({
       :what => 'published opinion',
       :where => proposal.slug
@@ -71,6 +85,7 @@ class OpinionController < ApplicationController
     opinion.update_attributes updates
     opinion.save
 
+
     # Update published
     if params['published'] && !opinion.published
       authorize! 'publish opinion', proposal
@@ -81,8 +96,12 @@ class OpinionController < ApplicationController
         :what => 'published opinion',
         :where => proposal.slug
       })
-    elsif params.has_key?('published') && !params['published'] && opinion.published
+      dirty_key "/opinion/#{opinion.id}"
+
+    elsif params.has_key?('published') && !params['published']
       opinion.unpublish()
+      opinion.destroy!()
+
       write_to_log({
         :what => 'unpublished opinion',
         :where => proposal.slug
@@ -92,7 +111,6 @@ class OpinionController < ApplicationController
 
     dirty_key "/proposal/#{proposal.id}"
     
-    dirty_key "/opinion/#{opinion.id}"
 
     render :json => []
 

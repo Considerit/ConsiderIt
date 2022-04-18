@@ -34,8 +34,10 @@ window.ajax_submit_files_in_form = (opts) ->
 
 
 
-
-
+window.screencasting = ->
+  window.is_screencasting ?= fetch('location').query_params.screencasting
+  window.is_screencasting
+  
 window.pad = (num, len) -> 
   str = num
   dec = str.split('.')
@@ -672,6 +674,9 @@ window.cssTriangle = (direction, color, width, height, style) ->
 window.header_font = ->
   customization('header_font') or customization('font')
 
+window.mono_font = ->
+  customization('mono_font') or customization('font')
+
 
 # from https://gist.github.com/mathewbyrne/1280286
 window.slugify = (text) -> 
@@ -773,7 +778,9 @@ b, strong { font-weight: bold; }
   -moz-box-sizing: border-box;
   box-sizing: border-box; 
 }
-
+.goog-te-gadget-simple .goog-te-menu-value span {
+  font-weight: 400;
+}
 a {
   color: inherit;
   cursor: pointer;

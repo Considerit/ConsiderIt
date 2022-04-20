@@ -408,12 +408,15 @@ _activate_opinion_view = (view, view_type, replace_existing) ->
 
 
 date_option_changed = (activated) ->
-  date_toggle_state = fetch 'date_toggle_state'
+  date_toggle_state = fetch 'opinion-date-filter'
+  tz_offset = new Date().getTimezoneOffset() * 60 * 1000
+
   pass = (u, opinion, proposal) -> 
     date = new Date(opinion.updated_at).getTime()
     now = Date.now()
 
     earliest = latest = null
+
     if activated.key != 'custom'
       clear_custom_date()
 
@@ -428,10 +431,8 @@ date_option_changed = (activated) ->
       if date_toggle_state.start
         earliest = date_toggle_state.start + tz_offset
 
-
       if date_toggle_state.end 
         latest = date_toggle_state.end + tz_offset
-
 
     (earliest == null || earliest <= date) && (latest == null || latest >= date) 
 
@@ -440,6 +441,7 @@ date_option_changed = (activated) ->
     salience: (u, opinion, proposal) -> if pass(u, opinion, proposal) then 1 else .1
     weight:   (u, opinion, proposal) -> if pass(u, opinion, proposal) then 1 else .1
     name: activated.key
+
 
   activate_opinion_date_filter view
 
@@ -462,7 +464,7 @@ default_date_options = ->
   ]
 
 clear_custom_date = ->
-  date_toggle_state = fetch 'date_toggle_state'
+  date_toggle_state = fetch 'opinion-date-filter'
   date_toggle_state.start = null
   date_toggle_state.end = null
   save date_toggle_state
@@ -726,7 +728,7 @@ OpinionViews = ReactiveComponent
                 className: 'custom_view_triangle'
                 style: 
                   left: triangle_left
-                  bottom: if browser.is_mobile then -27 else -26
+                  bottom: if browser.is_mobile then -27 else -25
                 dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="#979797"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
 
 
@@ -1130,10 +1132,12 @@ InteractiveOpinionViews = ReactiveComponent
           for weight in get_weights()
             do (weight) ->
               LI 
+                key: weight.key
                 style: 
                   marginRight: 8
                   marginBottom: 1
                   display: 'inline-block'
+                'data-key': weight.key
 
                 BUTTON 
                   'data-tooltip': if !browser.is_mobile then weight.label
@@ -1201,6 +1205,7 @@ NonInteractiveOpinionViews = ReactiveComponent
 
           else             
             filter_str = "#{to_date_str(date_toggle_state.start)} - #{to_date_str(date_toggle_state.end)}" 
+        
         else 
           filter_str = default_date_options().find((o) -> o.key == date_toggle_state.active).label
 

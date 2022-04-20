@@ -224,6 +224,7 @@ window.Proposal = ReactiveComponent
             DIV 
               style: 
                 position: 'absolute'
+                zIndex: 1
                 left: '100%'
                 marginLeft: 30
                 top: if fetch('histogram-dock').docked then 50 else 170

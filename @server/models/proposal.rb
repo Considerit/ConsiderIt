@@ -274,7 +274,9 @@ class Proposal < ApplicationRecord
     end
 
     if options[:points]
-      json['point_count'] = options[:points].length
+      pnts_with_inclusions = options[:points].select{ |p| p.includers.length > 0 }
+
+      json['point_count'] = pnts_with_inclusions.length
     else 
       json['point_count'] = self.points.where("(published=1 AND #{moderation_status_check} AND json_length(includers) > 0) OR user_id=#{current_user.id}").count
     end 

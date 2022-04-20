@@ -98,6 +98,10 @@ window.List = ReactiveComponent
         position: 'relative'
         padding: get_list_padding()
 
+        boxShadow: if screencasting() then 'none'
+        borderTop: if screencasting() then 'none'
+        paddingTop: if screencasting() then 0
+
       A name: list_link(list_key)
 
 
@@ -174,7 +178,25 @@ ListItems = ReactiveComponent
       for aggregated_list, idx in @props.combines_these_lists
         colors[aggregated_list] = hues[idx]
 
+    render_new = (is_top) =>
+      LI 
+        key: "new#{list_key}"
+        style: 
+          margin: 0 
+          padding: 0
+          listStyle: 'none'
+          display: 'inline-block'
+          marginBottom: 20
+          marginTop: 6
+          
+        NewProposal 
+          list_key: list_key
+          combines_these_lists: @props.combines_these_lists  
+          is_list_top: is_top    
+
     DIV null, 
+      if fetch(list_key).adding_new_proposal
+        render_new(true)
 
       UL null, 
         for proposal,idx in proposals
@@ -188,19 +210,7 @@ ListItems = ReactiveComponent
 
         if @props.show_new_button
 
-          LI 
-            key: "new#{list_key}"
-            style: 
-              margin: 0 
-              padding: 0
-              listStyle: 'none'
-              display: 'inline-block'
-              marginBottom: 20
-              marginTop: 6
-              
-            NewProposal 
-              list_key: list_key
-              combines_these_lists: @props.combines_these_lists
+          render_new()
 
 
 
@@ -548,6 +558,7 @@ window.list_actions = (props) ->
       marginBottom: 50
       marginTop: 24
       display: 'flex'
+      alignItems: 'baseline'
 
     DIV 
       style: 
@@ -561,28 +572,31 @@ window.list_actions = (props) ->
           style: 
             minWidth: 78
 
-          A
+
+          BUTTON
+            className: 'add_new_button like_link'
             style: 
               fontSize: 14
               color: focus_color()
               fontFamily: customization('font')
               fontStyle: 'normal'
               fontWeight: 700
+              textDecoration: 'none'
             onClick: (e) => 
-              list_state = fetch list_key
-              list_state.show_all_proposals = true 
-              save list_state
               e.stopPropagation()
-
-              wait_for = ->
-                add_new_button = $("[name='new_#{props.list.key.substring(5)}']")
-                if add_new_button.length > 0 
-                  add_new_button.ensureInView()
-                  add_new_button.click()
-                else 
-                  setTimeout wait_for, 1
-
-              wait_for()
+        
+              if permitted > 0
+                list_state = fetch list_key
+                # list_state.show_all_proposals = true 
+                list_state.adding_new_proposal = list_key
+                list_state.clicked_top = true
+                save list_state
+               
+              else 
+                e.stopPropagation()
+                reset_key 'auth', 
+                  form: 'create account'
+                  goal: 'Introduce yourself to share a response'
 
             '+ '
 

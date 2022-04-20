@@ -13,7 +13,6 @@ styles += """
 
 """
 
-
 window.NewProposal = ReactiveComponent
   displayName: 'NewProposal'
 
@@ -26,13 +25,14 @@ window.NewProposal = ReactiveComponent
 
     current_user = fetch '/current_user'
 
-    if list_state.adding_new_proposal != list_key && \
-       loc.query_params.new_proposal == list_key
-      list_state.adding_new_proposal = list_key
-      save list_state
+    # if list_state.adding_new_proposal != list_key && \
+    #    loc.query_params.new_proposal == list_key
+    #   list_state.adding_new_proposal = list_key
+    #   save list_state
 
-    adding = list_state.adding_new_proposal == list_key 
+    adding = list_state.adding_new_proposal == list_key && (!!@props.is_list_top == !!list_state.clicked_top)
 
+    console.log 'adding', list_state.adding_new_proposal == list_key , !!@props.is_list_top == !!list_state.clicked_top
     if @props.combines_these_lists
       available_lists = (lst for lst in lists_current_user_can_add_to(@props.combines_these_lists) when lst != list_key)
       permitted = available_lists.length
@@ -41,6 +41,7 @@ window.NewProposal = ReactiveComponent
 
     needs_to_login = permitted == Permission.NOT_LOGGED_IN
     permitted = permitted > 0
+
 
     return SPAN null if !permitted && !needs_to_login
 
@@ -82,21 +83,21 @@ window.NewProposal = ReactiveComponent
 
         
         onClick: (e) => 
-          loc.query_params.new_proposal = list_key
-          save loc
-
+          # loc.query_params.new_proposal = list_key
+          # save loc
+    
           if permitted
             list_state.adding_new_proposal = list_key; save(list_state)
-            setTimeout =>
-              $("##{list_name}-name").focus()
-            , 0
+            # setTimeout =>
+            #   $("##{list_name}-name").focus()
+            # , 0
           else 
             e.stopPropagation()
             reset_key 'auth', 
               form: 'create account'
               goal: 'Introduce yourself to share a response'
         
-        A name: "new_#{list_name}"
+        # A name: "new_#{list_name}"
         SVG
           width: 30 
           height: 30
@@ -131,7 +132,7 @@ window.NewProposal = ReactiveComponent
           padding: '6px 8px'
           marginLeft: if customization('show_proposer_icon', list_key) then -76 + 68 else -36 + 68
 
-        A name: "new_#{list_name}"
+        # A name: "new_#{list_name}"
 
         if customization('new_proposal_tips', list_key)
           @drawTips customization('new_proposal_tips', list_key)
@@ -155,14 +156,14 @@ window.NewProposal = ReactiveComponent
 
 
           CharacterCountTextInput 
-            id: "#{list_name}-name"
+            id: "#{list_name}-name-#{!!@props.is_list_top}"
             maxLength: 240
             name:'name'
             pattern: '^.{3,}'
             'aria-label': translator("engage.edit_proposal.summary.placeholder", 'Clear and concise summary')
             placeholder: translator("engage.edit_proposal.summary.placeholder", 'Clear and concise summary')
             required: 'required'
-            focus_on_mount: true
+            focus_on_mount: !!@props.is_list_top == !!list_state.clicked_top
 
             count_style: 
               position: 'absolute'
@@ -294,7 +295,7 @@ window.NewProposal = ReactiveComponent
                 backgroundColor: focus_color()
 
               onClick: => 
-                name = document.getElementById("#{list_name}-name").value
+                name = document.getElementById("#{list_name}-name-#{!!@props.is_list_top}").value
 
                 fields = 
                   description: fetch("description-new-proposal-#{list_name}").html
@@ -328,10 +329,23 @@ window.NewProposal = ReactiveComponent
 
                 save proposal, => 
                   if proposal.errors?.length == 0
-                    list_state.adding_new_proposal = null 
+                    list_state.adding_new_proposal = null
+                    list_state.clicked_top = null 
                     save list_state
-                    delete loc.query_params.new_proposal
-                    save loc                      
+
+                    if @props.is_list_top
+                      set_sort_order('Date: Most recent first')
+                    else 
+                      set_sort_order('Date: Earliest first')
+
+                    show_flash("Your response has been added")
+
+                    ensure_in_viewport_when_appears("[data-name=\"#{slugify(proposal.name)}\"]")
+                      
+
+
+                    # delete loc.query_params.new_proposal
+                    # save loc                      
                   else
                     @local.errors = proposal.errors
                     save @local
@@ -347,28 +361,12 @@ window.NewProposal = ReactiveComponent
                 marginLeft: 12
               onClick: => 
                 list_state.adding_new_proposal = null
+                list_state.clicked_top = null             
                 save(list_state)
-                delete loc.query_params.new_proposal
-                save loc
+                # delete loc.query_params.new_proposal
+                # save loc
 
               translator 'shared.cancel_button', 'cancel'
-
-  componentDidMount : ->    
-    @ensureIsInViewPort()
-
-  componentDidUpdate : -> 
-    @ensureIsInViewPort()
-
-  ensureIsInViewPort : -> 
-    loc = fetch 'location'
-
-    is_selected = loc.query_params.new_proposal == @props.list_key
-
-    if is_selected
-      if browser.is_mobile
-        $(@getDOMNode()).moveToTop {scroll: false}
-      else
-        $(@getDOMNode()).ensureInView {scroll: false}
 
 
 

@@ -387,7 +387,7 @@ window.Proposal = ReactiveComponent
                     points_draggable: mode == 'crafting'
                     drop_target: false
                     points: buildPointsList \
-                      @proposal, 'cons', \
+                      proposal, 'cons', \
                       (if mode == 'results' then 'score' else 'last_inclusion'), \ 
                       mode == 'crafting' && !TWO_COL(), \
                       mode == 'crafting' || TWO_COL() || (just_you && mode == 'results')
@@ -404,7 +404,7 @@ window.Proposal = ReactiveComponent
                     points_draggable: mode == 'crafting'
                     drop_target: false
                     points: buildPointsList \
-                      @proposal, 'pros', \
+                      proposal, 'pros', \
                       (if mode == 'results' then 'score' else 'last_inclusion'), \ 
                       mode == 'crafting' && !TWO_COL(), \
                       mode == 'crafting' || TWO_COL() || (just_you && mode == 'results')
@@ -1002,6 +1002,7 @@ GroupSelectionRegion = ReactiveComponent
 
 stored_points_order = {}
 buildPointsList = (proposal, valence, sort_field, filter_included, show_all_points) ->
+  return [] if !proposal.slug
   sort_field = sort_field or 'score'
   points = fetch("/page/#{proposal.slug}").points or []
   opinions = fetch(proposal).opinions

@@ -246,8 +246,9 @@ CustomizeDescription = ReactiveComponent
           DIV 
             className: 'wysiwyg_text'
             style: 
-              fontSize: 18
-              padding: '6px 8px'
+              fontSize: @props.style.fontSize or 18
+              padding: @props.style.padding or '6px 8px'
+              fontWeight: @props.style.fontWeight or 400
             dangerouslySetInnerHTML: __html: description
             onDoubleClick: if is_admin then => 
               edit_forum.editing = true 
@@ -1092,7 +1093,7 @@ window.PhotoBanner = (opts) ->
         // }
 
         .PhotoBanner > .wrapper .CustomizeTitle .banner_title {
-          font-size: 48px;
+          font-size: 42px;
           font-weight: 700;
           font-family: #{header_font()};
           text-align: center;
@@ -1155,7 +1156,8 @@ window.PhotoBanner = (opts) ->
               border: if !has_description then (if has_image_background || is_dark_theme then '1px solid rgba(255,255,255,.5)' else '1px solid rgba(0,0,0,.5)')
               padding: "6px 8px"
               minHeight: 20
-              fontSize: 18
+              fontSize: 16
+              fontWeight: 600
 
       CustomizeBackground()
 

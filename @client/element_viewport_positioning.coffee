@@ -1,5 +1,16 @@
 # jQuery plugins for positioning viewport with respect to an element
 
+window.ensure_in_viewport_when_appears = (selector) ->
+  viewport_ensurer = setInterval ->
+    el = document.querySelector selector
+    if el 
+      $(el).ensureInView {scroll: false}
+      clearInterval viewport_ensurer
+
+  , 10
+
+
+
 $.fn.ensureInView = (options = {}) ->
 
   _.defaults options,

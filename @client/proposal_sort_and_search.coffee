@@ -77,7 +77,7 @@ window.sorted_proposals = (proposals, sort_key, require_force) ->
     proposal_sort_keys[sort_key] = true
 
   sort = fetch 'sort_proposals'
-  set_sort() if !sort.name? 
+  set_default_sort() if !sort.name? 
 
   proposals = proposals.slice()
 
@@ -355,7 +355,15 @@ sort_options = [
 
 ]
 
-set_sort = -> 
+window.set_sort_order = (name) ->
+  sort = fetch 'sort_proposals'
+  for s in sort_options
+    if s.name == name
+      _.extend sort, s or sort_options[1]
+      save sort
+      return 
+
+set_default_sort = -> 
   sort = fetch 'sort_proposals'
   if !sort.name?
     found = false 
@@ -497,7 +505,7 @@ SortProposalsMenu = ReactiveComponent
   render: -> 
 
     sort = fetch 'sort_proposals'
-    set_sort() if !sort.name?       
+    set_default_sort() if !sort.name?       
 
 
     DropMenu

@@ -141,6 +141,7 @@ window.CollapsedProposal = ReactiveComponent
 
     LI
       key: proposal.key
+      "data-name": slugify(proposal.name)
       id: 'p' + (proposal.slug or "#{proposal.id}").replace('-', '_')  # Initial 'p' is because all ids must begin 
                                            # with letter. seeking to hash was failing 
                                            # on proposals whose name began with number.
@@ -363,13 +364,13 @@ window.CollapsedProposal = ReactiveComponent
 
               if permit('delete proposal', proposal, subdomain) > 0
                 BUTTON
+                  className: 'like_link'
                   style:
                     marginRight: 10
                     color: focus_color()
-                    backgroundColor: 'transparent'
-                    border: 'none'
                     padding: 0
                     fontSize: 12
+                    fontWeight: 600
 
                   onClick: => 
                     if confirm('Delete this proposal forever?')

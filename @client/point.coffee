@@ -666,7 +666,10 @@ window.Comment = ReactiveComponent
 
     else
 
-      DIV className: 'comment_entry',
+      DIV 
+        key: comment.key
+        "data-id": comment.key
+        className: 'comment_entry'
 
         # Comment author name
         DIV className: 'comment_entry_name',

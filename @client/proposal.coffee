@@ -753,7 +753,7 @@ DecisionBoard = ReactiveComponent
 
               
 
-        if your_opinion.key && permit('update opinion', @proposal, your_opinion) > 0
+        if your_opinion.key && permit('update opinion', @proposal, your_opinion) > 0 && get_proposal_mode() == 'crafting'
           remove_opinion = -> 
             your_opinion.stance = 0
             your_opinion.point_inclusions = []                   
@@ -769,7 +769,7 @@ DecisionBoard = ReactiveComponent
               className:'cancel_opinion_button primary_cancel_button'
               onClick: remove_opinion
 
-              translator "engage.remove_my_opinion", 'Remove my opinion'
+              translator "engage.remove_my_opinion", 'Remove your opinion'
 
 
 

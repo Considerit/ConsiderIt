@@ -110,7 +110,7 @@ window.ModerationDash = ReactiveComponent
         style: 
           marginBottom: 12 
           fontSize: 20
-        "Your moderation policy: "
+        # "Your moderation policy: "
 
 
         SELECT 
@@ -128,17 +128,22 @@ window.ModerationDash = ReactiveComponent
             OPTION 
               value: option.value
               option.label 
-      DIV 
-        style: 
-          marginBottom: 24           
-        "Visit the "
-        A 
-          href: '/dashboard/application'
+
+      if !screencasting()
+        DIV 
           style: 
-            textDecoration: 'underline'
-            fontWeight: 700
-          "forum settings"
-        " for more explanation about moderation policy options."
+            marginBottom: 24      
+            fontStyle: 'italic'
+            fontSize: 14
+
+          "Visit the "
+          A 
+            href: '/dashboard/application'
+            style: 
+              textDecoration: 'underline'
+              fontWeight: 700
+            "forum settings"
+          " for an explanation of these moderation policies."
 
 
       UL 

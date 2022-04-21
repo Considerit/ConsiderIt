@@ -150,6 +150,16 @@
 
 
         - if current_subdomain.google_analytics_code && current_subdomain.google_analytics_code != ''
-          :javascript
-            ga('create', '#{current_subdomain.google_analytics_code}', 'auto', {'name': 'customer'});
-            ga('customer.send', 'pageview');
+          - if current_subdomain.google_analytics_code.start_with?('G-')
+            %script{:async => true, :src => "https://www.googletagmanager.com/gtag/js?id=#{current_subdomain.google_analytics_code}", :type => 'text/javascript'}
+
+            :javascript
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '#{current_subdomain.google_analytics_code}');
+
+          - else          
+            :javascript
+              ga('create', '#{current_subdomain.google_analytics_code}', 'auto', {'name': 'customer'});
+              ga('customer.send', 'pageview');

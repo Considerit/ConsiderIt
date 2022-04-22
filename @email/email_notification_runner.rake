@@ -25,8 +25,8 @@ task :send_email_notifications => :environment do
           for user_id, triggered in triggered_users
             next if !triggered
 
-            user = User.find user_id
-            next if user.email.match('.ghost')
+            user = User.find_by_id user_id
+            next if !user || user.email.match('.ghost')
             
             prefs = user.subscription_settings(subdomain)
 

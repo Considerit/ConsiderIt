@@ -34,12 +34,15 @@ task :send_email_notifications => :environment do
               send_digest(subdomain, user, prefs)
             rescue => e
               pp "Failed to send notification to /user/#{user.id} for #{subdomain.name}", e
+              ExceptionNotifier.notify_exception(e)      
               raise e
             end    
           end
         rescue => e 
           pp "Notification runner failed for subdomain #{subdomain.name}", e
+          ExceptionNotifier.notify_exception(e)
           raise e
+
         end
 
       end

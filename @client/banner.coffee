@@ -820,6 +820,7 @@ window.EditBanner = ReactiveComponent
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
     edit_banner = fetch 'edit_banner'
+    edit_forum = fetch 'edit_forum'
 
     if !current_user.is_admin
       return DIV null 
@@ -841,7 +842,8 @@ window.EditBanner = ReactiveComponent
 
 
     DIV null, 
-      EditForum()
+      if !edit_forum.editing
+        EditForum()
 
       if @local.file_errors
         DIV style: {color: 'red'}, 'Error uploading files!'

@@ -19,15 +19,15 @@ window.Header = ReactiveComponent
     loc = fetch('location')
     is_homepage = loc.url == '/'
     
-    edit_forum = fetch('edit_forum')
 
     header_bonus = customization('header_bonus') # currently used for things like inserting google font
 
     HEADER 
       className: if !is_light_background() then 'dark'
 
-      if current_user.is_admin && (edit_forum.editing || loc.url.startsWith('/dashboard')) && window.UpgradeForumBanner? && permit('configure paid feature') < 0
-        UpgradeForumBanner()
+      if current_user.is_admin
+        HostHeader()
+
 
       # DIV 
       #   id: 'upgrade-message'
@@ -78,6 +78,36 @@ window.Header = ReactiveComponent
           translator "engage.server_error", 'Warning: there was a server error!'
 
 
+window.HostHeader = ReactiveComponent
+  displayName: 'HostHeader'
+
+  render: ->
+    loc = fetch('location')
+    edit_forum = fetch('edit_forum')
+
+    free_forum = permit('configure paid feature') < 0
+
+    if edit_forum.editing 
+
+      DIV 
+        className: 'forum_editor'
+        style: 
+          #display: 'flex'
+          #justifyContent: 'center'
+          #alignItems: 'center'
+          padding: 8
+          textAlign: 'center'
+
+        if window.UpgradeForumCompact? && free_forum
+          UpgradeForumCompact()
+
+        EditForum()
+
+    else if loc.url.startsWith('/dashboard') && window.UpgradeForumBanner? && free_forum
+      UpgradeForumBanner()
+
+    else 
+      DIV null
 
 
 

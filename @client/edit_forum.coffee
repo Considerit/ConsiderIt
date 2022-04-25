@@ -56,41 +56,30 @@ window.EditForum = ReactiveComponent
           onClick: enter_edit
 
           translator 'forum.edit_button', 'Edit Banner & Forum Structure'
-    else
-      DIV 
-        style: 
-          position: 'fixed'
-          left: "50%"
-          marginLeft: -80 - 8*2
-          # top: if subdomain.plan then 0 else 45 + 0
-          bottom: 12
-          zIndex: 99999
-          # backgroundColor: if !is_light then "rgba(0,0,0,.3)" else "rgba(255,255,255,.3)"
-          # backgroundColor: selected_color # if is_light then "rgba(0,0,0,.9)" else "rgba(220, 220, 220, 0.9)"
-          # color: 'white' # if !is_light then 'black' else 'white'
+    else 
 
-        DIV null,
-          BUTTON 
+      DIV null,
+        BUTTON 
+          style: 
+            boxShadow: '0 1px 2px rgba(0,0,0,.5)'
+          onClick: stop_editing_forum
+
+          translator 'shared.done_editing', 'Done Editing Forum'
+
+
+        if subdomain.errors?.length > 0
+          DIV 
             style: 
-              boxShadow: '0 1px 2px rgba(0,0,0,.5)'
-            onClick: stop_editing_forum
+              borderRadius: 8
+              margin: 20
+              padding: 20
+              backgroundColor: '#FFE2E2'
 
-            translator 'shared.done_editing', 'Done Editing Forum'
+            H1 style: {fontSize: 18}, 'Ooops!'
 
-
-          if subdomain.errors?.length > 0
-            DIV 
-              style: 
-                borderRadius: 8
-                margin: 20
-                padding: 20
-                backgroundColor: '#FFE2E2'
-
-              H1 style: {fontSize: 18}, 'Ooops!'
-
-              for error in subdomain.errors
-                DIV 
-                  style: 
-                    marginTop: 10
-                  error
+            for error in subdomain.errors
+              DIV 
+                style: 
+                  marginTop: 10
+                error
 

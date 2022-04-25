@@ -25,23 +25,24 @@ task :send_email_notifications => :environment do
           for user_id, triggered in triggered_users
             next if !triggered
 
-            user = User.find user_id
-            next if user.email.match('.ghost')
+            user = User.find_by_id user_id
+            next if !user || user.email.match('.ghost')
             
             prefs = user.subscription_settings(subdomain)
 
             begin 
               send_digest(subdomain, user, prefs)
             rescue => e
-              raise e
               pp "Failed to send notification to /user/#{user.id} for #{subdomain.name}", e
               ExceptionNotifier.notify_exception(e)      
+              raise e
             end    
           end
         rescue => e 
-          raise e
           pp "Notification runner failed for subdomain #{subdomain.name}", e
-          ExceptionNotifier.notify_exception(e)      
+          ExceptionNotifier.notify_exception(e)
+          raise e
+
         end
 
       end

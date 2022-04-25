@@ -20,8 +20,6 @@ def send_digest(subdomain, user, subscription_settings, deliver = true, since = 
   new_activity = get_new_activity(subdomain, user, since)
   mail = DigestMailer.digest(subdomain, user, new_activity, last_digest_sent_at, send_emails)
 
-  send_key = "/subdomain/#{subdomain.id}"
-  user.sent_email_about(send_key)
   
   subdomain.digest_triggered_for ||= {}
   subdomain.digest_triggered_for[user.id] = false
@@ -29,6 +27,9 @@ def send_digest(subdomain, user, subscription_settings, deliver = true, since = 
   
   pp "delivering to #{user.name}"
   mail.deliver_now if deliver
+
+  send_key = "/subdomain/#{subdomain.id}"
+  user.sent_email_about(send_key)
 
   mail 
 

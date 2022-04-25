@@ -138,6 +138,8 @@
 
       %script{:type => 'text/javascript', :src => "https://translate.google.com/translate_a/element.js"}
 
+      - if current_user.is_admin? || current_user.super_admin || current_subdomain.name == 'homepage'
+        %script{:src => "https://js.stripe.com/v3/"}
 
       - if Rails.env.production?
         :javascript
@@ -157,6 +159,16 @@
             ga('create', '#{current_subdomain.google_analytics_code}', 'auto', {'name': 'customer'});
             ga('customer.send', 'pageview');
 
-      - if current_user.is_admin? || current_user.super_admin || current_subdomain.name == 'homepage'
-        %script{:src => "https://js.stripe.com/v3/"}
+          - if current_subdomain.google_analytics_code.start_with?('G-')
+            %script{:async => true, :src => "https://www.googletagmanager.com/gtag/js?id=#{current_subdomain.google_analytics_code}", :type => 'text/javascript'}
 
+            :javascript
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '#{current_subdomain.google_analytics_code}');
+
+          - else          
+            :javascript
+              ga('create', '#{current_subdomain.google_analytics_code}', 'auto', {'name': 'customer'});
+              ga('customer.send', 'pageview');

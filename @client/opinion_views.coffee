@@ -407,7 +407,7 @@ _activate_opinion_view = (view, view_type, replace_existing) ->
 
 
 
-date_option_changed = (activated) ->
+window.date_option_changed = (activated) ->
   date_toggle_state = fetch 'opinion-date-filter'
   tz_offset = new Date().getTimezoneOffset() * 60 * 1000
 
@@ -1749,3 +1749,60 @@ window.ToggleButtons = (items, view_state, style) ->
             item.label
 
 window.OpinionViews = OpinionViews
+
+
+
+###########################################################################
+# Simulator tries to play back participation in the forum over time
+#
+
+window.passes_running_timelapse_simulation = (dt) ->
+  !window.running_timelapse_simulation? || (new Date(dt).getTime() < window.running_timelapse_simulation)
+
+window.participation_timelapse = (step, interval) -> 
+  filter_out = fetch 'filtered'
+  interval ?= 500
+  step ?= 1 * 60 * 60 * 1000
+  
+  proposals = fetch '/proposals'
+
+  if !proposals.proposals 
+    setTimeout ->
+      simulate_participation()
+    , 100
+    return 
+
+  users = {}
+  last = 0 
+  first = Infinity
+
+  for prop in proposals.proposals
+    for o in prop.opinions
+      t = new Date(o.created_at or o.updated_at).getTime()
+      if t > last 
+        last = t
+      if t < first 
+        first = t
+
+  date_options = default_date_options()
+  date_toggle_state = fetch 'opinion-date-filter'
+  change_date = (end) -> 
+    date_toggle_state.end = end
+    save date_toggle_state
+    date_option_changed date_options[3] 
+           
+
+  end = first
+
+  simulator = setInterval ->    
+
+    change_date(end)
+
+    end += step
+    window.running_timelapse_simulation = end 
+
+    if end > last
+      clearInterval simulator
+      delete window.running_timelapse_simulation
+
+  , interval

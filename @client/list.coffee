@@ -202,6 +202,8 @@ ListItems = ReactiveComponent
         for proposal,idx in proposals
           continue if idx > @props.show_first_num_items - 1
 
+          continue if !passes_running_timelapse_simulation(proposal.created_at)
+
           RenderListItem
             key: "collapsed#{proposal.key}"
             proposal: proposal.key

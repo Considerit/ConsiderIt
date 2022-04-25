@@ -607,6 +607,10 @@ ManualProposalResort = ReactiveComponent
     if !stale_sort_order(@props.sort_key) || ONE_COL()
       return SPAN null 
 
+    if running_timelapse_simulation?
+      invalidate_proposal_sorts()
+      return SPAN null
+
     DIV
       style: 
         position: 'relative'

@@ -1013,6 +1013,10 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
     filtered = true
     opinions = get_opinions_for_proposal opinions, proposal
 
+  if running_timelapse_simulation?
+    opinions = (o for o in opinions when passes_running_timelapse_simulation(o.created_at or o.updated_at))
+  
+
 
   points = (pnt for pnt in points when pnt.is_pro == (valence == 'pros') )
 
@@ -1067,9 +1071,9 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
 
     # Sort points based on resonance with selected users, or custom sort_field
     sort = (pnt) ->
-      if filtered
+      if filtered || running_timelapse_simulation?
         -point_inclusions_per_point[pnt.key] 
-      else
+      else 
         -pnt[sort_field]
 
 
@@ -1166,6 +1170,8 @@ PointsList = ReactiveComponent
         'aria-labelledby': @local.key.replace('/','-')
         if points.length > 0 || @props.rendered_as == 'decision_board_point'
           for point in points
+            continue if !passes_running_timelapse_simulation(point.created_at)
+
             if @props.points_editable && \
                point.key in your_points.editing_points && \
                !browser.is_mobile

@@ -181,19 +181,45 @@ sort_options = [
 
       opinion_views = fetch 'opinion_views'
 
+      filters_for_proposals = {}
+
+      # get last opinion to use as our "trending" stopper
+      last_activity = "0"
+      for prop in proposals
+        opinions = prop.opinions or fetch(prop).opinions or [] 
+
+        filters_for_proposals[prop.key] = 
+          opinions: opinions
+          views: compose_opinion_views opinions, prop, opinion_views
+        {weights, salience, groups} = filters_for_proposals[prop.key].views
+        for o in opinions
+          continue if salience[o.user] < 1 || weights[o.user] == 0
+          if o.updated_at > last_activity 
+            last_activity = o.updated_at
+
+        if prop.created_at > last_activity
+          last_activity = prop.created_at
+
+
+      latest_timestamp = new Date(last_activity).getTime()
+      date_filter = fetch('opinion-date-filter')
+      if date_filter.end
+        latest_timestamp = Math.min(date_filter.end, latest_timestamp)
+
       val = (proposal) -> 
         if proposal.key not of cache
-          opinions = proposal.opinions or fetch(proposal).opinions or []   
-          {weights, salience, groups} = compose_opinion_views opinions, proposal, opinion_views
+          opinions = filters_for_proposals[proposal.key].opinions
+          {weights, salience, groups} = filters_for_proposals[proposal.key].views
           sum = 0
           for opinion in opinions
             continue if salience[opinion.user] < 1 # don't count users who aren't fully salient, they're considered backgrounded
             w = weights[opinion.user] # * salience[opinion.user]
             sum += opinion.stance * w
 
-          n = Date.now()
           pt = new Date(proposal.created_at).getTime()
-          cache[proposal.key] = sum / (1 + (n - pt) / 10000000000)  # decrease this constant to favor newer proposals
+
+
+          cache[proposal.key] = sum / (1 + (latest_timestamp - pt) / 100)  # decrease this constant to favor newer proposals
         cache[proposal.key]
 
       proposals.sort (a, b) ->

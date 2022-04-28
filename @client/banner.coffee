@@ -35,8 +35,12 @@ CustomizeGoogleTranslate = ReactiveComponent
     edit_forum = fetch 'edit_forum'
     is_admin = fetch('/current_user').is_admin
 
+    trns = subdomain.customizations.google_translate_style
 
-    DIV null, 
+
+    DIV 
+      style: 
+        paddingTop: if trns?.callout && !edit_forum.editing then 48    
 
 
       if is_admin && edit_forum.editing   
@@ -45,7 +49,7 @@ CustomizeGoogleTranslate = ReactiveComponent
           style:
             display: 'flex'
             justifyContent: 'center'
-            paddingTop: 48
+            paddingTop: if !subdomain.customizations.banner.background_image_url then 48
 
           
           LABEL 
@@ -87,10 +91,10 @@ CustomizeGoogleTranslate = ReactiveComponent
               "Helps support multi-lingual forums."
 
 
-      if subdomain.customizations.google_translate_style?.prominent && fetch('location').url == '/'
-        trns = subdomain.customizations.google_translate_style
+      if trns?.prominent && fetch('location').url == '/'
         DIV
           className: "translator"
+          
 
 
           if trns.callout?
@@ -113,7 +117,6 @@ CustomizeGoogleTranslate = ReactiveComponent
                   onChange: (e) =>
                     @local.google_translate_style.callout = e.target.value
                     save @local
-                    console.log 'saved', @local
               else 
                 trns.callout
 
@@ -1023,6 +1026,8 @@ window.PhotoBanner = (opts) ->
 
   has_title = (banner_config.title or opts.title)?.length > 0 
 
+  has_translation_callout = subdomain.customizations.google_translate_style?.callout
+
 
   background_color = edit_banner.background_css or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
 
@@ -1042,6 +1047,8 @@ window.PhotoBanner = (opts) ->
 
   else  
     text_color = if is_light_background(background_color) then 'black' else 'white'
+
+
 
   DIV 
     id: 'banner'
@@ -1066,6 +1073,10 @@ window.PhotoBanner = (opts) ->
           background: #{background_color};
         }
 
+        .PhotoBanner > .wrapper.with-image.with-translation-callout {
+          padding-top: 64px;
+        }
+
         .PhotoBanner > .wrapper .translator {
           padding: 16px;
           width: 380px;
@@ -1076,7 +1087,7 @@ window.PhotoBanner = (opts) ->
         }
 
         .PhotoBanner > .wrapper > .text_block {
-          padding: 48px 48px 48px 48px;
+          padding: 64px 48px 48px 48px;
           width: #{HOMEPAGE_WIDTH()}px;
           max-width: #{720 + 48 * 2}px;
           margin: auto;
@@ -1103,9 +1114,17 @@ window.PhotoBanner = (opts) ->
         }
 
         .PhotoBanner #tabs {
-          margin-top: 130px;
+          margin-top: 100px;
           top: 0;
         }
+
+        .PhotoBanner > .wrapper.no-image #tabs {
+          margin-top: 48px;
+          top: 0;
+        }
+
+
+
         .PhotoBanner #tabs > ul {
         }
         .PhotoBanner #tabs > ul > li {
@@ -1130,7 +1149,7 @@ window.PhotoBanner = (opts) ->
         """
 
     DIV 
-      className: "wrapper #{if has_image_background then 'with-image' else 'no-image'}"
+      className: "wrapper #{if has_image_background then 'with-image' else 'no-image'} #{if has_translation_callout then 'with-translation-callout' else 'no-translation-callout'}"
 
       CustomizeLogo()
 

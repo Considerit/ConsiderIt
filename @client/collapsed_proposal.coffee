@@ -653,7 +653,6 @@ window.ProposalScoresPopover =  ReactiveComponent
       height: legend_color_size
       display: 'inline-block'
       boxShadow: "0 1px 2px 0 rgba(103,103,103,0.50), inset 0 -1px 2px 0 rgba(0,0,0,0.16)"
-
     separator_inserted = false 
 
     items = visible_groups.slice()
@@ -756,7 +755,9 @@ window.ProposalScoresPopover =  ReactiveComponent
             DIV 
               style: _.extend {}, group_avatar_style, 
                 backgroundColor: colors[group]
-                visibility: if insert_separator then 'hidden'        
+                visibility: if insert_separator then 'hidden'
+                minWidth: legend_color_size
+        
 
             DIV 
               style: 

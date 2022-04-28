@@ -75,6 +75,7 @@ window.EditList = ReactiveComponent
           render_option: (option, is_active) ->
             SPAN 
               key: option.action
+              "data-option": option.action
               option.label
 
 
@@ -553,7 +554,7 @@ window.ModalNewList = ReactiveComponent
                   padding: '12px 0'
 
                 LABEL
-                  className: 'LIST-field-edit-label'
+                  className: 'LIST-field-edit-label LIST-permissions'
                   htmlFor: 'list_permit_new_items'
 
 
@@ -624,6 +625,7 @@ window.ModalNewList = ReactiveComponent
                       color: '#666'
                       fontSize: 14
                       marginBottom: 24
+                      display: if screencasting() then 'none'
                     onClick: (e) => 
                       @local.show_all_options = true 
                       save @local

@@ -195,7 +195,7 @@ ListItems = ReactiveComponent
           is_list_top: is_top    
 
     DIV null, 
-      if fetch(list_key).adding_new_proposal
+      if fetch(list_key).adding_new_proposal && fetch(list_key).clicked_top
         render_new(true)
 
       UL null, 
@@ -388,7 +388,7 @@ window.NewList = ReactiveComponent
       BUTTON 
         style: 
           textAlign: 'left'
-          marginTop: 35
+          marginTop: 55
           display: 'block'
           padding: get_list_padding()
           position: 'relative'

@@ -32,7 +32,7 @@ window.NewProposal = ReactiveComponent
 
     adding = list_state.adding_new_proposal == list_key && (!!@props.is_list_top == !!list_state.clicked_top)
 
-    console.log 'adding', list_state.adding_new_proposal == list_key , !!@props.is_list_top == !!list_state.clicked_top
+    # console.log 'adding', @props.is_list_top, list_state.adding_new_proposal == list_key , !!@props.is_list_top == !!list_state.clicked_top
     if @props.combines_these_lists
       available_lists = (lst for lst in lists_current_user_can_add_to(@props.combines_these_lists) when lst != list_key)
       permitted = available_lists.length

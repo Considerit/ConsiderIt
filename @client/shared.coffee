@@ -35,9 +35,9 @@ window.ajax_submit_files_in_form = (opts) ->
 
 
 window.screencasting = ->
-  window.is_screencasting ?= fetch('location').query_params.screencasting
+  window.is_screencasting ?= fetch('location').query_params.screencasting == 'true'
   window.is_screencasting
-  
+    
 window.pad = (num, len) -> 
   str = num
   dec = str.split('.')

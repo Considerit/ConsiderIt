@@ -100,11 +100,12 @@ window.get_participant_attributes = ->
           attributes.push 
             key: name
             name: tag.view_name or tag.name or tag.self_report?.question or name
-            pass: do(name) -> (u, value) -> 
+            pass: do(name, tag) -> (u, value) -> 
+              result = tag.compute?(u) or fetch(u).tags[name]
               if value?
-                fetch(u).tags[name] == value
+                result == value
               else 
-                fetch(u).tags[name]
+                result
             options: tag.self_report?.options or tag.options or (if (tag.self_report?.input or tag.input) == 'boolean' then [true, false])
             input_type: tag.self_report?.input
             continuous_value: tag.continuous_value

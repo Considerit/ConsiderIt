@@ -971,6 +971,7 @@ InteractiveOpinionViews = ReactiveComponent
                     display: 'inline-block'
 
                   BUTTON
+                    "data-attribute": attr_name
                     title: if shortened then attribute.name
                     className: "filter opinion_view_button #{if opinion_views_ui.activated_attributes[attribute.key] then 'active' else ''}"
                     onClick: -> toggle_attribute_visibility(attribute)
@@ -1017,8 +1018,11 @@ InteractiveOpinionViews = ReactiveComponent
 
                     do (val) => 
                       LI 
+                        "data-attribute": attribute.name
+                        "data-value": val
                         style: 
                           display: 'inline-block'
+
                         LABEL 
                           className: "attribute_value_selector"
                           title: if shortened then val 
@@ -1058,7 +1062,7 @@ InteractiveOpinionViews = ReactiveComponent
           if opinion_views_ui.group_by == attr.key 
             cur_val = idx
         DIV 
-          className: 'opinion_view_row'
+          className: 'opinion_view_row color_code'
           style: 
             borderTop: '1px dotted #DEDDDD' 
 

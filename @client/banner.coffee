@@ -1116,6 +1116,7 @@ window.PhotoBanner = (opts) ->
         .PhotoBanner #tabs {
           margin-top: 100px;
           top: 0;
+          z-index: 0;
         }
 
         .PhotoBanner > .wrapper.no-image #tabs {

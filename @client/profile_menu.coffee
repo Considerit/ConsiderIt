@@ -143,6 +143,7 @@ window.ProfileMenu = ReactiveComponent
 
           DIV 
             style: 
+              marginTop: 48
               padding: '12px 24px'
               backgroundColor: bg
               fontSize: 14

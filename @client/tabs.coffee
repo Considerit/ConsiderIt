@@ -180,6 +180,7 @@ styles += """
     z-index: 2;
     margin-bottom: -2px;
     margin-top: 20px;
+    position: relative;
   }
   #tabs > ul {
     margin: auto;

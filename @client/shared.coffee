@@ -693,6 +693,56 @@ window.slugify = (text) ->
   slug
 
 
+# only play videos when they're in the viewport
+window.play_videos_when_in_viewport = (parent_el) ->
+  videos = parent_el.querySelectorAll('video:not([data-initialized])')
+
+  for video in videos
+    do (video) =>
+      video.setAttribute 'data-initialized', "" 
+      if video.hasAttribute 'autoplay'
+        video.setAttribute 'playsinline', ""   
+
+      video.addEventListener "loadstart", (e) ->
+        video.classList.add 'loading'
+        if video.hasAttribute 'controls'
+          video.setAttribute 'data-controls', ""
+        if !video.hasAttribute('poster')
+          video.setAttribute 'controls', ""
+
+      video.addEventListener 'loadeddata', (e) ->
+        if video.readyState >= 1
+          video.classList.remove 'loading'
+          if !video.hasAttribute 'data-controls'
+            video.removeAttribute 'controls'
+          eligible_to_play = null
+          observer = new IntersectionObserver (entries) ->
+            entries.forEach (entry) ->
+              if !entry.isIntersecting
+                eligible_to_play = false
+                pause_video()
+              else if video.hasAttribute 'autoplay'
+                eligible_to_play = true
+                play_video()
+          , {}
+
+          play_video = ->
+            video.play()
+          pause_video = ->
+            video.pause()
+
+
+          observer.observe video
+
+          onVisibilityChange = ->
+            if document.hidden || !eligible_to_play
+              pause_video()
+            else if video.hasAttribute 'autoplay'
+              play_video()
+
+          document.addEventListener 'visibilitychange', onVisibilityChange
+
+
 
 
 ## CSS reset
@@ -785,7 +835,7 @@ a {
   color: inherit;
   cursor: pointer;
   text-decoration: underline; 
-  font-weight: 600;}
+  font-weight: 700;}
   a:focus {
   }
   a:active {

@@ -52,7 +52,7 @@ question_index = (question) ->
   subdomain = fetch '/subdomain'
   qidx = null
   for q, idx in (subdomain.customizations.user_tags or [])
-    if q.self_report.question == question.self_report.question
+    if q.self_report?.question == question.self_report?.question
       qidx = idx
       break 
   qidx

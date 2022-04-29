@@ -1,7 +1,7 @@
 
 
 task :prep_deathstar => :environment do
-  for user in ['oprah@gmail.com', 'test@test.dev.ghost']
+  for user in ['oprah@gmail.com', 'test@test.dev.ghost', 'denver@denver.com']
     u = User.find_by_email(user)
 
     if u
@@ -17,6 +17,8 @@ task :prep_deathstar => :environment do
     end
 
   end 
+
+
 
   subdomain = Subdomain.find_by_name('galacticfederation')
   subdomain.proposals.update_all(:moderation_status => nil)
@@ -47,6 +49,7 @@ task :prep_deathstar => :environment do
   subdomain.customizations["homepage_tabs"][3]["page_preamble"] = ""
   subdomain.save
   subdomain.proposals.update_all(:active => true)
+
 
 
   subdomain = Subdomain.find_by_name('denverclimateaction')

@@ -29,7 +29,7 @@ require './footer'
 require './homepage'
 require './shared'
 require './opinion_slider'
-require './state_dash'
+# require './state_dash'
 require './tooltip'
 require './popover'
 require './flash'
@@ -329,7 +329,6 @@ Root = ReactiveComponent
       
       onClick: @resetSelection
 
-      StateDash()
       
       # state transition components
       AuthTransition()

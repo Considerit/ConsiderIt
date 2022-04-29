@@ -289,7 +289,7 @@ window.ProposalDescription = ReactiveComponent
 
 
 
-        if permit('update proposal', proposal) > 0
+        if permit('update proposal', proposal) > 0 && !screencasting()
           DIV
             style: 
               marginTop: 5

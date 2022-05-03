@@ -150,7 +150,7 @@ sort_options = [
 
   { 
     name: 'Total Score'
-    description: "Each item is scored by the sum of all opinions, where each opinion expresses a score on a spectrum from -1 to 1. "    
+    description: "each proposal is scored by the sum of all opinions, where each opinion expresses a score on a spectrum from -1 to 1. "    
     order: (proposals) -> 
       cache = {}
       opinion_views = fetch 'opinion_views'
@@ -200,12 +200,12 @@ sort_options = [
         if prop.created_at > last_activity
           last_activity = prop.created_at
 
-
       latest_timestamp = new Date(last_activity).getTime()
       date_filter = fetch('opinion-date-filter')
       if date_filter.end
         latest_timestamp = Math.min(date_filter.end, latest_timestamp)
 
+      RECENCY_SENSITIVITY = 100 # decrease this constant to favor newer proposals
       val = (proposal) -> 
         if proposal.key not of cache
           opinions = filters_for_proposals[proposal.key].opinions
@@ -218,8 +218,11 @@ sort_options = [
 
           pt = new Date(proposal.created_at).getTime()
 
+          if sum < 0
+            cache[proposal.key] = sum * (1 + (latest_timestamp - pt) / RECENCY_SENSITIVITY)  
+          else 
+            cache[proposal.key] = sum / (1 + (latest_timestamp - pt) / RECENCY_SENSITIVITY) 
 
-          cache[proposal.key] = sum / (1 + (latest_timestamp - pt) / 100)  # decrease this constant to favor newer proposals
         cache[proposal.key]
 
       proposals.sort (a, b) ->
@@ -316,7 +319,7 @@ sort_options = [
 
   { 
     name: 'Average Score'
-    description: "Each item is scored by the average opinion, where each opinion expresses a score on a spectrum from -1 to 1. "
+    description: "each proposal is scored by the average opinion, where each opinion expresses a score on a spectrum from -1 to 1. "
     order: (proposals) -> 
       cache = {}
       opinion_views = fetch 'opinion_views'

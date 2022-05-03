@@ -44,6 +44,7 @@ require './proposal'
 require './viewport_visibility_sensor'
 require './icons'
 require './google_translate'
+require './new_forum_onboarding'
 
 try 
   require './product_page/payment'

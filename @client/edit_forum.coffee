@@ -12,9 +12,10 @@ styles += """
     background-color: #{selected_color}; 
     color: white; 
     font-weight: 700;
-    padding: 8px 16px; 
+    padding: 10px 22px; 
     border-radius: 8px;
     cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,.4);
   }
 
 """

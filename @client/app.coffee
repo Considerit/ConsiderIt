@@ -350,6 +350,10 @@ Root = ReactiveComponent
             font-family: #{header_fonts};
             // letter-spacing: -1px;
           }
+
+          .monospaced {
+            font-family: #{mono_font()};
+          }
         """
 
       if !subdomain.name

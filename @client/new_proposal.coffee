@@ -3,12 +3,13 @@ styles += """
     cursor: pointer;
     background-color: #{focus_blue};
     border: none;
-    padding: 14px 36px 6px 9px;
+    padding: 10px 36px 10px 9px;
     border-radius: 8px;
     margin-left: -9px;   
     color: white;
     text-decoration: none;
     display: flex;
+    align-items: center;
   }
 
 """
@@ -42,38 +43,7 @@ window.NewProposal = ReactiveComponent
     needs_to_login = permitted == Permission.NOT_LOGGED_IN
     permitted = permitted > 0
 
-
     return SPAN null if !permitted && !needs_to_login
-
-    proposal_fields = customization('new_proposal_fields', list_key)()
-
-    label_style = 
-      fontWeight: 400
-      fontSize: 14
-      display: 'block'
-
-    if customization('show_proposer_icon', list_key) && adding 
-      editor = current_user.user
-      # Person's icon
-      bullet = Avatar
-        key: editor
-        user: editor
-        img_size: 'large'
-        style:
-          height: 50
-          width: 50
-          marginRight: 8
-          borderRadius: 0
-          backgroundColor: '#ddd'
-
-    else
-      bullet =  SVG 
-                  width: 8
-                  viewBox: '0 0 200 200' 
-                  style: 
-                    marginRight: 7 + (if !adding then 6 else 0)
-                    marginLeft: 6
-                  CIRCLE cx: 100, cy: 100, r: 80, fill: '#000000'
 
 
     if !adding 
@@ -98,24 +68,15 @@ window.NewProposal = ReactiveComponent
               goal: 'Introduce yourself to share a response'
         
         # A name: "new_#{list_name}"
-        SVG
-          width: 30 
-          height: 30
+        SPAN 
+          style: 
+            marginLeft: 6
+
+        plus_icon()
+
+        SPAN 
           style: 
             marginRight: 23
-            marginLeft: 6
-          fill: 'white'
-          viewBox: "0 0 700 700" 
-
-          dangerouslySetInnerHTML: __html: """
-             <g>
-              <path d="m350 28c-66.836 0-130.93 26.551-178.19 73.809-47.258 47.258-73.809 111.36-73.809 178.19s26.551 130.93 73.809 178.19c47.258 47.258 111.36 73.809 178.19 73.809s130.93-26.551 178.19-73.809c47.258-47.258 73.809-111.36 73.809-178.19 0-44.234-11.645-87.691-33.762-126-22.117-38.309-53.93-70.121-92.238-92.238-38.309-22.117-81.766-33.762-126-33.762zm0 470.4c-57.922 0-113.47-23.008-154.43-63.965-40.957-40.961-63.965-96.512-63.965-154.43s23.008-113.47 63.965-154.43c40.961-40.957 96.512-63.965 154.43-63.965s113.47 23.008 154.43 63.965c40.957 40.961 63.965 96.512 63.965 154.43s-23.008 113.47-63.965 154.43c-40.961 40.957-96.512 63.965-154.43 63.965z"/>
-              <path d="m456.4 257.6h-84v-84h-44.797v84h-84v44.797h84v84h44.797v-84h84z"/>
-             </g>
-          """
-
-
-
 
         if permitted
           translator "engage.add_new_proposal_to_list", 'Add new response'
@@ -123,21 +84,54 @@ window.NewProposal = ReactiveComponent
           translator "engage.login_to_add_new_proposal", 'Create an account to share a response'
 
     else 
+      label_style = 
+        fontWeight: 400
+        fontSize: 14
+        display: 'block'
 
       w = column_sizes().first
+      showing_proposer = customization('show_proposer_icon', list_key)
+      proposal_fields = customization('new_proposal_fields', list_key)()
+
       
       DIV 
         style:
           position: 'relative'
           padding: '6px 8px'
-          marginLeft: if customization('show_proposer_icon', list_key) then -76 + 68 else -36 + 68
+          marginLeft: if showing_proposer then -76 + 68 else 36 - 68
 
         # A name: "new_#{list_name}"
 
         if customization('new_proposal_tips', list_key)
           @drawTips customization('new_proposal_tips', list_key)
 
-        bullet
+
+        # bullet or icon
+        if showing_proposer && adding 
+          editor = current_user.user
+          # Person's icon
+          Avatar
+            key: editor
+            user: editor
+            img_size: 'large'
+            style:
+              height: 50
+              width: 50
+              marginRight: 8
+              borderRadius: 0
+              backgroundColor: '#ddd'
+
+        else
+          SVG 
+            width: 8
+            viewBox: '0 0 200 200' 
+            style: 
+              marginRight: 7 + (if !adding then 6 else 0)
+              marginLeft: 6
+              position: 'relative'
+              top: -50
+              left: -5
+            CIRCLE cx: 100, cy: 100, r: 80, fill: '#000000'
 
         DIV 
           style: 
@@ -187,7 +181,7 @@ window.NewProposal = ReactiveComponent
         DIV 
           style: 
             position: 'relative'
-            marginLeft: if customization('show_proposer_icon', list_key) then 58 else 21
+            marginLeft: if showing_proposer then 58 else 21
 
 
           # details 
@@ -291,6 +285,7 @@ window.NewProposal = ReactiveComponent
 
             BUTTON 
               className: 'btn'
+              disabled: @local.submitting
               style: 
                 backgroundColor: focus_color()
 
@@ -325,6 +320,8 @@ window.NewProposal = ReactiveComponent
                 
                 proposal.errors = []
                 @local.errors = []
+                @local.submitting = true
+
                 save @local
 
                 save proposal, => 
@@ -342,13 +339,14 @@ window.NewProposal = ReactiveComponent
 
                     ensure_in_viewport_when_appears("[data-name=\"#{slugify(proposal.name)}\"]")
                       
-
-
                     # delete loc.query_params.new_proposal
-                    # save loc                      
+                    # save loc            
+
                   else
                     @local.errors = proposal.errors
-                    save @local
+
+                  @local.submitting = false
+                  save @local
 
               translator 'engage.done_button', 'Done'
 

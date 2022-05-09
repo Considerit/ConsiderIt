@@ -273,9 +273,8 @@ window.HomepageTabs = ReactiveComponent
 
 
           LABEL 
+            className: 'toggle_switch_label'
             style:
-              paddingLeft: 18
-              cursor: if paid then 'pointer'
               backgroundColor: if is_light then 'rgba(255,255,255,.4)' else 'rgba(0,0,0,.4)'
             htmlFor: if paid then 'enable_tabs'
             B null,
@@ -285,9 +284,7 @@ window.HomepageTabs = ReactiveComponent
               UpgradeForumButton
                 text: 'upgrade'
             
-            DIV 
-              style:
-                fontSize: 14
+            DIV null,
 
               "Tabs help organize your forum into different pages."
 

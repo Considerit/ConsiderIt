@@ -14,16 +14,15 @@ window.EditList = ReactiveComponent
     edit_list = fetch "edit-#{list_key}"
     subdomain = fetch '/subdomain'
 
-
     return SPAN null if !current_user.is_admin
 
-
-
-    admin_actions = [{action: 'edit', label: translator('edit')}, 
-                     {action: 'list_order', label: translator('engage.list-configuration.reorder_topics', 'reorder topics')},
-                     {action: 'delete', label: translator('delete')}, 
-                     {action: 'close', label: translator('engage.list-configuration.close', 'close to participation')}, 
-                     {action: 'copy_link', label: translator('engage.list-configuration.copy_link', 'copy link')}]
+    admin_actions = [
+      {action: 'edit', label: translator('edit')}
+      {action: 'delete', label: translator('delete')}
+      {action: 'close', label: translator('engage.list-configuration.close', 'close to participation')}
+      {action: 'copy_link', label: translator('engage.list-configuration.copy_link', 'copy link')}
+      {action: 'list_order', label: translator('engage.list-configuration.reorder_topics', 'reorder lists')}
+    ]
 
     DIV null,
 
@@ -255,7 +254,12 @@ window.ModalNewList = ReactiveComponent
 
     description_style = customization 'list_description_style', list_key
 
+
+    permit_new_items = customization('list_permit_new_items', list_key, subdomain)
+
     option_block = 
+      display: 'flex'
+      alignItems: 'center'
       marginTop: 8
 
     children = \ 
@@ -273,7 +277,7 @@ window.ModalNewList = ReactiveComponent
                     style: 
                       fontWeight: 700
 
-                "<span>Title.</span> An open-ended question like \"What are your ideas?\" or a list label like \"Recommendations\"."
+                "<span>Heading.</span> An open-ended question like \"What are your ideas?\" or a category like \"Recommendations\"."
 
             H1 
               className: 'LIST-header'
@@ -380,7 +384,7 @@ window.ModalNewList = ReactiveComponent
                         style: 
                           fontWeight: 700
 
-                    "<span>Slider.</span> On what spectrum is each item evaluated?"
+                    "<span>Slider.</span> On what spectrum is each proposal evaluated?"
 
 
                 DIV 
@@ -520,38 +524,47 @@ window.ModalNewList = ReactiveComponent
 
                       DIV 
                         style: 
-                          margin: "12px 24px"
-                          position: 'relative'
-                          fontSize: 12
+                          margin: "4px 24px"
+                          # position: 'relative'
+                          fontSize: 14
+                          textAlign: 'center'
 
-                        SPAN 
-                          style: 
-                            display: 'inline-block'
-                            width: '100%'
-                            borderBottom: '1px solid'
-                            borderColor: '#666'
+                        "#{option.oppose}  <>  #{option.support}" 
 
-                        BR null
-                        SPAN
-                          style: 
-                            position: 'relative'
-                            left: 0
 
-                          option.oppose 
+                      # DIV 
+                      #   style: 
+                      #     margin: "12px 24px"
+                      #     position: 'relative'
+                      #     fontSize: 12
 
-                        SPAN
-                          style: 
-                            position: 'absolute'
-                            right: 0
-                          option.support
+                      #   SPAN 
+                      #     style: 
+                      #       display: 'inline-block'
+                      #       width: '100%'
+                      #       borderBottom: '1px solid'
+                      #       borderColor: '#666'
+
+                      #   BR null
+                      #   SPAN
+                      #     style: 
+                      #       position: 'relative'
+                      #       left: 0
+
+                      #     option.oppose 
+
+                      #   SPAN
+                      #     style: 
+                      #       position: 'absolute'
+                      #       right: 0
+                      #     option.support
 
 
 
 
             if !@props.combines_these_lists
               DIV 
-                style: 
-                  padding: '12px 0'
+                style: {}
 
                 LABEL
                   className: 'LIST-field-edit-label LIST-permissions'
@@ -566,7 +579,7 @@ window.ModalNewList = ReactiveComponent
                         style: 
                           fontWeight: 700
 
-                    "<span>Permissions.</span> Who can add proposals in response to this Topic?"
+                    "<span>Who can add proposals to this list?</span>"
 
                 DIV 
                   style: option_block
@@ -575,7 +588,9 @@ window.ModalNewList = ReactiveComponent
                     id: 'any-participant'
                     type: 'radio'
                     name: 'list_permit_new_items'
-                    defaultChecked: customization('list_permit_new_items', list_key, subdomain)
+                    defaultChecked: permit_new_items
+                    style: 
+                      marginTop: 0
                     onChange: (e) =>
                       edit_list.list_permit_new_items = true
                       save edit_list
@@ -594,7 +609,9 @@ window.ModalNewList = ReactiveComponent
                     id: 'host-only'
                     type: 'radio'
                     name: 'list_permit_new_items'
-                    defaultChecked: !customization('list_permit_new_items', list_key, subdomain)
+                    defaultChecked: !permit_new_items
+                    style: 
+                      marginTop: 0                    
                     onChange: (e) =>
                       edit_list.list_permit_new_items = false
                       save edit_list
@@ -651,7 +668,7 @@ window.ModalNewList = ReactiveComponent
                         SPAN 
                           style: 
                             paddingLeft: 4
-                          translator 'engage.list-config-discussion-enabled', 'Disable pro/con commenting on each proposal. Spectrums only.'
+                          translator 'engage.list-config-discussion-enabled', 'Disable pro/con commenting on each proposal in this list. Spectrums only.'
 
                     DIV                   
                       style:
@@ -670,7 +687,7 @@ window.ModalNewList = ReactiveComponent
                         SPAN 
                           style: 
                             paddingLeft: 4
-                          translator 'engage.list-config-archived', 'This Topic should be closed by default. Useful for archiving old topics and proposals.'
+                          translator 'engage.list-config-archived', 'This list should be closed by default. Useful for archiving.'
 
 
           BUTTON 
@@ -680,7 +697,10 @@ window.ModalNewList = ReactiveComponent
             disabled: (edit_list.list_title or "").length == 0
             onClick: submit
 
-            translator 'engage.save_changes_button', 'Save'
+            if @props.fresh 
+              translator 'engage.create_list_button', 'Create List'
+            else 
+              translator 'engage.update_list_button', 'Update List'
 
           BUTTON
             className: 'like_link'

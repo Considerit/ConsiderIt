@@ -2,7 +2,7 @@
 # Colors
 
 
-window.focus_blue = '#2478CC' #'#2196F3' # '#2478CC'
+window.focus_blue = '#456ae4' #2478CC' #'#2196F3' # '#2478CC'
 window.logo_red = "#B03A44"
 window.considerit_red = "#df6264"
 window.default_avatar_in_histogram_color = '#999'

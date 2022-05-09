@@ -336,6 +336,7 @@ window.styles += """
     -webkit-transition: .4s;
     transition: .4s;
     border-radius: 34px;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 40%);
 
   }
 
@@ -350,6 +351,7 @@ window.styles += """
     -webkit-transition: .4s;
     transition: .4s;
     border-radius: 50%;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 20%)
   }
 
   input:checked + .toggle_switch_circle {

@@ -3,6 +3,7 @@ require './tabs'
 
 
 
+window.DEFAULT_BACKGROUND_COLOR = focus_blue # "#91d8f8"
 
 
 
@@ -10,7 +11,14 @@ require './tabs'
 # HOMEPAGE HEADER TEMPLATES
 
 styles += """
-
+  .toggle_switch_label {
+    padding: 4px 12px;
+    cursor: pointer;
+    margin-left: 12px;
+  }
+  .toggle_switch_label div {
+    font-size: 14px;
+  }
 
 """
 
@@ -75,19 +83,15 @@ CustomizeGoogleTranslate = ReactiveComponent
               className: 'toggle_switch_circle'
 
           LABEL 
+            className: 'toggle_switch_label'
             style:
-              paddingLeft: 18
-              cursor: 'pointer'
               backgroundColor: if is_light then 'rgba(255,255,255,.4)' else 'rgba(0,0,0,.4)'
 
             htmlFor: 'enable_google_translate'
             B null,
               'Enable Google Translate.'
             
-            DIV 
-              style:
-                fontSize: 14
-
+            DIV null,
               "Helps support multi-lingual forums."
 
 
@@ -147,6 +151,7 @@ CustomizeTitle = ReactiveComponent
 
     is_admin = fetch('/current_user').is_admin
 
+
     DIV 
       className: 'CustomizeTitle'
 
@@ -181,13 +186,13 @@ CustomizeTitle = ReactiveComponent
             @local.title = e.target.value
             save @local
 
-          placeholder: translator('banner.title.placeholder', 'A pithy title for your forum.')
+          placeholder: translator('banner.title.placeholder', 'A headline for your forum')
 
       else 
         DIV
           className: 'banner_title'
           style: @props.style
-          dangerouslySetInnerHTML: __html: title
+          dangerouslySetInnerHTML: __html: title or subdomain.name
           onDoubleClick: if is_admin then => 
             edit_forum.editing = true 
             save edit_forum
@@ -239,7 +244,7 @@ CustomizeDescription = ReactiveComponent
           style: @props.style
           horizontal: true
           html: description
-          placeholder: translator("banner.description.label", "Let people know about this forum! What is its purpose? Who it is for? How long will it be open?")
+          placeholder: translator("banner.description.label", "Describe your forum. What is being discussed? Who is it for, and who are the hosts? How long will it be open?")
           focus_on_mount: focus_on_mount
           button_style: 
             backgroundColor: 'white'  
@@ -404,7 +409,7 @@ CustomizeLogo = ReactiveComponent
       height = 150
 
     left = @local.left or customization('banner')?.logo?.left or 50
-    top  = @local.top  or customization('banner')?.logo?.top  or 50
+    top  = @local.top  or customization('banner')?.logo?.top  or 68
 
     is_light = is_light_background()
 
@@ -895,11 +900,11 @@ window.EditBanner = ReactiveComponent
                   is_light = is_image_mostly_light image_data, img.width, img.height
 
                   if is_light 
-                    edit_banner.background_css = 'rgb(255,255,255)'
+                    subdomain.customizations.banner.background_css = 'rgb(255,255,255)'
                   else 
-                    edit_banner.background_css = 'rgb(0,0,0)'
+                    subdomain.customizations.banner.background_css = 'rgb(0,0,0)'
 
-                  save edit_banner
+                  save subdomain
 
                 img.src = fr.result
 
@@ -1024,12 +1029,12 @@ window.PhotoBanner = (opts) ->
   description = fetch("forum-description").html or banner_config?.description or opts.supporting_text
   has_description = opts.supporting_text || (description?.trim().length > 0 && description.trim() != '<p><br></p>')
 
-  has_title = (banner_config.title or opts.title)?.length > 0 
+  has_title = (banner_config.title or opts.title or subdomain.name)?.length > 0 
 
   has_translation_callout = subdomain.customizations.google_translate_style?.callout
 
 
-  background_color = edit_banner.background_css or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
+  background_color = customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
 
   is_dark_theme = !is_light_background()
 
@@ -1059,6 +1064,7 @@ window.PhotoBanner = (opts) ->
         .PhotoBanner {
           position: relative;
           color: black;
+          padding-top: #{if edit_forum.editing then '54px' else '0px'};
         }
         .dark .PhotoBanner {
           color: white;
@@ -1133,7 +1139,7 @@ window.PhotoBanner = (opts) ->
           background-color: #{tab_background_color};          
         }          
         .PhotoBanner #tabs > ul > li.selected {
-          background-color: white;
+          background-color: #{main_background_color};
         }
         .PhotoBanner #tabs > ul > li > h4 {
           //text-transform: uppercase;

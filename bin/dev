@@ -1,5 +1,6 @@
 #!/bin/sh
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 
-./bin/webpack &
-rails s -b 0.0.0.0
+kill $(ps -e | grep webpack | awk '{print $1}')
+bin/webpack &
+bin/rails s -p 3000

@@ -40,44 +40,59 @@ window.DefaultFooter = ReactiveComponent
     DIV null,
 
 
-      DIV 
-        className: 'main_background'
-          
-        customization('footer_bonus')?()
+      if customization('footer_bonus')?
+        DIV 
+          className: 'main_background'
+          style: 
+            paddingBottom: 36
+          customization('footer_bonus')?()
 
 
       DIV 
         style:
           paddingTop: 80
-          backgroundColor: "#F4F4F4"
-          borderTop: "1px solid #aaa"
+          backgroundColor: selected_color
+          # borderTop: "1px solid #888"
           
-          padding: '45px 0 15px 0'
+          padding: '65px 0 15px 0'
           position: 'relative'
           zIndex: 3
+          color: 'white'
 
+        DIV 
+          dangerouslySetInnerHTML: __html: """
+            <style>
+            .custom-shape-divider-top-1651729272 {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                overflow: hidden;
+                line-height: 0;
+            }
 
+            .custom-shape-divider-top-1651729272 svg {
+                position: relative;
+                display: block;
+                width: calc(100% + 1.3px);
+                height: 75px;
+            }
+
+            .custom-shape-divider-top-1651729272 .shape-fill {
+                fill: #f6f6f6;
+            }
+            </style>
+            <div class="custom-shape-divider-top-1651729272">
+                <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+                </svg>
+            </div>  
+          """
 
         DIV 
           style: 
             width: CONTENT_WIDTH()
             margin: 'auto'
-
-          # buttons 
-
-          # DIV 
-          #   style: 
-          #     position: 'relative'
-          #     margin: 'auto'
-          #     textAlign: 'center'
-          #     top: -70
-
-          #   BUTTON 
-          #     onClick: -> scrollTo 0, 0
-          #     style: _.extend {}, big_button(), 
-          #       backgroundColor: '#717171'
-
-          #     translator 'footer.back_to_top_button', 'Back to top'
 
 
           DIV 
@@ -86,6 +101,7 @@ window.DefaultFooter = ReactiveComponent
 
             TechnologyByConsiderit
               size: 26
+              color: 'white'
             BR null
 
             DIV 
@@ -103,7 +119,7 @@ window.DefaultFooter = ReactiveComponent
 
                 "Consider.it is Open Source"
                 IMG 
-                  src: asset('product_page/github_logo.png')
+                  src: asset('product_page/github_logo_white.png')
                   style: 
                     height: 18
                     paddingLeft: 6
@@ -130,8 +146,7 @@ window.DefaultFooter = ReactiveComponent
 
           DIV 
             style: 
-              color: '#303030'
-              fontSize: 11
+              fontSize: 12
               textAlign: 'center'
               marginTop: 20
 
@@ -191,6 +206,8 @@ window.TechnologyByConsiderit = ReactiveComponent
   displayName: 'TechnologyByConsiderit'
   render : -> 
     @props.size ||= 20
+
+    color = @props.color or logo_red
     DIV 
       style: 
         textAlign: 'left'
@@ -214,12 +231,12 @@ window.TechnologyByConsiderit = ReactiveComponent
         
         drawLogo 
           height: @props.size + 5
-          main_text_color: logo_red
-          o_text_color: logo_red
+          main_text_color: color
+          o_text_color: color
           clip: false
           draw_line: true 
-          line_color: logo_red
-          i_dot_x: if @local.hover then 142 else null
+          line_color: color
+          i_dot_x: if @local.hover then 252 else 142
           transition: true
 
 

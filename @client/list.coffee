@@ -4,7 +4,7 @@ require './edit_list'
 
 window.styles += """
 
-  [data-widget="List"], [data-widget="NewList"] {
+  [data-widget="List"], [data-widget="NewList"], .draggable-wrapper {
     background-color: white;
     /* border: 1px solid #e1e1e1; */
     border: none;
@@ -55,7 +55,7 @@ window.styles += """
 
 get_list_padding = ->
   top = if ONE_COL() then 12 else 48
-  bottom = top 
+  bottom = if ONE_COL() then 12 else 48 
 
   right = LIST_PADDING() + LIST_PADDING() / 6
   left = LIST_PADDING() - LIST_PADDING() / 6
@@ -323,7 +323,7 @@ window.ListHeader = ReactiveComponent
 
     wrapper_style = 
       width: HOMEPAGE_WIDTH()
-      marginBottom: 16 #24
+      marginBottom: if !is_collapsed then 16 #24
       position: 'relative'
 
     DIV 
@@ -368,6 +368,52 @@ window.ListHeader = ReactiveComponent
 
 
 
+
+
+styles += """
+  button[data-widget="NewList"] {
+    text-align: left;
+    margin-top: 55px;
+    display: block;
+    position: relative;
+    width: 100%;
+    border-radius: 8px;
+
+  }
+  [data-widget="NewList"] h1.LIST-header {
+    position: relative;
+    left: -42px;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+  }
+
+  [data-widget="NewList"] h1.LIST-header svg {
+    margin-right: 13px;
+  }
+
+
+  [data-widget="NewList"] .subbutton_button {
+    color: #{focus_blue};
+    font-weight: 700;
+  }
+
+  [data-widget="NewList"]:hover .subbutton_button {
+    text-decoration: underline;
+  }
+
+  [data-widget="NewList"] .separator {
+    padding: 0 12px;
+    font-weight: 300;
+    color: #444;
+  }
+  [data-widget="NewList"] .subheader {
+    color: #656565;
+    font-size: 16px;
+    position: relative;
+  }
+"""
+
 window.NewList = ReactiveComponent
   displayName: 'NewList'
 
@@ -379,6 +425,7 @@ window.NewList = ReactiveComponent
     if @local.editing
       ModalNewList 
         fresh: true
+        default_open_ended: @local.default_open_ended
         done_callback: =>
           @local.editing = false 
           save @local
@@ -387,43 +434,53 @@ window.NewList = ReactiveComponent
     else 
       BUTTON 
         style: 
-          textAlign: 'left'
-          marginTop: 55
-          display: 'block'
-          padding: get_list_padding()
-          position: 'relative'
-          # left: -24
-          width: '100%'
-          borderRadius: 8
-          backgroundColor: if @local.hovering then '#eaeaea' # else 'white'
-          # border: '1px solid'
-          # borderColor: if @local.hovering then '#bbb' else '#ddd'
+          padding: if !@props.no_padding then get_list_padding()
 
-        onMouseEnter: =>
-          @local.hovering = true 
-          save @local 
-        onMouseLeave: => 
-          @local.hovering = false
-          save @local 
-
-        onClick: =>
+        onClick: (e) =>
           @local.editing = true 
+          @local.default_open_ended = e.target.classList.contains('open')
           save @local
 
         H1
           className: 'LIST-header'
-          style: 
-            color: if @local.hovering then '#444' else '#666'
-            textDecoration: 'underline'
-          translator 'engage.create_new_list_button', "Create a new Topic"
+
+          plus_icon focus_blue
+
+          SPAN 
+            className: 'subbutton_button open'
+            'Add a request for feedback' 
+
+          SPAN 
+            className: 'separator'
+            t('or')
+          SPAN 
+            className: 'subbutton_button closed'
+            'an open-ended question'
 
         DIV 
-          style: 
-            fontSize: 14
-            marginTop: 4
-          'A Topic collects proposals under a category like "Recommendations" or in response to an open-ended question like "What are your ideas?"'
+          className: 'subheader'
+
+          SPAN 
+            style: 
+              position: 'relative'
+              left: 138 
+
+            'on a fixed set of proposals'
+
+          SPAN 
+            style: 
+              position: 'relative'
+              left: 305 
+            'for community ideation'
+
+          
 
 
+window.list_i18n = ->
+  button: translator('engage.create_new_list_button', "Create a new call for ideas or feedback")
+  explanation: translator 'engage.create_new_list_explanation', 'Ask an open-ended question like "What are your ideas?" or establish a category like "Recommendations."'
+               
+#'A Topic collects proposals under a category like "Recommendations" or in response to an open-ended question like "What are your ideas?"'
 
 
 EditableTitle = ReactiveComponent
@@ -605,7 +662,7 @@ window.list_actions = (props) ->
             SPAN 
               style: 
                 textDecoration: 'underline'
-              translator "engage.add_new_proposal_to_list", 'add new'
+              translator "engage.add_new_proposal_to_list", 'add new response'
 
       if props.can_sort && add_new
         SPAN 

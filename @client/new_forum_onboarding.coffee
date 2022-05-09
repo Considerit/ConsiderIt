@@ -6,7 +6,7 @@ styles += """
     box-shadow: 0 4px 6px 0 rgba(0,0,0,0.13);
     border-radius: 0 0 8px 8px;   
     max-width: 780px;
-    margin: 120px auto 60px auto;
+    margin: 48px auto 60px auto;
     padding: 24px 64px;
     border-top: 14px solid #{selected_color};
     position: relative;
@@ -155,7 +155,7 @@ window.NewForumOnBoarding = ReactiveComponent
           className: 'header_subtitle'
 
           if !tasks_completed
-            'A checklist for getting started:'
+            'A checklist to get started:'
           else 
             """When you’re ready, you can invite your community to participate. There are also more settings 
                accessible via the menu in the upper right."""
@@ -172,9 +172,9 @@ window.NewForumOnBoarding = ReactiveComponent
       else 
         UL null,
 
-          onboard_item "<b>Edit the Banner</b> to introduce people to your forum.", task_one_complete
-          onboard_item "Experiment with the example topic below. Delete it when you’re done.", task_two_complete
-          onboard_item "<b>Create a New Topic</b> to start your own conversation.", task_three_complete
+          onboard_item "Edit the Banner to introduce people to your forum.", task_one_complete
+          onboard_item "Experiment with the question below. Delete it when you’re done.", task_two_complete
+          onboard_item "Start your own conversation.", task_three_complete
 
 
 

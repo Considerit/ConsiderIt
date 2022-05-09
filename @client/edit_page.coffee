@@ -1,25 +1,42 @@
 require "./tabs"
 
 styles += """
+  [data-widget="EditPage"] .input_group {
+    margin: 36px 0;
+  }
+  [data-widget="EditPage"] .input_group fieldset {
+    padding-left: 30px;
+  }
   [data-widget="EditPage"] .radio_group {
-    margin-top: 24px;
-    margin-left: 0;
+    margin-top: 16px;
+    margin-left: 0px;
   }
   [data-widget="EditPage"] .field_explanation {
-    font-size: 15px;
-    margin-top: 3px;
+    font-size: 14px;
+    margin-top: 6px;
+    color: #444;
   }
+
   [data-widget="EditPage"] .radio_group label {
-    font-size: 18px;
-    font-weight: 700;
+  }
+
+
+  [data-widget="EditPage"] [data-widget="NewList"], [data-widget="EditPage"] .draggable-list {
+    padding: 24px 24px 24px 12px;
+  }
+
+  [data-widget="EditPage"] [data-widget="NewList"] {
+    padding-left: 60px;
+    margin-top: 8px;
   }
 
   [data-widget="EditPage"] .draggable-list {
-    background-color: #f1f1f1;
+    /* background-color: #f1f1f1;
     border: 1px solid #ddd;
-    padding: 12px 24px 12px 12px;
-    border-radius: 16px;
-    margin: 4px 0;
+    border-radius: 16px;*/
+    margin: 12px 0; 
+
+    
     display: flex;
     align-items: center; /* start; */
     position: relative;
@@ -75,7 +92,6 @@ styles += """
     font-weight: 500; */
     padding-left: 24px;
     flex-grow: 1;
-    cursor: move;
   }
 
   [data-widget="EditPage"] H2.list_header {
@@ -96,7 +112,13 @@ styles += """
     border-radius: 8px;
     margin-top: 12px;
   }
-   
+
+  [data-widget="EditPage"] .action_explanation {
+    font-size: 14px;
+    margin-top: 3px;
+  }
+
+
 """
 
 window.PAGE_TYPES =
@@ -118,8 +140,10 @@ window.EditPage = ReactiveComponent
       I null, 
         "This is an About page."
       @renderPreamble()
-
+      @renderPageType()
       @renderMakeDefaultPage()
+
+
 
   drawShowAllPage: -> 
     subdomain = fetch '/subdomain'
@@ -128,11 +152,14 @@ window.EditPage = ReactiveComponent
 
     DIV null, 
       I null, 
-        "This page displays all lists shown on other pages in this forum."
-      @renderPreamble()
+        "This page displays all proposal lists shown on other pages throughout this forum."
       @renderSortOrder()
-      @renderMakeDefaultPage()
 
+      @renderPreamble()
+
+      @renderPageType()
+
+      @renderMakeDefaultPage()
 
 
   drawDefaultPage: -> 
@@ -158,10 +185,11 @@ window.EditPage = ReactiveComponent
 
     drag_capabilities = ""
     if @ordered_lists.length > 1 && current_list_sort_method == 'fixed'
-      drag_capabilities += "Drag topics to reorder them. "
+      drag_capabilities += "Drag lists to reorder them. "
 
-    if get_tabs()?.length > 1 
-      drag_capabilities += "Topics can be dragged to a different tab to move them."
+    drag_enabled = get_tabs()?.length > 1
+    if drag_enabled 
+      drag_capabilities += "Lists can be dragged to a different tab to move them."
 
 
 
@@ -176,34 +204,35 @@ window.EditPage = ReactiveComponent
           marginBottom: 24
 
 
-        H2
-          className: "list_header"
+        # H2
+        #   className: "list_header"
 
-          'Topics'
+        #   # 'Questions and Categories'
+        #   'Calls for ideas or feedback'
 
-          DIV 
-            style:
-              fontSize: 14
-              fontWeight: 400
-            'A Topic collects proposals under a category like "Recommendations" or in response to an open-ended question like "What are your ideas?"'
+        #   # DIV 
+        #   #   style:
+        #   #     fontSize: 14
+        #   #     fontWeight: 400
+        #   #   'A Topic collects proposals under a category like "Recommendations" or in response to an open-ended question like "What are your ideas?"'
 
 
-        if @ordered_lists.length == 0
-          DIV 
-            style: 
-              textAlign: 'center'
-              padding: '36px 24px'
-              border: '1px dotted #eee'
-              backgroundColor: '#f1f1f1'
+        # if @ordered_lists.length == 0
+        #   DIV 
+        #     style: 
+        #       textAlign: 'center'
+        #       padding: '36px 24px'
+        #       border: '1px dotted #eee'
+        #       backgroundColor: '#f1f1f1'
 
-            "There are no topics here yet."
+        #     "None defined yet."
 
-        else if @ordered_lists.length > 0 
-          DIV 
-            style: 
-              fontSize: 14
+        # else if @ordered_lists.length > 0 
+        #   DIV 
+        #     style: 
+        #       fontSize: 14
 
-            drag_capabilities
+        #     drag_capabilities
 
         UL 
           style: 
@@ -235,8 +264,14 @@ window.EditPage = ReactiveComponent
                       "data-tooltip": drag_capabilities
                       style: 
                         cursor: 'move'
+                        position: 'relative'
+                        left: 7
 
                       drag_icon 15, '#888'
+                  else 
+                    DIV 
+                      style: 
+                        width: 22
 
                   DIV
                     className: 'name LIST-header'
@@ -245,7 +280,7 @@ window.EditPage = ReactiveComponent
                       SPAN 
                         style: 
                           fontStyle: 'italic'
-                        "All of the rest of the lists (#{lists_to_add.length} total)"
+                        "All of the rest (#{lists_to_add.length} total)"
                     else 
                       get_list_title lst, true, subdomain
 
@@ -267,7 +302,7 @@ window.EditPage = ReactiveComponent
                     BUTTON 
                       style: 
                         cursor: 'pointer'
-                      "data-tooltip": "Edit list"
+                      "data-tooltip": "Edit"
                       onClick: (e) =>
                         e.preventDefault()
                         e.stopPropagation()
@@ -283,7 +318,7 @@ window.EditPage = ReactiveComponent
                         position: 'absolute'
                         right: -36
                         cursor: 'pointer'
-                      "data-tooltip": "Delete list"
+                      "data-tooltip": "Delete"
                       onClick: (e) =>
                         @ordered_lists.splice( @ordered_lists.indexOf(lst), 1  )
                         delete_list(lst)
@@ -291,31 +326,36 @@ window.EditPage = ReactiveComponent
                       trash_icon 23, 23, '#888'
 
 
-        if @local.add_new_list || @local.edit_list
+        if @local.edit_list
 
           ModalNewList
             list: @local.edit_list
-            fresh: @local.add_new_list
+            fresh: false
             combines_these_lists: @props.combines_these_lists
             done_callback: => 
-              @local.add_new_list = @local.edit_list = false 
+              @local.edit_list = false 
               save @local
 
         else 
-          BUTTON
-            className: "add_new_list"
-            "data-tooltip": "Create a new Topic"
-            onClick: =>
-              @local.add_new_list = true 
-              save @local
-            "+ "  
-            SPAN 
-              style: 
-                textDecoration: 'underline'
-              translator 'engage.create_new_list_button', "Create a new Topic"
+
+          NewList
+            no_padding: true
+
+          # BUTTON
+          #   className: "add_new_list"
+          #   "data-tooltip": list_i18n().explanation
+
+          #   onClick: =>
+          #     @local.add_new_list = true 
+          #     save @local
+          #   "+ "  
+          #   SPAN 
+          #     style: 
+          #       textDecoration: 'underline'
+          #     list_i18n().button
 
 
-      @renderSortOrder()
+      
 
 
       DIV 
@@ -333,16 +373,39 @@ window.EditPage = ReactiveComponent
             onClick: (e) => 
               @local.show_all_options = true 
               save @local
-            'Show more options'
+            'Advanced settings for this page'
         else 
-          DIV null, 
+          FIELDSET 
+            style: 
+              marginLeft: 0
+              marginTop: 42
+              border: "1px solid #ccc"
+              padding: "0px 48px 48px 48px"
+              borderRadius: 8
 
-            @renderPreamble()
+            LABEL 
+              className: "main_background"
+              style: 
+                fontSize: 17
+                marginTop: 36
+                marginBottom: 24
+                padding: "4px 8px"
+                position: 'relative'
+                top: -12
+                color: '#333'
 
-            @renderMakeDefaultPage()
+              "Advanced settings for this page"
 
-            @renderPageType()
 
+            DIV null, 
+
+              @renderSortOrder()
+
+              @renderPreamble()
+
+              @renderPageType()
+
+              @renderMakeDefaultPage()
 
 
 
@@ -351,83 +414,99 @@ window.EditPage = ReactiveComponent
     is_a_tab = !!get_tabs()
     return SPAN null if !is_a_tab
 
-    FIELDSET 
-      style: 
-        marginLeft: 0
-        marginTop: 42
-        border: "1px solid #ccc"
-        padding: "0px 24px 18px 24px"
 
-      LABEL 
-        className: 'main_background'
+
+    page_types = [
+      {id: PAGE_TYPES.DEFAULT, label: "Standard page",    description: "Displays the proposal lists configured above."}
+      {id: PAGE_TYPES.ABOUT,   label: 'Background page',  description: "Give supplementary background information about the engagement."}
+      {id: PAGE_TYPES.ALL,     label: '"Show all" page"', description: "Aggregate and show all proposal lists from other pages."}
+    ]
+
+    DIV 
+      className: 'FORUM_SETTINGS_section input_group'
+
+      B 
         style: 
           fontSize: 17
-          marginTop: 36
-          fontWeight: 700
-          marginBottom: 24
-          padding: "4px 8px"
-          position: 'relative'
-          top: -12
 
-        "Convert this page"
+        'This page is a...'
 
-      DIV null,
+      DIV
+        className: 'explanation'
 
-        DIV
-          style: 
-            marginTop: 0
+        """
+        """
 
-          BUTTON 
-            className: 'convert_page'
-            onClick: => 
-              if @ordered_lists.length == 0 || confirm "Are you sure you want to convert this page? You may want to move the existing lists to a different tab first."
-                @ordered_lists.splice(0,@ordered_lists.length) 
-                @ordered_lists.push '*'
+      FIELDSET null,
 
-                @local.type = PAGE_TYPES.ALL
+        for option in page_types
+          DIV null,
+
+            DIV 
+              className: 'radio_group'
+              style: 
+                cursor: 'pointer'
+
+              onChange: do (option) => (ev) => 
+
+                if option.id == PAGE_TYPES.DEFAULT 
+                  @local.type = PAGE_TYPES.DEFAULT
+                  idx = @ordered_lists.indexOf('*')
+                  if idx > -1
+                    @ordered_lists.splice idx, 1
+
+                else 
+
+                  if @ordered_lists.length == 0 || confirm "Are you sure you want to convert this page? You may want to move the existing lists to a different page first. You can do that by dragging them to a different tab above."
+                    @ordered_lists.splice(0,@ordered_lists.length) 
+                    if option.id == PAGE_TYPES.ALL 
+                      @ordered_lists.push '*'
+                    @local.type = option.id
+
                 save @local
 
-            "Change to a \"Show all\" page"
 
-          DIV 
-            style: 
-              fontSize: 14
-            "All lists, such as those in other tabs, are shown on this page too."
 
-        DIV 
-          style: 
-            marginTop: 18
+              INPUT 
+                style: 
+                  cursor: 'pointer'
+                type: 'radio'
+                name: "page_type"
+                id: "page_type#{option.id}"
+                defaultChecked: @local.type == option.id
 
-          BUTTON
-            className: 'convert_page'
-            onClick: => 
-              if @ordered_lists.length == 0 || confirm "Are you sure you want to convert this page? You may want to move the existing lists to a different tab first."            
-                @local.type = PAGE_TYPES.ABOUT
-                @ordered_lists.splice(0, @ordered_lists.length)
-                save @local
+              LABEL 
+                style: 
+                  cursor: 'pointer'
+                  display: 'block'
+                htmlFor: "page_type#{option.id}"
+                
+                option.label
 
-            "Change to an \"About\" page"    
-          DIV 
-            style: 
-              fontSize: 14
-            "An About Page can help give participants additional background about the engagement."
+
+            if option.description
+              DIV 
+                className: 'explanation field_explanation'
+                option.description
+
+
 
 
   renderSortOrder: -> 
     current_list_sort_method = get_list_sort_method(@props.page_name)
+    
 
-    if @local.type == PAGE_TYPES.DEFAULT
-      list_orderings = [
-        {value: 'fixed', label: 'Fixed order', explanation: 'Topics always ordered as specified above.'}
-        {value: 'newest_item', label: 'Order by most recent activity', explanation: 'The lists with the most recent activity are shown first.'}
-        {value: 'randomized', label: 'Randomized', explanation: 'Topics are show in a random order on page load.'}
-      ]
+    groups_sorts = 
+      newest:       {value: 'newest_item', label: 'By most recent activity', explanation: 'The proposal lists with the most recent activity are shown first.'}
+      randomized:   {value: 'randomized', label: 'Randomized', explanation: 'Proposal lists are show in a random order on page load.'}
+      fixed:        {value: 'fixed', label: 'Fixed order', explanation: 'Proposal lists will be ordered as specified above.'}
+      fixed_by_tab: {value: 'by_tab', label: 'Fixed order', explanation: 'Proposal lists ordered as they are in the other pages.'}
+
+    if @local.type == PAGE_TYPES.DEFAULT      
+      list_orderings = [groups_sorts.fixed, groups_sorts.newest, groups_sorts.randomized]
     else if @local.type == PAGE_TYPES.ALL
-      list_orderings = [
-        {value: 'by_tab', label: 'Fixed order', explanation: 'Topics ordered as they are in the other tabs.'}
-        {value: 'newest_item', label: 'Order by most recent activity', explanation: 'The Topics with the most recent activity are shown first.'}
-        {value: 'randomized', label: 'Randomized', explanation: 'Topics are show in a random order on page load.'}
-      ]
+      list_orderings = [groups_sorts.fixed_by_tab, groups_sorts.newest, groups_sorts.randomized]
+
     else 
       list_orderings = null
 
@@ -439,17 +518,17 @@ window.EditPage = ReactiveComponent
       LABEL 
         style: 
           fontSize: 17
-          marginTop: 36
           fontWeight: 700
-          marginRight: 12
 
-        "Topic order:"
+        "Order of the proposal lists defined above"
 
 
       SELECT
         defaultValue: current_list_sort_method
         style: 
           fontSize: 18
+          display: 'block'
+          marginTop: 4
         onChange: (e) => 
           @local.list_sort_method = e.target.value
           save @local
@@ -506,7 +585,7 @@ window.EditPage = ReactiveComponent
           right: 0
         container_style: 
           borderRadius: 8
-          minHeight: 60
+          minHeight: 42
           width: '100%'     
           border: '1px solid #ccc'  
           marginTop: 4   
@@ -518,11 +597,19 @@ window.EditPage = ReactiveComponent
 
 
       DIV 
-        style: 
-          fontSize: 14
-          marginTop: 2
+        className: 'action_explanation'
 
-        """To use HTML, click </> in the upper right. <script>, <iframe> and <style> tags are not allowed (use inline styles instead)."""
+        if @local.type != PAGE_TYPES.ABOUT
+          """The preamble is displayed at the top of the page. """
+
+        SPAN 
+          dangerouslySetInnerHTML: __html: """
+            To use HTML, click <span class='monospaced'>&lt;/&gt;</span> in the upper right. 
+            <span class='monospaced'>&lt;script&gt;</span>, <span class='monospaced'>&lt;iframe&gt;</span> and 
+            <span class='monospaced'>&lt;style&gt;</span> tags are not allowed. 
+            Use inline styles instead.
+          """
+
         if @local.type == PAGE_TYPES.ABOUT
         
           """ If you need to embed a video, please contact help@consider.it."""
@@ -530,48 +617,41 @@ window.EditPage = ReactiveComponent
   renderMakeDefaultPage: -> 
     default_tab = customization('homepage_default_tab') # or get_tabs()[0]?.name or 'Show all'
 
-    FIELDSET 
-      style: 
-        marginLeft: 0
-        marginTop: 42
-        border: "1px solid #ccc"
-        padding: "0px 24px 18px 24px"
-
-      LABEL 
-        className: "main_background"
+    return SPAN null if !get_tabs()
+    DIV null,
+      FIELDSET 
         style: 
-          fontSize: 17
-          marginTop: 36
-          fontWeight: 700
-          marginBottom: 24
-          padding: "4px 8px"
-          position: 'relative'
-          top: -12
+          marginLeft: 0
+          marginTop: 32
 
-        "Default page"
+        LABEL 
+          style: 
+            fontSize: 17
+            marginTop: 36
+            fontWeight: 700
+            marginRight: 12
 
-      DIV null, 
+          "Default landing page"
 
-        if @props.page_name == default_tab
-          DIV 
-            style: 
-              fontStyle: 'italic'
-            "This page is already the default"
-
-        BUTTON 
-          className: 'convert_page'
-          disabled: @props.page_name == default_tab
-          onClick: => 
+        SELECT
+          defaultValue: default_tab
+          style: 
+            fontSize: 18
+            display: 'block'
+          onChange: (e) => 
             subdomain = fetch '/subdomain'
-            subdomain.customizations.homepage_default_tab = @props.page_name
+            subdomain.customizations.homepage_default_tab = e.target.value
             save subdomain
 
-          "Set to default landing page"
+          for tab in get_tabs()
+            OPTION
+              value: tab.name
+              tab.name 
 
         DIV 
-          style: 
-            fontSize: 14
-          "The default landing page is shown when someone arrives at #{location.origin}."
+          className: 'explanation field_explanation'
+          "When someone arrives at #{location.origin} they will be shown the '#{default_tab or get_tabs()[0]?.name}' page by default."
+
 
 
   render: -> 

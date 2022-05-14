@@ -5,6 +5,8 @@ window.Footer = ReactiveComponent
   displayName: 'Footer'
 
   render : ->
+    return SPAN null if embedded_demo()
+    
     FOOTER 
       style: 
         position: 'relative'

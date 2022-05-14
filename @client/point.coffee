@@ -245,7 +245,7 @@ window.Point = ReactiveComponent
                 color: '#666'
                 # textAlign: 'right'
 
-              if !screencasting()
+              if !screencasting() && !embedded_demo()
                 [
                   prettyDate(point.created_at)
                   ', '                

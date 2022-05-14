@@ -13,6 +13,7 @@ fetch 'decisionboard',
 # TODO: eliminate
 window.get_proposal_mode = -> 
   loc = fetch('location')
+
   if loc.url == '/'
     return null
   else if (loc.query_params?.results && loc.query_params?.results != 'false') || TWO_COL()
@@ -195,6 +196,7 @@ window.Proposal = ReactiveComponent
               fontWeight: 500
               textAlign: 'center'
               marginTop: 18
+              display: if embedded_demo() then 'none'
 
             if mode == 'crafting' || (just_you && current_user.logged_in)
               TRANSLATE
@@ -206,16 +208,16 @@ window.Proposal = ReactiveComponent
                   'Opinions about this proposal'
 
 
+        if !embedded_demo()      
+          OpinionViews
+            more_views_positioning: 'centered'
+            disable_switching: mode == 'crafting'
+            style: 
+              width: if get_participant_attributes().length > 0 then HOMEPAGE_WIDTH() else Math.max(660,PROPOSAL_HISTO_WIDTH()) # REASONS_REGION_WIDTH()
+              margin: '8px auto 20px auto'
+              position: 'relative'
 
-        OpinionViews
-          more_views_positioning: 'centered'
-          disable_switching: mode == 'crafting'
-          style: 
-            width: if get_participant_attributes().length > 0 then HOMEPAGE_WIDTH() else Math.max(660,PROPOSAL_HISTO_WIDTH()) # REASONS_REGION_WIDTH()
-            margin: '8px auto 20px auto'
-            position: 'relative'
-
-        if mode != 'crafting'
+        if mode != 'crafting' && !embedded_demo()
           DIV 
             style: 
               width: PROPOSAL_HISTO_WIDTH()
@@ -250,7 +252,7 @@ window.Proposal = ReactiveComponent
                   position: 'absolute'
                   left: 0 
                   top: 0
-                  zIndex: 99999
+                  zIndex: 99998
                   backgroundColor: 'rgba(255,255,255,.8)'
                 DIV 
                   style: 
@@ -440,7 +442,7 @@ window.Proposal = ReactiveComponent
                     "Show All Reasons"
 
 
-      if mode == 'results'
+      if mode == 'results' && !embedded_demo()
         w = HOMEPAGE_WIDTH()
         DIV   
           style: 
@@ -453,7 +455,7 @@ window.Proposal = ReactiveComponent
             proposal: @proposal
 
 
-      if edit_mode && browser.is_mobile
+      if edit_mode && browser.is_mobile && !embedded_demo()
         # full screen edit point mode for mobile
         valence = if edit_mode in ['community_pros', 'your_pro_points'] 
                     'pros' 

@@ -15,6 +15,8 @@ window.GoogleTranslate = ReactiveComponent
     loc = fetch 'location'
     homepage = loc.url == '/'
 
+    return SPAN null if embedded_demo()
+
     style = if customization('google_translate_style') && homepage 
               s = JSON.parse JSON.stringify customization('google_translate_style')
               delete s.prominent if s.prominent

@@ -13,8 +13,9 @@ window.Header = ReactiveComponent
     # auth = fetch('auth')
     # return SPAN null if auth.form && auth.form not in ['edit profile']
 
+    return SPAN null if !subdomain.name || embedded_demo()
 
-    return SPAN null if !subdomain.name 
+
     
     loc = fetch('location')
     is_homepage = loc.url == '/'

@@ -35,8 +35,12 @@ window.ajax_submit_files_in_form = (opts) ->
 
 
 window.screencasting = ->
-  window.is_screencasting ?= fetch('location').query_params.screencasting == 'true'
-  window.is_screencasting
+  window.__screencasting ?= fetch('location').query_params.screencasting == 'true'
+  window.__screencasting
+
+window.embedded_demo = ->
+  window.__embedded_demo ?= fetch('location').query_params.embedded_demo == 'true'
+  window.__embedded_demo
     
 window.pad = (num, len) -> 
   str = num
@@ -694,53 +698,73 @@ window.slugify = (text) ->
 
 
 # only play videos when they're in the viewport
-window.play_videos_when_in_viewport = (parent_el) ->
-  videos = parent_el.querySelectorAll('video:not([data-initialized])')
+videos_viewport_status = {}
+window.play_videos_when_in_viewport = (parent_el, args) ->
+  {play_only_topmost_video} = (args or {})
+  videos = parent_el.querySelectorAll('video[autoplay]:not([data-initialized])')
+
+  video_id = (video) ->
+    video.getElementsByTagName("source")[0].src
+
+  play_or_pause_after_event = -> 
+    play_rest = true
+    for video in videos 
+      continue if video.readyState < 1
+      should_play = !document.hidden && videos_viewport_status[video_id(video)]
+
+      if should_play && play_rest
+        video.play()
+        if play_only_topmost_video
+          play_rest = false
+      else 
+        video.pause()
+
+
+  document.addEventListener 'visibilitychange', play_or_pause_after_event
+
+  observe_video = (video) ->
+
+    id = video_id(video)
+
+    video.setAttribute 'data-initialized', "" 
+    video.setAttribute 'playsinline', ""   
+
+    video.addEventListener "loadstart", (e) ->
+      video.classList.add 'loading'
+      if video.hasAttribute 'controls'
+        video.setAttribute 'data-controls', ""
+      if !video.hasAttribute('poster')
+        video.setAttribute 'controls', ""
+
+    video.addEventListener 'loadeddata', (e) ->
+      if video.readyState >= 1
+        video.classList.remove 'loading'
+        if !video.hasAttribute 'data-controls'
+          video.removeAttribute 'controls'
+        eligible_to_play = null
+
+        observer_options = 
+          root: null
+          threshold: [1.0]
+
+        observer = new IntersectionObserver (entries) ->
+          entries.forEach (entry) ->
+            if !entry.isIntersecting
+              videos_viewport_status[id] = false
+            else
+              videos_viewport_status[id] = true
+
+            play_or_pause_after_event()
+        , observer_options
+
+        observer.observe video
+
+
 
   for video in videos
-    do (video) =>
-      video.setAttribute 'data-initialized', "" 
-      if video.hasAttribute 'autoplay'
-        video.setAttribute 'playsinline', ""   
-
-      video.addEventListener "loadstart", (e) ->
-        video.classList.add 'loading'
-        if video.hasAttribute 'controls'
-          video.setAttribute 'data-controls', ""
-        if !video.hasAttribute('poster')
-          video.setAttribute 'controls', ""
-
-      video.addEventListener 'loadeddata', (e) ->
-        if video.readyState >= 1
-          video.classList.remove 'loading'
-          if !video.hasAttribute 'data-controls'
-            video.removeAttribute 'controls'
-          eligible_to_play = null
-          observer = new IntersectionObserver (entries) ->
-            entries.forEach (entry) ->
-              if !entry.isIntersecting
-                eligible_to_play = false
-                pause_video()
-              else if video.hasAttribute 'autoplay'
-                eligible_to_play = true
-                play_video()
-          , {}
-
-          play_video = ->
-            video.play()
-          pause_video = ->
-            video.pause()
+    observe_video video
 
 
-          observer.observe video
-
-          onVisibilityChange = ->
-            if document.hidden || !eligible_to_play
-              pause_video()
-            else if video.hasAttribute 'autoplay'
-              play_video()
-
-          document.addEventListener 'visibilitychange', onVisibilityChange
 
 
 

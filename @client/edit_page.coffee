@@ -21,13 +21,15 @@ styles += """
   }
 
 
-  [data-widget="EditPage"] [data-widget="NewList"], [data-widget="EditPage"] .draggable-list {
+  [data-widget="EditPage"] .draggable-list {
     padding: 24px 24px 24px 12px;
   }
 
+
   [data-widget="EditPage"] [data-widget="NewList"] {
-    padding-left: 60px;
-    margin-top: 8px;
+    margin-top: 12px;
+    padding: 32px 24px 26px 60px;
+    margin-bottom: 12px;
   }
 
   [data-widget="EditPage"] .draggable-list {
@@ -520,7 +522,7 @@ window.EditPage = ReactiveComponent
           fontSize: 17
           fontWeight: 700
 
-        "Order of the proposal lists defined above"
+        "Order of the proposal lists#{if @local.type != PAGE_TYPES.ALL then " defined above" else ''}"
 
 
       SELECT

@@ -143,7 +143,9 @@ window.OpinionSlider = ReactiveComponent
       if can_opine > 0
         your_opinion.published = true
         your_opinion.key ?= "/new/opinion"
-        save your_opinion
+        save your_opinion, ->
+          show_flash("Your opinion has been saved")
+
       else
         # trigger authentication
         reset_key 'auth',

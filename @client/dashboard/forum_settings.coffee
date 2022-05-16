@@ -481,25 +481,25 @@ window.ForumSettingsDash = ReactiveComponent
         {
           label: "Default"
           value: 0
-          explanation: "People can contribute as you have configured elsewhere."
+          explanation: "" # "People can contribute as you have configured elsewhere."
         }
 
         {
-          label: "Frozen forum", 
+          label: "Frozen", 
           value: 'frozen'
-          explanation: "No one can add or change opinions, proposals, or comments while the forum is frozen."
+          explanation: "No one can add or update anything they have said."
         }
         
         {
           label: "Ideas only"
           value: "ideas-only"
-          explanation: "People can only contribute new proposals at this time (and only to the lists in which you've enabled ideation). Opinion slider drags or pro/con comments are not allowed at this time."
+          explanation: "People can only contribute new proposals at this time, and only in places you've allowed it."
         } 
         
         {
           label: "Opinions only"
           value: "opinions-only"
-          explanation: "People can only add their opinions by dragging sliders and writing pro/con points. No one can make new proposals."
+          explanation: "People can only add opinions at this time. They can drag sliders and write pro/con points, but no new proposals."
         } 
         
       ]
@@ -513,16 +513,16 @@ window.ForumSettingsDash = ReactiveComponent
 
       H4 null, 
 
-        'Dialogue Phase'
+        'Dialogue State'
 
       DIV
         className: 'explanation'
 
         """
-        Control the phase of your dialogue. This setting gives you the ability to globally override your settings elsewhere. 
-        For example, even if you have allowed people to add proposals to a given list, if you set the phase to "opinions only", 
-        no one will be allowed to add new proposals to that list. However, if you later change the phase, your previous 
-        settings will hold. 
+        Control the state of your dialogue. This setting gives you the ability to override your configuration elsewhere. 
+        For example, if you select "opinions only", no one will be allowed to add new proposals to any of your open-ended questions,
+        even if you allowed it when creating your questions. Your settings can be restored by returning to the 
+        default state. 
         """
 
 

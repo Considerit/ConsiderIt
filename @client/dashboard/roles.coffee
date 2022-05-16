@@ -142,26 +142,27 @@ SubdomainRoles = ReactiveComponent
           role: roles.admin
           add_button: 'Add new hosts'
 
-      RadioWildcardRolesSection
-        role: roles.proposer
-        section_label: 'Who can create new proposals for others to consider?'
-        open_label: 'Anyone who registers an account can add new proposals.'
-        restricted_label: 'This is a <b>framed forum</b> where only some people can create new proposals, but anyone else can drag opinion sliders and comment on those proposals. Hosts can override this limitation on a list-by-list basis to allow open ideation in specific places.'
-        add_button: 'Add new proposers'
-
-      RadioWildcardRolesSection
-        role: roles.participant
-        section_label: 'Who can participate by dragging opinion sliders and adding pro / con comments to proposals?'
-        open_label: 'Anyone who registers an account can give their opinion about the proposals.'
-        restricted_label: 'This is a <b>read-only forum</b> where only some people can participate but everyone can see the conversation.'
-        add_button: 'Add new participants'
+      # RadioWildcardRolesSection
+      #   role: roles.proposer
+      #   section_label: 'Who can create new proposals for others to consider?'
+      #   open_label: 'Anyone who registers an account can add new proposals.'
+      #   restricted_label: 'This is a <b>framed forum</b> where only some people can create new proposals, but anyone else can drag opinion sliders and comment on those proposals. Hosts can override this limitation on a list-by-list basis to allow open ideation in specific places.'
+      #   add_button: 'Add new proposers'
 
       RadioWildcardRolesSection
         role: roles.visitor
         section_label: 'Who can access this forum?'
-        open_label: 'This is an <b>open forum</b> where anyone with the link can access the forum.'
-        restricted_label: 'This is a <b>private forum</b> for invited participants only.'
+        open_label: 'This is an <b>open forum</b>. Anyone with the link can access the forum.'
+        restricted_label: 'This is a <b>private forum</b>. Only invited participants can access it.'
         add_button: 'Add new visitors'
+
+      RadioWildcardRolesSection
+        role: roles.participant
+        section_label: 'Who can participate in this forum?'
+        open_label: 'Anyone who registers an account can participate.'
+        restricted_label: 'This is a <b>read-only forum</b> where only some people can participate but everyone can see the conversation.'
+        add_button: 'Add new participants'
+
         
 window.styles += """
   

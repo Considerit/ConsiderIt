@@ -621,7 +621,7 @@ window.ModalNewList = ReactiveComponent
                       marginLeft: 4
                     htmlFor: 'host-only'
 
-                    translator "engage.list-config-who-can-add-only-hosts", "Only forum hosts or those granted permission"
+                    translator "engage.list-config-who-can-add-only-hosts", "Only forum hosts or those granted special permission"
 
 
             if !@props.combines_these_lists

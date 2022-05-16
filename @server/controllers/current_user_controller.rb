@@ -420,6 +420,14 @@ class CurrentUserController < ApplicationController
   end
 
 
+  def destroy
+    if current_user.subdomains.count > 0 
+      render :json => {error: "user_created_subdomains"}
+    else
+      current_user.destroy 
+    end
+  end 
+
 
   def update_via_third_party
     access_token = request.env["omniauth.auth"]
@@ -531,6 +539,7 @@ class CurrentUserController < ApplicationController
       "  window.close(); " + 
       "</script>"
   end
+
 
 
 

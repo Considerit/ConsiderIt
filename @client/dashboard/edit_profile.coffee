@@ -110,6 +110,54 @@ window.EditProfile = ReactiveComponent
 
 
 
+      DIV 
+        style: 
+          marginTop: 80
+
+        FORM 
+          id: 'delete_account_form'
+          
+
+          INPUT
+            type: 'submit' 
+            value: translator 'auth.delete_account', 'Delete your Account'
+            # className: 'like_link'
+            style: 
+              color: '#b74e4e'
+              fontWeight: 600
+              textTransform: 'lowercase'
+              padding: '10px 18px'
+              borderRadius: 8
+              border: 'none'
+              boxShadow: '0 1px 2px rgba(0,0,0,.2)'
+
+            onClick: (ev) =>
+              ev.preventDefault()
+
+              if confirm translator 'auth.delete_account_confirmation', "We're sorry to see you go! Just to check first, though: this will irreversibly delete your account and any material you have contributed to this or any other Consider.it forums. Do you still want to proceed?"
+                error_msg = "Something went wrong trying to delete your account. Please contact help@consider.it and we'll get it done. If you've created a Consider.it forum in the past, that is the most likely cause."
+                
+                ajax_submit_files_in_form
+                  uri: '/current_user'
+                  type: 'delete'
+                  form: '#delete_account_form'
+                  additional_data: 
+                    authenticity_token: fetch('/current_user').csrf
+
+                  success: (resp) =>
+                    if resp.length > 0 && JSON.parse(resp)?.error?
+                      @local.errors = [translator('auth.delete_account_contact_us', error_msg)]
+                      save @local
+                    else 
+                      window.location.href = location.origin
+
+                  error: (results) => 
+                    @local.errors = [translator('auth.delete_account_contact_us', error_msg)]
+                    save @local 
+            
+
+
+
 
 
 

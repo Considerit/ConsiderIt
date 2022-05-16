@@ -5,6 +5,8 @@ class User < ApplicationRecord
   has_secure_password validations: false
   alias_attribute :password_digest, :encrypted_password
 
+  has_many :subdomains, :foreign_key => 'created_by'
+
   has_many :points, :dependent => :destroy
   has_many :opinions, :dependent => :destroy
   has_many :inclusions, :dependent => :destroy

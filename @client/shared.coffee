@@ -877,7 +877,7 @@ a {
 } .button:active:focus, button:active:focus, input[type='submit']:active:focus{
 }
 
-button.like_link {
+button.like_link, input[type='submit'].like_link {
   background: none;
   border: none;
   text-decoration: underline;

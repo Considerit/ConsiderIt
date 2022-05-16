@@ -524,6 +524,8 @@ DateFilters = ->
               date_option_changed date_options[3]
               e.preventDefault()
 
+
+
 to_date_str = (ms) -> 
   ms += new Date().getTimezoneOffset() * 60 * 1000
   date = new Date(ms)
@@ -532,6 +534,59 @@ to_date_str = (ms) ->
   day = ("0" + date.getDate()).slice(-2)
   "#{year}-#{month}-#{day}"
 
+
+
+# RegistrationFilter = ->
+#   opinion_views = fetch 'opinion_views'
+
+#   date_toggle_state = fetch 'opinion-date-filter'
+#   date_options = default_date_options()
+#   DIV 
+#     className: 'grays' # for toggle buttons
+
+#     ToggleButtons date_options, date_toggle_state
+
+#     if date_toggle_state.active == 'custom'
+
+#       DIV 
+#         className: 'opinion-date-filter'
+
+#         SPAN 
+#           style: 
+#             position: 'relative'
+
+#           LABEL null,
+#             translator 'opinion_views.date_from', 'From:'
+#           INPUT 
+#             type: 'date'
+#             id: 'start'
+#             name: 'opinion-start'
+#             defaultValue: if date_toggle_state.start then to_date_str date_toggle_state.start
+#             onChange: (e) ->
+#               date_toggle_state.start = new Date(e.target.value).getTime()
+#               save date_toggle_state
+#               date_option_changed date_options[3]            
+#               e.preventDefault()
+
+#         SPAN 
+#           style: 
+#             position: 'relative'
+#             paddingLeft: 8
+
+#           LABEL null,
+#             translator 'opinion_views.date_to', 'To:'
+
+            
+#           INPUT 
+#             type: 'date'
+#             id: 'end'
+#             name: 'opinion-end'
+#             defaultValue: if date_toggle_state.end then to_date_str date_toggle_state.end
+#             onChange: (e) ->
+#               date_toggle_state.end = new Date(e.target.value).getTime()
+#               save date_toggle_state
+#               date_option_changed date_options[3]
+#               e.preventDefault()
 
 
 
@@ -827,6 +882,9 @@ OpinionViews = ReactiveComponent
 get_participant_attributes_with_defaults = ->
   attributes = get_participant_attributes()
   attributes.unshift {key: 'date', icon: date_icon, name: translator('opinion_views.views_date', 'Date'), render: DateFilters}
+
+  # attributes.unshift {key: 'registered', icon: date_icon, name: translator('opinion_views.views_registered', 'Registered'), options: ['true', 'false']}
+
   attributes
 
 

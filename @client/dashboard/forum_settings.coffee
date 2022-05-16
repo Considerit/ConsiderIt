@@ -327,10 +327,61 @@ window.ForumSettingsDash = ReactiveComponent
               'Enable civility pledge.'
             DIV 
               className: 'explanation'
-              ' Newly registered participants must agree to be civil and to use only one account.'
+              'Newly registered participants must agree to be civil and to use only one account.'
               
             
 
+      ########################
+      # Participation with registration
+
+      # do =>
+      #   key = "#{subdomain.name}-participation-without-registration"
+
+      #   question_index = ->
+      #     for tag, idx in (subdomain.customizations.user_tags or [])
+      #       if tag.key == key
+      #         return idx
+      #     return null
+
+      #   DIV className: 'input_group checkbox',
+
+      #     LABEL 
+      #       className: 'toggle_switch'
+
+      #       INPUT 
+      #         id: 'enable_unregistered_participation'
+      #         type: 'checkbox'
+      #         name: 'enable_unregistered_participation'
+      #         defaultChecked: customization('unregistered_participation')
+      #         onChange: (ev) -> 
+      #           subdomain.customizations ||= {}
+      #           subdomain.customizations.unregistered_participation = ev.target.checked
+      #           save subdomain
+
+
+      #       SPAN 
+      #         className: 'toggle_switch_circle'
+          
+
+      #     LABEL 
+      #       className: 'indented'
+
+      #       htmlFor: 'enable_unregistered_participation'
+      #       B null, 
+      #         'Allow participation without registration.'
+      #       DIV 
+      #         className: 'explanation'
+
+      #         dangerouslySetInnerHTML: __html: """
+      #           People are allowed to participate without registering an email or password. 
+      #           Works best for small groups where most people know each other. 
+      #           If you are considering unregistered participation, recognize that:
+      #           <ul style="padding-left: 24px; list-style-position: outside"> 
+      #             <li>It will be much easier for someone to participate many times, distorting your results. Including on proposals they submit.</li>
+      #             <li>Unregistered participants won't be notified about new activity in the forum, even in response to their own comments.</li>
+      #             <li>You will not have access to their email addresses in the data export.</li>
+      #           </ul>
+      #           """
 
 
 

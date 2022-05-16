@@ -180,7 +180,7 @@ window.Dashboard = ReactiveComponent
           className: 'label'
           translator "user_menu.option.#{opts.label}", opts.label
 
-        if opts.paid
+        if opts.paid && permit('configure paid feature') < 0
           UpgradeForumButton
             tag: SPAN
             style: 

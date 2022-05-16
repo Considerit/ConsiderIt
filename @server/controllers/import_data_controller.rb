@@ -178,8 +178,8 @@ class ImportDataController < ApplicationController
 
           when 'proposals'
 
-            title = row.fetch('title', false)
-            list = row.fetch('topic', false) || row.fetch('list', false) || row.fetch('cluster', false)
+            title = row.fetch('title', false) || row.fetch('name', false)
+            list = row.fetch('group', false) || row.fetch('topic', false) || row.fetch('list', false) || row.fetch('cluster', false) || row.fetch('category', false)
 
             if !user 
               user = current_user

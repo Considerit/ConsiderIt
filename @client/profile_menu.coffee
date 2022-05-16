@@ -126,7 +126,8 @@ window.ProfileMenu = ReactiveComponent
               bottom: 8
               paddingLeft: 27
               display: 'block'
-              whiteSpace: 'nowrap'  
+              whiteSpace: 'nowrap' 
+              fontWeight: 400 
 
             active_option_style: 
               color: 'black'

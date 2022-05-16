@@ -404,27 +404,44 @@ window.ForumSettingsDash = ReactiveComponent
       ########################
       # Plan
       if current_user.is_super_admin
-
         DIV 
-          className: 'input_group'
-          LABEL htmlFor: 'plan', 'Account Plan'
-          SELECT 
-            style: 
-              display: 'block'
-            onChange: (ev) -> 
-              subdomain.plan = ev.target.value
-              save subdomain
-            defaultValue: subdomain.plan
+          className: 'FORUM_SETTINGS_section input_group'
 
-            OPTION 
-              value: 0
-              'Free'
-            OPTION
-              value: 1
-              'Customized'
-            OPTION
-              value: 2
-              'Premium'
+          H4 null, 
+
+            'Forum Plan Type'
+
+          FIELDSET null,
+
+            for option in [{label: 'Free Forum', value: 0}, {label: 'Unlimited Forum', value: 1}, {label: 'Enterprise Forum', value: 2}]
+              DIV null,
+
+                DIV 
+                  className: 'radio_group'
+                  style: 
+                    cursor: 'pointer'
+
+                  onClick: do (option) => => 
+                    subdomain.plan = option.value
+                    save subdomain
+
+
+                  INPUT 
+                    style: 
+                      cursor: 'pointer'
+                    type: 'radio'
+                    name: "plan"
+                    id: "plan_#{option.value}"
+                    defaultChecked: subdomain.plan == option.value
+
+                  LABEL 
+                    style: 
+                      cursor: 'pointer'
+                      display: 'block'
+                    htmlFor: "plan_#{option.value}"
+                    
+                    option.label
+
 
       if current_user.is_super_admin
         FORM 

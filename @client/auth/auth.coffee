@@ -43,7 +43,7 @@ window.AuthCallout = ReactiveComponent
           width: HOMEPAGE_WIDTH()
           margin: 'auto'
           padding: 12
-          backgroundColor: '#f1f1f1'
+          # backgroundColor: '#f1f1f1'
         
         DIV 
           style: 

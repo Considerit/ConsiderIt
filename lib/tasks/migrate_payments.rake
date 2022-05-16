@@ -30,3 +30,14 @@ task :migrate_to_payments => :environment do
     end
   end
 end
+
+task :migrate_for_onboarding => :environment do 
+  Subdomain.all.each do |subdomain|
+    customizations = subdomain.customizations || {}
+
+    customizations['onboarding_complete'] = true
+    subdomain.customizations = customizations
+    subdomain.save
+
+  end
+end

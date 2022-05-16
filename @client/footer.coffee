@@ -17,7 +17,8 @@ window.Footer = ReactiveComponent
 
 big_button = -> 
   backgroundColor: logo_red
-  boxShadow: "0 4px 0 0 black"
+  # boxShadow: "0 4px 0 0 black"
+  boxShadow: "0 1px 2px 0 rgb(0 0 0 / 50%)"
   fontWeight: 700
   color: 'white'
   padding: '6px 60px'
@@ -25,6 +26,7 @@ big_button = ->
   fontSize: 24
   border: 'none'
   borderRadius: 12
+  borderBottom: "1px solid black"
 
 
 window.DefaultFooter = ReactiveComponent
@@ -81,7 +83,7 @@ window.DefaultFooter = ReactiveComponent
             }
 
             .custom-shape-divider-top-1651729272 .shape-fill {
-                fill: #f6f6f6;
+                fill: #{if fetch('location').url.indexOf('/dashboard') > -1 then 'white' else '#f6f6f6'};
             }
             </style>
             <div class="custom-shape-divider-top-1651729272">

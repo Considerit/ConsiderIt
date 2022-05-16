@@ -114,6 +114,8 @@ window.show_popover = (e) ->
 
 calc_coords = (el) ->
   coords = $(el).offset()
+  coords.width = el.offsetWidth
+  coords.height = el.offsetHeight
   coords.left += el.offsetWidth / 2
   coords
 
@@ -149,23 +151,69 @@ window.Popover = ReactiveComponent
       boxShadow: '0 1px 9px rgba(0,0,0,.5)'
       # maxWidth: 350
 
-
     arrow_size = 
       height: 10
       width: 26
 
-    if popover.top || !popover.top?
-      # place the popover above the element
-      _.extend style, 
-        top: coords.top + (popover.offsetY or 0) - (popover.rendered_size?.height or 0) - arrow_size.height
-        left: if !popover.rendered_size then -99999 else coords.left + (popover.offsetX or 0) - popover.rendered_size?.width / 2
-    else 
-      # place the popover below the element
-      _.extend style, 
-        top: coords.top + (popover.offsetY or 0)
-        left: if !popover.rendered_size then -99999 else coords.left + (popover.offsetX or 0) - (popover.rendered_size.width or 0)
+    window_height = window.innerHeight
+    viewport_top = window.scrollY
+    viewport_bottom = viewport_top + window_height
 
     arrow_up = popover.top || !popover.top?
+    try_top = (force) -> 
+
+      top = coords.top + (popover.offsetY or 0) - (popover.rendered_size?.height or 0) - arrow_size.height - 6
+      if top < viewport_top && !force
+        arrow_up = false
+        return null
+      else 
+        arrow_up = true
+        top
+
+    try_bottom = (force) -> 
+      top = coords.top + (popover.offsetY or 0) + arrow_size.height + coords.height + 12
+      if top + (popover.rendered_size?.height or 0) + arrow_size.height > viewport_bottom && !force
+        arrow_up = true
+        return null
+      else
+        arrow_up = false 
+        top
+
+    if popover.top || !popover.top? 
+      # place the popover above the element
+      top = try_top()
+      if top == null 
+        top = try_bottom()
+        if top == null
+          top = try_top(true)
+    else 
+      # place the popover below the element
+      top = try_bottom()
+      if top == null 
+        top = try_top()
+        if top == null
+          top = try_bottom(true)
+
+
+    arrow_adjustment = 0 
+    if popover.rendered_size?.width
+      left = coords.left + (popover.offsetX or 0) - popover.rendered_size.width / 2
+
+      if left < 0
+        arrow_adjustment = -1 * left
+        left = 0
+      else if left + popover.rendered_size.width > window.innerWidth
+        arrow_adjustment = (window.innerWidth - popover.rendered_size.width) - left
+        left = window.innerWidth - popover.rendered_size.width
+
+    else 
+      left = -999999 # render it offscreen first to get sizing
+
+
+    _.extend style, 
+      top: top
+      left: left
+    
 
     get_focus = ->
       popover.has_focus = true 
@@ -199,7 +247,7 @@ window.Popover = ReactiveComponent
           position: 'absolute'
           bottom: if arrow_up then -arrow_size.height
           top: if !arrow_up then -arrow_size.height
-          left: if popover.positioned != 'right' then "calc(50% - #{arrow_size.width / 2}px)" 
+          left: if popover.positioned != 'right' then "calc(50% - #{arrow_size.width / 2 + arrow_adjustment}px)" 
           right: if popover.positioned == 'right' then 7       
           transform: if !arrow_up then 'scale(1,-1)' 
           display: if popover.hide_triangle then 'none' 

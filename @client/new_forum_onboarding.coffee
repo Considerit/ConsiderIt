@@ -108,7 +108,9 @@ window.NewForumOnBoarding = ReactiveComponent
     return SPAN null if subdomain.customizations.onboarding_complete
 
     has_initial_list = subdomain.customizations['list/initial']
-    list_count = get_all_lists().length
+
+    all_lists = (k for k,v of subdomain.customizations when k.match( /list\// ) )
+    list_count = all_lists.length
 
     task_one_complete = subdomain.customizations.banner.title?.length > 0
     task_two_complete = !has_initial_list

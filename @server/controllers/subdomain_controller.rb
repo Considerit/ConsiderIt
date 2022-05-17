@@ -125,11 +125,7 @@ class SubdomainController < ApplicationController
         proposals = ['Vanilla', 
                      'Chocolate', 
                      'Cookies \'n Cream', 
-                     'Strawberry', 
                      'Mint chocolate chip',
-                     'Butter pecan',
-                     'Chocolate chip cookie dough',
-                     'Rocky Road',
                      'Salted caramel',
                      'Eggnog'
                     ]

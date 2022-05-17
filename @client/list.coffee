@@ -225,12 +225,9 @@ __remove_this_list = (list_key, page) ->
   customizations = subdomain.customizations
 
   if tabs
-    page ?= get_current_tab_name()
     for tab in tabs
-      if tab.name == page
-        if (idx = tab.lists.indexOf(list_key)) > -1
-          tab.lists.splice idx, 1
-        break
+      if (idx = tab.lists.indexOf(list_key)) > -1
+        tab.lists.splice idx, 1
 
   else 
     ol = customizations.lists
@@ -397,14 +394,14 @@ styles += """
     font-weight: 700;
   }
 
-  [data-widget="NewList"]:hover .subbutton_button {
+  [data-widget="NewList"]:hover .subbutton_button, [data-widget="NewList"]:hover .separator {
     text-decoration: underline;
   }
 
   [data-widget="NewList"] .separator {
-    padding: 0 12px;
+    // padding: 0 12px;
     font-weight: 300;
-    color: #444;
+    color: #{focus_blue};
   }
   [data-widget="NewList"] .subheader {
     color: #656565;
@@ -456,7 +453,7 @@ window.NewList = ReactiveComponent
             SPAN null,
               SPAN 
                 className: 'separator'
-                t('or')
+                dangerouslySetInnerHTML: __html: "&nbsp;&nbsp;#{t('or')}&nbsp;&nbsp;"
               SPAN 
                 className: 'subbutton_button closed'
                 'an open-ended question'

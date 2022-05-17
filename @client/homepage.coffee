@@ -208,7 +208,7 @@ window.SimpleHomepage = ReactiveComponent
           key: list.key
           list: list 
 
-      if current_user.is_admin && current_tab not in ['About', 'FAQ'] && get_tab(current_tab)?.type != PAGE_TYPES.ABOUT
+      if current_user.is_admin && current_tab not in ['About', 'FAQ'] && get_tab(current_tab)?.type not in [PAGE_TYPES.ABOUT, PAGE_TYPES.ALL]
         NewList()
           
 

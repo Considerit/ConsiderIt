@@ -168,12 +168,12 @@ window.CollapsedProposal = ReactiveComponent
           display: 'inline-block'
           verticalAlign: 'top'
           position: 'relative'
-          marginLeft: if icons then 40 + 18
+          marginLeft: if icons then 40 + 18 else 58
 
         DIV 
           style: 
             position: 'absolute'
-            left: if icons then -40 - 18
+            left: if icons then -40 - 18 else -58
             top: if icons then 4
 
 
@@ -222,8 +222,8 @@ window.CollapsedProposal = ReactiveComponent
               key: 'bullet'
               style: 
                 position: 'relative'
-                left: -22
-                top: 3
+                left: 13
+                top: 0
               width: 8
               viewBox: '0 0 200 200' 
               CIRCLE cx: 100, cy: 100, r: 80, fill: '#000000'

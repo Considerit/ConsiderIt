@@ -105,8 +105,8 @@ class SubdomainController < ApplicationController
             "list_category": "flavor",
             "list_opinions_title": "",
             "slider_pole_labels": {
-              "support": 'Unbelievably delicious',
-              "oppose": 'Remarkably poor'
+              "support": 'Yummy',
+              "oppose": 'Yucky'
             },
             "show_proposer_icon": false
           }

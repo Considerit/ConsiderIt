@@ -143,8 +143,6 @@ window.NewForumOnBoarding = ReactiveComponent
       DIV 
         className: 'header_wrapper'
 
-
-
         H1 null, 
           if !tasks_completed
             "Welcome to your new forum!"
@@ -176,6 +174,21 @@ window.NewForumOnBoarding = ReactiveComponent
           onboard_item "Experiment with the question below. Delete it when you’re done.", task_two_complete
           onboard_item "Start your own conversation.", task_three_complete
 
+      DIV 
+        style:
+          fontSize: 18
+          color: '#5D5C5C'
+          marginTop: 36
+
+        'Learn more about the '
+
+        A
+          href: "https://consider.it/tour#basics"
+          target: '_blank'
+          style:
+            fontWeight: 400
+          'lifecycle of a Consider.it forum'
+        '.'
 
 
 

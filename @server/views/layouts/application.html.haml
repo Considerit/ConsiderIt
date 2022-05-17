@@ -8,7 +8,7 @@
   %html{ lang: current_subdomain.lang}
 
     %head{ profile: "http://gmpg.org/xfn/1", prefix: "og: http://ogp.me/ns#"}
-
+        
       - if @title
         %title
           = @title      
@@ -49,12 +49,12 @@
         %link{ :rel => "preconnect", :href => "https://fonts.gstatic.com", :crossorigin => ""}
 
         - if @app == 'product_page'
-          %link{ :href => "https://fonts.googleapis.com/css2?family=Fira+Mono&family=Fira+Sans+Condensed:wght@200;400;700;800;900&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap", :rel => 'preload', :as => 'style' }
+          %link{ :href => "https://fonts.googleapis.com/css2?family=Fira+Mono&family=Fira+Sans+Condensed:wght@200;400;700;800;900&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=block", :rel => 'preload', :as => 'style' }
 
-          %link{ :href => "https://fonts.googleapis.com/css2?family=Fira+Mono&family=Fira+Sans+Condensed:wght@200;400;700;800;900&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap", :rel => 'stylesheet' }
+          %link{ :href => "https://fonts.googleapis.com/css2?family=Fira+Mono&family=Fira+Sans+Condensed:wght@200;400;700;800;900&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=block", :rel => 'stylesheet' }
           
         - else 
-          %link{ :href => "https://fonts.googleapis.com/css2?family=Fira+Mono&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap", :rel => "stylesheet"}
+          %link{ :href => "https://fonts.googleapis.com/css2?family=Fira+Mono&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=block", :rel => "stylesheet"}
 
       %link{:href => "https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css", :rel => "stylesheet"}
 

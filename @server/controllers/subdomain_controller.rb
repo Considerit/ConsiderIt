@@ -84,15 +84,29 @@ class SubdomainController < ApplicationController
       if !params[:skip_seeding]
 
         # create a sample list
+        # customizations = {
+        #   "list/initial": {
+        #     "list_title": "How do you want Consider.it to help you?",
+        #     "list_description": "Experiment with the proposals in this list however you want. When you’re done, you can delete the entire proposal list via the gear icon in the upper right.",
+        #     "list_category": "",
+        #     "list_opinions_title": "",
+        #     "slider_pole_labels": {
+        #       "support": 'Important to me',
+        #       "oppose": 'Unimportant'
+        #     },
+        #     "show_proposer_icon": false
+        #   }
+        # }
+
         customizations = {
           "list/initial": {
-            "list_title": "How do you want Consider.it to help you?",
-            "list_description": "This is an example topic with a set of responses. Experiment with these however you want. When you’re done, you can delete the entire topic by accessing the gear icon above. Use the “Create new topic” button below to create more topics. And don't forget to edit the banner at the top of the page to introduce people to the forum and give it your desired look and feel!",
-            "list_category": "",
+            "list_title": "What are your favorite ice cream flavors?",
+            "list_description": "Experiment with the proposed flavors however you want. When you’re done, you can delete the entire proposal list via the gear icon in the upper right.",
+            "list_category": "flavor",
             "list_opinions_title": "",
             "slider_pole_labels": {
-              "support": 'Important to me',
-              "oppose": 'Unimportant'
+              "support": 'Unbelievably delicious',
+              "oppose": 'Remarkably poor'
             },
             "show_proposer_icon": false
           }
@@ -102,7 +116,26 @@ class SubdomainController < ApplicationController
         new_subdomain.save
 
          # Seed new proposals in sample list       
-        proposals = ['Collect feedback from many stakeholders', 'Help me make decisions with peers', 'Talk with peers about things we care about', 'Help people get on the same page', 'Something else']
+        # proposals = ['Collect feedback from many stakeholders', 
+        #              'Help me make decisions with peers', 
+        #              'Talk with peers about things we care about', 
+        #              'Help people get on the same page', 
+        #              'Something else']
+
+        proposals = ['Vanilla', 
+                     'Chocolate', 
+                     'Cookies \'n Cream', 
+                     'Strawberry', 
+                     'Mint chocolate chip',
+                     'Butter pecan',
+                     'Chocolate chip cookie dough',
+                     'Rocky Road',
+                     'Salted caramel',
+                     'Eggnog'
+                    ]
+
+
+
 
         proposals.each do |proposal_name|
           proposal = Proposal.new({

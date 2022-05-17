@@ -4,9 +4,13 @@
   *** #{translator({id: "email.digest.text_header"}, "Recent activity")} ***
   ***********************
 
-- if @anonymize_everything || @hide_opinions
+- if @anonymize_everything || @hide_opinions || @frozen
 
   = section('Forum settings')
+
+  - if @frozen
+    %div
+      = translator "email.frozen_forum_message", "The forum host has frozen this forum to additional participation. The activity summarized in this email happened before then."
 
   - if @anonymize_everything
     %div

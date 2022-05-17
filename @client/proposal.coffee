@@ -203,9 +203,7 @@ window.Proposal = ReactiveComponent
                 id: "engage.opinion_header"
                 'What do you think?'
             else 
-              TRANSLATE
-                  id: "engage.opinion_header_results"
-                  'Opinions about this proposal'
+              list_i18n().opinion_header("list/#{@proposal.cluster}")
 
 
         if !embedded_demo()      

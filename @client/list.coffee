@@ -20,7 +20,7 @@ window.styles += """
 
   .LIST-header {
     font-size: 32px;
-    font-weight: 500;
+    font-weight: 700;
     text-align: left;     
   }
 
@@ -57,8 +57,8 @@ get_list_padding = ->
   top = if ONE_COL() then 12 else 48
   bottom = if ONE_COL() then 12 else 48 
 
-  right = LIST_PADDING() + LIST_PADDING() / 6
-  left = LIST_PADDING() - LIST_PADDING() / 6
+  right = Math.max 36, LIST_PADDING() + LIST_PADDING() / 6
+  left  = Math.max 36, LIST_PADDING() - LIST_PADDING() / 6
 
   "#{top}px #{right}px #{bottom}px #{left}px"
 
@@ -383,7 +383,6 @@ styles += """
   [data-widget="NewList"] h1.LIST-header {
     position: relative;
     left: -42px;
-    font-size: 24px;
     display: flex;
     align-items: center;
   }
@@ -414,11 +413,14 @@ styles += """
   }
 """
 
+
 window.NewList = ReactiveComponent
   displayName: 'NewList'
 
   render: -> 
     subdomain = fetch '/subdomain'
+
+    wide_layout = WINDOW_WIDTH() > 1250 
 
     @local.hovering ?= false
 
@@ -450,37 +452,71 @@ window.NewList = ReactiveComponent
             className: 'subbutton_button open'
             'Add a request for feedback' 
 
-          SPAN 
-            className: 'separator'
-            t('or')
-          SPAN 
-            className: 'subbutton_button closed'
-            'an open-ended question'
+          if wide_layout
+            SPAN null,
+              SPAN 
+                className: 'separator'
+                t('or')
+              SPAN 
+                className: 'subbutton_button closed'
+                'an open-ended question'
 
-        DIV 
-          className: 'subheader'
+        if wide_layout
+          DIV 
+            className: 'subheader'
 
-          SPAN 
-            style: 
-              position: 'relative'
-              left: 138 
+            SPAN 
+              style: 
+                position: 'relative'
+                left: 250 
 
-            'on a fixed set of proposals'
+              'on a fixed set of proposals'
 
-          SPAN 
-            style: 
-              position: 'relative'
-              left: 305 
-            'for community ideation'
+            SPAN 
+              style: 
+                position: 'relative'
+                left: 530 
+              'for community ideation'
 
-          
+        else 
+          DIV 
+            className: 'subheader'
+
+            SPAN 
+              style: 
+                position: 'relative'
+                left: 0 
+
+              'on a fixed set of proposals or in response to an open-ended question'
+
+
 
 
 window.list_i18n = ->
   button: translator('engage.create_new_list_button', "Create a new call for ideas or feedback")
   explanation: translator 'engage.create_new_list_explanation', 'Ask an open-ended question like "What are your ideas?" or establish a category like "Recommendations."'
-               
-#'A Topic collects proposals under a category like "Recommendations" or in response to an open-ended question like "What are your ideas?"'
+  new_response_label: (list_key) ->
+    item_name = customization('list_item_name', list_key)
+    if item_name
+      item_name = capitalize item_name
+    if item_name == 'proposal' or !item_name
+      translator "engage.add_new_proposal_to_list", 'Add new proposal'
+    else 
+      translator 
+        id: "engage.add_new_#{item_name}_to_list"
+        key: "/translations/#{fetch('/subdomain').name}"
+      , "Add new #{item_name}"
+  opinion_header: (list_key) ->
+    item_name = customization('list_item_name', list_key)
+    if item_name
+      item_name = capitalize item_name
+    if item_name == 'proposal' or !item_name
+      translator "engage.opinion_header_results", 'Opinions about this proposal'
+    else 
+      translator 
+        id: "engage.opinion_header_results_#{item_name}"
+        key: "/translations/#{fetch('/subdomain').name}"
+      , "Opinions about this #{item_name}"
 
 
 EditableTitle = ReactiveComponent
@@ -562,6 +598,7 @@ styles += """
     font-weight: 400;
     color: black;
     margin-top: 8px;
+    margin-bottom: 18px;
     font-style: italic;
   }
 
@@ -655,14 +692,14 @@ window.list_actions = (props) ->
                 e.stopPropagation()
                 reset_key 'auth', 
                   form: 'create account'
-                  goal: 'Introduce yourself to share a response'
+                  goal: 'Introduce yourself to make a contribution'
 
             '+ '
 
             SPAN 
               style: 
                 textDecoration: 'underline'
-              translator "engage.add_new_proposal_to_list", 'add new response'
+              list_i18n().new_response_label(list_key)
 
       if props.can_sort && add_new
         SPAN 

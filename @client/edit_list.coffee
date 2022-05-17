@@ -179,7 +179,7 @@ window.ModalNewList = ReactiveComponent
       customizations[list_key] ?= {}
       list_config = customizations[list_key]
 
-      fields = ['list_title', 'list_description', 'list_permit_new_items', 'list_category', 'slider_pole_labels', 'list_opinions_title', 'discussion_enabled', 'list_is_archived']
+      fields = ['list_title', 'list_description', 'list_permit_new_items', 'list_item_name', 'list_category', 'slider_pole_labels', 'list_opinions_title', 'discussion_enabled', 'list_is_archived']
 
       for f in fields
         val = edit_list[f]
@@ -240,6 +240,8 @@ window.ModalNewList = ReactiveComponent
 
       @props.done_callback?()
 
+    edit_list.list_category ?= customization('list_category', list_key)
+    edit_list.list_item_name ?= customization('list_item_name', list_key)
     edit_list.discussion_enabled ?= customization('discussion_enabled', list_key)
     edit_list.list_is_archived ?= customization('list_is_archived', list_key)
 
@@ -650,10 +652,32 @@ window.ModalNewList = ReactiveComponent
                 else 
                   DIV null, 
 
+                    DIV 
+                      style:
+                        marginBottom: 24
+
+                      LABEL 
+                        style: {}
+
+
+                        DIV null,
+
+                          translator 'engage.edit_list_item_name', 'What do you call each proposal in this list?'
+
+                        INPUT 
+                          type: 'text'
+                          defaultValue: edit_list.list_item_name or translator('shared.proposal', 'proposal')
+                          name: 'list_item_name'
+                          style: 
+                            padding: '8px 12px'
+                            fontSize: 18
+                          onChange: (e) =>
+                            edit_list.list_item_name = e.target.value
+                            save edit_list
 
                     DIV 
                       style:
-                        marginBottom: 6
+                        marginBottom: 24
                       LABEL 
                         style: {}
 
@@ -672,7 +696,7 @@ window.ModalNewList = ReactiveComponent
 
                     DIV                   
                       style:
-                        marginBottom: 24
+                        marginBottom: 36
                       LABEL 
                         style: {}
 

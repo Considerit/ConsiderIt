@@ -79,7 +79,7 @@ window.NewProposal = ReactiveComponent
             marginRight: 23
 
         if permitted
-          translator "engage.add_new_proposal_to_list", 'Add new response'
+          list_i18n().new_response_label(list_key)
         else 
           translator "engage.login_to_add_new_proposal", 'Create an account to share a response'
 

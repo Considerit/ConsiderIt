@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_03_12_030842) do
+ActiveRecord::Schema.define(version: 2022_05_17_214145) do
 
   create_table "comments", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "commentable_id", default: 0
@@ -206,7 +206,7 @@ ActiveRecord::Schema.define(version: 2022_03_12_030842) do
     t.string "reset_password_token", collation: "utf8_unicode_ci"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string "avatar_file_name", collation: "utf8_unicode_ci"
+    t.string "avatar_file_name", limit: 2056
     t.string "avatar_content_type", collation: "utf8_unicode_ci"
     t.integer "avatar_file_size"
     t.datetime "avatar_updated_at"
@@ -230,7 +230,6 @@ ActiveRecord::Schema.define(version: 2022_03_12_030842) do
     t.boolean "complete_profile", default: false
     t.string "lang"
     t.integer "paid_forums", default: 0
-    t.index ["avatar_file_name"], name: "index_users_on_avatar_file_name"
     t.index ["email"], name: "index_users_on_email"
     t.index ["registered"], name: "index_users_on_registered"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", length: 3

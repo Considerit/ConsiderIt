@@ -163,7 +163,7 @@ window.AuthTransition = ReactiveComponent
         save current_user
 
         reset_key 'auth'
-      else if current_user.tags.federation_allegiance && !auth.show_user_questions_after_account_creation && current_user.name == 'temp'
+      else if current_user.tags.federation_allegiance && current_user.name == 'temp'
         allegiance = current_user.tags.federation_allegiance
         id = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 15)
         switch allegiance 

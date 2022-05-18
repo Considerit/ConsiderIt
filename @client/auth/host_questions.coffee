@@ -40,8 +40,7 @@ window.HostQuestions = ReactiveComponent
           SPAN null
 
       DIV null,
-        ShowHostQuestions
-          disable_unchecking_required_booleans: @props.disable_unchecking_required_booleans     
+
 
         if embedded_demo() && fetch('/subdomain').name == 'galacticfederation' && fetch('local_tags').tags?.federation_allegiance
           switch current_user.tags.federation_allegiance
@@ -77,7 +76,9 @@ window.HostQuestions = ReactiveComponent
                 height: 70
                 marginLeft: 24
                 borderRadius: '50%'
-
+      
+        ShowHostQuestions
+          disable_unchecking_required_booleans: @props.disable_unchecking_required_booleans     
 
 
 

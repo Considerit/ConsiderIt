@@ -43,6 +43,44 @@ window.HostQuestions = ReactiveComponent
         ShowHostQuestions
           disable_unchecking_required_booleans: @props.disable_unchecking_required_booleans     
 
+        if embedded_demo() && fetch('/subdomain').name == 'galacticfederation' && fetch('local_tags').tags?.federation_allegiance
+          switch current_user.tags.federation_allegiance
+            when 'Dark'
+              avatar_url = "https://d2rtgkroh5y135.cloudfront.net/system/avatars/287330/large/stormtrooper1.png"
+              title = 'A Stormtrooper'
+              break
+            when 'Light' 
+              avatar_url = "https://f.consider.it/galacticfederation/ewok.png"  
+              title = 'An Ewok'                              
+              break
+            when "Wouldn't you like to know"
+              avatar_url = 'https://f.consider.it/galacticfederation/wookiee.jpeg'
+              title = 'A Wookiee'              
+              break
+            when 'Non-binary' 
+              avatar_url = 'https://f.consider.it/galacticfederation/rodian.jpeg'
+              title = 'A Rodian'              
+              break
+
+          DIV 
+            style: 
+              display: 'flex'
+              alignItems: 'center'
+              paddingLeft: 36
+
+            "In this parody, you'll participate as:"
+
+            IMG 
+              "data-tooltip": title
+              src: avatar_url
+              style: 
+                height: 70
+                marginLeft: 24
+                borderRadius: '50%'
+
+
+
+
         if customization('auth_footer')
           DIV 
             style:
@@ -166,6 +204,8 @@ window.ShowHostQuestions = ReactiveComponent
     current_user = fetch('/current_user')
     auth = fetch('auth')
 
+    local = fetch('local_tags')
+
     return DIV() if !current_user.tags
 
     questions = []
@@ -174,9 +214,9 @@ window.ShowHostQuestions = ReactiveComponent
       if vals.self_report
         questions.push _.extend {}, vals.self_report, {tag}
 
-    if @local.tags != current_user.tags
-      @local.tags = current_user.tags
-      save @local
+    if local.tags != current_user.tags
+      local.tags = current_user.tags
+      save local
       return SPAN null
 
 
@@ -198,12 +238,12 @@ window.ShowHostQuestions = ReactiveComponent
               key: "#{question.tag}_inputBox"
               id: slugify("#{question.tag}inputBox")
               type: 'text'
-              value: @local.tags[question.tag]
+              value: local.tags[question.tag]
 
               onChange: do(question) => (event) =>
-                @local.tags = @local.tags or {}
-                @local.tags[question.tag] = current_user.tags[question.tag] = event.target.value
-                save @local
+                # local.tags = local.tags or {}
+                local.tags[question.tag] = current_user.tags[question.tag] = event.target.value
+                save local
               onKeyPress: (event) =>
                 # submit on enter
                 if event.which == 13
@@ -227,11 +267,11 @@ window.ShowHostQuestions = ReactiveComponent
                     marginTop: 5
                     marginLeft: 0
                     marginRight: 6
-                  checked: @local.tags[question.tag]
+                  checked: local.tags[question.tag]
                   onChange: do(question) => (event) =>
-                    @local.tags = @local.tags or {}
-                    @local.tags[question.tag] = current_user.tags[question.tag] = event.target.checked
-                    save @local
+                    # local.tags = local.tags or {}
+                    local.tags[question.tag] = current_user.tags[question.tag] = event.target.checked
+                    save local
 
                 LABEL 
                   htmlFor: slugify("#{question.tag}inputBox")
@@ -284,7 +324,6 @@ window.ShowHostQuestions = ReactiveComponent
                         marginLeft: 0
                       checked: is_checked
                       onChange: do(question, option) => (event) =>
-                        @local.tags = @local.tags or {}
 
                         if event.target.checked
                           options_checked.push option
@@ -293,8 +332,8 @@ window.ShowHostQuestions = ReactiveComponent
                           if idx > -1
                             options_checked.splice idx, 1
                         
-                        @local.tags[question.tag] = current_user.tags[question.tag] = options_checked.join(CHECKLIST_SEPARATOR)
-                        save @local
+                        local.tags[question.tag] = current_user.tags[question.tag] = options_checked.join(CHECKLIST_SEPARATOR)
+                        save local
 
                         if question.open_text_option == option && event.target.checked
                           int = setInterval =>
@@ -324,11 +363,9 @@ window.ShowHostQuestions = ReactiveComponent
                           
                           full_vals = options_checked.slice()
                           full_vals[idx] = "#{full_vals[idx]}#{OTHER_SEPARATOR}#{event.target.value}"
-                          @local.tags[question.tag] = current_user.tags[question.tag] = full_vals.join(CHECKLIST_SEPARATOR)
-                          save @local
+                          local.tags[question.tag] = current_user.tags[question.tag] = full_vals.join(CHECKLIST_SEPARATOR)
+                          save local
                         
-                        
-
 
           when 'dropdown'
             input = DIV null,
@@ -341,11 +378,11 @@ window.ShowHostQuestions = ReactiveComponent
                   marginTop: 4
                   maxWidth: '100%'
                   marginRight: 12
-                defaultValue: (@local.tags[question.tag] or '').split(OTHER_SEPARATOR)[0]
+                defaultValue: (local.tags[question.tag] or '').split(OTHER_SEPARATOR)[0]
                 onChange: do(question) => (event) =>
-                  @local.tags = @local.tags or {}
-                  @local.tags[question.tag] = current_user.tags[question.tag] = event.target.value
-                  save @local
+                  # local.tags = local.tags or {}
+                  local.tags[question.tag] = current_user.tags[question.tag] = event.target.value
+                  save local
 
                   if question.open_text_option == event.target.value
                     int = setInterval =>
@@ -366,7 +403,7 @@ window.ShowHostQuestions = ReactiveComponent
                       value
                 ]
 
-              if question.open_text_option && question.open_text_option == @local.tags[question.tag]?.split(OTHER_SEPARATOR)[0]
+              if question.open_text_option && question.open_text_option == local.tags[question.tag]?.split(OTHER_SEPARATOR)[0]
                 INPUT 
                   ref: "open_value-#{question.tag}"
                   defaultValue: current_user.tags[question.tag]?.split(OTHER_SEPARATOR)[1] or ""
@@ -374,11 +411,11 @@ window.ShowHostQuestions = ReactiveComponent
                     display: 'inline-block'
                   type: 'text'
                   onChange: do(question) => (event) =>
-                    new_val = "#{@local.tags[question.tag].split(OTHER_SEPARATOR)[0]}#{OTHER_SEPARATOR}#{event.target.value}"
-                    @local.tags[question.tag] = current_user.tags[question.tag] = new_val
+                    new_val = "#{local.tags[question.tag].split(OTHER_SEPARATOR)[0]}#{OTHER_SEPARATOR}#{event.target.value}"
+                    local.tags[question.tag] = current_user.tags[question.tag] = new_val
 
-                    console.log "updated to", @local.tags[question.tag], current_user.tags[question.tag]
-                    save @local
+                    # console.log "updated to", local.tags[question.tag], current_user.tags[question.tag]
+                    save local
 
 
           else

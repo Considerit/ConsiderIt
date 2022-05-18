@@ -151,6 +151,47 @@ window.AuthTransition = ReactiveComponent
 
     @local.logged_in_last_render = current_user.logged_in
 
+
+    if embedded_demo() && fetch('/subdomain').name == 'galacticfederation'
+      if auth.form == 'create account' 
+        id = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 15)
+        _.extend current_user, 
+          name: "temp"
+          email: "temp-#{id}@galacticfederation.gov"
+          password: "#{Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 15)}"
+          trying_to: 'create account'
+        save current_user
+
+        reset_key 'auth'
+      else if current_user.tags.federation_allegiance && !auth.show_user_questions_after_account_creation && current_user.name == 'temp'
+        allegiance = current_user.tags.federation_allegiance
+        id = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 15)
+        switch allegiance 
+          when 'Dark'
+            name = "Stormtrooper ##{id}"
+            email = "stormtrooper-#{id}@deathstar.org"
+            avatar_url = "https://d2rtgkroh5y135.cloudfront.net/system/avatars/287330/large/stormtrooper1.png"
+            break
+          when 'Light' 
+            name = "Ewok ##{id}"
+            email = "endorite-#{id}@endor.net"
+            avatar_url = "https://f.consider.it/galacticfederation/ewok.png"                  
+            break
+          when "Wouldn't you like to know"
+            name = "Wookiee ##{id}"
+            email = "kashyyyk-wook#{id}@oo.com"
+            avatar_url = 'https://f.consider.it/galacticfederation/wookiee.jpeg'
+            break
+          when 'Non-binary' 
+            name = "Rodian ##{id}"
+            email = "rodia-#{id}@bountyhuntersrus.com"
+            avatar_url = 'https://f.consider.it/galacticfederation/rodian.jpeg'
+            break
+
+        _.extend current_user, {name, email, avatar_url}
+        save current_user
+
+
     SPAN null
 
 

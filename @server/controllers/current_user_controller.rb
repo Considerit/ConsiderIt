@@ -318,7 +318,7 @@ class CurrentUserController < ApplicationController
       end
     end
 
-    fields = ['avatar', 'bio', 'name', 'tags', 'subscriptions']
+    fields = ['avatar', 'avatar_url', 'bio', 'name', 'tags', 'subscriptions']
     new_params = params.select{|k,v| fields.include? k}.to_h
     new_params[:name] = '' if !new_params[:name] #TODO: Do we really want to allow blank names?...
 

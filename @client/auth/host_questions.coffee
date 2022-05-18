@@ -22,6 +22,23 @@ window.HostQuestions = ReactiveComponent
             auth.show_user_questions_after_account_creation = false
             save auth
 
+
+      render_below_title: -> 
+        host_framing = customization 'host_questions_framing'
+        if host_framing 
+
+          DIV 
+            style: 
+              marginBottom: 12     
+
+            DIV 
+              style: 
+                fontSize: 14
+                marginTop: 0
+              dangerouslySetInnerHTML: __html: host_framing
+        else 
+          SPAN null
+
       DIV null,
         ShowHostQuestions
           disable_unchecking_required_booleans: @props.disable_unchecking_required_booleans     
@@ -85,29 +102,13 @@ window.ShowHostQuestions = ReactiveComponent
     return SPAN null if host_questions.length == 0
 
 
-    host_framing = customization 'host_questions_framing'
+    
 
     DIV
       id: 'SHOWHOSTQUESTIONS'
 
       style: 
         padding: "0px 36px" 
-
-      DIV 
-        style: 
-          marginBottom: 12     
-
-        # LABEL
-        #   className: 'AUTH_field_label' 
-        #   translator('auth.host_questions.heading', 'Questions from the forum host') 
-
-        if host_framing 
-          DIV 
-            style: 
-              fontSize: 14
-              marginTop: 0
-            dangerouslySetInnerHTML: __html: host_framing
-
 
       UL 
         style: 

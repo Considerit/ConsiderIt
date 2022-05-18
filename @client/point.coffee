@@ -153,7 +153,7 @@ window.Point = ReactiveComponent
           style: 
             position: 'absolute'
             left: 0
-            top: 0
+            top: -2
 
           if @data().is_pro then '•' else '•'
 

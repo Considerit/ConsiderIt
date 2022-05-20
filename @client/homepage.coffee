@@ -12,9 +12,6 @@ require './list'
 require './tabs'
 
 
-
-window.main_background_color = '#f6f6f6'
-
 styles += """
   .main_background {
     background-color: #{main_background_color};

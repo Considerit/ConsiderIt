@@ -83,7 +83,7 @@ window.DefaultFooter = ReactiveComponent
             }
 
             .custom-shape-divider-top-1651729272 .shape-fill {
-                fill: #{if fetch('location').url.indexOf('/dashboard') > -1 then 'white' else '#f6f6f6'};
+                fill: #{if fetch('location').url.indexOf('/dashboard') > -1 then 'white' else '#f6f7f9'};
             }
             </style>
             <div class="custom-shape-divider-top-1651729272">

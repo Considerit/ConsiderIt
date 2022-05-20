@@ -11,6 +11,7 @@ window.considerit_gray = '#f6f7f9'
 window.selected_color = '#DA4570' #pinkish red
 window.upgrade_color = '#16a1e3'
 window.attention_orange = "#fb7e26"
+window.main_background_color = '#f6f7f9'
 
 window.parseCssRgb = (css_color_str) ->
   test = document.createElement('div')

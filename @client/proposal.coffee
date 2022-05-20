@@ -444,10 +444,29 @@ window.Proposal = ReactiveComponent
         w = HOMEPAGE_WIDTH() + LIST_PADDING() * 2
 
         DIV 
-          className: 'main_background'
+          className: 'main_background navigation_wrapper'
           style: 
-            borderTop: "1px solid #ccc"
             marginTop: if !show_all_points then 64
+            position: 'relative'
+
+          STYLE 
+            dangerouslySetInnerHTML: __html: """
+              .navigation_wrapper::after {
+                content: ' ';
+                position: absolute;
+                left: 0;
+                width: 100%;
+                top: -50px;
+                z-index: 10;
+                display: block;
+                height: 50px;
+                background-size: 50px 100%;
+                background-image: linear-gradient(135deg, #{main_background_color} 25%, transparent 25%), linear-gradient(225deg, #{main_background_color} 25%, transparent 25%);
+                background-position: 0 0;
+                transform: scaleY(-1);
+              }
+            """
+
 
           DIV   
             style: 

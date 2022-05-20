@@ -4,9 +4,12 @@ require './shared'
 
 
 styles += """
+  .GroupedProposalNavigation {
+    padding-top: 36px;
+  }
   .GroupedProposalNavigation #tabs {
     margin-top: 48px;
-    top: 0px;
+    top: -1px;
     z-index: 1;
 
   }
@@ -80,35 +83,6 @@ window.GroupedProposalNavigation = (args) ->
   DIV 
     className: 'GroupedProposalNavigation'
 
-    # DIV 
-    #   dangerouslySetInnerHTML: __html: """
-    #     <div class="custom-shape-divider-top-1653027108">
-    #         <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-    #             <path d="M649.97 0L550.03 0 599.91 54.12 649.97 0z" class="shape-fill"></path>
-    #         </svg>
-    #     </div>
-    #     <style>
-    #       .custom-shape-divider-top-1653027108 {
-    #           position: absolute;
-    #           top: 0;
-    #           left: 0;
-    #           width: 100%;
-    #           overflow: hidden;
-    #           line-height: 0;
-    #       }
-
-    #       .custom-shape-divider-top-1653027108 svg {
-    #           position: relative;
-    #           display: block;
-    #           width: calc(100% + 1.3px);
-    #           height: 56px;
-    #       }
-
-    #       .custom-shape-divider-top-1653027108 .shape-fill {
-    #           fill: #FFFFFF;
-    #       }
-    #     </style>
-    #   """
 
     H2
       style: 
@@ -134,18 +108,19 @@ window.GroupedProposalNavigation = (args) ->
         if embedded_demo()
           "Navigate to a different proposal below."
         else 
-        
-          TRANSLATE
-            id: 'engage.back_to_homepage_option'
-            link: 
-              component: A 
-              args: 
-                href: if current_tab && current_tab != 'all' then "/?tab=#{encodeURIComponent(current_tab)}##{hash}" else "/##{hash}"
-                style: 
-                  textDecoration: 'underline'
-                  fontWeight: 600
-            "Navigate to a different proposal below or go <link>back to the homepage</link>"  
+          [
+            TRANSLATE
+              id: 'engage.back_to_homepage_option'
+              link: 
+                component: A 
+                args: 
+                  href: if current_tab && current_tab != 'all' then "/?tab=#{encodeURIComponent(current_tab)}##{hash}" else "/##{hash}"
+                  style: 
+                    textDecoration: 'underline'
+                    fontWeight: 600
+              "Navigate to a different proposal below or go <link>back to the homepage</link>"  
             '.'
+          ]
 
 
 

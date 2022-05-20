@@ -125,6 +125,7 @@ window.List = ReactiveComponent
             combines_these_lists: @props.combines_these_lists
             show_new_button: (list_state.show_all_proposals || proposals.length <= list_state.show_first_num_items) && \
                ((@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || (permitted > 0 || permitted == Permission.NOT_LOGGED_IN) )
+            proposal_focused_on: @props.proposal_focused_on
 
           if !list_state.show_all_proposals && proposals.length > list_state.show_first_num_items 
             BUTTON
@@ -170,6 +171,16 @@ ListItems = ReactiveComponent
     sort_key = "sorted-proposals-#{list_key}"
     proposals = if !@props.fresh then sorted_proposals(list.proposals, sort_key, true) or [] else []
 
+    if @props.proposal_focused_on
+      proposals = proposals.slice()
+      for proposal,idx in proposals
+        if proposal.key == @props.proposal_focused_on.key
+          proposals.splice idx, 1
+          proposals.unshift proposal
+          break
+
+
+
     RenderListItem = customization('RenderListItem') or CollapsedProposal
 
     if @props.combines_these_lists
@@ -209,6 +220,8 @@ ListItems = ReactiveComponent
             proposal: proposal.key
             show_category: !!@props.combines_these_lists
             category_color: if @props.combines_these_lists then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], .9, .8)
+            focused_on: @props.proposal_focused_on && @props.proposal_focused_on.key == proposal.key
+
 
         if @props.show_new_button
 

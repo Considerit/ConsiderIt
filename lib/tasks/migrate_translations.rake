@@ -262,6 +262,8 @@ task :migrate_translations => :environment do
 
   delete_translation "engage.point_authoring.tip_review"
 
+  # delete_translation "engage.navigation_helper_current_location"
+
   sync_keys_with_english
   execute_translation_migration
 

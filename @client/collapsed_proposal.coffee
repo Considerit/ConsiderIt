@@ -162,6 +162,24 @@ window.CollapsedProposal = ReactiveComponent
         if draw_slider && !slider.is_moving
           @local.hover_proposal = null; save @local
 
+
+
+      if @props.focused_on
+        DIV 
+          style: 
+            position: 'absolute'
+            left: -66
+            top: -8
+            backgroundColor: 'white'
+            padding: '8px 14px'
+            borderRadius: 8
+            fontSize: 36
+            color: '#666'
+
+          #dangerouslySetInnerHTML: __html: "#{TRANSLATE('engage.navigation_helper_current_location', 'You are here')} &rarr;"
+          dangerouslySetInnerHTML: __html: "&rarr;"
+
+
       DIV 
         style: 
           width: col_sizes.first 

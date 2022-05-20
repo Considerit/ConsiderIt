@@ -59,7 +59,7 @@ window.EditComment = ReactiveComponent
 
             if permitted == Permission.NOT_LOGGED_IN
               reset_key 'auth', 
-                form: 'login'
+                form: 'create account'
                 goal: ''
             else if permitted == Permission.UNVERIFIED_EMAIL
               reset_key 'auth', 
@@ -79,7 +79,8 @@ window.EditComment = ReactiveComponent
                   backgroundColor: 'transparent'
                   padding: 0
                   border: 'none'
-                translator 'engage.permissions.login_to_participate', 'Login to participate'
+                translator 'engage.permissions.login_to_participate', 'Create an account to participate'
+
 
               if '*' not in @proposal.roles.participant
                 DIV style: {fontSize: 11},

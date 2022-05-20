@@ -379,7 +379,7 @@ window.Proposal = ReactiveComponent
 
                 DIV 
                   style: 
-                    height: if !show_all_points then 500
+                    height: if !show_all_points then 750
 
                   PointsList 
                     key: 'community_cons'
@@ -440,17 +440,25 @@ window.Proposal = ReactiveComponent
                     "Show All Reasons"
 
 
-      if mode == 'results' && !embedded_demo()
-        w = HOMEPAGE_WIDTH()
-        DIV   
+      if mode == 'results' # && !embedded_demo()
+        w = HOMEPAGE_WIDTH() + LIST_PADDING() * 2
+
+        DIV 
+          className: 'main_background'
           style: 
-            margin: '70px auto 48px auto'
-            width: w
+            borderTop: "1px solid #ccc"
+            marginTop: if !show_all_points then 64
+
+          DIV   
+            style: 
+              margin: '32px auto 0px auto'
+              paddingBottom: 48
+              width: w
 
 
-          (customization('ProposalNavigation') or GroupedProposalNavigation) # or NextProposals)
-            width: w
-            proposal: @proposal
+            (customization('ProposalNavigation') or GroupedProposalNavigation) # or NextProposals)
+              width: w
+              proposal: @proposal
 
 
       if edit_mode && browser.is_mobile && !embedded_demo()

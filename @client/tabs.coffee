@@ -83,10 +83,10 @@ window.get_tab = (name) ->
   return null
 
 window.get_current_tab_name = -> fetch('homepage_tabs').active_tab or null
-window.get_current_tab_view = ->
+window.get_current_tab_view = (args) ->
   tabs = customization('homepage_tabs') 
   if !tabs
-    return SimpleHomepage()
+    return SimpleHomepage(args)
 
   custom_view = null
   for tab in tabs
@@ -98,12 +98,12 @@ window.get_current_tab_view = ->
     custom_view = customization('render_page')
 
   if custom_view
-    view = custom_view()
+    view = custom_view(args)
     if typeof(view) == 'function'
-      view = view()
+      view = view(args)
     view
   else
-    SimpleHomepage()
+    SimpleHomepage(args)
 
 window.get_page_preamble = (tab_name) -> 
   if tab = get_tab(tab_name)

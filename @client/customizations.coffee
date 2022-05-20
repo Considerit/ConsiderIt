@@ -216,6 +216,7 @@ customizations.default =
   # default list options
   list_is_archived: false
   list_uncollapseable: false
+  list_item_name: 'Proposal'
 
   # Other options
   auth_footer: false

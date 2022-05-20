@@ -485,7 +485,7 @@ window.NewList = ReactiveComponent
             SPAN 
               style: 
                 position: 'relative'
-                left: 530 
+                left: 539
               'for community ideation'
 
         else 

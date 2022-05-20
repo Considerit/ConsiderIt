@@ -446,7 +446,7 @@ window.Proposal = ReactiveComponent
         DIV 
           className: 'main_background navigation_wrapper'
           style: 
-            marginTop: if !show_all_points then 64
+            marginTop: if !show_all_points then 88
             position: 'relative'
 
           STYLE 
@@ -465,7 +465,23 @@ window.Proposal = ReactiveComponent
                 background-position: 0 0;
                 transform: scaleY(-1);
               }
+
+              .navigation_wrapper::before {
+                content: ' ';
+                position: absolute;
+                left: 0;
+                width: 100%;
+                top: -51px;
+                z-index: 9;
+                display: block;
+                height: 51px;
+                background-size: 50px 100%;
+                background-image: linear-gradient(135deg, #babdc3 25%, transparent 25%), linear-gradient(225deg, #babdc3 25%, transparent 25%);
+                background-position: 0 0;
+                transform: scaleY(-1);
+              }
             """
+
 
 
           DIV   

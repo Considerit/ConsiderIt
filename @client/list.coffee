@@ -717,7 +717,7 @@ window.list_actions = (props) ->
             padding: '0 12px'
 
       if props.can_sort
-        SortProposalsMenu()
+        [ SortProposalsMenu(), FilterProposalsMenu() ]
 
 
       if !props.fresh

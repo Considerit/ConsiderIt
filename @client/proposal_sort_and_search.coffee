@@ -76,7 +76,7 @@ window.sorted_proposals = (proposals, sort_key, require_force) ->
   if sort_key not of proposal_sort_keys 
     proposal_sort_keys[sort_key] = true
 
-  sort = fetch 'sort_proposals'
+  sort = fetch 'sort_and_filter_proposals'
   set_default_sort() if !sort.name? 
 
   proposals = proposals.slice()
@@ -91,6 +91,9 @@ window.sorted_proposals = (proposals, sort_key, require_force) ->
         filtered.push proposal
     for proposal in filtered
       proposals.splice proposals.indexOf(proposal), 1
+
+  if sort.filter.name != 'Show all'
+    proposals = (p for p in proposals when sort.filter.passes(p))
 
 
   proposals = sort.order(proposals)
@@ -150,7 +153,7 @@ sort_options = [
 
   { 
     name: 'Total Score'
-    description: "each proposal is scored by the sum of all opinions, where each opinion expresses a score on a spectrum from -1 to 1. "    
+    description: "Each proposal is scored by the sum of all opinions, where each opinion expresses a score on a spectrum from -1 to 1. "    
     order: (proposals) -> 
       cache = {}
       opinion_views = fetch 'opinion_views'
@@ -169,7 +172,7 @@ sort_options = [
       proposals.sort (a, b) -> val(b) - val(a)
   }, {
     name: 'Trending'
-    description: "Same as 'Total Score', except newer items and opinions are weighed more heavily."
+    description: "Same as 'Total Score', except newer proposals and opinions are weighed more heavily."
 
     order: (proposals) ->
       cache = {}
@@ -232,15 +235,15 @@ sort_options = [
     order: (proposals) -> 
       proposals.sort (a,b) -> new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     name: 'Date: Most recent first'
-    description: "The items submitted most recently are shown first."
+    description: "The proposals submitted most recently are shown first."
   }, {
     order: (proposals) -> 
       proposals.sort (a,b) -> new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     name: 'Date: Earliest first'
-    description: "The items submitted first are shown first."
+    description: "The proposals submitted first are shown first."
   }, { 
     name: 'Most unifying first'
-    description: "The items on which participants are most united for or against are shown first."
+    description: "The proposals on which participants are most united for or against are shown first."
     order: (proposals) -> 
       cache = {}
       opinion_views = fetch 'opinion_views'
@@ -278,7 +281,7 @@ sort_options = [
 
   }, { 
     name: 'Most polarizing first'
-    description: "The items on which participants are most split are shown highest."
+    description: "The proposals on which participants are most split are shown highest."
     order: (proposals) -> 
       cache = {}
       opinion_views = fetch 'opinion_views'
@@ -385,7 +388,7 @@ sort_options = [
 ]
 
 window.set_sort_order = (name) ->
-  sort = fetch 'sort_proposals'
+  sort = fetch 'sort_and_filter_proposals'
   for s in sort_options
     if s.name == name
       _.extend sort, s or sort_options[1]
@@ -393,7 +396,7 @@ window.set_sort_order = (name) ->
       return 
 
 set_default_sort = -> 
-  sort = fetch 'sort_proposals'
+  sort = fetch 'sort_and_filter_proposals'
   if !sort.name?
     found = false 
     loc = fetch('location')
@@ -422,6 +425,7 @@ set_default_sort = ->
 
 
 
+# currently unused
 ProposalSort = ReactiveComponent
   displayName: 'ProposalSort'
 
@@ -529,11 +533,130 @@ ProposalSort = ReactiveComponent
 
 
 
+opined_on = (proposal) -> 
+  proposal.your_opinion?.published != false 
+
+filter_options = [
+  { 
+    name: "All"
+    description: "All proposals shown."    
+    passes: (proposal) -> true
+  }
+
+  { 
+    name: "Completed"
+    description: "Only show proposals on which you've expressed an opinion."    
+    passes: (proposal) -> opined_on(proposal)
+  }
+  { 
+    name: "Incomplete"
+    description: "Show proposals that you have not yet expressed an opinion about."    
+    passes: (proposal) -> !opined_on(proposal)
+  }  
+]
+
+
+FilterProposalsMenu = ReactiveComponent
+  displayName: 'FilterProposalsMenu'
+  render: -> 
+
+    sort_and_filter_state = fetch 'sort_and_filter_proposals'
+    sort_and_filter_state.filter ?= _.extend {}, filter_options[0]
+
+
+    DropMenu
+      options: filter_options
+      anchor_class_name: 'sort_proposals'
+
+      open_menu_on: 'activation'
+
+      selection_made_callback: (option) -> 
+        invalidate_proposal_sorts()
+
+        _.extend sort_and_filter_state.filter, option   
+        save sort_and_filter_state 
+
+      render_anchor: ->
+        current_filter = translator "engage.filter.#{sort_and_filter_state.filter.name}", sort_and_filter_state.filter.name
+        if current_filter.indexOf(':') > -1 
+          current_filter = current_filter.split(':')[1]
+        [
+          TRANSLATE "engage.filter_by", "show"
+          ": "
+
+          SPAN 
+            style: 
+              fontWeight: 700
+              paddingLeft: 8
+
+            current_filter
+
+            SPAN style: _.extend cssTriangle 'bottom', 'white', 8, 5,
+              display: 'inline-block'
+              marginLeft: 4   
+              marginBottom: 2
+        ]
+
+      render_option: (option, is_active) -> 
+        [
+          SPAN 
+            "data-filter": option.name
+            style: 
+              # fontWeight: 600
+              fontSize: 16
+              marginBottom: 2
+
+            translator "engage.filter.#{option.name}", option.name 
+
+          if !browser.is_mobile
+            SPAN 
+              style: 
+                float: 'right'
+              HelpIcon translator("engage.filter.#{option.name}.description", option.description),
+                color: 'black' #if is_active then 'white'
+              
+        ]
+
+      anchor_style:
+        display: 'flex'
+      wrapper_style: 
+        display: 'inline-block'
+        minWidth: 170
+
+
+
+      menu_style: 
+        left: -9999
+        top: 26
+        borderRadius: 8
+        overflow: 'hidden'
+        fontStyle: 'normal'
+        width: 250
+        boxShadow: '0 1px 2px rgba(0,0,0,.8)'
+        backgroundColor: 'white' 
+
+
+      menu_when_open_style: 
+        left: 0
+
+      option_style: 
+        padding: '8px 20px'
+        # borderBottom: "1px solid #ddd"
+        display: 'block'
+        fontWeight: 400
+        fontSize: 18
+
+      active_option_style: 
+        backgroundColor: '#eee'
+
+
+
+
 SortProposalsMenu = ReactiveComponent
   displayName: 'SortProposalsMenu'
   render: -> 
 
-    sort = fetch 'sort_proposals'
+    sort = fetch 'sort_and_filter_proposals'
     set_default_sort() if !sort.name?       
 
 
@@ -553,7 +676,7 @@ SortProposalsMenu = ReactiveComponent
         if current_sort.indexOf(':') > -1 
           current_sort = current_sort.split(':')[1]
         [
-          TRANSLATE "engage.sort_by", "sort by"
+          TRANSLATE "engage.sort_by", "sort"
           ": "
 
           SPAN 
@@ -600,38 +723,37 @@ SortProposalsMenu = ReactiveComponent
       wrapper_style: 
         display: 'inline-block'
         minWidth: 170
+
       menu_style: 
-        minWidth: 350
-        backgroundColor: '#fbfbfb'
-        border: "1px solid #ccc"
         left: -9999
         top: 26
         borderRadius: 8
-        fontWeight: 400
         overflow: 'hidden'
+        fontStyle: 'normal'
+        width: 280
         boxShadow: '0 1px 2px rgba(0,0,0,.8)'
-        padding: '4px 24px 12px 24px'
+        backgroundColor: 'white' 
+
 
       menu_when_open_style: 
         left: 0
 
       option_style: 
-        padding: '6px 12px'
-        borderBottom: "1px solid #ddd"
+        padding: '8px 20px'
+        # borderBottom: "1px solid #ddd"
         display: 'block'
+        fontWeight: 400
+        fontSize: 18
 
       active_option_style: 
-        borderBottom: "1px solid #444"
-        # color: 'white'
-        # backgroundColor: focus_color()
-
+        backgroundColor: '#eee'
 
 
 ManualProposalResort = ReactiveComponent
   displayName: 'ManualProposalResort'
 
   render: -> 
-    sort = fetch 'sort_proposals'
+    sort = fetch 'sort_and_filter_proposals'
 
     if !stale_sort_order(@props.sort_key) || ONE_COL()
       return SPAN null 
@@ -703,4 +825,5 @@ ManualProposalResort = ReactiveComponent
 
 window.ProposalSort = ProposalSort
 window.SortProposalsMenu = SortProposalsMenu
+window.FilterProposalsMenu = FilterProposalsMenu
 window.ManualProposalResort = ManualProposalResort

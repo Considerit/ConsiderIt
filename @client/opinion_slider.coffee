@@ -144,7 +144,7 @@ window.OpinionSlider = ReactiveComponent
         your_opinion.published = true
         your_opinion.key ?= "/new/opinion"
         save your_opinion, ->
-          show_flash("Your opinion has been saved")
+          show_flash(translator('engage.flashes.opinion_saved', "Your opinion has been saved"))
 
       else
         # trigger authentication
@@ -269,7 +269,9 @@ window.OpinionSlider = ReactiveComponent
         your_opinion.published = true
       your_opinion.key ?= "/new/opinion"
         
-      save your_opinion
+      save your_opinion, -> 
+        show_flash(translator('engage.flashes.opinion_saved', "Your opinion has been saved"))
+      
       window.writeToLog 
         what: 'move slider'
         details: {stance: slider.value}

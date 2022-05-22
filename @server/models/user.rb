@@ -37,7 +37,7 @@ class User < ApplicationRecord
       },
       :processors => [:thumbnail]
 
-  validates_attachment_content_type :avatar, :content_type => %w(image/jpeg image/jpg image/png image/gif)
+  validates_attachment_content_type :avatar, :content_type => %w(image/jpeg image/jpg image/png image/gif image/webp)
 
   scope :registered, -> {where( :registered => true )}
 

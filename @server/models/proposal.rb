@@ -11,10 +11,10 @@ class Proposal < ApplicationRecord
         :square => "250x250#"
     }
 
-  validates_attachment_content_type :pic, :content_type => %w(image/jpeg image/jpg image/png image/gif)
+  validates_attachment_content_type :pic, :content_type => %w(image/jpeg image/jpg image/png image/gif image/webp)
 
   has_attached_file :banner, :processors => [:thumbnail]
-  validates_attachment_content_type :banner, :content_type => %w(image/jpeg image/jpg image/png image/gif)
+  validates_attachment_content_type :banner, :content_type => %w(image/jpeg image/jpg image/png image/gif image/webp)
 
   belongs_to :user
 

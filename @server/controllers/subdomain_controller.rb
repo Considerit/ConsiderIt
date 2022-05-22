@@ -102,13 +102,12 @@ class SubdomainController < ApplicationController
           "list/initial": {
             "list_title": "What are your favorite ice cream flavors?",
             "list_description": "Experiment with the proposed flavors however you want. When you’re done, you can delete the entire proposal list via the gear icon in the upper right.",
-            "list_category": "flavor",
+            "list_item_name": "flavor",
             "list_opinions_title": "",
             "slider_pole_labels": {
               "support": 'Yummy',
               "oppose": 'Yucky'
-            },
-            "show_proposer_icon": false
+            }
           }
         }
 
@@ -122,18 +121,20 @@ class SubdomainController < ApplicationController
         #              'Help people get on the same page', 
         #              'Something else']
 
-        proposals = ['Vanilla', 
-                     'Chocolate', 
-                     'Cookies \'n Cream', 
-                     'Mint chocolate chip',
-                     'Salted caramel',
-                     'Eggnog'
-                    ]
+        proposals = [
+          {name: 'Vanilla', img: "https://f.consider.it/icecreams/vanilla.jpeg" },
+          {name: 'Chocolate', img: "https://f.consider.it/icecreams/chocolate.jpeg" },
+          {name: 'Cookies \'n Cream', img: "https://f.consider.it/icecreams/cookies-n-cream.jpeg" },
+          {name: 'Mint chocolate chip', img: "https://f.consider.it/icecreams/mint-chocolate-chip.jpeg" },
+          {name: 'Salted caramel', img: "https://f.consider.it/icecreams/salted-caramel.jpeg" },
+          {name: 'Eggnog', img: "https://f.consider.it/icecreams/eggnog.jpeg" }
+        ]
 
 
+        proposals.each do |p|
+          proposal_name = p[:name]
+          img = p[:img]
 
-
-        proposals.each do |proposal_name|
           proposal = Proposal.new({
             subdomain_id: new_subdomain.id, 
             slug: proposal_name.gsub(' ', '-').downcase,
@@ -148,6 +149,9 @@ class SubdomainController < ApplicationController
               "editor": ["/user/#{current_user.id}"]
             }
           })
+          if img 
+            proposal.pic = open(img)
+          end
           proposal.save
 
           opinion = Opinion.create!({

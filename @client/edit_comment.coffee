@@ -95,7 +95,7 @@ window.EditComment = ReactiveComponent
           marginLeft: 60   
 
         AutoGrowTextArea
-          ref: 'comment_input'
+          id: 'comment_input'
           name: 'new comment'
           'aria-label': if permitted > 0 then translator('engage.comment_input_placeholder', 'Write a comment') else ''
           placeholder: if permitted > 0 then translator('engage.comment_input_placeholder', 'Write a comment') else ''
@@ -161,8 +161,9 @@ window.EditComment = ReactiveComponent
 
                 if comment.errors?.length > 0
                   @local.errors = comment.errors
+                else
+                  show_flash(translator('engage.flashes.comment_saved', "Your comment has been saved"))
 
-                $(@refs.comment_input.getDOMNode()).val('')            
                 @local.new_comment = null
                 save @local
 

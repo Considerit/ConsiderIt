@@ -467,7 +467,7 @@ window.CollapsedProposal = ReactiveComponent
 
               your_opinion.key ?= "/new/opinion"
               save your_opinion, ->
-                show_flash("Your opinion has been saved")
+                show_flash(translator('engage.flashes.opinion_saved', "Your opinion has been saved"))
 
               window.writeToLog 
                 what: 'move slider'

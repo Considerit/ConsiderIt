@@ -65,6 +65,8 @@ window.show_flash_error = (message, time_in_ms) ->
   show_flash message, time_in_ms, 
     error: true
 
+current_flash_message = null
+
 window.show_flash = (message, time_in_ms, args) ->
   time_in_ms ?= 3000
 
@@ -74,7 +76,10 @@ window.show_flash = (message, time_in_ms, args) ->
   flash.args = args
   save flash
 
-  setTimeout ->
+  if current_flash_message
+    clearTimeout current_flash_message
+    
+  current_flash_message = setTimeout ->
     clear_flash()
   , time_in_ms
 

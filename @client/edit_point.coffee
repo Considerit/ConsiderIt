@@ -335,6 +335,7 @@ window.EditPoint = ReactiveComponent
     save point, => 
       if point.errors?.length == 0
         @done()
+        show_flash(translator('engage.flashes.point_saved', "Your point has been saved"))
       else
         @local.errors = point.errors
         save @local

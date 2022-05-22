@@ -1736,10 +1736,10 @@ styles += """
   .toggle_buttons li {
     display: inline-block;
   }
-  button.sort_proposals {
+  [data-widget="DropMenu"].bluedrop button.dropMenu-anchor {
     border-radius: 8px;
   }
-  button.sort_proposals, .toggle_buttons button {
+  [data-widget="DropMenu"].bluedrop button.dropMenu-anchor, .toggle_buttons button {
     background-color: white;
     color: #{focus_blue};
     font-weight: 600;
@@ -1762,7 +1762,7 @@ styles += """
     margin: 0;
   }
 
-  button.sort_proposals, .toggle_buttons .active button {
+  [data-widget="DropMenu"].bluedrop button.dropMenu-anchor, .toggle_buttons .active button {
     background-color: #{focus_blue};
     color: white;
   }

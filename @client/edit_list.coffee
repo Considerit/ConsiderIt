@@ -1,7 +1,27 @@
 
 
 
+styles += """
+  [data-widget="EditList"] .default_drop[data-widget="DropMenu"] .dropmenu-menu {
+    right: -9999;
+    left: auto;
+  }
 
+  [data-widget="EditList"] .default_drop[data-widget="DropMenu"] .dropmenu-menu.dropmenu-menu-open {
+    right: 0;
+    left: auto;
+  }
+
+
+  [data-widget="EditList"] .default_drop[data-widget="DropMenu"] .dropmenu-menu {
+    width: 250px;
+  }
+
+  [data-widget="EditList"] .default_drop[data-widget="DropMenu"] .menu-item {
+    text-align: right;
+  }  
+
+"""
 window.EditList = ReactiveComponent
   displayName: 'EditList'
 
@@ -18,10 +38,10 @@ window.EditList = ReactiveComponent
 
     admin_actions = [
       {action: 'edit', label: translator('edit')}
-      {action: 'delete', label: translator('delete')}
-      {action: 'close', label: translator('engage.list-configuration.close', 'close to participation')}
       {action: 'copy_link', label: translator('engage.list-configuration.copy_link', 'copy link')}
       {action: 'list_order', label: translator('engage.list-configuration.reorder_topics', 'reorder lists')}
+      {action: 'close', label: translator('engage.list-configuration.close', 'close to participation')}
+      {action: 'delete', label: translator('delete')}
     ]
 
     DIV null,
@@ -29,6 +49,8 @@ window.EditList = ReactiveComponent
       if !@local.editing
 
         DropMenu
+          className: 'default_drop'
+
           options: admin_actions
           open_menu_on: 'activation'
 
@@ -36,33 +58,7 @@ window.EditList = ReactiveComponent
             position: 'absolute'
             right: -LIST_PADDING() + 10
             top: -34
-
-          anchor_style: {}
-
-          menu_style: 
-            backgroundColor: '#eee'
-            border: "1px solid #{focus_color()}"
-            right: -9999
-            top: 18
-            borderRadius: 8
-            fontWeight: 400
-            overflow: 'hidden'
-            boxShadow: '0 1px 2px rgba(0,0,0,.3)'
-            fontSize: 18
-            fontStyle: 'normal'
-            width: 220
-
-          menu_when_open_style: 
-            right: 0
-
-          option_style: 
-            padding: '6px 12px'
-            borderBottom: "1px solid #ddd"
-            display: 'block'
-
-          active_option_style: 
-            color: 'white'
-            backgroundColor: focus_color()
+            minWidth: 'auto'
 
           render_anchor: ->
             SPAN 
@@ -444,6 +440,7 @@ window.ModalNewList = ReactiveComponent
                     open_menu_on: 'activation'
 
                     wrapper_style: 
+                      position: 'relative'
                       left: column_sizes().second + 50
                       top: -8
 
@@ -471,9 +468,10 @@ window.ModalNewList = ReactiveComponent
                       left: 0
 
                     option_style: 
-                      padding: '6px 0px'
+                      padding: '16px 18px'
                       display: 'block'
-                      color: '#888'
+                      color: 'black'
+                      fontWeight: 400
 
                     active_option_style: 
                       color: 'black'
@@ -526,12 +524,32 @@ window.ModalNewList = ReactiveComponent
 
                       DIV 
                         style: 
-                          margin: "4px 24px"
+                          # margin: "4px 24px"
                           # position: 'relative'
                           fontSize: 14
                           textAlign: 'center'
+                          fontFamily: mono_font()
 
-                        "#{option.oppose}  <>  #{option.support}" 
+                        SPAN 
+                          style:
+                            display: 'inline-block' 
+                            width: 140
+                            textAlign: 'right'
+                            paddingRight: 10
+                          "#{option.oppose}"
+                        SPAN 
+                          dangerouslySetInnerHTML: __html: "&#10231;"
+                          style: 
+                            fontSize: 32
+                            color: '#888'
+
+                        SPAN 
+                          style:
+                            display: 'inline-block' 
+                            width: 140
+                            textAlign: 'left'
+                            paddingLeft: 10                        
+                          "#{option.support}" 
 
 
                       # DIV 

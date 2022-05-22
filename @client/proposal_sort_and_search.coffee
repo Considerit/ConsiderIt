@@ -563,91 +563,66 @@ FilterProposalsMenu = ReactiveComponent
     sort_and_filter_state = fetch 'sort_and_filter_proposals'
     sort_and_filter_state.filter ?= _.extend {}, filter_options[0]
 
+    DIV 
+      style: 
+        position: 'relative'
+        paddingLeft: 12
+    
 
-    DropMenu
-      options: filter_options
-      anchor_class_name: 'sort_proposals'
+      DropMenu 
+        className: 'default_drop bluedrop'    
+        options: filter_options
+        anchor_class_name: 'sort_proposals'
 
-      open_menu_on: 'activation'
+        open_menu_on: 'activation'
 
-      selection_made_callback: (option) -> 
-        invalidate_proposal_sorts()
+        selection_made_callback: (option) -> 
+          invalidate_proposal_sorts()
 
-        _.extend sort_and_filter_state.filter, option   
-        save sort_and_filter_state 
+          _.extend sort_and_filter_state.filter, option   
+          save sort_and_filter_state 
 
-      render_anchor: ->
-        current_filter = translator "engage.filter.#{sort_and_filter_state.filter.name}", sort_and_filter_state.filter.name
-        if current_filter.indexOf(':') > -1 
-          current_filter = current_filter.split(':')[1]
-        [
-          TRANSLATE "engage.filter_by", "show"
-          ": "
+        render_anchor: ->
+          current_filter = translator "engage.filter.#{sort_and_filter_state.filter.name}", sort_and_filter_state.filter.name
+          if current_filter.indexOf(':') > -1 
+            current_filter = current_filter.split(':')[1]
+          [
+            TRANSLATE "engage.filter_by", "show"
+            ": "
 
-          SPAN 
-            style: 
-              fontWeight: 700
-              paddingLeft: 8
-
-            current_filter
-
-            SPAN style: _.extend cssTriangle 'bottom', 'white', 8, 5,
-              display: 'inline-block'
-              marginLeft: 4   
-              marginBottom: 2
-        ]
-
-      render_option: (option, is_active) -> 
-        [
-          SPAN 
-            "data-filter": option.name
-            style: 
-              # fontWeight: 600
-              fontSize: 16
-              marginBottom: 2
-
-            translator "engage.filter.#{option.name}", option.name 
-
-          if !browser.is_mobile
             SPAN 
               style: 
-                float: 'right'
-              HelpIcon translator("engage.filter.#{option.name}.description", option.description),
-                color: 'black' #if is_active then 'white'
-              
-        ]
+                fontWeight: 700
+                paddingLeft: 8
 
-      anchor_style:
-        display: 'flex'
-      wrapper_style: 
-        display: 'inline-block'
-        minWidth: 170
+              current_filter
 
+              SPAN style: _.extend cssTriangle 'bottom', 'white', 8, 5,
+                display: 'inline-block'
+                marginLeft: 4   
+                marginBottom: 2
+          ]
 
+        render_option: (option, is_active) -> 
+          [
+            SPAN 
+              "data-filter": option.name
+              style: 
+                # fontWeight: 600
+                fontSize: 16
+                marginBottom: 2
 
-      menu_style: 
-        left: -9999
-        top: 26
-        borderRadius: 8
-        overflow: 'hidden'
-        fontStyle: 'normal'
-        width: 250
-        boxShadow: '0 1px 2px rgba(0,0,0,.8)'
-        backgroundColor: 'white' 
+              translator "engage.filter.#{option.name}", option.name 
 
+            if !browser.is_mobile
+              SPAN 
+                style: 
+                  float: 'right'
+                HelpIcon translator("engage.filter.#{option.name}.description", option.description),
+                  color: 'black' #if is_active then 'white'
+                
+          ]
 
-      menu_when_open_style: 
-        left: 0
-
-      option_style: 
-        padding: '8px 20px'
-        # borderBottom: "1px solid #ddd"
-        display: 'block'
-        fontWeight: 400
-        fontSize: 18
-
-      active_option_style: 
-        backgroundColor: '#eee'
 
 
 
@@ -659,94 +634,67 @@ SortProposalsMenu = ReactiveComponent
     sort = fetch 'sort_and_filter_proposals'
     set_default_sort() if !sort.name?       
 
+    DIV 
+      style: 
+        position: 'relative'
+      DropMenu 
+        className: 'default_drop bluedrop'    
+        options: sort_options
 
-    DropMenu
-      options: sort_options
-      anchor_class_name: 'sort_proposals'
+        open_menu_on: 'activation'
 
-      open_menu_on: 'activation'
+        selection_made_callback: (option) -> 
+          invalidate_proposal_sorts()
+          _.extend sort, option   
+          save sort 
 
-      selection_made_callback: (option) -> 
-        invalidate_proposal_sorts()
-        _.extend sort, option   
-        save sort 
+        render_anchor: ->
+          current_sort = translator "engage.sort_order.#{sort.name}", sort.name
+          if current_sort.indexOf(':') > -1 
+            current_sort = current_sort.split(':')[1]
+          [
+            TRANSLATE "engage.sort_by", "sort"
+            ": "
 
-      render_anchor: ->
-        current_sort = translator "engage.sort_order.#{sort.name}", sort.name
-        if current_sort.indexOf(':') > -1 
-          current_sort = current_sort.split(':')[1]
-        [
-          TRANSLATE "engage.sort_by", "sort"
-          ": "
-
-          SPAN 
-            style: 
-              fontWeight: 700
-              paddingLeft: 8
-
-            current_sort
-
-            SPAN style: _.extend cssTriangle 'bottom', 'white', 8, 5,
-              display: 'inline-block'
-              marginLeft: 4   
-              marginBottom: 2
-        ]
-
-      render_option: (option, is_active) -> 
-        [
-          SPAN 
-            "data-sort": option.name
-            style: 
-              # fontWeight: 600
-              fontSize: 16
-              marginBottom: 2
-
-            translator "engage.sort_order.#{option.name}", option.name 
-
-          if !browser.is_mobile
             SPAN 
               style: 
-                float: 'right'
-              HelpIcon translator "engage.sort_order.#{option.name}.description", option.description
-              
+                fontWeight: 700
+                paddingLeft: 8
 
-          # DIV 
-          #   style: 
-          #     fontSize: 12
-          #     color: if is_active then 'white' else '#444'
+              current_sort
 
-          #   translator "engage.sort_order.#{option.name}.description", option.description 
-        ]
+              SPAN style: _.extend cssTriangle 'bottom', 'white', 8, 5,
+                display: 'inline-block'
+                marginLeft: 4   
+                marginBottom: 2
+          ]
 
-      anchor_style:
-        display: 'flex'
-      wrapper_style: 
-        display: 'inline-block'
-        minWidth: 170
+        render_option: (option, is_active) -> 
+          [
+            SPAN 
+              "data-sort": option.name
+              style: 
+                # fontWeight: 600
+                fontSize: 16
+                marginBottom: 2
 
-      menu_style: 
-        left: -9999
-        top: 26
-        borderRadius: 8
-        overflow: 'hidden'
-        fontStyle: 'normal'
-        width: 280
-        boxShadow: '0 1px 2px rgba(0,0,0,.8)'
-        backgroundColor: 'white' 
+              translator "engage.sort_order.#{option.name}", option.name 
 
+            if !browser.is_mobile
+              SPAN 
+                style: 
+                  float: 'right'
+                HelpIcon translator "engage.sort_order.#{option.name}.description", option.description
+                
 
-      menu_when_open_style: 
-        left: 0
+            # DIV 
+            #   style: 
+            #     fontSize: 12
+            #     color: if is_active then 'white' else '#444'
 
-      option_style: 
-        padding: '8px 20px'
-        # borderBottom: "1px solid #ddd"
-        display: 'block'
-        fontWeight: 400
-        fontSize: 18
+            #   translator "engage.sort_order.#{option.name}.description", option.description 
+          ]
 
-      active_option_style: 
-        backgroundColor: '#eee'
 
 
 ManualProposalResort = ReactiveComponent
@@ -791,7 +739,7 @@ ManualProposalResort = ReactiveComponent
           display: 'flex'
           alignItems: 'center'
 
-        'data-tooltip': if !browser.is_mobile then translator "engage.sort_order.out-of-order-tooltip", "A re-sort may be needed because someone else added or updated their opinion, or you selected an opinion view that filtered or weighed opinions differently."
+        # 'data-tooltip': if !browser.is_mobile then translator "engage.sort_order.out-of-order-tooltip", "A re-sort may be needed because someone else added or updated their opinion, or you selected an opinion view that filtered or weighed opinions differently."
 
         onClick: invalidate_proposal_sorts
 
@@ -818,6 +766,7 @@ ManualProposalResort = ReactiveComponent
         SPAN 
           style: 
             padding: "2px 0 2px 8px"
+            whiteSpace: 'nowrap'
 
           translator "engage.sort_order.resort", 'Re-sort'
 

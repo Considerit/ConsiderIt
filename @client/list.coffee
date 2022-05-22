@@ -123,40 +123,10 @@ window.List = ReactiveComponent
             fresh: @props.fresh
             show_first_num_items: if list_state.show_all_proposals then 999999 else list_state.show_first_num_items
             combines_these_lists: @props.combines_these_lists
-            show_new_button: (list_state.show_all_proposals || proposals.length <= list_state.show_first_num_items) && \
-               ((@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || (permitted > 0 || permitted == Permission.NOT_LOGGED_IN) )
+            # show_new_button: (list_state.show_all_proposals || proposals.length <= list_state.show_first_num_items) && \
+            #    ((@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || (permitted > 0 || permitted == Permission.NOT_LOGGED_IN) )
+            show_new_button: (@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || (permitted > 0 || permitted == Permission.NOT_LOGGED_IN)
             proposal_focused_on: @props.proposal_focused_on
-
-          if !list_state.show_all_proposals && proposals.length > list_state.show_first_num_items 
-            BUTTON
-              style:
-                backgroundColor: '#f9f9f9'
-                width: HOMEPAGE_WIDTH()
-                cursor: 'pointer'
-                paddingTop: 10
-                paddingBottom: 10
-                fontWeight: 600
-                textAlign: 'center'
-                marginTop: 12
-                marginBottom: 28
-                border: 'none'
-                fontSize: 22
-
-              onClick: => 
-                list_state.show_all_proposals = true
-                save list_state
-
-              SPAN 
-                style: 
-                  textDecoration: 'underline'
-
-                translator "engage.show_hidden_proposals", 'Show all'
-
-              SPAN 
-                style: 
-                  paddingLeft: 8
-                "(+#{proposals.length - list_state.show_first_num_items})"
-
 
       if customization('footer', list_key) && !is_collapsed
         customization('footer', list_key)()
@@ -188,6 +158,49 @@ ListItems = ReactiveComponent
       colors = {}
       for aggregated_list, idx in @props.combines_these_lists
         colors[aggregated_list] = hues[idx]
+
+
+
+    show_all_button = => 
+
+      LI
+        key: "show-all-#{list_key}"
+        style:
+          listStyle: 'none'
+
+        BUTTON
+          style:
+            backgroundColor: '#e9eaeb' #'#f9f9f9'
+            width: HOMEPAGE_WIDTH()
+            cursor: 'pointer'
+            padding: '14px 0' 
+            fontWeight: 600
+            textAlign: 'center'
+            marginTop: 12
+            marginBottom: 28
+            border: 'none'
+            fontSize: 22
+
+          onClick: => 
+            list_state = fetch list_key
+            list_state.show_all_proposals = true
+            save list_state
+
+          SPAN 
+            style: 
+              textDecoration: 'underline'
+
+            translator "engage.show_hidden_proposals", 'Show all'
+
+          SPAN 
+            style: 
+              paddingLeft: 18
+              fontFamily: mono_font()
+              color: '#444'
+              fontWeight: 400
+            "+#{proposals.length - @props.show_first_num_items}"
+
+
 
     render_new = (is_top) =>
       LI 
@@ -221,6 +234,10 @@ ListItems = ReactiveComponent
             show_category: !!@props.combines_these_lists
             category_color: if @props.combines_these_lists then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], .9, .8)
             focused_on: @props.proposal_focused_on && @props.proposal_focused_on.key == proposal.key
+
+
+        if proposals.length > @props.show_first_num_items 
+          show_all_button()
 
 
         if @props.show_new_button
@@ -688,6 +705,7 @@ window.list_actions = (props) ->
               fontStyle: 'normal'
               fontWeight: 700
               textDecoration: 'none'
+              whiteSpace: 'nowrap'
             onClick: (e) => 
               e.stopPropagation()
         

@@ -13,7 +13,7 @@ window.styles += """
     border-top: 1px solid #f3f3f3;
   }
 
-  .one-col [data-widget="List"] {
+  .one-col [data-widget="List"], .one-col [data-widget="NewList"] {
     border-top: none;
     box-shadow: none;
   }
@@ -57,8 +57,13 @@ get_list_padding = ->
   top = if ONE_COL() then 12 else 48
   bottom = if ONE_COL() then 12 else 48 
 
-  right = Math.max 36, LIST_PADDING() + LIST_PADDING() / 6
-  left  = Math.max 36, LIST_PADDING() - LIST_PADDING() / 6
+  if WINDOW_WIDTH() <= 955
+    right = Math.max 36, LIST_PADDING()
+    left  = Math.max 36, LIST_PADDING()
+  else 
+    right = Math.max 36, LIST_PADDING() + LIST_PADDING() / 6
+    left  = Math.max 36, LIST_PADDING() - LIST_PADDING() / 6
+
 
   "#{top}px #{right}px #{bottom}px #{left}px"
 

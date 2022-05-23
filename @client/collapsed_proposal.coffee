@@ -58,6 +58,7 @@ styles += """
     padding: 4px 10px;
     border: 1px solid #eee;
     box-shadow: 0 1px 1px rgba(160,160,160,.8);
+    white-space: nowrap;
   }
 
 """
@@ -103,7 +104,7 @@ window.CollapsedProposal = ReactiveComponent
 
     icons = customization('show_proposer_icon', proposal, subdomain) && !@props.hide_icons && !customization('anonymize_everything')
     slider_regions = customization('slider_regions', proposal, subdomain)
-    show_proposal_scores = !@props.hide_scores && customization('show_proposal_scores', proposal, subdomain)
+    show_proposal_scores = !@props.hide_scores && customization('show_proposal_scores', proposal, subdomain) && WINDOW_WIDTH() > 955
 
     opinions = opinionsForProposal(proposal)
 
@@ -288,17 +289,15 @@ window.CollapsedProposal = ReactiveComponent
             else if !@props.hide_metadata && customization('show_proposal_meta_data', null, subdomain)
               show_author_name_in_meta_data = !icons && (editor = proposal_editor(proposal)) && editor == proposal.user && !customization('anonymize_everything')
 
-              SPAN null,
-
-
+              [
                 if !screencasting()
                   SPAN 
                     className: 'separated'
                     style: 
                       fontFamily: mono_font()
 
-                    if !show_author_name_in_meta_data
-                      TRANSLATE 'engage.proposal_metadata_date_added', "Added: "
+                    # if !show_author_name_in_meta_data
+                    #   TRANSLATE 'engage.proposal_metadata_date_added', "Added: "
                     
                     prettyDate(proposal.created_at)
 
@@ -321,14 +320,15 @@ window.CollapsedProposal = ReactiveComponent
                       className: 'separated'
                       style: 
                         textDecoration: 'none'
-                        fontFamily: mono_font()                        
+                        fontFamily: mono_font()
+                        whiteSpace: 'nowrap'                        
                       TRANSLATE
                         id: "engage.point_count"
                         cnt: proposal.point_count
 
                         "{cnt, plural, one {# pro or con} other {# pros & cons}}"
 
-                    if proposal.active && permit('create point', proposal, subdomain) > 0
+                    if proposal.active && permit('create point', proposal, subdomain) > 0 && WINDOW_WIDTH() > 955
 
                       A 
                         href: proposal_url(proposal)
@@ -338,6 +338,7 @@ window.CollapsedProposal = ReactiveComponent
 
                           "give your opinion"
                   ]
+              ]
 
 
 

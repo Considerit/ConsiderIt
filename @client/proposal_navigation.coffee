@@ -81,7 +81,7 @@ window.GroupedProposalNavigation = (args) ->
       break
 
   DIV 
-    className: 'GroupedProposalNavigation'
+    className: "GroupedProposalNavigation"
 
 
     H2

@@ -57,7 +57,7 @@ window.EditList = ReactiveComponent
           wrapper_style: 
             position: 'absolute'
             right: -LIST_PADDING() + 10
-            top: -34
+            top: 12
             minWidth: 'auto'
 
           render_anchor: ->
@@ -388,23 +388,20 @@ window.ModalNewList = ReactiveComponent
                 DIV 
                   ref: 'slider_config'
                   style: 
-                    padding: '18px 24px 0px 24px'
+                    padding: '18px 0px 0px 12px'
                     position: 'relative'
                     marginTop: 8
-                    left: -24 - 1
+                    left: 0
+                    display: 'flex'
 
                   DIV 
                     style: 
                       position: 'relative'
-                      width: column_sizes().second
-
-
-                    SPAN 
-                      style: 
-                        display: 'block'
-                        width: '100%'
-                        borderBottom: '1px solid'
-                        borderColor: '#999'
+                      flexGrow: 2
+                      width: '100%'
+                      borderTop: '1px solid'
+                      borderColor: '#999'
+                      maxWidth: 500
                     
                     INPUT 
                       type: 'text'
@@ -441,22 +438,23 @@ window.ModalNewList = ReactiveComponent
 
                     wrapper_style: 
                       position: 'relative'
-                      left: column_sizes().second + 50
-                      top: -8
+                      flexGrow: 0
+                      paddingLeft: 18
 
                     anchor_style: 
                       color: 'inherit' #focus_color() #'inherit'
                       height: '100%'
-                      padding: '4px 4px'
+                      padding: '0px 4px'
                       position: 'relative'
                       right: 0
                       cursor: 'pointer'
+                      whiteSpace: 'nowrap'
 
                     menu_style: 
-                      width: column_sizes().second + 24 * 2
+                      width: 420
                       backgroundColor: '#fff'
                       border: "1px solid #aaa"
-                      left: -99999
+                      right: -99999
                       left: 'auto'
                       top: 24
                       fontWeight: 400
@@ -465,10 +463,10 @@ window.ModalNewList = ReactiveComponent
                       textAlign: 'left'
 
                     menu_when_open_style: 
-                      left: 0
+                      right: 0
 
                     option_style: 
-                      padding: '16px 18px'
+                      padding: '8px 18px 12px 18px'
                       display: 'block'
                       color: 'black'
                       fontWeight: 400
@@ -506,7 +504,7 @@ window.ModalNewList = ReactiveComponent
                             fontSize: 14
                             marginRight: 12
                             cursor: 'pointer'
-                          translator 'engage.list-config-spectrum-select', 'change spectrum'
+                          translator 'engage.list-config-spectrum-select', 'preset spectrums'
 
                         SPAN style: _.extend cssTriangle 'bottom', focus_color(), 15, 9,
                           display: 'inline-block'

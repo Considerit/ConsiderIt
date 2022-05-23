@@ -444,14 +444,14 @@ window.Proposal = ReactiveComponent
         w = HOMEPAGE_WIDTH() + LIST_PADDING() * 2
 
         DIV 
-          className: 'main_background navigation_wrapper'
+          className: "main_background navigation_wrapper #{if ONE_COL() then 'one-col' else ''}"
           style: 
             marginTop: if !show_all_points then 88
             position: 'relative'
 
           STYLE 
             dangerouslySetInnerHTML: __html: """
-              .navigation_wrapper::after {
+              .navigation_wrapper:not(.one-col)::after {
                 content: ' ';
                 position: absolute;
                 left: 0;
@@ -466,7 +466,7 @@ window.Proposal = ReactiveComponent
                 transform: scaleY(-1);
               }
 
-              .navigation_wrapper::before {
+              .navigation_wrapper:not(.one-col)::before {
                 content: ' ';
                 position: absolute;
                 left: 0;

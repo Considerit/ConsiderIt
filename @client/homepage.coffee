@@ -23,8 +23,9 @@ styles += """
     background-attachment: fixed;
   }
 
-  .main_background.one-col, .main_background .one-col {
+  .main_background.one-col, .main_background .one-col, .one-col.navigation_wrapper {
     background-image: none;
+    background-color: white;
   }
 
 
@@ -32,6 +33,10 @@ styles += """
     margin: 0px auto;
     position: relative;
     padding: 24px 0px 140px 0;
+  }
+
+  .one-col #homepagetab {
+    padding: 24px 0px 140px 12px;
   }
 
 
@@ -78,8 +83,7 @@ window.Homepage = ReactiveComponent
         id: 'homepagetab'
         role: if get_tabs() then "tabpanel"
         style: 
-          width: HOMEPAGE_WIDTH() + LIST_PADDING() * 2
-
+          width: if !ONE_COL() then HOMEPAGE_WIDTH() + LIST_PADDING() * 2
 
         if !fetch('/proposals').proposals
           ProposalsLoading()   

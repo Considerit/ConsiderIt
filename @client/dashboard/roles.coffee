@@ -318,7 +318,6 @@ ModalAddRolesAndInvite = ReactiveComponent
                          (!@local.filtered || 
                           "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1)
 
-    console.log "HELLO!", @local.key
     wrap_in_modal null, @props.done_callback, DIV null,
 
       H1

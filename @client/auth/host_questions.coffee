@@ -30,7 +30,7 @@ window.HostQuestions = ReactiveComponent
           DIV 
             style: 
               marginBottom: 12     
-
+              textAlign: if host_framing.length > 80 then 'left'
             DIV 
               style: 
                 fontSize: 14

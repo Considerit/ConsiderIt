@@ -4,7 +4,7 @@ window.ensure_in_viewport_when_appears = (selector) ->
   viewport_ensurer = setInterval ->
     el = document.querySelector selector
     if el 
-      $(el).ensureInView {scroll: false}
+      $(el).ensureInView {scroll: true}
       clearInterval viewport_ensurer
 
   , 10

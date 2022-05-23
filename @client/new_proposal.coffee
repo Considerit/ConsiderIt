@@ -31,9 +31,8 @@ window.NewProposal = ReactiveComponent
     #   list_state.adding_new_proposal = list_key
     #   save list_state
 
-    adding = list_state.adding_new_proposal == list_key && (!!@props.is_list_top == !!list_state.clicked_top)
+    adding = list_state.adding_new_proposal == list_key
 
-    # console.log 'adding', @props.is_list_top, list_state.adding_new_proposal == list_key , !!@props.is_list_top == !!list_state.clicked_top
     if @props.combines_these_lists
       available_lists = (lst for lst in lists_current_user_can_add_to(@props.combines_these_lists) when lst != list_key)
       permitted = available_lists.length
@@ -44,7 +43,6 @@ window.NewProposal = ReactiveComponent
     permitted = permitted > 0
 
     return SPAN null if !permitted && !needs_to_login
-
 
     if !adding 
       BUTTON  
@@ -150,14 +148,14 @@ window.NewProposal = ReactiveComponent
 
 
           CharacterCountTextInput 
-            id: "#{list_name}-name-#{!!@props.is_list_top}"
+            id: "#{list_name}-name"
             maxLength: 240
             name:'name'
             pattern: '^.{3,}'
             'aria-label': translator("engage.edit_proposal.summary.placeholder", 'Clear and concise summary')
             placeholder: translator("engage.edit_proposal.summary.placeholder", 'Clear and concise summary')
             required: 'required'
-            focus_on_mount: !!@props.is_list_top == !!list_state.clicked_top
+            focus_on_mount: true
 
             count_style: 
               position: 'absolute'
@@ -290,7 +288,7 @@ window.NewProposal = ReactiveComponent
                 backgroundColor: focus_color()
 
               onClick: => 
-                name = document.getElementById("#{list_name}-name-#{!!@props.is_list_top}").value
+                name = document.getElementById("#{list_name}-name").value
 
                 fields = 
                   description: fetch("description-new-proposal-#{list_name}").html
@@ -300,7 +298,6 @@ window.NewProposal = ReactiveComponent
 
                 description = proposal_fields.create_description(fields)
                 active = true 
-                hide_on_homepage = false
 
                 if @props.combines_these_lists && @refs.category
                   category = @refs.category.getDOMNode().value
@@ -314,7 +311,6 @@ window.NewProposal = ReactiveComponent
                   description : description
                   cluster : category
                   active: active
-                  hide_on_homepage: hide_on_homepage
 
                 InitializeProposalRoles(proposal)
                 
@@ -327,13 +323,10 @@ window.NewProposal = ReactiveComponent
                 save proposal, => 
                   if proposal.errors?.length == 0
                     list_state.adding_new_proposal = null
-                    list_state.clicked_top = null 
+                    list_state.show_all_proposals = true
                     save list_state
 
-                    if @props.is_list_top
-                      set_sort_order('Date: Most recent first')
-                    else 
-                      set_sort_order('Date: Earliest first')
+                    set_sort_order('Date: Earliest first')
 
                     show_flash("Your response has been added")
 
@@ -359,8 +352,7 @@ window.NewProposal = ReactiveComponent
                 marginLeft: 12
               onClick: => 
                 list_state.adding_new_proposal = null
-                list_state.clicked_top = null             
-                save(list_state)
+                save list_state
                 # delete loc.query_params.new_proposal
                 # save loc
 

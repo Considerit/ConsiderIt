@@ -65,6 +65,9 @@ get_list_padding = ->
 window.list_link = (list_key) ->
   list_key.substring(5).toLowerCase().replace(/ /g, '_')
 
+
+SHOW_FIRST_N_PROPOSALS = 6
+
 window.List = ReactiveComponent
   displayName: 'List'
 
@@ -85,7 +88,7 @@ window.List = ReactiveComponent
     proposals = list.proposals or []
 
     list_state = fetch list_key
-    list_state.show_first_num_items ?= @props.show_first_num_items or 12
+    list_state.show_first_num_items ?= @props.show_first_num_items or SHOW_FIRST_N_PROPOSALS
     list_state.collapsed ?= customization('list_is_archived', list_key)
 
     is_collapsed = list_state.collapsed
@@ -131,6 +134,36 @@ window.List = ReactiveComponent
       if customization('footer', list_key) && !is_collapsed
         customization('footer', list_key)()
 
+
+
+styles += """
+
+  .show-all-proposals {
+    list-style: none;
+    position: relative;
+    margin-top: -135px;
+    width: 105%;
+    z-index: 10;    
+  }
+
+  .show-all-proposals button {
+    background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 40%, rgba(255,255,255,0) 100%);
+    width: 100%;
+    cursor: pointer;
+    padding: 32px 0 22px 0;
+    font-weight: 700;
+    text-align: center;
+    border: none;
+    font-size: 22px;
+    z-index: 10;
+    color: #446ae3;
+    padding-top: 96px;
+    margin-top: 12px;
+    margin-bottom: 8px;
+  }
+"""
+
+
 ListItems = ReactiveComponent
   displayName: 'ListItems'
 
@@ -164,23 +197,12 @@ ListItems = ReactiveComponent
     show_all_button = => 
 
       LI
+        className: 'show-all-proposals'
         key: "show-all-#{list_key}"
         style:
           listStyle: 'none'
 
         BUTTON
-          style:
-            backgroundColor: '#e9eaeb' #'#f9f9f9'
-            width: HOMEPAGE_WIDTH()
-            cursor: 'pointer'
-            padding: '14px 0' 
-            fontWeight: 600
-            textAlign: 'center'
-            marginTop: 12
-            marginBottom: 28
-            border: 'none'
-            fontSize: 22
-
           onClick: => 
             list_state = fetch list_key
             list_state.show_all_proposals = true
@@ -202,7 +224,7 @@ ListItems = ReactiveComponent
 
 
 
-    render_new = (is_top) =>
+    render_new = =>
       LI 
         key: "new#{list_key}"
         style: 
@@ -216,11 +238,8 @@ ListItems = ReactiveComponent
         NewProposal 
           list_key: list_key
           combines_these_lists: @props.combines_these_lists  
-          is_list_top: is_top    
 
     DIV null, 
-      if fetch(list_key).adding_new_proposal && fetch(list_key).clicked_top
-        render_new(true)
 
       UL null, 
         for proposal,idx in proposals
@@ -241,7 +260,6 @@ ListItems = ReactiveComponent
 
 
         if @props.show_new_button
-
           render_new()
 
 
@@ -669,12 +687,6 @@ EditableDescription = ReactiveComponent
 window.list_actions = (props) -> 
   list_key = props.list.key
 
-  add_new = props.add_new
-  if add_new 
-    permitted = permit('create proposal', list_key)
-    add_new &&= permitted > 0 || permitted == Permission.NOT_LOGGED_IN
-
-
   DIV   
     className: 'list_actions'
     style: 
@@ -689,50 +701,6 @@ window.list_actions = (props) ->
         marginRight: column_sizes().gutter
         display: 'flex'
 
-      if add_new
-
-        SPAN 
-          style: 
-            minWidth: 78
-
-
-          BUTTON
-            className: 'add_new_button like_link'
-            style: 
-              fontSize: 14
-              color: focus_color()
-              fontFamily: customization('font')
-              fontStyle: 'normal'
-              fontWeight: 700
-              textDecoration: 'none'
-              whiteSpace: 'nowrap'
-            onClick: (e) => 
-              e.stopPropagation()
-        
-              if permitted > 0
-                list_state = fetch list_key
-                # list_state.show_all_proposals = true 
-                list_state.adding_new_proposal = list_key
-                list_state.clicked_top = true
-                save list_state
-               
-              else 
-                e.stopPropagation()
-                reset_key 'auth', 
-                  form: 'create account'
-                  goal: 'Introduce yourself to make a contribution'
-
-            '+ '
-
-            SPAN 
-              style: 
-                textDecoration: 'underline'
-              list_i18n().new_response_label(list_key)
-
-      if props.can_sort && add_new
-        SPAN 
-          style: 
-            padding: '0 12px'
 
       if props.can_sort
         [ SortProposalsMenu(), FilterProposalsMenu() ]

@@ -1,19 +1,54 @@
+
+
+styles += """
+  [data-widget="EditProposal"] #modal-body {
+
+  }
+
+  [data-widget="EditProposal"] input:checked + .toggle_switch_circle {
+    background-color: #{focus_blue};
+  }
+
+  [data-widget="EditProposal"] label:not(.toggle_switch):not(.toggle_label){
+    font-size: 20px;
+    font-weight: 600;
+    width: 240px;
+    display: inline-block;
+    color: #{focus_blue};
+    margin-bottom: 3px;
+    text-transform: capitalize;
+  }
+
+  [data-widget="EditProposal"] .toggle_label {
+    padding-left: 18px;
+    color: #{focus_blue};
+    font-weight: 600;
+    font-size: 18px;
+  }
+
+  [data-widget="EditProposal"] .block{
+    padding: 2px 0;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  [data-widget="EditProposal"] form {
+    margin-top: 8px;
+  }
+"""
+
+
+
+
+
 window.EditProposal = ReactiveComponent
   displayName: 'EditProposal'
+  mixins: [Modal]
 
   render : ->
     current_user = fetch('/current_user')
-    proposal = @data()
+    proposal = fetch @props.proposal
     subdomain = fetch '/subdomain'
-
-    # defaultValue for React forms conflicts with statebus's method of 
-    # just rerunning until things work. Namely, the default value
-    # that is set before the proposal is loaded entirely sticks
-    # even after the proposal is fully loaded from the server.
-    # This code works around that problem by simply exiting the 
-    # render if the proposal isn't loaded already. 
-    if !@props.fresh && !proposal.id
-      return SPAN null
     
     # check permissions
     permitted = if @props.fresh  
@@ -25,15 +60,9 @@ window.EditProposal = ReactiveComponent
       recourse permitted, 'To participate,'
       return DIV null
 
-    block_style = 
-      width: CONTENT_WIDTH()
-      padding: '2px 0px'
-      marginBottom: 12
-      position: 'relative'
-
     description_field_style =
       fontSize: 18
-      width: CONTENT_WIDTH()
+      width: '100%'
       padding: 12
       marginBottom: 8
       border: '1px solid #ccc'
@@ -41,13 +70,6 @@ window.EditProposal = ReactiveComponent
     input_style = _.extend {}, description_field_style, 
       display: 'block'
 
-    label_style =
-      fontSize: 24
-      fontWeight: 600
-      width: 240
-      display: 'inline-block'
-      color: focus_color()
-      marginBottom: 3
 
     operation_style = 
       color: '#aaa'
@@ -59,6 +81,11 @@ window.EditProposal = ReactiveComponent
       padding: 0
       border: 'none'  
 
+    explanation_style = 
+      fontSize: 16
+      color: '#333'
+      marginBottom: 6
+
 
     if @props.fresh 
       loc = fetch 'location'
@@ -68,34 +95,22 @@ window.EditProposal = ReactiveComponent
 
 
     available_lists = lists_current_user_can_add_to get_all_lists()
-    
-    DIV null, 
+
+
+
+    local = @local
+
+    wrap_in_modal HOMEPAGE_WIDTH(), @props.done_callback, DIV null,
+
+
       DIV 
         style: 
-          width: CONTENT_WIDTH()
-          margin: 'auto'
-          padding: '3em 0'
           position: 'relative'
 
         DIV 
-          style: 
-            fontSize: 28
-            marginBottom: 20
-
-          H2
-            style: 
-              fontSize: 30
-              fontWeight: 700
-
-            if @props.fresh 
-              translator 'engage.add_new_proposal_button', "Create new proposal"
-            else 
-              "#{capitalize(translator('engage.edit_button', 'edit'))} '#{proposal.name}'"
-
-        DIV style: block_style,
+          className: 'block'
           LABEL 
             htmlFor:'name'
-            style: label_style
             translator("engage.edit_proposal.summary_label", "Summary") + ':'
           INPUT 
             id:'name'
@@ -106,10 +121,10 @@ window.EditProposal = ReactiveComponent
             defaultValue: if @props.fresh then null else proposal.name
             style: input_style
 
-        DIV style: block_style,
+        DIV
+          className: 'block'        
           LABEL 
             htmlFor:"description-#{proposal.key}"
-            style: label_style
             translator("engage.edit_proposal.description_label", "Details") + ':'
           
           WysiwygEditor
@@ -119,13 +134,12 @@ window.EditProposal = ReactiveComponent
             html: if @props.fresh then null else proposal.description
 
         DIV
-          style: block_style
+          className: 'block'
 
           LABEL 
             htmlFor:'category'
-            style: label_style
-            translator('category') + ' [' + translator('optional') + ']:'
-          
+            translator 'category'
+
 
           SELECT
             ref: 'category'
@@ -173,54 +187,65 @@ window.EditProposal = ReactiveComponent
 
 
 
-        DIV 
-          style: _.extend {}, block_style,
-            display: if !current_user.is_admin then 'none'
+        # DIV 
+        #   style: _.extend {}, block_style,
+        #     display: if !current_user.is_admin then 'none'
 
-          LABEL 
-            htmlFor: 'listed_on_homepage'
-            style: label_style
-            translator "engage.edit_proposal.show_on_homepage", 'List on homepage?'
+        #   LABEL 
+        #     htmlFor: 'listed_on_homepage'
+        #     translator "engage.edit_proposal.show_on_homepage", 'List on homepage?'
 
-          INPUT 
-            id: 'listed_on_homepage'
-            name: 'listed_on_homepage'
-            type: 'checkbox'
-            defaultChecked: if @props.fresh then true else !proposal.hide_on_homepage
-            style: 
-              fontSize: 24
+        #   INPUT 
+        #     id: 'listed_on_homepage'
+        #     name: 'listed_on_homepage'
+        #     type: 'checkbox'
+        #     defaultChecked: if @props.fresh then true else !proposal.hide_on_homepage
+        #     style: 
+        #       fontSize: 24
 
         DIV
-          style: _.extend {}, block_style,
-            display: if !current_user.is_admin then 'none'
+          className: 'block'        
+          style:
+            display: if !current_user.is_admin then 'none' else 'flex'
+            alignItems: 'center'
 
           LABEL 
+            className: 'toggle_switch'
+
+            INPUT 
+              id: 'open_for_discussion'
+              name: 'open_for_discussion'
+              type: 'checkbox'
+              defaultChecked: if @props.fresh then true else proposal.active
+
+            SPAN 
+              className: 'toggle_switch_circle'
+
+          LABEL 
+            className: 'toggle_label'
             htmlFor: 'open_for_discussion'
-            style: label_style
-            translator "engage.edit_proposal.open_for_discussion", 'Open for discussion?'
-
-          INPUT 
-            id: 'open_for_discussion'
-            name: 'open_for_discussion'
-            type: 'checkbox'
-            defaultChecked: if @props.fresh then true else proposal.active
-            style: {fontSize: 24}
-
+            translator "engage.edit_proposal.open_for_discussion", 'Open for discussion'
         
+
+
         if current_user.is_admin 
           FORM 
             id: 'proposal_pic_files'
             action: '/update_proposal_pic_hack'
 
             DIV 
-              className: 'input_group'
-              style: block_style
+              className: 'input_group block'
 
               DIV null, 
                 LABEL 
-                  style: label_style
                   htmlFor: 'pic'
-                  'Pic'
+                  'Icon'
+
+                DIV 
+                  style: explanation_style
+                  "A custom icon to associate with this proposal, rather than the author's avatar."
+
+
               INPUT 
                 id: 'pic'
                 type: 'file'
@@ -229,14 +254,18 @@ window.EditProposal = ReactiveComponent
                   @submit_pic = true
 
             DIV 
-              className: 'input_group'
-              style: block_style
+              className: 'input_group block'
 
               DIV null, 
                 LABEL 
-                  style: label_style
                   htmlFor: 'banner'
                   'Banner'
+
+                DIV 
+                  style: explanation_style
+                  "A background image shown at the top of this proposal's page."
+
+
               INPUT 
                 id: 'banner'
                 type: 'file'
@@ -284,11 +313,7 @@ window.EditProposal = ReactiveComponent
               top: 20
               marginLeft: 12
 
-            onClick: =>
-              if @props.fresh 
-                loadPage "/"
-              else 
-                loadPage "/#{proposal.slug}"
+            onClick: @props.done_callback
 
             translator 'shared.cancel_button', 'cancel'
 
@@ -298,9 +323,10 @@ window.EditProposal = ReactiveComponent
 
   saveProposal : -> 
     current_user = fetch '/current_user'
+    proposal = fetch @props.proposal
     
     name = document.getElementById("name").value 
-    description = fetch("description-#{@data().key}").html
+    description = fetch("description-#{proposal.key}").html
 
     category = @refs.category.getDOMNode().value
     if current_user.is_admin && category == 'new category'
@@ -308,7 +334,7 @@ window.EditProposal = ReactiveComponent
     category = null if category == ''
 
     active = document.getElementById('open_for_discussion').checked
-    hide_on_homepage = !document.getElementById('listed_on_homepage').checked
+    # hide_on_homepage = !document.getElementById('listed_on_homepage').checked
 
     if @props.fresh
       proposal =
@@ -317,16 +343,15 @@ window.EditProposal = ReactiveComponent
         description : description
         cluster: category
         active: active
-        hide_on_homepage: hide_on_homepage
+        # hide_on_homepage: hide_on_homepage
 
     else 
-      proposal = @data()
       _.extend proposal, 
         cluster: category
         name: name
         description: description
         active: active
-        hide_on_homepage: hide_on_homepage
+        # hide_on_homepage: hide_on_homepage
 
     if @local.roles
       proposal.roles = @local.roles
@@ -338,8 +363,7 @@ window.EditProposal = ReactiveComponent
 
     after_save = => 
       if proposal.errors?.length == 0
-        window.scrollTo(0,0)
-        loadPage "/#{proposal.slug}"
+        @props.done_callback()
       else
         @local.errors = proposal.errors
         save @local

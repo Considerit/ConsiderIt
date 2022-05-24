@@ -146,13 +146,13 @@ styles += """
   .show-all-proposals {
     list-style: none;
     position: relative;
-    margin-top: -135px;
+    margin-top: -105px;
     width: 105%;
     z-index: 10;    
   }
 
   .show-all-proposals button {
-    background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 40%, rgba(255,255,255,0) 100%);
+    background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 60%, rgba(255,255,255,0) 100%);
     width: 100%;
     cursor: pointer;
     padding: 32px 0 22px 0;

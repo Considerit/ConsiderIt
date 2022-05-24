@@ -241,11 +241,6 @@ Page = ReactiveComponent
         else if loc.url.startsWith('/dashboard')
           Dashboard()
 
-        else if loc.url.match(/(.+)\/edit/)
-          EditProposal 
-            key: loc.url.match(/(.+)\/edit/)[1]
-            fresh: false
-
 
         else
           switch loc.url
@@ -257,8 +252,6 @@ Page = ReactiveComponent
               PrivacyPolicy()
             when '/terms_of_service'
               TermsOfService()
-            when '/proposal/new'
-              EditProposal key: "new_proposal", fresh: true      
             when '/accessibility_support'
               AccessibilitySupport()
             when '/histogram_test'

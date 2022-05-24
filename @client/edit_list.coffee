@@ -59,6 +59,7 @@ window.EditList = ReactiveComponent
             right: -LIST_PADDING() + 10
             top: 12
             minWidth: 'auto'
+            paddingLeft: 40
 
           render_anchor: ->
             SPAN 

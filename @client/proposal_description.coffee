@@ -93,6 +93,13 @@ window.ProposalDescription = ReactiveComponent
     DIV 
       style: wrapper_style
 
+      if @local.editing
+        EditProposal 
+          proposal: proposal
+          done_callback: (e) =>
+            @local.editing = false
+            save @local
+
       DIV 
         style: 
           textAlign: 'center'
@@ -304,20 +311,25 @@ window.ProposalDescription = ReactiveComponent
               marginTop: 5
 
 
-            A 
-              href: "#{proposal.key}/edit"
+            BUTTON 
+              className: 'like_link'              
+              onClick: (e) => 
+                @local.editing = true 
+                save @local
+                e.stopPropagation()
+                e.preventDefault()
+
               style:
                 marginRight: 10
                 color: '#999'
-                border: 'none'
-                padding: 0
+                fontWeight: 600
+
               TRANSLATE 'engage.edit_button', 'edit'
 
             if permit('delete proposal', proposal) > 0
               BUTTON
                 className: 'like_link'
                 style:
-                  marginRight: 10
                   color: '#999'
                   fontWeight: 600
 

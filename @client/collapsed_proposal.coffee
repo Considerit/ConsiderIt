@@ -163,7 +163,12 @@ window.CollapsedProposal = ReactiveComponent
         if draw_slider && !slider.is_moving
           @local.hover_proposal = null; save @local
 
-
+      if @local.editing
+        EditProposal 
+          proposal: proposal
+          done_callback: (e) =>
+            @local.editing = false
+            save @local
 
       if @props.focused_on
         DIV 
@@ -371,14 +376,20 @@ window.CollapsedProposal = ReactiveComponent
               style: 
                 visibility: if !@local.hover_proposal then 'hidden'
 
-              A 
-                href: "#{proposal.key}/edit"
+              BUTTON 
+                className: 'like_link'              
+                onClick: (e) => 
+                  @local.editing = true 
+                  save @local
+                  e.stopPropagation()
+                  e.preventDefault()
+                  
                 style:
                   marginRight: 10
                   color: focus_color()
-                  backgroundColor: 'transparent'
                   padding: 0
                   fontSize: 12
+                  fontWeight: 600
                 TRANSLATE 'engage.edit_button', 'edit'
 
               if permit('delete proposal', proposal, subdomain) > 0

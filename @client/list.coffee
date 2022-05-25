@@ -708,7 +708,8 @@ window.list_actions = (props) ->
 
 
       if props.can_sort
-        [ SortProposalsMenu(), FilterProposalsMenu() ]
+        # [ SortProposalsMenu(), FilterProposalsMenu() ]
+        SortProposalsMenu()
 
 
       if !props.fresh

@@ -92,7 +92,7 @@ window.sorted_proposals = (proposals, sort_key, require_force) ->
     for proposal in filtered
       proposals.splice proposals.indexOf(proposal), 1
 
-  if sort.filter?.name != 'Show all'
+  if sort.filter? && sort.filter?.name != 'Show all'
     proposals = (p for p in proposals when sort.filter.passes(p))
 
 

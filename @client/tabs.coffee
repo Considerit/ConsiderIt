@@ -279,15 +279,14 @@ window.HomepageTabs = ReactiveComponent
             htmlFor: if paid then 'enable_tabs'
             B null,
               'Enable Tabs.'
-
-            if !paid
-              UpgradeForumButton
-                text: 'upgrade'
             
             DIV null,
 
               "Tabs help organize your forum into different pages."
 
+          if !paid
+            UpgradeForumButton
+              text: 'upgrade'
 
 
       A 

@@ -12,7 +12,7 @@ styles += """
   [data-widget="EditProposal"] label:not(.toggle_switch):not(.toggle_label){
     font-size: 20px;
     font-weight: 600;
-    width: 240px;
+    padding-right: 24px;
     display: inline-block;
     color: #{focus_blue};
     margin-bottom: 3px;
@@ -111,7 +111,7 @@ window.EditProposal = ReactiveComponent
           className: 'block'
           LABEL 
             htmlFor:'name'
-            translator("engage.edit_proposal.summary_label", "Summary") + ':'
+            translator("engage.edit_proposal.summary_label", "Summary")
           INPUT 
             id:'name'
             name:'name'
@@ -125,7 +125,7 @@ window.EditProposal = ReactiveComponent
           className: 'block'        
           LABEL 
             htmlFor:"description-#{proposal.key}"
-            translator("engage.edit_proposal.description_label", "Details") + ':'
+            translator("engage.edit_proposal.description_label", "Details")
           
           WysiwygEditor
             key:"description-#{proposal.key}"

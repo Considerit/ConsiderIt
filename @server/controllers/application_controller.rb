@@ -128,10 +128,12 @@ protected
         candidate_subdomain = Subdomain.find_by_name 'homepage'
         set_current_tenant(candidate_subdomain) if candidate_subdomain
 
-        redirect_to "#{request.protocol}#{request.host_with_port}/create_forum?forum=#{subdomain_sought}"
 
         if Rails.env.development?
           session[:default_subdomain] = candidate_subdomain.name
+          redirect_to "#{request.protocol}#{request.host_with_port}/create_forum?forum=#{subdomain_sought}"
+        else 
+          redirect_to "#{request.protocol}#{request.domain(1)}/create_forum?forum=#{subdomain_sought}"
         end
         
       else

@@ -38,6 +38,7 @@ styles += """
   #NewForumOnBoarding .onboard_item {
     display: flex;
     margin-bottom: 18px;
+    position: relative;
   }
 
   #NewForumOnBoarding .onboard_item .checkbox {
@@ -102,7 +103,7 @@ window.NewForumOnBoarding = ReactiveComponent
 
   render : -> 
     current_user = fetch '/current_user'
-    return SPAN null if !current_user.is_admin
+    return SPAN null if !current_user.is_admin || screencasting()
 
     subdomain = fetch '/subdomain'
     return SPAN null if subdomain.customizations.onboarding_complete
@@ -122,9 +123,9 @@ window.NewForumOnBoarding = ReactiveComponent
 
       LI 
         className: "onboard_item #{if completed then 'complete' else 'incomplete'}"
-
         SPAN 
           className: 'checkbox'
+          "data-tooltip": if !completed then "This will be checked automatically when you complete the item"
 
         SPAN 
           className: 'label'
@@ -174,7 +175,7 @@ window.NewForumOnBoarding = ReactiveComponent
 
           onboard_item "Edit the Banner to introduce people to your forum.", task_one_complete
           onboard_item "Experiment with the question below. Delete it when you’re done.", task_two_complete
-          onboard_item "Start your own conversation.", task_three_complete
+          onboard_item "Add a request for feedback or an open-ended question.", task_three_complete
 
       DIV 
         style:

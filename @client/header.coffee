@@ -24,6 +24,9 @@ window.Header = ReactiveComponent
     header_bonus = customization('header_bonus') # currently used for things like inserting google font
 
     HEADER 
+      style: 
+        position: 'relative'
+        zIndex: if fetch('edit_forum').editing then 1 # necessary b/c of payment modal
       className: if !is_light_background() then 'dark'
 
       if current_user.is_admin

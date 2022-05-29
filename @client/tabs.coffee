@@ -244,7 +244,7 @@ window.HomepageTabs = ReactiveComponent
             className: 'toggle_switch'
             style: 
               pointerEvents: if !paid then 'none'
-              opacity: if !paid then .5
+              opacity: if !paid then .4
 
             INPUT 
               id: 'enable_tabs'

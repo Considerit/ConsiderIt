@@ -42,20 +42,15 @@ window.DataDash = ReactiveComponent
 
       if !paid
         UpgradeForumButton
+          big: true
           text: "Upgrade to enable data import and export"
-          style: 
-            fontSize: 13
-            marginLeft: 0
-            marginBottom: 24
-            padding: '8px 14px'
-
 
       FORM 
         action: "/dashboard/export#{query}"
         method: 'post'
         style: 
           pointerEvents: if !paid then 'none'
-          opacity: if !paid then .5
+          opacity: if !paid then .4
 
         INPUT 
           type: 'hidden'
@@ -92,7 +87,7 @@ window.DataDash = ReactiveComponent
         style: 
           marginTop: 24
           pointerEvents: if !paid then 'none'
-          opacity: if !paid then .5
+          opacity: if !paid then .4
 
 
         H4

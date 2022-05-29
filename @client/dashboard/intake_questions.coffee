@@ -125,12 +125,9 @@ window.IntakeQuestions = ReactiveComponent
 
       if permit('configure paid feature') < 0
         UpgradeForumButton
+          big: true
           text: "Upgrade to enable sign-up questions"
-          style: 
-            fontSize: 13
-            marginLeft: 0
-            marginTop: 24
-            padding: '8px 14px'
+
 
 
 

@@ -166,14 +166,16 @@ window.TagHomepage = ReactiveComponent
 
     aggregate_list_key = get_current_tab_name()
 
-    List
-      key: aggregate_list_key
-      proposal_focused_on: @props.proposal_focused_on
-      combines_these_lists: get_all_lists()
-      list: 
-        key: "list/#{aggregate_list_key}"
-        name: aggregate_list_key
-        proposals: fetch('/proposals').proposals
+    DIV null,
+
+      List
+        key: aggregate_list_key
+        proposal_focused_on: @props.proposal_focused_on
+        combines_these_lists: get_all_lists()
+        list: 
+          key: "list/#{aggregate_list_key}"
+          name: aggregate_list_key
+          proposals: fetch('/proposals').proposals
 
 
 #############

@@ -128,7 +128,7 @@ window.DefaultFooter = ReactiveComponent
                   src: asset('product_page/github_logo_white.png')
                   style: 
                     height: 18
-                    paddingLeft: 6
+                    marginLeft: 6
                     verticalAlign: 'middle'
 
 

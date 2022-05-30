@@ -6,7 +6,7 @@ def send_digest(subdomain, user, subscription_settings, deliver = true, since = 
 
   return if !send_emails || \
             (!force && !due_for_notification(user, subdomain)) || \
-            subdomain.customization_json['email_notifications_disabled']
+            (subdomain.customization_json['email_notifications_disabled'] && (!user.super_admin || subdomain.name != 'galacticfederation'))
 
   last_digest_sent_at = last_sent_at(user, subdomain)
   if !since 

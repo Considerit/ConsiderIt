@@ -6,6 +6,20 @@ window.stop_editing_forum = ->
   save edit_forum
 
 
+styles += """
+  [data-widget="EditForum"] button {
+    border: none;
+    background-color: #{selected_color}; 
+    color: white; 
+    font-weight: 700;
+    padding: 10px 22px; 
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,.4);
+  }
+
+"""
+
 window.EditForum = ReactiveComponent
   displayName: 'EditForum'
 
@@ -32,62 +46,41 @@ window.EditForum = ReactiveComponent
 
       DIV 
         style: 
-          position: 'fixed'
+          position: 'absolute'
           left: "50%"
           top: 8
           zIndex: 99999
           marginLeft: -142
 
-        BUTTON
-          style: 
-            border: 'none'
+        BUTTON 
 
-            backgroundColor: if is_light then "rgba(0,0,0,.9)" else "rgba(220, 220, 220, 0.9)"
-            color: if !is_light then 'black' else 'white'
-
-            padding: '4px 8px'
-            borderRadius: 8
-            cursor: 'pointer'
           onClick: enter_edit
 
           translator 'forum.edit_button', 'Edit Banner & Forum Structure'
-    else
-      DIV 
-        style: 
-          position: 'fixed'
-          left: "50%"
-          marginLeft: -80 - 8*2
-          top: 0
-          padding: "4px 8px"
-          zIndex: 99999999999
-          backgroundColor: if !is_light then "rgba(0,0,0,.3)" else "rgba(255,255,255,.3)"
+    else 
 
-        DIV null,
-          BUTTON 
+      DIV null,
+        BUTTON 
+          style: 
+            boxShadow: '0 1px 2px rgba(0,0,0,.5)'
+          onClick: stop_editing_forum
+
+          translator 'shared.done_editing', 'Done Editing Forum'
+
+
+        if subdomain.errors?.length > 0
+          DIV 
             style: 
-              backgroundColor: if is_light then "rgba(0,0,0,.8)" else "rgba(255,255,255,.8)"
-              color: if !is_light then 'black' else 'white'
-              border: 'none'
               borderRadius: 8
-              padding: '4px 8px'
-            onClick: stop_editing_forum
+              margin: 20
+              padding: 20
+              backgroundColor: '#FFE2E2'
 
-            translator 'shared.done_editing', 'Done Editing Forum'
+            H1 style: {fontSize: 18}, 'Ooops!'
 
-
-          if subdomain.errors?.length > 0
-            DIV 
-              style: 
-                borderRadius: 8
-                margin: 20
-                padding: 20
-                backgroundColor: '#FFE2E2'
-
-              H1 style: {fontSize: 18}, 'Ooops!'
-
-              for error in subdomain.errors
-                DIV 
-                  style: 
-                    marginTop: 10
-                  error
+            for error in subdomain.errors
+              DIV 
+                style: 
+                  marginTop: 10
+                error
 

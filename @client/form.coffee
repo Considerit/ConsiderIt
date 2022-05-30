@@ -363,6 +363,10 @@ window.WysiwygEditor = ReactiveComponent
         node = @editor.root
         removeStyles node
         my_data.html = getHTML()
+        
+      if my_data.html == "<p><br></p>"
+        my_data.html = ""
+
 
       save my_data
 

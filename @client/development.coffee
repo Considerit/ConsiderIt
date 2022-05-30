@@ -10,22 +10,25 @@ Development = ReactiveComponent
   displayName: 'Development'
 
   render : -> 
-
     if !@local.search 
       @local.search = ''
 
-    if !@local.only_with_activity?
-      @local.only_with_activity = true 
+    @local.only_with_activity ?= true 
 
-    subdomains = fetch('/subdomains').subs
-    return SPAN null if @is_waiting()
 
-    subdomains = (s for s in subdomains when (!@local.only_with_activity || s.activity) && (!@local.highlight_customized || s.customizations))
+    if @local.hover_top
+      subdomains = fetch('/subdomains').subs
+      return SPAN null if @is_waiting()
 
-    hues = getNiceRandomHues subdomains.length
-    
-    subdomains.sort((a,b) -> if a.name.toLowerCase() > b.name.toLowerCase() then 1 else -1)
+      subdomains = (s for s in subdomains when (!@local.only_with_activity || s.activity) && (!@local.highlight_customized || s.customizations))
 
+      hues = getNiceRandomHues subdomains.length
+      
+      # subdomains.sort((a,b) -> if a.name.toLowerCase() > b.name.toLowerCase() then 1 else -1)
+      subdomains.sort((a,b) -> b.activity - a.activity)
+
+
+    return DIV null if screencasting()
 
     DIV 
       style: 
@@ -85,7 +88,7 @@ Development = ReactiveComponent
                     display: 'inline-block'
                     listStyle: 'none'
                   A
-                    href: "/change_subdomain/#{sub.id}"
+                    href: "/change_subdomain/#{sub.name}"
                     'data-nojax': false
                     style: 
                       padding: "4px 8px"
@@ -117,7 +120,7 @@ Development = ReactiveComponent
         if next_idx >= subdomains.subs.length
           next_idx = 0
 
-        window.location = "/change_subdomain/#{subdomains.subs[next_idx].id}"
+        window.location = "/change_subdomain/#{subdomains.subs[next_idx].name}"
 
 
 

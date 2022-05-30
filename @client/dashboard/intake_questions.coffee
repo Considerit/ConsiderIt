@@ -52,7 +52,7 @@ question_index = (question) ->
   subdomain = fetch '/subdomain'
   qidx = null
   for q, idx in (subdomain.customizations.user_tags or [])
-    if q.self_report.question == question.self_report.question
+    if q.self_report?.question == question.self_report?.question
       qidx = idx
       break 
   qidx
@@ -123,10 +123,20 @@ window.IntakeQuestions = ReactiveComponent
         """
 
 
+      if permit('configure paid feature') < 0
+        UpgradeForumButton
+          big: true
+          text: "Upgrade to enable sign-up questions"
+
+
+
+
 
       DIV 
         style: 
           marginTop: 36
+          pointerEvents: if permit('configure paid feature') < 0 then 'none'
+          opacity: if permit('configure paid feature') < 0 then .4
 
         H2 
           style: 
@@ -189,6 +199,8 @@ window.IntakeQuestions = ReactiveComponent
       DIV 
         style: 
           marginTop: 36
+          pointerEvents: if permit('configure paid feature') < 0 then 'none'
+          opacity: if permit('configure paid feature') < 0 then .4
 
         LABEL 
           style: {}

@@ -11,7 +11,6 @@
 # - user questions
 
 require '../browser_location' # for loadPage
-require '../bubblemouth'
 require '../customizations'
 require '../shared'
 require '../modal'
@@ -44,7 +43,7 @@ window.AuthCallout = ReactiveComponent
           width: HOMEPAGE_WIDTH()
           margin: 'auto'
           padding: 12
-          backgroundColor: '#f1f1f1'
+          # backgroundColor: '#f1f1f1'
         
         DIV 
           style: 
@@ -152,6 +151,47 @@ window.AuthTransition = ReactiveComponent
 
     @local.logged_in_last_render = current_user.logged_in
 
+
+    if embedded_demo() && fetch('/subdomain').name == 'galacticfederation'
+      if auth.form == 'create account' 
+        id = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 15)
+        _.extend current_user, 
+          name: "temp"
+          email: "temp-#{id}@galacticfederation.gov"
+          password: "#{Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 15)}"
+          trying_to: 'create account'
+        save current_user
+
+        reset_key 'auth'
+      else if current_user.tags.federation_allegiance && current_user.name == 'temp'
+        allegiance = current_user.tags.federation_allegiance
+        id = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 15)
+        switch allegiance 
+          when 'Dark'
+            name = "Stormtrooper ##{id}"
+            email = "stormtrooper-#{id}@deathstar.org"
+            avatar_url = "https://d2rtgkroh5y135.cloudfront.net/system/avatars/287330/large/stormtrooper1.png"
+            break
+          when 'Light' 
+            name = "Ewok ##{id}"
+            email = "endorite-#{id}@endor.net"
+            avatar_url = "https://f.consider.it/galacticfederation/ewok.png"                  
+            break
+          when "Wouldn't you like to know"
+            name = "Wookiee ##{id}"
+            email = "kashyyyk-wook#{id}@oo.com"
+            avatar_url = 'https://f.consider.it/galacticfederation/wookiee.jpeg'
+            break
+          when 'Non-binary' 
+            name = "Rodian ##{id}"
+            email = "rodia-#{id}@bountyhuntersrus.com"
+            avatar_url = 'https://f.consider.it/galacticfederation/rodian.jpeg'
+            break
+
+        _.extend current_user, {name, email, avatar_url}
+        save current_user
+
+
     SPAN null
 
 
@@ -166,17 +206,17 @@ window.Auth = ReactiveComponent
     auth = fetch('auth')
 
     if auth.form == 'reset password'
-      ResetPassword()
+      ResetPassword @props
     else if auth.form == 'verify email'
-      VerifyEmail()
+      VerifyEmail @props
     else if auth.form == 'login'
-      Login()
+      Login @props
     else if auth.form == 'create account'
-      CreateAccount()
+      CreateAccount @props
     else if auth.form == 'create account via invitation'
       CreateAccount by_invitation: true
     else if auth.form == 'user questions'
-      HostQuestions()
+      HostQuestions @props
     else 
       SPAN null 
 
@@ -237,7 +277,7 @@ window.styles += """
   }
 
   .AUTH_body_wrapper {
-    padding: 3.5em 125px 4em 125px;
+    padding: 3.5em 105px 4em 90px;
     font-size: 16px;
     box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 0 100px rgb(255 255 255 / 40%);
     background-color: white;
@@ -322,16 +362,18 @@ window.AuthForm =
         loadPage '/'
       reset_key 'auth'
 
+
     DIV 
       className: 'AUTH'
 
-      DIV 
-        id: 'lightbox'
+      if !@props.no_modal
+        DIV 
+          id: 'lightbox'
 
       DIV
-        id: 'modal'
-        ref: 'dialog'
-        role: 'dialog'
+        id: if !@props.no_modal then 'modal'
+        ref: if !@props.no_modal then 'dialog'
+        role: if !@props.no_modal then 'dialog'
         'aria-labeledby': 'AUTH_task'
         'aria-describedby': if options.goal then 'AUTH_goal'
 
@@ -341,7 +383,7 @@ window.AuthForm =
           style:
             maxWidth: AUTH_WIDTH()
 
-          if !options.disallow_cancel
+          if !options.disallow_cancel && !@props.disallow_cancel
 
             BUTTON
               className: 'AUTH_cancel floating'

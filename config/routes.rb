@@ -23,7 +23,7 @@ ConsiderIt::Application.routes.draw do
 
   ######
   ## Development dashboard
-  get '/change_subdomain/:id' => 'developer#change_subdomain'
+  get '/change_subdomain/:name' => 'developer#change_subdomain'
 
   ###########
   # Third party oauth routes. These go before 
@@ -52,6 +52,14 @@ ConsiderIt::Application.routes.draw do
   get "/create_subdomain" => 'subdomain#create'
   post '/subdomain' => 'subdomain#create'
 
+  if APP_CONFIG[:product_page_installed]
+    # Stripe payments
+    get "/payments/successful" => 'product_page#stripe_successful'
+    get "/payments/failed" => 'product_page#stripe_failed'  
+    get "/payments/payment_intent" => 'product_page#stripe_create_payment_intent'    
+    get "/payments/public_key" => 'product_page#stripe_public'    
+  end 
+
   get "/login_via_saml" => 'current_user#login_via_saml'
 
   # SAML for Development
@@ -76,7 +84,6 @@ ConsiderIt::Application.routes.draw do
   resources :point, :only => [:create, :update, :destroy, :show]
   resources :opinion, :only => [:create, :update, :show]
   resources :client_error, :only => [:create]
-  match '/histogram/proposal/:id/:hash' => 'histogram#update', :via => [:put]
 
   resources :comment, :only => [:create, :show, :update, :destroy]
   get '/comments/:point_id' => 'comment#index'
@@ -86,16 +93,22 @@ ConsiderIt::Application.routes.draw do
   get '/subdomain' => 'subdomain#show'
   get '/subdomain/:id' => 'subdomain#show'
 
-  get '/points' => 'point#index'
-
   match '/subdomain' => 'subdomain#update', :via => [:put]
   get '/subdomains' => 'subdomain#index'
+
+
+
+  get '/points' => 'point#index'
 
   get '/translations' => 'translations#show'
   get '/translations/*subdomain' => 'translations#show'
   match '/translations' => 'translations#update', :via => [:put]
   match '/translations/*subdomain' => 'translations#update', :via => [:put]
 
+  if APP_CONFIG[:product_page_installed]
+    post "/contact_us" => 'product_page#contact'
+    get '/metrics' => 'product_page#metrics'
+  end
 
   match 'rename_forum' => 'subdomain#rename_forum', :via => [:post]
   match 'nuke_everything' => 'subdomain#nuke_everything', :via => [:put]
@@ -110,6 +123,8 @@ ConsiderIt::Application.routes.draw do
   # how to tell it to be like "/current_user"
   get 'current_user' => 'current_user#show'
   match 'current_user' => 'current_user#update', :via => [:put]
+
+  match 'current_user' => 'current_user#destroy', :via => [:delete]
 
   # This is for the special /opinion/current_user/234:
   match 'opinion/:id/:proposal_id' => 'opinion#show', :via => [:get, :put]

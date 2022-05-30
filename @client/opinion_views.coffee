@@ -100,11 +100,12 @@ window.get_participant_attributes = ->
           attributes.push 
             key: name
             name: tag.view_name or tag.name or tag.self_report?.question or name
-            pass: do(name) -> (u, value) -> 
+            pass: do(name, tag) -> (u, value) -> 
+              result = tag.compute?(u) or fetch(u).tags[name]
               if value?
-                fetch(u).tags[name] == value
+                result == value
               else 
-                fetch(u).tags[name]
+                result
             options: tag.self_report?.options or tag.options or (if (tag.self_report?.input or tag.input) == 'boolean' then [true, false])
             input_type: tag.self_report?.input
             continuous_value: tag.continuous_value
@@ -407,13 +408,16 @@ _activate_opinion_view = (view, view_type, replace_existing) ->
 
 
 
-date_option_changed = (activated) ->
-  date_toggle_state = fetch 'date_toggle_state'
+window.date_option_changed = (activated) ->
+  date_toggle_state = fetch 'opinion-date-filter'
+  tz_offset = new Date().getTimezoneOffset() * 60 * 1000
+
   pass = (u, opinion, proposal) -> 
     date = new Date(opinion.updated_at).getTime()
     now = Date.now()
 
     earliest = latest = null
+
     if activated.key != 'custom'
       clear_custom_date()
 
@@ -428,10 +432,8 @@ date_option_changed = (activated) ->
       if date_toggle_state.start
         earliest = date_toggle_state.start + tz_offset
 
-
       if date_toggle_state.end 
         latest = date_toggle_state.end + tz_offset
-
 
     (earliest == null || earliest <= date) && (latest == null || latest >= date) 
 
@@ -440,6 +442,7 @@ date_option_changed = (activated) ->
     salience: (u, opinion, proposal) -> if pass(u, opinion, proposal) then 1 else .1
     weight:   (u, opinion, proposal) -> if pass(u, opinion, proposal) then 1 else .1
     name: activated.key
+
 
   activate_opinion_date_filter view
 
@@ -462,7 +465,7 @@ default_date_options = ->
   ]
 
 clear_custom_date = ->
-  date_toggle_state = fetch 'date_toggle_state'
+  date_toggle_state = fetch 'opinion-date-filter'
   date_toggle_state.start = null
   date_toggle_state.end = null
   save date_toggle_state
@@ -521,6 +524,8 @@ DateFilters = ->
               date_option_changed date_options[3]
               e.preventDefault()
 
+
+
 to_date_str = (ms) -> 
   ms += new Date().getTimezoneOffset() * 60 * 1000
   date = new Date(ms)
@@ -529,6 +534,59 @@ to_date_str = (ms) ->
   day = ("0" + date.getDate()).slice(-2)
   "#{year}-#{month}-#{day}"
 
+
+
+# RegistrationFilter = ->
+#   opinion_views = fetch 'opinion_views'
+
+#   date_toggle_state = fetch 'opinion-date-filter'
+#   date_options = default_date_options()
+#   DIV 
+#     className: 'grays' # for toggle buttons
+
+#     ToggleButtons date_options, date_toggle_state
+
+#     if date_toggle_state.active == 'custom'
+
+#       DIV 
+#         className: 'opinion-date-filter'
+
+#         SPAN 
+#           style: 
+#             position: 'relative'
+
+#           LABEL null,
+#             translator 'opinion_views.date_from', 'From:'
+#           INPUT 
+#             type: 'date'
+#             id: 'start'
+#             name: 'opinion-start'
+#             defaultValue: if date_toggle_state.start then to_date_str date_toggle_state.start
+#             onChange: (e) ->
+#               date_toggle_state.start = new Date(e.target.value).getTime()
+#               save date_toggle_state
+#               date_option_changed date_options[3]            
+#               e.preventDefault()
+
+#         SPAN 
+#           style: 
+#             position: 'relative'
+#             paddingLeft: 8
+
+#           LABEL null,
+#             translator 'opinion_views.date_to', 'To:'
+
+            
+#           INPUT 
+#             type: 'date'
+#             id: 'end'
+#             name: 'opinion-end'
+#             defaultValue: if date_toggle_state.end then to_date_str date_toggle_state.end
+#             onChange: (e) ->
+#               date_toggle_state.end = new Date(e.target.value).getTime()
+#               save date_toggle_state
+#               date_option_changed date_options[3]
+#               e.preventDefault()
 
 
 
@@ -601,7 +659,7 @@ OpinionViews = ReactiveComponent
 
 
     is_admin = fetch('/current_user').is_admin
-    show_others = !customization('hide_opinions') || is_admin
+    show_others = (!customization('hide_opinions') || is_admin) && !@props.disable_switching
     show_all_not_available = !show_others
 
     view_buttons = [ 
@@ -614,6 +672,7 @@ OpinionViews = ReactiveComponent
       {
         key: 'you'
         label: translator 'opinion_views.view_buttons_you', 'Just you'
+        disabled: @props.disable_switching
         callback: ->
           clear_all()
           toggle_opinion_filter just_you_filter
@@ -725,7 +784,7 @@ OpinionViews = ReactiveComponent
                 className: 'custom_view_triangle'
                 style: 
                   left: triangle_left
-                  bottom: if browser.is_mobile then -27 else -26
+                  bottom: if browser.is_mobile then -27 else -25
                 dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="#979797"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
 
 
@@ -823,6 +882,9 @@ OpinionViews = ReactiveComponent
 get_participant_attributes_with_defaults = ->
   attributes = get_participant_attributes()
   attributes.unshift {key: 'date', icon: date_icon, name: translator('opinion_views.views_date', 'Date'), render: DateFilters}
+
+  # attributes.unshift {key: 'registered', icon: date_icon, name: translator('opinion_views.views_registered', 'Registered'), options: ['true', 'false']}
+
   attributes
 
 
@@ -967,6 +1029,7 @@ InteractiveOpinionViews = ReactiveComponent
                     display: 'inline-block'
 
                   BUTTON
+                    "data-attribute": attr_name
                     title: if shortened then attribute.name
                     className: "filter opinion_view_button #{if opinion_views_ui.activated_attributes[attribute.key] then 'active' else ''}"
                     onClick: -> toggle_attribute_visibility(attribute)
@@ -1013,8 +1076,11 @@ InteractiveOpinionViews = ReactiveComponent
 
                     do (val) => 
                       LI 
+                        "data-attribute": attribute.name
+                        "data-value": val
                         style: 
                           display: 'inline-block'
+
                         LABEL 
                           className: "attribute_value_selector"
                           title: if shortened then val 
@@ -1054,7 +1120,7 @@ InteractiveOpinionViews = ReactiveComponent
           if opinion_views_ui.group_by == attr.key 
             cur_val = idx
         DIV 
-          className: 'opinion_view_row'
+          className: 'opinion_view_row color_code'
           style: 
             borderTop: '1px dotted #DEDDDD' 
 
@@ -1129,10 +1195,12 @@ InteractiveOpinionViews = ReactiveComponent
           for weight in get_weights()
             do (weight) ->
               LI 
+                key: weight.key
                 style: 
                   marginRight: 8
                   marginBottom: 1
                   display: 'inline-block'
+                'data-key': weight.key
 
                 BUTTON 
                   'data-tooltip': if !browser.is_mobile then weight.label
@@ -1200,6 +1268,7 @@ NonInteractiveOpinionViews = ReactiveComponent
 
           else             
             filter_str = "#{to_date_str(date_toggle_state.start)} - #{to_date_str(date_toggle_state.end)}" 
+        
         else 
           filter_str = default_date_options().find((o) -> o.key == date_toggle_state.active).label
 
@@ -1667,10 +1736,10 @@ styles += """
   .toggle_buttons li {
     display: inline-block;
   }
-  button.sort_proposals {
+  [data-widget="DropMenu"].bluedrop button.dropMenu-anchor {
     border-radius: 8px;
   }
-  button.sort_proposals, .toggle_buttons button {
+  [data-widget="DropMenu"].bluedrop button.dropMenu-anchor, .toggle_buttons button {
     background-color: white;
     color: #{focus_blue};
     font-weight: 600;
@@ -1693,13 +1762,13 @@ styles += """
     margin: 0;
   }
 
-  button.sort_proposals, .toggle_buttons .active button {
+  [data-widget="DropMenu"].bluedrop button.dropMenu-anchor, .toggle_buttons .active button {
     background-color: #{focus_blue};
     color: white;
   }
 
   .toggle_buttons button[disabled] {
-    opacity: .45;
+    opacity: .4;
     cursor: default;
   }
 
@@ -1743,3 +1812,60 @@ window.ToggleButtons = (items, view_state, style) ->
             item.label
 
 window.OpinionViews = OpinionViews
+
+
+
+###########################################################################
+# Simulator tries to play back participation in the forum over time
+#
+
+window.passes_running_timelapse_simulation = (dt) ->
+  !window.running_timelapse_simulation? || (new Date(dt).getTime() < window.running_timelapse_simulation)
+
+window.participation_timelapse = (step, interval) -> 
+  filter_out = fetch 'filtered'
+  interval ?= 500
+  step ?= 1 * 60 * 60 * 1000
+  
+  proposals = fetch '/proposals'
+
+  if !proposals.proposals 
+    setTimeout ->
+      simulate_participation()
+    , 100
+    return 
+
+  users = {}
+  last = 0 
+  first = Infinity
+
+  for prop in proposals.proposals
+    for o in prop.opinions
+      t = new Date(o.created_at or o.updated_at).getTime()
+      if t > last 
+        last = t
+      if t < first 
+        first = t
+
+  date_options = default_date_options()
+  date_toggle_state = fetch 'opinion-date-filter'
+  change_date = (end) -> 
+    date_toggle_state.end = end
+    save date_toggle_state
+    date_option_changed date_options[3] 
+           
+
+  end = first
+
+  simulator = setInterval ->    
+
+    change_date(end)
+
+    end += step
+    window.running_timelapse_simulation = end 
+
+    if end > last
+      clearInterval simulator
+      delete window.running_timelapse_simulation
+
+  , interval

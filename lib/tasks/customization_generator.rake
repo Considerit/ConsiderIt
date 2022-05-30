@@ -157,7 +157,7 @@ namespace :customizations do
 
       config["list/#{name}"] = list 
 
-      section = row['section']
+      section = row['section'] || row['tab'] || row['page']
       if section 
         if !sections.has_key? section 
           sections[section] = []

@@ -13,9 +13,10 @@ fetch 'decisionboard',
 # TODO: eliminate
 window.get_proposal_mode = -> 
   loc = fetch('location')
+
   if loc.url == '/'
     return null
-  else if loc.query_params?.results || TWO_COL()
+  else if (loc.query_params?.results && loc.query_params?.results != 'false') || TWO_COL()
     'results' 
   else 
     'crafting'
@@ -195,26 +196,26 @@ window.Proposal = ReactiveComponent
               fontWeight: 500
               textAlign: 'center'
               marginTop: 18
+              display: if embedded_demo() then 'none'
 
             if mode == 'crafting' || (just_you && current_user.logged_in)
               TRANSLATE
                 id: "engage.opinion_header"
                 'What do you think?'
             else 
-              TRANSLATE
-                  id: "engage.opinion_header_results"
-                  'Opinions about this proposal'
+              list_i18n().opinion_header("list/#{@proposal.cluster}")
 
 
+        if !embedded_demo()      
+          OpinionViews
+            more_views_positioning: 'centered'
+            disable_switching: mode == 'crafting'
+            style: 
+              width: if get_participant_attributes().length > 0 then HOMEPAGE_WIDTH() else Math.max(660,PROPOSAL_HISTO_WIDTH()) # REASONS_REGION_WIDTH()
+              margin: '8px auto 20px auto'
+              position: 'relative'
 
-        OpinionViews
-          more_views_positioning: 'centered'
-          style: 
-            width: if get_participant_attributes().length > 0 then HOMEPAGE_WIDTH() else Math.max(660,PROPOSAL_HISTO_WIDTH()) # REASONS_REGION_WIDTH()
-            margin: '8px auto 20px auto'
-            position: 'relative'
-
-        if mode != 'crafting'
+        if mode != 'crafting' && !embedded_demo()
           DIV 
             style: 
               width: PROPOSAL_HISTO_WIDTH()
@@ -227,7 +228,7 @@ window.Proposal = ReactiveComponent
                 zIndex: 1
                 left: '100%'
                 marginLeft: 30
-                top: if fetch('histogram-dock').docked then 50 else 170
+                top: if fetch('histogram-dock').docked then 50 else if screencasting() then 120 else 170
 
               HistogramScores
                 proposal: @proposal
@@ -249,7 +250,7 @@ window.Proposal = ReactiveComponent
                   position: 'absolute'
                   left: 0 
                   top: 0
-                  zIndex: 99999
+                  zIndex: 99998
                   backgroundColor: 'rgba(255,255,255,.8)'
                 DIV 
                   style: 
@@ -282,7 +283,7 @@ window.Proposal = ReactiveComponent
                 proposal: @proposal
                 opinions: opinionsForProposal(@proposal)
                 width: PROPOSAL_HISTO_WIDTH()
-                height: if fetch('histogram-dock').docked then 50 else 170
+                height: if fetch('histogram-dock').docked then 50 else if screencasting() then 120 else 170
                 enable_individual_selection: true
                 enable_range_selection: true
                 draw_base: if fetch('histogram-dock').docked then true else false
@@ -378,7 +379,7 @@ window.Proposal = ReactiveComponent
 
                 DIV 
                   style: 
-                    height: if !show_all_points then 500
+                    height: if !show_all_points then 750
 
                   PointsList 
                     key: 'community_cons'
@@ -414,6 +415,7 @@ window.Proposal = ReactiveComponent
 
               if !show_all_points
                 BUTTON 
+                  id: "show_all_reasons"
                   style: 
                     backgroundColor: "#eee"
                     padding: '12px 0'
@@ -438,20 +440,63 @@ window.Proposal = ReactiveComponent
                     "Show All Reasons"
 
 
-      if mode == 'results'
-        w = HOMEPAGE_WIDTH()
-        DIV   
+      if mode == 'results' # && !embedded_demo()
+        w = HOMEPAGE_WIDTH() + LIST_PADDING() * 2
+
+        DIV 
+          className: "main_background navigation_wrapper #{if ONE_COL() then 'one-col' else ''}"
           style: 
-            margin: '70px auto 48px auto'
-            width: w
+            marginTop: if !show_all_points then 88
+            position: 'relative'
+
+          STYLE 
+            dangerouslySetInnerHTML: __html: """
+              .navigation_wrapper:not(.one-col)::after {
+                content: ' ';
+                position: absolute;
+                left: 0;
+                width: 100%;
+                top: -50px;
+                z-index: 10;
+                display: block;
+                height: 50px;
+                background-size: 50px 100%;
+                background-image: linear-gradient(135deg, #{main_background_color} 25%, transparent 25%), linear-gradient(225deg, #{main_background_color} 25%, transparent 25%);
+                background-position: 0 0;
+                transform: scaleY(-1);
+              }
+
+              .navigation_wrapper:not(.one-col)::before {
+                content: ' ';
+                position: absolute;
+                left: 0;
+                width: 100%;
+                top: -51px;
+                z-index: 9;
+                display: block;
+                height: 51px;
+                background-size: 50px 100%;
+                background-image: linear-gradient(135deg, #babdc3 25%, transparent 25%), linear-gradient(225deg, #babdc3 25%, transparent 25%);
+                background-position: 0 0;
+                transform: scaleY(-1);
+              }
+            """
 
 
-          (customization('ProposalNavigation') or GroupedProposalNavigation) # or NextProposals)
-            width: w
-            proposal: @proposal
+
+          DIV   
+            style: 
+              margin: '32px auto 0px auto'
+              paddingBottom: 48
+              width: w
 
 
-      if edit_mode && browser.is_mobile
+            (customization('ProposalNavigation') or GroupedProposalNavigation) # or NextProposals)
+              width: w
+              proposal: @proposal
+
+
+      if edit_mode && browser.is_mobile && !embedded_demo()
         # full screen edit point mode for mobile
         valence = if edit_mode in ['community_pros', 'your_pro_points'] 
                     'pros' 
@@ -752,7 +797,7 @@ DecisionBoard = ReactiveComponent
 
               
 
-        if your_opinion.key && permit('update opinion', @proposal, your_opinion) > 0
+        if your_opinion.key && permit('update opinion', @proposal, your_opinion) > 0 && get_proposal_mode() == 'crafting'
           remove_opinion = -> 
             your_opinion.stance = 0
             your_opinion.point_inclusions = []                   
@@ -768,7 +813,7 @@ DecisionBoard = ReactiveComponent
               className:'cancel_opinion_button primary_cancel_button'
               onClick: remove_opinion
 
-              translator "engage.remove_my_opinion", 'Remove my opinion'
+              translator "engage.remove_my_opinion", 'Remove your opinion'
 
 
 
@@ -1013,6 +1058,10 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
     filtered = true
     opinions = get_opinions_for_proposal opinions, proposal
 
+  if running_timelapse_simulation?
+    opinions = (o for o in opinions when passes_running_timelapse_simulation(o.created_at or o.updated_at))
+  
+
 
   points = (pnt for pnt in points when pnt.is_pro == (valence == 'pros') )
 
@@ -1067,9 +1116,9 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
 
     # Sort points based on resonance with selected users, or custom sort_field
     sort = (pnt) ->
-      if filtered
+      if filtered || running_timelapse_simulation?
         -point_inclusions_per_point[pnt.key] 
-      else
+      else 
         -pnt[sort_field]
 
 
@@ -1166,6 +1215,8 @@ PointsList = ReactiveComponent
         'aria-labelledby': @local.key.replace('/','-')
         if points.length > 0 || @props.rendered_as == 'decision_board_point'
           for point in points
+            continue if !passes_running_timelapse_simulation(point.created_at)
+
             if @props.points_editable && \
                point.key in your_points.editing_points && \
                !browser.is_mobile
@@ -1182,13 +1233,21 @@ PointsList = ReactiveComponent
                 enable_dragging: @props.points_draggable
 
         else if points.length == 0 && @props.rendered_as == 'community_point' && mode == "results"
+          opinion_views = fetch 'opinion_views'
+          none_given = opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected          
+
           DIV 
             style: 
               fontStyle: 'italic'
               textAlign: 'center'
               color: '#777'
               marginLeft: -20
-            "Be the first to add a #{get_point_label(@props.valence.substring(0, @props.valence.length - 1), @proposal)}"
+
+            if none_given
+              "No #{get_point_label(@props.valence.substring(0, @props.valence.length - 1) + 's', @proposal)} given"
+
+            else               
+              "Be the first to add a #{get_point_label(@props.valence.substring(0, @props.valence.length - 1), @proposal)}"
 
 
       if @props.drop_target && permit('create point', @proposal) > 0

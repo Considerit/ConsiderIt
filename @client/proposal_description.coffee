@@ -47,7 +47,7 @@ window.ProposalDescription = ReactiveComponent
         # background: "linear-gradient(0deg, rgb(255, 255, 255), rgb(236, 236, 236), rgb(255, 255, 255))"
 
     anonymized = !customization('show_proposer_icon', "list/#{proposal.cluster}") || customization('anonymize_everything')
-    show_proposal_meta_data = customization('show_proposal_meta_data')
+    show_proposal_meta_data = customization('show_proposal_meta_data') && !embedded_demo()
 
 
     list_key = "list/#{proposal.cluster or 'proposals'}"
@@ -73,10 +73,32 @@ window.ProposalDescription = ReactiveComponent
 
 
 
+    title_block_style = 
+      width: HOMEPAGE_WIDTH()
+      position: 'relative'
+      margin: 'auto'
+      padding: "24px 36px 12px 36px"
+      marginBottom: 18 
+      backgroundColor: considerit_gray #'white'
+      boxShadow: "0 8px 6px -2px rgb(0 0 0 / 15%)" #"0 1px 3px rgba(0,0,0,.3)"
+      borderRadius: 8
+
+    if embedded_demo()
+      title_block_style = 
+        width: HOMEPAGE_WIDTH()
+        margin: 'auto'
+        textAlign: 'center'
 
 
     DIV 
       style: wrapper_style
+
+      if @local.editing
+        EditProposal 
+          proposal: proposal
+          done_callback: (e) =>
+            @local.editing = false
+            save @local
 
       DIV 
         style: 
@@ -84,6 +106,7 @@ window.ProposalDescription = ReactiveComponent
           #color: "#666"
           margin: "0 auto 8px auto"
           width: HOMEPAGE_WIDTH()
+          display: if embedded_demo() then 'none'
 
 
         SPAN 
@@ -114,15 +137,8 @@ window.ProposalDescription = ReactiveComponent
               ChevronRight(24)
 
       DIV           
-        style: 
-          width: HOMEPAGE_WIDTH()
-          position: 'relative'
-          margin: 'auto'
-          padding: "24px 36px 12px 36px"
-          marginBottom: 18 
-          backgroundColor: considerit_gray #'white'
-          boxShadow: "0 8px 6px -2px rgb(0 0 0 / 15%)" #"0 1px 3px rgba(0,0,0,.3)"
-          borderRadius: 8
+        style: title_block_style
+          
 
         if proposal.pic && !show_proposal_meta_data
           IMG 
@@ -191,10 +207,12 @@ window.ProposalDescription = ReactiveComponent
                     else
                       translator('anonymous', 'Anonymous')
 
-                  DIV 
-                    style: 
-                      color: '#666'
-                    prettyDate(proposal.created_at)
+                  if !screencasting()
+                    DIV 
+                      style: 
+                        color: '#666'
+
+                      prettyDate(proposal.created_at)
 
                 # TRANSLATE 
                 #   id: "engage.proposal_meta_data"
@@ -222,7 +240,7 @@ window.ProposalDescription = ReactiveComponent
             style:
               maxHeight: if @local.description_collapsed then @max_description_height
               overflowY: if @local.description_collapsed then 'hidden'
-
+              display: if embedded_demo() then 'none'
             if body 
 
               DIV 
@@ -256,7 +274,7 @@ window.ProposalDescription = ReactiveComponent
                   DIV dangerouslySetInnerHTML:{__html: body}
 
 
-          if @local.description_collapsed
+          if @local.description_collapsed && !embedded_demo()
             BUTTON
               id: 'expand_full_text'
               style:
@@ -287,26 +305,31 @@ window.ProposalDescription = ReactiveComponent
 
 
 
-        if permit('update proposal', proposal) > 0
+        if permit('update proposal', proposal) > 0 && !screencasting() && !embedded_demo()
           DIV
             style: 
               marginTop: 5
 
 
-            A 
-              href: "#{proposal.key}/edit"
+            BUTTON 
+              className: 'like_link'              
+              onClick: (e) => 
+                @local.editing = true 
+                save @local
+                e.stopPropagation()
+                e.preventDefault()
+
               style:
                 marginRight: 10
                 color: '#999'
-                border: 'none'
-                padding: 0
+                fontWeight: 600
+
               TRANSLATE 'engage.edit_button', 'edit'
 
             if permit('delete proposal', proposal) > 0
               BUTTON
                 className: 'like_link'
                 style:
-                  marginRight: 10
                   color: '#999'
                   fontWeight: 600
 

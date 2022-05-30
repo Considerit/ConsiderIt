@@ -2,13 +2,16 @@
 # Colors
 
 
-window.focus_blue = '#2478CC' #'#2196F3' # '#2478CC'
+window.focus_blue = '#456ae4' #2478CC' #'#2196F3' # '#2478CC'
 window.logo_red = "#B03A44"
 window.considerit_red = "#df6264"
 window.default_avatar_in_histogram_color = '#999'
 window.considerit_gray = '#f6f7f9'
-window.selected_color = "#e316ae" # magenta
+# window.selected_color = "#e316ae" # magenta
+window.selected_color = '#DA4570' #pinkish red
+window.upgrade_color = '#16a1e3'
 window.attention_orange = "#fb7e26"
+window.main_background_color = '#f6f7f9'
 
 window.parseCssRgb = (css_color_str) ->
   test = document.createElement('div')

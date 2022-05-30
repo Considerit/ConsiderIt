@@ -29,10 +29,10 @@ window.styles += """
 }
 
 #modal-body {
-  padding: 3.5em 125px 4em 125px;
+  padding: 2.5em 125px 3.5em 125px;
   font-size: 16px;
   box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 0 100px rgb(255 255 255 / 40%);
-  background-color: #f1f1f1;
+  background-color: white; /* #f1f1f1; */
   position: relative;
   border-radius: 16px;
 }
@@ -117,6 +117,8 @@ window.Modal =
       overflow: 'hidden'
       position: 'fixed'
       top: "-#{@scroll_Y}px"
+      width: '100vw'
+
 
 
 
@@ -132,6 +134,7 @@ window.Modal =
       overflow: null
       position: null
       top: 0
+      width: null
 
     # restore scroll position
     window.scroll(0, @scroll_Y)

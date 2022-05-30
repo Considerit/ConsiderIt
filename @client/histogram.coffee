@@ -183,11 +183,19 @@ window.Histogram = ReactiveComponent
     proposal = fetch @props.proposal
 
     opinion_views = fetch 'opinion_views'
-    {weights, salience, groups} = compose_opinion_views @props.opinions, proposal
+
+    opinions = @props.opinions
+
+    if running_timelapse_simulation?
+      opinions = (o for o in opinions when passes_running_timelapse_simulation(o.created_at or o.updated_at))
+    
+
+
+    {weights, salience, groups} = compose_opinion_views opinions, proposal
     @weights = weights
     @salience = salience 
     @groups = groups
-    @opinions = opinions = get_opinions_for_proposal @props.opinions, proposal, weights
+    @opinions = opinions = get_opinions_for_proposal opinions, proposal, weights
     @opinions.sort (a,b) -> a.stance - b.stance
 
     histocache_key = @histocache_key()
@@ -225,6 +233,7 @@ window.Histogram = ReactiveComponent
 
 
     histo_height = @props.height + REGION_SELECTION_VERTICAL_PADDING
+    
     histogram_props = 
       tabIndex: if !@props.backgrounded then 0
 

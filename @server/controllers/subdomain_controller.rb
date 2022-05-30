@@ -7,7 +7,7 @@ class SubdomainController < ApplicationController
 
   def index 
     ActsAsTenant.without_tenant do 
-      subdomains = Subdomain.where('name != "homepage"').map {|s| {:id => s.id, :name => s.name, :customizations => s.customizations, :activity => s.proposals.count > 1 || s.opinions.published.count > 1 || s.points.published.count > 0}}
+      subdomains = Subdomain.where('name != "homepage"').map {|s| {:id => s.id, :name => s.name, :customizations => s.customizations, :activity => s.points.published.count} }
       render :json => [{
         key: '/subdomains',
         subs: subdomains
@@ -50,7 +50,7 @@ class SubdomainController < ApplicationController
       errors.push "You must specify a forum name"
     end 
 
-    existing = Subdomain.find_by_name(subdomain)
+    existing = Subdomain.find_by_name(subdomain) || ['aeb', 'cs', 'de', 'en', 'es', 'fr', 'heb', 'hu', 'mi', 'nl', 'pt', 'sk'].index(subdomain) || subdomain.start_with?('oauth-')
     if existing
       errors.push "That forum already exists. Please choose a different name."
     end 
@@ -67,55 +67,121 @@ class SubdomainController < ApplicationController
       roles['admin'].push "/user/#{current_user.id}"
       roles['visitor'].push "*"
       new_subdomain.roles = roles
+      new_subdomain.created_by = current_user.id
 
       if params[:sso_domain]
         new_subdomain.SSO_domain = params[:sso_domain]
       end
+
+      if (params[:upgrade] && current_user.paid_forums > Subdomain.where(:created_by => current_user).where("plan > 0").count) || (Rails.env == 'development' && params[:skip_seeding])
+        new_subdomain.plan = 1
+      end 
+
       new_subdomain.save
 
       set_current_tenant new_subdomain
 
-      # Seed a new proposal
-      proposal = Proposal.new({
-        subdomain_id: new_subdomain.id, 
-        slug: 'considerit_can_help', 
-               # if you change the slug, be sure to update the 
-               # welcome_new_customer email template
-        name: 'Consider.it can help me',
-        description: '',
-        user: current_user,
-        cluster: 'Test question',
-        active: true,
-        published: true, 
-        moderation_status: 1,
-        roles: {
-          "editor": ["/user/#{current_user.id}"],
-          "participant":["*"],
-          "observer":["*"]
-        }
-      })
-      proposal.save
+      if !params[:skip_seeding]
 
-      opinion = Opinion.create!({
-        published: true,         
-        user: current_user,
-        subdomain_id: new_subdomain.id, 
-        proposal: proposal,
-        stance: 0.0,
-        point_inclusions: []
-      })
+        # create a sample list
+        # customizations = {
+        #   "list/initial": {
+        #     "list_title": "How do you want Consider.it to help you?",
+        #     "list_description": "Experiment with the proposals in this list however you want. When you’re done, you can delete the entire proposal list via the gear icon in the upper right.",
+        #     "list_category": "",
+        #     "list_opinions_title": "",
+        #     "slider_pole_labels": {
+        #       "support": 'Important to me',
+        #       "oppose": 'Unimportant'
+        #     },
+        #     "show_proposer_icon": false
+        #   }
+        # }
+
+        customizations = {
+          "list/initial": {
+            "list_title": "What are your favorite ice cream flavors?",
+            "list_description": "Experiment with the proposed flavors however you want. When you’re done, you can delete the entire proposal list via the gear icon in the upper right.",
+            "list_item_name": "flavor",
+            "list_opinions_title": "",
+            "slider_pole_labels": {
+              "support": 'Yummy',
+              "oppose": 'Yucky'
+            }
+          }
+        }
+
+        new_subdomain.customizations = customizations
+        new_subdomain.save
+
+         # Seed new proposals in sample list       
+        # proposals = ['Collect feedback from many stakeholders', 
+        #              'Help me make decisions with peers', 
+        #              'Talk with peers about things we care about', 
+        #              'Help people get on the same page', 
+        #              'Something else']
+
+        proposals = [
+          {name: 'Vanilla', img: "https://f.consider.it/icecreams/vanilla.jpeg" },
+          {name: 'Chocolate', img: "https://f.consider.it/icecreams/chocolate.jpeg" },
+          {name: 'Cookies \'n Cream', img: "https://f.consider.it/icecreams/cookies-n-cream.jpeg" },
+          {name: 'Mint chocolate chip', img: "https://f.consider.it/icecreams/mint-chocolate-chip.jpeg" },
+          {name: 'Salted caramel', img: "https://f.consider.it/icecreams/salted-caramel.jpeg" },
+          {name: 'Eggnog', img: "https://f.consider.it/icecreams/eggnog.jpeg" }
+        ]
+
+
+        proposals.each do |p|
+          proposal_name = p[:name]
+          img = p[:img]
+
+          proposal = Proposal.new({
+            subdomain_id: new_subdomain.id, 
+            slug: proposal_name.gsub(' ', '-').downcase,
+            name: proposal_name,
+            description: '',
+            user: current_user,
+            cluster: 'initial',
+            active: true,
+            published: true, 
+            moderation_status: 1,
+            roles: {
+              "editor": ["/user/#{current_user.id}"]
+            }
+          })
+          if img 
+            proposal.pic = open(img)
+          end
+          proposal.save
+
+          opinion = Opinion.create!({
+            published: true,         
+            user: current_user,
+            subdomain_id: new_subdomain.id, 
+            proposal: proposal,
+            stance: 0.0
+          })
+        end 
+
+
+      end
+      
       current_user.add_to_active_in new_subdomain
 
       set_current_tenant(Subdomain.find_by_name('homepage'))
 
       # Send welcome email to subdomain creator
-      UserMailer.welcome_new_customer(current_user, new_subdomain, params[:plan]).deliver_later
+      UserMailer.welcome_new_customer(current_user, new_subdomain).deliver_later
 
       if request.xhr?
         render :json => [{key: 'new_subdomain', name: new_subdomain.name, t: current_user.auth_token(new_subdomain)}]
       else 
         token = current_user.auth_token(new_subdomain)
-        redirect_to "#{request.protocol}#{new_subdomain.url}?u=#{current_user.email}&t=#{token}"
+        if Rails.env.development?
+          redirect_to "/?u=#{current_user.email}&t=#{token}&domain=#{new_subdomain.name}"
+        else
+          redirect_to "#{request.protocol}#{new_subdomain.url}?u=#{current_user.email}&t=#{token}"
+        end
       end
     end
   end

@@ -11,6 +11,14 @@ window.DataDash = ReactiveComponent
     else 
       tables = ['Proposals']
 
+    paid = permit('configure paid feature') > 0
+
+    query = ''
+    user_tags = customization 'user_tags'
+    if user_tags
+
+      query = "?#{(v.key for v in user_tags).join('=1&')}" 
+
     DIV null, 
 
       if current_user.is_super_admin
@@ -32,58 +40,55 @@ window.DataDash = ReactiveComponent
             "Delete all data on this forum"
       
 
-      if subdomain.plan || current_user.is_super_admin
-        query = ''
-        user_tags = customization 'user_tags'
-        if user_tags
+      if !paid
+        UpgradeForumButton
+          big: true
+          text: "Upgrade to enable data import and export"
 
-          query = "?#{(v.key for v in user_tags).join('=1&')}" 
+      FORM 
+        action: "/dashboard/export#{query}"
+        method: 'post'
+        style: 
+          pointerEvents: if !paid then 'none'
+          opacity: if !paid then .4
+
+        INPUT 
+          type: 'hidden'
+          name: 'authenticity_token'
+          value: current_user.csrf
+
+        H4
+          style: 
+            fontSize: 20
+            marginBottom: 12
+
+          "Export data from your forum"
+
+        DIV 
+          className: 'explanation'
+          "A download will begin in a couple seconds after hitting export. The zip file contains four spreadsheets: opinions, points, proposals, and users."
+
+        BUTTON
+          type: 'submit'
+          className: 'btn' 
+          style: 
+            marginTop: 18
+            fontSize: 20
+
+          'Export'
 
 
-        FORM 
-          action: "/dashboard/export#{query}"
-          method: 'post'
-
-          INPUT 
-            type: 'hidden'
-            name: 'authenticity_token'
-            value: current_user.csrf
-
-          H4
-            style: 
-              fontSize: 20
-              marginBottom: 12
-
-            "Export data from your forum"
-
-          DIV 
-            className: 'explanation'
-            "A download will begin in a couple seconds after hitting export. The zip file contains four spreadsheets: opinions, points, proposals, and users."
-
-          BUTTON
-            type: 'submit'
-            className: 'btn' 
-            style: 
-              marginTop: 18
-              fontSize: 20
-
-            'Export'
 
 
-      else 
-        DIV style: {fontStyle: 'italic'},
-          "Data export is only available for paid plans. Contact "
-          A 
-            href: 'mailto:hello@consider.it'
-            style: 
-              textDecoration: 'underline'
-            'hello@consider.it'
-          ' to inquire about a paid plan.'
+
 
 
       DIV 
         style: 
           marginTop: 24
+          pointerEvents: if !paid then 'none'
+          opacity: if !paid then .4
+
 
         H4
           style: 

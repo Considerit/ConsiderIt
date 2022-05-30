@@ -38,6 +38,31 @@ styles += """
 
 """
 
+styles += """
+  [data-widget="CollapsedProposal"] .metadata {
+    font-size: 12px;
+    color: #555;
+    margin-top: 6px;
+  }
+
+  [data-widget="CollapsedProposal"] .metadata .separated {
+    padding-right: 4px;
+    margin-right: 12px;
+    font-weight: 400;
+  }
+
+  [data-widget="CollapsedProposal"] .metadata .separated.give-your-opinion {
+    text-decoration: none;
+    background-color: #f7f7f7;
+    border-radius: 8px;
+    padding: 4px 10px;
+    border: 1px solid #eee;
+    box-shadow: 0 1px 1px rgba(160,160,160,.8);
+    white-space: nowrap;
+  }
+
+"""
+
 pad = (num, len) -> 
   str = num
   dec = str.split('.')
@@ -79,7 +104,7 @@ window.CollapsedProposal = ReactiveComponent
 
     icons = customization('show_proposer_icon', proposal, subdomain) && !@props.hide_icons && !customization('anonymize_everything')
     slider_regions = customization('slider_regions', proposal, subdomain)
-    show_proposal_scores = !@props.hide_scores && customization('show_proposal_scores', proposal, subdomain)
+    show_proposal_scores = !@props.hide_scores && customization('show_proposal_scores', proposal, subdomain) && WINDOW_WIDTH() > 955
 
     opinions = opinionsForProposal(proposal)
 
@@ -117,6 +142,7 @@ window.CollapsedProposal = ReactiveComponent
 
     LI
       key: proposal.key
+      "data-name": slugify(proposal.name)
       id: 'p' + (proposal.slug or "#{proposal.id}").replace('-', '_')  # Initial 'p' is because all ids must begin 
                                            # with letter. seeking to hash was failing 
                                            # on proposals whose name began with number.
@@ -137,18 +163,41 @@ window.CollapsedProposal = ReactiveComponent
         if draw_slider && !slider.is_moving
           @local.hover_proposal = null; save @local
 
+      if @local.editing
+        EditProposal 
+          proposal: proposal
+          done_callback: (e) =>
+            @local.editing = false
+            save @local
+
+      if @props.focused_on
+        DIV 
+          style: 
+            position: 'absolute'
+            left: -66
+            top: -8
+            backgroundColor: 'white'
+            padding: '8px 14px'
+            borderRadius: 8
+            fontSize: 36
+            color: '#666'
+
+          #dangerouslySetInnerHTML: __html: "#{TRANSLATE('engage.navigation_helper_current_location', 'You are here')} &rarr;"
+          dangerouslySetInnerHTML: __html: "&rarr;"
+
+
       DIV 
         style: 
           width: col_sizes.first 
           display: 'inline-block'
           verticalAlign: 'top'
           position: 'relative'
-          marginLeft: if icons then 40 + 18
+          marginLeft: if icons then 40 + 18 else 58
 
         DIV 
           style: 
             position: 'absolute'
-            left: if icons then -40 - 18
+            left: if icons then -40 - 18 else -58
             top: if icons then 4
 
 
@@ -197,8 +246,8 @@ window.CollapsedProposal = ReactiveComponent
               key: 'bullet'
               style: 
                 position: 'relative'
-                left: -22
-                top: 3
+                left: 13
+                top: 0
               width: 8
               viewBox: '0 0 200 200' 
               CIRCLE cx: 100, cy: 100, r: 80, fill: '#000000'
@@ -233,12 +282,11 @@ window.CollapsedProposal = ReactiveComponent
               className: 'description_on_homepage'
               dangerouslySetInnerHTML: __html: desc  
 
+
+
+
           DIV 
-            style: 
-              fontSize: 12
-              color: '#555' #'#999'
-              marginTop: 4
-              #fontStyle: 'italic'
+            className: 'metadata'
 
             if customization('proposal_meta_data', null, subdomain)?
               customization('proposal_meta_data', null, subdomain)(proposal)
@@ -246,66 +294,56 @@ window.CollapsedProposal = ReactiveComponent
             else if !@props.hide_metadata && customization('show_proposal_meta_data', null, subdomain)
               show_author_name_in_meta_data = !icons && (editor = proposal_editor(proposal)) && editor == proposal.user && !customization('anonymize_everything')
 
-              SPAN 
-                style: 
-                  paddingRight: 16
+              [
+                if !screencasting()
+                  SPAN 
+                    className: 'separated'
+                    style: 
+                      fontFamily: mono_font()
 
-                if !show_author_name_in_meta_data
-                  TRANSLATE 'engage.proposal_metadata_date_added', "Added: "
-                
-                prettyDate(proposal.created_at)
+                    # if !show_author_name_in_meta_data
+                    #   TRANSLATE 'engage.proposal_metadata_date_added', "Added: "
+                    
+                    prettyDate(proposal.created_at)
 
-
-                SPAN 
-                  style: 
-                    padding: '0 8px'
-                  '|'
 
                 if show_author_name_in_meta_data
-                  [ 
-                    SPAN 
-                      style: {}
-                      TRANSLATE
-                        id: 'engage.proposal_author'
-                        name: fetch(editor)?.name 
-                        " by {name}"
+                  SPAN 
+                    className: 'separated'
+                    style: 
+                      fontFamily: mono_font()
 
-                    SPAN 
-                      style: 
-                        padding: '0 8px'
-                      '|'
-                  ]
-
-
+                    TRANSLATE
+                      id: 'engage.proposal_author'
+                      name: fetch(editor)?.name 
+                      " by {name}"
 
                 if customization('discussion_enabled', proposal, subdomain)
+                  [
                     A 
                       href: proposal_url(proposal)
+                      className: 'separated'
                       style: 
-                        #fontWeight: 500
-                        cursor: 'pointer'
-
+                        textDecoration: 'none'
+                        fontFamily: mono_font()
+                        whiteSpace: 'nowrap'                        
                       TRANSLATE
                         id: "engage.point_count"
                         cnt: proposal.point_count
 
-                        "{cnt, plural, one {# pro or con} other {# pros and cons}}"
+                        "{cnt, plural, one {# pro or con} other {# pros & cons}}"
 
-                      if proposal.active && permit('create point', proposal, subdomain) > 0
-                        [
-                          SPAN 
-                            style: 
-                              padding: '0 8px'
-                            '|'
+                    if proposal.active && permit('create point', proposal, subdomain) > 0 && WINDOW_WIDTH() > 955
 
-                          SPAN 
-                            style: 
-                              textDecoration: 'underline'
-                            TRANSLATE
-                              id: "engage.add_your_own"
+                      A 
+                        href: proposal_url(proposal)
+                        className: 'separated give-your-opinion'                          
+                        TRANSLATE
+                          id: "engage.add_your_own"
 
-                              "give your opinion"
-                        ]
+                          "give your opinion"
+                  ]
+              ]
 
 
 
@@ -315,6 +353,7 @@ window.CollapsedProposal = ReactiveComponent
                   padding: '1px 2px'
                   color: @props.category_color or 'black'
                   fontWeight: 500
+                  fontFamily: mono_font()
 
                 get_list_title "list/#{proposal.cluster}", true, subdomain
 
@@ -322,42 +361,46 @@ window.CollapsedProposal = ReactiveComponent
               SPAN 
                 style: 
                   padding: '0 16px'
-
+                  fontFamily: mono_font()
                 TRANSLATE "engage.proposal_closed.short", 'closed'
 
             else if opinion_publish_permission == Permission.INSUFFICIENT_PRIVILEGES
               SPAN 
                 style: 
                   padding: '0 16px'
-
+                  fontFamily: mono_font()
                 TRANSLATE "engage.proposal_read_only.short", 'read-only'
 
           if can_edit
             DIV
               style: 
                 visibility: if !@local.hover_proposal then 'hidden'
-                position: 'relative'
-                top: -2
 
-              A 
-                href: "#{proposal.key}/edit"
+              BUTTON 
+                className: 'like_link'              
+                onClick: (e) => 
+                  @local.editing = true 
+                  save @local
+                  e.stopPropagation()
+                  e.preventDefault()
+                  
                 style:
                   marginRight: 10
                   color: focus_color()
-                  backgroundColor: 'transparent'
                   padding: 0
                   fontSize: 12
+                  fontWeight: 600
                 TRANSLATE 'engage.edit_button', 'edit'
 
               if permit('delete proposal', proposal, subdomain) > 0
                 BUTTON
+                  className: 'like_link'
                   style:
                     marginRight: 10
                     color: focus_color()
-                    backgroundColor: 'transparent'
-                    border: 'none'
                     padding: 0
                     fontSize: 12
+                    fontWeight: 600
 
                   onClick: => 
                     if confirm('Delete this proposal forever?')
@@ -435,7 +478,9 @@ window.CollapsedProposal = ReactiveComponent
               your_opinion.published = true
 
               your_opinion.key ?= "/new/opinion"
-              save your_opinion
+              save your_opinion, ->
+                show_flash(translator('engage.flashes.opinion_saved', "Your opinion has been saved"))
+
               window.writeToLog 
                 what: 'move slider'
                 details: {proposal: proposal.key, stance: slider.value}
@@ -640,7 +685,6 @@ window.ProposalScoresPopover =  ReactiveComponent
       height: legend_color_size
       display: 'inline-block'
       boxShadow: "0 1px 2px 0 rgba(103,103,103,0.50), inset 0 -1px 2px 0 rgba(0,0,0,0.16)"
-
     separator_inserted = false 
 
     items = visible_groups.slice()
@@ -743,7 +787,9 @@ window.ProposalScoresPopover =  ReactiveComponent
             DIV 
               style: _.extend {}, group_avatar_style, 
                 backgroundColor: colors[group]
-                visibility: if insert_separator then 'hidden'        
+                visibility: if insert_separator then 'hidden'
+                minWidth: legend_color_size
+        
 
             DIV 
               style: 

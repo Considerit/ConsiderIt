@@ -48,7 +48,7 @@ window.ProfileMenu = ReactiveComponent
         zIndex: 999
         right: 30
         fontSize: 26
-        top: 17
+        top: if current_user.is_admin && (edit_forum.editing || loc.url.startsWith('/dashboard')) && permit('configure paid feature') < 0 then 57 else 17
 
 
 
@@ -126,7 +126,8 @@ window.ProfileMenu = ReactiveComponent
               bottom: 8
               paddingLeft: 27
               display: 'block'
-              whiteSpace: 'nowrap'  
+              whiteSpace: 'nowrap' 
+              fontWeight: 600 
 
             active_option_style: 
               color: 'black'
@@ -136,13 +137,14 @@ window.ProfileMenu = ReactiveComponent
           bg = if is_light then 'rgba(255,255,255,.4)' else 'rgba(0,0,0,.4)'
 
           settings = [{name: 'Forum Settings', url: '/dashboard/application'}, {name: 'Permissions & Roles', url: '/dashboard/roles'}]
-          if is_admin && (subdomain.plan || is_super)
-            settings.push {name: 'Sign-up Questions', url: '/dashboard/intake_questions'}
+          if is_admin
+            settings.push {name: 'Sign-up Questions', url: '/dashboard/intake_questions', paid: true}
 
           show_dash_modal = fetch 'show_dash_modal'
 
           DIV 
             style: 
+              marginTop: 48
               padding: '12px 24px'
               backgroundColor: bg
               fontSize: 14
@@ -166,7 +168,7 @@ window.ProfileMenu = ReactiveComponent
                   BUTTON
                     className: 'like_link'
                     style: 
-                      textDecoration: 'underline'
+                      # textDecoration: 'underline'
                       fontWeight: 700
                       color: color
                       fontSize: 14
@@ -175,7 +177,15 @@ window.ProfileMenu = ReactiveComponent
                       show_dash_modal.showing = config
                       save show_dash_modal
 
+
                     config.name
+
+                  if config.paid && permit('configure paid feature') < 0
+                    UpgradeForumButton
+                      text: 'upgrade'
+
+
+
 
 
 

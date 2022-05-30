@@ -24,10 +24,12 @@ require './histogram'
 require './proposal_sort_and_search'
 require './opinion_views'
 require './tabs'
+require './header'
+require './footer'
 require './homepage'
 require './shared'
 require './opinion_slider'
-require './state_dash'
+# require './state_dash'
 require './tooltip'
 require './popover'
 require './flash'
@@ -42,6 +44,12 @@ require './proposal'
 require './viewport_visibility_sensor'
 require './icons'
 require './google_translate'
+require './new_forum_onboarding'
+
+try 
+  require './product_page/payment'
+catch
+  console.error 'no product page code'
 
 
 
@@ -152,6 +160,18 @@ LocationTransition = ReactiveComponent
   render : -> 
     loc = fetch 'location'
 
+    if loc.url == '/' && loc.query_params.edit_forum
+      edit_forum = fetch 'edit_forum'
+      edit_forum.editing = true
+      save edit_forum      
+      delete loc.query_params.edit_forum
+      save loc
+
+
+    if loc.query_params.flash
+      show_flash loc.query_params.flash, 3000
+      delete loc.query_params.flash
+
     if @last_location != loc.url 
 
       # resetting root state when switching routes
@@ -221,11 +241,6 @@ Page = ReactiveComponent
         else if loc.url.startsWith('/dashboard')
           Dashboard()
 
-        else if loc.url.match(/(.+)\/edit/)
-          EditProposal 
-            key: loc.url.match(/(.+)\/edit/)[1]
-            fresh: false
-
 
         else
           switch loc.url
@@ -237,8 +252,6 @@ Page = ReactiveComponent
               PrivacyPolicy()
             when '/terms_of_service'
               TermsOfService()
-            when '/proposal/new'
-              EditProposal key: "new_proposal", fresh: true      
             when '/accessibility_support'
               AccessibilitySupport()
             when '/histogram_test'
@@ -310,7 +323,6 @@ Root = ReactiveComponent
       
       onClick: @resetSelection
 
-      StateDash()
       
       # state transition components
       AuthTransition()
@@ -330,6 +342,10 @@ Root = ReactiveComponent
           .content h1, .content h2, .content h3, .content h1 button, .content h2 button, .content h3 button, .content h4 button {
             font-family: #{header_fonts};
             // letter-spacing: -1px;
+          }
+
+          .monospaced {
+            font-family: #{mono_font()};
           }
         """
 
@@ -354,14 +370,15 @@ Root = ReactiveComponent
       Popover()
       Flash()
 
-
       do -> 
-        app = fetch('/application')      
-        if app.dev
-          Development()
+        app = fetch('/application')   
 
-        if current_user.is_super_admin || app.su
-          SU()
+        DIV null, 
+          if app.dev
+            Development()
+
+          if current_user.is_super_admin || app.su
+            SU()
 
   resetSelection: (e) ->
     # TODO: This is ugly. Perhaps it would be better to have components 

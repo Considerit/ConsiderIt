@@ -4,7 +4,7 @@ require './edit_list'
 
 window.styles += """
 
-  [data-widget="List"], [data-widget="NewList"] {
+  [data-widget="List"], [data-widget="NewList"], .draggable-wrapper {
     background-color: white;
     /* border: 1px solid #e1e1e1; */
     border: none;
@@ -13,14 +13,14 @@ window.styles += """
     border-top: 1px solid #f3f3f3;
   }
 
-  .one-col [data-widget="List"] {
+  .one-col [data-widget="List"], .one-col [data-widget="NewList"] {
     border-top: none;
     box-shadow: none;
   }
 
   .LIST-header {
     font-size: 32px;
-    font-weight: 500;
+    font-weight: 700;
     text-align: left;     
   }
 
@@ -55,15 +55,23 @@ window.styles += """
 
 get_list_padding = ->
   top = if ONE_COL() then 12 else 48
-  bottom = top 
+  bottom = if ONE_COL() then 12 else 48 
 
-  right = LIST_PADDING() + LIST_PADDING() / 6
-  left = LIST_PADDING() - LIST_PADDING() / 6
+  if WINDOW_WIDTH() <= 955
+    right = Math.max 36, LIST_PADDING()
+    left  = Math.max 36, LIST_PADDING()
+  else 
+    right = Math.max 36, LIST_PADDING() + LIST_PADDING() / 6
+    left  = Math.max 36, LIST_PADDING() - LIST_PADDING() / 6
+
 
   "#{top}px #{right}px #{bottom}px #{left}px"
 
 window.list_link = (list_key) ->
   list_key.substring(5).toLowerCase().replace(/ /g, '_')
+
+
+SHOW_FIRST_N_PROPOSALS = 6
 
 window.List = ReactiveComponent
   displayName: 'List'
@@ -85,7 +93,7 @@ window.List = ReactiveComponent
     proposals = list.proposals or []
 
     list_state = fetch list_key
-    list_state.show_first_num_items ?= @props.show_first_num_items or 12
+    list_state.show_first_num_items ?= @props.show_first_num_items or SHOW_FIRST_N_PROPOSALS
     list_state.collapsed ?= customization('list_is_archived', list_key)
 
     is_collapsed = list_state.collapsed
@@ -97,6 +105,10 @@ window.List = ReactiveComponent
         marginBottom: 40
         position: 'relative'
         padding: get_list_padding()
+
+        boxShadow: if screencasting() then 'none'
+        borderTop: if screencasting() then 'none'
+        paddingTop: if screencasting() then 0
 
       A name: list_link(list_key)
 
@@ -119,42 +131,43 @@ window.List = ReactiveComponent
             fresh: @props.fresh
             show_first_num_items: if list_state.show_all_proposals then 999999 else list_state.show_first_num_items
             combines_these_lists: @props.combines_these_lists
-            show_new_button: (list_state.show_all_proposals || proposals.length <= list_state.show_first_num_items) && \
-               ((@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || (permitted > 0 || permitted == Permission.NOT_LOGGED_IN) )
-
-          if !list_state.show_all_proposals && proposals.length > list_state.show_first_num_items 
-            BUTTON
-              style:
-                backgroundColor: '#f9f9f9'
-                width: HOMEPAGE_WIDTH()
-                cursor: 'pointer'
-                paddingTop: 10
-                paddingBottom: 10
-                fontWeight: 600
-                textAlign: 'center'
-                marginTop: 12
-                marginBottom: 28
-                border: 'none'
-                fontSize: 22
-
-              onClick: => 
-                list_state.show_all_proposals = true
-                save list_state
-
-              SPAN 
-                style: 
-                  textDecoration: 'underline'
-
-                translator "engage.show_hidden_proposals", 'Show all'
-
-              SPAN 
-                style: 
-                  paddingLeft: 8
-                "(+#{proposals.length - list_state.show_first_num_items})"
-
+            # show_new_button: (list_state.show_all_proposals || proposals.length <= list_state.show_first_num_items) && \
+            #    ((@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || (permitted > 0 || permitted == Permission.NOT_LOGGED_IN) )
+            show_new_button: (@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || (permitted > 0 || permitted == Permission.NOT_LOGGED_IN)
+            proposal_focused_on: @props.proposal_focused_on
 
       if customization('footer', list_key) && !is_collapsed
         customization('footer', list_key)()
+
+
+
+styles += """
+
+  .show-all-proposals {
+    list-style: none;
+    position: relative;
+    margin-top: -105px;
+    width: 105%;
+    z-index: 10;    
+  }
+
+  .show-all-proposals button {
+    background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 60%, rgba(255,255,255,0) 100%);
+    width: 100%;
+    cursor: pointer;
+    padding: 32px 0 22px 0;
+    font-weight: 700;
+    text-align: center;
+    border: none;
+    font-size: 22px;
+    z-index: 10;
+    color: #446ae3;
+    padding-top: 96px;
+    margin-top: 12px;
+    margin-bottom: 8px;
+  }
+"""
+
 
 ListItems = ReactiveComponent
   displayName: 'ListItems'
@@ -166,6 +179,16 @@ ListItems = ReactiveComponent
     sort_key = "sorted-proposals-#{list_key}"
     proposals = if !@props.fresh then sorted_proposals(list.proposals, sort_key, true) or [] else []
 
+    if @props.proposal_focused_on
+      proposals = proposals.slice()
+      for proposal,idx in proposals
+        if proposal.key == @props.proposal_focused_on.key
+          proposals.splice idx, 1
+          proposals.unshift proposal
+          break
+
+
+
     RenderListItem = customization('RenderListItem') or CollapsedProposal
 
     if @props.combines_these_lists
@@ -174,33 +197,75 @@ ListItems = ReactiveComponent
       for aggregated_list, idx in @props.combines_these_lists
         colors[aggregated_list] = hues[idx]
 
+
+
+    show_all_button = => 
+
+      LI
+        className: 'show-all-proposals'
+        key: "show-all-#{list_key}"
+        style:
+          listStyle: 'none'
+
+        BUTTON
+          onClick: => 
+            list_state = fetch list_key
+            list_state.show_all_proposals = true
+            save list_state
+
+          SPAN 
+            style: 
+              textDecoration: 'underline'
+
+            translator "engage.show_hidden_proposals", 'Show all'
+
+          SPAN 
+            style: 
+              paddingLeft: 18
+              fontFamily: mono_font()
+              color: '#444'
+              fontWeight: 400
+            "+#{proposals.length - @props.show_first_num_items}"
+
+
+
+    render_new = =>
+      LI 
+        key: "new#{list_key}"
+        style: 
+          margin: 0 
+          padding: 0
+          listStyle: 'none'
+          display: 'inline-block'
+          marginBottom: 20
+          marginTop: 6
+          
+        NewProposal 
+          list_key: list_key
+          combines_these_lists: @props.combines_these_lists  
+
     DIV null, 
 
       UL null, 
         for proposal,idx in proposals
           continue if idx > @props.show_first_num_items - 1
 
+          continue if !passes_running_timelapse_simulation(proposal.created_at)
+
           RenderListItem
             key: "collapsed#{proposal.key}"
             proposal: proposal.key
             show_category: !!@props.combines_these_lists
             category_color: if @props.combines_these_lists then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], .9, .8)
+            focused_on: @props.proposal_focused_on && @props.proposal_focused_on.key == proposal.key
+
+
+        if proposals.length > @props.show_first_num_items 
+          show_all_button()
+
 
         if @props.show_new_button
-
-          LI 
-            key: "new#{list_key}"
-            style: 
-              margin: 0 
-              padding: 0
-              listStyle: 'none'
-              display: 'inline-block'
-              marginBottom: 20
-              marginTop: 6
-              
-            NewProposal 
-              list_key: list_key
-              combines_these_lists: @props.combines_these_lists
+          render_new()
 
 
 
@@ -213,12 +278,9 @@ __remove_this_list = (list_key, page) ->
   customizations = subdomain.customizations
 
   if tabs
-    page ?= get_current_tab_name()
     for tab in tabs
-      if tab.name == page
-        if (idx = tab.lists.indexOf(list_key)) > -1
-          tab.lists.splice idx, 1
-        break
+      if (idx = tab.lists.indexOf(list_key)) > -1
+        tab.lists.splice idx, 1
 
   else 
     ol = customizations.lists
@@ -311,7 +373,7 @@ window.ListHeader = ReactiveComponent
 
     wrapper_style = 
       width: HOMEPAGE_WIDTH()
-      marginBottom: 16 #24
+      marginBottom: if !is_collapsed then 16 #24
       position: 'relative'
 
     DIV 
@@ -356,17 +418,66 @@ window.ListHeader = ReactiveComponent
 
 
 
+
+
+styles += """
+  button[data-widget="NewList"] {
+    text-align: left;
+    margin-top: 55px;
+    display: block;
+    position: relative;
+    width: 100%;
+    border-radius: 8px;
+
+  }
+  [data-widget="NewList"] h1.LIST-header {
+    position: relative;
+    left: -42px;
+    display: flex;
+    align-items: center;
+  }
+
+  [data-widget="NewList"] h1.LIST-header svg {
+    margin-right: 13px;
+  }
+
+
+  [data-widget="NewList"] .subbutton_button {
+    color: #{focus_blue};
+    font-weight: 700;
+  }
+
+  [data-widget="NewList"]:hover .subbutton_button, [data-widget="NewList"]:hover .separator {
+    text-decoration: underline;
+  }
+
+  [data-widget="NewList"] .separator {
+    // padding: 0 12px;
+    font-weight: 300;
+    color: #{focus_blue};
+  }
+  [data-widget="NewList"] .subheader {
+    color: #656565;
+    font-size: 16px;
+    position: relative;
+  }
+"""
+
+
 window.NewList = ReactiveComponent
   displayName: 'NewList'
 
   render: -> 
     subdomain = fetch '/subdomain'
 
+    wide_layout = WINDOW_WIDTH() > 1250 
+
     @local.hovering ?= false
 
     if @local.editing
       ModalNewList 
         fresh: true
+        default_open_ended: @local.default_open_ended
         done_callback: =>
           @local.editing = false 
           save @local
@@ -375,43 +486,87 @@ window.NewList = ReactiveComponent
     else 
       BUTTON 
         style: 
-          textAlign: 'left'
-          marginTop: 35
-          display: 'block'
-          padding: get_list_padding()
-          position: 'relative'
-          # left: -24
-          width: '100%'
-          borderRadius: 8
-          backgroundColor: if @local.hovering then '#eaeaea' # else 'white'
-          # border: '1px solid'
-          # borderColor: if @local.hovering then '#bbb' else '#ddd'
+          padding: if !@props.no_padding then get_list_padding()
 
-        onMouseEnter: =>
-          @local.hovering = true 
-          save @local 
-        onMouseLeave: => 
-          @local.hovering = false
-          save @local 
-
-        onClick: =>
+        onClick: (e) =>
           @local.editing = true 
+          @local.default_open_ended = e.target.classList.contains('open')
           save @local
 
         H1
           className: 'LIST-header'
-          style: 
-            color: if @local.hovering then '#444' else '#666'
-            textDecoration: 'underline'
-          translator 'engage.create_new_list_button', "Create a new Topic"
 
-        DIV 
-          style: 
-            fontSize: 14
-            marginTop: 4
-          'A Topic collects proposals under a category like "Recommendations" or in response to an open-ended question like "What are your ideas?"'
+          plus_icon focus_blue
+
+          SPAN 
+            className: 'subbutton_button open'
+            'Add a request for feedback' 
+
+          if wide_layout
+            SPAN null,
+              SPAN 
+                className: 'separator'
+                dangerouslySetInnerHTML: __html: "&nbsp;&nbsp;#{t('or')}&nbsp;&nbsp;"
+              SPAN 
+                className: 'subbutton_button closed'
+                'an open-ended question'
+
+        if wide_layout
+          DIV 
+            className: 'subheader'
+
+            SPAN 
+              style: 
+                position: 'relative'
+                left: 250 
+
+              'on a fixed set of proposals'
+
+            SPAN 
+              style: 
+                position: 'relative'
+                left: 539
+              'for community ideation'
+
+        else 
+          DIV 
+            className: 'subheader'
+
+            SPAN 
+              style: 
+                position: 'relative'
+                left: 0 
+
+              'on a fixed set of proposals or in response to an open-ended question'
 
 
+
+
+window.list_i18n = ->
+  button: translator('engage.create_new_list_button', "Create a new call for ideas or feedback")
+  explanation: translator 'engage.create_new_list_explanation', 'Ask an open-ended question like "What are your ideas?" or establish a category like "Recommendations."'
+  new_response_label: (list_key) ->
+    item_name = customization('list_item_name', list_key)
+    if item_name
+      item_name = capitalize item_name
+    if item_name == 'proposal' or !item_name
+      translator "engage.add_new_proposal_to_list", 'Add new proposal'
+    else 
+      translator 
+        id: "engage.add_new_#{item_name}_to_list"
+        key: "/translations/#{fetch('/subdomain').name}"
+      , "Add new #{item_name}"
+  opinion_header: (list_key) ->
+    item_name = customization('list_item_name', list_key)
+    if item_name
+      item_name = capitalize item_name
+    if item_name == 'proposal' or !item_name
+      translator "engage.opinion_header_results", 'Opinions about this proposal'
+    else 
+      translator 
+        id: "engage.opinion_header_results_#{item_name}"
+        key: "/translations/#{fetch('/subdomain').name}"
+      , "Opinions about this #{item_name}"
 
 
 EditableTitle = ReactiveComponent
@@ -493,6 +648,7 @@ styles += """
     font-weight: 400;
     color: black;
     margin-top: 8px;
+    margin-bottom: 18px;
     font-style: italic;
   }
 
@@ -536,18 +692,13 @@ EditableDescription = ReactiveComponent
 window.list_actions = (props) -> 
   list_key = props.list.key
 
-  add_new = props.add_new
-  if add_new 
-    permitted = permit('create proposal', list_key)
-    add_new &&= permitted > 0 || permitted == Permission.NOT_LOGGED_IN
-
-
   DIV   
     className: 'list_actions'
     style: 
       marginBottom: 50
       marginTop: 24
       display: 'flex'
+      alignItems: 'baseline'
 
     DIV 
       style: 
@@ -555,48 +706,9 @@ window.list_actions = (props) ->
         marginRight: column_sizes().gutter
         display: 'flex'
 
-      if add_new
-
-        SPAN 
-          style: 
-            minWidth: 78
-
-          A
-            style: 
-              fontSize: 14
-              color: focus_color()
-              fontFamily: customization('font')
-              fontStyle: 'normal'
-              fontWeight: 700
-            onClick: (e) => 
-              list_state = fetch list_key
-              list_state.show_all_proposals = true 
-              save list_state
-              e.stopPropagation()
-
-              wait_for = ->
-                add_new_button = $("[name='new_#{props.list.key.substring(5)}']")
-                if add_new_button.length > 0 
-                  add_new_button.ensureInView()
-                  add_new_button.click()
-                else 
-                  setTimeout wait_for, 1
-
-              wait_for()
-
-            '+ '
-
-            SPAN 
-              style: 
-                textDecoration: 'underline'
-              translator "engage.add_new_proposal_to_list", 'add new'
-
-      if props.can_sort && add_new
-        SPAN 
-          style: 
-            padding: '0 12px'
 
       if props.can_sort
+        # [ SortProposalsMenu(), FilterProposalsMenu() ]
         SortProposalsMenu()
 
 

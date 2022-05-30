@@ -151,32 +151,17 @@ window.ForumSettingsDash = ReactiveComponent
 
       #######################
       # Google Analytics code
-      if subdomain.plan || current_user.is_super_admin
-        DIV className: 'input_group',
-          
-          LABEL htmlFor: 'google_analytics_code', "Google Analytics tracking code"
-          INPUT 
-            id: 'google_analytics_code'
-            type: 'text'
-            name: 'google_analytics_code'
-            defaultValue: subdomain.google_analytics_code
-            onChange: (ev) -> 
-              subdomain.google_analytics_code = ev.target.value
-              save subdomain
-
-      else 
-        DIV className: 'input_group',
-          LABEL htmlFor: 'google_analytics_code', "Google analytics tracking code"
-          DIV 
-            className: 'explanation'
-            "Only available for paid plans. Email "
-            A 
-              href: 'mailto:hello@consider.it'
-              style: 
-                textDecoration: 'underline'
-              'hello@consider.it'
-            ' to inquire further.'
-
+      DIV className: 'input_group',
+        
+        LABEL htmlFor: 'google_analytics_code', "Google Analytics tracking code"
+        INPUT 
+          id: 'google_analytics_code'
+          type: 'text'
+          name: 'google_analytics_code'
+          defaultValue: subdomain.google_analytics_code
+          onChange: (ev) -> 
+            subdomain.google_analytics_code = ev.target.value
+            save subdomain
 
 
 
@@ -342,10 +327,61 @@ window.ForumSettingsDash = ReactiveComponent
               'Enable civility pledge.'
             DIV 
               className: 'explanation'
-              ' Newly registered participants must agree to be civil and to use only one account.'
+              'Newly registered participants must agree to be civil and to use only one account.'
               
             
 
+      ########################
+      # Participation with registration
+
+      # do =>
+      #   key = "#{subdomain.name}-participation-without-registration"
+
+      #   question_index = ->
+      #     for tag, idx in (subdomain.customizations.user_tags or [])
+      #       if tag.key == key
+      #         return idx
+      #     return null
+
+      #   DIV className: 'input_group checkbox',
+
+      #     LABEL 
+      #       className: 'toggle_switch'
+
+      #       INPUT 
+      #         id: 'enable_unregistered_participation'
+      #         type: 'checkbox'
+      #         name: 'enable_unregistered_participation'
+      #         defaultChecked: customization('unregistered_participation')
+      #         onChange: (ev) -> 
+      #           subdomain.customizations ||= {}
+      #           subdomain.customizations.unregistered_participation = ev.target.checked
+      #           save subdomain
+
+
+      #       SPAN 
+      #         className: 'toggle_switch_circle'
+          
+
+      #     LABEL 
+      #       className: 'indented'
+
+      #       htmlFor: 'enable_unregistered_participation'
+      #       B null, 
+      #         'Allow participation without registration.'
+      #       DIV 
+      #         className: 'explanation'
+
+      #         dangerouslySetInnerHTML: __html: """
+      #           People are allowed to participate without registering an email or password. 
+      #           Works best for small groups where most people know each other. 
+      #           If you are considering unregistered participation, recognize that:
+      #           <ul style="padding-left: 24px; list-style-position: outside"> 
+      #             <li>It will be much easier for someone to participate many times, distorting your results. Including on proposals they submit.</li>
+      #             <li>Unregistered participants won't be notified about new activity in the forum, even in response to their own comments.</li>
+      #             <li>You will not have access to their email addresses in the data export.</li>
+      #           </ul>
+      #           """
 
 
 
@@ -368,27 +404,44 @@ window.ForumSettingsDash = ReactiveComponent
       ########################
       # Plan
       if current_user.is_super_admin
-
         DIV 
-          className: 'input_group'
-          LABEL htmlFor: 'plan', 'Account Plan'
-          SELECT 
-            style: 
-              display: 'block'
-            onChange: (ev) -> 
-              subdomain.plan = ev.target.value
-              save subdomain
-            defaultValue: subdomain.plan
+          className: 'FORUM_SETTINGS_section input_group'
 
-            OPTION 
-              value: 0
-              'Free'
-            OPTION
-              value: 1
-              'Customized'
-            OPTION
-              value: 2
-              'Premium'
+          H4 null, 
+
+            'Forum Plan Type'
+
+          FIELDSET null,
+
+            for option in [{label: 'Free Forum', value: 0}, {label: 'Unlimited Forum', value: 1}, {label: 'Enterprise Forum', value: 2}]
+              DIV null,
+
+                DIV 
+                  className: 'radio_group'
+                  style: 
+                    cursor: 'pointer'
+
+                  onClick: do (option) => => 
+                    subdomain.plan = option.value
+                    save subdomain
+
+
+                  INPUT 
+                    style: 
+                      cursor: 'pointer'
+                    type: 'radio'
+                    name: "plan"
+                    id: "plan_#{option.value}"
+                    defaultChecked: subdomain.plan == option.value
+
+                  LABEL 
+                    style: 
+                      cursor: 'pointer'
+                      display: 'block'
+                    htmlFor: "plan_#{option.value}"
+                    
+                    option.label
+
 
       if current_user.is_super_admin
         FORM 
@@ -428,25 +481,25 @@ window.ForumSettingsDash = ReactiveComponent
         {
           label: "Default"
           value: 0
-          explanation: "People can contribute as you have configured elsewhere."
+          explanation: "" # "People can contribute as you have configured elsewhere."
         }
 
         {
-          label: "Frozen forum", 
+          label: "Frozen", 
           value: 'frozen'
-          explanation: "No one can add or change opinions, proposals, or comments while the forum is frozen."
+          explanation: "No one can add or update anything they have said."
         }
         
         {
           label: "Ideas only"
           value: "ideas-only"
-          explanation: "People can only contribute new proposals at this time (and only to the lists in which you've enabled ideation). Opinion slider drags or pro/con comments are not allowed at this time."
+          explanation: "People can only contribute new proposals at this time, and only in places you've allowed it."
         } 
         
         {
           label: "Opinions only"
           value: "opinions-only"
-          explanation: "People can only add their opinions by dragging sliders and writing pro/con points. No one can make new proposals."
+          explanation: "People can only add opinions at this time. They can drag sliders and write pro/con points, but no new proposals."
         } 
         
       ]
@@ -460,16 +513,16 @@ window.ForumSettingsDash = ReactiveComponent
 
       H4 null, 
 
-        'Dialogue Phase'
+        'Dialogue State'
 
       DIV
         className: 'explanation'
 
         """
-        Control the phase of your dialogue. This setting gives you the ability to globally override your settings elsewhere. 
-        For example, even if you have allowed people to add proposals to a given list, if you set the phase to "opinions only", 
-        no one will be allowed to add new proposals to that list. However, if you later change the phase, your previous 
-        settings will hold. 
+        Control the state of your dialogue. This setting gives you the ability to override your configuration elsewhere. 
+        For example, if you select "opinions only", no one will be allowed to add new proposals to any of your open-ended questions,
+        even if you allowed it when creating your questions. Your settings can be restored by returning to the 
+        default state. 
         """
 
 

@@ -59,7 +59,7 @@ window.EditComment = ReactiveComponent
 
             if permitted == Permission.NOT_LOGGED_IN
               reset_key 'auth', 
-                form: 'login'
+                form: 'create account'
                 goal: ''
             else if permitted == Permission.UNVERIFIED_EMAIL
               reset_key 'auth', 
@@ -79,7 +79,8 @@ window.EditComment = ReactiveComponent
                   backgroundColor: 'transparent'
                   padding: 0
                   border: 'none'
-                translator 'engage.permissions.login_to_participate', 'Login to participate'
+                translator 'engage.permissions.login_to_participate', 'Create an account to participate'
+
 
               if '*' not in @proposal.roles.participant
                 DIV style: {fontSize: 11},
@@ -94,7 +95,7 @@ window.EditComment = ReactiveComponent
           marginLeft: 60   
 
         AutoGrowTextArea
-          ref: 'comment_input'
+          id: 'comment_input'
           name: 'new comment'
           'aria-label': if permitted > 0 then translator('engage.comment_input_placeholder', 'Write a comment') else ''
           placeholder: if permitted > 0 then translator('engage.comment_input_placeholder', 'Write a comment') else ''
@@ -160,8 +161,9 @@ window.EditComment = ReactiveComponent
 
                 if comment.errors?.length > 0
                   @local.errors = comment.errors
+                else
+                  show_flash(translator('engage.flashes.comment_saved', "Your comment has been saved"))
 
-                $(@refs.comment_input.getDOMNode()).val('')            
                 @local.new_comment = null
                 save @local
 

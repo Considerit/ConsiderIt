@@ -13,14 +13,25 @@ window.Header = ReactiveComponent
     # auth = fetch('auth')
     # return SPAN null if auth.form && auth.form not in ['edit profile']
 
+    return SPAN null if !subdomain.name || embedded_demo()
+
+
+    
     loc = fetch('location')
     is_homepage = loc.url == '/'
-    editing_banner = fetch('edit_banner').editing
+    
 
     header_bonus = customization('header_bonus') # currently used for things like inserting google font
 
     HEADER 
+      style: 
+        position: 'relative'
+        zIndex: if fetch('edit_forum').editing then 1 # necessary b/c of payment modal
       className: if !is_light_background() then 'dark'
+
+      if current_user.is_admin
+        HostHeader()
+
 
       # DIV 
       #   id: 'upgrade-message'
@@ -53,8 +64,8 @@ window.Header = ReactiveComponent
         if is_homepage
           EditBanner()
 
-        if is_homepage && (customization('HomepageHeader') or customization('SiteHeader'))
-          (customization('HomepageHeader') or customization('SiteHeader')).apply(@)
+        if is_homepage
+          (customization('HomepageHeader') or customization('SiteHeader') or PhotoBanner).apply(@)
         else
           ShortHeader
             background: 'white'
@@ -71,6 +82,36 @@ window.Header = ReactiveComponent
           translator "engage.server_error", 'Warning: there was a server error!'
 
 
+window.HostHeader = ReactiveComponent
+  displayName: 'HostHeader'
+
+  render: ->
+    loc = fetch('location')
+    edit_forum = fetch('edit_forum')
+
+    free_forum = permit('configure paid feature') < 0
+
+    if edit_forum.editing 
+
+      DIV 
+        className: 'forum_editor'
+        style: 
+          #display: 'flex'
+          #justifyContent: 'center'
+          #alignItems: 'center'
+          padding: 8
+          textAlign: 'center'
+
+        if window.UpgradeForumCompact? && free_forum
+          UpgradeForumCompact()
+
+        EditForum()
+
+    else if loc.url.startsWith('/dashboard') && window.UpgradeForumBanner? && free_forum
+      UpgradeForumBanner()
+
+    else 
+      DIV null
 
 
 

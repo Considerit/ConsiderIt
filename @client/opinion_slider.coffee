@@ -143,7 +143,9 @@ window.OpinionSlider = ReactiveComponent
       if can_opine > 0
         your_opinion.published = true
         your_opinion.key ?= "/new/opinion"
-        save your_opinion
+        save your_opinion, ->
+          show_flash(translator('engage.flashes.opinion_saved', "Your opinion has been saved"))
+
       else
         # trigger authentication
         reset_key 'auth',
@@ -217,6 +219,7 @@ window.OpinionSlider = ReactiveComponent
       width: feedback_width
 
     DIV
+      className: 'slider_feedback'
       'aria-hidden' : true
       style: feedback_style
       slider_feedback
@@ -266,7 +269,9 @@ window.OpinionSlider = ReactiveComponent
         your_opinion.published = true
       your_opinion.key ?= "/new/opinion"
         
-      save your_opinion
+      save your_opinion, -> 
+        show_flash(translator('engage.flashes.opinion_saved', "Your opinion has been saved"))
+      
       window.writeToLog 
         what: 'move slider'
         details: {stance: slider.value}

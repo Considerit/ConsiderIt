@@ -1,7 +1,27 @@
 
 
 
+styles += """
+  [data-widget="EditList"] .default_drop[data-widget="DropMenu"] .dropmenu-menu {
+    right: -9999;
+    left: auto;
+  }
 
+  [data-widget="EditList"] .default_drop[data-widget="DropMenu"] .dropmenu-menu.dropmenu-menu-open {
+    right: 0;
+    left: auto;
+  }
+
+
+  [data-widget="EditList"] .default_drop[data-widget="DropMenu"] .dropmenu-menu {
+    width: 250px;
+  }
+
+  [data-widget="EditList"] .default_drop[data-widget="DropMenu"] .menu-item {
+    text-align: right;
+  }  
+
+"""
 window.EditList = ReactiveComponent
   displayName: 'EditList'
 
@@ -14,56 +34,32 @@ window.EditList = ReactiveComponent
     edit_list = fetch "edit-#{list_key}"
     subdomain = fetch '/subdomain'
 
-
     return SPAN null if !current_user.is_admin
 
-
-
-    admin_actions = [{action: 'edit', label: translator('edit')}, 
-                     {action: 'list_order', label: translator('engage.list-configuration.reorder_topics', 'reorder topics')},
-                     {action: 'delete', label: translator('delete')}, 
-                     {action: 'close', label: translator('engage.list-configuration.close', 'close to participation')}, 
-                     {action: 'copy_link', label: translator('engage.list-configuration.copy_link', 'copy link')}]
+    admin_actions = [
+      {action: 'edit', label: translator('edit')}
+      {action: 'copy_link', label: translator('engage.list-configuration.copy_link', 'copy link')}
+      {action: 'list_order', label: translator('engage.list-configuration.reorder_topics', 'reorder lists')}
+      {action: 'close', label: translator('engage.list-configuration.close', 'close to participation')}
+      {action: 'delete', label: translator('delete')}
+    ]
 
     DIV null,
 
       if !@local.editing
 
         DropMenu
+          className: 'default_drop'
+
           options: admin_actions
           open_menu_on: 'activation'
 
           wrapper_style: 
             position: 'absolute'
             right: -LIST_PADDING() + 10
-            top: -34
-
-          anchor_style: {}
-
-          menu_style: 
-            backgroundColor: '#eee'
-            border: "1px solid #{focus_color()}"
-            right: -9999
-            top: 18
-            borderRadius: 8
-            fontWeight: 400
-            overflow: 'hidden'
-            boxShadow: '0 1px 2px rgba(0,0,0,.3)'
-            fontSize: 18
-            fontStyle: 'normal'
-            width: 220
-
-          menu_when_open_style: 
-            right: 0
-
-          option_style: 
-            padding: '6px 12px'
-            borderBottom: "1px solid #ddd"
-            display: 'block'
-
-          active_option_style: 
-            color: 'white'
-            backgroundColor: focus_color()
+            top: 12
+            minWidth: 'auto'
+            paddingLeft: 40
 
           render_anchor: ->
             SPAN 
@@ -75,6 +71,7 @@ window.EditList = ReactiveComponent
           render_option: (option, is_active) ->
             SPAN 
               key: option.action
+              "data-option": option.action
               option.label
 
 
@@ -179,7 +176,7 @@ window.ModalNewList = ReactiveComponent
       customizations[list_key] ?= {}
       list_config = customizations[list_key]
 
-      fields = ['list_title', 'list_description', 'list_permit_new_items', 'list_category', 'slider_pole_labels', 'list_opinions_title', 'discussion_enabled', 'list_is_archived']
+      fields = ['list_title', 'list_description', 'list_permit_new_items', 'list_item_name', 'list_category', 'slider_pole_labels', 'list_opinions_title', 'discussion_enabled', 'list_is_archived']
 
       for f in fields
         val = edit_list[f]
@@ -240,6 +237,8 @@ window.ModalNewList = ReactiveComponent
 
       @props.done_callback?()
 
+    edit_list.list_category ?= customization('list_category', list_key)
+    edit_list.list_item_name ?= customization('list_item_name', list_key)
     edit_list.discussion_enabled ?= customization('discussion_enabled', list_key)
     edit_list.list_is_archived ?= customization('list_is_archived', list_key)
 
@@ -254,7 +253,12 @@ window.ModalNewList = ReactiveComponent
 
     description_style = customization 'list_description_style', list_key
 
+
+    permit_new_items = customization('list_permit_new_items', list_key, subdomain)
+
     option_block = 
+      display: 'flex'
+      alignItems: 'center'
       marginTop: 8
 
     children = \ 
@@ -272,7 +276,7 @@ window.ModalNewList = ReactiveComponent
                     style: 
                       fontWeight: 700
 
-                "<span>Title.</span> An open-ended question like \"What are your ideas?\" or a list label like \"Recommendations\"."
+                "<span>Heading.</span> An open-ended question like \"What are your ideas?\" or a category like \"Recommendations\"."
 
             H1 
               className: 'LIST-header'
@@ -379,29 +383,26 @@ window.ModalNewList = ReactiveComponent
                         style: 
                           fontWeight: 700
 
-                    "<span>Slider.</span> On what spectrum is each item evaluated?"
+                    "<span>Slider.</span> On what spectrum is each proposal evaluated?"
 
 
                 DIV 
                   ref: 'slider_config'
                   style: 
-                    padding: '18px 24px 0px 24px'
+                    padding: '18px 0px 0px 12px'
                     position: 'relative'
                     marginTop: 8
-                    left: -24 - 1
+                    left: 0
+                    display: 'flex'
 
                   DIV 
                     style: 
                       position: 'relative'
-                      width: column_sizes().second
-
-
-                    SPAN 
-                      style: 
-                        display: 'block'
-                        width: '100%'
-                        borderBottom: '1px solid'
-                        borderColor: '#999'
+                      flexGrow: 2
+                      width: '100%'
+                      borderTop: '1px solid'
+                      borderColor: '#999'
+                      maxWidth: 500
                     
                     INPUT 
                       type: 'text'
@@ -437,22 +438,24 @@ window.ModalNewList = ReactiveComponent
                     open_menu_on: 'activation'
 
                     wrapper_style: 
-                      left: column_sizes().second + 50
-                      top: -8
+                      position: 'relative'
+                      flexGrow: 0
+                      paddingLeft: 18
 
                     anchor_style: 
                       color: 'inherit' #focus_color() #'inherit'
                       height: '100%'
-                      padding: '4px 4px'
+                      padding: '0px 4px'
                       position: 'relative'
                       right: 0
                       cursor: 'pointer'
+                      whiteSpace: 'nowrap'
 
                     menu_style: 
-                      width: column_sizes().second + 24 * 2
+                      width: 420
                       backgroundColor: '#fff'
                       border: "1px solid #aaa"
-                      left: -99999
+                      right: -99999
                       left: 'auto'
                       top: 24
                       fontWeight: 400
@@ -461,12 +464,13 @@ window.ModalNewList = ReactiveComponent
                       textAlign: 'left'
 
                     menu_when_open_style: 
-                      left: 0
+                      right: 0
 
                     option_style: 
-                      padding: '6px 0px'
+                      padding: '8px 18px 12px 18px'
                       display: 'block'
-                      color: '#888'
+                      color: 'black'
+                      fontWeight: 400
 
                     active_option_style: 
                       color: 'black'
@@ -501,7 +505,7 @@ window.ModalNewList = ReactiveComponent
                             fontSize: 14
                             marginRight: 12
                             cursor: 'pointer'
-                          translator 'engage.list-config-spectrum-select', 'change spectrum'
+                          translator 'engage.list-config-spectrum-select', 'preset spectrums'
 
                         SPAN style: _.extend cssTriangle 'bottom', focus_color(), 15, 9,
                           display: 'inline-block'
@@ -519,41 +523,70 @@ window.ModalNewList = ReactiveComponent
 
                       DIV 
                         style: 
-                          margin: "12px 24px"
-                          position: 'relative'
-                          fontSize: 12
+                          # margin: "4px 24px"
+                          # position: 'relative'
+                          fontSize: 14
+                          textAlign: 'center'
+                          fontFamily: mono_font()
 
                         SPAN 
+                          style:
+                            display: 'inline-block' 
+                            width: 140
+                            textAlign: 'right'
+                            paddingRight: 10
+                          "#{option.oppose}"
+                        SPAN 
+                          dangerouslySetInnerHTML: __html: "&#10231;"
                           style: 
-                            display: 'inline-block'
-                            width: '100%'
-                            borderBottom: '1px solid'
-                            borderColor: '#666'
+                            fontSize: 32
+                            color: '#888'
 
-                        BR null
-                        SPAN
-                          style: 
-                            position: 'relative'
-                            left: 0
+                        SPAN 
+                          style:
+                            display: 'inline-block' 
+                            width: 140
+                            textAlign: 'left'
+                            paddingLeft: 10                        
+                          "#{option.support}" 
 
-                          option.oppose 
 
-                        SPAN
-                          style: 
-                            position: 'absolute'
-                            right: 0
-                          option.support
+                      # DIV 
+                      #   style: 
+                      #     margin: "12px 24px"
+                      #     position: 'relative'
+                      #     fontSize: 12
+
+                      #   SPAN 
+                      #     style: 
+                      #       display: 'inline-block'
+                      #       width: '100%'
+                      #       borderBottom: '1px solid'
+                      #       borderColor: '#666'
+
+                      #   BR null
+                      #   SPAN
+                      #     style: 
+                      #       position: 'relative'
+                      #       left: 0
+
+                      #     option.oppose 
+
+                      #   SPAN
+                      #     style: 
+                      #       position: 'absolute'
+                      #       right: 0
+                      #     option.support
 
 
 
 
             if !@props.combines_these_lists
               DIV 
-                style: 
-                  padding: '12px 0'
+                style: {}
 
                 LABEL
-                  className: 'LIST-field-edit-label'
+                  className: 'LIST-field-edit-label LIST-permissions'
                   htmlFor: 'list_permit_new_items'
 
 
@@ -565,7 +598,7 @@ window.ModalNewList = ReactiveComponent
                         style: 
                           fontWeight: 700
 
-                    "<span>Permissions.</span> Who can add proposals in response to this Topic?"
+                    "<span>Who can add proposals to this list?</span>"
 
                 DIV 
                   style: option_block
@@ -574,7 +607,9 @@ window.ModalNewList = ReactiveComponent
                     id: 'any-participant'
                     type: 'radio'
                     name: 'list_permit_new_items'
-                    defaultChecked: customization('list_permit_new_items', list_key, subdomain)
+                    defaultChecked: permit_new_items
+                    style: 
+                      marginTop: 0
                     onChange: (e) =>
                       edit_list.list_permit_new_items = true
                       save edit_list
@@ -593,7 +628,9 @@ window.ModalNewList = ReactiveComponent
                     id: 'host-only'
                     type: 'radio'
                     name: 'list_permit_new_items'
-                    defaultChecked: !customization('list_permit_new_items', list_key, subdomain)
+                    defaultChecked: !permit_new_items
+                    style: 
+                      marginTop: 0                    
                     onChange: (e) =>
                       edit_list.list_permit_new_items = false
                       save edit_list
@@ -603,7 +640,7 @@ window.ModalNewList = ReactiveComponent
                       marginLeft: 4
                     htmlFor: 'host-only'
 
-                    translator "engage.list-config-who-can-add-only-hosts", "Only forum hosts or those granted permission"
+                    translator "engage.list-config-who-can-add-only-hosts", "Only forum hosts or those granted special permission"
 
 
             if !@props.combines_these_lists
@@ -624,6 +661,7 @@ window.ModalNewList = ReactiveComponent
                       color: '#666'
                       fontSize: 14
                       marginBottom: 24
+                      display: if screencasting() then 'none'
                     onClick: (e) => 
                       @local.show_all_options = true 
                       save @local
@@ -631,10 +669,32 @@ window.ModalNewList = ReactiveComponent
                 else 
                   DIV null, 
 
+                    DIV 
+                      style:
+                        marginBottom: 24
+
+                      LABEL 
+                        style: {}
+
+
+                        DIV null,
+
+                          translator 'engage.edit_list_item_name', 'What do you call each proposal in this list?'
+
+                        INPUT 
+                          type: 'text'
+                          defaultValue: edit_list.list_item_name or translator('shared.proposal', 'proposal')
+                          name: 'list_item_name'
+                          style: 
+                            padding: '8px 12px'
+                            fontSize: 18
+                          onChange: (e) =>
+                            edit_list.list_item_name = e.target.value
+                            save edit_list
 
                     DIV 
                       style:
-                        marginBottom: 6
+                        marginBottom: 24
                       LABEL 
                         style: {}
 
@@ -649,11 +709,11 @@ window.ModalNewList = ReactiveComponent
                         SPAN 
                           style: 
                             paddingLeft: 4
-                          translator 'engage.list-config-discussion-enabled', 'Disable pro/con commenting on each proposal. Spectrums only.'
+                          translator 'engage.list-config-discussion-enabled', 'Disable pro/con commenting on each proposal in this list. Spectrums only.'
 
                     DIV                   
                       style:
-                        marginBottom: 24
+                        marginBottom: 36
                       LABEL 
                         style: {}
 
@@ -668,7 +728,7 @@ window.ModalNewList = ReactiveComponent
                         SPAN 
                           style: 
                             paddingLeft: 4
-                          translator 'engage.list-config-archived', 'This Topic should be closed by default. Useful for archiving old topics and proposals.'
+                          translator 'engage.list-config-archived', 'This list should be closed by default. Useful for archiving.'
 
 
           BUTTON 
@@ -678,7 +738,10 @@ window.ModalNewList = ReactiveComponent
             disabled: (edit_list.list_title or "").length == 0
             onClick: submit
 
-            translator 'engage.save_changes_button', 'Save'
+            if @props.fresh 
+              translator 'engage.create_list_button', 'Create List'
+            else 
+              translator 'engage.update_list_button', 'Update List'
 
           BUTTON
             className: 'like_link'

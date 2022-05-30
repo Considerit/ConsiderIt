@@ -40,8 +40,6 @@ window.AvatarPopover = ReactiveComponent
     anonymous = user.key != fetch('/current_user').user && (customization('anonymize_everything') || anon)      
     opinion_views = fetch 'opinion_views'
 
-    attributes = get_participant_attributes()
-    grouped_by = opinion_views.active_views.group_by
 
     name = user_name user, anonymous
 
@@ -55,7 +53,6 @@ window.AvatarPopover = ReactiveComponent
         alt = "–#{(stance * -100).toFixed(0)}%"
       else 
         alt = translator "engage.histogram.user_is_neutral", "is neutral"
-
 
     DIV 
       style: 
@@ -89,7 +86,10 @@ window.AvatarPopover = ReactiveComponent
             name
 
 
-          if !anonymous && !user_is_organization_account(user)
+          if get_participant_attributes? && !anonymous && !user_is_organization_account(user)
+            attributes = get_participant_attributes()
+            grouped_by = opinion_views.active_views.group_by
+
             unreported = missing_attribute_info_label()
 
             UL 
@@ -300,7 +300,7 @@ window.avatar = (user, props) ->
     key: user.key
     className: "avatar #{props.className or ''}"
     'data-user': if anonymous then -1 else user.key
-    'data-popover': if !props.hide_popover && !anonymous then alt 
+    'data-popover': if !props.hide_popover && !anonymous && !screencasting() then alt 
     'data-tooltip': if anonymous then alt
     'data-anon': anonymous  
     tabIndex: if props.focusable then 0 else -1

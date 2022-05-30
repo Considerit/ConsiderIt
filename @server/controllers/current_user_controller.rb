@@ -318,7 +318,7 @@ class CurrentUserController < ApplicationController
       end
     end
 
-    fields = ['avatar', 'bio', 'name', 'tags', 'subscriptions']
+    fields = ['avatar', 'avatar_url', 'bio', 'name', 'tags', 'subscriptions']
     new_params = params.select{|k,v| fields.include? k}.to_h
     new_params[:name] = '' if !new_params[:name] #TODO: Do we really want to allow blank names?...
 
@@ -419,6 +419,14 @@ class CurrentUserController < ApplicationController
     write_to_log({:what => what, :where => request.fullpath, :details => nil})
   end
 
+
+  def destroy
+    if current_user.subdomains.count > 0 
+      render :json => {error: "user_created_subdomains"}
+    else
+      current_user.destroy 
+    end
+  end 
 
 
   def update_via_third_party
@@ -531,6 +539,7 @@ class CurrentUserController < ApplicationController
       "  window.close(); " + 
       "</script>"
   end
+
 
 
 

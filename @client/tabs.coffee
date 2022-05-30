@@ -83,10 +83,10 @@ window.get_tab = (name) ->
   return null
 
 window.get_current_tab_name = -> fetch('homepage_tabs').active_tab or null
-window.get_current_tab_view = ->
+window.get_current_tab_view = (args) ->
   tabs = customization('homepage_tabs') 
   if !tabs
-    return SimpleHomepage()
+    return SimpleHomepage(args)
 
   custom_view = null
   for tab in tabs
@@ -98,12 +98,12 @@ window.get_current_tab_view = ->
     custom_view = customization('render_page')
 
   if custom_view
-    view = custom_view()
+    view = custom_view(args)
     if typeof(view) == 'function'
-      view = view()
+      view = view(args)
     view
   else
-    SimpleHomepage()
+    SimpleHomepage(args)
 
 window.get_page_preamble = (tab_name) -> 
   if tab = get_tab(tab_name)
@@ -178,9 +178,9 @@ styles += """
   #tabs {
     width: 100%;
     z-index: 2;
-    position: relative;
-    top: 2px;
+    margin-bottom: -2px;
     margin-top: 20px;
+    position: relative;
   }
   #tabs > ul {
     margin: auto;
@@ -208,7 +208,7 @@ window.HomepageTabs = ReactiveComponent
 
     return DIV null if !edit_forum.editing && !tabs
 
-    return DIV style:{paddingBottom:36} if edit_forum.editing && !fetch('/current_user').is_super_admin && !subdomain.plan
+    #return DIV style:{paddingBottom:36} if edit_forum.editing && !fetch('/current_user').is_super_admin && permit('configure paid feature') < 0
 
     is_light = is_light_background()
 
@@ -225,6 +225,8 @@ window.HomepageTabs = ReactiveComponent
       else 
         tabs.push {name: "add new tab", add_new: true}
 
+    paid = permit('configure paid feature') > 0
+
     DIV 
       id: 'tabs'
       className: "#{if demo then 'demo' else ''} #{if edit_forum.editing then 'editing' else ''}" 
@@ -240,6 +242,9 @@ window.HomepageTabs = ReactiveComponent
           
           LABEL 
             className: 'toggle_switch'
+            style: 
+              pointerEvents: if !paid then 'none'
+              opacity: if !paid then .4
 
             INPUT 
               id: 'enable_tabs'
@@ -268,21 +273,20 @@ window.HomepageTabs = ReactiveComponent
 
 
           LABEL 
+            className: 'toggle_switch_label'
             style:
-              paddingLeft: 18
-              cursor: 'pointer'
               backgroundColor: if is_light then 'rgba(255,255,255,.4)' else 'rgba(0,0,0,.4)'
-
-            htmlFor: 'enable_tabs'
+            htmlFor: if paid then 'enable_tabs'
             B null,
               'Enable Tabs.'
             
-            DIV 
-              style:
-                fontSize: 14
+            DIV null,
 
               "Tabs help organize your forum into different pages."
 
+          if !paid
+            UpgradeForumButton
+              text: 'upgrade'
 
 
       A 

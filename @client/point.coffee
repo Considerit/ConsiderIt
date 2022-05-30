@@ -153,7 +153,7 @@ window.Point = ReactiveComponent
           style: 
             position: 'absolute'
             left: 0
-            top: 0
+            top: -2
 
           if @data().is_pro then '•' else '•'
 
@@ -241,9 +241,16 @@ window.Point = ReactiveComponent
             DIV 
               style: 
                 fontSize: 12
+                # fontFamily: mono_font()
+                color: '#666'
+                # textAlign: 'right'
 
-              prettyDate(point.created_at)
-              ', '                
+              if !screencasting() && !embedded_demo()
+                [
+                  prettyDate(point.created_at)
+                  ', '                
+                ]
+
               SPAN 
                 key: 2 
                 style: {whiteSpace: 'nowrap'}
@@ -659,7 +666,10 @@ window.Comment = ReactiveComponent
 
     else
 
-      DIV className: 'comment_entry',
+      DIV 
+        key: comment.key
+        "data-id": comment.key
+        className: 'comment_entry'
 
         # Comment author name
         DIV className: 'comment_entry_name',

@@ -10,9 +10,9 @@ class DigestMailer < Mailer
     @last_sent_at = last_sent_at
     @new_stuff = new_stuff
 
-
     @anonymize_everything = subdomain.customization_json['anonymize_everything']
     @hide_opinions = subdomain.customization_json['hide_opinions']
+    @frozen = subdomain.customization_json['contribution_phase'] = 'frozen'
 
     @subdomain = subdomain
     @user = user

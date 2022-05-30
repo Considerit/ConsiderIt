@@ -31,10 +31,11 @@ gem 'kt-paperclip'
 #############
 # BACKGROUND PROCESSING / EMAIL
 gem 'whenever' # https://github.com/javan/whenever
-gem 'delayed_job', :git => 'git://github.com/collectiveidea/delayed_job.git' 
-gem 'delayed_job_active_record', :git => 'git://github.com/collectiveidea/delayed_job_active_record.git'
+gem 'delayed_job', :git => 'https://github.com/collectiveidea/delayed_job' 
+gem 'delayed_job_active_record', :git => 'https://github.com/collectiveidea/delayed_job_active_record'
 gem "daemons" # for the daemonize method used in bin/delayed_job
 gem 'rubyzip'
+
 
 #############
 # i18n
@@ -49,6 +50,21 @@ gem 'bootsnap', require: false
 
 # for importing from google sheets
 gem 'google-api-client'
+
+
+
+
+require 'yaml'
+
+local_config = YAML.load_file "./config/local_environment.yml"
+
+if local_config["default"]["product_page_installed"]
+  # for payments
+  gem 'stripe'
+
+  # for contact
+  gem 'mailgun-ruby'
+end 
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators

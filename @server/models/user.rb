@@ -5,6 +5,8 @@ class User < ApplicationRecord
   has_secure_password validations: false
   alias_attribute :password_digest, :encrypted_password
 
+  has_many :subdomains, :foreign_key => 'created_by'
+
   has_many :points, :dependent => :destroy
   has_many :opinions, :dependent => :destroy
   has_many :inclusions, :dependent => :destroy
@@ -35,7 +37,7 @@ class User < ApplicationRecord
       },
       :processors => [:thumbnail]
 
-  validates_attachment_content_type :avatar, :content_type => %w(image/jpeg image/jpg image/png image/gif)
+  validates_attachment_content_type :avatar, :content_type => %w(image/jpeg image/jpg image/png image/gif image/webp)
 
   scope :registered, -> {where( :registered => true )}
 
@@ -69,9 +71,7 @@ class User < ApplicationRecord
       needs_to_verify: ['bitcoin', 'bitcoinclassic', 'bch'].include?(current_subdomain.name) && \
                                self.registered && !self.verified,
       completed_host_questions: has_answered_all_required_host_questions,
-
-      # facebook_uid: facebook_uid,
-      # google_uid: google_uid
+      paid_forums: if is_admin? then paid_forums else 0 end
 
     }
 

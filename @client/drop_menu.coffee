@@ -39,6 +39,36 @@
 #   - active_option ("focus" in other code)
 
 
+styles += """
+
+[data-widget="DropMenu"] .dropmenu-wrapper {
+  position: relative;
+}
+
+[data-widget="DropMenu"] .dropMenu-anchor {
+  position: relative;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: inherit;
+}
+
+[data-widget="DropMenu"] .dropmenu-menu {
+  list-style: none;
+  position: absolute;
+  z-index: 999999;
+}
+
+[data-widget="DropMenu"] .menu-item {
+  cursor: pointer;
+  outline: none;
+  text-decoration: none;
+}
+
+
+"""
+
+
 window.DropMenu = ReactiveComponent
   displayName: 'DropMenu'
 
@@ -46,34 +76,18 @@ window.DropMenu = ReactiveComponent
     @local.active_option ?= -1
     open_menu_on = @props.open_menu_on or 'focus' #other option is 'activation'
 
-    wrapper_style = _.defaults {}, @props.wrapper_style, 
-      position: 'relative'
+    wrapper_style = @props.wrapper_style or {}
 
-    if !@props.anchor_class_name
-      anchor_style = _.defaults {}, @props.anchor_style,
-        position: 'relative'
-        background: 'transparent'
-        border: 'none'
-        cursor: 'pointer'
-        fontSize: 'inherit'
-    else 
-      anchor_style = _.defaults {}, @props.anchor_style
+    anchor_style = @props.anchor_style or {}
 
-    anchor_when_open_style = _.defaults {}, @props.anchor_open_style, anchor_style
+    anchor_when_open_style = _.defaults {}, (@props.anchor_open_style or {}), anchor_style
     
-    menu_style = _.defaults {}, @props.menu_style,
-      listStyle: 'none'
-      position: 'absolute'
-      zIndex: 999999
+    menu_style = @props.menu_style or {}
 
-    menu_when_open_style = _.defaults {}, @props.menu_when_open_style, menu_style
+    menu_when_open_style = _.defaults {}, (@props.menu_when_open_style or {}), menu_style
 
-
-    option_style = _.defaults {}, @props.option_style,
-      cursor: 'pointer'
-      outline: 'none'
-      textDecoration: 'none'
-    active_option_style = _.defaults {}, @props.active_option_style, option_style
+    option_style = @props.option_style or {}
+    active_option_style = _.defaults {}, (@props.active_option_style or {}), option_style
 
     options = @props.options
 
@@ -113,7 +127,7 @@ window.DropMenu = ReactiveComponent
 
     # wrapper
     DIV 
-      className: 'dropmenu-wrapper'
+      className: "dropmenu-wrapper #{if @props.className then @props.className}"
       ref: 'menu_wrap'
       key: 'dropmenu-wrapper'
       style: wrapper_style
@@ -184,7 +198,7 @@ window.DropMenu = ReactiveComponent
       # drop menu
 
       UL
-        className: 'dropmenu-menu'
+        className: "dropmenu-menu #{if @local.show_menu then 'dropmenu-menu-open'}"
         id: "dropMenu-#{@local.key}" 
         role: "menu"
         'aria-hidden': !@local.show_menu
@@ -204,7 +218,7 @@ window.DropMenu = ReactiveComponent
                 href: option.href #optional
                 key: "#{option.label}-activate" 
                 'data-action': option['data-action'] #optional
-                className: if @local.active_option == idx then 'active-menu-item'
+                className: "menu-item #{if @local.active_option == idx then 'active-menu-item'}"
 
                 style: if @local.active_option == idx then active_option_style else option_style
 
@@ -243,7 +257,46 @@ window.DropMenu = ReactiveComponent
 
                 render_option option, @local.active_option == idx
 
-                  
+
+styles += """
+  .default_drop[data-widget="DropMenu"] {
+    display: inline-block;
+    min-width: 170px;
+  }
+  .default_drop[data-widget="DropMenu"] .dropMenu-anchor {
+    display: flex;
+  }
+
+  .default_drop[data-widget="DropMenu"] .dropmenu-menu {
+    left: -9999px;
+    top: 26px;
+    border-radius: 8px;
+    overflow: hidden;
+    font-style: normal;
+    width: 280px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.7);
+    background-color: rgb(238, 238, 238);
+    padding: 8px 0;
+  }
+
+  .default_drop[data-widget="DropMenu"] .dropmenu-menu.dropmenu-menu-open {
+    left: 0;
+  }
+
+  .default_drop[data-widget="DropMenu"] .menu-item {
+    padding: 8px 20px;
+    display: block;
+    font-weight: 600;
+    font-size: 18px;
+    text-transform: capitalize;
+    color: #{focus_blue};
+  }
+
+  .default_drop[data-widget="DropMenu"] .menu-item.active-menu-item {
+    /* background-color: #eee; */
+    color: black;
+  }
+"""
 
 
 # DropOverlay
@@ -350,7 +403,7 @@ window.DropOverlay = ReactiveComponent
         'aria-haspopup': "true"
         'aria-owns': "DropOverlay-#{@local.key}"
         style: if @local.show_area then anchor_when_open_style else anchor_style
-        className: if @props.anchor_class_name then @props.anchor_class_name
+        className: "menu_anchor #{if @props.anchor_class_name then @props.anchor_class_name}"
 
         onMouseEnter: if open_area_on == 'focus' then (e) => 
                 @onOpen()

@@ -76,8 +76,8 @@ window.sorted_proposals = (proposals, sort_key, require_force) ->
   if sort_key not of proposal_sort_keys 
     proposal_sort_keys[sort_key] = true
 
-  sort = fetch 'sort_proposals'
-  set_sort() if !sort.name? 
+  sort = fetch 'sort_and_filter_proposals'
+  set_default_sort() if !sort.name? 
 
   proposals = proposals.slice()
 
@@ -91,6 +91,9 @@ window.sorted_proposals = (proposals, sort_key, require_force) ->
         filtered.push proposal
     for proposal in filtered
       proposals.splice proposals.indexOf(proposal), 1
+
+  if sort.filter? && sort.filter?.name != 'Show all'
+    proposals = (p for p in proposals when sort.filter.passes(p))
 
 
   proposals = sort.order(proposals)
@@ -150,7 +153,7 @@ sort_options = [
 
   { 
     name: 'Total Score'
-    description: "Each item is scored by the sum of all opinions, where each opinion expresses a score on a spectrum from -1 to 1. "    
+    description: "Each proposal is scored by the sum of all opinions, where each opinion expresses a score on a spectrum from -1 to 1. "    
     order: (proposals) -> 
       cache = {}
       opinion_views = fetch 'opinion_views'
@@ -169,7 +172,7 @@ sort_options = [
       proposals.sort (a, b) -> val(b) - val(a)
   }, {
     name: 'Trending'
-    description: "Same as 'Total Score', except newer items and opinions are weighed more heavily."
+    description: "Same as 'Total Score', except newer proposals and opinions are weighed more heavily."
 
     order: (proposals) ->
       cache = {}
@@ -181,19 +184,48 @@ sort_options = [
 
       opinion_views = fetch 'opinion_views'
 
+      filters_for_proposals = {}
+
+      # get last opinion to use as our "trending" stopper
+      last_activity = "0"
+      for prop in proposals
+        opinions = prop.opinions or fetch(prop).opinions or [] 
+
+        filters_for_proposals[prop.key] = 
+          opinions: opinions
+          views: compose_opinion_views opinions, prop, opinion_views
+        {weights, salience, groups} = filters_for_proposals[prop.key].views
+        for o in opinions
+          continue if salience[o.user] < 1 || weights[o.user] == 0
+          if o.updated_at > last_activity 
+            last_activity = o.updated_at
+
+        if prop.created_at > last_activity
+          last_activity = prop.created_at
+
+      latest_timestamp = new Date(last_activity).getTime()
+      date_filter = fetch('opinion-date-filter')
+      if date_filter.end
+        latest_timestamp = Math.min(date_filter.end, latest_timestamp)
+
+      RECENCY_SENSITIVITY = 100 # decrease this constant to favor newer proposals
       val = (proposal) -> 
         if proposal.key not of cache
-          opinions = proposal.opinions or fetch(proposal).opinions or []   
-          {weights, salience, groups} = compose_opinion_views opinions, proposal, opinion_views
+          opinions = filters_for_proposals[proposal.key].opinions
+          {weights, salience, groups} = filters_for_proposals[proposal.key].views
           sum = 0
           for opinion in opinions
             continue if salience[opinion.user] < 1 # don't count users who aren't fully salient, they're considered backgrounded
             w = weights[opinion.user] # * salience[opinion.user]
             sum += opinion.stance * w
 
-          n = Date.now()
           pt = new Date(proposal.created_at).getTime()
-          cache[proposal.key] = sum / (1 + (n - pt) / 10000000000)  # decrease this constant to favor newer proposals
+
+          if sum < 0
+            cache[proposal.key] = sum * (1 + (latest_timestamp - pt) / RECENCY_SENSITIVITY)  
+          else 
+            cache[proposal.key] = sum / (1 + (latest_timestamp - pt) / RECENCY_SENSITIVITY) 
+
         cache[proposal.key]
 
       proposals.sort (a, b) ->
@@ -203,15 +235,15 @@ sort_options = [
     order: (proposals) -> 
       proposals.sort (a,b) -> new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     name: 'Date: Most recent first'
-    description: "The items submitted most recently are shown first."
+    description: "The proposals submitted most recently are shown first."
   }, {
     order: (proposals) -> 
       proposals.sort (a,b) -> new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     name: 'Date: Earliest first'
-    description: "The items submitted first are shown first."
+    description: "The proposals submitted first are shown first."
   }, { 
     name: 'Most unifying first'
-    description: "The items on which participants are most united for or against are shown first."
+    description: "The proposals on which participants are most united for or against are shown first."
     order: (proposals) -> 
       cache = {}
       opinion_views = fetch 'opinion_views'
@@ -249,7 +281,7 @@ sort_options = [
 
   }, { 
     name: 'Most polarizing first'
-    description: "The items on which participants are most split are shown highest."
+    description: "The proposals on which participants are most split are shown highest."
     order: (proposals) -> 
       cache = {}
       opinion_views = fetch 'opinion_views'
@@ -290,7 +322,7 @@ sort_options = [
 
   { 
     name: 'Average Score'
-    description: "Each item is scored by the average opinion, where each opinion expresses a score on a spectrum from -1 to 1. "
+    description: "each proposal is scored by the average opinion, where each opinion expresses a score on a spectrum from -1 to 1. "
     order: (proposals) -> 
       cache = {}
       opinion_views = fetch 'opinion_views'
@@ -355,8 +387,16 @@ sort_options = [
 
 ]
 
-set_sort = -> 
-  sort = fetch 'sort_proposals'
+window.set_sort_order = (name) ->
+  sort = fetch 'sort_and_filter_proposals'
+  for s in sort_options
+    if s.name == name
+      _.extend sort, s or sort_options[1]
+      save sort
+      return 
+
+set_default_sort = -> 
+  sort = fetch 'sort_and_filter_proposals'
   if !sort.name?
     found = false 
     loc = fetch('location')
@@ -385,6 +425,7 @@ set_sort = ->
 
 
 
+# currently unused
 ProposalSort = ReactiveComponent
   displayName: 'ProposalSort'
 
@@ -492,100 +533,167 @@ ProposalSort = ReactiveComponent
 
 
 
+opined_on = (proposal) -> 
+  proposal.your_opinion?.published != false 
+
+filter_options = [
+  { 
+    name: "All"
+    description: "All proposals shown."    
+    passes: (proposal) -> true
+  }
+
+  { 
+    name: "Completed"
+    description: "Only show proposals on which you've expressed an opinion."    
+    passes: (proposal) -> opined_on(proposal)
+  }
+  { 
+    name: "Incomplete"
+    description: "Show proposals that you have not yet expressed an opinion about."    
+    passes: (proposal) -> !opined_on(proposal)
+  }  
+]
+
+
+FilterProposalsMenu = ReactiveComponent
+  displayName: 'FilterProposalsMenu'
+  render: -> 
+
+    sort_and_filter_state = fetch 'sort_and_filter_proposals'
+    sort_and_filter_state.filter ?= _.extend {}, filter_options[0]
+
+    DIV 
+      style: 
+        position: 'relative'
+        paddingLeft: 12
+    
+
+      DropMenu 
+        className: 'default_drop bluedrop'    
+        options: filter_options
+        anchor_class_name: 'sort_proposals'
+
+        open_menu_on: 'activation'
+
+        selection_made_callback: (option) -> 
+          invalidate_proposal_sorts()
+
+          _.extend sort_and_filter_state.filter, option   
+          save sort_and_filter_state 
+
+        render_anchor: ->
+          current_filter = translator "engage.filter.#{sort_and_filter_state.filter.name}", sort_and_filter_state.filter.name
+          if current_filter.indexOf(':') > -1 
+            current_filter = current_filter.split(':')[1]
+          [
+            TRANSLATE "engage.filter_by", "show"
+            ": "
+
+            SPAN 
+              style: 
+                fontWeight: 700
+                paddingLeft: 8
+
+              current_filter
+
+              SPAN style: _.extend cssTriangle 'bottom', 'white', 8, 5,
+                display: 'inline-block'
+                marginLeft: 4   
+                marginBottom: 2
+          ]
+
+        render_option: (option, is_active) -> 
+          [
+            SPAN 
+              "data-filter": option.name
+              style: 
+                # fontWeight: 600
+                fontSize: 16
+                marginBottom: 2
+
+              translator "engage.filter.#{option.name}", option.name 
+
+            if !browser.is_mobile
+              SPAN 
+                style: 
+                  float: 'right'
+                HelpIcon translator("engage.filter.#{option.name}.description", option.description),
+                  color: 'black' #if is_active then 'white'
+                
+          ]
+
+
+
+
+
 SortProposalsMenu = ReactiveComponent
   displayName: 'SortProposalsMenu'
   render: -> 
 
-    sort = fetch 'sort_proposals'
-    set_sort() if !sort.name?       
+    sort = fetch 'sort_and_filter_proposals'
+    set_default_sort() if !sort.name?       
 
+    DIV 
+      style: 
+        position: 'relative'
+      DropMenu 
+        className: 'default_drop bluedrop'    
+        options: sort_options
 
-    DropMenu
-      options: sort_options
-      anchor_class_name: 'sort_proposals'
+        open_menu_on: 'activation'
 
-      open_menu_on: 'activation'
+        selection_made_callback: (option) -> 
+          invalidate_proposal_sorts()
+          _.extend sort, option   
+          save sort 
 
-      selection_made_callback: (option) -> 
-        invalidate_proposal_sorts()
-        _.extend sort, option   
-        save sort 
+        render_anchor: ->
+          current_sort = translator "engage.sort_order.#{sort.name}", sort.name
+          if current_sort.indexOf(':') > -1 
+            current_sort = current_sort.split(':')[1]
+          [
+            TRANSLATE "engage.sort_by", "sort"
+            ": "
 
-      render_anchor: ->
-        current_sort = translator "engage.sort_order.#{sort.name}", sort.name
-        if current_sort.indexOf(':') > -1 
-          current_sort = current_sort.split(':')[1]
-        [
-          TRANSLATE "engage.sort_by", "sort by"
-          ": "
-
-          SPAN 
-            style: 
-              fontWeight: 700
-              paddingLeft: 8
-
-            current_sort
-
-            SPAN style: _.extend cssTriangle 'bottom', 'white', 8, 5,
-              display: 'inline-block'
-              marginLeft: 4   
-              marginBottom: 2
-        ]
-
-      render_option: (option, is_active) -> 
-        [
-          SPAN 
-            style: 
-              # fontWeight: 600
-              fontSize: 16
-              marginBottom: 2
-
-            translator "engage.sort_order.#{option.name}", option.name 
-
-          if !browser.is_mobile
             SPAN 
               style: 
-                float: 'right'
-              HelpIcon translator "engage.sort_order.#{option.name}.description", option.description
-              
+                fontWeight: 700
+                paddingLeft: 8
 
-          # DIV 
-          #   style: 
-          #     fontSize: 12
-          #     color: if is_active then 'white' else '#444'
+              current_sort
 
-          #   translator "engage.sort_order.#{option.name}.description", option.description 
-        ]
+              SPAN style: _.extend cssTriangle 'bottom', 'white', 8, 5,
+                display: 'inline-block'
+                marginLeft: 4   
+                marginBottom: 2
+          ]
 
-      anchor_style:
-        display: 'flex'
-      wrapper_style: 
-        display: 'inline-block'
-        minWidth: 170
-      menu_style: 
-        minWidth: 350
-        backgroundColor: '#fbfbfb'
-        border: "1px solid #ccc"
-        left: -9999
-        top: 26
-        borderRadius: 8
-        fontWeight: 400
-        overflow: 'hidden'
-        boxShadow: '0 1px 2px rgba(0,0,0,.8)'
-        padding: '4px 24px 12px 24px'
+        render_option: (option, is_active) -> 
+          [
+            SPAN 
+              "data-sort": option.name
+              style: 
+                # fontWeight: 600
+                fontSize: 16
+                marginBottom: 2
 
-      menu_when_open_style: 
-        left: 0
+              translator "engage.sort_order.#{option.name}", option.name 
 
-      option_style: 
-        padding: '6px 12px'
-        borderBottom: "1px solid #ddd"
-        display: 'block'
+            if !browser.is_mobile
+              SPAN 
+                style: 
+                  float: 'right'
+                HelpIcon translator "engage.sort_order.#{option.name}.description", option.description
+                
 
-      active_option_style: 
-        borderBottom: "1px solid #444"
-        # color: 'white'
-        # backgroundColor: focus_color()
+            # DIV 
+            #   style: 
+            #     fontSize: 12
+            #     color: if is_active then 'white' else '#444'
+
+            #   translator "engage.sort_order.#{option.name}.description", option.description 
+          ]
 
 
 
@@ -593,10 +701,14 @@ ManualProposalResort = ReactiveComponent
   displayName: 'ManualProposalResort'
 
   render: -> 
-    sort = fetch 'sort_proposals'
+    sort = fetch 'sort_and_filter_proposals'
 
     if !stale_sort_order(@props.sort_key) || ONE_COL()
       return SPAN null 
+
+    if running_timelapse_simulation?
+      invalidate_proposal_sorts()
+      return SPAN null
 
     DIV
       style: 
@@ -627,7 +739,7 @@ ManualProposalResort = ReactiveComponent
           display: 'flex'
           alignItems: 'center'
 
-        'data-tooltip': if !browser.is_mobile then translator "engage.sort_order.out-of-order-tooltip", "A re-sort may be needed because someone else added or updated their opinion, or you selected an opinion view that filtered or weighed opinions differently."
+        # 'data-tooltip': if !browser.is_mobile then translator "engage.sort_order.out-of-order-tooltip", "A re-sort may be needed because someone else added or updated their opinion, or you selected an opinion view that filtered or weighed opinions differently."
 
         onClick: invalidate_proposal_sorts
 
@@ -654,6 +766,7 @@ ManualProposalResort = ReactiveComponent
         SPAN 
           style: 
             padding: "2px 0 2px 8px"
+            whiteSpace: 'nowrap'
 
           translator "engage.sort_order.resort", 'Re-sort'
 
@@ -661,4 +774,5 @@ ManualProposalResort = ReactiveComponent
 
 window.ProposalSort = ProposalSort
 window.SortProposalsMenu = SortProposalsMenu
+window.FilterProposalsMenu = FilterProposalsMenu
 window.ManualProposalResort = ManualProposalResort

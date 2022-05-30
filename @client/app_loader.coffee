@@ -24,6 +24,8 @@
   if !app
     throw "Application not defined"
 
+  return if app not in ['franklin', 'proposal_embed']
+
   # Add defined styles
 
   style = document.createElement('style')
@@ -36,6 +38,7 @@
   document.body.appendChild style
 
   switch app
+
     when 'franklin'      
       if 'ontouchend' in document #detect touch support
         React.initializeTouchEvents(true)
@@ -44,5 +47,6 @@
 
     when 'proposal_embed'
       React.renderComponent ProposalEmbed({key: app_meta.getAttribute('proposal')}), document.getElementById('content')
+
 
 )()

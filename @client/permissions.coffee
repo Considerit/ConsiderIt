@@ -56,7 +56,7 @@ permit = (action) ->
   phase = customization('contribution_phase', null, subdomain)
 
 
-  if phase == 'frozen' && action not in ['read proposal', 'access forum']
+  if phase == 'frozen' && action not in ['read proposal', 'access forum', 'configure paid feature']
     return Permission.DISABLED
 
   switch action
@@ -162,7 +162,7 @@ permit = (action) ->
     when 'configure paid feature'
       subdomain ?= fetch '/subdomain'
 
-      if !((current_user.is_admin && subdomain.plan) || current_user.is_super_admin)
+      if !(   (current_user.is_admin && subdomain.plan) || current_user.is_super_admin   )
         return Permission.INSUFFICIENT_PRIVILEGES
     else
       console.error "Unrecognized action to permit: #{action}"

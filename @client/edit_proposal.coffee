@@ -250,6 +250,7 @@ window.EditProposal = ReactiveComponent
                 id: 'pic'
                 type: 'file'
                 name: 'pic'
+                accept: "image/jpg, image/jpeg, image/pjpeg, image/png, image/x-png, image/gif, image/webp"
                 onChange: (ev) =>
                   @submit_pic = true
 
@@ -270,6 +271,7 @@ window.EditProposal = ReactiveComponent
                 id: 'banner'
                 type: 'file'
                 name: 'banner'
+                accept: "image/jpg, image/jpeg, image/pjpeg, image/png, image/x-png, image/gif, image/webp"
                 onChange: (ev) =>
                   @submit_pic = true
 

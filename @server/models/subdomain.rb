@@ -9,8 +9,8 @@ class Subdomain < ApplicationRecord
   has_attached_file :logo, :processors => [:thumbnail]
   has_attached_file :masthead, :processors => [:thumbnail]
 
-  validates_attachment_content_type :masthead, :content_type => %w(image/jpeg image/jpg image/png image/gif)
-  validates_attachment_content_type :logo, :content_type => %w(image/jpeg image/jpg image/png image/gif)
+  validates_attachment_content_type :masthead, :content_type => ["image/jpg", "image/jpeg", "image/pjpeg", "image/png","image/x-png", "image/gif", "image/webp"], message: "Only jpeg, png, gif, and webp images types are allowed"
+  validates_attachment_content_type :logo, :content_type => ["image/jpg", "image/jpeg", "image/pjpeg", "image/png","image/x-png", "image/gif", "image/webp"], message: "Only jpeg, png, gif, and webp images types are allowed"
 
   class_attribute :my_public_fields
   self.my_public_fields = [:id, :lang, :name, :created_at, :about_page_url, :external_project_url, :moderation_policy, :plan, :SSO_domain]

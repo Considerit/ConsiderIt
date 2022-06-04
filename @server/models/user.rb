@@ -37,7 +37,7 @@ class User < ApplicationRecord
       },
       :processors => [:thumbnail]
 
-  validates_attachment_content_type :avatar, :content_type => %w(image/jpeg image/jpg image/png image/gif image/webp)
+  validates_attachment_content_type :avatar, :content_type => ["image/jpg", "image/jpeg", "image/pjpeg", "image/png","image/x-png", "image/gif", "image/webp"], message: "Only jpeg, png, gif, and webp images types are allowed"
 
   scope :registered, -> {where( :registered => true )}
 

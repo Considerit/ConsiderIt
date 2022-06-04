@@ -866,6 +866,7 @@ window.EditBanner = ReactiveComponent
           id: 'logo'
           type: 'file'
           name: 'logo'
+          accept: "image/jpg, image/jpeg, image/pjpeg, image/png, image/x-png, image/gif, image/webp"          
           ref: 'logo_file_input'
           onChange: (ev) =>
             edit_banner.logo_preview = URL.createObjectURL ev.target.files[0]
@@ -875,6 +876,7 @@ window.EditBanner = ReactiveComponent
         INPUT 
           id: 'masthead'
           type: 'file'
+          accept: "image/jpg, image/jpeg, image/pjpeg, image/png, image/x-png, image/gif, image/webp"          
           name: 'masthead'
           ref: 'masthead_file_input'
           onChange: (ev) =>

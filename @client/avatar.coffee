@@ -6,6 +6,9 @@ require './customizations'
 # globally accessible method for getting the URL of a user's avatar
 window.avatarUrl = (user, img_size) -> 
   user = fetch(user)
+  if user.avatar_file_name.endsWith('svg') 
+    img_size = 'original' # paperclip mangles svg files
+
   if !!user.avatar_file_name
     app = arest.cache['/application'] or fetch('/application')
     (app.asset_host or '') + \

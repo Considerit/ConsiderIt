@@ -264,8 +264,9 @@ class CurrentUserController < ApplicationController
         log('verification token sent')
 
       when 'update_avatar_hack'
-        current_user.update_attribute(:avatar, params['avatar'])
-
+        if !current_user.update_attributes({ avatar: params['avatar'] })
+          errors.push current_user.errors.messages[:avatar][0]
+        end
     end
 
     # Wrap everything up
@@ -352,25 +353,13 @@ class CurrentUserController < ApplicationController
       new_params[:subscriptions] = current_user.update_subscriptions(new_params[:subscriptions].to_h)
     end
 
-    if current_user.update_attributes(new_params)
-      # puts("Updating params. #{new_params}")
-      if !current_user.save
-        raise "Error saving basic current_user parameters! #{current_user.errors.messages.inspect.to_s}"
+    if !current_user.update_attributes(new_params)
+      for err in current_user.errors.messages 
+        if !errors.index(err[1])
+          errors.push err[1]
+        end
       end
-      
-    else
-      errors = current_user.errors.messages
-      if errors.has_key?(:avatar) && errors[:avatar].index('is invalid')
-        new_params[:avatar] = nil
-        if current_user.update_attributes(new_params)
-          # puts("Updating params. #{new_params}")
-          if !current_user.save
-            raise "Error saving basic current_user parameters! #{current_user.errors.messages.inspect.to_s}"
-          end
-        else 
-          raise "Had trouble manipulating #{current_user.id} user! #{new_params.to_s}; #{current_user.errors.messages.inspect.to_s}"
-        end 
-      end
+      return false
     end
 
     # Update their email address.  First, check if they gave us a new address

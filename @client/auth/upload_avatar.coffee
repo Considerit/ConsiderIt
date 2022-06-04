@@ -64,6 +64,7 @@ window.AvatarInput = ReactiveComponent
         id: 'user_avatar'
         name: "avatar"
         type: "file"
+        accept: "image/jpg, image/jpeg, image/pjpeg, image/png, image/x-png, image/gif, image/webp"        
         style: {marginTop: 24, verticalAlign: 'top'}
         onChange: (ev) => 
           input = $('#user_avatar')[0]
@@ -88,12 +89,15 @@ window.upload_avatar = ->
       additional_data:  
         authenticity_token: current_user.csrf
         trying_to: 'update_avatar_hack'
-      success: -> 
+      success: (resp) -> 
         # It is important that a user that just submitted a user picture see the picture
         # on the results and in the header. However, this is a bit tricky because the avatars
         # are cached on the server and the image is processed in a background task. 
         # Therefore, we'll wait until the image is available and then make it available
         # in the avatar cache.  
+        if resp && errors = JSON.parse(resp)[0]?.errors
+          if errors.length > 0
+            show_flash_error errors[0]
         poll_until_avatar_arrives()
       error: (problem) ->
         console.error "Error uploading avatar", problem  

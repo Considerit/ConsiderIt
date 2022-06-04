@@ -16,7 +16,7 @@ Development = ReactiveComponent
     @local.only_with_activity ?= true 
 
 
-    if @local.hover_top
+    if location.hostname == 'localhost' && @local.hover_top
       subdomains = fetch('/subdomains').subs
       return SPAN null if @is_waiting()
 

@@ -207,7 +207,7 @@ window.ProposalDescription = ReactiveComponent
                     else
                       translator('anonymous', 'Anonymous')
 
-                  if !screencasting()
+                  if !screencasting() && fetch('/subdomain').name != 'galacticfederation'
                     DIV 
                       style: 
                         color: '#666'

@@ -295,7 +295,7 @@ window.CollapsedProposal = ReactiveComponent
               show_author_name_in_meta_data = !icons && (editor = proposal_editor(proposal)) && editor == proposal.user && !customization('anonymize_everything')
 
               [
-                if !screencasting()
+                if !screencasting() && subdomain.name != 'galacticfederation'
                   SPAN 
                     className: 'separated'
                     style: 

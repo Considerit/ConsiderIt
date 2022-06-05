@@ -245,7 +245,7 @@ window.Point = ReactiveComponent
                 color: '#666'
                 # textAlign: 'right'
 
-              if !screencasting() && !embedded_demo()
+              if !screencasting() && !embedded_demo() && fetch('/subdomain').name != 'galacticfederation'
                 [
                   prettyDate(point.created_at)
                   ', '                

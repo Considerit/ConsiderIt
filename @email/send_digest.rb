@@ -15,9 +15,10 @@ def send_digest(subdomain, user, subscription_settings, deliver = true, since = 
     else 
       since = user.created_at.to_s
     end
-  end 
+  end
 
-  new_activity = get_new_activity(subdomain, user, since)
+
+  new_activity = get_new_activity(subdomain, user, since.to_s)
   mail = DigestMailer.digest(subdomain, user, new_activity, last_digest_sent_at, send_emails)
 
   

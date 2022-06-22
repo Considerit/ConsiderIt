@@ -270,10 +270,13 @@ window.CollapsedProposal = ReactiveComponent
             proposal.name
 
           if customization('proposal_show_description_on_homepage', null, subdomain)
-
-            if proposal.description?.length > 700
+            len = customization('proposal_show_description_on_homepage', null, subdomain)
+            if len == true 
+              len = 700
+              
+            if proposal.description?.length > len
               div = document.createElement("div")
-              div.innerHTML = proposal.description.substring(0,700)
+              div.innerHTML = proposal.description.substring(0,len)
               desc = div.textContent or div.innerText or ""
               desc += " (...)" 
             else 

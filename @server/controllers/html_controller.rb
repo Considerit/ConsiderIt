@@ -117,7 +117,7 @@ class HtmlController < ApplicationController
       #image = "#{request.protocol}#{view_context.asset_path('images/product_page/logo.png').gsub(/\/\//,'')}"
 
       description = "A web forum that elevates your community's opinions. Civil and organized discussion even when hundreds of stakeholders participate. "
-      keywords = "opinion visualization,community engagement,public engagement,public involvement,discussion,forum,feedback,decision making,governance,feedback,collect feedback,deliberation,impact assessment,strategic planning,process improvement,stakeholder committee,listening"
+      keywords = "online engagement, public engagement tool, community engagement tool, stakeholder engagement tool, ideation platform, community ideation, public engagement, community engagement, stakeholder engagement, online forum, online deliberation, online dialogue, strategic planning tool, feedback tool"
       
 
     when 'newblueplan'

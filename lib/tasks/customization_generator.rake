@@ -4,7 +4,16 @@ require 'json'
 require Rails.root.join("lib/services/google_sheet")
 
 
+
 namespace :customizations do 
+
+
+  # Usage: 
+  # 
+  # rake customizations:generate_lists\["https://docs.google.com/spreadsheets/d/1Tap450yKuXKtTZw42jvbwNdcYx7gkOC9U6BUkEG3_MM/edit\#gid\=884353670"\]
+  #
+  # Note: share google sheet with considerit@consideritus.iam.gserviceaccount.com to allow access
+
   task :generate_lists, [:fpath] => :environment do |t, args|
 
     # edit this before running if necessary: 
@@ -33,6 +42,7 @@ namespace :customizations do
       sheets.each do |sh|
         if sh.index('structure')
           structure_sheet = sh
+          break
         end
       end
 
@@ -66,7 +76,7 @@ namespace :customizations do
     out = File.open('lib/tasks/client_data/customizations.txt', 'w')
 
     data.each do |row|
-      name = row['name']
+      name = row['name'] || row['list']
       desc = row['description']
       header = row['title'] || row['header']
       if desc && !header 

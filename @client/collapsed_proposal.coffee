@@ -281,8 +281,14 @@ window.CollapsedProposal = ReactiveComponent
               desc += " (...)" 
             else 
               desc = proposal.description
-            DIV 
+
+            A
               className: 'description_on_homepage'
+              style: 
+                textDecoration: 'none'
+                fontWeight: 400
+                display: 'block'                
+              href: proposal_url(proposal, just_you && current_user.logged_in)
               dangerouslySetInnerHTML: __html: desc  
 
 

@@ -35,7 +35,7 @@ require './browser_hacks'
 setResponsive = -> 
   responsive = fetch('responsive_vars')
 
-  w = window.innerWidth
+  w = if browser.is_mobile then document.documentElement.clientWidth else window.innerWidth
   h = window.innerHeight
 
   portrait = h > w
@@ -75,7 +75,7 @@ setResponsive = ->
   homepage_width = Math.min content_width, 1100
   homepage_width = 60 * Math.floor(homepage_width / 60)
 
-    
+
   if browser.is_mobile && portrait
     point_font_size += 4
 
@@ -101,6 +101,10 @@ setResponsive = ->
     LANDSCAPE_MOBILE: !portrait && browser.is_mobile
     HOMEPAGE_WIDTH: homepage_width
     LIST_PADDING: if one_col then 12 else 80
+    SAAS_PAGE_WIDTH: Math.min(1120, w - 2 * 24)
+
+  
+
 
   # only update if we have a change
   # (something like this should go into statebus)
@@ -108,6 +112,7 @@ setResponsive = ->
     if responsive[k] != v
       _.extend responsive, new_vals
       save responsive
+      console.log 'saving responsive'
       break
       
 # Initialize the responsive variables on page load.
@@ -115,6 +120,15 @@ setResponsive()
 
 # Whenever the window resizes, we need to recalculate the variables.
 $(window).on "resize.responsive_vars", setResponsive
+
+
+# Trying to make sure to catch events (like initial auto zoom) that lead to viewport changes
+$(window).on "gestureend.responsive_vars", setResponsive
+window.matchMedia('screen and (min-resolution: 2dppx)').addEventListener "change", setResponsive
+if browser.is_mobile
+  setTimeout setResponsive, 1
+
+
 
 # Convenience method for programmers to access responsive variables.
 responsive = fetch('responsive_vars')

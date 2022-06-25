@@ -272,7 +272,6 @@ window.styles += """
   #AUTH_task {
     font-size: 38px;
     font-weight: 700;
-    white-space: nowrap;
     margin-bottom: 18px;
   }
 
@@ -336,6 +335,13 @@ window.styles += """
     font-size: #{if browser.is_mobile then 36 else 20}px;
     display: inline-block;
     background-color: #f2f2f2;
+  }
+
+
+  @media only screen and (max-width: 637px) {
+    .AUTH_body_wrapper {
+      padding: 2.5em 32px 3em 36px;
+    }
   }
 
 

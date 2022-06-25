@@ -41,6 +41,51 @@ class OAuthHandler
 
 OAuth_providers = ['google'] # ['facebook', 'google']
 
+styles += """
+  .oauth_wrapper {
+    display: flex;
+  }
+
+  .oauth_child_wrapper {
+    flex-grow: 4;
+  }
+
+  .oauth_providers_wrapper {
+    flex-grow: 0;
+  }
+
+
+  @media only screen and (min-width: 637px) {
+    .oauth_wrapper {
+
+    }
+
+    .oauth_child_wrapper {
+
+    }
+
+    .oauth_providers_wrapper {
+      border-left: 1px dashed #ccc;
+      margin-left: 40px;
+      padding: 15px 0 0 40px;
+    }
+  }
+
+  @media only screen and (max-width: 637px) {
+    .oauth_wrapper {
+      flex-direction: column;
+    }
+
+    .oauth_child_wrapper {
+
+    }
+
+    .oauth_providers_wrapper {
+      margin-top: 24px;
+    }
+  }
+
+"""
 
 # Mixin for authenticating via OAuth
 window.OAuthLogin =
@@ -65,20 +110,14 @@ window.OAuthLogin =
 
   WrapOAuth: (form, children) -> 
     DIV 
-      style: 
-        display: 'flex' 
+      className: 'oauth_wrapper'
 
       DIV 
-        style: 
-          flexGrow: 4
+        className: 'oauth_child_wrapper'
         children
 
       DIV 
-        style: 
-          flexGrow: 0
-          marginLeft: 40
-          borderLeft: "1px dashed #ccc"
-          padding: "15px 0 0 40px"
+        className: 'oauth_providers_wrapper'
 
         @RenderOAuthProviders(form)
 

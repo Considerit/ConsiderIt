@@ -6,9 +6,6 @@ window.browser =
   key: 'browser'
   is_android_browser : is_android_browser  # stock android browser (not chrome)
   is_opera_mini : !!navigator.userAgent.match /Opera Mini/
-  is_ie9 : !!(document.documentMode && document.documentMode == 9)
-  is_iOS : !!navigator.platform.match(/(iPad|iPhone)/)
-  touch_enabled : 'ontouchend' in document
   high_density_display : ((window.matchMedia && 
                            (window.matchMedia('''
                               only screen and (min-resolution: 124dpi), 
@@ -21,7 +18,7 @@ window.browser =
                               only screen and (min-device-pixel-ratio: 1.3)''').matches
                             )) || 
                           (window.devicePixelRatio && window.devicePixelRatio > 1.3))
-  is_mobile :  is_android_browser ||
+  is_mobile :  is_android_browser ||   # Note: this is an old method. iPad, for example, no longer distinguishes itself in user agent
                 navigator.userAgent.match(/Android/i) || 
                 navigator.userAgent.match(/webOS/i) ||
                 navigator.userAgent.match(/iPhone/i) ||

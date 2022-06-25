@@ -61,6 +61,7 @@ window.loadPage = (url, query_params) ->
 # it will reload the page, even if the link is internal to this site
 
 old_A = A
+window.is_swipping = false
 window.A = React.createClass
   displayName: 'modified_A'
   render : -> 

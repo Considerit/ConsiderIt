@@ -270,7 +270,7 @@ window.avatar = (user, props) ->
   src = null
 
   if !anonymous && !props.custom_bg_color && user.avatar_file_name 
-    if style?.width >= 50 && !browser.is_ie9
+    if style?.width >= 50
       img_size = 'large'
     else 
       img_size = attrs.img_size or 'small'

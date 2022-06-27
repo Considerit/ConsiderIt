@@ -35,7 +35,7 @@ require './browser_hacks'
 setResponsive = -> 
   responsive = fetch('responsive_vars')
 
-  w = if browser.is_mobile then document.documentElement.clientWidth else window.innerWidth
+  w = document.documentElement.clientWidth
   h = window.innerHeight
 
   portrait = h > w
@@ -112,9 +112,15 @@ setResponsive = ->
     if responsive[k] != v
       _.extend responsive, new_vals
       save responsive
-      console.log 'saving responsive'
       break
-      
+
+styles += """
+  :root {
+    --WINDOW_WIDTH: 100vw;
+    --SAAS_PAGE_WIDTH: min(1120px, calc(100vw - 2 * 24px));
+  }
+"""
+     
 # Initialize the responsive variables on page load.
 setResponsive()
 

@@ -55,7 +55,7 @@ styles += """
   }
 
 
-  @media only screen and (min-width: 637px) {
+  @media (min-width: 637px) {
     .oauth_wrapper {
 
     }
@@ -71,7 +71,7 @@ styles += """
     }
   }
 
-  @media only screen and (max-width: 637px) {
+  @media (max-width: 637px) {
     .oauth_wrapper {
       flex-direction: column;
     }

@@ -14,7 +14,7 @@ window.drawLogo = (opts) ->
 
   SVG 
     id: 'considerit_logo'
-    width: width 
+    # width: width 
     height: height 
     viewBox: "0 0 284 60" 
     version: "1.1" 

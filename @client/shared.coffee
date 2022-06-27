@@ -1,3 +1,5 @@
+window.styles = ""
+
 require './responsive_vars'
 require './color'
 
@@ -91,8 +93,6 @@ window.back_to_homepage_button = (style, text) ->
 # Make the DIV, SPAN, etc.
 for el of React.DOM
   window[el.toUpperCase()] = React.DOM[el]
-
-window.styles = ""
 
 window.TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
 
@@ -680,6 +680,19 @@ window.header_font = ->
 
 window.mono_font = ->
   customization('mono_font') or customization('font')
+
+
+window.responsive_css_rule = ({min_size, max_size, min_vw, max_vw}) -> 
+
+  XX = min_vw / 100
+  YY = 100 * (max_size - min_size) / (max_vw - min_vw)
+  ZZ = min_size
+
+  "clamp(#{min_size}px, calc(#{ZZ}px + ((1vw - #{XX}px) * #{YY})), #{max_size}px)"
+
+
+
+
 
 
 # from https://gist.github.com/mathewbyrne/1280286

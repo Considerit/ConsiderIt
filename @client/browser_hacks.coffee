@@ -8,14 +8,14 @@ window.browser =
   is_opera_mini : !!navigator.userAgent.match /Opera Mini/
   high_density_display : ((window.matchMedia && 
                            (window.matchMedia('''
-                              only screen and (min-resolution: 124dpi), 
-                              only screen and (min-resolution: 1.3dppx), 
-                              only screen and (min-resolution: 48.8dpcm)''').matches || 
+                              (min-resolution: 124dpi), 
+                              (min-resolution: 1.3dppx), 
+                              (min-resolution: 48.8dpcm)''').matches || 
                             window.matchMedia('''
-                              only screen and (-webkit-min-device-pixel-ratio: 1.3), 
-                              only screen and (-o-min-device-pixel-ratio: 2.6/2), 
-                              only screen and (min--moz-device-pixel-ratio: 1.3), 
-                              only screen and (min-device-pixel-ratio: 1.3)''').matches
+                              (-webkit-min-device-pixel-ratio: 1.3), 
+                              (-o-min-device-pixel-ratio: 2.6/2), 
+                              (min--moz-device-pixel-ratio: 1.3), 
+                              (min-device-pixel-ratio: 1.3)''').matches
                             )) || 
                           (window.devicePixelRatio && window.devicePixelRatio > 1.3))
   is_mobile :  is_android_browser ||   # Note: this is an old method. iPad, for example, no longer distinguishes itself in user agent

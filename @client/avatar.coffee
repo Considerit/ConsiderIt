@@ -70,6 +70,7 @@ window.AvatarPopover = ReactiveComponent
 
         if user.avatar_file_name
           IMG 
+            alt: @props.alt or alt or "Image of #{user.name}"
             style: 
               width: 120
               height: 120
@@ -295,7 +296,6 @@ window.avatar = (user, props) ->
 
   if attrs.alt 
     alt = attrs.alt.replace('<user>', name) 
-    delete attrs.alt
   else 
     alt = name 
 
@@ -317,7 +317,6 @@ window.avatar = (user, props) ->
     # If in future it turns out we want alt text for accessibility, we can address
     # the broken text ugliness by using img { text-indent: -10000px } to 
     # hide the alt text / broken image
-    attrs.alt = ""
     attrs.src = src
     IMG attrs
   else 

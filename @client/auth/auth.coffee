@@ -338,7 +338,7 @@ window.styles += """
   }
 
 
-  @media only screen and (max-width: 637px) {
+  @media (max-width: 637px) {
     .AUTH_body_wrapper {
       padding: 2.5em 32px 3em 36px;
     }

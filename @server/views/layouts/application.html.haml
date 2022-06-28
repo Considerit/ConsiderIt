@@ -62,6 +62,8 @@
 
       %link{:href => "https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css", :rel => "stylesheet"}
 
+      - if @canonical
+        %link{:href => @canonical, :rel => "canonical"}
 
 
       - if current_subdomain.name == 'RANDOM2015'

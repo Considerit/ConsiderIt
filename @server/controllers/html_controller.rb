@@ -105,6 +105,7 @@ class HtmlController < ApplicationController
     proposal = nil
     keywords = title = nil
     google_verification = APP_CONFIG[:google_site_verification]
+    canonical = nil
 
     @favicon = "/favicon.ico"
 
@@ -112,13 +113,42 @@ class HtmlController < ApplicationController
     case current_subdomain.name
 
     when 'homepage'
-      title = 'Consider.it'
-      image = "#{request.protocol}#{view_context.asset_path('images/product_page/galacticfederation.png').gsub(/\/\//,'')}"
-      #image = "#{request.protocol}#{view_context.asset_path('images/product_page/logo.png').gsub(/\/\//,'')}"
+      @canonical = "#{request.protocol}#{request.host}#{page}"
 
-      description = "A web forum that elevates your community's opinions. Civil and organized discussion even when hundreds of stakeholders participate. "
-      keywords = "online engagement, public engagement tool, community engagement tool, stakeholder engagement tool, ideation platform, community ideation, public engagement, community engagement, stakeholder engagement, online forum, online deliberation, online dialogue, strategic planning tool, feedback tool"
-      
+      case page 
+
+        when "/tour"
+          title = 'Consider.it is the only forum to visually summarize what your community thinks and why'
+          description = "Explore the features of Consider.it and what it takes to host a Consider.it forum. Includes a comparison guide between Consider.it, surveys, and standard web forums."
+
+
+        when "/examples", "/examples/public_engagement"
+          title = 'Join Seattle in using Consider.it for public engagement'
+          description = "Public engagement on housing, transportation, climate and more. Collect demographic data to understand who you're reaching. Understand what different groups think, and why."
+          @canonical = "#{request.protocol}#{request.host}/examples/public_engagement"
+        when "/examples/strategic_planning"
+          title = 'Engage stakeholders during strategic planning'
+          description = "Involve staff and other stakeholders in major strategy decisions to learn, decide, and gain buy-in. Compare opinions of staff, board, donors, and others."
+
+        when "/examples/community_visioning"
+          title = 'Use Consider.it for community ideation and deliberation as you help mobilize action.'
+          description = "\"Coordinate a community-wide conversation in a way that’s easy for participants and productive for organizers.\" – Kēhau Abad, ʻĀina Aloha Economic Futures"
+
+        when "/examples/decentralized_decisions"
+          title = 'Community prioritization and decision-making at scale, without hierarchy.'
+          description = "\"Consider.it’s careful design choices were critical for not only aggregating community opinions, but also in understanding the rationale.\" – Auryn Macmillan, Gnosis"
+
+        when "/create_forum"
+        when "/contact"
+        when "/pricing"
+
+        else
+          title = 'Consider.it: An Online Forum for Community Engagement'
+          description = "Want to easily understand what your community thinks and why? Consider.it can help. Supports civil and focused stakeholder dialogue, even when hundreds participate."
+                        #"A web forum that elevates your community's opinions. Civil and focused discussion even when hundreds of stakeholders participate. Great for public engagement and community ideation."
+      end
+      image = "#{request.protocol}#{view_context.asset_path('images/product_page/galacticfederation.png').gsub(/\/\//,'')}"
+      keywords = "online engagement, public engagement tool, community engagement tool, stakeholder engagement tool, deliberation tool, ideation platform, community ideation, public engagement, community engagement, stakeholder engagement, online forum, online deliberation, online dialogue, feedback tool"
 
     when 'newblueplan'
       title = 'New Blue Plan for Retaking Washington'

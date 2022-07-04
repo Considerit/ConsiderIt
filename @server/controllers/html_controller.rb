@@ -62,6 +62,9 @@ class HtmlController < ApplicationController
       @app = "product_page"
       @google_analytics_code = APP_CONFIG[:google_analytics_product]
       @js_dependencies = "/#{manifest['product_page_dependencies']}"
+      if APP_CONFIG[:google_ads]
+        @google_ads_id = APP_CONFIG[:google_ads]
+      end
     else 
       @app = "franklin"
       @google_analytics_code = APP_CONFIG[:google_analytics]

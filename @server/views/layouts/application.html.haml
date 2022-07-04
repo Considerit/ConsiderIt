@@ -9,6 +9,16 @@
 
     %head{ profile: "http://gmpg.org/xfn/1", prefix: "og: http://ogp.me/ns#"}
         
+
+      - if @app == 'product_page' && @google_ads_id
+        %script{:async => true, :src => "https://www.googletagmanager.com/gtag/js?id=#{@google_ads_id}"}
+
+        :javascript
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '#{@google_ads_id}');
+
       - if @title
         %title
           = @title      

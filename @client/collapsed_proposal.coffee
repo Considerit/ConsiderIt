@@ -14,10 +14,13 @@ styles += """
     position: relative;
     padding: 0px;
     list-style: none;    
+    display: flex;
+    margin: 0;
   }
 
   .one-col [data-widget="CollapsedProposal"] {
     padding: 14px 0; 
+    flex-direction: column;
   }
   .one-col [data-widget="CollapsedProposal"]:nth-child(even) {
     background-color: #f4f7f9;
@@ -30,20 +33,71 @@ styles += """
     font-size: 17px;
   }
 
-  .description_on_homepage {
+  [data-widget="CollapsedProposal"] .description_on_homepage {
     font-size: 14px;
     color: #444;
-    margin-bottom: 4px;    
+    margin-bottom: 4px;  
+    text-decoration: none;
+    font-weight: 400;
+    display: block;  
   }
 
-"""
 
-styles += """
+
+  [data-widget="CollapsedProposal"] .proposal_info {
+    display: inline-block;
+    position: relative;
+    margin-left: -58px;
+  }
+
+  [data-widget="CollapsedProposal"] .proposal_histo {
+    display: inline-block;
+    position: relative;
+    top: -26px;
+  }
+
+  [data-widget="CollapsedProposal"] .proposal_scores {
+    position: absolute;
+    left: calc(100%);
+    top: 9px;    
+  }
+
+
+
+
+  [data-widget="CollapsedProposal"].editable {
+    margin-bottom: 15px;
+  }
+
+  [data-widget="CollapsedProposal"].editable .proposal_name {
+    padding-bottom: 4px;
+  }
+
+  [data-widget="CollapsedProposal"] .proposal_name {
+    display: inline-block;
+    padding-bottom: 20px;
+  }
+
   [data-widget="CollapsedProposal"] .metadata {
     font-size: 12px;
     color: #555;
     margin-top: 6px;
   }
+
+
+  [data-widget="CollapsedProposal"] .proposal_pic, [data-widget="CollapsedProposal"] [data-widget="Avatar"] {
+    height: 40px;
+    width: 40px;
+    border-radius: 0px;
+    background-color: #ddd;
+  }
+
+  [data-widget="CollapsedProposal"] .proposal_bullet {
+    position: relative;
+    left: 13px;
+    top: 0px;
+  }
+
 
   [data-widget="CollapsedProposal"] .metadata .separated {
     padding-right: 4px;
@@ -142,12 +196,11 @@ window.CollapsedProposal = ReactiveComponent
 
     LI
       key: proposal.key
+      className: "#{if can_edit then 'editable' else ''}"
       "data-name": slugify(proposal.name)
       id: 'p' + (proposal.slug or "#{proposal.id}").replace('-', '_')  # Initial 'p' is because all ids must begin 
                                            # with letter. seeking to hash was failing 
                                            # on proposals whose name began with number.
-      style: _.defaults {}, (@props.wrapper_style or {}),
-        margin: "0 0 #{if can_edit then '0' else '15px'} 0"
 
 
       onMouseEnter: => 
@@ -171,7 +224,7 @@ window.CollapsedProposal = ReactiveComponent
             save @local
 
       if @props.focused_on
-        DIV 
+        DIV
           style: 
             position: 'absolute'
             left: -66
@@ -187,67 +240,55 @@ window.CollapsedProposal = ReactiveComponent
 
 
       DIV 
+        className: 'proposal_info'
         style: 
           width: col_sizes.first 
-          display: 'inline-block'
-          verticalAlign: 'top'
-          position: 'relative'
-          marginLeft: if icons then 40 + 18 else 58
+          marginLeft: 58
 
+        
+
+        # icon or bullet
         DIV 
           style: 
             position: 'absolute'
-            left: if icons then -40 - 18 else -58
+            left: -58
             top: if icons then 4
 
 
           if icons
             editor = proposal_editor(proposal)
 
-            if proposal.pic
-              A
-                href: proposal_url(proposal)
-                'aria-hidden': true
-                tabIndex: -1
-                IMG
-                  src: proposal.pic 
-                  style:
-                    height: 40
-                    width: 40
-                    borderRadius: 0
-                    backgroundColor: '#ddd'
-                    # opacity: opacity
+            A
+              href: proposal_url(proposal)
+              'aria-hidden': true
+              tabIndex: -1
 
-            # Person's icon
-            else if editor 
-              A
-                href: proposal_url(proposal)
-                'aria-hidden': true
-                tabIndex: -1
+              if proposal.pic 
+                IMG
+                  className: 'proposal_pic'
+                  src: proposal.pic 
+
+              else if editor
+                # Person's icon
                 Avatar
                   key: editor
                   user: editor
                   style:
                     height: 40
                     width: 40
-                    borderRadius: 0
-                    backgroundColor: '#ddd'
-                    # opacity: opacity
-            else 
-              SPAN 
-                style: 
-                  height: 50
-                  width: 50
-                  display: 'inline-block'
-                  verticalAlign: 'top'
-                  border: "2px dashed #ddd"
+
+              else # no author specified
+                SPAN 
+                  className: 'empty_pic'
+                  style: 
+                    height: 36
+                    width: 36
+                    display: 'inline-block'
+                    border: "2px dashed #ddd"
           else
             @props.icon?() or SVG 
+              className: 'proposal_bullet'
               key: 'bullet'
-              style: 
-                position: 'relative'
-                left: 13
-                top: 0
               width: 8
               viewBox: '0 0 200 200' 
               CIRCLE cx: 100, cy: 100, r: 80, fill: '#000000'
@@ -256,15 +297,12 @@ window.CollapsedProposal = ReactiveComponent
 
         # Name of Proposal
         DIV
+          className: 'proposal_name'
           style:
-            display: 'inline-block'
-            paddingBottom: if !can_edit then 20 else 4
             width: col_sizes.first
 
           A
-            className: 'proposal proposal_homepage_name'
-            style: @props.name_style or {}
-              
+            className: 'proposal proposal_homepage_name'              
             href: proposal_url(proposal, just_you && current_user.logged_in)
 
             proposal.name
@@ -284,10 +322,6 @@ window.CollapsedProposal = ReactiveComponent
 
             A
               className: 'description_on_homepage'
-              style: 
-                textDecoration: 'none'
-                fontWeight: 400
-                display: 'block'                
               href: proposal_url(proposal, just_you && current_user.logged_in)
               dangerouslySetInnerHTML: __html: desc  
 
@@ -295,20 +329,23 @@ window.CollapsedProposal = ReactiveComponent
 
 
           DIV 
-            className: 'metadata'
+            className: 'metadata monospaced'
 
             if customization('proposal_meta_data', null, subdomain)?
               customization('proposal_meta_data', null, subdomain)(proposal)
 
             else if !@props.hide_metadata && customization('show_proposal_meta_data', null, subdomain)
               show_author_name_in_meta_data = !icons && (editor = proposal_editor(proposal)) && editor == proposal.user && !customization('anonymize_everything')
+              show_timestamp = !screencasting() && subdomain.name != 'galacticfederation'
+              show_discussion_info = customization('discussion_enabled', proposal, subdomain)
+              show_cluster = @props.show_category && proposal.cluster
+              is_closed = opinion_publish_permission == Permission.DISABLED
+              read_only = opinion_publish_permission == Permission.INSUFFICIENT_PRIVILEGES
 
               [
-                if !screencasting() && subdomain.name != 'galacticfederation'
+                if show_timestamp
                   SPAN 
                     className: 'separated'
-                    style: 
-                      fontFamily: mono_font()
 
                     # if !show_author_name_in_meta_data
                     #   TRANSLATE 'engage.proposal_metadata_date_added', "Added: "
@@ -319,22 +356,19 @@ window.CollapsedProposal = ReactiveComponent
                 if show_author_name_in_meta_data
                   SPAN 
                     className: 'separated'
-                    style: 
-                      fontFamily: mono_font()
 
                     TRANSLATE
                       id: 'engage.proposal_author'
                       name: fetch(editor)?.name 
                       " by {name}"
 
-                if customization('discussion_enabled', proposal, subdomain)
+                if show_discussion_info
                   [
                     A 
                       href: proposal_url(proposal)
                       className: 'separated'
                       style: 
                         textDecoration: 'none'
-                        fontFamily: mono_font()
                         whiteSpace: 'nowrap'                        
                       TRANSLATE
                         id: "engage.point_count"
@@ -356,29 +390,28 @@ window.CollapsedProposal = ReactiveComponent
 
 
 
-            if @props.show_category && proposal.cluster
+            if show_cluster
               SPAN 
                 style: 
                   padding: '1px 2px'
                   color: @props.category_color or 'black'
                   fontWeight: 500
-                  fontFamily: mono_font()
 
                 get_list_title "list/#{proposal.cluster}", true, subdomain
 
-            if opinion_publish_permission == Permission.DISABLED
+            if is_closed
               SPAN 
                 style: 
                   padding: '0 16px'
-                  fontFamily: mono_font()
                 TRANSLATE "engage.proposal_closed.short", 'closed'
 
-            else if opinion_publish_permission == Permission.INSUFFICIENT_PRIVILEGES
+            else if read_only
               SPAN 
                 style: 
                   padding: '0 16px'
-                  fontFamily: mono_font()
                 TRANSLATE "engage.proposal_read_only.short", 'read-only'
+
+          
 
           if can_edit
             DIV
@@ -422,11 +455,8 @@ window.CollapsedProposal = ReactiveComponent
 
       # Histogram for Proposal
       DIV 
+        className: 'proposal_histo'      
         style: 
-          display: 'inline-block' 
-          position: 'relative'
-          top: -26
-          verticalAlign: 'top'
           width: col_sizes.second
           marginLeft: col_sizes.gutter
                 
@@ -509,10 +539,7 @@ window.CollapsedProposal = ReactiveComponent
       # little score feedback
       if show_proposal_scores        
         DIV 
-          style: 
-            position: 'absolute'
-            left: "calc(100%)"
-            top: 9
+          className: 'proposal_scores'
 
           HistogramScores
             proposal: proposal

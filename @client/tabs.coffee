@@ -312,6 +312,7 @@ window.HomepageTabs = ReactiveComponent
             hovering_tab_wrapper_style: @props.hovering_tab_wrapper_style
             featured: @props.featured == tab.name            
             featured_insertion: @props.featured_insertion
+            go_to_hash: @props.go_to_hash
 
 
 
@@ -441,6 +442,13 @@ window.Tab = ReactiveComponent
           create_new_tab new_tab_name
         else 
           tab_name = tab.name
+          if @props.go_to_hash
+            $el = $(document.querySelector("[name='#{@props.go_to_hash}']"))
+            if $el
+              $el.ensureInView
+                position: 'top'
+                scroll: true
+
 
         loc.query_params.tab = tab_name
         save loc  

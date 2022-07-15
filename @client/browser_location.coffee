@@ -160,6 +160,7 @@ window.BrowserLocation = ReactiveComponent
 
     loc = fetch 'location'
     if loc.seek_to_hash 
+      
       loc.seek_to_hash = false
       save loc
 

@@ -146,7 +146,8 @@ window.EditProposal = ReactiveComponent
             id: "category"
             name: "category"
             style: 
-              fontSize: 18
+              fontSize: 16
+              maxWidth: '100%'
             defaultValue: category
             onChange: (e) => 
               @local.category = e.target.value

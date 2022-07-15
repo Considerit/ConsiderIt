@@ -241,9 +241,7 @@ window.Point = ReactiveComponent
             DIV 
               style: 
                 fontSize: 12
-                # fontFamily: mono_font()
                 color: '#666'
-                # textAlign: 'right'
 
               if !screencasting() && !embedded_demo() && fetch('/subdomain').name != 'galacticfederation'
                 [

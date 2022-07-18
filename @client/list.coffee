@@ -220,9 +220,9 @@ ListItems = ReactiveComponent
             translator "engage.show_hidden_proposals", 'Show all'
 
           SPAN 
+            className: 'monospaced'
             style: 
               paddingLeft: 18
-              fontFamily: mono_font()
               color: '#444'
               fontWeight: 400
             "+#{proposals.length - @props.show_first_num_items}"

@@ -522,12 +522,10 @@ window.ModalNewList = ReactiveComponent
                                   translator "engage.list-config-custom-spectrum", "Custom Spectrum"
 
                       DIV 
+                        className: 'monospaced'
                         style: 
-                          # margin: "4px 24px"
-                          # position: 'relative'
                           fontSize: 14
                           textAlign: 'center'
-                          fontFamily: mono_font()
 
                         SPAN 
                           style:

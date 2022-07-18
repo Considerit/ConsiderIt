@@ -267,8 +267,6 @@ window.Notifications = ReactiveComponent
                   hide_icons: true
                   hide_metadata: true
                   show_category: false
-                  name_style: 
-                    fontSize: 16
                   icon: =>
                     LABEL 
                       key: 'unfollow-area'

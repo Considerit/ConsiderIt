@@ -2,8 +2,6 @@
 # Core considerit client code
 #////////////////////////////////////////////////////////////
 
-
-
 require './element_viewport_positioning'
 require './activerest-m'
 require 'dashboard/dashboard'
@@ -26,8 +24,8 @@ require './opinion_views'
 require './tabs'
 require './header'
 require './footer'
-require './homepage'
 require './shared'
+require './homepage'
 require './opinion_slider'
 # require './state_dash'
 require './tooltip'
@@ -225,7 +223,7 @@ Page = ReactiveComponent
 
       MAIN 
         role: 'main'
-        className: if loc.url == '/' then 'main_background'
+        className: if loc.url == '/' || EXPAND_IN_PLACE then 'main_background'
         style: 
           position: 'relative'
           # zIndex: 1
@@ -272,6 +270,9 @@ Page = ReactiveComponent
                       color: '#555'
                       fontSize: 16
                     "Check if the url is correct. The author may also have deleted it. Good luck!"
+
+              else if EXPAND_IN_PLACE
+                Homepage key: 'homepage'
 
               else 
                 result = null
@@ -364,7 +365,11 @@ Root = ReactiveComponent
           
           BrowserHacks()
 
-          Page key: "/page#{loc.url}"
+          if EXPAND_IN_PLACE
+            Page()
+          else 
+            Page 
+              key: "/page#{loc.url}"
 
       Tooltip()
       Popover()

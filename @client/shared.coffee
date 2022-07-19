@@ -220,7 +220,7 @@ window.proposal_url = (proposal, prefer_crafting_page) ->
   # "?results=true" if the proposal has an opinion.
 
   proposal = fetch proposal
-  result = '/' + proposal.slug
+  result = "/#{proposal.slug}"
   subdomain = fetch '/subdomain'
 
   if TWO_COL() || !proposal.active || (!customization('show_crafting_page_first', proposal, subdomain) && !prefer_crafting_page) || !customization('discussion_enabled', proposal, subdomain)

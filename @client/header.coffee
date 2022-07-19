@@ -18,7 +18,7 @@ window.Header = ReactiveComponent
 
     
     loc = fetch('location')
-    is_homepage = loc.url == '/'
+    is_homepage = EXPAND_IN_PLACE || loc.url == '/'
     
 
     header_bonus = customization('header_bonus') # currently used for things like inserting google font

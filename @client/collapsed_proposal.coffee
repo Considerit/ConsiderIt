@@ -6,7 +6,7 @@ require './permissions'
 require './bubblemouth'
 require './popover'
 
-
+window.EXPAND_IN_PLACE = false # temporary global variable that will be eliminated when proposals expanding in place is finished
 
 styles += """
   [data-widget="CollapsedProposal"] {
@@ -194,9 +194,12 @@ window.CollapsedProposal = ReactiveComponent
       else 
         translator "engage.slider_feedback.neutral", "Neutral"
 
+
+    is_open = EXPAND_IN_PLACE && fetch('location').url == "/#{proposal.slug}"
+
     LI
       key: proposal.key
-      className: "#{if can_edit then 'editable' else ''}"
+      className: "#{if can_edit then 'editable' else ''} #{if is_open then 'is_open' else ''}"
       "data-name": slugify(proposal.name)
       id: 'p' + (proposal.slug or "#{proposal.id}").replace('-', '_')  # Initial 'p' is because all ids must begin 
                                            # with letter. seeking to hash was failing 
@@ -260,6 +263,7 @@ window.CollapsedProposal = ReactiveComponent
 
             A
               href: proposal_url(proposal)
+              "data-no-scroll": EXPAND_IN_PLACE
               'aria-hidden': true
               tabIndex: -1
 
@@ -302,6 +306,7 @@ window.CollapsedProposal = ReactiveComponent
             width: col_sizes.first
 
           A
+            "data-no-scroll": EXPAND_IN_PLACE
             className: 'proposal proposal_homepage_name'              
             href: proposal_url(proposal, just_you && current_user.logged_in)
 
@@ -323,6 +328,8 @@ window.CollapsedProposal = ReactiveComponent
             A
               className: 'description_on_homepage'
               href: proposal_url(proposal, just_you && current_user.logged_in)
+              "data-no-scroll": EXPAND_IN_PLACE
+
               dangerouslySetInnerHTML: __html: desc  
 
 
@@ -366,6 +373,7 @@ window.CollapsedProposal = ReactiveComponent
                   [
                     A 
                       href: proposal_url(proposal)
+                      "data-no-scroll": EXPAND_IN_PLACE
                       className: 'separated'
                       style: 
                         textDecoration: 'none'
@@ -380,6 +388,7 @@ window.CollapsedProposal = ReactiveComponent
 
                       A 
                         href: proposal_url(proposal)
+                        "data-no-scroll": EXPAND_IN_PLACE
                         className: 'separated give-your-opinion'                          
                         TRANSLATE
                           id: "engage.add_your_own"

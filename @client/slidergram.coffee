@@ -40,7 +40,7 @@ window.Slidergram = ReactiveComponent
         slider.has_moved = true
       save slider
 
-    @props.enable_range_selection ?= true
+    enable_range_selection = if @props.enable_range_selection? then @props.enable_range_selection else true
 
     DIV null,
 
@@ -51,7 +51,7 @@ window.Slidergram = ReactiveComponent
         width: @props.width
         height: @props.height or 40
         enable_individual_selection: !browser.is_mobile
-        enable_range_selection: !just_you && !browser.is_mobile && @props.enable_range_selection
+        enable_range_selection: !just_you && !browser.is_mobile && enable_range_selection
         draw_base: true
         draw_base_labels: !slider_regions
 

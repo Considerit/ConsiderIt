@@ -71,12 +71,12 @@ window.invalidate_proposal_sorts = ->
     v.force_resort = true
     save v
 
-window.sorted_proposals = (proposals, sort_key, require_force) ->
+window.sorted_proposals = (proposals, sort_key, require_force, sort_order_state) ->
 
   if sort_key not of proposal_sort_keys 
     proposal_sort_keys[sort_key] = true
 
-  sort = fetch 'sort_proposals'
+  sort = fetch (sort_order_state or 'sort_proposals')
   set_sort() if !sort.name? 
 
   proposals = proposals.slice()
@@ -146,7 +146,7 @@ window.sorted_proposals = (proposals, sort_key, require_force) ->
 
 rnd_order = {}
 
-sort_options = [
+window.sort_options = [
 
   { 
     name: 'Total Score'
@@ -331,8 +331,9 @@ sort_options = [
 
 ]
 
-set_sort = -> 
-  sort = fetch 'sort_proposals'
+window.set_sort = (sort_key) ->
+
+  sort = fetch (sort_key or 'sort_proposals')
   if !sort.name?
     found = false 
     loc = fetch('location')

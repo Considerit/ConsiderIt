@@ -142,7 +142,13 @@ ListItems = ReactiveComponent
 
     DIV null, 
 
-      UL null, 
+      MagicList
+        key: 'magiclist'
+        duration: 500
+        items: proposals
+        dummy: @props.show_new_button
+        dummy2: @props.show_first_num_items
+
         for proposal,idx in proposals
           continue if idx > @props.show_first_num_items - 1
 
@@ -295,13 +301,15 @@ EditList = ReactiveComponent
 
         render_anchor: ->
           SPAN 
+            key: 'gear'
             "data-tooltip": translator "engage.list-config-icon-tooltip", "Configure list settings" 
             GearIcon
               size: 20
               fill: '#888'
 
         render_option: (option, is_active) ->
-          SPAN null, 
+          SPAN 
+            key: option.label 
             option.label
 
 
@@ -698,7 +706,8 @@ window.ListHeader = ReactiveComponent
 
 
                     render_anchor: ->
-                      SPAN null, 
+                      SPAN 
+                        key: 'change spectrum'
                         LABEL 
                           style: 
                             color: focus_color()
@@ -713,6 +722,7 @@ window.ListHeader = ReactiveComponent
                     render_option: (option, is_active) ->
                       if option.oppose == ''
                         return  DIV 
+                                  key: 'custom-spectrum'
                                   style: 
                                     fontSize: 16
                                     borderBottom: '1px dashed #ccc'
@@ -722,6 +732,7 @@ window.ListHeader = ReactiveComponent
                                   translator "engage.list-config-custom-spectrum", "Custom Spectrum"
 
                       DIV 
+                        key: 'spectrum'
                         style: 
                           margin: "12px 24px"
                           position: 'relative'
@@ -1130,7 +1141,7 @@ EditableDescription = ReactiveComponent
                 """
 
               WysiwygEditor
-                key: "#{list_key}-description"
+                editor_key: "#{list_key}-description"
                 horizontal: true
                 html: customization('list_description', list_key)
                 # placeholder: if !@props.fresh then translator("engage.list_description", "(optional) Description")

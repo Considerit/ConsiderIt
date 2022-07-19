@@ -197,12 +197,12 @@ require './logo'
 window.TechnologyByConsiderit = ReactiveComponent
   displayName: 'TechnologyByConsiderit'
   render : -> 
-    @props.size ||= 20
+    size = @props.size or 20
     DIV 
       style: 
         textAlign: 'left'
         display: 'inline-block'
-        fontSize: @props.size
+        fontSize: size
       "Technology by "
       A 
         onMouseEnter: => 
@@ -220,7 +220,7 @@ window.TechnologyByConsiderit = ReactiveComponent
           left: 3
         
         drawLogo 
-          height: @props.size + 5
+          height: size + 5
           main_text_color: logo_red
           o_text_color: logo_red
           clip: false

@@ -209,8 +209,7 @@ window.Histogram = ReactiveComponent
     @props.draw_base_labels ?= true
 
 
-    @props.enable_individual_selection &&= @opinions.length > 0
-
+    enable_individual_selection = @props.enable_individual_selection && @opinions.length > 0
 
     # whether to show the shaded opinion selection region in the histogram
     draw_selection_area = @props.enable_range_selection &&
@@ -279,7 +278,7 @@ window.Histogram = ReactiveComponent
       exp = translator "engage.slider_feedback.neutral", "Neutral"
 
 
-    if @props.enable_range_selection || @props.enable_individual_selection
+    if @props.enable_range_selection || enable_individual_selection
       if !browser.is_mobile
         _.extend histogram_props,
           onClick: @onClick
@@ -363,7 +362,7 @@ window.Histogram = ReactiveComponent
           salience: @salience
           groups: @groups
           avatar_size: @local.avatar_size 
-          enable_individual_selection: @props.enable_individual_selection
+          enable_individual_selection: enable_individual_selection
           enable_range_selection: @props.enable_range_selection
           height: @props.height 
           backgrounded: @props.backgrounded

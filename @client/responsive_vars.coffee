@@ -39,7 +39,6 @@ setResponsive = ->
   h = window.innerHeight
 
   portrait = h > w
-  two_col = false
 
   # The document will be at least 900px
   document_width = Math.max(900, w)
@@ -50,7 +49,7 @@ setResponsive = ->
 
   whitespace = Math.max(100, w / 10)
 
-  body_width = if true 
+  body_width = if false 
                  content_width - 2 * gutter
                else 
                  content_width - 2 * gutter - 2 * whitespace
@@ -63,9 +62,9 @@ setResponsive = ->
 
   decision_board_width = body_width + 4 # the four is for the border
 
-  point_width = if true then body_width / 2 - 38 else decision_board_width / 2 - 30
+  point_width = if false then body_width / 2 - 38 else decision_board_width - 30
 
-  reasons_region_width = if false
+  reasons_region_width = if true
                            decision_board_width + 2 * point_width + 76
                          else 
                            decision_board_width

@@ -208,7 +208,6 @@ window.CollapsedProposal = ReactiveComponent
                       cursor: 'pointer'
 
                     TRANSLATE
-                      key: 'point-count'
                       id: "engage.point_count"
                       cnt: proposal.point_count
 

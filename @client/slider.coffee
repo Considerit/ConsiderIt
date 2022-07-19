@@ -103,10 +103,10 @@ window.Slider = ReactiveComponent
 
   render : ->
 
-    @props.draw_handle ?= true
+    draw_handle = if @props.draw_handle? then @props.draw_handle else true
 
     # initialize
-    if @props.draw_handle
+    if draw_handle
       slider = fetch @props.slider_key
       if !slider.value?
         _.defaults slider,
@@ -129,7 +129,7 @@ window.Slider = ReactiveComponent
       onFocus: if @props.onFocus then @props.onFocus
 
       @drawSliderBase()
-      if @props.draw_handle
+      if draw_handle
         @drawSliderHandle()
 
 

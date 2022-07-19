@@ -1,4 +1,5 @@
 require './comment'
+
 ##
 # Point
 # A single point in a list. 
@@ -6,16 +7,17 @@ window.Point = ReactiveComponent
   displayName: 'Point'
 
   render : ->
-    point = @data()
+    point = fetch @props.point
 
-    is_selected = get_selected_point() == @props.key
+    is_selected = get_selected_point() == @props.point
 
     current_user = fetch('/current_user')
 
+    is_pro = false 
 
-    renderIncluders = (draw_all_includers) =>
+    renderIncluders = =>
 
-      if @data().opinions
+      if point.opinions
 
         includers = [point.user]
 
@@ -38,7 +40,7 @@ window.Point = ReactiveComponent
             curr_column = Math.floor(i / s.rows)
             side_offset = curr_column * s.col_gap + i * s.dx
             top_offset = (i % s.rows) * s.dy 
-            left_right = if @data().is_pro then 'left' else 'right'
+            left_right = if is_pro then 'left' else 'right'
             style = 
               top: top_offset
               position: 'absolute'
@@ -54,8 +56,6 @@ window.Point = ReactiveComponent
               style: style
               set_bg_color: true
               anonymous: point.user == includer && point.hide_name
-
-
 
     point_content_style = 
       width: POINT_WIDTH() #+ 6
@@ -77,21 +77,13 @@ window.Point = ReactiveComponent
         borderColor: '#999'
         backgroundColor: 'white'
 
-    if @props.rendered_as == 'decision_board_point'
-      _.extend point_content_style,
-        padding: 8
-        borderRadius: 8
-        top: point_content_style.top - 8
-        left: -11
-        #width: point_content_style.width + 16
-
-    else if @props.rendered_as == 'community_point'
-      _.extend point_content_style,
-        padding: 8
-        borderRadius: 16
-        top: point_content_style.top - 8
-        #left: point_content_style.left - 8
-        #width: point_content_style.width + 16
+    _.extend point_content_style,
+      padding: "8px 8px 8px 12px"
+      borderRadius: 16
+      top: point_content_style.top - 8
+      cursor: 'pointer'
+      #left: point_content_style.left - 8
+      #width: point_content_style.width + 16
 
 
     expand_to_see_details = !!point.text
@@ -101,12 +93,7 @@ window.Point = ReactiveComponent
       listStyle: 'none outside none'
 
 
-    if @props.rendered_as == 'decision_board_point'
-      _.extend point_style, 
-        marginLeft: 9
-        padding: '0 18px 0 18px'
-    else if @props.rendered_as == 'community_point'
-      point_style.marginBottom = '0.5em'
+    point_style.marginBottom = '0.5em'
 
 
 
@@ -115,14 +102,14 @@ window.Point = ReactiveComponent
       height: 25
       width: 25
       top: 0
-    left_or_right = if @data().is_pro && @props.rendered_as != 'decision_board_point'
+
+    left_or_right = if is_pro
                       'right' 
                     else 
                       'left'
     ioffset = -50
     includers_style[left_or_right] = ioffset
 
-    draw_all_includers = @props.rendered_as == 'community_point'
 
     if expand_to_see_details && !is_selected
       append = SPAN 
@@ -135,18 +122,24 @@ window.Point = ReactiveComponent
     else 
       append = null
 
+
+    side = if is_pro then 'right' else 'left'
+    mouth_style = 
+      top: 8
+      position: 'absolute'
+
+    mouth_style[side] = -POINT_MOUTH_WIDTH + (if is_selected || @local.has_focus then 3 else 1)
+    
+    if !is_pro
+      mouth_style['transform'] = 'rotate(270deg) scaleX(-1)'
+    else 
+      mouth_style['transform'] = 'rotate(90deg)'
+
     LI
       key: "point-#{point.id}"
-      'data-id': @props.key
-      className: "point #{@props.rendered_as} #{if point.is_pro then 'pro' else 'con'}"
-      onClick: @selectPoint
-      onTouchEnd: @selectPoint
-      onKeyDown: (e) =>
-        if (is_selected && e.which == 27) || e.which == 13 || e.which == 32
-          @selectPoint(e)
-          e.preventDefault()
+      'data-id': @props.point
+      className: "point #{if is_pro then 'pro' else 'con'}"
       style: point_style
-
 
       DIV 
         className:'point_content'
@@ -154,67 +147,58 @@ window.Point = ReactiveComponent
         tabIndex: 0
         onBlur: (e) => @local.has_focus = false; save(@local)
         onFocus: (e) => @local.has_focus = true; save(@local)
+        onClick: @selectPoint
+        onTouchEnd: @selectPoint
+        onKeyDown: (e) =>
+          if (is_selected && e.which == 27) || e.which == 13 || e.which == 32
+            @selectPoint(e)
+            e.preventDefault()
 
-        if @props.rendered_as != 'decision_board_point'
 
-          side = if point.is_pro then 'right' else 'left'
-          mouth_style = 
-            top: 8
-            position: 'absolute'
+        DIV 
+          'role': 'presentation'
+          key: 'community_point_mouth'
+          style: css.crossbrowserify mouth_style
 
-          mouth_style[side] = -POINT_MOUTH_WIDTH + \
-            if is_selected || @local.has_focus then 3 else 1
-          
-          if !point.is_pro
-            mouth_style['transform'] = 'rotate(270deg) scaleX(-1)'
-          else 
-            mouth_style['transform'] = 'rotate(90deg)'
-
-          DIV 
-            'role': 'presentation'
-            key: 'community_point_mouth'
-            style: css.crossbrowserify mouth_style
-
-            Bubblemouth 
-              apex_xfrac: 0
-              width: POINT_MOUTH_WIDTH
-              height: POINT_MOUTH_WIDTH
-              fill: considerit_gray
-              stroke: if is_selected then focus_color() else if @local.has_focus then '#888' else 'transparent'
-              stroke_width: if is_selected || @local.has_focus then 20 else 0
-              box_shadow:   
-                dx: 3
-                dy: 0
-                stdDeviation: 2
-                opacity: .5
+          Bubblemouth 
+            apex_xfrac: 0
+            width: POINT_MOUTH_WIDTH
+            height: POINT_MOUTH_WIDTH
+            fill: considerit_gray
+            stroke: if is_selected then focus_color() else if @local.has_focus then '#888' else 'transparent'
+            stroke_width: if is_selected || @local.has_focus then 20 else 0
+            box_shadow:   
+              dx: 3
+              dy: 0
+              stdDeviation: 2
+              opacity: .5
 
         DIV 
           style: 
             wordWrap: 'break-word'
             fontSize: POINT_FONT_SIZE()
 
-          DIV 
+          SPAN 
             className: 'point_nutshell'
 
             splitParagraphs point.nutshell, append
 
 
-
-          DIV 
+          SPAN 
             id: "point-aria-interaction-#{point.id}"
             className: 'hidden'
 
             translator
               id: "engage.point_explanations"
               author: if point.hide_name then anonymous_label() else fetch(point.user).name
-              num_positive_opinions: (o for o in @data().opinions when o.stance > 0).length
+              num_positive_opinions: (o for o in point.opinions when o.stance > 0).length
               comment_count: point.comment_count
               """By {author}. 
                  { num_positive_opinions, plural, =0 {} one {Important to one person.} other {Important to # people.} } 
                  {comment_count, plural, =0 {} one {Has received one comment.} other {Has received # comments.} }
                  Press ENTER or SPACE for details or discussion."""
 
-          DIV 
+          SPAN 
             'aria-hidden': true
             className: "point_details" + \
                        if is_selected
@@ -223,37 +207,37 @@ window.Point = ReactiveComponent
                          '_tease'
 
             style: 
-              wordWrap: 'break-word'
+              # wordWrap: 'break-word'
+              whiteSpace: 'nowrap'
               marginTop: '0.5em'
               fontSize: POINT_FONT_SIZE()
               fontWeight: if browser.high_density_display && !browser.is_mobile then 300 else 400              
-              
+              fontSize: 12
+              float: 'right'
+              paddingLeft: 24
 
-            DIV 
-              style: 
-                fontSize: 12
+            prettyDate(point.created_at)
+            ', '                
+            SPAN 
+              key: 2 
+              style: {whiteSpace: 'nowrap'}
 
-              prettyDate(point.created_at)
-              ', '                
-              SPAN 
-                key: 2 
-                style: {whiteSpace: 'nowrap'}
+              A 
+                className: 'select_point'
 
-                A 
-                  className: 'select_point'
+                translator
+                  id: 'engage.link_to_comments'
+                  comment_count: point.comment_count 
+                  "{comment_count, plural, one {# comment} other {# comments}}"
+          DIV style: clear: 'both'
 
-                  translator
-                    id: 'engage.link_to_comments'
-                    comment_count: point.comment_count 
-                    "{comment_count, plural, one {# comment} other {# comments}}"
+
 
 
 
         if current_user.user == point.user
-
           DIV null,
-            if permit('update point', point) > 0 && 
-                (@props.rendered_as == 'decision_board_point')
+            if permit('update point', point) > 0
               BUTTON
                 style:
                   fontSize: if browser.is_mobile then 24 else 14
@@ -266,12 +250,11 @@ window.Point = ReactiveComponent
                 onClick: ((e) =>
                   e.stopPropagation()
                   points = fetch(@props.your_points_key)
-                  points.editing_points.push(@props.key)
+                  points.editing_points.push(@props.point)
                   save(points))
                 translator 'engage.edit_button', 'edit'
 
-            if permit('delete point', point) > 0 && 
-                (@props.rendered_as == 'decision_board_point')
+            if permit('delete point', point) > 0
               BUTTON
                 'data-action': 'delete-point'
                 style:
@@ -284,7 +267,7 @@ window.Point = ReactiveComponent
                 onClick: (e) =>
                   e.stopPropagation()
                   if confirm('Delete this point forever?')
-                    destroy @props.key
+                    destroy @props.point
                 translator 'engage.delete_button', 'delete'
 
       DIV 
@@ -294,7 +277,7 @@ window.Point = ReactiveComponent
         onMouseLeave: @unhighlightSupporters
         style: includers_style
           
-        renderIncluders(draw_all_includers)
+        renderIncluders()
 
 
       DIV
@@ -309,9 +292,8 @@ window.Point = ReactiveComponent
 
       if is_selected
         Discussion
-          key:"/comments/#{point.id}"
+          comments:"/comments/#{point.id}"
           point: point.key
-          rendered_as: @props.rendered_as
 
   componentDidMount : ->    
     @ensureDiscussionIsInViewPort()
@@ -326,7 +308,7 @@ window.Point = ReactiveComponent
   #   - Scroll to new point when scrolled down to bottom of long 
   #     discussion & click a new point below it
   ensureDiscussionIsInViewPort : ->
-    is_selected = get_selected_point() == @props.key
+    is_selected = get_selected_point() == @props.point
     if @local.is_selected != is_selected
       if is_selected
         if browser.is_mobile
@@ -355,25 +337,25 @@ window.Point = ReactiveComponent
 
 
     loc = fetch('location')
-    if get_selected_point() == @props.key # deselect
+    if get_selected_point() == @props.point # deselect
       delete loc.query_params.selected
       what = 'deselected a point'
 
       document.activeElement.blur()
     else
       what = 'selected a point'
-      loc.query_params.selected = @props.key
+      loc.query_params.selected = @props.point
 
     save loc
 
     window.writeToLog
       what: what
       details: 
-        point: @props.key
+        point: @props.point
 
 
   buildIncluders : -> 
-    point = @data()
+    point = fetch @props.point
 
     includers = (o.user for o in point.opinions or [])
 
@@ -390,13 +372,7 @@ window.Point = ReactiveComponent
 
 styles += """
 
-/* war! disabled jquery UI draggable class defined with !important */
-.point_content.ui-draggable-disabled {
-  cursor: pointer !important; }
-
-#{css.grab_cursor('.point_content.ui-draggable')}
-
-.community_point .point_content {
+.point .point_content {
   border-radius: 16px;
   padding: 0.5em 9px;
   background-color: #{considerit_gray};
@@ -429,14 +405,4 @@ styles += """
   width: 50px;
   height: 50px; }
 
-.community_point.con .point_includer_avatar {
-  box-shadow: -1px 2px 0 0 #eeeeee; }
-
-.community_point.pro .point_includer_avatar {
-  box-shadow: 1px 2px 0 0 #eeeeee; }
-
-.decision_board_point.pro .point_includer_avatar {
-  left: -10px; }
-
 """
-

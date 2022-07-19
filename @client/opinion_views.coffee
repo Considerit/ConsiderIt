@@ -221,7 +221,7 @@ build_influencer_network = ->
 
 
 
-just_you_filter = 
+window.just_you_filter = 
   key: 'just_you'
   name: 'Just you'
   pass: (u) -> 
@@ -357,7 +357,7 @@ toggle_group = (view, replace_existing) ->
 toggle_weight = (view, replace_existing) -> 
   _activate_opinion_view(view, 'weight', replace_existing)
 
-toggle_opinion_filter = (view, replace_existing) -> 
+window.toggle_opinion_filter = (view, replace_existing) -> 
   _activate_opinion_view(view, 'filter', replace_existing)
 
 activate_opinion_date_filter = (view) -> 
@@ -1856,6 +1856,7 @@ window.ToggleButtons = (items, view_state, style) ->
       do (item) =>
         key = item.key or item.label
         LI 
+          key: key
           className: if view_state.active == key then 'active'
           'data-view-state': key
           

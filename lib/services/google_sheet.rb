@@ -10,7 +10,7 @@ require "fileutils"
 
 OOB_URI = "urn:ietf:wg:oauth:2.0:oob".freeze
 APPLICATION_NAME = "Consider.it".freeze
-CLIENT_SECRETS_PATH = 'google.json'
+CLIENT_SECRETS_PATH = 'google.json' # This derives from a Google Service Account
 CREDENTIALS_PATH = File.join(Dir.home, '.credentials',
                              "sheets.googleapis.yaml")
 # The file token.yaml stores the user's access and refresh tokens, and is

@@ -140,6 +140,12 @@ namespace :customizations do
             support: 'High Priority',
             oppose: 'Low Priority'
           }
+        when 'support'
+          {
+            support: 'Support',
+            oppose: 'Oppose'
+          }
+
 
         else 
           nil 

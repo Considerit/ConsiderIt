@@ -97,7 +97,7 @@ window.Dock = ReactiveComponent
         zIndex: 999999 - @local.stack_priority
         width: '100%'
 
-    @transferPropsTo DIV null,
+    DIV _.extend({}, @props),
 
       # A placeholder for content that suddenly got ripped out of the standard layout
       DIV 
@@ -110,7 +110,7 @@ window.Dock = ReactiveComponent
 
   componentWillMount : ->
 
-    @key = if @props.key? then @props.key else @local.key
+    @key = if @props.dock_key? then @props.dock_key else @local.key
     dock = fetch @key,
       docked: false
       y: undefined
@@ -631,7 +631,6 @@ dockingStation.initialize()
 #
 # This method is expensive, use it sparingly.
 realDimensions = ($el) -> 
-  tar = $el.is('.opinion_region')
   recurse = ($e, min_top, max_top) -> 
     
     t = $e.offset().top

@@ -372,6 +372,7 @@ window.CollapsedProposal = ReactiveComponent
                 if show_discussion_info
                   [
                     A 
+                      key: 'proposal-link'
                       href: proposal_url(proposal)
                       "data-no-scroll": EXPAND_IN_PLACE
                       className: 'separated'
@@ -379,6 +380,7 @@ window.CollapsedProposal = ReactiveComponent
                         textDecoration: 'none'
                         whiteSpace: 'nowrap'                        
                       TRANSLATE
+                        key: 'point-count'
                         id: "engage.point_count"
                         cnt: proposal.point_count
 
@@ -387,6 +389,7 @@ window.CollapsedProposal = ReactiveComponent
                     if proposal.active && permit('create point', proposal, subdomain) > 0 && WINDOW_WIDTH() > 955
 
                       A 
+                        key: 'give-opinion'
                         href: proposal_url(proposal)
                         "data-no-scroll": EXPAND_IN_PLACE
                         className: 'separated give-your-opinion'                          
@@ -471,7 +474,7 @@ window.CollapsedProposal = ReactiveComponent
                 
 
         Histogram
-          key: "histogram-#{proposal.slug}"
+          histo_key: "histogram-#{proposal.slug}"
           proposal: proposal
           opinions: opinions
           width: col_sizes.second
@@ -482,9 +485,9 @@ window.CollapsedProposal = ReactiveComponent
           draw_base_labels: !slider_regions
 
         Slider 
+          slider_key: "homepage_slider#{proposal.key}"
           base_height: 0
           draw_handle: !!draw_slider
-          key: "homepage_slider#{proposal.key}"
           width: col_sizes.second
           polarized: true
           regions: slider_regions

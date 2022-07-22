@@ -195,7 +195,7 @@ window.NewProposal = ReactiveComponent
 
             WysiwygEditor
               id: "#{list_name}-details"
-              key:"description-new-proposal-#{list_name}"
+              editor_key:"description-new-proposal-#{list_name}"
               #placeholder: translator("engage.edit_proposal.description.placeholder", 'Add details here')  
               'aria-label': translator("engage.edit_proposal.description.placeholder", 'Add details here')  
               container_style: 
@@ -222,7 +222,7 @@ window.NewProposal = ReactiveComponent
 
               WysiwygEditor
                 id: "#{list_name}-#{additional_field}"
-                key:"#{additional_field}-new-proposal-#{list_name}"
+                editor_key:"#{additional_field}-new-proposal-#{list_name}"
                 'aria-label': proposal_fields[additional_field]
                 container_style: 
                   padding: '6px 8px'

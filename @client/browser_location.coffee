@@ -62,7 +62,7 @@ window.loadPage = (url, query_params) ->
 
 old_A = A
 window.is_swipping = false
-window.A = React.createClass
+window.A = React.createFactory React.createClass
   displayName: 'modified_A'
   render : -> 
 

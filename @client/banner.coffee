@@ -240,7 +240,7 @@ CustomizeDescription = ReactiveComponent
 
           """
         WysiwygEditor
-          key: "forum-description"
+          editor_key: "forum-description"
           style: @props.style
           horizontal: true
           html: description

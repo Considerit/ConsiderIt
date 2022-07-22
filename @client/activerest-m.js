@@ -339,19 +339,20 @@
                  components[this.local_key] = this
 
                  // You can pass an object in as a key if you want:
-                 if (this.props.key && this.props.key.key)
-                     this.props.key = this.props.key.key
+                 if (this._currentElement.key && this._currentElement.key.key)
+                     this._currentElement.key = this._currentElement.key.key
 
                  // XXX Putting this into WillMount probably won't let you use the
                  // mounted_key inside getInitialState!  But you should be using
                  // activerest state anyway, right?
-                 this.mounted_key = this.props.key
+                 this.mounted_key = this._currentElement.key
 
                  // STEP 2: Create shortcuts e.g. `this.foo' for all parents up the
                  // tree, and this component's local key
                  
                  function add_shortcut (obj, shortcut_name, to_key) {
                      //console.log('Giving '+obj.name+' shorcut @'+shortcut_name+'='+to_key)
+                     // console.log('shortcut', obj, shortcut_name, to_key)
                      delete obj[name]
                      Object.defineProperty(obj, shortcut_name, {
                          get: function () {
@@ -416,7 +417,7 @@
             // have changed.  We can do so by simply serializing them
             // and then comparing them.  But ignore React's 'children'
             // prop, because it often has a circular reference.
-            next_props = clone(next_props); this_props = clone(this.props)
+            next_props = clone(next_props); this_props = clone(this._currentElement)
             delete next_props['children']; delete this_props['children']
 
             // console.assert(!_.isEqual([next_state, next_props], [this.state, this_props]) == JSON.stringify([next_state, next_props]) != JSON.stringify([this.state, this_props]), {next_state: next_state, next_props: next_props})
@@ -446,7 +447,7 @@
 
         // Now create the actual React class with this definition, and
         // return it.
-        var react_class = React.createClass(component)
+        var react_class = React.createFactory(React.createClass(component))
         var result = function (props, children) {
             props = props || {}
             props.parents = execution_context.slice()

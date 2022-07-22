@@ -183,7 +183,7 @@ window.Proposal = ReactiveComponent
 
       DIV null,
 
-        ProposalDescription()
+        ProposalDescription {proposal}
 
         ParticipationStatus({can_opine})
 

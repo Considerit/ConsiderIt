@@ -64,6 +64,7 @@ window.DefaultFooter = ReactiveComponent
           color: 'white'
 
         DIV 
+          key: 'back2top'
           dangerouslySetInnerHTML: __html: """
             <style>
             .custom-shape-divider-top-1651729272 {
@@ -113,6 +114,7 @@ window.DefaultFooter = ReactiveComponent
                 marginBottom: 18
 
               A 
+                key: 'considerit-link'
                 href: 'https://github.com/Considerit/ConsiderIt'
                 style: 
                   textDecoration: 'underline'
@@ -133,6 +135,7 @@ window.DefaultFooter = ReactiveComponent
 
 
               A 
+                key: 'create-forum'
                 href: 'https://consider.it'
                 style: 
                   display: 'inline-block'
@@ -151,12 +154,14 @@ window.DefaultFooter = ReactiveComponent
           # more info
 
           DIV 
+            key: 'more_info'
             style: 
               fontSize: 12
               textAlign: 'center'
               marginTop: 20
 
             SPAN 
+              key: 'considerit-errata'
               style: 
                 display: 'flex'
                 alignItems: 'center'
@@ -184,6 +189,7 @@ window.DefaultFooter = ReactiveComponent
                   "<privacy_link>Privacy</privacy_link> and <terms_link>Terms</terms_link>."
 
               DIV 
+                key: 'bug reports'
                 style: 
                   marginLeft: 40
 

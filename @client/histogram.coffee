@@ -24,7 +24,7 @@ require './histogram_lab'
 #     Whether individual users can be selected on the histogram
 #   enable_range_selection (default = false)
 #     Whether ranges can be selected on the histogram
-#   selection_state (default = @props.key)
+#   selection_state (default = @props.histo_key)
 #     The state key at which selection state will be updated
 #   draw_base (default = false)
 #     Whether to draw a base with +/- labels. If a slider is attached,
@@ -235,6 +235,7 @@ window.Histogram = ReactiveComponent
     histo_height = @props.height + REGION_SELECTION_VERTICAL_PADDING
     
     histogram_props = 
+      key: 'histogram'
       tabIndex: if !@props.backgrounded then 0
 
       className: 'histogram'
@@ -321,6 +322,7 @@ window.Histogram = ReactiveComponent
 
     DIV histogram_props, 
       DIV 
+        key: 'accessibility-histo-label'
         id: "##{proposal.id}-histo-label"
         className: 'hidden'
         
@@ -330,6 +332,7 @@ window.Histogram = ReactiveComponent
           "Histogram showing {num_opinions, plural, one {# opinion} other {# opinions}}"
 
       DIV 
+        key: 'accessibility-histo-description'
         id: "##{proposal.id}-histo-description"
         className: 'hidden'
 
@@ -350,7 +353,7 @@ window.Histogram = ReactiveComponent
 
       # A little padding at the top to give some space for selecting
       # opinion regions with lots of people stacked high      
-      DIV style: {height: @local.region_selected_vertical_padding}
+      DIV key: 'vert-padding', style: {height: @local.region_selected_vertical_padding}
 
       # Draw the opinion selection area + region resizing border
       if draw_selection_area
@@ -359,12 +362,13 @@ window.Histogram = ReactiveComponent
 
 
       DIV 
+        key: 'histoavatars'
         style: 
           paddingTop: histo_height - @props.height
-          'content-visibility': 'auto'
+          contentVisibility: 'auto'
 
         HistoAvatars
-          key: @props.proposal.key or @props.proposal        
+          histo_key: @props.proposal.key or @props.proposal        
           dirtied: dirtied
           weights: @weights
           salience: @salience
@@ -391,12 +395,14 @@ window.Histogram = ReactiveComponent
     }
 
     [SPAN
+      key: 'oppose'
       style: _.extend {}, label_style,
         position: 'absolute'
         left: 0
 
       get_slider_label("slider_pole_labels.oppose", @props.proposal, subdomain)
     SPAN
+      key: 'support'
       style: _.extend {}, label_style,
         position: 'absolute'
         right: 0
@@ -417,7 +423,7 @@ window.Histogram = ReactiveComponent
     selection_left = Math.max 0, left
 
 
-    return DIV null if !is_histogram_controlling_region_selection(@props.key) 
+    return DIV null if !is_histogram_controlling_region_selection(@props.histo_key) 
     DIV 
       style:
         height: @props.height + REGION_SELECTION_VERTICAL_PADDING
@@ -469,14 +475,14 @@ window.Histogram = ReactiveComponent
         if @weights[user_key] == 0 || @salience[user_key] < 1
           clear_histogram_managed_opinion_views opinion_views
         else 
-          select_single_opinion user_opinion, @props.key
+          select_single_opinion user_opinion, @props.histo_key
 
       else
         max = @local.mouse_opinion_value + REGION_SELECTION_WIDTH
         min = @local.mouse_opinion_value - REGION_SELECTION_WIDTH
 
         is_deselection = \
-          !is_histogram_controlling_region_selection(@props.key) || ( \
+          !is_histogram_controlling_region_selection(@props.histo_key) || ( \
           region_selected && 
            (!@local.touched || inRange(@local.mouse_opinion_value, min, max)))
 
@@ -489,7 +495,7 @@ window.Histogram = ReactiveComponent
 
           @users_in_region = @getUsersInRegion()
           opinion_views.active_views.region_selected =
-            created_by: @props.key 
+            created_by: @props.histo_key 
             opinion_value: @local.mouse_opinion_value
             get_salience: (u, opinion, proposal) => 
               if @users_in_region[u.key || u] 
@@ -525,7 +531,7 @@ window.Histogram = ReactiveComponent
 
     return if fetch(namespaced_key('slider', @props.proposal)).is_moving  || \
               @props.backgrounded || !@props.enable_range_selection || \
-              !is_histogram_controlling_region_selection(@props.key)
+              !is_histogram_controlling_region_selection(@props.histo_key)
 
     ev.stopPropagation()
 
@@ -570,7 +576,7 @@ window.Histogram = ReactiveComponent
 
     opinion_views = fetch 'opinion_views'
     active = opinion_views.active_views
-    originating_histogram = (active.single_opinion_selected or active.region_selected)?.created_by == @props.key
+    originating_histogram = (active.single_opinion_selected or active.region_selected)?.created_by == @props.histo_key
 
     return if originating_histogram
 
@@ -764,7 +770,7 @@ HistoAvatars = ReactiveComponent
 
     DIV 
       id: @props.histocache_key
-      key: @props.key or @local.key
+      key: @props.histo_key or @local.key
       ref: 'histo'
       'data-receive-viewport-visibility-updates': 2
       'data-component': @local.key      

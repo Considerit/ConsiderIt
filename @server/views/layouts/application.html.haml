@@ -91,7 +91,8 @@
       %script{:src => "#{@vendor}/vendor/formatjs-intl-pluralrules.polyfill.min.js", :type => 'text/javascript'}
       %script{:src => "https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en", :type => 'text/javascript'}
 
-      %script{:src => "#{@vendor}/vendor/react.min.js", :type => 'text/javascript'}
+      %script{:src => "#{@vendor}/vendor/react-12.2.js", :type => 'text/javascript'}
+      // %script{:src => "#{@vendor}/vendor/react.min.js", :type => 'text/javascript'}
       %script{:src => "#{@vendor}/vendor/underscore.js", :type => 'text/javascript'}
       %script{:src => "#{@vendor}/vendor/jquery.js", :type => 'text/javascript'}
       %script{:src => "#{@vendor}/vendor/jquery.touchpunch.js", :type => 'text/javascript'}
@@ -106,6 +107,9 @@
         %script{:src => "#{@vendor}/vendor/cassowary.js", :type => 'text/javascript'}
         %script{:src => "#{@vendor}/vendor/modernizr.js", :type => 'text/javascript'}
         %script{:src => "#{@vendor}/vendor/colorbrewer.js", :type => 'text/javascript'}
+
+        // %script{:src => "#{@vendor}/vendor/react-flip-move-3.0.3.js", :type => 'text/javascript'}
+        // %script{:src => "#{@vendor}/vendor/web-animations.min.js", :type => 'text/javascript'}
 
       - elsif current_user.super_admin
         %script{:src => "#{@vendor}/vendor/d3.v3.min.js", :type => 'text/javascript'}

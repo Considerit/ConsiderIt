@@ -92,7 +92,7 @@ window.back_to_homepage_button = (style, text) ->
 ####
 # Make the DIV, SPAN, etc.
 for el of React.DOM
-  window[el.toUpperCase()] = React.DOM[el]
+  window[el.toUpperCase()] = React.createFactory(el) # React.DOM[el]
 
 window.TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
 
@@ -432,9 +432,15 @@ window.splitParagraphs = (user_content, append) ->
   user_content = safe_string user_content
 
   paragraphs = user_content.split(/(?:\r?\n)/g)
+  if paragraphs.length < 2
+    WRAPPER = SPAN
+  else 
+    WRAPPER = P
 
   for para,pidx in paragraphs
-    P key: "para-#{pidx}", 
+    WRAPPER 
+      key: "para-#{pidx}"
+
       # now split around all links
       for text,idx in para.split '(*-&)'
         if text.substring(0,5) == 'link:'
@@ -583,28 +589,28 @@ css_as_str = (attrs) -> _.keys(attrs).map( (p) -> "#{p}: #{attrs[p]}").join(';')
 
 css.crossbrowserify = (props, as_str = false) -> 
 
-  prefixes = ['-webkit-', '-ms-', '-mox-', '-o-']
+  prefixes = ['Webkit', 'ms', 'Moz', 'O']
 
 
   if props.transform
     for prefix in prefixes
-      props["#{prefix}transform"] = props.transform
+      props["#{prefix}Transform"] = props.transform
 
   if props.transformOrigin
     for prefix in prefixes
-      props["#{prefix}transform-origin"] = props.transform
+      props["#{prefix}TransformOrigin"] = props.transform
 
   if props.flex 
     for prefix in prefixes
-      props["#{prefix}flex"] = props.flex
+      props["#{prefix}Flex"] = props.flex
 
   if props.flexDirection
     for prefix in prefixes
-      props["#{prefix}flex-direction"] = props.flexDirection
+      props["#{prefix}FlexDirection"] = props.flexDirection
 
   if props.justifyContent
     for prefix in prefixes
-      props["#{prefix}justify-content"] = props.justifyContent
+      props["#{prefix}JustifyContent"] = props.justifyContent
 
 
   if props.display == 'flex'
@@ -612,7 +618,7 @@ css.crossbrowserify = (props, as_str = false) ->
 
   if props.transition
     for prefix in prefixes
-      props["#{prefix}transition"] = props.transition.replace("transform", "#{prefix}transform")
+      props["#{prefix}Transition"] = props.transition.replace("transform", "#{prefix}Transform")
 
   if props.userSelect
     _.extend props,

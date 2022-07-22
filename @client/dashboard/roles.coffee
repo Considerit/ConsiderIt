@@ -339,6 +339,7 @@ ModalAddRolesAndInvite = ReactiveComponent
 
           render_anchor: (menu_showing) =>
             INPUT 
+              key: 'filter'
               id: 'filter'
               type: 'text'
               style: {fontSize: 18, width: 350, padding: '3px 6px'}
@@ -358,11 +359,13 @@ ModalAddRolesAndInvite = ReactiveComponent
           render_option: (user) ->
             [
               SPAN 
+                key: 'name' 
                 style: 
                   fontWeight: 600
                 user.name 
 
               SPAN
+                key: 'email'
                 style: 
                   opacity: .7
                   paddingLeft: 8

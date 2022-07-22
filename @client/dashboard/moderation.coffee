@@ -246,6 +246,7 @@ window.ModerationDash = ReactiveComponent
             for item in items[@local.show_category].items
               ModerateItem 
                 key: item.key
+                item: item.key
 
 
 
@@ -273,7 +274,7 @@ ModerateItem = ReactiveComponent
   displayName: 'ModerateItem'
 
   render : ->
-    item = fetch @props.key
+    item = fetch @props.item
 
     class_name = item.moderatable_type
     moderatable = fetch(item.moderatable)
@@ -429,12 +430,12 @@ ModerateItem = ReactiveComponent
 
 
             LABEL 
-              htmlFor: "pass-#{@props.key}"
+              htmlFor: "pass-#{@props.item}"
 
               INPUT 
                 name: 'moderation'
                 type: 'radio'
-                id: "pass-#{@props.key}"
+                id: "pass-#{@props.item}"
                 value: 1
                 defaultChecked: item.status == 1
                 onChange: judge
@@ -447,11 +448,11 @@ ModerateItem = ReactiveComponent
               backgroundColor: '#ffc92a'
 
             LABEL 
-              htmlFor: "quar-#{@props.key}"
+              htmlFor: "quar-#{@props.item}"
               INPUT 
                 name: 'moderation'
                 type: 'radio'
-                id: "quar-#{@props.key}"
+                id: "quar-#{@props.item}"
                 value: 2
                 defaultChecked: item.status == 2
                 onChange: judge
@@ -464,12 +465,12 @@ ModerateItem = ReactiveComponent
               backgroundColor: '#f94747'
 
             LABEL 
-              htmlFor: "fail-#{@props.key}"
+              htmlFor: "fail-#{@props.item}"
 
               INPUT 
                 name: 'moderation'
                 type: 'radio'
-                id: "fail-#{@props.key}"
+                id: "fail-#{@props.item}"
                 value: 0
                 defaultChecked: item.status == 0
                 onChange: judge

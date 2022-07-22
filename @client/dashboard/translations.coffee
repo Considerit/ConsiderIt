@@ -58,12 +58,14 @@ window.TRANSLATE = (args, native_text) ->
   if !tr.in_situ_translations
     translation 
   else 
-    IN_SITU_TRANSLATOR _.extend({lang_used, target_lang, message, native_text}, args), translation
+    props = _.extend({lang_used, target_lang, message, native_text}, args)
+    props.translation_key = props.key
+    IN_SITU_TRANSLATOR props, translation
 
 IN_SITU_TRANSLATOR = ReactiveComponent
   displayName: 'InSituTranslator'
   render: ->
-    key = @props.key or '/translations'
+    key = @props.translation_key or '/translations'
     target_lang = @props.target_lang
 
     translated = @props.lang_used == target_lang

@@ -298,19 +298,19 @@ class Proposal < ApplicationRecord
   # current user. 
   #
   # TODO: consolidate with subdomain.user_roles
-  def user_roles(filter = false)
+  def user_roles(filter = false, user = nil)
     rolez = roles ? roles.deep_dup : {}
-
+    user ||= current_user
 
     ['editor', 'participant', 'observer'].each do |role|
 
       # Initialize empty role
       if !rolez[role]
-        if role == 'observer' && current_subdomain
+        if role == 'observer' && self.subdomain
           # default to subdomain setting
-          rolez[role] = current_subdomain.user_roles['visitor'] || ['*']
-        elsif role == 'participant' && current_subdomain
-          rolez[role] = current_subdomain.user_roles['participant'] || ['*']
+          rolez[role] = self.subdomain.user_roles['visitor'] || ['*']
+        elsif role == 'participant' && self.subdomain
+          rolez[role] = self.subdomain.user_roles['participant'] || ['*']
         else
           rolez[role] = [] 
         end
@@ -322,7 +322,7 @@ class Proposal < ApplicationRecord
         # Is used by client permissions system to determining whether 
         # to show action buttons for unauthenticated users. 
         rolez[role] = rolez[role].map{|email_or_key|
-          email_or_key.index('*') || email_or_key == "/user/#{current_user.id}" || email_or_key.index('@') == nil ? email_or_key : '-'
+          email_or_key.index('*') || email_or_key == "/user/#{user.id}" || email_or_key.index('@') == nil ? email_or_key : '-'
         }.uniq
       end
     end

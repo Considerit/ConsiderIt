@@ -139,7 +139,7 @@ window.Point = ReactiveComponent
     LI
       key: "point-#{point.id}"
       'data-id': @props.key
-      className: "point #{@props.rendered_as} #{if point.is_pro then 'pro' else 'con'}"
+      className: "point #{@props.rendered_as} #{if point.is_pro then 'pro' else 'con'} #{if customization('disable_comments') && !expand_to_see_details then 'commenting-disabled' else ''}"
       onClick: @selectPoint
       onTouchEnd: @selectPoint
       onKeyDown: (e) =>
@@ -246,20 +246,21 @@ window.Point = ReactiveComponent
               if !screencasting() && !embedded_demo() && fetch('/subdomain').name != 'galacticfederation'
                 [
                   prettyDate(point.created_at)
-                  ', '                
+                  SPAN style: paddingLeft: 8
                 ]
 
-              SPAN 
-                key: 2 
-                style: {whiteSpace: 'nowrap'}
+              if !customization('disable_comments')
+                SPAN 
+                  key: 2 
+                  style: {whiteSpace: 'nowrap'}
 
-                A 
-                  className: 'select_point'
+                  A 
+                    className: 'select_point'
 
-                  translator
-                    id: 'engage.link_to_comments'
-                    comment_count: point.comment_count 
-                    "{comment_count, plural, one {# comment} other {# comments}}"
+                    translator
+                      id: 'engage.link_to_comments'
+                      comment_count: point.comment_count 
+                      "{comment_count, plural, one {# comment} other {# comments}}"
 
 
 
@@ -518,6 +519,10 @@ window.Point = ReactiveComponent
 
   selectPoint: (e) ->
     e.stopPropagation()
+    point = @data()
+
+    return if !point.text && customization('disable_comments')
+
 
     # android browser needs to respond to this via a touch event;
     # all other browsers via click event. iOS fails to select 
@@ -598,6 +603,14 @@ styles += """
 /* war! disabled jquery UI draggable class defined with !important */
 .point_content.ui-draggable-disabled {
   cursor: pointer !important; }
+
+.commenting-disabled .point_content.ui-draggable-disabled {
+  cursor: auto !important; }
+
+
+.commenting-disabled .point_details_tease {
+  cursor: auto;
+}
 
 #{css.grab_cursor('.point_content.ui-draggable')}
 
@@ -870,25 +883,25 @@ window.Discussion = ReactiveComponent
             splitParagraphs(point.text)
           
 
+      if !customization('disable_comments')
+        SECTION null,
+          HEADING
+            style:
+              textAlign: 'left'
+              fontSize: 24
+              color: focus_color()
+              marginBottom: 25
+              marginTop: 10
+              fontWeight: 600
 
-      SECTION null,
-        HEADING
-          style:
-            textAlign: 'left'
-            fontSize: 24
-            color: focus_color()
-            marginBottom: 25
-            marginTop: 10
-            fontWeight: 600
+            translator "engage.point_details_heading", 'Discuss this Point'
 
-          translator "engage.point_details_heading", 'Discuss this Point'
+          DIV className: 'comments',
+            for comment in comments
+              Comment key: comment.key
 
-        DIV className: 'comments',
-          for comment in comments
-            Comment key: comment.key
-
-        # Write a new comment
-        EditComment fresh: true, point: arest.key_id(@props.key)
+          # Write a new comment
+          EditComment fresh: true, point: arest.key_id(@props.key)
 
   # HACK! Save the height of the open point, which will be added 
   # to the min height of the reasons region to accommodate the

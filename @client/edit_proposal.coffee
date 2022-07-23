@@ -356,9 +356,11 @@ window.EditProposal = ReactiveComponent
         active: active
         # hide_on_homepage: hide_on_homepage
 
-    if @local.roles
-      proposal.roles = @local.roles
-      proposal.invitations = @local.invitations
+
+    # Editing the proposal shouldn't mess with the current roles
+    # This is sloppy, but can lead to permission problems if we don't. 
+    if proposal.roles
+      InitializeProposalRoles proposal
 
     proposal.errors = []
     @local.errors = []

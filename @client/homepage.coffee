@@ -124,16 +124,20 @@ window.Homepage = ReactiveComponent
               get_current_tab_view()
 
               if get_tabs()
-                HomepageTabs
-                  go_to_hash: 'active_tab'
-                  active_style: 
-                    backgroundColor: '#666'
-                    color: 'white'
-                  tab_style: 
-                    backgroundColor: 'transparent'
-                    margin: 4
-                    padding: "8px 20px"
-                    color: '#555'
+                DIV 
+                  style: 
+                    paddingTop: 28
+                    
+                  HomepageTabs
+                    go_to_hash: 'active_tab'
+                    active_style: 
+                      backgroundColor: '#666'
+                      color: 'white'
+                    tab_style: 
+                      backgroundColor: 'transparent'
+                      margin: 4
+                      padding: "8px 20px"
+                      color: '#555'
 
 
   typeset : -> 

@@ -177,8 +177,8 @@ top_level.calculateAvatarRadius = (width, height, opinions, weights, {fill_ratio
 
 Placer = (opts, bodies) -> 
   opinions = opts.o
-  width = opts.w
-  height = opts.h
+  width = Math.round opts.w
+  height = Math.round opts.h
   layout_params = opts.layout_params
   base_radius = opts.r
   weights = opts.weights

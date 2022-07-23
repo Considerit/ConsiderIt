@@ -1,4 +1,3 @@
-
 window.Comment = ReactiveComponent
   displayName: 'Comment'
 
@@ -218,25 +217,25 @@ window.Discussion = ReactiveComponent
             splitParagraphs(point.text)
           
 
+      if !customization('disable_comments')
+        SECTION null,
+          HEADING
+            style:
+              textAlign: 'left'
+              fontSize: 24
+              color: focus_color()
+              marginBottom: 25
+              marginTop: 10
+              fontWeight: 600
 
-      SECTION null,
-        HEADING
-          style:
-            textAlign: 'left'
-            fontSize: 24
-            color: focus_color()
-            marginBottom: 25
-            marginTop: 10
-            fontWeight: 600
+            translator "engage.point_details_heading", 'Discuss this Point'
 
-          translator "engage.point_details_heading", 'Discuss this Point'
+          DIV className: 'comments',
+            for comment in comments
+              Comment key: comment.key
 
-        DIV className: 'comments',
-          for comment in comments
-            Comment key: comment.key
-
-        # Write a new comment
-        EditComment fresh: true, point: arest.key_id(@props.comments)
+          # Write a new comment
+          EditComment fresh: true, point: arest.key_id(@props.comments)
 
   # HACK! Save the height of the open point, which will be added 
   # to the min height of the reasons region to accommodate the

@@ -164,6 +164,7 @@ window.ProfileMenu = ReactiveComponent
 
               for config in settings
                 LI 
+                  key: config.name
                   style: 
                     marginBottom: 6
 

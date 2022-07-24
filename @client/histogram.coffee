@@ -243,12 +243,17 @@ window.Histogram = ReactiveComponent
       'aria-labelledby': if !@props.backgrounded then "##{proposal.id}-histo-label"
       'aria-describedby': if !@props.backgrounded then "##{proposal.id}-histo-description"
 
-      style: css.crossbrowserify
+      style:
         width: @props.width
         height: histo_height
         position: 'relative'
         borderBottom: if @props.draw_base then @props.base_style or "1px solid #999"
         userSelect: 'none'
+        MozUserSelect: 'none'
+        WebkitUserSelect: 'none'
+        msUserSelect: 'none'
+
+
       onKeyDown: (e) =>
         if e.which == 32 # SPACE toggles navigation
           @local.navigating_inside = !@local.navigating_inside 
@@ -423,8 +428,9 @@ window.Histogram = ReactiveComponent
     selection_left = Math.max 0, left
 
 
-    return DIV null if !is_histogram_controlling_region_selection(@props.histo_key) 
+    return DIV {key: 'selection_label'} if !is_histogram_controlling_region_selection(@props.histo_key) 
     DIV 
+      key: 'selection_label'
       style:
         height: @props.height + REGION_SELECTION_VERTICAL_PADDING
         position: 'absolute'
@@ -438,7 +444,7 @@ window.Histogram = ReactiveComponent
 
       if !opinion_views.active_views.region_selected
         DIV
-          style: css.crossbrowserify
+          style: 
             fontSize: 12
             textAlign: 'center'
             whiteSpace: 'nowrap'

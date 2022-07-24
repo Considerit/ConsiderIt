@@ -121,10 +121,12 @@ window.AvatarPopover = ReactiveComponent
                 continue if !is_grouped && !user_val
 
                 LI 
+                  key: attribute.name
                   style: 
                     padding: '1px 0'
 
                   SPAN 
+                    key: 'attribute name'
                     style: 
                       letterSpacing: -1
                       fontSize: 10
@@ -136,6 +138,7 @@ window.AvatarPopover = ReactiveComponent
 
                   for val in user_val
                     SPAN 
+                      key: val or unreported
                       style: 
                         fontSize: 12
                         backgroundColor: if is_grouped then get_color_for_group(val or unreported)

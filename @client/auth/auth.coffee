@@ -85,7 +85,9 @@ window.AuthCallout = ReactiveComponent
                 fontSize: 12
                 marginTop: 4
               translator 'engage.permissions.only_some_participate', 'Only some accounts are authorized to participate.'
-        @props.children
+        
+        if @props.children 
+          @props.children
 
 # AuthTransition doesn't actually render anything.  It just handles state
 # transitions for current_user, e.g. for CSRF and logging in and out.

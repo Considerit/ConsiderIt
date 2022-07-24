@@ -37,11 +37,11 @@ window.EditList = ReactiveComponent
     return SPAN null if !current_user.is_admin
 
     admin_actions = [
-      {action: 'edit', label: translator('edit')}
+      {action: 'edit', label: translator('edit', 'edit')}
       {action: 'copy_link', label: translator('engage.list-configuration.copy_link', 'copy link')}
       {action: 'list_order', label: translator('engage.list-configuration.reorder_topics', 'reorder lists')}
       {action: 'close', label: translator('engage.list-configuration.close', 'close to participation')}
-      {action: 'delete', label: translator('delete')}
+      {action: 'delete', label: translator('delete', 'delete')}
     ]
 
     DIV null,
@@ -340,8 +340,8 @@ window.ModalNewList = ReactiveComponent
                       """
 
                     WysiwygEditor
-
                       key: "#{list_key}-description"
+                      editor_key: "#{list_key}-description"
                       horizontal: true
                       html: customization('list_description', list_key)
                       # placeholder: if !@props.fresh then translator("engage.list_description", "(optional) Description")

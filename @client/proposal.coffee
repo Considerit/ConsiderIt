@@ -82,14 +82,16 @@ window.Proposal = ReactiveComponent
 
   render : ->
     doc = fetch('document')
-    proposal = fetch @proposal
-    page = fetch @page
+    proposal = fetch @props.proposal
 
-    if doc.title != @proposal.name
-      doc.title = @proposal.name
+    is_loading = !proposal.slug || !fetch("/page/#{proposal.slug}").proposal
+
+
+    if doc.title != proposal.name
+      doc.title = proposal.name
       save doc
 
-    your_opinion = @proposal.your_opinion
+    your_opinion = proposal.your_opinion
     if your_opinion.key 
       fetch your_opinion
     current_user = fetch '/current_user'
@@ -106,7 +108,7 @@ window.Proposal = ReactiveComponent
         edit_mode = pc
         break
 
-    local_proposal = fetch shared_local_key(@proposal)
+    local_proposal = fetch shared_local_key(proposal)
 
     has_focus = \
       if get_selected_point()
@@ -123,9 +125,9 @@ window.Proposal = ReactiveComponent
     mode = get_proposal_mode()
 
     if your_opinion.key
-      can_opine = permit 'update opinion', @proposal, your_opinion
+      can_opine = permit 'update opinion', proposal, your_opinion
     else
-      can_opine = permit 'publish opinion', @proposal
+      can_opine = permit 'publish opinion', proposal
 
     # change to results page if user entered crafting page when it is not permitted
     if mode == 'crafting' && 
@@ -148,7 +150,7 @@ window.Proposal = ReactiveComponent
       minheight += adjustments.edit_point_height
 
     # if there aren't community_points, then we won't bother showing them
-    community_points = fetch("/page/#{@proposal.slug}").points or []
+    community_points = fetch("/page/#{proposal.slug}").points or []
     if mode == 'crafting'
       included_points = your_opinion.point_inclusions or []
       community_points = (pnt for pnt in community_points when !_.contains(included_points, pnt.key) )
@@ -165,30 +167,30 @@ window.Proposal = ReactiveComponent
 
     show_all_points = @local.show_all_points || mode == 'crafting' || community_points.length < 8 || has_selection
 
-    is_loading = !page.proposal || !@proposal.name?
 
     just_you = opinion_views.active_views['just_you']
 
     draw_handle = can_opine != Permission.INSUFFICIENT_PRIVILEGES && 
                     (can_opine != Permission.DISABLED || your_opinion.published ) && 
-                    !(!current_user.logged_in && '*' not in @proposal.roles.participant)
+                    !(!current_user.logged_in && '*' not in proposal.roles.participant)
 
     ARTICLE 
-      id: "proposal-#{@proposal.id}"
-      "data-proposal": @proposal.key
-      key: @props.slug
+      id: "proposal-#{proposal.id}"
+      "data-proposal": proposal.key
+      key: proposal.slug
       style: 
         paddingBottom: if browser.is_mobile && has_focus == 'edit point' then 200
           # make room for add new point button
 
       DIV null,
 
-        ProposalDescription {proposal}
+        ProposalDescription
+          proposal: proposal.key
 
         ParticipationStatus({can_opine})
 
-        if (customization('opinion_callout')?[@proposal.cluster] or (customization('opinion_callout') && _.isFunction(customization('opinion_callout'))))
-          (customization('opinion_callout')?[@proposal.cluster] or customization('opinion_callout'))()
+        if (customization('opinion_callout')?[proposal.cluster] or (customization('opinion_callout') && _.isFunction(customization('opinion_callout'))))
+          (customization('opinion_callout')?[proposal.cluster] or customization('opinion_callout'))()
         else 
           H1
             style: _.defaults {}, customization('list_title_style'),
@@ -203,7 +205,7 @@ window.Proposal = ReactiveComponent
                 id: "engage.opinion_header"
                 'What do you think?'
             else 
-              list_i18n().opinion_header("list/#{@proposal.cluster}")
+              list_i18n().opinion_header("list/#{proposal.cluster}")
 
 
         if !embedded_demo()      
@@ -231,12 +233,11 @@ window.Proposal = ReactiveComponent
                 top: if fetch('histogram-dock').docked then 50 else if screencasting() then 120 else 170
 
               HistogramScores
-                proposal: @proposal
+                proposal: proposal.key
 
         if is_loading
           LOADING_INDICATOR
-
-        if !is_loading
+        else
           DIV 
             style: 
               position: 'relative' 
@@ -272,16 +273,16 @@ window.Proposal = ReactiveComponent
 
                 translator
                   id: "engage.opinion_spectrum_explanation"
-                  negative_pole: get_slider_label("slider_pole_labels.oppose", @proposal)
-                  positive_pole: get_slider_label("slider_pole_labels.support", @proposal)
-                  proposal_name: @proposal.name
+                  negative_pole: get_slider_label("slider_pole_labels.oppose", proposal)
+                  positive_pole: get_slider_label("slider_pole_labels.support", proposal)
+                  proposal_name: proposal.name
                   "Evaluations on spectrum from {negative_pole} to {positive_pole} of the proposal {proposal_name}"
 
 
               Histogram
-                key: namespaced_key('histogram', @proposal)
-                proposal: @proposal
-                opinions: opinionsForProposal(@proposal)
+                key: namespaced_key('histogram', proposal)
+                proposal: proposal.key
+                opinions: opinionsForProposal(proposal)
                 width: PROPOSAL_HISTO_WIDTH()
                 height: if fetch('histogram-dock').docked then 50 else if screencasting() then 120 else 170
                 enable_individual_selection: true
@@ -302,7 +303,7 @@ window.Proposal = ReactiveComponent
 
               Dock
                 key: 'slider-dock'
-                docked_key: namespaced_key('slider', @proposal)          
+                docked_key: namespaced_key('slider', proposal)          
                 dock_on_zoomed_screens: true
                 constraints : ['decisionboard-dock', 'histogram-dock']
                 skip_jut: mode == 'results'
@@ -312,15 +313,17 @@ window.Proposal = ReactiveComponent
                 dummy2: PROPOSAL_HISTO_WIDTH()
                 do =>   
                   OpinionSlider
-                    key: namespaced_key('slider', @proposal)
+                    key: namespaced_key('slider', proposal)
+                    slider_key: namespaced_key('slider', proposal)
+                    proposal: @props.proposal
                     width: PROPOSAL_HISTO_WIDTH() - 10
                     your_opinion: your_opinion
                     focused: mode == 'crafting'
                     backgrounded: false
                     permitted: draw_handle
                     pole_labels: [ \
-                      get_slider_label("slider_pole_labels.oppose", @proposal),
-                      get_slider_label("slider_pole_labels.support", @proposal)]
+                      get_slider_label("slider_pole_labels.oppose", proposal),
+                      get_slider_label("slider_pole_labels.support", proposal)]
           
 
             DIV 
@@ -339,7 +342,7 @@ window.Proposal = ReactiveComponent
                   position: 'relative'
                   paddingBottom: '4em' #padding instead of margin for docking
                   margin: "#{if draw_handle && !TWO_COL() then '24px' else '0'} auto 0 auto"
-                  display: if !customization('discussion_enabled', @proposal) then 'none'
+                  display: if !customization('discussion_enabled', proposal) then 'none'
 
                 H2
                   className: 'hidden'
@@ -351,7 +354,7 @@ window.Proposal = ReactiveComponent
                 # Border + bubblemouth that is shown when there is a histogram selection
                 GroupSelectionRegion()
 
-                if !TWO_COL() && customization('discussion_enabled', @proposal)
+                if !TWO_COL() && customization('discussion_enabled', proposal)
                   Dock
                     key: 'decisionboard-dock'
                     docked_key: 'decisionboard'            
@@ -376,6 +379,7 @@ window.Proposal = ReactiveComponent
 
                     DecisionBoard
                       key: 'decisionboard'
+                      proposal: proposal.key
 
                 DIV 
                   style: 
@@ -383,6 +387,8 @@ window.Proposal = ReactiveComponent
 
                   PointsList 
                     key: 'community_cons'
+                    proposal: proposal.key
+                    reasons_key: 'community_cons'
                     rendered_as: 'community_point'
                     points_editable: TWO_COL()
                     valence: 'cons'
@@ -400,6 +406,8 @@ window.Proposal = ReactiveComponent
                   #community pros
                   PointsList 
                     key: 'community_pros'
+                    proposal: proposal.key
+                    reasons_key: 'community_pros'
                     rendered_as: 'community_point'
                     points_editable: TWO_COL()
                     valence: 'pros'
@@ -493,7 +501,7 @@ window.Proposal = ReactiveComponent
 
             (customization('ProposalNavigation') or GroupedProposalNavigation) # or NextProposals)
               width: w
-              proposal: @proposal
+              proposal: proposal.key
 
 
       if edit_mode && browser.is_mobile && !embedded_demo()
@@ -506,6 +514,7 @@ window.Proposal = ReactiveComponent
 
         EditPoint 
           key: if pc.adding_new_point then "new_point_#{valence}" else pc.editing_points[0]
+          proposal: @props.proposal
           fresh: pc.adding_new_point
           valence: valence
           your_points_key: edit_mode
@@ -573,15 +582,16 @@ DecisionBoard = ReactiveComponent
     subdomain = fetch('/subdomain')
 
     db = fetch('decision_board')
+    proposal = fetch @props.proposal
     
-    your_opinion = @proposal.your_opinion
+    your_opinion = proposal.your_opinion
     if your_opinion.key
       fetch your_opinion
 
     if your_opinion.published
-      can_opine = permit 'update opinion', @proposal, your_opinion
+      can_opine = permit 'update opinion', proposal, your_opinion
     else
-      can_opine = permit 'publish opinion', @proposal
+      can_opine = permit 'publish opinion', proposal
 
     opinion_views = fetch 'opinion_views'
     has_selection = opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
@@ -589,16 +599,16 @@ DecisionBoard = ReactiveComponent
     enable_opining = can_opine != Permission.INSUFFICIENT_PRIVILEGES && 
                       (can_opine != Permission.DISABLED || your_opinion.published ) && 
                       !has_selection &&
-                      !(!current_user.logged_in && '*' not in @proposal.roles.participant)
+                      !(!current_user.logged_in && '*' not in proposal.roles.participant)
 
     return DIV null if !enable_opining
 
-    register_dependency = fetch(namespaced_key('slider', @proposal)).value 
+    register_dependency = fetch(namespaced_key('slider', proposal)).value 
                              # to keep bubble mouth in sync with slider
 
     # if there aren't points in the wings, then we won't bother showing 
     # the drop target
-    wing_points = fetch("/page/#{@proposal.slug}").points or [] 
+    wing_points = fetch("/page/#{proposal.slug}").points or [] 
     included_points = your_opinion.point_inclusions or []
     wing_points = (pnt for pnt in wing_points when !_.contains(included_points, pnt.key) )
     are_points_in_wings = wing_points.length > 0 
@@ -620,7 +630,7 @@ DecisionBoard = ReactiveComponent
 
     if get_proposal_mode() == 'results'
       give_opinion_button_width = 232
-      slider = fetch namespaced_key('slider', @proposal)
+      slider = fetch namespaced_key('slider', proposal)
       gutter = .1 * give_opinion_button_width
 
       opinion_slider_width = BODY_WIDTH() - 10
@@ -676,23 +686,24 @@ DecisionBoard = ReactiveComponent
 
         translator 
           id: "engage.opinion_crafting_explanation" 
-          proposal_name: @proposal.name
+          proposal_name: proposal.name
           "Craft your opinion using pros and cons about {proposal_name}"
 
-      SliderBubblemouth()
+      SliderBubblemouth 
+        proposal: proposal.key
 
       DIV
         'aria-live': 'polite'
         key: 'body' 
         className:'decision_board_body'
-        style: css.crossbrowserify decision_board_style
+        style: decision_board_style
         onClick: => 
           if get_proposal_mode() == 'results' 
 
             if your_opinion.key
-              can_opine = permit 'update opinion', @proposal, your_opinion
+              can_opine = permit 'update opinion', proposal, your_opinion
             else 
-              can_opine = permit 'publish opinion', @proposal
+              can_opine = permit 'publish opinion', proposal
 
             if can_opine > 0
               updateProposalMode('crafting', 'give_opinion_button')
@@ -720,6 +731,8 @@ DecisionBoard = ReactiveComponent
 
               PointsList 
                 key: 'your_pro_points'
+                proposal: proposal.key
+                reasons_key: 'your_pro_points'
                 valence: 'pros'
                 rendered_as: 'decision_board_point'
                 points_editable: true
@@ -730,6 +743,8 @@ DecisionBoard = ReactiveComponent
 
               PointsList 
                 key: 'your_con_points'
+                proposal: proposal.key
+                reasons_key: 'your_con_points'
                 valence: 'cons'
                 rendered_as: 'decision_board_point'
                 points_editable: true
@@ -784,7 +799,7 @@ DecisionBoard = ReactiveComponent
           translator 'engage.update_opinion_button', 'Show the results'
 
         
-        if !your_opinion.key || (your_opinion.key && permit('update opinion', @proposal, your_opinion) < 0)
+        if !your_opinion.key || (your_opinion.key && permit('update opinion', proposal, your_opinion) < 0)
 
           DIV 
             className: 'below_save'
@@ -797,7 +812,7 @@ DecisionBoard = ReactiveComponent
 
               
 
-        if your_opinion.key && permit('update opinion', @proposal, your_opinion) > 0 && get_proposal_mode() == 'crafting'
+        if your_opinion.key && permit('update opinion', proposal, your_opinion) > 0 && get_proposal_mode() == 'crafting'
           remove_opinion = -> 
             your_opinion.stance = 0
             your_opinion.point_inclusions = []                   
@@ -833,11 +848,13 @@ DecisionBoard = ReactiveComponent
 
     return if $el.is('.ui-droppable')
 
+    proposal = fetch @props.proposal
+
     $el.droppable
       accept: ".point_content"
       drop : (ev, ui) =>
         if ui.draggable.parent().is('.community_point')
-          your_opinion = @proposal.your_opinion
+          your_opinion = proposal.your_opinion
           your_opinion.key ?= "/new/opinion"
           your_opinion.published = true
           your_opinion.point_inclusions ?= []
@@ -924,7 +941,8 @@ SliderBubblemouth = ReactiveComponent
   displayName: 'SliderBubblemouth'
 
   render : -> 
-    slider = fetch(namespaced_key('slider', @proposal))
+    proposal = fetch @props.proposal
+    slider = fetch(namespaced_key('slider', proposal))
     db = fetch('decision_board')
 
     w = 34
@@ -945,7 +963,7 @@ SliderBubblemouth = ReactiveComponent
 
     DIV 
       key: 'slider_bubblemouth'
-      style: css.crossbrowserify
+      style: 
         left: 10 + translateStanceToPixelX slider.value, DECISION_BOARD_WIDTH() - w - 20
         top: -h + 18 + 3 # +10 is because of the decision board translating down 18, 3 is for its border
         position: 'absolute'
@@ -1045,12 +1063,14 @@ GroupSelectionRegion = ReactiveComponent
           title 
   
 
+points_for_proposal = (proposal) ->
+  fetch("/page/#{proposal.slug}").points or []
 
 stored_points_order = {}
 buildPointsList = (proposal, valence, sort_field, filter_included, show_all_points) ->
   return [] if !proposal.slug
   sort_field = sort_field or 'score'
-  points = fetch("/page/#{proposal.slug}").points or []
+  points = points_for_proposal(proposal)
   opinions = fetch(proposal).opinions
 
 
@@ -1136,7 +1156,9 @@ PointsList = ReactiveComponent
 
     mode = get_proposal_mode()
 
-    your_points = @data()
+    your_points = fetch @props.reasons_key
+
+    proposal = fetch @props.proposal
 
 
 
@@ -1170,13 +1192,13 @@ PointsList = ReactiveComponent
 
 
     get_heading = (valence) => 
-      point_labels = customization("point_labels", @proposal)
+      point_labels = customization("point_labels", proposal)
 
 
       heading = point_labels["#{header_prefix}_header"]
 
 
-      plural_point = get_point_label valence, @proposal
+      plural_point = get_point_label valence, proposal
 
       heading_t = translator
                     id: "point_labels.header_#{header_prefix}.#{heading}"
@@ -1200,6 +1222,7 @@ PointsList = ReactiveComponent
 
 
       HEADING 
+        key: 'point_list_heading'
         ref: 'point_list_heading'
         id: @local.key.replace('/','-')
         className: 'points_heading_label'
@@ -1212,6 +1235,7 @@ PointsList = ReactiveComponent
 
 
       UL 
+        key: 'points_list'
         'aria-labelledby': @local.key.replace('/','-')
         if points.length > 0 || @props.rendered_as == 'decision_board_point'
           for point in points
@@ -1222,14 +1246,16 @@ PointsList = ReactiveComponent
                !browser.is_mobile
               EditPoint 
                 key: point.key
+                proposal: @props.proposal
                 fresh: false
                 valence: @props.valence
-                your_points_key: @props.key
+                your_points_key: @props.reasons_key
             else
               Point
                 key: point.key
+                point: point.key
                 rendered_as: @props.rendered_as
-                your_points_key: @props.key
+                your_points_key: @props.reasons_key
                 enable_dragging: @props.points_draggable
 
         else if points.length == 0 && @props.rendered_as == 'community_point' && mode == "results"
@@ -1244,22 +1270,22 @@ PointsList = ReactiveComponent
               marginLeft: -20
 
             if none_given
-              "No #{get_point_label(@props.valence.substring(0, @props.valence.length - 1) + 's', @proposal)} given"
+              "No #{get_point_label(@props.valence.substring(0, @props.valence.length - 1) + 's', proposal)} given"
 
             else               
-              "Be the first to add a #{get_point_label(@props.valence.substring(0, @props.valence.length - 1), @proposal)}"
+              "Be the first to add a #{get_point_label(@props.valence.substring(0, @props.valence.length - 1), proposal)}"
 
 
-      if @props.drop_target && permit('create point', @proposal) > 0
+      if @props.drop_target && permit('create point', proposal) > 0
         @drawDropTarget()
 
-      if @props.points_editable && permit('create point', @proposal) > 0 
+      if @props.points_editable && permit('create point', proposal) > 0 
         @drawAddNewPoint()
       ] 
 
 
   columnStandsOut: -> 
-    your_points = @data()
+    your_points = fetch @props.reasons_key
 
     contains_selection = get_selected_point() && \
                          fetch(get_selected_point()).is_pro == (@props.valence == 'pros')
@@ -1270,6 +1296,8 @@ PointsList = ReactiveComponent
 
 
   drawCommunityPoints: (children) -> 
+    proposal = fetch @props.proposal 
+
     x_pos = if @props.points_draggable
               if @props.valence == 'cons' then 0 else DECISION_BOARD_WIDTH()
             else if !TWO_COL()
@@ -1283,13 +1311,15 @@ PointsList = ReactiveComponent
     #              (which is absolutely positioned) grows taller the wing points
     #           2) when filtering the points on result page to a group of opinions 
     #              with few inclusions, the document height can jarringly fluctuate
+
     SECTION
+      key: 'community_points'
       className: "point_list points_by_community #{@props.valence}_by_community"
-      style: css.crossbrowserify _.defaults (@props.style or {}),
+      style: _.defaults (@props.style or {}),
         display: 'inline-block'
         verticalAlign: 'top'
         width: POINT_WIDTH()
-        minHeight: (if @page.points.length > 4 && get_proposal_mode() == 'crafting' then jQuery(window).height() else 100)
+        minHeight: (if points_for_proposal(proposal).length > 4 && get_proposal_mode() == 'crafting' then jQuery(window).height() else 100)
         zIndex: if @columnStandsOut() then 6 else 1
         margin: '38px 18px 0 18px'
         position: 'relative'
@@ -1299,6 +1329,7 @@ PointsList = ReactiveComponent
       if get_proposal_mode() == 'crafting' && !TWO_COL()
 
         [A
+          key: 'skip to'
           className: 'hidden'
           href: "##{@props.valence}_on_decision_board"
           'data-nojax': true
@@ -1308,7 +1339,7 @@ PointsList = ReactiveComponent
             $("[name='#{@props.valence}_on_decision_board']").focus()
 
           "Skip to Your points."
-        A name: "#{@props.valence}_by_community"]
+        A key: 'anchor', name: "#{@props.valence}_by_community"]
 
       children
 
@@ -1329,9 +1360,9 @@ PointsList = ReactiveComponent
       children
 
   drawAddNewPoint: -> 
-    
-    your_points = @data()
-    can_add_new_point = permit 'create point', @proposal
+    proposal = fetch @props.proposal
+    your_points = fetch @props.reasons_key
+    can_add_new_point = permit 'create point', proposal
 
     opinion_views = fetch 'opinion_views'
     hist_selection = opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
@@ -1339,7 +1370,8 @@ PointsList = ReactiveComponent
 
     if can_add_new_point != Permission.INSUFFICIENT_PRIVILEGES && !hist_selection
       if !your_points.adding_new_point
-        DIV null,
+        DIV 
+          key: 'draw add new point'
 
           DIV 
             onClick: => 
@@ -1371,9 +1403,9 @@ PointsList = ReactiveComponent
           if @props.rendered_as == 'decision_board_point'
 
             if @props.valence == 'pros' 
-              noun = get_point_label 'pro', @proposal 
+              noun = get_point_label 'pro', proposal 
             else 
-              noun = get_point_label 'con', @proposal 
+              noun = get_point_label 'con', proposal 
 
             noun = capitalize noun   
 
@@ -1391,15 +1423,17 @@ PointsList = ReactiveComponent
       else if !browser.is_mobile
         EditPoint
           key: "new_point_#{@props.valence}"
+          proposal: @props.proposal
           fresh: true
           valence: @props.valence
-          your_points_key: @props.key
+          your_points_key: @props.reasons_key
 
   drawAddNewPointInCommunityCol: ->
+    proposal = fetch @props.proposal
     if @props.valence == 'pros' 
-      point_label = get_point_label 'pro', @proposal 
+      point_label = get_point_label 'pro', proposal 
     else 
-      point_label = get_point_label 'con', @proposal 
+      point_label = get_point_label 'con', proposal 
 
     button_text = translator 
                     id: "engage.add_a_point"
@@ -1426,12 +1460,13 @@ PointsList = ReactiveComponent
 
 
   drawAddNewPointInDecisionBoard: -> 
-    your_points = @data()
+    proposal = fetch @props.proposal
+    your_points = fetch @props.reasons_key
 
     if @props.valence == 'pros' 
-      point_label = get_point_label 'pro', @proposal 
+      point_label = get_point_label 'pro', proposal 
     else 
-      point_label = get_point_label 'con', @proposal 
+      point_label = get_point_label 'con', proposal 
 
 
     DIV 
@@ -1446,7 +1481,7 @@ PointsList = ReactiveComponent
           'aria-hidden': true
           style: 
             fontWeight: if browser.high_density_display then 300 else 400
-          "#{t('or')} "
+          "#{t('or', 'or')} "
       # SPAN
       #   'aria-hidden': true
       #   style: 
@@ -1466,12 +1501,13 @@ PointsList = ReactiveComponent
           "Add a new {pro_or_con}" 
 
   drawDropTarget: -> 
+    proposal = fetch @props.proposal
     left_or_right = if @props.valence == 'pros' then 'right' else 'left'
 
     if @props.valence == 'pros' 
-      point_label = get_point_label 'pro', @proposal 
+      point_label = get_point_label 'pro', proposal 
     else 
-      point_label = get_point_label 'con', @proposal 
+      point_label = get_point_label 'con', proposal 
 
     drop_target_text = TRANSLATE 
                          id: "engage.drag_point.#{left_or_right}"
@@ -1481,9 +1517,10 @@ PointsList = ReactiveComponent
 
 
     dt_w = POINT_WIDTH() - 24
-    local_proposal = fetch shared_local_key(@proposal)
+    local_proposal = fetch shared_local_key(proposal)
 
     DIV 
+      key: 'drop-target'
       'aria-hidden': true
       style: 
         marginLeft: if @props.valence == 'cons' then 24 else 0
@@ -1501,7 +1538,8 @@ PointsList = ReactiveComponent
         text_style: {}
 
 
-  drawGhostedPoint: (props) ->     
+  drawGhostedPoint: (props) ->   
+    proposal = fetch @props.proposal  
     text_style = props.text_style or {}
     style = props.style or {}
     width = props.width
@@ -1528,7 +1566,7 @@ PointsList = ReactiveComponent
       mouth_style['transform'] = 'rotate(90deg)'
       mouth_style['right'] = -POINT_MOUTH_WIDTH  + stroke_width + 1
 
-    local_proposal = fetch shared_local_key(@proposal)
+    local_proposal = fetch shared_local_key(proposal)
 
     DIV
       style: _.defaults style, 
@@ -1548,6 +1586,7 @@ PointsList = ReactiveComponent
             patternUnits: "userSpaceOnUse"
 
             RECT 
+              key: 'rect'
               width: '100%'
               height: '100%'
               fill: 'white'
@@ -1565,6 +1604,7 @@ PointsList = ReactiveComponent
               for [x1, y1, x2, y2], idx in cross_hatch
 
                 LINE 
+                  key: idx
                   x1: x1
                   y1: y1
                   x2: x2 
@@ -1609,4 +1649,4 @@ PointsList = ReactiveComponent
         stroke: focus_color()
         stroke_width: 6
         dash_array: '24, 18'
-        style: css.crossbrowserify mouth_style
+        style: mouth_style

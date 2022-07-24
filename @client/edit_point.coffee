@@ -6,6 +6,7 @@ window.EditPoint = ReactiveComponent
   displayName: 'EditPoint'
 
   render : ->
+    proposal = fetch @props.proposal
     @local = @data @local_key,
       sign_name : if @props.fresh then true else !@data().hide_name
       add_details : false
@@ -20,7 +21,7 @@ window.EditPoint = ReactiveComponent
         padding: '4px 6px'
 
       # full page mode if we're on mobile      
-      parent = $("#proposal-#{@proposal.id}")
+      parent = $("#proposal-#{proposal.id}")
       parent_offset = if parent.length > 0 then parent.offset().top else 0
       style = 
         position: 'absolute'
@@ -121,7 +122,7 @@ window.EditPoint = ReactiveComponent
           marginTop: 3
           marginBottom: '.5em'
 
-        if !@proposal.active
+        if !proposal.active
           DIV 
             style: {color: '#777', fontSize: 12}
             translator 'engage.no_new_points', 'New points disabled for this proposal'
@@ -153,7 +154,7 @@ window.EditPoint = ReactiveComponent
           style: 
             clear: 'both'
 
-      if @proposal.active
+      if proposal.active
         DIV 
           style: 
             position: 'relative'
@@ -184,7 +185,8 @@ window.EditPoint = ReactiveComponent
       @scrollY = window.scrollY
 
   componentDidMount : ->
-    if @proposal.active 
+    proposal = fetch @props.proposal
+    if proposal.active 
       $el = $(@getDOMNode())
       $el.find('#nutshell').focus() if !browser.is_mobile # iOS messes this up
       $el.find('[data-action="submit-point"]').ensureInView {scroll: false, position: 'bottom'}
@@ -199,6 +201,7 @@ window.EditPoint = ReactiveComponent
     save s    
 
   drawTips : -> 
+    proposal = fetch @props.proposal
     # guidelines/tips for good points
     mobile = browser.is_mobile
 
@@ -206,11 +209,11 @@ window.EditPoint = ReactiveComponent
     guidelines_h = 238
 
     singular =  if @props.valence == 'pros' 
-                  get_point_label 'pro', @proposal
+                  get_point_label 'pro', proposal
                 else 
-                  get_point_label 'con', @proposal
+                  get_point_label 'con', proposal
 
-    plural =  get_point_label @props.valence, @proposal 
+    plural =  get_point_label @props.valence, proposal 
 
 
     DIV 
@@ -230,7 +233,7 @@ window.EditPoint = ReactiveComponent
           width: guidelines_w + 28
           height: guidelines_h
           viewBox: "-4 0 #{guidelines_w+20 + 9} #{guidelines_h}"
-          style: css.crossbrowserify
+          style: 
             position: 'absolute'
             transform: if @props.valence == 'cons' then 'scaleX(-1)'
             left: if @props.valence == 'cons' then -20
@@ -289,6 +292,7 @@ window.EditPoint = ReactiveComponent
 
             for tip in tips
               LI 
+                key: tip
                 style: 
                   paddingBottom: 3
                   fontSize: if PORTRAIT_MOBILE() then 24 else if LANDSCAPE_MOBILE() then 14
@@ -306,7 +310,7 @@ window.EditPoint = ReactiveComponent
 
   savePoint : (ev) ->
     $form = $(@getDOMNode())
-
+    proposal = fetch @props.proposal
     nutshell = $form.find('#nutshell').val()
     text = $form.find('#text').val()
     hide_name = !$form.find("#sign_name-#{@props.valence}").is(':checked')
@@ -326,7 +330,7 @@ window.EditPoint = ReactiveComponent
         user : current_user
         comment_count : 0
         includers : [current_user]
-        proposal : @proposal.key
+        proposal : proposal.key
         nutshell : nutshell
         text : text
         hide_name : hide_name

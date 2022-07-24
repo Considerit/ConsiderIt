@@ -591,6 +591,7 @@ FilterProposalsMenu = ReactiveComponent
             ": "
 
             SPAN 
+              key: 'filter_name'
               style: 
                 fontWeight: 700
                 paddingLeft: 8
@@ -606,6 +607,7 @@ FilterProposalsMenu = ReactiveComponent
         render_option: (option, is_active) -> 
           [
             SPAN 
+              key: 'option-name'
               "data-filter": option.name
               style: 
                 # fontWeight: 600
@@ -616,6 +618,7 @@ FilterProposalsMenu = ReactiveComponent
 
             if !browser.is_mobile
               SPAN 
+                key: 'help icon'
                 style: 
                   float: 'right'
                 HelpIcon translator("engage.filter.#{option.name}.description", option.description),
@@ -657,6 +660,7 @@ SortProposalsMenu = ReactiveComponent
             ": "
 
             SPAN 
+              key: 'sort name'
               style: 
                 fontWeight: 700
                 paddingLeft: 8
@@ -672,6 +676,7 @@ SortProposalsMenu = ReactiveComponent
         render_option: (option, is_active) -> 
           [
             SPAN 
+              key: 'sort name'
               "data-sort": option.name
               style: 
                 # fontWeight: 600
@@ -682,6 +687,7 @@ SortProposalsMenu = ReactiveComponent
 
             if !browser.is_mobile
               SPAN 
+                key: 'help-icon'
                 style: 
                   float: 'right'
                 HelpIcon translator "engage.sort_order.#{option.name}.description", option.description

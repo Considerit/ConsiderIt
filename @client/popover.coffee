@@ -260,6 +260,7 @@ window.Popover = ReactiveComponent
         G null,
           for x1 in [0.866, 530.874]
             LINE 
+              key: x1
               x1: x1
               y1: 0.5
               x2: 265.87

@@ -270,7 +270,7 @@ window.Slider = ReactiveComponent
       onBlur: => @local.has_focus = false; save @local
       onFocus: => @local.has_focus = true; save @local
 
-      style: css.crossbrowserify _.extend (@props.handle_style || {}), 
+      style: _.extend (@props.handle_style || {}), 
         width: handle_width
         height: handle_height
         top: if @props.offset then 0 else -(handle_height - @props.base_height) / 2
@@ -293,6 +293,7 @@ window.Slider = ReactiveComponent
         DIV null,
           for support in [true, false]
             DIV 
+              key: "#{support}1"
               style: 
                 right: if support then -21
                 left: if !support then -21
@@ -305,6 +306,7 @@ window.Slider = ReactiveComponent
 
           for support in [true, false]
             DIV 
+              key: "#{support}2"
               style: 
                 right: if support then -19
                 left: if !support then -19
@@ -317,6 +319,7 @@ window.Slider = ReactiveComponent
 
           for support in [true, false]
             DIV 
+              key: "#{support}3"
               style: 
                 right: if support then -20
                 left: if !support then -20

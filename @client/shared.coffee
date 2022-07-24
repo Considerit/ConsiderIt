@@ -587,47 +587,6 @@ window.css = {}
 
 css_as_str = (attrs) -> _.keys(attrs).map( (p) -> "#{p}: #{attrs[p]}").join(';') + ';'
 
-css.crossbrowserify = (props, as_str = false) -> 
-
-  prefixes = ['Webkit', 'ms', 'Moz', 'O']
-
-
-  if props.transform
-    for prefix in prefixes
-      props["#{prefix}Transform"] = props.transform
-
-  if props.transformOrigin
-    for prefix in prefixes
-      props["#{prefix}TransformOrigin"] = props.transform
-
-  if props.flex 
-    for prefix in prefixes
-      props["#{prefix}Flex"] = props.flex
-
-  if props.flexDirection
-    for prefix in prefixes
-      props["#{prefix}FlexDirection"] = props.flexDirection
-
-  if props.justifyContent
-    for prefix in prefixes
-      props["#{prefix}JustifyContent"] = props.justifyContent
-
-
-  if props.display == 'flex'
-    props.display = 'display: table-cell; -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex'
-
-  if props.transition
-    for prefix in prefixes
-      props["#{prefix}Transition"] = props.transition.replace("transform", "#{prefix}Transform")
-
-  if props.userSelect
-    _.extend props,
-      MozUserSelect: props.userSelect
-      WebkitUserSelect: props.userSelect
-      msUserSelect: props.userSelect
-
-
-  if as_str then css_as_str(props) else props
 
 css.grayscale = (props) ->
   if browser.is_mobile

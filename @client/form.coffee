@@ -8,7 +8,7 @@ require './dock'
 
 
 old_BUTTON = BUTTON
-window.BUTTON = React.createClass
+window.BUTTON = React.createFactory React.createClass
   displayName: 'modified_BUTTON'
   render: -> 
     new_props = {}
@@ -75,8 +75,10 @@ window.AutoGrowTextArea = ReactiveComponent
     if !@local.height
       @local.height = @props.min_height
 
+    className = "AutoGrowTextArea #{if @props.className then @props.className else ''}"
+
     TEXTAREA _.extend {}, @props,
-      className: 'AutoGrowTextArea'
+      className: className
       onChange: @onChange
       rows: 1
       style: _.extend {}, (@props.style or {}), {height: @local.height}
@@ -256,6 +258,7 @@ window.WysiwygEditor = ReactiveComponent
               for button, idx in toolbar_items
                 do (idx) =>
                   BUTTON
+                    key: button.title or idx
                     ref: "toolbaritem-#{idx}"
                     tabIndex: if @local.focused_toolbar_item == idx then 0 else -1
                     className: button.className

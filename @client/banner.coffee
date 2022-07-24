@@ -282,7 +282,7 @@ UploadFileSVG = (opts) ->
     y: 0
     viewBox: "0 0 100 100"
     style: 
-      'enable-background': "new 0 0 100 100" 
+      enableBackground: "new 0 0 100 100" 
 
 UploadableLogo = (opts) ->
   edit_forum = fetch 'edit_forum'
@@ -342,7 +342,7 @@ UploadableLogo = (opts) ->
           y: 0
           viewBox: "0 0 511.995 511.995"
           style: 
-            'enable-background': "new 0 0 511.995 511.995" 
+            enableBackground: "new 0 0 511.995 511.995" 
 
           dangerouslySetInnerHTML: __html: """
             <g>

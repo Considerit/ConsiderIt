@@ -167,19 +167,26 @@ window.DefaultFooter = ReactiveComponent
                 alignItems: 'center'
                 justifyContent: 'center'
 
-              DIV null,
-                '© Consider.it LLC. All rights reserved. '
+              DIV 
+                key: 'privacy & terms'
+  
+                SPAN 
+                  key: 'copyright'
+                  '© Consider.it LLC. All rights reserved. '
 
                 TRANSLATE
+                  key: 'footer policies'
                   id: 'footer.policies'
                   privacy_link: 
                     component: A 
                     args: 
+                      key: 'privacy'
                       href: '/privacy_policy'
                       style: 
                         textDecoration: 'underline'
 
                   terms_link:
+                    key: 'terms'
                     component: A 
                     args: 
                       href: '/terms_of_service'

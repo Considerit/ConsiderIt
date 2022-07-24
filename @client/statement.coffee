@@ -57,7 +57,7 @@ window.BUBBLE_WRAP = ReactiveComponent
 
 
         DIV 
-          style: css.crossbrowserify mouth_style
+          style: mouth_style
 
           Bubblemouth 
             apex_xfrac: 0

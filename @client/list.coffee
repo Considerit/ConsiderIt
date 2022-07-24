@@ -506,7 +506,7 @@ window.NewList = ReactiveComponent
             SPAN null,
               SPAN 
                 className: 'separator'
-                dangerouslySetInnerHTML: __html: "&nbsp;&nbsp;#{t('or')}&nbsp;&nbsp;"
+                dangerouslySetInnerHTML: __html: "&nbsp;&nbsp;#{t('or', 'or')}&nbsp;&nbsp;"
               SPAN 
                 className: 'subbutton_button closed'
                 'an open-ended question'
@@ -618,7 +618,7 @@ EditableTitle = ReactiveComponent
 
             BUTTON 
               tabIndex: if !list_uncollapseable then 0
-              'aria-label': "#{title}. #{translator('Expand or collapse list.')}"
+              'aria-label': "#{title}. #{translator('accessibility-expand-or-collapse-list', 'Expand or collapse list.')}"
               'aria-pressed': !is_collapsed
 
               onClick: if !list_uncollapseable then (e) -> 

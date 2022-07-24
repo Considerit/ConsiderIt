@@ -221,7 +221,7 @@ window.CollapsedProposal = ReactiveComponent
 
       if @local.editing
         EditProposal 
-          proposal: proposal
+          proposal: proposal.key
           done_callback: (e) =>
             @local.editing = false
             save @local
@@ -352,6 +352,7 @@ window.CollapsedProposal = ReactiveComponent
               [
                 if show_timestamp
                   SPAN 
+                    key: 'date'
                     className: 'separated'
 
                     # if !show_author_name_in_meta_data
@@ -362,6 +363,7 @@ window.CollapsedProposal = ReactiveComponent
 
                 if show_author_name_in_meta_data
                   SPAN 
+                    key: 'author name'
                     className: 'separated'
 
                     TRANSLATE
@@ -475,7 +477,7 @@ window.CollapsedProposal = ReactiveComponent
 
         Histogram
           histo_key: "histogram-#{proposal.slug}"
-          proposal: proposal
+          proposal: proposal.key
           opinions: opinions
           width: col_sizes.second
           height: 40
@@ -554,7 +556,7 @@ window.CollapsedProposal = ReactiveComponent
           className: 'proposal_scores'
 
           HistogramScores
-            proposal: proposal
+            proposal: proposal.key
 
 
 

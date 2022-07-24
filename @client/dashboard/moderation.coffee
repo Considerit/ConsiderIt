@@ -581,11 +581,13 @@ BanHammer = ReactiveComponent
               render_option: (user) ->
                 [
                   SPAN 
+                    key: 'user name'
                     style: 
                       fontWeight: 600
                     user.name 
 
                   SPAN
+                    key: 'user email'
                     style: 
                       opacity: .7
                       paddingLeft: 8

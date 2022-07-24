@@ -386,7 +386,7 @@ window.NewProposal = ReactiveComponent
           width: guidelines_w + 28
           height: guidelines_h
           viewBox: "-4 0 #{guidelines_w+20 + 9} #{guidelines_h}"
-          style: css.crossbrowserify
+          style:
             position: 'absolute'
             transform: 'scaleX(-1)'
             left: -20

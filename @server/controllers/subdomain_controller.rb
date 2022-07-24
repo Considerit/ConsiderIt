@@ -124,7 +124,7 @@ class SubdomainController < ApplicationController
         proposals = [
           {name: 'Vanilla', img: "https://f.consider.it/icecreams/vanilla.jpeg" },
           {name: 'Chocolate', img: "https://f.consider.it/icecreams/chocolate.jpeg" },
-          {name: 'Cookies \'n Cream', img: "https://f.consider.it/icecreams/cookies-n-cream.jpeg" },
+          {name: 'Cookies in Cream', img: "https://f.consider.it/icecreams/cookies-n-cream.jpeg" },
           {name: 'Mint chocolate chip', img: "https://f.consider.it/icecreams/mint-chocolate-chip.jpeg" },
           {name: 'Salted caramel', img: "https://f.consider.it/icecreams/salted-caramel.jpeg" },
           {name: 'Eggnog', img: "https://f.consider.it/icecreams/eggnog.jpeg" }

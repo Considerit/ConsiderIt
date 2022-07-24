@@ -8,7 +8,7 @@ window.ProposalDescription = ReactiveComponent
   render : ->    
     current_user = fetch('/current_user')
     subdomain = fetch '/subdomain'
-    proposal = fetch (@props.proposal or @proposal)
+    proposal = fetch @props.proposal
 
     @max_description_height = customization('collapse_proposal_description_at', proposal)
 
@@ -95,7 +95,7 @@ window.ProposalDescription = ReactiveComponent
 
       if @local.editing
         EditProposal 
-          proposal: proposal
+          proposal: proposal.key
           done_callback: (e) =>
             @local.editing = false
             save @local
@@ -342,13 +342,13 @@ window.ProposalDescription = ReactiveComponent
 
 
   componentDidMount : ->
-    if (fetch(@props.proposal or @proposal).description && @max_description_height && !@local.description_collapsed? \
+    if (fetch(@props.proposal).description && @max_description_height && !@local.description_collapsed? \
         && $('.wysiwyg_text').height() > @max_description_height)
       @local.description_collapsed = true 
       save(@local)
 
   componentDidUpdate : ->
-    if (fetch(@props.proposal or @proposal).description && @max_description_height && !@local.description_collapsed? \
+    if (fetch(@props.proposal).description && @max_description_height && !@local.description_collapsed? \
         && $('.wysiwyg_text').height() > @max_description_height)
       @local.description_collapsed = true
       save(@local)

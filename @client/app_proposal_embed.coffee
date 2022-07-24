@@ -222,7 +222,7 @@ Proposal = ReactiveComponent
 
             SPAN 
               key: 'slider_bubblemouth'
-              style: css.crossbrowserify
+              style:
                 left: 35 - w / 2
                 top: 8
                 position: 'absolute'

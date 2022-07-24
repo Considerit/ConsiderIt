@@ -251,6 +251,7 @@ window.EditPage = ReactiveComponent
                                        when ag_lst not in @ordered_lists)
 
               LI 
+                key: lst
                 "data-idx": idx
                 "data-list-key": lst
                 className: "draggable-wrapper #{if wildcard then 'wildcard'}"
@@ -537,6 +538,7 @@ window.EditPage = ReactiveComponent
 
         for option in list_orderings
           OPTION
+            key: option.value
             value: option.value
             option.label 
 
@@ -579,6 +581,7 @@ window.EditPage = ReactiveComponent
 
       WysiwygEditor
         key: "#{@props.page_name}-preamble"
+        editor_key: "#{@props.page_name}-preamble"
         horizontal: true
         html: current_preamble
         allow_html: true

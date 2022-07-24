@@ -50,7 +50,7 @@ window.EditForum = ReactiveComponent
           left: "50%"
           top: 8
           zIndex: 99999
-          marginLeft: -142
+          marginLeft: -152
 
         BUTTON 
 

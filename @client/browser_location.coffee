@@ -113,11 +113,11 @@ window.A = React.createFactory React.createClass
         # page to be scrolled to the top of the new page. The programmer can
         # set "data-no-scroll" on the link if they wish to prevent this 
         # behavior.
-      if !@getDOMNode().getAttribute('data-no-scroll')
+      no_scroll = @getDOMNode().getAttribute('data-no-scroll')
+      if !no_scroll || no_scroll == 'false'
         window.scrollTo(0, 0)
       # , 100
                       
-      return false
     else
       @_onclick event
 

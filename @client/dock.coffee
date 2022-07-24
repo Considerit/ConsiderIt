@@ -105,7 +105,7 @@ window.Dock = ReactiveComponent
           height: if dock.docked then @local.placeholder_height else 0
       
       # The dockable content
-      DIV ref: 'dock_child', style: css.crossbrowserify(style or {}),
+      DIV ref: 'dock_child', style: style or {},
         @props.children
 
   componentWillMount : ->

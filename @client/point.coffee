@@ -8,16 +8,20 @@ window.Point = ReactiveComponent
   displayName: 'Point'
 
   render : ->
-    point = @data()
+    point = fetch @props.point
 
-    is_selected = get_selected_point() == @props.key
+    return SPAN null if !point.proposal
+
+    proposal = fetch point.proposal
+
+    is_selected = get_selected_point() == @props.point
 
     current_user = fetch('/current_user')
 
 
     renderIncluders = (draw_all_includers) =>
 
-      if @data().includers
+      if point.includers
 
         if draw_all_includers
           includers = @buildIncluders()
@@ -43,7 +47,7 @@ window.Point = ReactiveComponent
             curr_column = Math.floor(i / s.rows)
             side_offset = curr_column * s.col_gap + i * s.dx
             top_offset = (i % s.rows) * s.dy 
-            left_right = if @data().is_pro then 'left' else 'right'
+            left_right = if point.is_pro then 'left' else 'right'
             style = 
               top: top_offset
               position: 'absolute'
@@ -118,7 +122,7 @@ window.Point = ReactiveComponent
       height: 25
       width: 25
       top: 0
-    left_or_right = if @data().is_pro && @props.rendered_as != 'decision_board_point'
+    left_or_right = if point.is_pro && @props.rendered_as != 'decision_board_point'
                       'right' 
                     else 
                       'left'
@@ -140,7 +144,7 @@ window.Point = ReactiveComponent
 
     LI
       key: "point-#{point.id}"
-      'data-id': @props.key
+      'data-id': @props.point
       className: "point #{@props.rendered_as} #{if point.is_pro then 'pro' else 'con'} #{if customization('disable_comments') && !expand_to_see_details then 'commenting-disabled' else ''}"
       onClick: @selectPoint
       onTouchEnd: @selectPoint
@@ -157,7 +161,7 @@ window.Point = ReactiveComponent
             left: 0
             top: -2
 
-          if @data().is_pro then '•' else '•'
+          if point.is_pro then '•' else '•'
 
       DIV 
         className:'point_content'
@@ -184,7 +188,7 @@ window.Point = ReactiveComponent
           DIV 
             'role': 'presentation'
             key: 'community_point_mouth'
-            style: css.crossbrowserify mouth_style
+            style: mouth_style
 
             Bubblemouth 
               apex_xfrac: 0
@@ -218,7 +222,7 @@ window.Point = ReactiveComponent
             translator
               id: "engage.point_explanation"
               author: if point.hide_name then anonymous_label() else fetch(point.user).name
-              num_inclusions: @data().includers.length
+              num_inclusions: point.includers.length
               comment_count: point.comment_count
               """By {author}. 
                  { num_inclusions, plural, =0 {} one {Important to one person.} other {Important to # people.} } 
@@ -248,7 +252,7 @@ window.Point = ReactiveComponent
               if !screencasting() && !embedded_demo() && fetch('/subdomain').name != 'galacticfederation'
                 [
                   prettyDate(point.created_at)
-                  SPAN style: paddingLeft: 8
+                  SPAN key: 'padding', style: paddingLeft: 8
                 ]
 
               if !customization('disable_comments')
@@ -282,7 +286,7 @@ window.Point = ReactiveComponent
                 onClick: ((e) =>
                   e.stopPropagation()
                   points = fetch(@props.your_points_key)
-                  points.editing_points.push(@props.key)
+                  points.editing_points.push(@props.point)
                   save(points))
                 translator 'engage.edit_button', 'edit'
 
@@ -300,7 +304,7 @@ window.Point = ReactiveComponent
                 onClick: (e) =>
                   e.stopPropagation()
                   if confirm('Delete this point forever?')
-                    destroy @props.key
+                    destroy @props.point
                 translator 'engage.delete_button', 'delete'
 
       if @props.rendered_as != 'decision_board_point' 
@@ -316,13 +320,13 @@ window.Point = ReactiveComponent
 
 
       if TWO_COL() || (!TWO_COL() && @props.enable_dragging)
-        your_opinion = @proposal.your_opinion
+        your_opinion = proposal.your_opinion
         if your_opinion.key 
           fetch your_opinion
         if your_opinion?.published
-          can_opine = permit 'update opinion', @proposal, your_opinion
+          can_opine = permit 'update opinion', proposal, your_opinion
         else
-          can_opine = permit 'publish opinion', @proposal
+          can_opine = permit 'publish opinion', proposal
 
         included = @included()
         includePoint = (e) => 
@@ -367,7 +371,7 @@ window.Point = ReactiveComponent
 
                 next = $(e.target).closest('.point').next().find('.point_content')
                 includePoint(e)
-                valence = if @data().is_pro then 'pros' else 'cons'
+                valence = if point.is_pro then 'pros' else 'cons'
 
                 next.focus()
                 e.preventDefault()
@@ -417,7 +421,8 @@ window.Point = ReactiveComponent
 
       if is_selected
         Discussion
-          key:"/comments/#{point.id}"
+          key: "/comments/#{point.id}"
+          comments: "/comments/#{point.id}"
           point: point.key
           rendered_as: @props.rendered_as
 
@@ -436,7 +441,7 @@ window.Point = ReactiveComponent
   #   - Scroll to new point when scrolled down to bottom of long 
   #     discussion & click a new point below it
   ensureDiscussionIsInViewPort : ->
-    is_selected = get_selected_point() == @props.key
+    is_selected = get_selected_point() == @props.point
     if @local.is_selected != is_selected
       if is_selected
         if browser.is_mobile
@@ -475,53 +480,59 @@ window.Point = ReactiveComponent
         disabled: !@props.enable_dragging
 
   included: -> 
-    your_opinion = @proposal.your_opinion
+    point = fetch @props.point
+    proposal = fetch point.proposal
+    your_opinion = proposal.your_opinion
     your_opinion.point_inclusions ?= []
-    your_opinion.point_inclusions.indexOf(@props.key) > -1
+    your_opinion.point_inclusions.indexOf(@props.point) > -1
 
   remove: -> 
 
-    pnt = fetch @props.key 
+    point = fetch @props.point 
+    proposal = fetch point.proposal
 
-    validate_first = pnt.user == fetch('/current_user').user && pnt.includers.length < 2
+    validate_first = point.user == fetch('/current_user').user && point.includers.length < 2
 
 
     if !validate_first || confirm('Are you sure you want to remove your point? It will be gone forever.')
 
-      your_opinion = @proposal.your_opinion
+      your_opinion = proposal.your_opinion
       your_opinion.point_inclusions ?= []
       your_opinion.point_inclusions = _.without your_opinion.point_inclusions, \
-                                                @props.key
+                                                @props.point
 
       your_opinion.key ?= "/new/opinion"
       save(your_opinion)
       window.writeToLog
         what: 'removed point'
         details: 
-          point: @props.key
+          point: @props.point
     else 
       $point_content = $(@getDOMNode()).find('.point_content')
       $point_content.css 'left', '-11px'
       $point_content.css 'top', '-11px'
 
   include: -> 
-    your_opinion = @proposal.your_opinion
+    point = fetch @props.point 
+    proposal = fetch point.proposal
+
+    your_opinion = proposal.your_opinion
     your_opinion.key ?= "/new/opinion"
 
     your_opinion.published = true 
     your_opinion.point_inclusions ?= []
-    your_opinion.point_inclusions.push @data().key
+    your_opinion.point_inclusions.push @props.point
     save(your_opinion)
 
     window.writeToLog
       what: 'included point'
       details: 
-        point: @data().key
+        point: @props.point
 
 
   selectPoint: (e) ->
     e.stopPropagation()
-    point = @data()
+    point = fetch @props.point
 
     return if !point.text && customization('disable_comments')
 
@@ -535,28 +546,28 @@ window.Point = ReactiveComponent
 
 
     loc = fetch('location')
-    if get_selected_point() == @props.key # deselect
+    if get_selected_point() == @props.point # deselect
       delete loc.query_params.selected
       what = 'deselected a point'
 
       document.activeElement.blur()
     else
       what = 'selected a point'
-      loc.query_params.selected = @props.key
+      loc.query_params.selected = @props.point
 
     save loc
 
     window.writeToLog
       what: what
       details: 
-        point: @props.key
+        point: @props.point
 
 
   ## ##
   # On hovering over a point, highlight the people who included this 
   # point in the Histogram.
   highlightIncluders : -> 
-    point = @data()
+    point = fetch @props.point
     includers = point.includers
 
     # For point authors who chose not to sign their points, remove them from 
@@ -568,7 +579,7 @@ window.Point = ReactiveComponent
 
     opinion_views = fetch 'opinion_views'
     opinion_views.active_views.point_includers =
-      created_by: @props.key 
+      created_by: @props.point 
       point: point.key 
       get_salience: (u, opinion, proposal) ->
         if (u.key or u) in includers 
@@ -585,12 +596,13 @@ window.Point = ReactiveComponent
       save opinion_views
 
   buildIncluders : -> 
-    point = @data()
+    point = fetch @props.point 
+    proposal = fetch point.proposal
 
     includers = point.includers
 
     opinion_views = fetch 'opinion_views'
-    {weights, salience, groups} = compose_opinion_views null, @proposal
+    {weights, salience, groups} = compose_opinion_views null, proposal
 
     includers = (i for i in includers when salience[i] == 1 && weights[i] > 0)
 

@@ -1025,6 +1025,7 @@ InteractiveOpinionViews = ReactiveComponent
                   attr_name = "#{attr_name.substring(0,37)}..."
                   shortened = true
                 LI 
+                  key: attr_name
                   style: 
                     display: 'inline-block'
 
@@ -1802,6 +1803,7 @@ window.ToggleButtons = (items, view_state, style) ->
       do (item) =>
         key = item.key or item.label
         LI 
+          key: key
           className: if view_state.active == key then 'active'
           'data-view-state': key
           

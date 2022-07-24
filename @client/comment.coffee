@@ -2,12 +2,16 @@ window.Comment = ReactiveComponent
   displayName: 'Comment'
 
   render: -> 
-    comment = @data()
+    comment = fetch @props.comment
     current_user = fetch '/current_user'
 
     if comment.editing
       # Sharing keys, with some non-persisted client data getting saved...
-      EditComment fresh: false, point: comment.point, key: comment.key
+      EditComment 
+        fresh: false
+        point: comment.point
+        key: comment.key
+        proposal: fetch(comment.point).proposal
 
     else
 
@@ -171,7 +175,7 @@ window.Discussion = ReactiveComponent
       onFocus: (e) => @local.has_focus = true; save @local
 
       DIV 
-        style: css.crossbrowserify mouth_style
+        style: mouth_style
 
         Bubblemouth 
           apex_xfrac: 1.1
@@ -232,10 +236,16 @@ window.Discussion = ReactiveComponent
 
           DIV className: 'comments',
             for comment in comments
-              Comment key: comment.key
+              Comment 
+                key: comment.key
+                comment: comment.key
 
           # Write a new comment
-          EditComment fresh: true, point: arest.key_id(@props.comments)
+          EditComment 
+            key: "fresh-comment-#{comments.length}"
+            fresh: true
+            point: arest.key_id(@props.comments)
+            proposal: proposal.key
 
   # HACK! Save the height of the open point, which will be added 
   # to the min height of the reasons region to accommodate the

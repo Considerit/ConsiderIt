@@ -366,6 +366,6 @@ window.drawLogo = (opts) ->
         cx: opts.i_dot_x
         cy: "55"
         r: "4.25"
-        style: if opts.transition then css.crossbrowserify({transition: 'cx 1000ms'}) 
+        style: if opts.transition then {transition: 'cx 1000ms'} 
           
 

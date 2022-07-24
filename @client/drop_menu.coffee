@@ -210,7 +210,7 @@ window.DropMenu = ReactiveComponent
         for option, idx in options
           do (option, idx) =>
             LI 
-              key: option.label
+              key: "#{option.label}-#{idx}"
               role: "presentation"
 
               A

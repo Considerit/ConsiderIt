@@ -257,7 +257,7 @@ window.IntakeQuestions = ReactiveComponent
     @onDrop ?= (e) =>
       move_question @dragging, @draggedOver
 
-    for question in @getDOMNode().querySelectorAll('.intake-question.open')
+    for question in ReactDOM.findDOMNode(@).querySelectorAll('.intake-question.open')
       question.removeEventListener('dragstart', @onDragStart) 
       question.removeEventListener('dragover', @onDragOver)
       question.removeEventListener('drop', @onDrop) 

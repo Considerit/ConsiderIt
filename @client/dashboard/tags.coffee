@@ -88,7 +88,7 @@ UserTags = ReactiveComponent
           placeholder: "Name or email..."
           value: if selected_user then selected_user.name
           onChange: => 
-            @local.filtered = $(@getDOMNode()).find('#filter').val()?.toLowerCase()
+            @local.filtered = $(ReactDOM.findDOMNode(@)).find('#filter').val()?.toLowerCase()
             change_selected_user null 
             save(@local)
           onKeyPress: (e) => 
@@ -249,8 +249,8 @@ UserTags = ReactiveComponent
                 for tags in [selected_user.tags, @local.new_tags]
 
                   for k,v of tags
-                    new_k = @refs[k].getDOMNode().value
-                    new_v = @refs["#{k}-val"].getDOMNode().value
+                    new_k = @refs[k].value
+                    new_v = @refs["#{k}-val"].value
                     if new_k?.length > 0 # && new_v?.length > 0
                       update[new_k] = new_v
 

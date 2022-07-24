@@ -86,7 +86,7 @@ window.A = React.createFactory React.createClass
     old_A props, props.children
 
   handleClick: (event) -> 
-    node = @getDOMNode()
+    node = ReactDOM.findDOMNode(@)
     href = node.getAttribute('href') 
               # use getAttribute rather than .href so we 
               # can easily check relative vs absolute url
@@ -113,7 +113,7 @@ window.A = React.createFactory React.createClass
         # page to be scrolled to the top of the new page. The programmer can
         # set "data-no-scroll" on the link if they wish to prevent this 
         # behavior.
-      no_scroll = @getDOMNode().getAttribute('data-no-scroll')
+      no_scroll = ReactDOM.findDOMNode(@).getAttribute('data-no-scroll')
       if !no_scroll || no_scroll == 'false'
         window.scrollTo(0, 0)
       # , 100

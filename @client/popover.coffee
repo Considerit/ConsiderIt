@@ -277,8 +277,8 @@ window.Popover = ReactiveComponent
 
     if popover.coords 
       rendered_size = 
-        width: @getDOMNode().offsetWidth
-        height: @getDOMNode().offsetHeight
+        width: ReactDOM.findDOMNode(@).offsetWidth
+        height: ReactDOM.findDOMNode(@).offsetHeight
 
       popover.rendered_size ?= {}
 

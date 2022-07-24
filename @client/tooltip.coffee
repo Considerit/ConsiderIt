@@ -140,7 +140,7 @@ window.Tooltip = ReactiveComponent
     if !tooltip.rendered_size && tooltip.coords 
 
       tooltip.rendered_size = 
-        width: @getDOMNode().offsetWidth
-        height: @getDOMNode().offsetHeight
+        width: ReactDOM.findDOMNode(@).offsetWidth
+        height: ReactDOM.findDOMNode(@).offsetHeight
       save tooltip
 

@@ -338,8 +338,8 @@ window.ShowHostQuestions = ReactiveComponent
 
                         if question.open_text_option == option && event.target.checked
                           int = setInterval =>
-                            if @refs["open_value-#{question.tag}"] && !@refs["open_value-#{question.tag}"].getDOMNode().getAttribute('disabled')
-                              @refs["open_value-#{question.tag}"].getDOMNode().focus()
+                            if @refs["open_value-#{question.tag}"] && !@refs["open_value-#{question.tag}"].getAttribute('disabled')
+                              @refs["open_value-#{question.tag}"].focus()
                               clearInterval(int)
                           , 10
 
@@ -387,8 +387,8 @@ window.ShowHostQuestions = ReactiveComponent
 
                   if question.open_text_option == event.target.value
                     int = setInterval =>
-                      if @refs["open_value-#{question.tag}"] && !@refs["open_value-#{question.tag}"].getDOMNode().getAttribute('disabled')
-                        @refs["open_value-#{question.tag}"].getDOMNode().focus()
+                      if @refs["open_value-#{question.tag}"] && !@refs["open_value-#{question.tag}"].getAttribute('disabled')
+                        @refs["open_value-#{question.tag}"].focus()
                         clearInterval(int)
                     , 10
 

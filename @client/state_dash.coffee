@@ -156,7 +156,7 @@ window.StateDash = ReactiveComponent
                       onClick: do (key, field) => (evt) =>
                         @local.editing = {key_:key, field:field}
                         save(@local)
-                        setTimeout(=> @refs.dash_input.getDOMNode().focus())
+                        setTimeout(=> @refs.dash_input.focus())
                       if (@local.editing \
                           and @local.editing.key_ == key \
                           and @local.editing.field == field)
@@ -168,7 +168,7 @@ window.StateDash = ReactiveComponent
                             defaultValue: JSON.stringify(row[field])
                             onChange: (event) =>
                               try
-                                val = JSON.parse(@refs.dash_input.getDOMNode().value)
+                                val = JSON.parse(@refs.dash_input.value)
                                 cache[@local.editing.key_][@local.editing.field] = val
                                 save(cache[@local.editing.key_])
                                 event.stopPropagation()
@@ -185,7 +185,7 @@ window.StateDash = ReactiveComponent
                           #   type: 'submit'
                           #   onClick: (event) =>
                           #     try
-                          #       val = JSON.parse(@refs.dash_input.getDOMNode().value)
+                          #       val = JSON.parse(@refs.dash_input.value)
                           #       cache[@local.editing.key_][@local.editing.field] = val
                           #       save(cache[@local.editing.key_])
                           #       c = fetch('component/1')
@@ -234,7 +234,7 @@ window.StateDash = ReactiveComponent
     true
 
   # componentDidUpdate: () ->
-  #   el = @refs.json_preview.getDOMNode()
+  #   el = @refs.json_preview
   #   el.innerHTML = rainbows(el.innerHTML)
 reset_selection = () ->
   dash = fetch('state_dash')

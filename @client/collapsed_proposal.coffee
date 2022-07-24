@@ -524,7 +524,7 @@ window.CollapsedProposal = ReactiveComponent
               # save distance from top that the proposal is at, so we can 
               # maintain that position after the save potentially triggers 
               # a re-sort. 
-              prev_offset = @getDOMNode().offsetTop
+              prev_offset = ReactDOM.findDOMNode(@).offsetTop
               prev_scroll = window.scrollY
 
               your_opinion.stance = slider.value
@@ -544,7 +544,7 @@ window.CollapsedProposal = ReactiveComponent
               save update
 
             mouse_over_element = closest e.target, (node) => 
-              node == @getDOMNode()
+              node == ReactDOM.findDOMNode(@)
 
             if @local.hover_proposal == proposal.key && !mouse_over_element
               @local.hover_proposal = null 

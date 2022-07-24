@@ -296,7 +296,7 @@ LayoutExplorer = ReactiveComponent
     width = @props.hist.width 
     height = @props.hist.height
 
-    canvas = @refs.my_canvas.getDOMNode()
+    canvas = @refs.my_canvas
     canvas.width = width 
     canvas.height = height
     ctx = canvas.getContext('2d')

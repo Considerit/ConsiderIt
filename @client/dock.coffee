@@ -122,7 +122,7 @@ window.Dock = ReactiveComponent
     # Register this dock with dockingStation. Send dockingStation a callback that it 
     # can invoke to learn about this dock when making calculations. 
 
-    $el = $(@refs.dock_child.getDOMNode()).children(':visible')
+    $el = $(@refs.dock_child).children(':visible')
 
     # The stacking order of this dock. Used to determine 
     # how docking components stack up. The initial y position seems to be 
@@ -161,7 +161,7 @@ window.Dock = ReactiveComponent
       # as the docked element changes rarely compared to the 
       # frequency of scroll events. 
 
-      $el = $(@refs.dock_child.getDOMNode()).children(':visible')
+      $el = $(@refs.dock_child).children(':visible')
       current_dom = serializer.serializeToString($el[0]) + @props.skip_jut
 
       if current_dom != last_dom
@@ -176,7 +176,7 @@ window.Dock = ReactiveComponent
         start         : if _.isFunction(@props.start) 
                           @props.start() 
                         else 
-                          $(@getDOMNode()).offset().top + (@props.start || 0)
+                          $(ReactDOM.findDOMNode(@)).offset().top + (@props.start || 0)
         stop          : @props.stop?() or Infinity
         dock_on_zoom  : if @props.dock_on_zoomed_screens?
                           @props.dock_on_zoomed_screens 
@@ -188,7 +188,7 @@ window.Dock = ReactiveComponent
         height        : element_height
         constraints   : @props.constraints or []
         docked_key    : @props.docked_key
-        offset_parent : if browser.is_mobile then $(@getDOMNode()).offsetParent().offset().top 
+        offset_parent : if browser.is_mobile then $(ReactDOM.findDOMNode(@)).offsetParent().offset().top 
       }
 
   componentWillUnmount : -> 

@@ -108,7 +108,7 @@ About = ReactiveComponent
   componentDidUpdate : -> @handleContent()
 
   handleContent : -> 
-    $el = $(@getDOMNode())
+    $el = $(ReactDOM.findDOMNode(@))
 
     if @local.embed_html_directly
       # have to use appendChild rather than dangerouslysetinnerhtml

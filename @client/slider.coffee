@@ -334,7 +334,7 @@ window.Slider = ReactiveComponent
 
   # Kick off sliding 
   handleMouseDown: (e) -> 
-    el = @getDOMNode()
+    el = ReactDOM.findDOMNode(@)
     
     e.preventDefault()
 
@@ -407,7 +407,7 @@ window.Slider = ReactiveComponent
 
       clientX = e.clientX or e.touches[0].clientX
 
-      val = (clientX - $(@refs.base.getDOMNode()).offset().left) / @props.width
+      val = (clientX - $(@refs.base).offset().left) / @props.width
       if val < 0 
         val = 0
       if val > 1

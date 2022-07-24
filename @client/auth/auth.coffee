@@ -359,7 +359,7 @@ window.styles += """
 window.AuthForm =
 
   Draw: (options, children) -> 
-    # docked_node_height = @refs.dialog?.getDOMNode().offsetHeight
+    # docked_node_height = @refs.dialog?.offsetHeight
     # if @local.docked_node_height != docked_node_height
     #   @local.docked_node_height = docked_node_height
     #   save @local 

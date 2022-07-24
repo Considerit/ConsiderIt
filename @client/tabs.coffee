@@ -547,7 +547,7 @@ window.Tab = ReactiveComponent
     return if @tab_draggable || !fetch('edit_forum').editing || @props.tab.add_new
     @tab_draggable = true 
 
-    tab = @getDOMNode()
+    tab = ReactDOM.findDOMNode(@)
 
     drag_data = fetch 'list/tab_drag'
 
@@ -660,7 +660,7 @@ window.Tab = ReactiveComponent
   removeTabDraggability: -> 
     return if !@tab_draggable || fetch('edit_forum').editing || @props.tab.add_new
     @tab_draggable = false
-    tab = @getDOMNode()
+    tab = ReactDOM.findDOMNode(@)
 
 
     tab.removeEventListener('dragstart', @onDragStartTab) 

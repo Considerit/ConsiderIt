@@ -197,8 +197,8 @@ CustomizeTitle = ReactiveComponent
             edit_forum.editing = true 
             save edit_forum
             setTimeout => 
-              @refs.primary_input?.getDOMNode().focus()
-              @refs.primary_input?.getDOMNode().setSelectionRange(-1, -1) # put cursor at end
+              @refs.primary_input?.focus()
+              @refs.primary_input?.setSelectionRange(-1, -1) # put cursor at end
 
 
 CustomizeDescription = ReactiveComponent
@@ -263,8 +263,8 @@ CustomizeDescription = ReactiveComponent
               @local.focus_on_mount = true
               save edit_forum
               setTimeout => 
-                @refs.primary_input?.getDOMNode().focus()
-                @refs.primary_input?.getDOMNode().setSelectionRange(-1, -1) # put cursor at end
+                @refs.primary_input?.focus()
+                @refs.primary_input?.setSelectionRange(-1, -1) # put cursor at end
         else if @props.opts.supporting_text
           @props.opts.supporting_text()
 
@@ -837,13 +837,13 @@ window.EditBanner = ReactiveComponent
 
     delete_masthead = (e) =>
       edit_banner.masthead_preview = '*delete*' 
-      @refs.masthead_file_input.getDOMNode().value = ''
+      @refs.masthead_file_input.value = ''
       @delete_masthead = true 
       save edit_banner
 
     delete_logo = (e) =>
       edit_banner.logo_preview = '*delete*' 
-      @refs.logo_file_input.getDOMNode().value = ''
+      @refs.logo_file_input.value = ''
       @delete_logo = true 
       save edit_banner
 
@@ -944,8 +944,8 @@ window.EditBanner = ReactiveComponent
 
 
   componentDidUpdate: -> 
-    submit_masthead = @refs.masthead_file_input?.getDOMNode().files?.length > 0
-    submit_logo =     @refs.logo_file_input?.getDOMNode().files?.length > 0
+    submit_masthead = @refs.masthead_file_input?.files?.length > 0
+    submit_logo =     @refs.logo_file_input?.files?.length > 0
     
     if submit_masthead || submit_logo || @delete_logo || @delete_masthead
       @submit_files()
@@ -970,8 +970,8 @@ window.EditBanner = ReactiveComponent
       success: (response) =>
         @delete_logo = false 
         @delete_masthead = false     
-        @refs.masthead_file_input?.getDOMNode().value = null
-        @refs.logo_file_input?.getDOMNode().value = null
+        @refs.masthead_file_input?.value = null
+        @refs.logo_file_input?.value = null
 
         try 
           resp = JSON.parse(response)

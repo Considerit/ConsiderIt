@@ -395,14 +395,14 @@
         })
 
         wrap(component, 'componentDidMount', function () {
-            this.getDOMNode().setAttribute('data-widget', component.displayName)
+            ReactDOM.findDOMNode(this).setAttribute('data-widget', component.displayName)
             if (this._reactInternalInstance._currentElement.key)
-                this.getDOMNode().setAttribute('data-key', this._reactInternalInstance._currentElement.key)              
+                ReactDOM.findDOMNode(this).setAttribute('data-key', this._reactInternalInstance._currentElement.key)              
         })
         wrap(component, 'componentDidUpdate', function () {
-            this.getDOMNode().setAttribute('data-widget', component.displayName)
+            ReactDOM.findDOMNode(this).setAttribute('data-widget', component.displayName)
             if (this._reactInternalInstance._currentElement.key)
-                this.getDOMNode().setAttribute('data-key', this._reactInternalInstance._currentElement.key)              
+                ReactDOM.findDOMNode(this).setAttribute('data-key', this._reactInternalInstance._currentElement.key)              
         })
         wrap(component, 'getDefaultProps')
         //wrap(component, 'componentWillReceiveProps')

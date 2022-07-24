@@ -331,9 +331,9 @@ window.EditProposal = ReactiveComponent
     name = document.getElementById("name").value 
     description = fetch("description-#{proposal.key}").html
 
-    category = @refs.category.getDOMNode().value
+    category = @refs.category.value
     if current_user.is_admin && category == 'new category'
-      category = @refs.new_category.getDOMNode().value    
+      category = @refs.new_category.value    
     category = null if category == ''
 
     active = document.getElementById('open_for_discussion').checked

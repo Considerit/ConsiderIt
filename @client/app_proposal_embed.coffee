@@ -159,7 +159,7 @@ Proposal = ReactiveComponent
 
     return DIV(null, LOADING_INDICATOR) if !@proposal.name
 
-    width = @getDOMNode().offsetWidth
+    width = ReactDOM.findDOMNode(@).offsetWidth
     histo_width = width - 100
 
     w = 34

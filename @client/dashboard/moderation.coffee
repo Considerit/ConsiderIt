@@ -705,7 +705,7 @@ DirectMessage = ReactiveComponent
 
   submitMessage : -> 
     # TODO: convert to using arest create method; waiting on full dash porting
-    $el = $(@getDOMNode())
+    $el = $(ReactDOM.findDOMNode(@))
     attrs = 
       recipient: @props.to
       subject: $el.find('.message_subject').val()

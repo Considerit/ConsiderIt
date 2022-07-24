@@ -260,22 +260,22 @@ window.Histogram = ReactiveComponent
           save @local 
           e.preventDefault() # prevent scroll jumping
           if @local.navigating_inside
-            @refs["avatar-0"]?.getDOMNode().focus()
+            @refs["avatar-0"]?.focus()
           else 
-            @getDOMNode().focus()
+            ReactDOM.findDOMNode(@).focus()
         else if e.which == 13 && !@local.navigating_inside # ENTER 
           @local.navigating_inside = true 
-          @refs["avatar-0"]?.getDOMNode().focus()
+          @refs["avatar-0"]?.focus()
           save @local 
         else if e.which == 27 && @local.navigating_inside
           @local.navigating_inside = false
-          @getDOMNode().focus() 
+          ReactDOM.findDOMNode(@).focus() 
           save @local 
       onBlur: (e) => 
         setTimeout => 
           # if the focus isn't still on this histogram, 
           # then we should reset its navigation
-          if @local.navigating_inside && $(document.activeElement).closest(@getDOMNode()).length == 0
+          if @local.navigating_inside && $(document.activeElement).closest(ReactDOM.findDOMNode(@)).length == 0
             @local.navigating_inside = false; save @local
         , 0
 
@@ -527,8 +527,8 @@ window.Histogram = ReactiveComponent
   getOpinionValueAtFocus: (ev) -> 
     # Calculate the mouse_opinion_value (the slider value about which we determine
     # the selection region) based on the mouse offset within the histogram element.
-    h_x = @getDOMNode().getBoundingClientRect().left + window.pageXOffset
-    h_w = @getDOMNode().offsetWidth
+    h_x = ReactDOM.findDOMNode(@).getBoundingClientRect().left + window.pageXOffset
+    h_w = ReactDOM.findDOMNode(@).offsetWidth
     m_x = ev.pageX or ev.touches[0].pageX
 
     translatePixelXToStance m_x - h_x, h_w

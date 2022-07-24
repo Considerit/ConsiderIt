@@ -844,7 +844,7 @@ DecisionBoard = ReactiveComponent
   makeDroppable: -> 
     db = fetch('decision_board')
 
-    $el = $(@getDOMNode())
+    $el = $(ReactDOM.findDOMNode(@))
 
     return if $el.is('.ui-droppable')
 
@@ -882,7 +882,7 @@ DecisionBoard = ReactiveComponent
 
   update_reasons_height: -> 
     s = fetch('reasons_height_adjustment')
-    h = $(@getDOMNode()).height()
+    h = $(ReactDOM.findDOMNode(@)).height()
     if h != s.opinion_region_height
       s.opinion_region_height = h
       save s
@@ -896,7 +896,7 @@ DecisionBoard = ReactiveComponent
 
     perform = (transitions) => 
       for own k,v of transitions
-        $(@getDOMNode()).find(k).css(v)
+        $(ReactDOM.findDOMNode(@)).find(k).css(v)
 
     initial_state = 
       '.give_opinion_button':

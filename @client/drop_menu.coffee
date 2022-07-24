@@ -101,8 +101,8 @@ window.DropMenu = ReactiveComponent
         save @local 
         if idx != -1
           setTimeout =>
-            if idx == @local.active_option
-              @refs["menuitem-#{idx}"]?.getDOMNode()?.focus()           
+            if idx == @local.active_option && @refs["menuitem-#{idx}"]?
+              ReactDOM.findDOMNode(@refs["menuitem-#{idx}"]).focus()           
           , 0
 
 
@@ -142,7 +142,7 @@ window.DropMenu = ReactiveComponent
         setTimeout => 
           # if the focus isn't still on an element inside of this menu, 
           # then we should close the menu
-          if @refs.menu_wrap && $(document.activeElement).closest(@refs.menu_wrap?.getDOMNode()).length == 0
+          if @refs.menu_wrap && $(document.activeElement).closest(@refs.menu_wrap).length == 0
             @local.show_menu = false; save @local
         , 0
 
@@ -338,7 +338,7 @@ window.DropOverlay = ReactiveComponent
     if @local.show_area
       # if the focus isn't still on an element inside of this menu, 
       # then we should close the menu
-      if @refs.area_wrap && $(e.target).closest(@refs.area_wrap?.getDOMNode()).length == 0
+      if @refs.area_wrap && $(e.target).closest(@refs.area_wrap).length == 0
         @onClose()
 
   onOpen: ->

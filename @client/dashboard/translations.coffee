@@ -336,15 +336,15 @@ TranslationsDash = ReactiveComponent
 
             BUTTON
               onClick: => 
-                abbrev = @refs.newlang_abbrev.getDOMNode().value
-                label = @refs.newlang_label.getDOMNode().value
+                abbrev = @refs.newlang_abbrev.value
+                label = @refs.newlang_label.value
 
                 if abbrev not of translations.available_languages
                   translations.available_languages[abbrev] = label 
                   save translations
 
-                  @refs.newlang_abbrev.getDOMNode().value = ""
-                  @refs.newlang_label.getDOMNode().value = ""
+                  @refs.newlang_abbrev.value = ""
+                  @refs.newlang_label.value = ""
 
               "Add"
 

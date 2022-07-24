@@ -445,9 +445,9 @@ window.Point = ReactiveComponent
     if @local.is_selected != is_selected
       if is_selected
         if browser.is_mobile
-          $(@getDOMNode()).moveToTop {scroll: false}
+          $(ReactDOM.findDOMNode(@)).moveToTop {scroll: false}
         else
-          $(@getDOMNode()).ensureInView {scroll: false}
+          $(ReactDOM.findDOMNode(@)).ensureInView {scroll: false}
         
         i = setInterval ->
               if $('#open_point').length > 0 
@@ -463,7 +463,7 @@ window.Point = ReactiveComponent
     # or drag remove for point on decision board
     # also: disable for results page
 
-    $point_content = $(@getDOMNode()).find('.point_content')
+    $point_content = $(ReactDOM.findDOMNode(@)).find('.point_content')
     revert = 
       if @props.rendered_as == 'community_point' 
         'invalid' 
@@ -508,7 +508,7 @@ window.Point = ReactiveComponent
         details: 
           point: @props.point
     else 
-      $point_content = $(@getDOMNode()).find('.point_content')
+      $point_content = $(ReactDOM.findDOMNode(@)).find('.point_content')
       $point_content.css 'left', '-11px'
       $point_content.css 'top', '-11px'
 

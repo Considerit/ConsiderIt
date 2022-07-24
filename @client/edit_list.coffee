@@ -478,8 +478,8 @@ window.ModalNewList = ReactiveComponent
 
 
                     selection_made_callback: (option) => 
-                      @refs.oppose_slider.getDOMNode().value = option.oppose
-                      @refs.support_slider.getDOMNode().value = option.support
+                      @refs.oppose_slider.value = option.oppose
+                      @refs.support_slider.value = option.support
 
 
                       edit_list.slider_pole_labels = 
@@ -489,10 +489,10 @@ window.ModalNewList = ReactiveComponent
 
 
                       setTimeout =>
-                        $(@refs.slider_config.getDOMNode()).ensureInView()
+                        $(@refs.slider_config).ensureInView()
 
                         if option.oppose == ''
-                          moveCursorToEnd @refs.oppose_slider.getDOMNode()
+                          moveCursorToEnd @refs.oppose_slider
 
                       , 100
 
@@ -766,7 +766,7 @@ window.ModalNewList = ReactiveComponent
   setFocusOnTitle: ->
     if !@initialized && @refs.input?
       setTimeout =>
-        moveCursorToEnd @refs.input?.getDOMNode()
+        moveCursorToEnd ReactDOM.findDOMNode(@refs.input)
       @initialized = true
 
 

@@ -96,7 +96,7 @@ window.EditPoint = ReactiveComponent
           style: textarea_style
           onHeightChange: => 
             s = fetch('reasons_height_adjustment')
-            s.edit_point_height = $(@getDOMNode()).height()            
+            s.edit_point_height = $(ReactDOM.findDOMNode(@)).height()            
             save s
 
       if @local.errors?.length > 0
@@ -187,7 +187,7 @@ window.EditPoint = ReactiveComponent
   componentDidMount : ->
     proposal = fetch @props.proposal
     if proposal.active 
-      $el = $(@getDOMNode())
+      $el = $(ReactDOM.findDOMNode(@))
       $el.find('#nutshell').focus() if !browser.is_mobile # iOS messes this up
       $el.find('[data-action="submit-point"]').ensureInView {scroll: false, position: 'bottom'}
 
@@ -309,7 +309,7 @@ window.EditPoint = ReactiveComponent
     save your_points
 
   savePoint : (ev) ->
-    $form = $(@getDOMNode())
+    $form = $(ReactDOM.findDOMNode(@))
     proposal = fetch @props.proposal
     nutshell = $form.find('#nutshell').val()
     text = $form.find('#text').val()

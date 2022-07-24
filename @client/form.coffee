@@ -53,14 +53,14 @@ window.AutoGrowTextArea = ReactiveComponent
   componentDidMount : -> 
     @checkAndSetHeight()
     if @props.focus_on_mount 
-      @refs.input.getDOMNode().focus()
+      @refs.input.focus()
 
   componentDidUpdate : -> @checkAndSetHeight()
 
   checkAndSetHeight : ->
-    scroll_height = @getDOMNode().scrollHeight
+    scroll_height = ReactDOM.findDOMNode(@).scrollHeight
     max_height = @props.max_height or 600
-    client_height = @getDOMNode().clientHeight
+    client_height = ReactDOM.findDOMNode(@).clientHeight
     if scroll_height > client_height
 
       h = Math.min scroll_height + 5, max_height
@@ -115,12 +115,12 @@ window.CharacterCountTextInput = ReactiveComponent
         ref: 'input' 
         className: class_name
         onChange: =>
-         @local.count = $(@getDOMNode()).find('textarea').val().length
+         @local.count = $(ReactDOM.findDOMNode(@)).find('textarea').val().length
          save(@local)
 
   componentDidMount: ->
     if @props.focus_on_mount
-      @refs.input.getDOMNode().focus()
+      @refs.input.focus()
 
 
 # Quill = require './vendor/quill-1.0.js'
@@ -235,7 +235,7 @@ window.WysiwygEditor = ReactiveComponent
                     @local.focused_toolbar_item = 0 
                     save @local
 
-                  @refs["toolbaritem-#{@local.focused_toolbar_item}"].getDOMNode().focus()
+                  @refs["toolbaritem-#{@local.focused_toolbar_item}"].focus()
 
               onKeyDown: (e) => 
 
@@ -252,7 +252,7 @@ window.WysiwygEditor = ReactiveComponent
                       i = 0
                   @local.focused_toolbar_item = i
                   save @local 
-                  @refs["toolbaritem-#{i}"].getDOMNode().focus()
+                  @refs["toolbaritem-#{i}"].focus()
                   e.preventDefault()
 
               for button, idx in toolbar_items
@@ -294,7 +294,7 @@ window.WysiwygEditor = ReactiveComponent
                       # if the focus isn't still on an element inside of this menu, 
                       # then we should close the menu                
                       setTimeout => 
-                        if $(document.activeElement).closest(@getDOMNode()).length == 0
+                        if $(document.activeElement).closest(ReactDOM.findDOMNode(@)).length == 0
                           wysiwyg_editor = fetch 'wysiwyg_editor'
                           wysiwyg_editor.showing = false
                           save wysiwyg_editor
@@ -323,7 +323,7 @@ window.WysiwygEditor = ReactiveComponent
                 # if the focus isn't still on an element inside of this menu, 
                 # then we should close the menu                
                 setTimeout => 
-                  if $(document.activeElement).closest(@getDOMNode()).length == 0
+                  if $(document.activeElement).closest(ReactDOM.findDOMNode(@)).length == 0
                     wysiwyg_editor = fetch 'wysiwyg_editor'
                     wysiwyg_editor.showing = false
                     save wysiwyg_editor
@@ -337,13 +337,13 @@ window.WysiwygEditor = ReactiveComponent
     return if !@supports_Quill
 
     getHTML = => 
-      @getDOMNode().querySelector(".ql-editor").innerHTML
+      ReactDOM.findDOMNode(@).querySelector(".ql-editor").innerHTML
 
     # Attach the Quill wysiwyg editor
-    @editor = new Quill $(@getDOMNode()).find('#editor')[0],    
+    @editor = new Quill $(ReactDOM.findDOMNode(@)).find('#editor')[0],    
       modules: 
         toolbar: 
-          container: $(@getDOMNode()).find('#toolbar')[0]
+          container: $(ReactDOM.findDOMNode(@)).find('#toolbar')[0]
       styles: true #if/when we want to define all styles, set to false
       placeholder: @props.placeholder
 

@@ -43,10 +43,10 @@
       if 'ontouchend' in document #detect touch support
         React.initializeTouchEvents(true)
 
-      React.render Franklin({key: 'root'}), document.getElementById('content')
+      ReactDOM.render Franklin({key: 'root'}), document.getElementById('content')
 
     when 'proposal_embed'
-      React.render ProposalEmbed({proposal: app_meta.getAttribute('proposal')}), document.getElementById('content')
+      ReactDOM.render ProposalEmbed({proposal: app_meta.getAttribute('proposal')}), document.getElementById('content')
 
 
 )()

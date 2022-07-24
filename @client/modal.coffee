@@ -44,7 +44,7 @@ window.Modal =
   accessibility_on_keydown: (e) ->
     # cancel on ESC if a cancel button has been defined
     if e.key == 'Escape' || e.keyCode == 27
-      @refs.cancel_dialog?.getDOMNode().click()
+      @refs.cancel_dialog?.click()
 
     # trap focus
     is_tab_pressed = e.key == 'Tab' or e.keyCode == 9
@@ -73,7 +73,7 @@ window.Modal =
     @componentDidUpdate()
     
   componentDidUpdate: ->
-    modal = @refs?.dialog?.getDOMNode() or document.querySelector '[role=dialog]'
+    modal = @refs?.dialog or document.querySelector '[role=dialog]'
     return if !modal || @mounted
     @mounted = true
 

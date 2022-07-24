@@ -463,7 +463,7 @@ ProposalSort = ReactiveComponent
       #       position: 'relative'
 
       #     onSubmit: (e) => 
-      #       n = @refs.new_filter.getDOMNode()
+      #       n = @refs.new_filter
       #       filters.for_proposals ||= []
       #       filters.for_proposals.push n.value
       #       save filters

@@ -300,7 +300,7 @@ window.NewProposal = ReactiveComponent
                 active = true 
 
                 if @props.combines_these_lists && @refs.category
-                  category = @refs.category.getDOMNode().value
+                  category = @refs.category.value
                 else 
                   category = list_key 
                 category = category.substring(5)

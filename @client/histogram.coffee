@@ -219,11 +219,11 @@ window.Histogram = ReactiveComponent
     @props.draw_base_labels ?= true
 
 
-    @props.enable_individual_selection &&= opinions.length > 0
-    @props.enable_range_selection &&= opinions.length > 1
+    enable_individual_selection = @props.enable_individual_selection && @opinions.length > 0
+    @enable_range_selection = @props.enable_range_selection && opinions.length > 1
 
     # whether to show the shaded opinion selection region in the histogram
-    draw_selection_area = @props.enable_range_selection &&
+    draw_selection_area = @enable_range_selection &&
                             !opinion_views.active_views.single_opinion_selected && 
                             !@props.backgrounded &&
                             (opinion_views.active_views.region_selected || 
@@ -295,7 +295,7 @@ window.Histogram = ReactiveComponent
       exp = translator "engage.slider_feedback.neutral", "Neutral"
 
 
-    if @props.enable_range_selection || @props.enable_individual_selection
+    if @enable_range_selection || enable_individual_selection
       if !browser.is_mobile
         _.extend histogram_props,
           onClick: @onClick
@@ -379,8 +379,8 @@ window.Histogram = ReactiveComponent
           salience: @salience
           groups: @groups
           avatar_size: @local.avatar_size 
-          enable_individual_selection: @props.enable_individual_selection
-          enable_range_selection: @props.enable_range_selection
+          enable_individual_selection: enable_individual_selection
+          enable_range_selection: @enable_range_selection
           height: @props.height 
           backgrounded: @props.backgrounded
           opinions: @opinions 
@@ -496,7 +496,7 @@ window.Histogram = ReactiveComponent
           clear_histogram_managed_opinion_views opinion_views
           if ev.type == 'touchstart'
             @local.mouse_opinion_value = null
-        else if @props.enable_range_selection
+        else if @enable_range_selection
           clear_histogram_managed_opinion_views opinion_views, 'single_opinion_selected'
 
           @users_in_region = @getUsersInRegion()
@@ -536,7 +536,7 @@ window.Histogram = ReactiveComponent
   onMouseMove: (ev) ->     
 
     return if fetch(namespaced_key('slider', @props.proposal)).is_moving  || \
-              @props.backgrounded || !@props.enable_range_selection || \
+              @props.backgrounded || !@enable_range_selection || \
               !is_histogram_controlling_region_selection(@props.histo_key)
 
     ev.stopPropagation()
@@ -785,7 +785,7 @@ HistoAvatars = ReactiveComponent
         position: 'relative'
         top: -1
         cursor: if !@props.backgrounded && 
-                    @props.enable_range_selection then 'pointer'
+                    @enable_range_selection then 'pointer'
 
       if @local.in_viewport
 

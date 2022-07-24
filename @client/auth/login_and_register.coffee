@@ -216,7 +216,7 @@ window.CreateAccount = ReactiveComponent
                   marginLeft: 4
                   display: 'inline-block'
 
-                " (#{translator('optional')})"
+                " (#{translator('optional', 'optional')})"
 
             avatar_field
 

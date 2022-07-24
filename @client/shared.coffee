@@ -588,6 +588,8 @@ window.css = {}
 css_as_str = (attrs) -> _.keys(attrs).map( (p) -> "#{p}: #{attrs[p]}").join(';') + ';'
 
 
+css.crossbrowserify = (styles) -> styles # legacy method now no-op-ing
+
 css.grayscale = (props) ->
   if browser.is_mobile
     console.log "CAUTION: grayscale filter on mobile can cause crashes"

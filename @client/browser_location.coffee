@@ -66,21 +66,21 @@ window.A = React.createFactory React.createClass
   displayName: 'modified_A'
   render : -> 
 
-    props = @props
-    if @props.href
-      @_onclick = @props.onClick or (-> null)
+    props = _.extend {}, @props
+    if props.href
+      @_onclick = props.onClick or (-> null)
 
       if browser.is_mobile
-        @props.onTouchEnd = (e) => 
+        props.onTouchEnd = (e) => 
           # don't follow the link if the user is in the middle of swipping
           if !is_swipping
             @handleClick(e)
 
         if browser.is_android_browser
-          @props.onClick = (e) -> e.preventDefault(); e.stopPropagation()
+          props.onClick = (e) -> e.preventDefault(); e.stopPropagation()
 
       else
-        @props.onClick = @handleClick
+        props.onClick = @handleClick
 
 
     old_A props, props.children

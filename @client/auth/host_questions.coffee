@@ -427,7 +427,7 @@ window.ShowHostQuestions = ReactiveComponent
         #         style: 
         #           color: '#888'
         #           fontSize: 12
-        #         translator('optional')
+        #         translator('optional', 'optional')
 
         #   label = [op, label] 
 

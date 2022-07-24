@@ -277,7 +277,7 @@
     function ReactiveComponent(component) {
         // STEP 1: Define get() and save()
         component.fetch = component.data = component.get = function (key, defaults) {
-            if (!this._lifeCycleState || this._lifeCycleState == 'UNMOUNTED')
+            if (!this.isMounted)
                 throw Error('Component ' + this.name + ' (' + this.local_key
                             + ') is tryin to get data(' + key + ') after it died.')
 
@@ -339,13 +339,13 @@
                  components[this.local_key] = this
 
                  // You can pass an object in as a key if you want:
-                 if (this._currentElement.key && this._currentElement.key.key)
-                     this._currentElement.key = this._currentElement.key.key
+                 if (this._reactInternalInstance._currentElement.key && this._reactInternalInstance._currentElement.key.key)
+                     this._reactInternalInstance._currentElement.key = this._reactInternalInstance._currentElement.key.key
 
                  // XXX Putting this into WillMount probably won't let you use the
                  // mounted_key inside getInitialState!  But you should be using
                  // activerest state anyway, right?
-                 this.mounted_key = this._currentElement.key
+                 this.mounted_key = this._reactInternalInstance._currentElement.key
 
                  // STEP 2: Create shortcuts e.g. `this.foo' for all parents up the
                  // tree, and this component's local key
@@ -396,9 +396,13 @@
 
         wrap(component, 'componentDidMount', function () {
             this.getDOMNode().setAttribute('data-widget', component.displayName)
+            if (this._reactInternalInstance._currentElement.key)
+                this.getDOMNode().setAttribute('data-key', this._reactInternalInstance._currentElement.key)              
         })
         wrap(component, 'componentDidUpdate', function () {
             this.getDOMNode().setAttribute('data-widget', component.displayName)
+            if (this._reactInternalInstance._currentElement.key)
+                this.getDOMNode().setAttribute('data-key', this._reactInternalInstance._currentElement.key)              
         })
         wrap(component, 'getDefaultProps')
         //wrap(component, 'componentWillReceiveProps')
@@ -417,7 +421,7 @@
             // have changed.  We can do so by simply serializing them
             // and then comparing them.  But ignore React's 'children'
             // prop, because it often has a circular reference.
-            next_props = clone(next_props); this_props = clone(this._currentElement)
+            next_props = clone(next_props); this_props = clone(this._reactInternalInstance._currentElement)
             delete next_props['children']; delete this_props['children']
 
             // console.assert(!_.isEqual([next_state, next_props], [this.state, this_props]) == JSON.stringify([next_state, next_props]) != JSON.stringify([this.state, this_props]), {next_state: next_state, next_props: next_props})

@@ -353,7 +353,7 @@
                  // XXX Putting this into WillMount probably won't let you use the
                  // mounted_key inside getInitialState!  But you should be using
                  // activerest state anyway, right?
-                 this.mounted_key = this._reactInternalFiber.key
+                 this.mounted_key = this._reactInternals.key
 
                  // STEP 2: Create shortcuts e.g. `this.foo' for all parents up the
                  // tree, and this component's local key

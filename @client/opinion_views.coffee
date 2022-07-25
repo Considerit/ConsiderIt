@@ -1050,6 +1050,7 @@ InteractiveOpinionViews = ReactiveComponent
         continue if !opinion_views_ui.activated_attributes[attribute.key]
         do (attribute) => 
           DIV 
+            key: attribute.key
             className: 'attribute_wrapper'
 
             DIV 
@@ -1077,6 +1078,7 @@ InteractiveOpinionViews = ReactiveComponent
 
                     do (val) => 
                       LI 
+                        key: "#{val}:#{attribute.name}"
                         "data-attribute": attribute.name
                         "data-value": val
                         style: 
@@ -1172,6 +1174,7 @@ InteractiveOpinionViews = ReactiveComponent
               continue if !attribute.options
               do (attribute) =>
                 OPTION 
+                  key: idx
                   value: idx 
                   attribute.name or attribute.question
     
@@ -1368,6 +1371,7 @@ NonInteractiveOpinionViews = ReactiveComponent
       for mini in minimized_views
         do (mini) ->
           LI  
+            key: mini.label
             className: 'minimized_view_wrapper'
 
             SPAN 

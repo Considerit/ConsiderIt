@@ -121,6 +121,7 @@ window.DataDash = ReactiveComponent
 
           for table in tables
             DIV
+              key: table
               style: 
                 display: 'flex'
 
@@ -156,6 +157,7 @@ window.DataDash = ReactiveComponent
           if current_user.is_super_admin
             [
               DIV 
+                key: 'generate_inclusions'
                 style: 
                   padding: '20px 0 20px 20px' 
                 INPUT type: 'checkbox', name: 'generate_inclusions', id: 'generate_inclusions'
@@ -169,6 +171,7 @@ window.DataDash = ReactiveComponent
                   """
 
               DIV 
+                key: 'assign_pics'
                 style: 
                   padding: '20px 0 20px 20px' 
                 INPUT type: 'checkbox', name: 'assign_pics', id: 'assign_pics'

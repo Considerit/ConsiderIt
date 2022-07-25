@@ -252,7 +252,7 @@ window.DropMenu = ReactiveComponent
                     @local.active_option = -1 
                     save @local  
 
-                onMouseExit: (e) => 
+                onMouseLeave: (e) => 
                   @local.active_option = -1 
                   save @local
                   e.stopPropagation()

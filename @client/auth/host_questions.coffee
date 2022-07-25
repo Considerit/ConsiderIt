@@ -157,6 +157,7 @@ window.ShowHostQuestions = ReactiveComponent
         for [label, render, question] in host_questions
           field_id = render?.props?.id or render?[0]?.props?.id
           LI 
+            key: label
             style: 
               marginBottom: 24
 
@@ -395,11 +396,13 @@ window.ShowHostQuestions = ReactiveComponent
 
                 [
                   OPTION 
+                    key: 'none'
                     value: ''
                     disabled: true 
                     hidden: true
                   for value in question.options
                     OPTION  
+                      key: value
                       value: value
                       value
                 ]

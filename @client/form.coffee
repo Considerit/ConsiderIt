@@ -8,7 +8,7 @@ require './dock'
 
 
 old_BUTTON = BUTTON
-window.BUTTON = React.createFactory React.createClass
+window.BUTTON = React.createFactory createReactClass
   displayName: 'modified_BUTTON'
   render: -> 
     new_props = {}
@@ -77,12 +77,18 @@ window.AutoGrowTextArea = ReactiveComponent
 
     className = "AutoGrowTextArea #{if @props.className then @props.className else ''}"
 
-    TEXTAREA _.extend {}, @props,
+    props = _.extend {}, @props,
       className: className
       onChange: @onChange
       rows: 1
       style: _.extend {}, (@props.style or {}), {height: @local.height}
       ref: 'input'
+    
+    for prop_to_strip in ['parents', 'min_height', 'focus_on_mount', 'onHeightChange']
+      if prop_to_strip of props
+        delete props[prop_to_strip]
+
+    TEXTAREA props
 
 
 window.CharacterCountTextInput = ReactiveComponent
@@ -95,6 +101,18 @@ window.CharacterCountTextInput = ReactiveComponent
     count_style = @props.count_style or {}
 
     class_name = "is_counted"
+
+    props = _.extend {}, @props,
+      ref: 'input' 
+      className: class_name
+      onChange: =>
+       @local.count = $(ReactDOM.findDOMNode(@)).find('textarea').val().length
+       save(@local)
+
+    for prop_to_strip in ['parents', 'count_style', 'focus_on_mount']
+      if prop_to_strip of props
+        delete props[prop_to_strip]
+
     DIV 
       style: 
         position: 'relative' 
@@ -111,12 +129,7 @@ window.CharacterCountTextInput = ReactiveComponent
           characters_left: @props.maxLength - @local.count
           "{characters_left, plural, one {# character} other {# characters}} left"
 
-      TEXTAREA _.extend {}, @props,
-        ref: 'input' 
-        className: class_name
-        onChange: =>
-         @local.count = $(ReactDOM.findDOMNode(@)).find('textarea').val().length
-         save(@local)
+      TEXTAREA props
 
   componentDidMount: ->
     if @props.focus_on_mount

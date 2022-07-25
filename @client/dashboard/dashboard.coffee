@@ -167,6 +167,7 @@ window.Dashboard = ReactiveComponent
     draw_menu_option = (opts) ->
       active = opts.href == loc.url
       A 
+        key: opts.href
         className: if active then 'active'
         href: opts.href
         style: 
@@ -188,7 +189,8 @@ window.Dashboard = ReactiveComponent
 
 
     draw_menu_separator = (title) -> 
-      DIV null,
+      DIV 
+        key: title
         translator "dashboard.section_title.#{title}", title
 
     DIV 

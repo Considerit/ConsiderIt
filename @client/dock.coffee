@@ -97,7 +97,14 @@ window.Dock = ReactiveComponent
         zIndex: 999999 - @local.stack_priority
         width: '100%'
 
-    DIV _.extend({}, @props),
+
+    props = _.extend {}, @props
+
+    for prop_to_strip in ['dock_key', 'dock_on_zoomed_screens', 'skip_jut', 'dummy', 'parents', 'docked_key', 'constraints', 'dockable', 'dummy2', 'stop']
+      if prop_to_strip of props 
+        delete props[prop_to_strip]
+
+    DIV props,
 
       # A placeholder for content that suddenly got ripped out of the standard layout
       DIV 

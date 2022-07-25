@@ -459,6 +459,7 @@ window.AuthForm =
     @local.updates[name] ?= current_user[name]
     
     DIV 
+      key: field_id
       className: 'AUTH_field_wrapper'
       style: 
         opacity: if opts.disabled then .5

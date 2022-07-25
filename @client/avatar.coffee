@@ -313,6 +313,11 @@ window.avatar = (user, props) ->
     width: style?.width
     height: style?.width
 
+
+  for prop_to_strip in ['user', 'anonymous', 'set_bg_color', 'custom_bg_color', 'hide_popover', 'parents', 'img_size']
+    if prop_to_strip of attrs
+      delete attrs[prop_to_strip]
+
   if src
     # attrs.alt = if props.hide_popover then '' else popover 
     # the above fails too much on broken images, and 

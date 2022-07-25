@@ -273,6 +273,7 @@ window.ModalNewList = ReactiveComponent
                 span: 
                   component: SPAN 
                   args: 
+                    key: 'title'
                     style: 
                       fontWeight: 700
 
@@ -315,6 +316,7 @@ window.ModalNewList = ReactiveComponent
                       span: 
                         component: SPAN 
                         args: 
+                          key: 'span'
                           style: 
                             fontWeight: 700
 
@@ -380,6 +382,7 @@ window.ModalNewList = ReactiveComponent
                     span: 
                       component: SPAN 
                       args: 
+                        key: 'span'
                         style: 
                           fontWeight: 700
 
@@ -593,6 +596,7 @@ window.ModalNewList = ReactiveComponent
                     span: 
                       component: SPAN 
                       args: 
+                        key: 'span'
                         style: 
                           fontWeight: 700
 

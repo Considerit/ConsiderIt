@@ -262,8 +262,9 @@
         return ""
     }
 
-    window.loading_indicator = React.DOM.div({style: {height: '100%', width: '100%'},
+    window.loading_indicator = React.createFactory(React.DOM.div)({style: {height: '100%', width: '100%'},
                                        className: 'loading'}, 'Loading')
+
     function error_indicator(message) {
         return React.DOM.div(null, 'Error! ' + message)
     }
@@ -372,7 +373,7 @@
                  var parents = this.props.parents.concat([this.local_key])
                  for (var i=0; i<parents.length; i++) {
                      var name = components[parents[i]].name
-                     var key = components[parents[i]].props.key
+                     var key = components[parents[i]].mounted_key //props.key
                      if (!key && cache[name] !== undefined)
                          key = name
                      add_shortcut(this, name, key)
@@ -404,7 +405,7 @@
             if (this._reactInternalInstance._currentElement.key)
                 ReactDOM.findDOMNode(this).setAttribute('data-key', this._reactInternalInstance._currentElement.key)              
         })
-        wrap(component, 'getDefaultProps')
+        // wrap(component, 'getDefaultProps')
         //wrap(component, 'componentWillReceiveProps')
         wrap(component, 'componentWillUnmount', function () {
             // Clean up
@@ -451,7 +452,7 @@
 
         // Now create the actual React class with this definition, and
         // return it.
-        var react_class = React.createFactory(React.createClass(component))
+        var react_class = React.createFactory(createReactClass(component))
         var result = function (props, children) {
             props = props || {}
             props.parents = execution_context.slice()

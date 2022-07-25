@@ -180,7 +180,7 @@ window.DefaultFooter = ReactiveComponent
                   privacy_link: 
                     component: A 
                     args: 
-                      key: 'privacy'
+                      key: 'privacy_link'
                       href: '/privacy_policy'
                       style: 
                         textDecoration: 'underline'
@@ -189,6 +189,7 @@ window.DefaultFooter = ReactiveComponent
                     key: 'terms'
                     component: A 
                     args: 
+                      key: 'terms_link'
                       href: '/terms_of_service'
                       style: 
                         textDecoration: 'underline'
@@ -205,6 +206,7 @@ window.DefaultFooter = ReactiveComponent
                   link: 
                     component: A
                     args: 
+                      key: 'mailto'
                       style: 
                         textDecoration: 'underline'                    
                       href: 'mailto:help@consider.it'

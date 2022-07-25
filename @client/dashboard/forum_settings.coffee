@@ -114,6 +114,7 @@ window.ForumSettingsDash = ReactiveComponent
               
             for abbrev, label of available_languages
               OPTION
+                key: abbrev
                 value: abbrev
                 label 
 
@@ -414,7 +415,8 @@ window.ForumSettingsDash = ReactiveComponent
           FIELDSET null,
 
             for option in [{label: 'Free Forum', value: 0}, {label: 'Unlimited Forum', value: 1}, {label: 'Enterprise Forum', value: 2}]
-              DIV null,
+              DIV 
+                key: option.label
 
                 DIV 
                   className: 'radio_group'
@@ -529,7 +531,8 @@ window.ForumSettingsDash = ReactiveComponent
       FIELDSET null,
 
         for option in phases
-          DIV null,
+          DIV 
+            key: option.value
 
             DIV 
               className: 'radio_group'
@@ -602,7 +605,8 @@ window.ForumSettingsDash = ReactiveComponent
       FIELDSET null,
 
         for option in moderation_options
-          DIV null,
+          DIV 
+            key: option.value
 
             DIV 
               className: 'radio_group'

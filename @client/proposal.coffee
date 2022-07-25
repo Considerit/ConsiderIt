@@ -230,7 +230,7 @@ window.Proposal = ReactiveComponent
                 zIndex: 1
                 left: '100%'
                 marginLeft: 30
-                top: if fetch('histogram-dock').docked then 50 else if screencasting() then 120 else 170
+                top: if screencasting() then 120 else 170
 
               HistogramScores
                 proposal: proposal.key
@@ -284,10 +284,10 @@ window.Proposal = ReactiveComponent
                 proposal: proposal.key
                 opinions: opinionsForProposal(proposal)
                 width: PROPOSAL_HISTO_WIDTH()
-                height: if fetch('histogram-dock').docked then 50 else if screencasting() then 120 else 170
+                height: if screencasting() then 120 else 170
                 enable_individual_selection: true
                 enable_range_selection: true
-                draw_base: if fetch('histogram-dock').docked then true else false
+                draw_base: false
                 backgrounded: mode == 'crafting'
                 draw_base: true
                 draw_base_labels: true
@@ -303,9 +303,10 @@ window.Proposal = ReactiveComponent
 
               Dock
                 key: 'slider-dock'
+                dock_key: 'slider-dock'
                 docked_key: namespaced_key('slider', proposal)          
                 dock_on_zoomed_screens: true
-                constraints : ['decisionboard-dock', 'histogram-dock']
+                constraints : ['decisionboard-dock']
                 skip_jut: mode == 'results'
                 dockable : => 
                   mode == 'crafting' && can_opine > 0
@@ -357,6 +358,7 @@ window.Proposal = ReactiveComponent
                 if !TWO_COL() && customization('discussion_enabled', proposal)
                   Dock
                     key: 'decisionboard-dock'
+                    dock_key: 'decisionboard-dock'
                     docked_key: 'decisionboard'            
                     constraints : ['slider-dock']
                     dock_on_zoomed_screens: true
@@ -841,6 +843,9 @@ DecisionBoard = ReactiveComponent
     @transition()
     @makeDroppable()
 
+  componentWillUnmount: -> 
+    @dismounting = true
+
   makeDroppable: -> 
     db = fetch('decision_board')
 
@@ -920,7 +925,7 @@ DecisionBoard = ReactiveComponent
         # wait for css transitions to complete
         @transitioning = true
         _.delay => 
-          if @isMounted()
+          if !@dismounting
             perform final_state
             @transitioning = false
 

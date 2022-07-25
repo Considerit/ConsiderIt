@@ -126,6 +126,7 @@ window.ModerationDash = ReactiveComponent
 
           for option in moderation_options
             OPTION 
+              key: option.value
               value: option.value
               option.label 
 
@@ -158,6 +159,7 @@ window.ModerationDash = ReactiveComponent
           do (model) => 
             active = @local.model == model
             LI 
+              key: model
               style: 
                 display: 'inline-block'
 
@@ -337,6 +339,7 @@ ModerateItem = ReactiveComponent
                 style: 
                   opacity: .5
                 BUBBLE_WRAP 
+                  key: point.key
                   title: point.nutshell 
                   anon: point.hide_name
                   user: point.user
@@ -346,6 +349,7 @@ ModerateItem = ReactiveComponent
 
                 for comment in _.uniq( _.map(comments.comments, (c) -> c.key).concat(moderatable.key)) when comment != moderatable.key
                   BUBBLE_WRAP 
+                    key: comment
                     title: fetch(comment).body
                     user: fetch(comment).user
                     width: '100%'
@@ -412,6 +416,7 @@ ModerateItem = ReactiveComponent
 
               for list_key in get_all_lists()
                 OPTION  
+                  key: list_key
                   value: list_key.substring(5)
                   get_list_title list_key, true
 

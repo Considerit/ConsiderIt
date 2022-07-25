@@ -263,7 +263,7 @@ TranslationsDash = ReactiveComponent
 
 
         SELECT 
-          value: local.translating_lang
+          value: local.translating_lang or subdomain.lang or 'en'
           style: 
             fontSize: 20
             marginLeft: 14
@@ -271,10 +271,10 @@ TranslationsDash = ReactiveComponent
           onChange: (ev) => 
             local.translating_lang = ev.target.value
             save local
-          defaultValue: subdomain.lang or 'en'
 
           for [k,v] in all_langs
             OPTION 
+              key: k
               value: k
               "#{v} (#{k})"
 
@@ -508,6 +508,7 @@ TranslationsForLang = ReactiveComponent
 
               for col in cols
                 TH
+                  key: col
                   style: 
                     textAlign: 'left'
                     padding: "4px 6px"
@@ -576,6 +577,7 @@ TranslationsForLang = ReactiveComponent
                             else 
                               proposer = current_user 
                             LI 
+                              key: name
                               style: 
                                 padding: "2px 0px 8px 0px"
                                 listStyle: 'none'

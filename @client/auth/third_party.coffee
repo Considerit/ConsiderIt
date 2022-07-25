@@ -91,7 +91,7 @@ styles += """
 window.OAuthLogin =
 
   startThirdPartyAuth : (provider) ->
-    root = @root
+    root = fetch('root')
     new OAuthHandler
       provider : provider
       callback : (new_data) => 

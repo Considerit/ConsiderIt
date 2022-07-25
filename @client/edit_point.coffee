@@ -179,7 +179,7 @@ window.EditPoint = ReactiveComponent
                      with peers."""
             translator 'engage.point_anonymous_toggle', 'Sign your name'
 
-  componentWillMount : ->
+  UNSAFE_componentWillMount : ->
     # save scroll position and keep it there
     if browser.is_mobile
       @scrollY = window.scrollY

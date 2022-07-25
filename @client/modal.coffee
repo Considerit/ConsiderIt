@@ -66,7 +66,7 @@ window.Modal =
 
     return
 
-  componentWillMount: ->
+  UNSAFE_componentWillMount: ->
     @scroll_Y = window.scrollY
 
   componentDidMount: ->

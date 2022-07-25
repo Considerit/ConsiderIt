@@ -1,5 +1,5 @@
-for el of React.DOM
-  this[el.toUpperCase()] = React.DOM[el]
+for el of ReactDOMFactories
+  this[el.toUpperCase()] = ReactDOMFactories[el]
 
 window.parse_key = (key) ->
   word = "([^/]+)"

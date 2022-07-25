@@ -270,7 +270,7 @@ ProposalsLoading = ReactiveComponent
 
       translator "loading_indicator", "Loading...there is much to consider!"
 
-  componentWillMount: -> 
+  UNSAFE_componentWillMount: -> 
     @int = setInterval => 
       @local.cnt += 1 
       save @local 

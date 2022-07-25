@@ -99,7 +99,7 @@ AccessibilitySupport = ReactiveComponent
 About = ReactiveComponent
   displayName: 'About'
 
-  componentWillMount : ->
+  UNSAFE_componentWillMount : ->
     @local.embed_html_directly = true
     @local.html = null
     @local.save

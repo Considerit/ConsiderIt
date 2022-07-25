@@ -32,7 +32,7 @@ window.BUBBLE_WRAP = ReactiveComponent
 
       if @props.user 
         Avatar
-          key: @props.user 
+          key: @props.user.key or @props.user 
           style: pic_style
           hide_popover: false 
           anonymous: @props.anon

@@ -115,7 +115,7 @@ window.Dock = ReactiveComponent
       DIV ref: 'dock_child', style: style or {},
         @props.children
 
-  componentWillMount : ->
+  UNSAFE_componentWillMount : ->
 
     @key = if @props.dock_key? then @props.dock_key else @local.key
     dock = fetch @key,

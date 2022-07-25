@@ -91,8 +91,8 @@ window.back_to_homepage_button = (style, text) ->
 
 ####
 # Make the DIV, SPAN, etc.
-for el of React.DOM
-  window[el.toUpperCase()] = React.createFactory(el) # React.DOM[el]
+for el of ReactDOMFactories
+  window[el.toUpperCase()] = React.createFactory(el) # ReactDOMFactories[el]
 
 window.TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
 
@@ -237,7 +237,8 @@ window.isNeutralOpinion = (stance) ->
 # logging
 
 window.on_ajax_error = () ->
-  (root = fetch('root')).server_error = true
+  root = fetch('root')
+  root.server_error = true
   save(root)
 
 window.on_client_error = (e) ->

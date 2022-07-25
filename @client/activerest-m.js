@@ -262,12 +262,13 @@
         return ""
     }
 
-    window.loading_indicator = React.createFactory(React.DOM.div)({style: {height: '100%', width: '100%'},
+    window.loading_indicator = React.createFactory(ReactDOMFactories.div)({style: {height: '100%', width: '100%'},
                                        className: 'loading'}, 'Loading')
 
     function error_indicator(message) {
-        return React.DOM.div(null, 'Error! ' + message)
+        return ReactDOMFactories.div(null, 'Error! ' + message)
     }
+
 
     // ****************
     // Wrapper for React Components
@@ -275,7 +276,9 @@
     var components_count = 0
     var dirty_components = {}
     var execution_context = []  // The stack of components that are being rendered
+
     function ReactiveComponent(component) {
+
         // STEP 1: Define get() and save()
         component.fetch = component.data = component.get = function (key, defaults) {
             if (!this.isMounted)
@@ -329,8 +332,8 @@
         }
 
         // We register the component when mounting it into the DOM
-        wrap(component, 'componentWillMount',
-             function () { 
+        wrap(component, 'UNSAFE_componentWillMount',
+            function () { 
 
                  // STEP 1. Register the component's basic info
                  if (component.displayName === undefined)
@@ -339,14 +342,18 @@
                  this.local_key = 'component/' + components_count++
                  components[this.local_key] = this
 
-                 // You can pass an object in as a key if you want:
-                 if (this._reactInternalInstance._currentElement.key && this._reactInternalInstance._currentElement.key.key)
-                     this._reactInternalInstance._currentElement.key = this._reactInternalInstance._currentElement.key.key
+
+                 // This is broken now that React doesn't allow props to be modified
+                 // // You can pass an object in as a key if you want:
+                 // var my_props = get_current_props_for_component_instance(this)
+                 // if (my_props.key && my_props.key.key)
+                 //     my_props.key = my_props.key.key
+
 
                  // XXX Putting this into WillMount probably won't let you use the
                  // mounted_key inside getInitialState!  But you should be using
                  // activerest state anyway, right?
-                 this.mounted_key = this._reactInternalInstance._currentElement.key
+                 this.mounted_key = this._reactInternalFiber.key
 
                  // STEP 2: Create shortcuts e.g. `this.foo' for all parents up the
                  // tree, and this component's local key
@@ -369,16 +376,17 @@
                  // ...first for @local
                  add_shortcut(this, 'local', this.local_key)
                  
+                 // I don't use parent shortcuts anymore, and consider them an anti-pattern
                  // ...and now for all parents
-                 var parents = this.props.parents.concat([this.local_key])
-                 for (var i=0; i<parents.length; i++) {
-                     var name = components[parents[i]].name
-                     var key = components[parents[i]].mounted_key //props.key
-                     if (!key && cache[name] !== undefined)
-                         key = name
-                     add_shortcut(this, name, key)
-                 }
-             })
+                 // var parents = this.props.parents.concat([this.local_key])
+                 // for (var i=0; i<parents.length; i++) {
+                 //     var name = components[parents[i]].name
+                 //     var key = components[parents[i]].mounted_key //props.key
+                 //     if (!key && cache[name] !== undefined)
+                 //         key = name
+                 //     add_shortcut(this, name, key)
+                 // }
+            })
 
         wrap(component, 'render', function () {
             // Render will need to clear the component's old
@@ -397,13 +405,13 @@
 
         wrap(component, 'componentDidMount', function () {
             ReactDOM.findDOMNode(this).setAttribute('data-widget', component.displayName)
-            if (this._reactInternalInstance._currentElement.key)
-                ReactDOM.findDOMNode(this).setAttribute('data-key', this._reactInternalInstance._currentElement.key)              
+            if (this.mounted_key)
+                ReactDOM.findDOMNode(this).setAttribute('data-key', this.mounted_key)              
         })
         wrap(component, 'componentDidUpdate', function () {
             ReactDOM.findDOMNode(this).setAttribute('data-widget', component.displayName)
-            if (this._reactInternalInstance._currentElement.key)
-                ReactDOM.findDOMNode(this).setAttribute('data-key', this._reactInternalInstance._currentElement.key)              
+            if (this.mounted_key)
+                ReactDOM.findDOMNode(this).setAttribute('data-key', this.mounted_key)              
         })
         // wrap(component, 'getDefaultProps')
         //wrap(component, 'componentWillReceiveProps')
@@ -422,7 +430,7 @@
             // have changed.  We can do so by simply serializing them
             // and then comparing them.  But ignore React's 'children'
             // prop, because it often has a circular reference.
-            next_props = clone(next_props); this_props = clone(this._reactInternalInstance._currentElement)
+            next_props = clone(next_props); this_props = clone(this.props)
             delete next_props['children']; delete this_props['children']
 
             // console.assert(!_.isEqual([next_state, next_props], [this.state, this_props]) == JSON.stringify([next_state, next_props]) != JSON.stringify([this.state, this_props]), {next_state: next_state, next_props: next_props})

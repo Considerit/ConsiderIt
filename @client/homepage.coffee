@@ -127,6 +127,13 @@ window.Homepage = ReactiveComponent
                 DIV 
                   style: 
                     paddingTop: 28
+
+                  DIV 
+                    style: 
+                      textAlign: 'center'
+                      color: selected_color
+                      fontWeight: 600
+                    "Find more proposals on a different page:"
                     
                   HomepageTabs
                     go_to_hash: 'active_tab'

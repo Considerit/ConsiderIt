@@ -22,7 +22,7 @@ window.BUBBLE_WRAP = ReactiveComponent
       width: 50
       height: 50
       left: -64
-      boxShadow: '-1px 2px 0 0 #eeeeee;'
+      boxShadow: '-1px 2px 0 0 #eeeeee'
 
     DIV
       style: 

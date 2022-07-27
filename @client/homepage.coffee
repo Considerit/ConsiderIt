@@ -110,6 +110,7 @@ window.Homepage = ReactiveComponent
 
                 for message in messages
                   DIV 
+                    key: message
                     style: 
                       marginBottom: 24 
                       fontStyle: 'italic'

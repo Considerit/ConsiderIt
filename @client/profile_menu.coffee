@@ -261,7 +261,7 @@ window.ProfileMenu = ReactiveComponent
           fontWeight: 600
           padding: '4px 12px'
           fontSize: 21
-          borderRadius: if ! @local.show_verify then 8
+          borderRadius: if !@local.show_verify then 8
           position: 'relative'
           cursor: 'pointer'
 

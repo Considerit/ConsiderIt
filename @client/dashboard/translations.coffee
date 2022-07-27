@@ -148,9 +148,9 @@ DEVELOPMENT_LANGUAGE = 'en'
 translation_cache = {}
 translations_loaded = false 
 window.T = window.t = window.translator = (args, native_text) -> 
-  if !native_text
-    native_text = ""
-    console.error("Native text for translation is null", args, native_text)
+  # if !native_text
+  #   native_text = ""
+  #   console.error("Native text for translation is null", args, native_text)
 
   if translations_loaded 
     cache_key = JSON.stringify(args, native_text)
@@ -477,7 +477,8 @@ TranslationsForLang = ReactiveComponent
 
             rows = []
 
-            rows.push TR null,              
+            rows.push TR
+              key: 'preamble'              
               TD 
                 colSpan: cols.length 
                 style: 
@@ -502,6 +503,7 @@ TranslationsForLang = ReactiveComponent
 
 
             rows.push TR 
+              key: 'header'
               style: 
                 backgroundColor: '#dfdfdf'
 

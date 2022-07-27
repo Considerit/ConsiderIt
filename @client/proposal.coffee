@@ -1228,7 +1228,6 @@ PointsList = ReactiveComponent
 
       HEADING 
         key: 'point_list_heading'
-        ref: 'point_list_heading'
         id: @local.key.replace('/','-')
         className: 'points_heading_label'
         style: _.extend header_style,

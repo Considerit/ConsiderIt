@@ -93,6 +93,7 @@ window.back_to_homepage_button = (style, text) ->
 # Make the DIV, SPAN, etc.
 for el of ReactDOMFactories
   window[el.toUpperCase()] = React.createFactory(el) # ReactDOMFactories[el]
+window['STRICTMODE'] = React.createFactory(React.StrictMode)
 
 window.TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
 

@@ -215,6 +215,7 @@ RadioWildcardRolesSection = (opts) ->
           type: 'radio'
           name: "radio_#{role.name}"
           checked: subdomain.roles[role.name].indexOf('*') > -1
+          readOnly: true
         
         LABEL
           htmlFor: "forum_open_#{role.name}"
@@ -227,6 +228,7 @@ RadioWildcardRolesSection = (opts) ->
           type: 'radio'
           name: "radio_#{role.name}"
           checked: subdomain.roles[role.name].indexOf('*') == -1
+          readOnly: true
 
         LABEL
           htmlFor: "forum_restricted_#{role.name}"

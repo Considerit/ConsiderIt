@@ -150,7 +150,7 @@ window.wrap_in_modal = (width, click_lightbox_callback, children) ->
       id: 'modal'
       ref: 'dialog'
       role: 'dialog'
-      # 'aria-labeledby': 'AUTH_task'
+      # 'aria-labelledby': 'AUTH_task'
       # 'aria-describedby': if options.goal then 'AUTH_goal'
 
       onClick: if click_lightbox_callback then click_lightbox_callback

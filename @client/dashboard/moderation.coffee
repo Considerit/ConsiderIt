@@ -171,12 +171,11 @@ window.ModerationDash = ReactiveComponent
                   fontSize: 18
                   marginLeft: 12
                   marginRight: 12
+                  marginBottom: if active then -1
                   border: '1px solid #bbb'
                   borderBottom: 'none'
                   borderRadius: '4px 4px 0 0px'
-                  padding: '6px 14px 2px 14px'
-                  paddingBottom: if active then 3
-                  marginBottom: if active then -1
+                  padding: "6px 14px #{if active then 3 else 2}px 14px"
 
                 onClick: => select_class(model)
 

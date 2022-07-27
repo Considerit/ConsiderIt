@@ -178,7 +178,7 @@ CustomizeTitle = ReactiveComponent
       if is_admin && edit_forum.editing
 
         AutoGrowTextArea 
-          ref: 'primary_input'
+          id: 'banner_primary_input'
           className: 'banner_title'
           defaultValue: title
           style: @props.style
@@ -196,9 +196,13 @@ CustomizeTitle = ReactiveComponent
           onDoubleClick: if is_admin then => 
             edit_forum.editing = true 
             save edit_forum
-            setTimeout => 
-              @refs.primary_input?.focus()
-              @refs.primary_input?.setSelectionRange(-1, -1) # put cursor at end
+            int = setInterval => 
+              textarea = document.getElementById('banner_primary_input')
+              if textarea
+                textarea.focus()
+                textarea.setSelectionRange(-1, -1) # put cursor at end
+                clearInterval(int)
+            , 10
 
 
 CustomizeDescription = ReactiveComponent
@@ -275,9 +279,6 @@ UploadFileSVG = (opts) ->
     height: opts.height or 100
     width: opts.height or 100
     fill: opts.fill or '#fff'
-    xmlns: "http://www.w3.org/2000/svg" 
-    'xmlns:xlink': "http://www.w3.org/1999/xlink" 
-    version: "1.1" 
     x: 0
     y: 0
     viewBox: "0 0 100 100"
@@ -335,9 +336,6 @@ UploadableLogo = (opts) ->
           height: delete_size
           width: delete_size
           fill: '#fff'
-          xmlns: "http://www.w3.org/2000/svg" 
-          'xmlns:xlink': "http://www.w3.org/1999/xlink" 
-          version: "1.1" 
           x: 0
           y: 0
           viewBox: "0 0 511.995 511.995"

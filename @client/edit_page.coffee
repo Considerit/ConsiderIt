@@ -443,7 +443,8 @@ window.EditPage = ReactiveComponent
       FIELDSET null,
 
         for option in page_types
-          DIV null,
+          DIV 
+            key: option.id
 
             DIV 
               className: 'radio_group'
@@ -545,7 +546,8 @@ window.EditPage = ReactiveComponent
       if option.explanation
         for option in list_orderings
           if option.value == (@local.list_sort_method or current_list_sort_method)
-            DIV 
+            DIV
+              key: option.value 
               className: 'explanation field_explanation'
               option.explanation
 
@@ -650,6 +652,7 @@ window.EditPage = ReactiveComponent
 
           for tab in get_tabs()
             OPTION
+              key: tab.name
               value: tab.name
               tab.name 
 

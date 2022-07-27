@@ -307,6 +307,7 @@ Root = ReactiveComponent
 
     fonts = customization('font')
     header_fonts = customization('header_font') or fonts
+
     DIV 
       className: 'full_height'
       # Track whether the user is currently swipping. Used to determine whether

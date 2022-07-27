@@ -64,7 +64,6 @@ get_list_padding = ->
     right = Math.max 36, LIST_PADDING() + LIST_PADDING() / 6
     left  = Math.max 36, LIST_PADDING() - LIST_PADDING() / 6
 
-
   "#{top}px #{right}px #{bottom}px #{left}px"
 
 window.list_link = (list_key) ->
@@ -98,20 +97,23 @@ window.List = ReactiveComponent
 
     is_collapsed = list_state.collapsed
 
+    sty =         
+      marginBottom: 40
+      position: 'relative'
+      padding: get_list_padding()
+
+    if screencasting()
+      _.extend sty,
+        boxShadow: 'none'
+        borderTop: 'none'
+        paddingTop: 0 
+
     ARTICLE
       key: list_key
       id: list_key.substring(5).toLowerCase()
-      style: 
-        marginBottom: 40
-        position: 'relative'
-        padding: get_list_padding()
-
-        boxShadow: if screencasting() then 'none'
-        borderTop: if screencasting() then 'none'
-        paddingTop: if screencasting() then 0
+      style: sty
 
       A name: list_link(list_key)
-
 
       ListHeader 
         list: list

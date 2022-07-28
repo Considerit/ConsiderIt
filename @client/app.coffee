@@ -208,7 +208,14 @@ Page = ReactiveComponent
 
     access_granted = @accessGranted()
 
-    return LOADING_INDICATOR if !fetch('customizations_signature').signature
+    if !fetch('customizations_signature').signature
+      return  DIV 
+                className: 'full_height'
+
+                DIV 
+                  style: 
+                    position: 'absolute'
+                  LOADING_INDICATOR
 
     DIV
       className: 'full_height'

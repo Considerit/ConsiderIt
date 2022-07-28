@@ -68,9 +68,10 @@
           %link{ :href => "https://fonts.googleapis.com/css2?family=Fira+Mono&family=Fira+Sans+Condensed:wght@200;400;700;800;900&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=block", :rel => 'stylesheet' }
           
         - else 
+          %link{ :href => "https://fonts.googleapis.com/css2?family=Fira+Mono&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=block", :rel => "preload", :as => 'style'}
+
           %link{ :href => "https://fonts.googleapis.com/css2?family=Fira+Mono&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=block", :rel => "stylesheet"}
 
-      %link{:href => "https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css", :rel => "stylesheet"}
 
       - if @canonical
         %link{:href => @canonical, :rel => "canonical"}
@@ -87,9 +88,11 @@
         window.asset_host = '#{Rails.application.config.action_controller.asset_host}'
 
 
+      %script{:src => "https://polyfill.io/v3/polyfill.min.js?features=Intl%2CIntl.PluralRules%2CIntl.Locale%2CIntl.PluralRules.~locale.en%2CIntl.~locale.en", :type => 'text/javascript'}
 
-      %script{:src => "#{@vendor}/vendor/formatjs-intl-pluralrules.polyfill.min.js", :type => 'text/javascript'}
-      %script{:src => "https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en", :type => 'text/javascript'}
+      // %script{:src => "#{@vendor}/vendor/formatjs-intl-pluralrules.polyfill.min.js", :type => 'text/javascript'}
+      // %script{:src => "https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en", :type => 'text/javascript'}
+
 
       - if Rails.env.development?
         %script{:src => "#{@vendor}/vendor/react-18.2.js", :type => 'text/javascript'}
@@ -148,8 +151,11 @@
           }
         }
 
+      %link{:async => true, :href => "https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css", :rel => "stylesheet"}
+
       - if @js_dependencies
         %script{:src => @js_dependencies, :type => 'text/javascript'}
+
 
       %script{:src => @js, :type => 'text/javascript'}
 

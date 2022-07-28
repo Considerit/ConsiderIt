@@ -172,7 +172,7 @@
 
 
 
-      %script{:type => 'text/javascript', :src => "https://translate.google.com/translate_a/element.js"}
+      %script{:async => true, :defer => true, :type => 'text/javascript', :src => "https://translate.google.com/translate_a/element.js"}
 
       - if current_user.is_admin? || current_user.super_admin || current_subdomain.name == 'homepage'
         %script{:src => "https://js.stripe.com/v3/"}

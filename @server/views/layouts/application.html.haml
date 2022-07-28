@@ -10,14 +10,6 @@
     %head{ profile: "http://gmpg.org/xfn/1", prefix: "og: http://ogp.me/ns#"}
         
 
-      - if @app == 'product_page' && @google_ads_id
-        %script{:async => true, :src => "https://www.googletagmanager.com/gtag/js?id=#{@google_ads_id}"}
-
-        :javascript
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', '#{@google_ads_id}');
 
       - if @title
         %title
@@ -68,9 +60,9 @@
           %link{ :href => "https://fonts.googleapis.com/css2?family=Fira+Mono&family=Fira+Sans+Condensed:wght@200;400;700;800;900&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=block", :rel => 'stylesheet' }
           
         - else 
-          %link{ :href => "https://fonts.googleapis.com/css2?family=Fira+Mono&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=block", :rel => "preload", :as => 'style'}
+          %link{ :href => "https://fonts.googleapis.com/css2?family=Fira+Mono&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=block", :rel => "preload", :as => 'style'}
 
-          %link{ :href => "https://fonts.googleapis.com/css2?family=Fira+Mono&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=block", :rel => "stylesheet"}
+          %link{ :href => "https://fonts.googleapis.com/css2?family=Fira+Mono&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=block", :rel => "stylesheet"}
 
       %link{:rel => "preload", :as => "style", :href => "https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css", :onload => "this.onload=null;this.rel='stylesheet'"}
 
@@ -170,7 +162,14 @@
         %script{:async => true, :defer => true, :src => 'https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.5.3/jsoneditor.min.js', :type => 'text/javascript'}
         %link{:rel => 'stylesheet', :href => 'https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.5.3/jsoneditor.min.css'}
 
+      - if @app == 'product_page' && @google_ads_id
+        %script{:async => true, :src => "https://www.googletagmanager.com/gtag/js?id=#{@google_ads_id}"}
 
+        :javascript
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '#{@google_ads_id}');
 
 
       %script{:async => true, :defer => true, :type => 'text/javascript', :src => "https://translate.google.com/translate_a/element.js"}

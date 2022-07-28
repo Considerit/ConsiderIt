@@ -320,9 +320,17 @@ window.CollapsedProposal = ReactiveComponent
             else 
               desc = proposal.description
 
-            A
+
+
+            DIV
+              style: 
+                cursor: 'pointer'
+              onClick: (e) => 
+                if e.target.tagName not in ["A", "BUTTON"]
+                  loadPage proposal_url(proposal, just_you && current_user.logged_in)                
+                  window.scrollTo(0, 0)
+
               className: 'description_on_homepage'
-              href: proposal_url(proposal, just_you && current_user.logged_in)
               dangerouslySetInnerHTML: __html: desc  
 
 

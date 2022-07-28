@@ -209,7 +209,6 @@ window.Histogram = ReactiveComponent
 
       if @local.avatar_size != avatar_radius * 2
         @local.avatar_size = avatar_radius * 2
-        save @local
         dirtied = true 
 
       @last_key = histocache_key
@@ -451,6 +450,9 @@ window.Histogram = ReactiveComponent
             marginTop: -3 #-9
             marginLeft: -4
             userSelect: 'none'
+            MozUserSelect: 'none'
+            WebkitUserSelect: 'none'
+            msUserSelect: 'none'            
             pointerEvents: 'none'
 
           TRANSLATE "engage.histogram.select_these_opinions", 'highlight opinions'
@@ -508,7 +510,6 @@ window.Histogram = ReactiveComponent
                 1
               else
                 .1
-
 
       save opinion_views
       save @local
@@ -650,9 +651,6 @@ window.Histogram = ReactiveComponent
           rando_order: .1
           topple_towers: .05
           density_modified_jostle: 1
-
-      # requestAnimationFrame =>
-      #   if @isMounted()
 
       has_groups = Object.keys(@groups).length > 0
       delegate_layout_task

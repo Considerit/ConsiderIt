@@ -96,6 +96,7 @@ AccessibilitySupport = ReactiveComponent
 
 
 
+# Legacy component (TODO: migrate where it is used)
 About = ReactiveComponent
   displayName: 'About'
 
@@ -208,14 +209,6 @@ Page = ReactiveComponent
 
     access_granted = @accessGranted()
 
-    if !fetch('customizations_signature').signature
-      return  DIV 
-                className: 'full_height'
-
-                DIV 
-                  style: 
-                    position: 'absolute'
-                  LOADING_INDICATOR
 
     DIV
       className: 'full_height'
@@ -306,9 +299,31 @@ Root = ReactiveComponent
   displayName: 'Root'
 
   render : -> 
+
     loc = fetch('location')
     app = fetch('/application')
     page = fetch("/page#{loc.url}")
+
+
+    setTimeout ->
+      fetch '/users'
+      if loc.url == '/'
+
+        setTimeout ->
+          fetch '/proposals'
+
+    if !fetch('customizations_signature').signature || !app.web_worker
+      return  DIV 
+                className: 'full_height'
+
+                CustomizationTransition()
+
+                DIV 
+                  style: 
+                    position: 'absolute'
+                    left: '48%'
+                  LOADING_INDICATOR
+
     return ProposalsLoading() if !app.web_worker
 
     subdomain = fetch '/subdomain'

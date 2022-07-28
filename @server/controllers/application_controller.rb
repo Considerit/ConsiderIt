@@ -26,9 +26,9 @@ class ApplicationController < ActionController::Base
 
   def application
     dirty_key '/application'
-    dirty_key '/subdomain' # just to eliminate a couple renders
+    # dirty_key '/subdomain' # just to eliminate a couple renders
     dirty_key '/current_user' # just to eliminate a couple renders
-    dirty_key '/users'
+    # dirty_key '/users'
     for lang in [ (current_user[:lang] || "en"), (current_subdomain[:lang] || "en"), "en"].uniq
       dirty_key "/translations/#{lang}"
       dirty_key "/translations/#{current_subdomain.name}/#{lang}"

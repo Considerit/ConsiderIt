@@ -39,7 +39,7 @@ styles += """
     margin-bottom: 4px;  
     text-decoration: none;
     font-weight: 400;
-    display: block;  
+    display: inline-block;  
   }
 
 
@@ -325,11 +325,17 @@ window.CollapsedProposal = ReactiveComponent
             else 
               desc = proposal.description
 
-            A
-              className: 'description_on_homepage'
-              href: proposal_url(proposal, just_you && current_user.logged_in)
-              "data-no-scroll": EXPAND_IN_PLACE
 
+
+            DIV
+              style: 
+                cursor: 'pointer'
+              onClick: (e) => 
+                if e.target.tagName not in ["A", "BUTTON"]
+                  loadPage proposal_url(proposal, just_you && current_user.logged_in)                
+                  window.scrollTo(0, 0)
+
+              className: 'description_on_homepage'
               dangerouslySetInnerHTML: __html: desc  
 
 

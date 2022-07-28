@@ -39,7 +39,7 @@ styles += """
     margin-bottom: 4px;  
     text-decoration: none;
     font-weight: 400;
-    display: block;  
+    display: inline-block;  
   }
 
 

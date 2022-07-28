@@ -127,14 +127,14 @@ window.Homepage = ReactiveComponent
               if get_tabs()
                 DIV 
                   style: 
-                    paddingTop: 28
+                    paddingTop: 48
 
                   DIV 
                     style: 
                       textAlign: 'center'
                       color: selected_color
                       fontWeight: 600
-                    "Find more proposals on a different page:"
+                    translator 'tabs.footer_label', "Find more proposals on a different page:"
                     
                   HomepageTabs
                     go_to_hash: 'active_tab'

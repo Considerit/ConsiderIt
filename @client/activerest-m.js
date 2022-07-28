@@ -18,7 +18,7 @@
         if (url[0] === '/')
             server_fetch(url)
 
-        update_cache(extend({key: url}, defaults))
+        update_cache(extend({key: url}, defaults), true)
         return cache[url]
     }
 
@@ -62,7 +62,7 @@
     var new_index = 0
     var affected_keys = new Set()
     var re_render_timer = null
-    function update_cache(object) {
+    function update_cache(object, from_fetch) {
         function recurse(object) {
             // Recurses into object and folds it into the cache.
 
@@ -84,7 +84,9 @@
                         cache[key][k] = object[k]  // pointers to this object
 
                 // Remember this key for re-rendering
-                affected_keys.add(key)
+                if (!from_fetch) {
+                    affected_keys.add(key)
+                }
             }
 
             // Now recurse into this object.
@@ -376,8 +378,8 @@
                  // ...first for @local
                  add_shortcut(this, 'local', this.local_key)
                  
-                 // I don't use parent shortcuts anymore, and consider them an anti-pattern
                  // ...and now for all parents
+                 // (I don't use parent shortcuts anymore, and consider them an anti-pattern)
                  // var parents = this.props.parents.concat([this.local_key])
                  // for (var i=0; i<parents.length; i++) {
                  //     var name = components[parents[i]].name

@@ -71,6 +71,7 @@ window.AuthCallout = ReactiveComponent
               BUTTON1: 
                 component: BUTTON 
                 args: 
+                  key: 'create_button'
                   'data-action': 'create'
                   onClick: (e) =>
                     reset_key 'auth',

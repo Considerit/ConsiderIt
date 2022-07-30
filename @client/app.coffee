@@ -220,7 +220,6 @@ Page = ReactiveComponent
       STYLE 
         dangerouslySetInnerHTML: __html: customization('style')
 
-        
       Header(key: 'page_header') if access_granted
 
 

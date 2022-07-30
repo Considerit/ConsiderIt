@@ -197,372 +197,375 @@ window.CollapsedProposal = ReactiveComponent
 
     is_open = EXPAND_IN_PLACE && fetch('location').url == "/#{proposal.slug}"
 
-    LI
+    FLIPPED 
       key: proposal.key
-      className: "#{if can_edit then 'editable' else ''} #{if is_open then 'is_open' else ''}"
-      "data-name": slugify(proposal.name)
-      id: 'p' + (proposal.slug or "#{proposal.id}").replace('-', '_')  # Initial 'p' is because all ids must begin 
-                                           # with letter. seeking to hash was failing 
-                                           # on proposals whose name began with number.
+      flipId: proposal.key
+      LI
+        key: proposal.key
+        className: "#{if can_edit then 'editable' else ''} #{if is_open then 'is_open' else ''}"
+        "data-name": slugify(proposal.name)
+        id: 'p' + (proposal.slug or "#{proposal.id}").replace('-', '_')  # Initial 'p' is because all ids must begin 
+                                             # with letter. seeking to hash was failing 
+                                             # on proposals whose name began with number.
 
 
-      onMouseEnter: => 
-        if draw_slider
-          @local.hover_proposal = proposal.key; save @local
-      onMouseLeave: => 
-        if draw_slider && !slider.is_moving
-          @local.hover_proposal = null; save @local
-      onFocus: => 
-        if draw_slider
-          @local.hover_proposal = proposal.key; save @local
-      onBlur: => 
-        if draw_slider && !slider.is_moving
-          @local.hover_proposal = null; save @local
+        onMouseEnter: => 
+          if draw_slider
+            @local.hover_proposal = proposal.key; save @local
+        onMouseLeave: => 
+          if draw_slider && !slider.is_moving
+            @local.hover_proposal = null; save @local
+        onFocus: => 
+          if draw_slider
+            @local.hover_proposal = proposal.key; save @local
+        onBlur: => 
+          if draw_slider && !slider.is_moving
+            @local.hover_proposal = null; save @local
 
-      if @local.editing
-        EditProposal 
-          proposal: proposal.key
-          done_callback: (e) =>
-            @local.editing = false
-            save @local
+        if @local.editing
+          EditProposal 
+            proposal: proposal.key
+            done_callback: (e) =>
+              @local.editing = false
+              save @local
 
-      if @props.focused_on
-        DIV
-          style: 
-            position: 'absolute'
-            left: -66
-            top: -8
-            backgroundColor: 'white'
-            padding: '8px 14px'
-            borderRadius: 8
-            fontSize: 36
-            color: '#666'
+        if @props.focused_on
+          DIV
+            style: 
+              position: 'absolute'
+              left: -66
+              top: -8
+              backgroundColor: 'white'
+              padding: '8px 14px'
+              borderRadius: 8
+              fontSize: 36
+              color: '#666'
 
-          #dangerouslySetInnerHTML: __html: "#{TRANSLATE('engage.navigation_helper_current_location', 'You are here')} &rarr;"
-          dangerouslySetInnerHTML: __html: "&rarr;"
+            #dangerouslySetInnerHTML: __html: "#{TRANSLATE('engage.navigation_helper_current_location', 'You are here')} &rarr;"
+            dangerouslySetInnerHTML: __html: "&rarr;"
 
 
-      DIV 
-        className: 'proposal_info'
-        style: 
-          width: col_sizes.first 
-          marginLeft: 58
-
-        
-
-        # icon or bullet
         DIV 
+          className: 'proposal_info'
           style: 
-            position: 'absolute'
-            left: -58
-            top: if icons then 4
-
-
-          if icons
-            editor = proposal_editor(proposal)
-
-            A
-              href: proposal_url(proposal)
-              "data-no-scroll": EXPAND_IN_PLACE
-              'aria-hidden': true
-              tabIndex: -1
-
-              if proposal.pic 
-                IMG
-                  className: 'proposal_pic'
-                  src: proposal.pic 
-
-              else if editor
-                # Person's icon
-                Avatar
-                  key: editor
-                  user: editor
-                  style:
-                    height: 40
-                    width: 40
-
-              else # no author specified
-                SPAN 
-                  className: 'empty_pic'
-                  style: 
-                    height: 36
-                    width: 36
-                    display: 'inline-block'
-                    border: "2px dashed #ddd"
-          else
-            @props.icon?() or SVG 
-              className: 'proposal_bullet'
-              key: 'bullet'
-              width: 8
-              viewBox: '0 0 200 200' 
-              CIRCLE cx: 100, cy: 100, r: 80, fill: '#000000'
-
-
-
-        # Name of Proposal
-        DIV
-          className: 'proposal_name'
-          style:
-            width: col_sizes.first
-
-          A
-            "data-no-scroll": EXPAND_IN_PLACE
-            className: 'proposal proposal_homepage_name'              
-            href: proposal_url(proposal, just_you && current_user.logged_in)
-
-            proposal.name
-
-          if customization('proposal_show_description_on_homepage', null, subdomain)
-            len = customization('proposal_show_description_on_homepage', null, subdomain)
-            if len == true 
-              len = 700
-              
-            if proposal.description?.length > len
-              div = document.createElement("div")
-              div.innerHTML = proposal.description.substring(0,len)
-              desc = div.textContent or div.innerText or ""
-              desc += " (...)" 
-            else 
-              desc = proposal.description
-
-
-
-            DIV
-              style: 
-                cursor: 'pointer'
-              onClick: (e) => 
-                if e.target.tagName not in ["A", "BUTTON"]
-                  loadPage proposal_url(proposal, just_you && current_user.logged_in)                
-                  window.scrollTo(0, 0)
-
-              className: 'description_on_homepage'
-              dangerouslySetInnerHTML: __html: desc  
-
-
-
-
-          DIV 
-            className: 'metadata monospaced'
-
-            if customization('proposal_meta_data', null, subdomain)?
-              customization('proposal_meta_data', null, subdomain)(proposal)
-
-            else if !@props.hide_metadata && customization('show_proposal_meta_data', null, subdomain)
-              show_author_name_in_meta_data = !icons && (editor = proposal_editor(proposal)) && editor == proposal.user && !customization('anonymize_everything')
-              show_timestamp = !screencasting() && subdomain.name != 'galacticfederation'
-              show_discussion_info = customization('discussion_enabled', proposal, subdomain)
-              show_cluster = @props.show_category && proposal.cluster
-              is_closed = opinion_publish_permission == Permission.DISABLED
-              read_only = opinion_publish_permission == Permission.INSUFFICIENT_PRIVILEGES
-
-              [
-                if show_timestamp
-                  SPAN 
-                    key: 'date'
-                    className: 'separated'
-
-                    # if !show_author_name_in_meta_data
-                    #   TRANSLATE 'engage.proposal_metadata_date_added', "Added: "
-                    
-                    prettyDate(proposal.created_at)
-
-
-                if show_author_name_in_meta_data
-                  SPAN 
-                    key: 'author name'
-                    className: 'separated'
-
-                    TRANSLATE
-                      id: 'engage.proposal_author'
-                      name: fetch(editor)?.name 
-                      " by {name}"
-
-                if show_discussion_info
-                  [
-                    A 
-                      key: 'proposal-link'
-                      href: proposal_url(proposal)
-                      "data-no-scroll": EXPAND_IN_PLACE
-                      className: 'separated'
-                      style: 
-                        textDecoration: 'none'
-                        whiteSpace: 'nowrap'                        
-                      TRANSLATE
-                        key: 'point-count'
-                        id: "engage.point_count"
-                        cnt: proposal.point_count
-
-                        "{cnt, plural, one {# pro or con} other {# pros & cons}}"
-
-                    if proposal.active && permit('create point', proposal, subdomain) > 0 && WINDOW_WIDTH() > 955
-
-                      A 
-                        key: 'give-opinion'
-                        href: proposal_url(proposal)
-                        "data-no-scroll": EXPAND_IN_PLACE
-                        className: 'separated give-your-opinion'                          
-                        TRANSLATE
-                          id: "engage.add_your_own"
-
-                          "give your opinion"
-                  ]
-              ]
-
-
-
-            if show_cluster
-              SPAN 
-                style: 
-                  padding: '1px 2px'
-                  color: @props.category_color or 'black'
-                  fontWeight: 500
-
-                get_list_title "list/#{proposal.cluster}", true, subdomain
-
-            if is_closed
-              SPAN 
-                style: 
-                  padding: '0 16px'
-                TRANSLATE "engage.proposal_closed.short", 'closed'
-
-            else if read_only
-              SPAN 
-                style: 
-                  padding: '0 16px'
-                TRANSLATE "engage.proposal_read_only.short", 'read-only'
+            width: col_sizes.first 
+            marginLeft: 58
 
           
 
-          if can_edit
-            DIV
-              style: 
-                visibility: if !@local.hover_proposal then 'hidden'
+          # icon or bullet
+          DIV 
+            style: 
+              position: 'absolute'
+              left: -58
+              top: if icons then 4
 
-              BUTTON 
-                className: 'like_link'              
+
+            if icons
+              editor = proposal_editor(proposal)
+
+              A
+                href: proposal_url(proposal)
+                "data-no-scroll": EXPAND_IN_PLACE
+                'aria-hidden': true
+                tabIndex: -1
+
+                if proposal.pic 
+                  IMG
+                    className: 'proposal_pic'
+                    src: proposal.pic 
+
+                else if editor
+                  # Person's icon
+                  Avatar
+                    key: editor
+                    user: editor
+                    style:
+                      height: 40
+                      width: 40
+
+                else # no author specified
+                  SPAN 
+                    className: 'empty_pic'
+                    style: 
+                      height: 36
+                      width: 36
+                      display: 'inline-block'
+                      border: "2px dashed #ddd"
+            else
+              @props.icon?() or SVG 
+                className: 'proposal_bullet'
+                key: 'bullet'
+                width: 8
+                viewBox: '0 0 200 200' 
+                CIRCLE cx: 100, cy: 100, r: 80, fill: '#000000'
+
+
+
+          # Name of Proposal
+          DIV
+            className: 'proposal_name'
+            style:
+              width: col_sizes.first
+
+            A
+              "data-no-scroll": EXPAND_IN_PLACE
+              className: 'proposal proposal_homepage_name'              
+              href: proposal_url(proposal, just_you && current_user.logged_in)
+
+              proposal.name
+
+            if customization('proposal_show_description_on_homepage', null, subdomain)
+              len = customization('proposal_show_description_on_homepage', null, subdomain)
+              if len == true 
+                len = 700
+                
+              if proposal.description?.length > len
+                div = document.createElement("div")
+                div.innerHTML = proposal.description.substring(0,len)
+                desc = div.textContent or div.innerText or ""
+                desc += " (...)" 
+              else 
+                desc = proposal.description
+
+
+
+              DIV
+                style: 
+                  cursor: 'pointer'
                 onClick: (e) => 
-                  @local.editing = true 
-                  save @local
-                  e.stopPropagation()
-                  e.preventDefault()
-                  
-                style:
-                  marginRight: 10
-                  color: focus_color()
-                  padding: 0
-                  fontSize: 12
-                  fontWeight: 600
-                TRANSLATE 'engage.edit_button', 'edit'
+                  if e.target.tagName not in ["A", "BUTTON"]
+                    loadPage proposal_url(proposal, just_you && current_user.logged_in)                
+                    window.scrollTo(0, 0)
 
-              if permit('delete proposal', proposal, subdomain) > 0
-                BUTTON
-                  className: 'like_link'
+                className: 'description_on_homepage'
+                dangerouslySetInnerHTML: __html: desc  
+
+
+
+
+            DIV 
+              className: 'metadata monospaced'
+
+              if customization('proposal_meta_data', null, subdomain)?
+                customization('proposal_meta_data', null, subdomain)(proposal)
+
+              else if !@props.hide_metadata && customization('show_proposal_meta_data', null, subdomain)
+                show_author_name_in_meta_data = !icons && (editor = proposal_editor(proposal)) && editor == proposal.user && !customization('anonymize_everything')
+                show_timestamp = !screencasting() && subdomain.name != 'galacticfederation'
+                show_discussion_info = customization('discussion_enabled', proposal, subdomain)
+                show_cluster = @props.show_category && proposal.cluster
+                is_closed = opinion_publish_permission == Permission.DISABLED
+                read_only = opinion_publish_permission == Permission.INSUFFICIENT_PRIVILEGES
+
+                [
+                  if show_timestamp
+                    SPAN 
+                      key: 'date'
+                      className: 'separated'
+
+                      # if !show_author_name_in_meta_data
+                      #   TRANSLATE 'engage.proposal_metadata_date_added', "Added: "
+                      
+                      prettyDate(proposal.created_at)
+
+
+                  if show_author_name_in_meta_data
+                    SPAN 
+                      key: 'author name'
+                      className: 'separated'
+
+                      TRANSLATE
+                        id: 'engage.proposal_author'
+                        name: fetch(editor)?.name 
+                        " by {name}"
+
+                  if show_discussion_info
+                    [
+                      A 
+                        key: 'proposal-link'
+                        href: proposal_url(proposal)
+                        "data-no-scroll": EXPAND_IN_PLACE
+                        className: 'separated'
+                        style: 
+                          textDecoration: 'none'
+                          whiteSpace: 'nowrap'                        
+                        TRANSLATE
+                          key: 'point-count'
+                          id: "engage.point_count"
+                          cnt: proposal.point_count
+
+                          "{cnt, plural, one {# pro or con} other {# pros & cons}}"
+
+                      if proposal.active && permit('create point', proposal, subdomain) > 0 && WINDOW_WIDTH() > 955
+
+                        A 
+                          key: 'give-opinion'
+                          href: proposal_url(proposal)
+                          "data-no-scroll": EXPAND_IN_PLACE
+                          className: 'separated give-your-opinion'                          
+                          TRANSLATE
+                            id: "engage.add_your_own"
+
+                            "give your opinion"
+                    ]
+                ]
+
+
+
+              if show_cluster
+                SPAN 
+                  style: 
+                    padding: '1px 2px'
+                    color: @props.category_color or 'black'
+                    fontWeight: 500
+
+                  get_list_title "list/#{proposal.cluster}", true, subdomain
+
+              if is_closed
+                SPAN 
+                  style: 
+                    padding: '0 16px'
+                  TRANSLATE "engage.proposal_closed.short", 'closed'
+
+              else if read_only
+                SPAN 
+                  style: 
+                    padding: '0 16px'
+                  TRANSLATE "engage.proposal_read_only.short", 'read-only'
+
+            
+
+            if can_edit
+              DIV
+                style: 
+                  visibility: if !@local.hover_proposal then 'hidden'
+
+                BUTTON 
+                  className: 'like_link'              
+                  onClick: (e) => 
+                    @local.editing = true 
+                    save @local
+                    e.stopPropagation()
+                    e.preventDefault()
+                    
                   style:
                     marginRight: 10
                     color: focus_color()
                     padding: 0
                     fontSize: 12
                     fontWeight: 600
+                  TRANSLATE 'engage.edit_button', 'edit'
 
-                  onClick: => 
-                    if confirm('Delete this proposal forever?')
-                      destroy(proposal.key)
-                      loadPage('/')
-                  TRANSLATE 'engage.delete_button', 'delete'
+                if permit('delete proposal', proposal, subdomain) > 0
+                  BUTTON
+                    className: 'like_link'
+                    style:
+                      marginRight: 10
+                      color: focus_color()
+                      padding: 0
+                      fontSize: 12
+                      fontWeight: 600
+
+                    onClick: => 
+                      if confirm('Delete this proposal forever?')
+                        destroy(proposal.key)
+                        loadPage('/')
+                    TRANSLATE 'engage.delete_button', 'delete'
 
 
 
 
-      # Histogram for Proposal
-      DIV 
-        className: 'proposal_histo'      
-        style: 
-          width: col_sizes.second
-          marginLeft: col_sizes.gutter
-                
-
-        Histogram
-          histo_key: "histogram-#{proposal.slug}"
-          proposal: proposal.key
-          opinions: opinions
-          width: col_sizes.second
-          height: 40
-          enable_individual_selection: !@props.disable_selection && !browser.is_mobile
-          enable_range_selection: !just_you && !browser.is_mobile && !ONE_COL()
-          draw_base: true
-          draw_base_labels: !slider_regions
-
-        Slider 
-          slider_key: "homepage_slider#{proposal.key}"
-          base_height: 0
-          draw_handle: !!draw_slider
-          width: col_sizes.second
-          polarized: true
-          regions: slider_regions
-          respond_to_click: false
-          base_color: 'transparent'
-          handle: slider_handle.triangley
-          handle_height: 18
-          handle_width: 21
-          handle_style: 
-            opacity: if just_you && !browser.is_mobile && @local.hover_proposal != proposal.key && !@local.slider_has_focus then 0 else 1             
-          offset: true
-          ticks: 
-            increment: .5
-            height: 2
-
-          handle_props:
-            use_face: false
-          label: translator
-                    id: "sliders.instructions"
-                    negative_pole: get_slider_label("slider_pole_labels.oppose", proposal, subdomain)
-                    positive_pole: get_slider_label("slider_pole_labels.support", proposal, subdomain)
-                    "Express your opinion on a slider from {negative_pole} to {positive_pole}"
-          onBlur: (e) => @local.slider_has_focus = false; save @local
-          onFocus: (e) => @local.slider_has_focus = true; save @local 
-
-          readable_text: slider_interpretation
-          onMouseUpCallback: (e) =>
-            # We save the slider's position to the server only on mouse-up.
-            # This way you can drag it with good performance.
-            if your_opinion.stance != slider.value
-
-              # save distance from top that the proposal is at, so we can 
-              # maintain that position after the save potentially triggers 
-              # a re-sort. 
-              prev_offset = ReactDOM.findDOMNode(@).offsetTop
-              prev_scroll = window.scrollY
-
-              your_opinion.stance = slider.value
-              your_opinion.published = true
-
-              your_opinion.key ?= "/new/opinion"
-              save your_opinion, ->
-                show_flash(translator('engage.flashes.opinion_saved', "Your opinion has been saved"))
-
-              window.writeToLog 
-                what: 'move slider'
-                details: {proposal: proposal.key, stance: slider.value}
-              @local.slid = 1000
-
-              update = fetch('homepage_you_updated_proposal')
-              update.dummy = !update.dummy
-              save update
-
-            mouse_over_element = closest e.target, (node) => 
-              node == ReactDOM.findDOMNode(@)
-
-            if @local.hover_proposal == proposal.key && !mouse_over_element
-              @local.hover_proposal = null 
-              save @local
-    
-      # little score feedback
-      if show_proposal_scores        
+        # Histogram for Proposal
         DIV 
-          className: 'proposal_scores'
+          className: 'proposal_histo'      
+          style: 
+            width: col_sizes.second
+            marginLeft: col_sizes.gutter
+                  
 
-          HistogramScores
+          Histogram
+            histo_key: "histogram-#{proposal.slug}"
             proposal: proposal.key
+            opinions: opinions
+            width: col_sizes.second
+            height: 40
+            enable_individual_selection: !@props.disable_selection && !browser.is_mobile
+            enable_range_selection: !just_you && !browser.is_mobile && !ONE_COL()
+            draw_base: true
+            draw_base_labels: !slider_regions
+
+          Slider 
+            slider_key: "homepage_slider#{proposal.key}"
+            base_height: 0
+            draw_handle: !!draw_slider
+            width: col_sizes.second
+            polarized: true
+            regions: slider_regions
+            respond_to_click: false
+            base_color: 'transparent'
+            handle: slider_handle.triangley
+            handle_height: 18
+            handle_width: 21
+            handle_style: 
+              opacity: if just_you && !browser.is_mobile && @local.hover_proposal != proposal.key && !@local.slider_has_focus then 0 else 1             
+            offset: true
+            ticks: 
+              increment: .5
+              height: 2
+
+            handle_props:
+              use_face: false
+            label: translator
+                      id: "sliders.instructions"
+                      negative_pole: get_slider_label("slider_pole_labels.oppose", proposal, subdomain)
+                      positive_pole: get_slider_label("slider_pole_labels.support", proposal, subdomain)
+                      "Express your opinion on a slider from {negative_pole} to {positive_pole}"
+            onBlur: (e) => @local.slider_has_focus = false; save @local
+            onFocus: (e) => @local.slider_has_focus = true; save @local 
+
+            readable_text: slider_interpretation
+            onMouseUpCallback: (e) =>
+              # We save the slider's position to the server only on mouse-up.
+              # This way you can drag it with good performance.
+              if your_opinion.stance != slider.value
+
+                # save distance from top that the proposal is at, so we can 
+                # maintain that position after the save potentially triggers 
+                # a re-sort. 
+                prev_offset = ReactDOM.findDOMNode(@).offsetTop
+                prev_scroll = window.scrollY
+
+                your_opinion.stance = slider.value
+                your_opinion.published = true
+
+                your_opinion.key ?= "/new/opinion"
+                save your_opinion, ->
+                  show_flash(translator('engage.flashes.opinion_saved', "Your opinion has been saved"))
+
+                window.writeToLog 
+                  what: 'move slider'
+                  details: {proposal: proposal.key, stance: slider.value}
+                @local.slid = 1000
+
+                update = fetch('homepage_you_updated_proposal')
+                update.dummy = !update.dummy
+                save update
+
+              mouse_over_element = closest e.target, (node) => 
+                node == ReactDOM.findDOMNode(@)
+
+              if @local.hover_proposal == proposal.key && !mouse_over_element
+                @local.hover_proposal = null 
+                save @local
+      
+        # little score feedback
+        if show_proposal_scores        
+          DIV 
+            className: 'proposal_scores'
+
+            HistogramScores
+              proposal: proposal.key
 
 
 

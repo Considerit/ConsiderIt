@@ -191,8 +191,6 @@ ListItems = ReactiveComponent
 
 
 
-    RenderListItem = customization('RenderListItem') or CollapsedProposal
-
     if @props.combines_these_lists
       hues = getNiceRandomHues @props.combines_these_lists.length
       colors = {}
@@ -246,28 +244,32 @@ ListItems = ReactiveComponent
           list_key: list_key
           combines_these_lists: @props.combines_these_lists  
 
-    DIV null, 
+    proposals_to_render = (p for p,idx in proposals when idx < @props.show_first_num_items && passes_running_timelapse_simulation(p.created_at))
 
-      UL null, 
-        for proposal,idx in proposals
-          continue if idx > @props.show_first_num_items - 1
+    sorted_key = (p.key for p in proposals_to_render).join('###')
 
-          continue if !passes_running_timelapse_simulation(proposal.created_at)
+    DIV null,
 
-          RenderListItem
-            key: "collapsed#{proposal.key}"
-            proposal: proposal.key
-            show_category: !!@props.combines_these_lists
-            category_color: if @props.combines_these_lists then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], .9, .8)
-            focused_on: @props.proposal_focused_on && @props.proposal_focused_on.key == proposal.key
+      FLIPPER
+        flipKey: sorted_key
+
+        UL null, 
+          for proposal,idx in proposals_to_render
+
+            CollapsedProposal
+              key: "collapsed#{proposal.key}"
+              proposal: proposal.key
+              show_category: !!@props.combines_these_lists
+              category_color: if @props.combines_these_lists then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], .9, .8)
+              focused_on: @props.proposal_focused_on && @props.proposal_focused_on.key == proposal.key
 
 
-        if proposals.length > @props.show_first_num_items 
-          show_all_button()
+          if proposals.length > @props.show_first_num_items 
+            show_all_button()
 
 
-        if @props.show_new_button
-          render_new()
+          if @props.show_new_button
+            render_new()
 
 
 

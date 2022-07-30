@@ -91,12 +91,18 @@
       - if Rails.env.development?
         %script{:src => "#{@vendor}/vendor/react-18.2.js", :type => 'text/javascript'}
         %script{:src => "#{@vendor}/vendor/react-dom-18.2.js", :type => 'text/javascript'}
+        %script{:src => "#{@vendor}/vendor/prop-types.js", :type => 'text/javascript'}
+        %script{:src => "#{@vendor}/vendor/react-flip-toolkit-6.6.5.js", :type => 'text/javascript'}
+
       - else 
         %script{:src => "#{@vendor}/vendor/react-18.2.min.js", :type => 'text/javascript'}
         %script{:src => "#{@vendor}/vendor/react-dom-18.2.min.js", :type => 'text/javascript'}
+        %script{:src => "#{@vendor}/vendor/prop-types.min.js", :type => 'text/javascript'}
+        %script{:src => "#{@vendor}/vendor/react-flip-toolkit-6.6.5.min.js", :type => 'text/javascript'}
 
       %script{:src => "#{@vendor}/vendor/create-react-class.min.js", :type => 'text/javascript'}
       %script{:src => "#{@vendor}/vendor/react-dom-factories-1.0.2.js", :type => 'text/javascript'}
+
 
       %script{:src => "#{@vendor}/vendor/underscore.js", :type => 'text/javascript'}
       %script{:src => "#{@vendor}/vendor/jquery.js", :type => 'text/javascript'}

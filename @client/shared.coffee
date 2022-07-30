@@ -93,7 +93,16 @@ window.back_to_homepage_button = (style, text) ->
 # Make the DIV, SPAN, etc.
 for el of ReactDOMFactories
   window[el.toUpperCase()] = React.createFactory(el) # ReactDOMFactories[el]
-window['STRICTMODE'] = React.createFactory(React.StrictMode)
+
+USE_STRICT_MODE = false
+if USE_STRICT_MODE
+  window['STRICTMODE'] = React.createFactory(React.StrictMode)
+
+if ReactFlipToolkit?
+  window.FLIPPER = React.createFactory(ReactFlipToolkit.Flipper)
+  window.FLIPPED = React.createFactory(ReactFlipToolkit.Flipped)
+  window.EXITCONTAINER = React.createFactory(ReactFlipToolkit.ExitContainer)
+
 
 window.TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
 

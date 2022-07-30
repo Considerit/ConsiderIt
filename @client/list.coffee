@@ -413,7 +413,7 @@ window.ListHeader = ReactiveComponent
           fresh: @props.fresh
           combines_these_lists: @props.combines_these_lists
 
-      if @props.proposals_count > 0 && !customization('questionaire', list_key, subdomain) && !is_collapsed && !customization('list_no_filters', list_key, subdomain)
+      if @props.proposals_count > 0 && !is_collapsed && !customization('list_no_filters', list_key, subdomain)
         list_actions
           list: @props.list
           add_new: !@props.combines_these_lists && customization('list_permit_new_items', list_key, subdomain) && !is_collapsed && @props.proposals_count > 4

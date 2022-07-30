@@ -46,7 +46,7 @@ window.InitializeProposalRoles = (proposal) ->
   subdomain = fetch '/subdomain'
 
   proposal.roles =
-    editor: proposal.roles.editor or ["/user/#{current_user.id}"]
+    editor: proposal.roles?.editor or ["/user/#{current_user.id}"]
     
   # Commented out b/c it is better to let the server fill these in dynamically 
   # so they're easier to modify through the forum settings. We're currently 

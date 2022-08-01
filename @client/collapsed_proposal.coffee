@@ -332,29 +332,38 @@ window.CollapsedProposal = ReactiveComponent
             parent.removeChild div
 
 
-
-            DIV
-              className: 'description_on_homepage'
+            DIV 
               style: 
-                maxHeight: max_desc_height
+                position: 'relative' 
 
-              onClick: (e) => 
-                if e.target.tagName not in ["A", "BUTTON"]
-                  loadPage proposal_url(proposal, just_you && current_user.logged_in)                
-                  window.scrollTo(0, 0)
+              DIV
+                className: 'description_on_homepage'
+                style: 
+                  maxHeight: max_desc_height
 
-              dangerouslySetInnerHTML: __html: desc  
+                onClick: (e) => 
+                  if e.target.tagName not in ["A", "BUTTON"]
+                    loadPage proposal_url(proposal, just_you && current_user.logged_in)                
+                    window.scrollTo(0, 0)
+
+                dangerouslySetInnerHTML: __html: desc 
+
+              if exceeds_height
+                DIV 
+                  style: 
+                    background: 'linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 34%, rgba(255,255,255,0) 100%)'
+                    bottom: 0
+                    height: 18
+                    width: '100%'
+                    position: 'absolute'
+                    pointerEvents: 'none'
+
 
 
 
 
           DIV 
             className: 'metadata monospaced'
-            style: if showing_description
-                    background: 'linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 60%, rgba(255,255,255,0) 100%)'
-                    marginTop: if exceeds_height then -26 else -12
-                    paddingTop: if exceeds_height then 36 else 12
-                    position: 'relative'
 
 
             if customization('proposal_meta_data', null, subdomain)?

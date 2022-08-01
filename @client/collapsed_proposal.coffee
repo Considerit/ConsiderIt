@@ -36,10 +36,12 @@ styles += """
   [data-widget="CollapsedProposal"] .description_on_homepage {
     font-size: 14px;
     color: #444;
-    margin-bottom: 4px;  
+    padding-bottom: 10px;  
     text-decoration: none;
     font-weight: 400;
-    display: inline-block;  
+    cursor: pointer;
+    overflow-y: hidden;
+    padding-top: 3px;
   }
 
 
@@ -194,6 +196,8 @@ window.CollapsedProposal = ReactiveComponent
       else 
         translator "engage.slider_feedback.neutral", "Neutral"
 
+    showing_description = customization('proposal_show_description_on_homepage', null, subdomain)
+
     LI
       key: proposal.key
       className: "#{if can_edit then 'editable' else ''}"
@@ -307,30 +311,38 @@ window.CollapsedProposal = ReactiveComponent
 
             proposal.name
 
-          if customization('proposal_show_description_on_homepage', null, subdomain)
+          if showing_description
             len = customization('proposal_show_description_on_homepage', null, subdomain)
-            if len == true 
+            if len == true || len == 'true'
               len = 700
               
-            if proposal.description?.length > len
-              div = document.createElement("div")
-              div.innerHTML = proposal.description.substring(0,len)
-              desc = div.textContent or div.innerText or ""
-              desc += " (...)" 
-            else 
-              desc = proposal.description
+            desc = proposal.description
+
+            max_desc_height = Math.floor 20 * len / 70
+
+            # predict height of rendered description
+            div = document.createElement("div")
+            div.style.fontSize = "14px"
+            div.style.width = "#{col_sizes.first}px"
+            div.style.visibility = 'hidden'
+            div.innerHTML = proposal.description
+            parent = document.getElementById('content')
+            parent.appendChild div 
+            exceeds_height = max_desc_height < div.clientHeight            
+            parent.removeChild div
 
 
 
             DIV
+              className: 'description_on_homepage'
               style: 
-                cursor: 'pointer'
+                maxHeight: max_desc_height
+
               onClick: (e) => 
                 if e.target.tagName not in ["A", "BUTTON"]
                   loadPage proposal_url(proposal, just_you && current_user.logged_in)                
                   window.scrollTo(0, 0)
 
-              className: 'description_on_homepage'
               dangerouslySetInnerHTML: __html: desc  
 
 
@@ -338,6 +350,12 @@ window.CollapsedProposal = ReactiveComponent
 
           DIV 
             className: 'metadata monospaced'
+            style: if showing_description
+                    background: 'linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 60%, rgba(255,255,255,0) 100%)'
+                    marginTop: if exceeds_height then -26 else -12
+                    paddingTop: if exceeds_height then 36 else 12
+                    position: 'relative'
+
 
             if customization('proposal_meta_data', null, subdomain)?
               customization('proposal_meta_data', null, subdomain)(proposal)

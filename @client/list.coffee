@@ -160,7 +160,6 @@ styles += """
     text-align: center;
     border: none;
     font-size: 22px;
-    z-index: 10;
     color: #446ae3;
     padding-top: 96px;
     margin-top: 12px;

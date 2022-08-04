@@ -905,7 +905,7 @@ DecisionBoard = ReactiveComponent
   transition : -> 
     return if @is_waiting()
 
-    speed = if !Modernizr.csstransitions || !@last_proposal_mode then 0 else TRANSITION_SPEED
+    speed = if !@last_proposal_mode then 0 else TRANSITION_SPEED
     mode = get_proposal_mode()
 
 
@@ -1334,7 +1334,7 @@ PointsList = ReactiveComponent
         display: 'inline-block'
         verticalAlign: 'top'
         width: POINT_WIDTH()
-        minHeight: (if points_for_proposal(proposal).length > 4 && get_proposal_mode() == 'crafting' then jQuery(window).height() else 100)
+        minHeight: (if points_for_proposal(proposal).length > 4 && get_proposal_mode() == 'crafting' then window.innerHeight else 100)
         zIndex: if @columnStandsOut() then 6 else 1
         margin: '38px 18px 0 18px'
         position: 'relative'

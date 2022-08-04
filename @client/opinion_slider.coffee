@@ -184,11 +184,11 @@ window.OpinionSlider = ReactiveComponent
     slider_feedback = 
 
       if !slider.has_moved 
-        TRANSLATE "sliders.slide_prompt", 'Slide Your Overall Opinion'
+        translator "sliders.slide_prompt", 'Slide Your Overall Opinion'
       else if func = labels.slider_feedback or default_feedback
         func slider.value, proposal
       else if TWO_COL() 
-        TRANSLATE "sliders.slide_feedback_short", "Your opinion"
+        translator "sliders.slide_feedback_short", "Your opinion"
       else 
         ''
 
@@ -196,7 +196,7 @@ window.OpinionSlider = ReactiveComponent
 
     feedback_style = 
       pointerEvents: 'none' 
-      fontSize: if TWO_COL() then 22 else 30
+      fontSize: if TWO_COL() then "22px" else "30px"
       fontWeight: if !TWO_COL() then 700
       color: if @props.backgrounded then '#eee' else focus_color()
       textAlign: 'center'

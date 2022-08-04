@@ -179,13 +179,16 @@ window.BrowserLocation = ReactiveComponent
 
         el ||= document.querySelector("[name=\"#{loc.hash}\"]") || document.querySelector("#p#{loc.hash}")
 
+
         if el
           # If there are docked elements, we want to scroll a bit 
           # before the element so that the docked elements don't 
           # obscure the section headings
           docks = fetch('docking_station')
           seek_below = docks.y_stack or 50
-          $(window).scrollTop getCoords(el).top - seek_below
+          
+          window.scrollTo 0, getCoords(el).top - seek_below
+
           el.focus()
           clearInterval int 
       , 100

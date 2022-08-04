@@ -106,7 +106,7 @@ window.CharacterCountTextInput = ReactiveComponent
       ref: 'input' 
       className: class_name
       onChange: =>
-       @local.count = $(ReactDOM.findDOMNode(@)).find('textarea').val().length
+       @local.count = ReactDOM.findDOMNode(@refs.input).value.length
        save(@local)
 
     for prop_to_strip in ['parents', 'count_style', 'focus_on_mount']
@@ -188,14 +188,25 @@ window.WysiwygEditor = ReactiveComponent
       # },
     ]
 
+
+    close_if_nothing_in_menu_focused = =>
+      setTimeout => 
+        if !$$.closest(document.activeElement, "##{id}")
+          wysiwyg_editor = fetch 'wysiwyg_editor'
+          wysiwyg_editor.showing = false
+          save wysiwyg_editor
+      , 0
+
+
     if fetch('/current_user').is_admin || @props.allow_html
       toolbar_items.push 
         className: 'fa fa-code'
         title: 'Directly edit HTML'
         onClick: => @local.edit_code = true; save @local
 
+    id = @props.editor_key.replace(/\//g, '__')
     DIV 
-      id: @props.editor_key
+      id: id
       style: 
         position: 'relative'
 
@@ -244,11 +255,12 @@ window.WysiwygEditor = ReactiveComponent
               onFocus: (e) => 
                 if !@local.focused_toolbar_item && !@local.just_unfocused
 
-                  if !@local.focused_toolbar_item?
+                  if @local.focused_toolbar_item in [undefined, null]
                     @local.focused_toolbar_item = 0 
                     save @local
-
-                  @refs["toolbaritem-#{@local.focused_toolbar_item}"].focus()
+                
+                if @local.focused_toolbar_item not in [undefined, null] 
+                  ReactDOM.findDOMNode(@refs["toolbaritem-#{@local.focused_toolbar_item}"]).focus()
 
               onKeyDown: (e) => 
 
@@ -265,7 +277,8 @@ window.WysiwygEditor = ReactiveComponent
                       i = 0
                   @local.focused_toolbar_item = i
                   save @local 
-                  @refs["toolbaritem-#{i}"].focus()
+
+                  ReactDOM.findDOMNode(@refs["toolbaritem-#{i}"]).focus()
                   e.preventDefault()
 
               for button, idx in toolbar_items
@@ -304,14 +317,7 @@ window.WysiwygEditor = ReactiveComponent
                       , 0
                       save @local 
 
-                      # if the focus isn't still on an element inside of this menu, 
-                      # then we should close the menu                
-                      setTimeout => 
-                        if $(document.activeElement).closest(ReactDOM.findDOMNode(@)).length == 0
-                          wysiwyg_editor = fetch 'wysiwyg_editor'
-                          wysiwyg_editor.showing = false
-                          save wysiwyg_editor
-                      , 0
+                      close_if_nothing_in_menu_focused()
 
           DIV 
             style: _.defaults {}, @props.container_style, 
@@ -320,6 +326,7 @@ window.WysiwygEditor = ReactiveComponent
           
             DIV 
               id: 'editor'
+              ref: 'editor'
               dangerouslySetInnerHTML:{__html: @initial_html}
               onFocus: (e) => 
                 # Show the toolbar on focus
@@ -332,15 +339,7 @@ window.WysiwygEditor = ReactiveComponent
                 wysiwyg_editor.showing = @props.editor_key
                 save wysiwyg_editor
 
-              onBlur: => 
-                # if the focus isn't still on an element inside of this menu, 
-                # then we should close the menu                
-                setTimeout => 
-                  if $(document.activeElement).closest(ReactDOM.findDOMNode(@)).length == 0
-                    wysiwyg_editor = fetch 'wysiwyg_editor'
-                    wysiwyg_editor.showing = false
-                    save wysiwyg_editor
-                , 0
+              onBlur: close_if_nothing_in_menu_focused
 
               style: @props.style
 
@@ -353,10 +352,10 @@ window.WysiwygEditor = ReactiveComponent
       ReactDOM.findDOMNode(@).querySelector(".ql-editor").innerHTML
 
     # Attach the Quill wysiwyg editor
-    @editor = new Quill $(ReactDOM.findDOMNode(@)).find('#editor')[0],    
+    @editor = new Quill @refs.editor,
       modules: 
         toolbar: 
-          container: $(ReactDOM.findDOMNode(@)).find('#toolbar')[0]
+          container: @refs.toolbar
       styles: true #if/when we want to define all styles, set to false
       placeholder: @props.placeholder
 

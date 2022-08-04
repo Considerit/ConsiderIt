@@ -233,7 +233,9 @@ window.Histogram = ReactiveComponent
 
     histo_height = @props.height + REGION_SELECTION_VERTICAL_PADDING
     
+    @id = "histo-#{@local.key.replace(/\//g, '__')}"
     histogram_props = 
+      id: @id
       key: 'histogram'
       tabIndex: if !@props.backgrounded then 0
 
@@ -274,7 +276,8 @@ window.Histogram = ReactiveComponent
         setTimeout => 
           # if the focus isn't still on this histogram, 
           # then we should reset its navigation
-          if @local.navigating_inside && $(document.activeElement).closest(ReactDOM.findDOMNode(@)).length == 0
+
+          if @local.navigating_inside && !$$.closest(document.activeElement, "##{@id}")
             @local.navigating_inside = false; save @local
         , 0
 
@@ -733,7 +736,7 @@ window.styles += """
 
 
 
-$('body').on 'keydown', '.avatar[data-opinion]', (e) ->
+$$.add_delegated_listener document.body, 'keydown', '.avatar[data-opinion]', (e) ->
   if e.which == 13 || e.which == 32 # ENTER or SPACE 
     user_opinion = fetch e.target.getAttribute 'data-opinion'
     select_single_opinion user_opinion, 'keydown'

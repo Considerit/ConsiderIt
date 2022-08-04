@@ -407,7 +407,7 @@ ModerateItem = ReactiveComponent
             SELECT
               style: 
                 fontSize: 18
-              value: proposal.cluster
+              value: proposal.cluster or ''
               ref: 'category'
               onChange: (e) =>
                 proposal.cluster = e.target.value
@@ -708,15 +708,16 @@ DirectMessage = ReactiveComponent
         'cancel'
 
   submitMessage : -> 
-    # TODO: convert to using arest create method; waiting on full dash porting
-    $el = $(ReactDOM.findDOMNode(@))
-    attrs = 
-      recipient: @props.to
-      subject: $el.find('.message_subject').val()
-      body: $el.find('.message_body').val()
-      sender_mask: @props.sender_mask or fetch('/current_user').name
-      authenticity_token: fetch('/current_user').csrf
+    el = ReactDOM.findDOMNode(@)
 
-    $.ajax '/dashboard/message', data: attrs, type: 'POST', success: => 
+    new_message = 
+      key: '/dashboard/message'
+      recipient: @props.to
+      subject: el.querySelector('#message_subject').value
+      body: el.querySelector('#message_body').value 
+      sender_mask: @props.sender_mask or fetch('/current_user').name
+      # authenticity_token: fetch('/current_user').csrf
+
+    save new_message, =>
       @props.parent.messaging = null
       save @props.parent

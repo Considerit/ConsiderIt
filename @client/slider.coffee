@@ -352,14 +352,15 @@ window.Slider = ReactiveComponent
     save slider
 
     # adjust for starting location - offset
-    @local.starting_adjustment = (parseInt($(e.currentTarget)[0].style.left, 10) || 0) - \
+    @local.starting_adjustment = (parseInt(e.currentTarget.style.left, 10) || 0) - \
                                  (e.clientX or e.touches[0].clientX)
     save @local
 
     props.onMouseDownCallback(e) if props.onMouseDownCallback
 
-    $(window).on "mousemove.slider", @handleMouseMove
-    $(window).on "mouseup.slider", @handleMouseUp
+
+    document.addEventListener "mousemove", @handleMouseMove
+    document.addEventListener "mouseup", @handleMouseUp
 
   # While sliding
   handleMouseMove: (e) ->
@@ -410,7 +411,8 @@ window.Slider = ReactiveComponent
 
     props.onMouseUpCallback(e) if props.onMouseUpCallback
 
-    $(window).off ".slider" # Remove event handlers
+    document.removeEventListener "mousemove", @handleMouseMove
+    document.removeEventListener "mouseup", @handleMouseUp
 
   handleMouseClick: (e) -> 
     props = @full_props()
@@ -419,7 +421,7 @@ window.Slider = ReactiveComponent
 
       clientX = e.clientX or e.touches[0].clientX
 
-      val = (clientX - $(@refs.base).offset().left) / props.width
+      val = (clientX - $$.offset(@refs.base).left) / props.width
       if val < 0 
         val = 0
       if val > 1

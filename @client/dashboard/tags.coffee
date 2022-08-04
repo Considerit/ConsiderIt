@@ -86,9 +86,9 @@ UserTags = ReactiveComponent
           autoComplete: 'off'
           'aria-label': "Name or email..."
           placeholder: "Name or email..."
-          value: if selected_user then selected_user.name
-          onChange: => 
-            @local.filtered = $(ReactDOM.findDOMNode(@)).find('#filter').val()?.toLowerCase()
+          value: if selected_user then selected_user.name else ""
+          onChange: (ev) => 
+            @local.filtered = ev.target.value?.toLowerCase()
             change_selected_user null 
             save(@local)
           onKeyPress: (e) => 
@@ -101,12 +101,16 @@ UserTags = ReactiveComponent
             @local.selecting = true
             save(@local)
             e.stopPropagation()
-            $(document).on 'click.tags', (e) =>
+            e.preventDefault()
+
+            @handle_click ?= (e) =>
               if e.target.id != 'filter'
                 @local.selecting = false
                 save @local
-                $(document).off('click.tags')
-            return false
+                document.removeEventListener 'click', @handle_click
+
+            document.addEventListener 'click', @handle_click
+
 
       # Dropdown, autocomplete menu for adding existing users
       if @local.selecting

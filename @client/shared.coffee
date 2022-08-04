@@ -469,14 +469,22 @@ window.widthWhenRendered = (str, style) ->
   # This DOM manipulation is relatively expensive, so cache results
   key = JSON.stringify _.extend({str: str}, style)
   if key not of width_cache
-    _.defaults style, 
-      display: 'inline-block'
-    $el = $("<span id='width_test'><span>#{str}</span></span>").css(style)
-    $('#content').append($el)
-    width = $('#width_test span').width()
-    $('#width_test').remove()
+    style.display ?= 'inline-block'
+
+    el = document.createElement 'span'
+    el.id = "width_test"
+    el.style.setProperty 'visibility', 'hidden'
+    el.innerHTML = "<span>#{str}</span>"
+
+    parent = document.getElementById('content')
+    parent.appendChild el
+    $$.setStyles "#width_test", style
+    width = $$.width el
+    parent.removeChild(el)
+
     width_cache[key] = width
   width_cache[key]
+
 
 
 height_cache = {}
@@ -484,13 +492,23 @@ window.heightWhenRendered = (str, style) ->
   # This DOM manipulation is relatively expensive, so cache results
   key = JSON.stringify _.extend({str: str}, style)
   if key not of height_cache
-    $el = $("<div id='height_test'>#{str}</div>").css(style)
-    $('#content').append($el)
-    height = $('#height_test').height()
-    $('#height_test').remove()
-    height_cache[key] = height
+    el = document.createElement 'div'
+    el.id = "height_test"
+    el.style.setProperty 'visibility', 'hidden'
+    el.innerHTML = "<span>#{str}</span>"
 
+    parent = document.getElementById('content')
+    parent.appendChild el
+    $$.setStyles "#height_test", style
+    height = $$.height el
+    parent.removeChild(el)
+
+    height_cache[key] = height
   height_cache[key]
+
+
+
+
 
 # Computes the width/height of some text given some styles
 size_cache = {}

@@ -492,7 +492,7 @@ window.ModalNewList = ReactiveComponent
 
 
                       setTimeout =>
-                        $(@refs.slider_config).ensureInView()
+                        $$.ensureInView @refs.slider_config
 
                         if option.oppose == ''
                           moveCursorToEnd @refs.oppose_slider

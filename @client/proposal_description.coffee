@@ -236,6 +236,7 @@ window.ProposalDescription = ReactiveComponent
 
 
           DIV 
+            ref: 'wysiwyg_text'
             className: 'wysiwyg_text'
             style:
               maxHeight: if @local.description_collapsed then @max_description_height
@@ -341,14 +342,14 @@ window.ProposalDescription = ReactiveComponent
 
 
 
-  componentDidMount : ->
+  collapse_description_if_needed : ->
     if (fetch(@props.proposal).description && @max_description_height && !@local.description_collapsed? \
-        && $('.wysiwyg_text').height() > @max_description_height)
+        && $$.height(@refs.wysiwyg_text) > @max_description_height)
       @local.description_collapsed = true 
       save(@local)
 
+  componentDidMount: -> 
+    @collapse_description_if_needed()
+    
   componentDidUpdate : ->
-    if (fetch(@props.proposal).description && @max_description_height && !@local.description_collapsed? \
-        && $('.wysiwyg_text').height() > @max_description_height)
-      @local.description_collapsed = true
-      save(@local)
+    @collapse_description_if_needed()

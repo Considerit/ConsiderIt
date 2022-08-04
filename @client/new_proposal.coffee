@@ -56,9 +56,6 @@ window.NewProposal = ReactiveComponent
     
           if permitted
             list_state.adding_new_proposal = list_key; save(list_state)
-            # setTimeout =>
-            #   $("##{list_name}-name").focus()
-            # , 0
           else 
             e.stopPropagation()
             reset_key 'auth', 
@@ -330,7 +327,7 @@ window.NewProposal = ReactiveComponent
 
                     show_flash("Your response has been added")
 
-                    ensure_in_viewport_when_appears("[data-name=\"#{slugify(proposal.name)}\"]")
+                    $$.ensure_in_viewport_when_appears "[data-name=\"#{slugify(proposal.name)}\"]"
                       
                     # delete loc.query_params.new_proposal
                     # save loc            

@@ -21,8 +21,8 @@ window.EditPoint = ReactiveComponent
         padding: '4px 6px'
 
       # full page mode if we're on mobile      
-      parent = $("#proposal-#{proposal.id}")
-      parent_offset = if parent.length > 0 then parent.offset().top else 0
+      parent = document.getElementById "proposal-#{proposal.id}"
+      parent_offset = if parent then $$.offset(parent).top else 0
       style = 
         position: 'absolute'
         top: 0
@@ -63,6 +63,7 @@ window.EditPoint = ReactiveComponent
 
         CharacterCountTextInput 
           id: 'nutshell'
+          ref: 'nutshell'
           maxLength: 180
           name: 'nutshell'
           pattern: '^.{3,}'
@@ -96,7 +97,7 @@ window.EditPoint = ReactiveComponent
           style: textarea_style
           onHeightChange: => 
             s = fetch('reasons_height_adjustment')
-            s.edit_point_height = $(ReactDOM.findDOMNode(@)).height()            
+            s.edit_point_height = $$.height ReactDOM.findDOMNode(@)
             save s
 
       if @local.errors?.length > 0
@@ -129,6 +130,7 @@ window.EditPoint = ReactiveComponent
         else
           BUTTON 
             className: 'btn'
+            ref: 'submit_point'
             'data-action': 'submit-point'
             onClick: @savePoint
             style: 
@@ -187,12 +189,15 @@ window.EditPoint = ReactiveComponent
   componentDidMount : ->
     proposal = fetch @props.proposal
     if proposal.active 
-      $el = $(ReactDOM.findDOMNode(@))
-      $el.find('#nutshell').focus() if !browser.is_mobile # iOS messes this up
-      $el.find('[data-action="submit-point"]').ensureInView {scroll: false, position: 'bottom'}
+
+      ReactDOM.findDOMNode(@refs.nutshell).focus() if !browser.is_mobile # iOS messes this up
+      
+      $$.ensureInView ReactDOM.findDOMNode(@refs.submit_point),
+        scroll: false
+        position: 'bottom'
 
       s = fetch('reasons_height_adjustment')
-      s.edit_point_height = $el.height()  
+      s.edit_point_height = $$.height ReactDOM.findDOMNode(@)
       save s
 
   componentWillUnmount : -> 
@@ -309,11 +314,14 @@ window.EditPoint = ReactiveComponent
     save your_points
 
   savePoint : (ev) ->
-    $form = $(ReactDOM.findDOMNode(@))
+
     proposal = fetch @props.proposal
-    nutshell = $form.find('#nutshell').val()
-    text = $form.find('#text').val()
-    hide_name = !$form.find("#sign_name-#{@props.valence}").is(':checked')
+  
+    form = ReactDOM.findDOMNode(@)
+
+    nutshell = form.querySelector('#nutshell').value
+    text = form.querySelector('#text').value
+    hide_name = !@local.sign_name
 
     if !@props.fresh
       # If we're updating an existing point, we just have to update

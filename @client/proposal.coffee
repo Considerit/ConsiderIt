@@ -41,9 +41,12 @@ window.updateProposalMode = (proposal_mode, triggered_by) ->
 
   save loc
 
-  if proposal_mode == 'results' && $('.histogram').length > 0
-    $('.histogram').ensureInView
-      offset_buffer: -50
+  histo_el = document.querySelector('[data-widget="Proposal"] .histogram')
+
+  if proposal_mode == 'results' && histo_el
+    
+    $$.ensureInView histo_el,
+      offset_buffer: 0
 
   window.writeToLog
     what: 'toggle proposal mode'
@@ -143,6 +146,7 @@ window.Proposal = ReactiveComponent
     # board, new point). We need to set a minheight that is large enough to 
     # encompass these elements. 
     adjustments = fetch('reasons_height_adjustment')
+
     minheight = 100 + (adjustments.opinion_region_height || 0)
     if get_selected_point()
       minheight += adjustments.open_point_height
@@ -333,6 +337,7 @@ window.Proposal = ReactiveComponent
                 top: -8
                 overflowY: if !show_all_points then 'hidden'  
                 overflowX: if !show_all_points then 'auto' 
+                minHeight: 440
 
               #reasons
               SECTION 
@@ -368,7 +373,8 @@ window.Proposal = ReactiveComponent
                     start: 0 # -24
 
                     stop : -> 
-                      $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
+                      reasons_region = document.querySelector('.reasons_region')
+                      $$.offset( reasons_region  ).top + reasons_region.offsetHeight - 20
 
                     style: 
                       position: 'absolute'
@@ -450,7 +456,7 @@ window.Proposal = ReactiveComponent
                     "Show All Reasons"
 
 
-      if mode == 'results' # && !embedded_demo()
+      if true || mode == 'results' # && !embedded_demo()
         w = HOMEPAGE_WIDTH() + LIST_PADDING() * 2
 
         DIV 
@@ -657,7 +663,7 @@ DecisionBoard = ReactiveComponent
         transform: "translate(0, 10px)"
         minHeight: if are_points_in_wings then 275 else 170
         width: DECISION_BOARD_WIDTH()
-        borderBottom: "#{decision_board_style.borderWidth}px dashed #{focus_color()}"
+        # borderBottom: "#{decision_board_style.borderWidth}px dashed #{focus_color()}"
         backgroundColor: 'white'
         
     if get_proposal_mode() == 'results'
@@ -680,6 +686,50 @@ DecisionBoard = ReactiveComponent
       className:'opinion_region'
       style:
         width: DECISION_BOARD_WIDTH()
+
+      onDrop : (ev) =>
+        point_key = ev.dataTransfer.getData('text/plain')
+
+        return if !point_key
+        point = fetch point_key
+
+        your_opinion = proposal.your_opinion
+
+        if !your_opinion.point_inclusions || point.key not in your_opinion.point_inclusions
+          your_opinion.key ?= "/new/opinion"
+          your_opinion.published = true
+          your_opinion.point_inclusions ?= []
+
+          your_opinion.point_inclusions.push point.key
+
+          save your_opinion
+
+          window.writeToLog
+            what: 'included point'
+            details: 
+              point: point.id
+
+        db = fetch('decision_board')
+        db.user_hovering_on_drop_target = false
+        save db
+
+      onDragLeave : (ev) => 
+        db = fetch('decision_board')
+        if db.user_hovering_on_drop_target
+          db.user_hovering_on_drop_target = false
+          save db
+
+      onDragOver : (ev) => 
+        db = fetch('decision_board')
+
+        if !db.user_hovering_on_drop_target
+          db.user_hovering_on_drop_target = true
+          save db
+
+        ev.dataTransfer.dropEffect = "move"
+        ev.preventDefault() # makes it droppable, according to html5 DnD spec
+
+
 
       H3 
         className: 'hidden'
@@ -709,7 +759,7 @@ DecisionBoard = ReactiveComponent
 
             if can_opine > 0
               updateProposalMode('crafting', 'give_opinion_button')
-              $('.the_handle')[0].focus()
+              document.querySelector('.the_handle').focus()
             else
               # trigger authentication
               reset_key 'auth',
@@ -717,7 +767,7 @@ DecisionBoard = ReactiveComponent
                 goal: 'To participate, please introduce yourself.'
                 after: =>
                   updateProposalMode('crafting', 'give_opinion_button')
-                  $('.the_handle')[0].focus()
+                  document.querySelector('.the_handle').focus()
 
 
 
@@ -836,58 +886,18 @@ DecisionBoard = ReactiveComponent
 
   componentDidUpdate : ->
     @transition()
-    @makeDroppable()
     @update_reasons_height()
 
   componentDidMount : ->
     @transition()
-    @makeDroppable()
 
   componentWillUnmount: -> 
     @dismounting = true
 
-  makeDroppable: -> 
-    db = fetch('decision_board')
-
-    $el = $(ReactDOM.findDOMNode(@))
-
-    return if $el.is('.ui-droppable')
-
-    proposal = fetch @props.proposal
-
-    $el.droppable
-      accept: ".point_content"
-      drop : (ev, ui) =>
-        if ui.draggable.parent().is('.community_point')
-          your_opinion = proposal.your_opinion
-          your_opinion.key ?= "/new/opinion"
-          your_opinion.published = true
-          your_opinion.point_inclusions ?= []
-          your_opinion.point_inclusions.push(
-            ui.draggable.parent().data('id'))
-          save(your_opinion)
-
-          window.writeToLog
-            what: 'included point'
-            details: 
-              point: ui.draggable.parent().data('id')
-
-          db.user_hovering_on_drop_target = false
-          save db
-
-      out : (ev, ui) => 
-        if ui.draggable.parent().is('.community_point')
-          db.user_hovering_on_drop_target = false
-          save db
-
-      over : (ev, ui) => 
-        if ui.draggable.parent().is('.community_point')
-          db.user_hovering_on_drop_target = true
-          save db
 
   update_reasons_height: -> 
     s = fetch('reasons_height_adjustment')
-    h = $(ReactDOM.findDOMNode(@)).height()
+    h = $$.height(ReactDOM.findDOMNode(@))
     if h != s.opinion_region_height
       s.opinion_region_height = h
       save s
@@ -900,20 +910,21 @@ DecisionBoard = ReactiveComponent
 
 
     perform = (transitions) => 
-      for own k,v of transitions
-        $(ReactDOM.findDOMNode(@)).find(k).css(v)
+      for own selector,styles of transitions
+        $$.setStyles selector, styles
+
 
     initial_state = 
-      '.give_opinion_button':
+      'section.opinion_region .give_opinion_button':
         visibility: 'hidden'
-      '.your_points, .save_opinion_button, .below_save': 
+      'section.opinion_region .your_points, section.opinion_region .save_opinion_button, section.opinion_region .below_save': 
         display: 'none'
 
     final_state = JSON.parse JSON.stringify initial_state
     if mode == 'results'
-      final_state['.give_opinion_button'].visibility = ''
+      final_state['section.opinion_region .give_opinion_button'].visibility = ''
     else
-      final_state['.your_points, .save_opinion_button, .below_save'].display = ''
+      final_state['section.opinion_region .your_points, section.opinion_region .save_opinion_button, section.opinion_region .below_save'].display = ''
 
     
 
@@ -1052,7 +1063,7 @@ GroupSelectionRegion = ReactiveComponent
         avatar_height = avatar_in_histo.offsetHeight
 
         name_style = 
-          fontSize: 30
+          fontSize: "30px"
           fontWeight: 600
 
         user = fetch(fetch(single_opinion_selected.opinion).user)
@@ -1176,8 +1187,8 @@ PointsList = ReactiveComponent
     if @props.rendered_as == 'community_point'
       header_prefix = if mode == 'results' then 'top' else "other"
       header_style = 
-        width: POINT_WIDTH()
-        fontSize: 30       
+        width: "#{POINT_WIDTH()}px"
+        fontSize: "30px"
         fontWeight: 400 
         position: 'relative'
         left: if @props.valence == 'cons' then -20 else 20
@@ -1189,10 +1200,10 @@ PointsList = ReactiveComponent
     else
       header_prefix = 'your' 
       header_style = 
-        width: POINT_WIDTH()
         fontWeight: 700
         color: focus_color()
-        fontSize: 30
+        width: "#{POINT_WIDTH()}px"
+        fontSize: "30px"
       wrapper = @drawYourPoints
 
 
@@ -1228,7 +1239,7 @@ PointsList = ReactiveComponent
 
       HEADING 
         key: 'point_list_heading'
-        id: @local.key.replace('/','-')
+        id: @local.key.replace(/\//g,'-')
         className: 'points_heading_label'
         style: _.extend header_style,
           textAlign: 'center'
@@ -1240,7 +1251,7 @@ PointsList = ReactiveComponent
 
       UL 
         key: 'points_list'
-        'aria-labelledby': @local.key.replace('/','-')
+        'aria-labelledby': @local.key.replace(/\//g,'-')
         if points.length > 0 || @props.rendered_as == 'decision_board_point'
           for point in points
             continue if !passes_running_timelapse_simulation(point.created_at)
@@ -1340,7 +1351,7 @@ PointsList = ReactiveComponent
           onClick: (e) => 
             e.stopPropagation()
             document.activeElement?.blur()
-            $("[name='#{@props.valence}_on_decision_board']").focus()
+            document.querySelector("[name='#{@props.valence}_on_decision_board']").focus()
 
           "Skip to Your points."
         A key: 'anchor', name: "#{@props.valence}_by_community"]
@@ -1420,7 +1431,7 @@ PointsList = ReactiveComponent
               onClick: (e) => 
                 e.stopPropagation()
                 document.activeElement?.blur()
-                $("[name='#{@props.valence}_by_community']").focus()
+                document.querySelector("[name='#{@props.valence}_by_community']").focus()
 
               "Skip to #{noun} points by others to vote on important ones."
 
@@ -1553,7 +1564,7 @@ PointsList = ReactiveComponent
     w = width
     padding_x = 18
     padding_y = 12
-    text_height = heightWhenRendered(text, {'font-size': POINT_FONT_SIZE(), 'width': w - 2 * padding_x})
+    text_height = heightWhenRendered(text, {fontSize: "#{POINT_FONT_SIZE()}px", width: "#{w - 2 * padding_x}px"})
     stroke_width = 1
     h = Math.max text_height + 2 * padding_y, 85
     s_w = 8

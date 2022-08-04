@@ -260,8 +260,13 @@ window.Discussion = ReactiveComponent
   setHeight : -> 
     s = fetch('reasons_height_adjustment')
 
-    dist_from_parent = $(ReactDOM.findDOMNode(@)).offset().top - $('.reasons_region').offset().top
-    open_point_height = $(ReactDOM.findDOMNode(@)).height() + dist_from_parent
+    el = ReactDOM.findDOMNode(@)
+
+    dist_from_parent = $$.offset(el).top - $$.offset(document.querySelector('.reasons_region')).top
+    open_point_height = $$.height(el) + dist_from_parent
     if s.open_point_height != open_point_height
       s.open_point_height = open_point_height
       save s
+
+
+

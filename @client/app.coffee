@@ -108,20 +108,19 @@ About = ReactiveComponent
   componentDidUpdate : -> @handleContent()
 
   handleContent : -> 
-    $el = $(ReactDOM.findDOMNode(@))
+    el = ReactDOM.findDOMNode(@)
 
     if @local.embed_html_directly
       # have to use appendChild rather than dangerouslysetinnerhtml
       # because scripts in the about page html won't get executed
       # when using dangerouslysetinnerhtml
       if @local.html
-        $el.find('.embedded_about_html').html @local.html
+        @refs.embedded_about_html.innerHTML = @local.html
 
     else
       # REACT iframes don't support onLoad, so we need to figure out when 
       #               to check the height of the loaded content ourselves      
-      $el.prop('tagName').toLowerCase() == 'iframe'
-      iframe = $el[0]
+      iframe = el
       _.delay ->
         try 
           iframe.height = iframe.contentWindow.document.body.scrollHeight + "px"
@@ -149,7 +148,9 @@ About = ReactiveComponent
           width: CONTENT_WIDTH()
           style: {display: 'block', margin: 'auto'}
       else
-        DIV className: 'embedded_about_html'
+        DIV
+          ref: 'embedded_about_html'
+          className: 'embedded_about_html'
 
 
 

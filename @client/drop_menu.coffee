@@ -126,7 +126,9 @@ window.DropMenu = ReactiveComponent
       @props.close_callback?()
 
     # wrapper
+    id = "drop-menu-#{@local.key.replace(/\//g, '__')}"
     DIV 
+      id: id
       className: "dropmenu-wrapper #{if @props.className then @props.className}"
       ref: 'menu_wrap'
       key: 'dropmenu-wrapper'
@@ -142,7 +144,9 @@ window.DropMenu = ReactiveComponent
         setTimeout => 
           # if the focus isn't still on an element inside of this menu, 
           # then we should close the menu
-          if @refs.menu_wrap && $(document.activeElement).closest(@refs.menu_wrap).length == 0
+
+          el = document.getElementById(id)
+          if el && !$$.closest(document.activeElement, "##{id}")
             @local.show_menu = false; save @local
         , 0
 
@@ -338,7 +342,8 @@ window.DropOverlay = ReactiveComponent
     if @local.show_area
       # if the focus isn't still on an element inside of this menu, 
       # then we should close the menu
-      if @refs.area_wrap && $(e.target).closest(@refs.area_wrap).length == 0
+      el = document.getElementById("overlay-wrap")
+      if el && !$$.closest(e.target, '#overlay-wrap')
         @onClose()
 
   onOpen: ->
@@ -387,6 +392,7 @@ window.DropOverlay = ReactiveComponent
 
     # wrapper
     DIV 
+      id: 'overlay-wrap'
       ref: 'area_wrap'
       key: 'droparea-wrapper'
       style: wrapper_style

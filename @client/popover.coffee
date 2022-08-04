@@ -113,7 +113,7 @@ window.show_popover = (e) ->
 
 
 calc_coords = (el) ->
-  coords = $(el).offset()
+  coords = $$.offset(el)
   coords.width = el.offsetWidth
   coords.height = el.offsetHeight
   coords.left += el.offsetWidth / 2
@@ -124,11 +124,11 @@ calc_coords = (el) ->
 document.addEventListener "mouseover", show_popover
 document.addEventListener "mouseout", hide_popover
 
-$('body').on 'focusin', '[data-popover]', show_popover
-$('body').on 'focusout', '[data-popover]', hide_popover
+$$.add_delegated_listener document.body, 'focusin', '[data-popover]', show_popover
+$$.add_delegated_listener document.body, 'focusout', '[data-popover]', hide_popover
 
+$$.add_delegated_listener document.body, 'click', '[data-popover]', toggle_popover
 
-$('body').on 'click', '[data-popover]', toggle_popover
 
 window.Popover = ReactiveComponent
   displayName: 'Popover'

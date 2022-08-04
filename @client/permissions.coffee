@@ -113,6 +113,9 @@ permit = (action) ->
 
     when 'update opinion'
       proposal = fetch arguments[1]
+      if !arguments[2]
+        return Permission.INSUFFICIENT_PRIVILEGES
+      # console.log arguments[2]
       opinion = fetch arguments[2]
 
       return Permission.INSUFFICIENT_PRIVILEGES if opinion.user != fetch('/current_user').user

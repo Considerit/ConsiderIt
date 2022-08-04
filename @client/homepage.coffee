@@ -150,7 +150,7 @@ window.Homepage = ReactiveComponent
 
   typeset : -> 
     subdomain = fetch('/subdomain')
-    if subdomain.name == 'RANDOM2015' && $('.MathJax').length == 0
+    if subdomain.name == 'RANDOM2015' && !document.querySelector('.MathJax')
       MathJax.Hub.Queue(["Typeset", MathJax.Hub, ".proposal_homepage_name"])
 
   componentDidMount : -> @typeset()

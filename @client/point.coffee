@@ -164,11 +164,14 @@ window.Point = ReactiveComponent
           if point.is_pro then '•' else '•'
 
       DIV 
+        ref: 'point_content'
         className:'point_content'
         style : point_content_style
         tabIndex: 0
         onBlur: (e) => @local.has_focus = false; save(@local)
         onFocus: (e) => @local.has_focus = true; save(@local)
+        draggable: @props.enable_dragging
+        "data-point": point.key
 
         if @props.rendered_as != 'decision_board_point'
 
@@ -362,17 +365,17 @@ window.Point = ReactiveComponent
               backgroundColor: 'transparent'
               border: 'none'              
               display: if get_selected_point() then 'none'
-            onFocus: (e) => @local.focused_include = true; save @local
+            onFocus: (e) => 
+              @local.focused_include = true; save @local
             onBlur: (e) => @local.focused_include = false; save @local
             onTouchEnd: includePoint
             onClick: includePoint
             onKeyDown: (e) => 
               if e.which == 13 || e.which == 32
-
-                next = $(e.target).closest('.point').next().find('.point_content')
                 includePoint(e)
                 valence = if point.is_pro then 'pros' else 'cons'
 
+                next = $$.closest(e.target, '.point').nextElementSibling.querySelector('.point_content')
                 next.focus()
                 e.preventDefault()
 
@@ -410,6 +413,12 @@ window.Point = ReactiveComponent
             onTouchEnd: includePoint
             onClick: includePoint
 
+            onKeyDown: (e) => 
+              if e.which == 13 || e.which == 32
+                includePoint(e)
+                e.preventDefault()
+                e.stopPropagation()
+
             I
               className: 'fa fa-thumbs-o-up'
               style: 
@@ -444,14 +453,21 @@ window.Point = ReactiveComponent
     is_selected = get_selected_point() == @props.point
     if @local.is_selected != is_selected
       if is_selected
-        if browser.is_mobile
-          $(ReactDOM.findDOMNode(@)).moveToTop {scroll: false}
-        else
-          $(ReactDOM.findDOMNode(@)).ensureInView {scroll: false}
         
-        i = setInterval ->
-              if $('#open_point').length > 0 
-                $('#open_point').focus()
+        i = setInterval =>
+              discussion = document.getElementById('open_point')
+              if discussion 
+                if browser.is_mobile
+                  $$.moveToTop ReactDOM.findDOMNode(@)
+                  discussion.focus()
+
+                else
+                  $$.ensureInView discussion,
+                    scroll: true
+                    offset_buffer: 50 + $$.height(ReactDOM.findDOMNode(@))
+                    callback: -> 
+                      discussion.focus()
+
                 clearInterval i
             , 10
 
@@ -459,25 +475,21 @@ window.Point = ReactiveComponent
       save @local
 
   setDraggability : ->
-    # Ability to drag include this point if a community point, 
-    # or drag remove for point on decision board
-    # also: disable for results page
+    el = @refs.point_content
+    if el && !@dragstart_listener
+      @dragstart_listener_installed = (ev) =>
+        point = fetch @props.point
+        dnd_points = fetch 'drag and drop points'
+        dnd_points.dragging = point.key 
+        ev.dataTransfer.setData('text/plain', point.key)
+        ev.dataTransfer.effectAllowed = "move"
 
-    $point_content = $(ReactDOM.findDOMNode(@)).find('.point_content')
-    revert = 
-      if @props.rendered_as == 'community_point' 
-        'invalid' 
-      else (valid) =>
-        if !valid
+      el.addEventListener "dragstart", @dragstart_listener_installed
+
+      el.addEventListener "dragend", (ev) =>
+        if ev.dataTransfer.dropEffect == "none"
           @remove()
-        valid
 
-    if $point_content.hasClass "ui-draggable"
-      $point_content.draggable(if @props.enable_dragging then 'enable' else 'disable' ) 
-    else
-      $point_content.draggable
-        revert: revert
-        disabled: !@props.enable_dragging
 
   included: -> 
     point = fetch @props.point
@@ -508,10 +520,9 @@ window.Point = ReactiveComponent
         details: 
           point: @props.point
     else 
-      $point_content = $(ReactDOM.findDOMNode(@)).find('.point_content')
-      $point_content.css 'left', '-11px'
-      $point_content.css 'top', '-11px'
-
+      el = @refs.point_content
+      el.style.left = '-11px'
+      el.style.top = '-11px'
   include: -> 
     point = fetch @props.point 
     proposal = fetch point.proposal

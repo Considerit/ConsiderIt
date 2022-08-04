@@ -443,9 +443,9 @@ window.Tab = ReactiveComponent
         else 
           tab_name = tab.name
           if @props.go_to_hash
-            $el = $(document.querySelector("[name='#{@props.go_to_hash}']"))
-            if $el
-              $el.ensureInView
+            el = document.querySelector("[name='#{@props.go_to_hash}']")
+            if el
+              $$.ensureInView el, 
                 position: 'top'
                 scroll: true
 

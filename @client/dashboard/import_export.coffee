@@ -190,7 +190,8 @@ window.DataDash = ReactiveComponent
 
             onClick: (e) => 
               e.preventDefault()
-              $('html, #submit_import').css('cursor', 'wait')
+
+              $$.setStyles 'html, #submit_import', {cursor: 'wait'}
 
               ajax_submit_files_in_form
                 form: '#import_data'
@@ -206,14 +207,15 @@ window.DataDash = ReactiveComponent
                     @local.errors = data[0].errors
                     save @local
                   else
-                    $('html, #submit_import').css('cursor', '')
+                    $$.setStyles 'html, #submit_import', {cursor: ''}
+
                     # clear out statebus 
                     arest.clear_matching_objects((key) -> key.match( /\/page\// ))
                     @local.errors = null
                     @local.successes = data[0]
                     save @local
                 error: (result) => 
-                  $('html, #submit_import').css('cursor', '')
+                  $$.setStyles 'html, #submit_import', {cursor: ''}
                   @local.successes = null                      
                   @local.errors = ['Unknown error parsing the files. Email tkriplean@gmail.com.']
                   save @local

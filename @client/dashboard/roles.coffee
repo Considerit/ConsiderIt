@@ -446,6 +446,7 @@ ModalAddRolesAndInvite = ReactiveComponent
             AutoGrowTextArea 
               id: 'custom_email_message'
               name: 'custom_email_message'
+              ref: 'custom_email_message'
               placeholder: '(optional) custom message'
               style: {width: '90%', fontSize: 18, padding: '8px 14px'}
 
@@ -474,7 +475,7 @@ ModalAddRolesAndInvite = ReactiveComponent
                   target.invitations = []
 
                 invitation = {role: role, keys_or_emails: @local.added}
-                invitation.message = $('#custom_email_message').val()              
+                invitation.message = ReactDOM.findDOMNode(@refs.custom_email_message).value
                 target.invitations.push invitation
               
               @local.added = []

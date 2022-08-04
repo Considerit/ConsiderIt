@@ -129,21 +129,21 @@ window.Dock = ReactiveComponent
     # Register this dock with dockingStation. Send dockingStation a callback that it 
     # can invoke to learn about this dock when making calculations. 
 
-    $el = $(@refs.dock_child).children(':visible')
+    el = @refs.dock_child.firstChild
 
     # The stacking order of this dock. Used to determine 
     # how docking components stack up. The initial y position seems to be 
     # a good determiner of stacking order. Perhaps a scenario 
     # in the future will crop up where this is untrue.
-    @local.stack_priority = $el.offset().top
+    @local.stack_priority = $$.offset(el).top
     # If the docking element isn't already absolutely or fixed positioned, 
     # then when we dock the element and take it out of normal flow, the 
     # screen is jerked. So we store the component's height to be assigned 
     # to a placeholder we drop in when docked.  
-    placeholder_height = if $el[0].style.position in ['absolute', 'fixed'] 
+    placeholder_height = if el.style.position in ['absolute', 'fixed'] 
                            0 
                          else 
-                           $el.outerHeight()
+                           el.offsetHeight
 
     @local.placeholder_height = placeholder_height
     save @local
@@ -168,22 +168,23 @@ window.Dock = ReactiveComponent
       # as the docked element changes rarely compared to the 
       # frequency of scroll events. 
 
-      $el = $(@refs.dock_child).children(':visible')
-      current_dom = serializer.serializeToString($el[0]) + @props.skip_jut
+      el = @refs.dock_child.firstChild
+      current_dom = serializer.serializeToString(el) + @props.skip_jut
 
       if current_dom != last_dom
 
         [element_height, jut_above, jut_below] = if !@props.skip_jut 
-                                                   realDimensions($el) 
+                                                   realDimensions(el) 
                                                  else 
-                                                   [$el.height(), 0, 0]
+                                                   [$$.height(el), 0, 0]
         last_dom = current_dom
       
+      dock_el = ReactDOM.findDOMNode(@)
       return {
         start         : if _.isFunction(@props.start) 
                           @props.start() 
                         else 
-                          $(ReactDOM.findDOMNode(@)).offset().top + (@props.start || 0)
+                          $$.offset(dock_el).top + (@props.start || 0)
         stop          : @props.stop?() or Infinity
         dock_on_zoom  : if @props.dock_on_zoomed_screens?
                           @props.dock_on_zoomed_screens 
@@ -195,7 +196,7 @@ window.Dock = ReactiveComponent
         height        : element_height
         constraints   : @props.constraints or []
         docked_key    : @props.docked_key
-        offset_parent : if browser.is_mobile then $(ReactDOM.findDOMNode(@)).offsetParent().offset().top 
+        offset_parent : if browser.is_mobile then $$.offset(dock_el.offsetParent or dock_el).top 
       }
 
   componentWillUnmount : -> 
@@ -241,8 +242,10 @@ dockingStation =
 
     if !dockingStation.listening_to_scroll_events
       
-      $(window).on "scroll.dockingStation", -> dockingStation.user_scrolled = true
-      $(window).on "resize.dockingStation", dockingStation.onResize
+      @on_scroll = -> dockingStation.user_scrolled = true
+
+      window.addEventListener "scroll", @on_scroll
+      window.addEventListener "resize", dockingStation.onResize
 
       # If the height of a docked component changes, we need to recalculate
       # the layout. Unfortunately, it is non-trivial and error prone to detect 
@@ -261,7 +264,8 @@ dockingStation =
   unregister : (key) -> 
     delete dockingStation.registry[key]
     if _.keys(dockingStation.registry).length == 0
-      $(window).off ".dockingStation"
+      window.removeEventListener "scroll", @on_scroll
+      window.removeEventListener "resize", dockingStation.onResize
       dockingStation.listening_to_scroll_events = false
       clearInterval dockingStation.check_resize_interval
       dockingStation.check_resize_interval = null
@@ -374,7 +378,7 @@ dockingStation =
     docked = []; undocked = []
 
     # Whether the screen is zoomed or quite small 
-    zoomed_or_small = window.innerWidth / $(window).width() < .95 || screen.width <= 700
+    zoomed_or_small = window.innerWidth / document.documentElement.clientWidth < .95 || screen.width <= 700
 
     # Sort by stacking order. Stacking order based on the 
     # y position when the component was mounted. 
@@ -619,7 +623,7 @@ dockingStation =
       # Adjust for horizontal scroll for fixed position elements because they don't 
       # move with the rest of the content (they're fixed to the viewport). 
       # ScrollLeft is used to offset the fixed element to simulate docking to the window.
-      x = -$(window).scrollLeft()
+      x = -document.body.scrollLeft
 
     [x,y]
 
@@ -637,14 +641,14 @@ dockingStation.initialize()
 # The jut of child elements above and below $el.height()
 #
 # This method is expensive, use it sparingly.
-realDimensions = ($el) -> 
-  recurse = ($e, min_top, max_top) -> 
+realDimensions = (el) -> 
+  recurse = (cur_el, min_top, max_top) -> 
     
-    t = $e.offset().top
-    h = $e.height()
+    t = $$.offset(cur_el).top
+    h = $$.height(cur_el)
 
     return [min_top, max_top] if h == 0 ||
-                                 $e[0].style.display == 'none'
+                                 cur_el.style.display == 'none'
                               # skip elements that don't take up space
 
     if min_top > t
@@ -652,15 +656,16 @@ realDimensions = ($el) ->
     if t + h > max_top
       max_top = t + h
 
-    for child in $e.children()
-      [min_top, max_top] = recurse($(child), min_top, max_top)
+    for child in cur_el.children
+      [min_top, max_top] = recurse(child, min_top, max_top)
 
     [min_top, max_top]
 
-  [min_top, max_top] = recurse $el, Infinity, 0
+  [min_top, max_top] = recurse el, Infinity, 0
 
-  offset = $el.offset().top
+  offset = $$.offset(el).top
+
   jut_above = offset - min_top
-  jut_below = max_top - (offset + $el.height())
+  jut_below = max_top - (offset + $$.height(el))
 
   [max_top - min_top, jut_above, jut_below]

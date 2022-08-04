@@ -134,7 +134,8 @@ ConsiderIt::Application.routes.draw do
   get '/moderation/:id' => 'moderation#show'
 
   match "/moderation/:id" => 'moderation#update', :via => :put
-  post '/dashboard/message' => 'direct_message#create', :as => 'message'
+
+  match '/dashboard/message' => 'direct_message#create', :via => [:put]
 
   post "/dashboard/data_import_export" => 'import_data#create'
 

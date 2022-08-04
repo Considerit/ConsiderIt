@@ -125,11 +125,11 @@ styles += """
 setResponsive()
 
 # Whenever the window resizes, we need to recalculate the variables.
-$(window).on "resize.responsive_vars", setResponsive
+window.addEventListener "resize", setResponsive
 
 
 # Trying to make sure to catch events (like initial auto zoom) that lead to viewport changes
-$(window).on "gestureend.responsive_vars", setResponsive
+window.addEventListener "gestureend", setResponsive
 window.matchMedia('screen and (min-resolution: 2dppx)').addEventListener "change", setResponsive
 if browser.is_mobile
   setTimeout setResponsive, 1

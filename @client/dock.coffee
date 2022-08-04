@@ -216,6 +216,9 @@ window.Dock = ReactiveComponent
 # For console output: 
 debug = false
 
+
+window.ccnt = 0 
+
 dockingStation =
 
   ####
@@ -242,7 +245,8 @@ dockingStation =
 
     if !dockingStation.listening_to_scroll_events
       
-      @on_scroll = -> dockingStation.user_scrolled = true
+      @on_scroll = -> 
+        window.requestAnimationFrame dockingStation.onScroll
 
       window.addEventListener "scroll", @on_scroll
       window.addEventListener "resize", dockingStation.onResize
@@ -254,12 +258,7 @@ dockingStation =
 
       dockingStation.listening_to_scroll_events = true
 
-      # Recompute layout if we've seen a scroll in past X ms
-      dockingStation.interval = setInterval -> 
-        if dockingStation.user_scrolled
-          dockingStation.user_scrolled = false
-          dockingStation.onScroll()
-      , 100 
+
 
   unregister : (key) -> 
     delete dockingStation.registry[key]
@@ -275,6 +274,8 @@ dockingStation =
   #######
   # onScroll
   onScroll : -> 
+    ccnt += 1
+
     dockingStation.updateViewport()
 
     # At most we will shift the docked components by the distance scrolled
@@ -347,6 +348,7 @@ dockingStation =
     if docked.length > 0
       # Calculate y-positions for all docked components
       y_pos = dockingStation.solveForY docked, docks, max_change
+      return if !y_pos?
 
       for k in docked
         dock = fetch k
@@ -443,7 +445,22 @@ dockingStation =
   #
   # max_change constrains how far each docking element is allowed to move
   # since the last time it was laid out. 
-  solveForY : (docked, docks, max_change) -> 
+  solveForY : (docked, docks, max_change) ->
+
+    if !cassowary? 
+
+      if !dockingStation.cassowary_loading?
+        dockingStation.cassowary_loading = setInterval -> 
+          if cassowary?
+            dockingStation.solveForY(docked, docks, max_change)
+            clearInterval dockingStation.cassowary_loading
+        , 10
+
+      return
+
+
+
+
     c = cassowary
 
     # cassowary constraint solver

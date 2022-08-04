@@ -1,6 +1,9 @@
 require './browser_hacks'
 require './histogram_layout'
-require './histogram_lab'
+
+# require './histogram_lab'  # for testing only
+
+
 # md5 = require './vendor/md5' 
 
 ##

@@ -24,7 +24,6 @@
 
 require './shared'
 require './svg'
-# md5 = require './vendor/md5' 
 
 window.Bubblemouth = (props) -> 
 
@@ -71,7 +70,7 @@ window.Bubblemouth = (props) ->
     
   """
 
-  id = "x#{md5(JSON.stringify(props))}-#{(Math.random() * 100000).toFixed(0)}"
+  id = "x-#{(Math.random() * 10000000000).toFixed(0)}"
 
   x_pad = 0 
   if props.box_shadow

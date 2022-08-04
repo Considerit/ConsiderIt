@@ -1,11 +1,11 @@
 {
   "dependencies": {
-    "chunk-manifest-webpack-plugin": "0.0.1",
     "coffee-loader": "^0.7.2",
     "coffee-script": "^1.12.7",
-    "compression-webpack-plugin": "0.2.0",
     "@auth0/s3": "1.0.0",
+    "yamljs": "^0.2.1",
     "webpack": "1.11.0",
-    "yamljs": "^0.2.1"
+    "chunk-manifest-webpack-plugin": "0.0.1",
+    "compression-webpack-plugin": "0.2.0"
   }
 }

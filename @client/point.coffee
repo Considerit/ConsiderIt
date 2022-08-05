@@ -172,6 +172,11 @@ window.Point = ReactiveComponent
         onFocus: (e) => @local.has_focus = true; save(@local)
         draggable: @props.enable_dragging
         "data-point": point.key
+
+        onDragEnd: (ev) =>
+          # @refs.point_content.style.visibility = 'visible'
+          @refs.point_content.style.opacity = 1
+
         onDragStart: (ev) =>
           if @props.enable_dragging
             point = fetch @props.point
@@ -183,12 +188,33 @@ window.Point = ReactiveComponent
             dragging = fetch 'point-dragging'
             dragging.point = point.key
 
-            # ev.dataTransfer.effectAllowed = "move"
-            # ev.dataTransfer.dropEffect = "move"     
+            ev.dataTransfer.effectAllowed = "move"
+            ev.dataTransfer.dropEffect = "move"     
 
-            img = new Image(0,0)
-            img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-            # ev.dataTransfer.setDragImage(img, 0, 0)   
+
+            #######################
+            # There is a big bug with dragging and dropping elements whose parent has been moved with 
+            # transform translate. The ghosting is way off, safari (15 at the moment) can't seem to 
+            # properly locate the element to make a ghost bitmap of the screen. So we'll create our 
+            # own ghost point outside the translated parents. Note that this hack for some reason
+            # *doesn't work* in Chrome or Firefox (but the original bug isn't in them). 
+            # So we'll have to keep an eye on this for each release of Safari to make sure the 
+            # hack is still appropriate.
+            if window.safari || window.parent?.safari
+              ghost = @refs.point_content.cloneNode()
+              ghost.innerHTML = @refs.point_content.innerHTML
+
+              content = document.getElementById('content')
+              content.appendChild ghost
+              ev.dataTransfer.setDragImage ghost, 0, 0
+
+              setTimeout ->
+                content.removeChild ghost
+
+            setTimeout =>
+              @refs.point_content.style.opacity = .3
+
+
 
 
 

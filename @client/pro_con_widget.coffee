@@ -1,5 +1,5 @@
 require "./opinion_views"
-
+require "./browser_hacks"
 fetch 'decisionboard',
   docked : false
 
@@ -10,7 +10,10 @@ window.Pro_Con_Widget = ReactiveComponent
   render: ->
     current_user = fetch '/current_user'
     proposal = fetch @props.proposal
-    your_opinion = fetch proposal.your_opinion
+
+    your_opinion = proposal.your_opinion
+    if your_opinion.key
+      fetch your_opinion
 
     opinion_views = fetch 'opinion_views'
     just_you = opinion_views?.active_views['just_you']
@@ -52,11 +55,32 @@ window.Pro_Con_Widget = ReactiveComponent
       @local.show_all_points = true 
       save @local
 
-
-
     has_selection = opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
-
     show_all_points = @local.show_all_points || mode == 'crafting' || community_points.length < 8 || has_selection
+
+
+    point_cols = ['your_con_points', 'your_pro_points', 'community_cons', 'community_pros']
+    edit_mode = false
+    for pc in point_cols
+      col = fetch(pc)
+      if col.adding_new_point || col.editing_points?.length > 0
+        edit_mode = pc
+        break
+
+    local_proposal = fetch shared_local_key(proposal)
+
+    has_focus = \
+      if get_selected_point()
+        'point'
+      else if edit_mode
+        'edit point'
+      else
+        "opinion"
+
+    if local_proposal.has_focus != has_focus
+      local_proposal.has_focus = has_focus
+      save local_proposal
+
 
 
 
@@ -64,6 +88,43 @@ window.Pro_Con_Widget = ReactiveComponent
     DIV 
       style: 
         position: 'relative' 
+        paddingBottom: if browser.is_mobile && has_focus == 'edit point' then 200
+          # make room for add new point button
+
+
+      # for allowing people to drop a point in their list outside to remove it
+      onDrop : (ev) =>
+        # point_key = ev.dataTransfer.getData('text/plain')
+        point_key = fetch('point-dragging').point
+        
+        return if !point_key
+        point = fetch point_key
+
+
+        validate_first = point.user == fetch('/current_user').user && point.includers.length < 2
+
+
+        if !validate_first || confirm('Are you sure you want to remove your point? It will be gone forever.')
+
+          your_opinion = proposal.your_opinion
+
+          if your_opinion.point_inclusions && point.key in your_opinion.point_inclusions
+            idx = your_opinion.point_inclusions.indexOf point.key
+            your_opinion.point_inclusions.splice(idx, 1)
+            save your_opinion
+
+            window.writeToLog
+              what: 'removed point'
+              details: 
+                point: point.key
+
+        ev.preventDefault()
+
+      onDragEnter : (ev) =>
+        ev.preventDefault()
+
+      onDragOver : (ev) => 
+        ev.preventDefault() # makes it droppable, according to html5 DnD spec
 
 
       if mode == 'crafting' && can_opine in [Permission.NOT_LOGGED_IN, Permission.UNVERIFIED_EMAIL]
@@ -273,6 +334,20 @@ window.Pro_Con_Widget = ReactiveComponent
               id: "engage.show_all_thoughts"
               "Show All Reasons"
 
+      if edit_mode && browser.is_mobile && !embedded_demo()
+        # full screen edit point mode for mobile
+        valence = if edit_mode in ['community_pros', 'your_pro_points'] 
+                    'pros' 
+                  else 
+                    'cons'
+        pc = fetch edit_mode
+        EditPoint 
+          key: if pc.adding_new_point then "new_point_#{valence}" else pc.editing_points[0]
+          proposal: @props.proposal
+          fresh: pc.adding_new_point
+          valence: valence
+          your_points_key: edit_mode
+
 
 ##
 # DecisionBoard
@@ -383,7 +458,8 @@ DecisionBoard = ReactiveComponent
         width: DECISION_BOARD_WIDTH()
 
       onDrop : (ev) =>
-        point_key = ev.dataTransfer.getData('text/plain')
+        # point_key = ev.dataTransfer.getData('text/plain')
+        point_key = fetch('point-dragging').point
 
         return if !point_key
         point = fetch point_key
@@ -408,6 +484,7 @@ DecisionBoard = ReactiveComponent
         db.user_hovering_on_drop_target = false
         save db
 
+        ev.preventDefault()
         ev.stopPropagation()
 
       onDragLeave : (ev) => 
@@ -416,17 +493,22 @@ DecisionBoard = ReactiveComponent
           db.user_hovering_on_drop_target = false
           save db
 
+      onDragEnter : (ev) =>
+        ev.preventDefault()
+
       onDragOver : (ev) => 
         db = fetch('decision_board')
 
         if !db.user_hovering_on_drop_target
-          db.user_hovering_on_drop_target = true
-          save db
+          # point_key = ev.dataTransfer.getData('text/plain') 
+          point_key = fetch('point-dragging').point
+          your_opinion = proposal.your_opinion
+          if point_key && point_key not in (your_opinion.point_inclusions or [])
+            db.user_hovering_on_drop_target = true
+            save db
 
-        ev.dataTransfer.dropEffect = "move"
         ev.preventDefault() # makes it droppable, according to html5 DnD spec
         ev.stopPropagation()
-
 
 
       H3 

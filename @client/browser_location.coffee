@@ -17,6 +17,37 @@ require './browser_hacks'
 ######
 # Public API
 
+
+parseURL = (url) ->
+  parser = document.createElement('a')
+  parser.href = url
+
+  pathname = parser.pathname or '/'
+  if pathname[0] != '/'
+    pathname = "/#{pathname}"
+  searchObject = {}
+
+  alt_search = new URLSearchParams(parser.search)
+
+  queries = parser.search.replace(/^\?/, '').split('&')  
+  i = 0
+  while i < queries.length
+    if queries[i].length > 0
+      split = queries[i].split('=')
+      searchObject[split[0]] = alt_search.get(split[0])
+    i++
+
+  {
+    protocol: parser.protocol
+    host: parser.host
+    hostname: parser.hostname
+    port: parser.port
+    pathname: pathname
+    search: parser.search
+    searchObject: searchObject
+    hash: parser.hash
+  }
+
 ####
 # loadPage
 #
@@ -87,6 +118,7 @@ window.A = React.createFactory createReactClass
 
   handleClick: (event) -> 
     node = ReactDOM.findDOMNode(@)
+    no_scroll = node.getAttribute('data-no-scroll')
     href = node.getAttribute('href') 
               # use getAttribute rather than .href so we 
               # can easily check relative vs absolute url
@@ -108,15 +140,14 @@ window.A = React.createFactory createReactClass
       loadPage href
       @_onclick event
 
-      # setTimeout =>
+      setTimeout =>
         # When we navigate to another internal page, we typically want the 
         # page to be scrolled to the top of the new page. The programmer can
         # set "data-no-scroll" on the link if they wish to prevent this 
         # behavior.
-      no_scroll = ReactDOM.findDOMNode(@).getAttribute('data-no-scroll')
-      if !no_scroll || no_scroll == 'false'
-        window.scrollTo(0, 0)
-      # , 100
+        if !no_scroll || no_scroll == 'false'
+          window.scrollTo(0, 0)
+      , 1
                       
     else
       @_onclick event

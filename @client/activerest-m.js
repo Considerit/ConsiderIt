@@ -69,6 +69,11 @@
             // If this object has a key, update the cache for it
             var key = object && object.key
             if (key) {
+                // if (!key || !key.match) {
+                //     console.trace()
+                //     console.log(key)
+                // }
+
                 // Change /new/thing to /new/thing/45
                 if (key.match(new RegExp('^/new/'))     // Starts with /new/
                     && !key.match(new RegExp('/\\d+$'))) // Doesn't end in a /number

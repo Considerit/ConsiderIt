@@ -102,29 +102,6 @@ window.Proposal = ReactiveComponent
 
     return DIV(null) if !proposal.roles
 
-
-    point_cols = ['your_con_points', 'your_pro_points', 'community_cons', 'community_pros']
-    edit_mode = false
-    for pc in point_cols
-      col = fetch(pc)
-      if col.adding_new_point || col.editing_points?.length > 0
-        edit_mode = pc
-        break
-
-    local_proposal = fetch shared_local_key(proposal)
-
-    has_focus = \
-      if get_selected_point()
-        'point'
-      else if edit_mode
-        'edit point'
-      else
-        "opinion"
-
-    if local_proposal.has_focus != has_focus
-      local_proposal.has_focus = has_focus
-      save local_proposal
-
     mode = get_proposal_mode()
 
     if your_opinion.key
@@ -143,17 +120,10 @@ window.Proposal = ReactiveComponent
     opinion_views = fetch 'opinion_views'
     just_you = opinion_views?.active_views['just_you']
 
-    draw_handle = can_opine != Permission.INSUFFICIENT_PRIVILEGES && 
-                    (can_opine != Permission.DISABLED || your_opinion.published ) && 
-                    !(!current_user.logged_in && '*' not in proposal.roles.participant)
-
     ARTICLE 
       id: "proposal-#{proposal.id}"
       "data-proposal": proposal.key
       key: proposal.slug
-      style: 
-        paddingBottom: if browser.is_mobile && has_focus == 'edit point' then 200
-          # make room for add new point button
 
       DIV null,
 
@@ -212,7 +182,9 @@ window.Proposal = ReactiveComponent
           LOADING_INDICATOR
         else
           
-          Pro_Con_Widget {proposal, can_opine}
+          Pro_Con_Widget 
+            proposal: proposal.key
+            can_opine: can_opine
 
 
       if true || mode == 'results' # && !embedded_demo()
@@ -270,20 +242,6 @@ window.Proposal = ReactiveComponent
               proposal: proposal.key
 
 
-      if edit_mode && browser.is_mobile && !embedded_demo()
-        # full screen edit point mode for mobile
-        valence = if edit_mode in ['community_pros', 'your_pro_points'] 
-                    'pros' 
-                  else 
-                    'cons'
-        pc = fetch edit_mode
-
-        EditPoint 
-          key: if pc.adding_new_point then "new_point_#{valence}" else pc.editing_points[0]
-          proposal: @props.proposal
-          fresh: pc.adding_new_point
-          valence: valence
-          your_points_key: edit_mode
 
 
 ParticipationStatus = ReactiveComponent
@@ -335,11 +293,5 @@ ParticipationStatus = ReactiveComponent
               save current_user
 
             translator 'engage.permissions.verify_account_to_participate', "Verify your account to participate"
-
-
-
-
-
-
 
 

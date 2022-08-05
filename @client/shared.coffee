@@ -67,6 +67,7 @@ window.back_to_homepage_button = (style, text) ->
       className: 'back_to_homepage'
       title: 'back to homepage'
       key: 'back_to_homepage_button'
+      "data-no-scroll": true
       href: "/##{hash}"
       style: _.defaults {}, style,
         fontSize: 43
@@ -158,18 +159,18 @@ window.POINT_MOUTH_WIDTH = 17
 # props: 
 #   public_key: the key to store the heartbeat at
 #   interval: length between pulses, in ms (default=1000)
-window.HEARTBEAT = ReactiveComponent
-  displayName: 'heartbeat'
+# window.HEARTBEAT = ReactiveComponent
+#   displayName: 'heartbeat'
 
-  render: ->   
-    beat = fetch(@props.public_key or 'pulse')
-    if !beat.beat?
-      setInterval ->   
-        beat.beat = (beat.beat or 0) + 1
-        save(beat)
-      , (@props.interval or 1000)
+#   render: ->   
+#     beat = fetch(@props.public_key or 'pulse')
+#     if !beat.beat?
+#       setInterval ->   
+#         beat.beat = (beat.beat or 0) + 1
+#         save(beat)
+#       , (@props.interval or 1000)
 
-    SPAN null
+#     SPAN null
 
 
 
@@ -224,22 +225,6 @@ window.namespaced_key = (base_key, base_object) ->
     namespace_key = namespace_key.substring(1, namespace_key.length)
   
   "#{namespace_key}_#{base_key}"
-
-window.proposal_url = (proposal, prefer_crafting_page) ->
-  # The special thing about this function is that it only links to
-  # "?results=true" if the proposal has an opinion.
-
-  proposal = fetch proposal
-  result = "/#{proposal.slug}"
-  subdomain = fetch '/subdomain'
-
-  if TWO_COL() || !proposal.active || (!customization('show_crafting_page_first', proposal, subdomain) && !prefer_crafting_page) || !customization('discussion_enabled', proposal, subdomain)
-    result += '?results=true'
-
-  return result
-
-window.isNeutralOpinion = (stance) -> 
-  return Math.abs(stance) < 0.05
 
   
 
@@ -318,10 +303,6 @@ window.prettyDate = (time) ->
   r = r.replace('1 days ago', '1 day ago').replace('1 weeks ago', '1 week ago').replace('1 years ago', '1 year ago')
   r
 
-
-window.shorten = (str, max_length) ->
-  max_length ||= 70
-  "#{str.substring(0, max_length)}#{if str.length > max_length then '...' else ''}"
 
 window.inRange = (val, min, max) ->
   return val <= max && val >= min
@@ -418,7 +399,7 @@ window.reset_key = (obj_or_key, updates) ->
   save obj_or_key
 
 
-window.safe_string = (user_content) -> 
+safe_string = (user_content) -> 
   user_content = user_content.replace(/(<li>|<br\s?\/?>|<p>)/g, '\n') #add newlines
   user_content = user_content.replace(/(<([^>]+)>)/ig, "") #strips all tags
 
@@ -570,37 +551,6 @@ window.location_origin = ->
   else 
     window.location.origin
 
-window.parseURL = (url) ->
-  parser = document.createElement('a')
-  parser.href = url
-
-  pathname = parser.pathname or '/'
-  if pathname[0] != '/'
-    pathname = "/#{pathname}"
-  searchObject = {}
-
-  alt_search = new URLSearchParams(parser.search)
-
-  queries = parser.search.replace(/^\?/, '').split('&')  
-  i = 0
-  while i < queries.length
-    if queries[i].length > 0
-      split = queries[i].split('=')
-      searchObject[split[0]] = alt_search.get(split[0])
-    i++
-
-  {
-    protocol: parser.protocol
-    host: parser.host
-    hostname: parser.hostname
-    port: parser.port
-    pathname: pathname
-    search: parser.search
-    searchObject: searchObject
-    hash: parser.hash
-  }
-
-
 
 ##############################
 ## Styles
@@ -613,9 +563,6 @@ window.focus_color = -> focus_blue
 # Mixin for mediaquery for retina screens. 
 # Adapted from https://gist.github.com/ddemaree/5470343
 window.css = {}
-
-css_as_str = (attrs) -> _.keys(attrs).map( (p) -> "#{p}: #{attrs[p]}").join(';') + ';'
-
 
 css.crossbrowserify = (styles) -> styles # legacy method now no-op-ing
 
@@ -779,7 +726,7 @@ window.play_videos_when_in_viewport = (parent_el, args) ->
 
 
 ## CSS reset
-focus_shadow = 'inset 0 0 2px rgba(0,0,0,.3), 0 0 2px rgba(0,0,0,.3)'
+
 window.styles += """
 /* RESET
  * Eric Meyer's Reset CSS v2.0 (http://meyerweb.com/eric/tools/css/reset/)

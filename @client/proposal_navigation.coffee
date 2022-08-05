@@ -114,6 +114,7 @@ window.GroupedProposalNavigation = (args) ->
               link: 
                 component: A 
                 args: 
+                  key: 'linker'
                   href: if current_tab && current_tab != 'all' then "/?tab=#{encodeURIComponent(current_tab)}##{hash}" else "/##{hash}"
                   style: 
                     textDecoration: 'underline'

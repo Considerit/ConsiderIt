@@ -31,26 +31,6 @@ window.styles += """
     margin: 0; 
     
   }
-
-  .LIST-fat-header-field {
-    background-color: white;
-    border: 1px solid #eaeaea;
-    border-radius: 8px;
-    outline-color: #ccc;
-    line-height: 1.4;
-    padding: 8px 12px;
-    /* margin-top: -9px; */
-    margin-left: -13px;
-
-  }
-
-  .LIST-field-edit-label {
-    font-size: 14px;
-    display: inline-block;
-    font-weight: 400;
-    margin-top: 18px;
-  }
-
 """
 
 get_list_padding = ->
@@ -433,33 +413,33 @@ styles += """
     border-radius: 8px;
 
   }
-  [data-widget="NewList"] h1.LIST-header {
+  button[data-widget="NewList"] h1.LIST-header {
     position: relative;
     left: -42px;
     display: flex;
     align-items: center;
   }
 
-  [data-widget="NewList"] h1.LIST-header svg {
+  button[data-widget="NewList"] h1.LIST-header svg {
     margin-right: 13px;
   }
 
 
-  [data-widget="NewList"] .subbutton_button {
+  button[data-widget="NewList"] .subbutton_button {
     color: #{focus_blue};
     font-weight: 700;
   }
 
-  [data-widget="NewList"]:hover .subbutton_button, [data-widget="NewList"]:hover .separator {
+  button[data-widget="NewList"]:hover .subbutton_button, button[data-widget="NewList"]:hover .separator {
     text-decoration: underline;
   }
 
-  [data-widget="NewList"] .separator {
+  button[data-widget="NewList"] .separator {
     // padding: 0 12px;
     font-weight: 300;
     color: #{focus_blue};
   }
-  [data-widget="NewList"] .subheader {
+  button[data-widget="NewList"] .subheader {
     color: #656565;
     font-size: 16px;
     position: relative;

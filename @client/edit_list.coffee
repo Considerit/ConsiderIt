@@ -135,10 +135,21 @@ window.EditList = ReactiveComponent
 
 
 styles += """
-  [data-widget="ModalNewList"] .LIST-fat-header-field {
-    margin-left: 0;
+  .LIST-fat-header-field {
+    background-color: white;
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+    outline-color: #ccc;
+    line-height: 1.4;
+    padding: 8px 12px;
   }
 
+  .LIST-field-edit-label {
+    font-size: 14px;
+    display: inline-block;
+    font-weight: 400;
+    margin-top: 18px;
+  }
 """
 
 

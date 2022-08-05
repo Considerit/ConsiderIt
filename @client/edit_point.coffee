@@ -188,9 +188,11 @@ window.EditPoint = ReactiveComponent
 
   componentDidMount : ->
     proposal = fetch @props.proposal
+
     if proposal.active 
 
-      ReactDOM.findDOMNode(@refs.nutshell).focus() if !browser.is_mobile # iOS messes this up
+      if !browser.is_mobile # iOS messes this up
+        ReactDOM.findDOMNode(@refs.nutshell).querySelector('#nutshell').focus() 
       
       $$.ensureInView ReactDOM.findDOMNode(@refs.submit_point),
         scroll: false

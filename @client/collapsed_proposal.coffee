@@ -119,6 +119,20 @@ styles += """
 
 """
 
+proposal_url = (proposal, prefer_crafting_page) ->
+  # The special thing about this function is that it only links to
+  # "?results=true" if the proposal has an opinion.
+
+  proposal = fetch proposal
+  result = "/#{proposal.slug}"
+  subdomain = fetch '/subdomain'
+
+  if TWO_COL() || !proposal.active || (!customization('show_crafting_page_first', proposal, subdomain) && !prefer_crafting_page) || !customization('discussion_enabled', proposal, subdomain)
+    result += '?results=true'
+
+  return result
+
+
 pad = (num, len) -> 
   str = num
   dec = str.split('.')

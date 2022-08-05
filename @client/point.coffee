@@ -172,6 +172,25 @@ window.Point = ReactiveComponent
         onFocus: (e) => @local.has_focus = true; save(@local)
         draggable: @props.enable_dragging
         "data-point": point.key
+        onDragStart: (ev) =>
+          if @props.enable_dragging
+            point = fetch @props.point
+            dnd_points = fetch 'drag and drop points'
+            dnd_points.dragging = point.key 
+            ev.dataTransfer.setData('text/plain', point.key)
+
+            # because DnD setdata is broke ass
+            dragging = fetch 'point-dragging'
+            dragging.point = point.key
+
+            # ev.dataTransfer.effectAllowed = "move"
+            # ev.dataTransfer.dropEffect = "move"     
+
+            img = new Image(0,0)
+            img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+            # ev.dataTransfer.setDragImage(img, 0, 0)   
+
+
 
         if @props.rendered_as != 'decision_board_point'
 
@@ -338,9 +357,7 @@ window.Point = ReactiveComponent
 
           return unless e.type != 'click' || \
                         (!browser.is_android_browser && e.type == 'click')
-          if included
-            @remove()
-          else 
+          if !included
             @include()
 
         if !TWO_COL() && @props.enable_dragging
@@ -436,11 +453,9 @@ window.Point = ReactiveComponent
           rendered_as: @props.rendered_as
 
   componentDidMount : ->    
-    @setDraggability()
     @ensureDiscussionIsInViewPort()
 
   componentDidUpdate : -> 
-    @setDraggability()
     @ensureDiscussionIsInViewPort()
 
 
@@ -474,21 +489,7 @@ window.Point = ReactiveComponent
       @local.is_selected = is_selected
       save @local
 
-  setDraggability : ->
-    el = @refs.point_content
-    if el && !@dragstart_listener
-      @dragstart_listener_installed = (ev) =>
-        point = fetch @props.point
-        dnd_points = fetch 'drag and drop points'
-        dnd_points.dragging = point.key 
-        ev.dataTransfer.setData('text/plain', point.key)
-        ev.dataTransfer.effectAllowed = "move"
 
-      el.addEventListener "dragstart", @dragstart_listener_installed
-
-      el.addEventListener "dragend", (ev) =>
-        if ev.dataTransfer.dropEffect == "none"
-          @remove()
 
 
   included: -> 
@@ -497,32 +498,7 @@ window.Point = ReactiveComponent
     your_opinion = proposal.your_opinion
     your_opinion.point_inclusions ?= []
     your_opinion.point_inclusions.indexOf(@props.point) > -1
-
-  remove: -> 
-
-    point = fetch @props.point 
-    proposal = fetch point.proposal
-
-    validate_first = point.user == fetch('/current_user').user && point.includers.length < 2
-
-
-    if !validate_first || confirm('Are you sure you want to remove your point? It will be gone forever.')
-
-      your_opinion = proposal.your_opinion
-      your_opinion.point_inclusions ?= []
-      your_opinion.point_inclusions = _.without your_opinion.point_inclusions, \
-                                                @props.point
-
-      your_opinion.key ?= "/new/opinion"
-      save(your_opinion)
-      window.writeToLog
-        what: 'removed point'
-        details: 
-          point: @props.point
-    else 
-      el = @refs.point_content
-      el.style.left = '-11px'
-      el.style.top = '-11px'
+    
   include: -> 
     point = fetch @props.point 
     proposal = fetch point.proposal
@@ -625,19 +601,18 @@ window.Point = ReactiveComponent
 
 styles += """
 
-/* war! disabled jquery UI draggable class defined with !important */
-.point_content.ui-draggable-disabled {
+.point_content[draggable="false"] {
   cursor: pointer !important; }
 
-.commenting-disabled .point_content.ui-draggable-disabled {
-  cursor: auto !important; }
+.commenting-disabled .point_content[draggable="false"] {
+  cursor: auto; }
 
 
 .commenting-disabled .point_details_tease {
   cursor: auto;
 }
 
-#{css.grab_cursor('.point_content.ui-draggable')}
+#{css.grab_cursor('.point_content[draggable="true"]')}
 
 .community_point .point_content {
   border-radius: 16px;

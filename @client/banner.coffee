@@ -126,8 +126,6 @@ CustomizeGoogleTranslate = ReactiveComponent
 
           DIV 
             className: 'google-translate-candidate-container'
-            style: 
-              margin: 'auto'
 
 
 

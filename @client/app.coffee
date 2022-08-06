@@ -30,7 +30,7 @@ require './opinion_slider'
 require './tooltip'
 require './popover'
 require './flash'
-require './development'
+# require './development'
 require './su'
 require './edit_point'
 require './edit_comment'
@@ -409,8 +409,8 @@ Root = ReactiveComponent
         app = fetch('/application')   
 
         DIV null, 
-          if app.dev
-            Development()
+          # if app.dev
+          #   Development()
 
           if current_user.is_super_admin || app.su
             SU()

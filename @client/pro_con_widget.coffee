@@ -19,8 +19,6 @@ window.Pro_Con_Widget = ReactiveComponent
     just_you = opinion_views?.active_views['just_you']
 
 
-    show_all_points = @props.show_all_points
-
     # A number of elements controlled by other components are absolutely 
     # positioned within the reasons region (e.g. discussions, decision
     # board, new point). We need to set a minheight that is large enough to 
@@ -44,7 +42,7 @@ window.Pro_Con_Widget = ReactiveComponent
 
 
     # if there aren't community_points, then we won't bother showing them
-    community_points = fetch("/page/#{proposal.slug}").points or []
+    community_points = (pnt for pnt in fetch("/page/#{proposal.slug}").points or [] when pnt.includers?.length > 0)
     if mode == 'crafting'
       included_points = your_opinion.point_inclusions or []
       community_points = (pnt for pnt in community_points when !_.contains(included_points, pnt.key) )
@@ -57,7 +55,6 @@ window.Pro_Con_Widget = ReactiveComponent
 
     has_selection = opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
     show_all_points = @local.show_all_points || mode == 'crafting' || community_points.length < 8 || has_selection
-
 
     point_cols = ['your_con_points', 'your_pro_points', 'community_cons', 'community_pros']
     edit_mode = false
@@ -96,7 +93,7 @@ window.Pro_Con_Widget = ReactiveComponent
       onDrop : (ev) =>
         # point_key = ev.dataTransfer.getData('text/plain')
         point_key = fetch('point-dragging').point
-        
+
         return if !point_key
         point = fetch point_key
 
@@ -216,7 +213,7 @@ window.Pro_Con_Widget = ReactiveComponent
           top: -8
           overflowY: if !show_all_points then 'hidden'  
           overflowX: if !show_all_points then 'auto' 
-          minHeight: 440
+          minHeight: if mode == 'crafting' then 440 else 220
 
         #reasons
         SECTION 

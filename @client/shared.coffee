@@ -184,7 +184,10 @@ window.getCoords = (el) ->
   offset = 
     top: rect.top + window.pageYOffset - docEl.clientTop
     left: rect.left + window.pageXOffset - docEl.clientLeft
+
   _.extend offset,
+    width: rect.width
+    height: rect.height
     cx: offset.left + rect.width / 2
     cy: offset.top + rect.height / 2
     right: offset.left + rect.width

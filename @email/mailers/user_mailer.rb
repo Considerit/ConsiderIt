@@ -72,7 +72,7 @@ class UserMailer < Mailer
     when 'proposer'
       @action = 'add new proposals at'
     when 'admin'
-      @action = 'administer'
+      @action = 'host'
     when 'editor'
       @action = 'edit'
     when 'visitor'

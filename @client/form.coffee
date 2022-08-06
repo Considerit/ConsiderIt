@@ -75,7 +75,7 @@ window.AutoGrowTextArea = ReactiveComponent
     if !@local.height
       @local.height = @props.min_height
 
-    className = "AutoGrowTextArea #{if @props.className then @props.className else ''}"
+    className = "AutoGrowTextArea #{if @props.className then @props.className else ''} skiptranslate"
 
     props = _.extend {}, @props,
       className: className
@@ -325,6 +325,7 @@ window.WysiwygEditor = ReactiveComponent
             className: 'wysiwyg_text' # for formatting like proposals 
           
             DIV 
+              className: 'skiptranslate'
               id: 'editor'
               ref: 'editor'
               dangerouslySetInnerHTML:{__html: @initial_html}

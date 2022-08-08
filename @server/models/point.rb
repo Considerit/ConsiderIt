@@ -56,8 +56,11 @@ class Point < ApplicationRecord
 
     result['includers'] = result['includers'] || []
     result['includers'].map! {|u| hide_name && u == user_id ? -1 : u}
-    result['includers'].map! {|u| "/user/#{u}"}
+    result['includers'].map! {|u| u.is_a?(Integer) ? "/user/#{u}" : u}
         
+    result["created_at"] = result["created_at"].to_time.utc
+    result["updated_at"] = result["updated_at"].to_time.utc
+
     make_key(result, 'point')
     stubify_field(result, 'proposal')
     stubify_field(result, 'user')

@@ -155,6 +155,11 @@
         %script{:async => true, :defer => true, :src => 'https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.5.3/jsoneditor.min.js', :type => 'text/javascript'}
         %link{:rel => 'stylesheet', :href => 'https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.5.3/jsoneditor.min.css'}
 
+        - if current_subdomain.name == 'homepage'
+          %script{:async => "true", :src => "#{@vendor}/vendor/d3.v3.min.js", :type => 'text/javascript'}
+
+
+
       - if @app == 'product_page' && @google_ads_id
         %script{:async => true, :src => "https://www.googletagmanager.com/gtag/js?id=#{@google_ads_id}"}
 

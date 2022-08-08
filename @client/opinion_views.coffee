@@ -922,6 +922,9 @@ construct_view_for_attribute = (attribute) ->
 
   pass = (u) -> 
     user = fetch(u)
+
+    return false if !user.tags
+
     val_for_user = user.tags[attr_key]
     is_array = Array.isArray(val_for_user)
 

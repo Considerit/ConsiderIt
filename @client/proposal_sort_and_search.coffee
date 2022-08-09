@@ -245,39 +245,12 @@ sort_options = [
     name: 'Most unifying first'
     description: "The proposals on which participants are most united for or against are shown first."
     order: (proposals) -> 
-      cache = {}
-      opinion_views = fetch 'opinion_views'
-      val = (proposal) ->
-        if proposal.key not of cache 
-          opinions = fetch(proposal).opinions or []   
-          {weights, salience, groups} = compose_opinion_views opinions, proposal, opinion_views
-          sum = 0
-          weight = 0 
-          for opinion in opinions
-            continue if salience[opinion.user] < 1 # don't count users who aren't fully salient, they're considered backgrounded
-            w = weights[opinion.user] # * salience[opinion.user]
-            sum += opinion.stance * w
-            weight += w
-
-          avg = sum / weight
-
-          differences = 0
-          weight = 0 
-          for opinion in opinions
-            continue if salience[opinion.user] < 1 # don't count users who aren't fully salient, they're considered backgrounded
-            w = weights[opinion.user] # * salience[opinion.user]
-            differences += w * (opinion.stance - avg) * (opinion.stance - avg)
-            weight += w
-
-          std_dev = Math.sqrt(differences / weight)
-          if opinions.length > 1
-            cache[proposal.key] = Math.log(opinions.length + 1) / std_dev / (1 - Math.abs(avg) + 1)
-          else 
-            cache[proposal.key] = -1
-
-        cache[proposal.key]
-      proposals.sort (a, b) -> val(b) - val(a)
-
+      for sort in sort_options
+        if sort.name == 'Most polarizing first'
+          sorted = sort.order(proposals)
+          sorted.reverse()
+          return sorted
+      return []
 
   }, { 
     name: 'Most polarizing first'

@@ -930,6 +930,10 @@ construct_view_for_attribute = (attribute) ->
 
     passing_vals = (val for val,enabled of opinion_views_ui.visible_attribute_values[attr_key] when enabled)
 
+    if 'either' in passing_vals
+      passing_vals.push 'true'
+      passing_vals.push 'false'
+
     passes = false
     for passing_val in passing_vals
 
@@ -1067,13 +1071,23 @@ InteractiveOpinionViews = ReactiveComponent
               if attribute.render 
                 attribute.render()
               else 
+                is_grouped = opinion_views_ui.group_by == attribute.key
+
+                true_false = !is_grouped && true in attribute.options && false in attribute.options && attribute.options.length == 2
+                
+                if true_false
+                  options = ['true', 'false', 'either']
+                else 
+                  options = attribute.options
+
                 UL null, 
 
-                  for val in attribute.options
-                    is_grouped = opinion_views_ui.group_by == attribute.key
-                    checked = !!opinion_views_ui.visible_attribute_values[attribute.key][val]
-
-                    val_name = "#{val}" 
+                  for val in options                      
+                    if true_false && opinion_views_ui.visible_attribute_values[attribute.key]['true'] && opinion_views_ui.visible_attribute_values[attribute.key]['false']
+                      checked = val == 'either'
+                    else 
+                      checked = !!opinion_views_ui.visible_attribute_values[attribute.key][val]
+                    val_name = "#{val}"
                     shortened = false 
                     if val_name.length > 25
                       val_name = "#{val_name.substring(0,22)}..."
@@ -1090,16 +1104,21 @@ InteractiveOpinionViews = ReactiveComponent
                         LABEL 
                           className: "attribute_value_selector"
                           title: if shortened then val 
+
                           SPAN
                             className: if is_grouped then 'toggle_switch' else ''
 
                             INPUT 
-                              type: 'checkbox'
-                              # className: 'bigger'
+                              type: if true_false then 'radio' else 'checkbox'
                               value: val
                               checked: checked
                               onChange: (e) ->
                                 # create a view on the fly for this attribute
+                                if true_false
+                                  opinion_views_ui.visible_attribute_values[attribute.key][true] = false
+                                  opinion_views_ui.visible_attribute_values[attribute.key][false] = false
+                                  opinion_views_ui.visible_attribute_values[attribute.key]["either"] = false
+
                                 opinion_views_ui.visible_attribute_values[attribute.key][val] = e.target.checked
                                 save opinion_views_ui
                                 construct_view_for_attribute(attribute)
@@ -1705,6 +1724,11 @@ styles += """
     cursor: pointer;
     margin-right: 18px;
   }
+
+  .attribute_value_selector > span {
+    display: flex; 
+    align-items: center;
+  }
   .attribute_value_selector input {
 
   }
@@ -1713,6 +1737,7 @@ styles += """
     font-size: 12px;
     font-weight: 400;
     letter-spacing: -1px;
+    text-transform: capitalize; 
   }
 
   .opinion-date-filter {

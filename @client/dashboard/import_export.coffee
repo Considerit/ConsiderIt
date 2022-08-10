@@ -68,14 +68,17 @@ window.DataDash = ReactiveComponent
           className: 'explanation'
           "A download will begin in a couple seconds after hitting export. The zip file contains four spreadsheets: opinions, points, proposals, and users."
 
-        BUTTON
+        INPUT
           type: 'submit'
           className: 'btn' 
           style: 
             marginTop: 18
             fontSize: 20
 
-          'Export'
+          onClick: => 
+            show_flash(translator('admin.flashes.export_started', "Your export has started. It can take a little while."))
+
+          value: 'Export'
 
 
 

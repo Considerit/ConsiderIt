@@ -113,7 +113,7 @@ window.show_popover = (e) ->
 
 
 calc_coords = (el) ->
-  coords = $(el).offset()
+  coords = $$.offset(el)
   coords.width = el.offsetWidth
   coords.height = el.offsetHeight
   coords.left += el.offsetWidth / 2
@@ -124,11 +124,11 @@ calc_coords = (el) ->
 document.addEventListener "mouseover", show_popover
 document.addEventListener "mouseout", hide_popover
 
-$('body').on 'focusin', '[data-popover]', show_popover
-$('body').on 'focusout', '[data-popover]', hide_popover
+$$.add_delegated_listener document.body, 'focusin', '[data-popover]', show_popover
+$$.add_delegated_listener document.body, 'focusout', '[data-popover]', hide_popover
 
+$$.add_delegated_listener document.body, 'click', '[data-popover]', toggle_popover
 
-$('body').on 'click', '[data-popover]', toggle_popover
 
 window.Popover = ReactiveComponent
   displayName: 'Popover'
@@ -260,6 +260,7 @@ window.Popover = ReactiveComponent
         G null,
           for x1 in [0.866, 530.874]
             LINE 
+              key: x1
               x1: x1
               y1: 0.5
               x2: 265.87
@@ -276,8 +277,8 @@ window.Popover = ReactiveComponent
 
     if popover.coords 
       rendered_size = 
-        width: @getDOMNode().offsetWidth
-        height: @getDOMNode().offsetHeight
+        width: ReactDOM.findDOMNode(@).offsetWidth
+        height: ReactDOM.findDOMNode(@).offsetHeight
 
       popover.rendered_size ?= {}
 

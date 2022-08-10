@@ -245,39 +245,12 @@ sort_options = [
     name: 'Most unifying first'
     description: "The proposals on which participants are most united for or against are shown first."
     order: (proposals) -> 
-      cache = {}
-      opinion_views = fetch 'opinion_views'
-      val = (proposal) ->
-        if proposal.key not of cache 
-          opinions = fetch(proposal).opinions or []   
-          {weights, salience, groups} = compose_opinion_views opinions, proposal, opinion_views
-          sum = 0
-          weight = 0 
-          for opinion in opinions
-            continue if salience[opinion.user] < 1 # don't count users who aren't fully salient, they're considered backgrounded
-            w = weights[opinion.user] # * salience[opinion.user]
-            sum += opinion.stance * w
-            weight += w
-
-          avg = sum / weight
-
-          differences = 0
-          weight = 0 
-          for opinion in opinions
-            continue if salience[opinion.user] < 1 # don't count users who aren't fully salient, they're considered backgrounded
-            w = weights[opinion.user] # * salience[opinion.user]
-            differences += w * (opinion.stance - avg) * (opinion.stance - avg)
-            weight += w
-
-          std_dev = Math.sqrt(differences / weight)
-          if opinions.length > 1
-            cache[proposal.key] = Math.log(opinions.length + 1) / std_dev / (1 - Math.abs(avg) + 1)
-          else 
-            cache[proposal.key] = -1
-
-        cache[proposal.key]
-      proposals.sort (a, b) -> val(b) - val(a)
-
+      for sort in sort_options
+        if sort.name == 'Most polarizing first'
+          sorted = sort.order(proposals)
+          sorted.reverse()
+          return sorted
+      return []
 
   }, { 
     name: 'Most polarizing first'
@@ -463,7 +436,7 @@ ProposalSort = ReactiveComponent
       #       position: 'relative'
 
       #     onSubmit: (e) => 
-      #       n = @refs.new_filter.getDOMNode()
+      #       n = @refs.new_filter
       #       filters.for_proposals ||= []
       #       filters.for_proposals.push n.value
       #       save filters
@@ -591,6 +564,7 @@ FilterProposalsMenu = ReactiveComponent
             ": "
 
             SPAN 
+              key: 'filter_name'
               style: 
                 fontWeight: 700
                 paddingLeft: 8
@@ -606,6 +580,7 @@ FilterProposalsMenu = ReactiveComponent
         render_option: (option, is_active) -> 
           [
             SPAN 
+              key: 'option-name'
               "data-filter": option.name
               style: 
                 # fontWeight: 600
@@ -616,6 +591,7 @@ FilterProposalsMenu = ReactiveComponent
 
             if !browser.is_mobile
               SPAN 
+                key: 'help icon'
                 style: 
                   float: 'right'
                 HelpIcon translator("engage.filter.#{option.name}.description", option.description),
@@ -657,6 +633,7 @@ SortProposalsMenu = ReactiveComponent
             ": "
 
             SPAN 
+              key: 'sort name'
               style: 
                 fontWeight: 700
                 paddingLeft: 8
@@ -672,6 +649,7 @@ SortProposalsMenu = ReactiveComponent
         render_option: (option, is_active) -> 
           [
             SPAN 
+              key: 'sort name'
               "data-sort": option.name
               style: 
                 # fontWeight: 600
@@ -682,6 +660,7 @@ SortProposalsMenu = ReactiveComponent
 
             if !browser.is_mobile
               SPAN 
+                key: 'help-icon'
                 style: 
                   float: 'right'
                 HelpIcon translator "engage.sort_order.#{option.name}.description", option.description

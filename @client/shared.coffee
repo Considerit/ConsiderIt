@@ -67,6 +67,7 @@ window.back_to_homepage_button = (style, text) ->
       className: 'back_to_homepage'
       title: 'back to homepage'
       key: 'back_to_homepage_button'
+      "data-no-scroll": true
       href: "/##{hash}"
       style: _.defaults {}, style,
         fontSize: 43
@@ -91,8 +92,18 @@ window.back_to_homepage_button = (style, text) ->
 
 ####
 # Make the DIV, SPAN, etc.
-for el of React.DOM
-  window[el.toUpperCase()] = React.DOM[el]
+for el of ReactDOMFactories
+  window[el.toUpperCase()] = React.createFactory(el) # ReactDOMFactories[el]
+
+USE_STRICT_MODE = false
+if USE_STRICT_MODE
+  window['STRICTMODE'] = React.createFactory(React.StrictMode)
+
+if ReactFlipToolkit?
+  window.FLIPPER = React.createFactory(ReactFlipToolkit.Flipper)
+  window.FLIPPED = React.createFactory(ReactFlipToolkit.Flipped)
+  window.EXITCONTAINER = React.createFactory(ReactFlipToolkit.ExitContainer)
+
 
 window.TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
 
@@ -148,18 +159,18 @@ window.POINT_MOUTH_WIDTH = 17
 # props: 
 #   public_key: the key to store the heartbeat at
 #   interval: length between pulses, in ms (default=1000)
-window.HEARTBEAT = ReactiveComponent
-  displayName: 'heartbeat'
+# window.HEARTBEAT = ReactiveComponent
+#   displayName: 'heartbeat'
 
-  render: ->   
-    beat = fetch(@props.public_key or 'pulse')
-    if !beat.beat?
-      setInterval ->   
-        beat.beat = (beat.beat or 0) + 1
-        save(beat)
-      , (@props.interval or 1000)
+#   render: ->   
+#     beat = fetch(@props.public_key or 'pulse')
+#     if !beat.beat?
+#       setInterval ->   
+#         beat.beat = (beat.beat or 0) + 1
+#         save(beat)
+#       , (@props.interval or 1000)
 
-    SPAN null
+#     SPAN null
 
 
 
@@ -173,7 +184,10 @@ window.getCoords = (el) ->
   offset = 
     top: rect.top + window.pageYOffset - docEl.clientTop
     left: rect.left + window.pageXOffset - docEl.clientLeft
+
   _.extend offset,
+    width: rect.width
+    height: rect.height
     cx: offset.left + rect.width / 2
     cy: offset.top + rect.height / 2
     right: offset.left + rect.width
@@ -215,29 +229,14 @@ window.namespaced_key = (base_key, base_object) ->
   
   "#{namespace_key}_#{base_key}"
 
-window.proposal_url = (proposal, prefer_crafting_page) ->
-  # The special thing about this function is that it only links to
-  # "?results=true" if the proposal has an opinion.
-
-  proposal = fetch proposal
-  result = '/' + proposal.slug
-  subdomain = fetch '/subdomain'
-
-  if TWO_COL() || !proposal.active || (!customization('show_crafting_page_first', proposal, subdomain) && !prefer_crafting_page) || !customization('discussion_enabled', proposal, subdomain)
-    result += '?results=true'
-
-  return result
-
-window.isNeutralOpinion = (stance) -> 
-  return Math.abs(stance) < 0.05
-
   
 
 ##
 # logging
 
 window.on_ajax_error = () ->
-  (root = fetch('root')).server_error = true
+  root = fetch('root')
+  root.server_error = true
   save(root)
 
 window.on_client_error = (e) ->
@@ -307,10 +306,6 @@ window.prettyDate = (time) ->
   r = r.replace('1 days ago', '1 day ago').replace('1 weeks ago', '1 week ago').replace('1 years ago', '1 year ago')
   r
 
-
-window.shorten = (str, max_length) ->
-  max_length ||= 70
-  "#{str.substring(0, max_length)}#{if str.length > max_length then '...' else ''}"
 
 window.inRange = (val, min, max) ->
   return val <= max && val >= min
@@ -407,7 +402,7 @@ window.reset_key = (obj_or_key, updates) ->
   save obj_or_key
 
 
-window.safe_string = (user_content) -> 
+safe_string = (user_content) -> 
   user_content = user_content.replace(/(<li>|<br\s?\/?>|<p>)/g, '\n') #add newlines
   user_content = user_content.replace(/(<([^>]+)>)/ig, "") #strips all tags
 
@@ -432,9 +427,15 @@ window.splitParagraphs = (user_content, append) ->
   user_content = safe_string user_content
 
   paragraphs = user_content.split(/(?:\r?\n)/g)
+  if paragraphs.length < 2
+    WRAPPER = SPAN
+  else 
+    WRAPPER = P
 
   for para,pidx in paragraphs
-    P key: "para-#{pidx}", 
+    WRAPPER 
+      key: "para-#{pidx}"
+
       # now split around all links
       for text,idx in para.split '(*-&)'
         if text.substring(0,5) == 'link:'
@@ -452,14 +453,22 @@ window.widthWhenRendered = (str, style) ->
   # This DOM manipulation is relatively expensive, so cache results
   key = JSON.stringify _.extend({str: str}, style)
   if key not of width_cache
-    _.defaults style, 
-      display: 'inline-block'
-    $el = $("<span id='width_test'><span>#{str}</span></span>").css(style)
-    $('#content').append($el)
-    width = $('#width_test span').width()
-    $('#width_test').remove()
+    style.display ?= 'inline-block'
+
+    el = document.createElement 'span'
+    el.id = "width_test"
+    el.style.setProperty 'visibility', 'hidden'
+    el.innerHTML = "<span>#{str}</span>"
+
+    parent = document.getElementById('content')
+    parent.appendChild el
+    $$.setStyles "#width_test", style
+    width = $$.width el
+    parent.removeChild(el)
+
     width_cache[key] = width
   width_cache[key]
+
 
 
 height_cache = {}
@@ -467,13 +476,23 @@ window.heightWhenRendered = (str, style) ->
   # This DOM manipulation is relatively expensive, so cache results
   key = JSON.stringify _.extend({str: str}, style)
   if key not of height_cache
-    $el = $("<div id='height_test'>#{str}</div>").css(style)
-    $('#content').append($el)
-    height = $('#height_test').height()
-    $('#height_test').remove()
-    height_cache[key] = height
+    el = document.createElement 'div'
+    el.id = "height_test"
+    el.style.setProperty 'visibility', 'hidden'
+    el.innerHTML = "<span>#{str}</span>"
 
+    parent = document.getElementById('content')
+    parent.appendChild el
+    $$.setStyles "#height_test", style
+    height = $$.height el
+    parent.removeChild(el)
+
+    height_cache[key] = height
   height_cache[key]
+
+
+
+
 
 # Computes the width/height of some text given some styles
 size_cache = {}
@@ -535,37 +554,6 @@ window.location_origin = ->
   else 
     window.location.origin
 
-window.parseURL = (url) ->
-  parser = document.createElement('a')
-  parser.href = url
-
-  pathname = parser.pathname or '/'
-  if pathname[0] != '/'
-    pathname = "/#{pathname}"
-  searchObject = {}
-
-  alt_search = new URLSearchParams(parser.search)
-
-  queries = parser.search.replace(/^\?/, '').split('&')  
-  i = 0
-  while i < queries.length
-    if queries[i].length > 0
-      split = queries[i].split('=')
-      searchObject[split[0]] = alt_search.get(split[0])
-    i++
-
-  {
-    protocol: parser.protocol
-    host: parser.host
-    hostname: parser.hostname
-    port: parser.port
-    pathname: pathname
-    search: parser.search
-    searchObject: searchObject
-    hash: parser.hash
-  }
-
-
 
 ##############################
 ## Styles
@@ -579,49 +567,7 @@ window.focus_color = -> focus_blue
 # Adapted from https://gist.github.com/ddemaree/5470343
 window.css = {}
 
-css_as_str = (attrs) -> _.keys(attrs).map( (p) -> "#{p}: #{attrs[p]}").join(';') + ';'
-
-css.crossbrowserify = (props, as_str = false) -> 
-
-  prefixes = ['-webkit-', '-ms-', '-mox-', '-o-']
-
-
-  if props.transform
-    for prefix in prefixes
-      props["#{prefix}transform"] = props.transform
-
-  if props.transformOrigin
-    for prefix in prefixes
-      props["#{prefix}transform-origin"] = props.transform
-
-  if props.flex 
-    for prefix in prefixes
-      props["#{prefix}flex"] = props.flex
-
-  if props.flexDirection
-    for prefix in prefixes
-      props["#{prefix}flex-direction"] = props.flexDirection
-
-  if props.justifyContent
-    for prefix in prefixes
-      props["#{prefix}justify-content"] = props.justifyContent
-
-
-  if props.display == 'flex'
-    props.display = 'display: table-cell; -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex'
-
-  if props.transition
-    for prefix in prefixes
-      props["#{prefix}transition"] = props.transition.replace("transform", "#{prefix}transform")
-
-  if props.userSelect
-    _.extend props,
-      MozUserSelect: props.userSelect
-      WebkitUserSelect: props.userSelect
-      msUserSelect: props.userSelect
-
-
-  if as_str then css_as_str(props) else props
+css.crossbrowserify = (styles) -> styles # legacy method now no-op-ing
 
 css.grayscale = (props) ->
   if browser.is_mobile
@@ -783,7 +729,7 @@ window.play_videos_when_in_viewport = (parent_el, args) ->
 
 
 ## CSS reset
-focus_shadow = 'inset 0 0 2px rgba(0,0,0,.3), 0 0 2px rgba(0,0,0,.3)'
+
 window.styles += """
 /* RESET
  * Eric Meyer's Reset CSS v2.0 (http://meyerweb.com/eric/tools/css/reset/)
@@ -908,6 +854,10 @@ button.like_link, input[type='submit'].like_link {
   vertical-align: middle;
   cursor: pointer;
   user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+
   border-radius: .25rem;
   transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
   margin: 0;

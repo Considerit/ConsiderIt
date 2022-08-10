@@ -2,8 +2,6 @@
 # Core considerit client code
 #////////////////////////////////////////////////////////////
 
-
-
 require './element_viewport_positioning'
 require './activerest-m'
 require 'dashboard/dashboard'
@@ -26,14 +24,13 @@ require './opinion_views'
 require './tabs'
 require './header'
 require './footer'
-require './homepage'
 require './shared'
+require './homepage'
 require './opinion_slider'
-# require './state_dash'
 require './tooltip'
 require './popover'
 require './flash'
-require './development'
+# require './development'
 require './su'
 require './edit_point'
 require './edit_comment'
@@ -98,10 +95,11 @@ AccessibilitySupport = ReactiveComponent
 
 
 
+# Legacy component (TODO: migrate where it is used)
 About = ReactiveComponent
   displayName: 'About'
 
-  componentWillMount : ->
+  UNSAFE_componentWillMount : ->
     @local.embed_html_directly = true
     @local.html = null
     @local.save
@@ -110,20 +108,19 @@ About = ReactiveComponent
   componentDidUpdate : -> @handleContent()
 
   handleContent : -> 
-    $el = $(@getDOMNode())
+    el = ReactDOM.findDOMNode(@)
 
     if @local.embed_html_directly
       # have to use appendChild rather than dangerouslysetinnerhtml
       # because scripts in the about page html won't get executed
       # when using dangerouslysetinnerhtml
       if @local.html
-        $el.find('.embedded_about_html').html @local.html
+        @refs.embedded_about_html.innerHTML = @local.html
 
     else
       # REACT iframes don't support onLoad, so we need to figure out when 
       #               to check the height of the loaded content ourselves      
-      $el.prop('tagName').toLowerCase() == 'iframe'
-      iframe = $el[0]
+      iframe = el
       _.delay ->
         try 
           iframe.height = iframe.contentWindow.document.body.scrollHeight + "px"
@@ -151,7 +148,9 @@ About = ReactiveComponent
           width: CONTENT_WIDTH()
           style: {display: 'block', margin: 'auto'}
       else
-        DIV className: 'embedded_about_html'
+        DIV
+          ref: 'embedded_about_html'
+          className: 'embedded_about_html'
 
 
 
@@ -206,10 +205,10 @@ Page = ReactiveComponent
     subdomain = fetch('/subdomain')
     loc = fetch('location')
     auth = fetch('auth')
+    page = fetch @props.page
 
     access_granted = @accessGranted()
 
-    return LOADING_INDICATOR if !fetch('customizations_signature').signature
 
     DIV
       className: 'full_height'
@@ -221,13 +220,15 @@ Page = ReactiveComponent
       STYLE 
         dangerouslySetInnerHTML: __html: customization('style')
 
-        
-      Header(key: 'page_header') if access_granted
+      if access_granted
+        Header
+          key: 'page_header'
+          
 
 
       MAIN 
         role: 'main'
-        className: if loc.url == '/' then 'main_background'
+        className: if loc.url == '/' || EXPAND_IN_PLACE then 'main_background'
         style: 
           position: 'relative'
           # zIndex: 1
@@ -260,7 +261,7 @@ Page = ReactiveComponent
               HistogramTester()
 
             else
-              if @page?.result == 'Not found'
+              if page?.result == 'Not found'
                 DIV 
                   style: 
                     textAlign: 'center'
@@ -275,16 +276,19 @@ Page = ReactiveComponent
                       fontSize: 16
                     "Check if the url is correct. The author may also have deleted it. Good luck!"
 
+              else if EXPAND_IN_PLACE
+                Homepage key: 'homepage'
+
               else 
                 result = null
 
-                if @page.proposal 
-                  result = Proposal key: @page.proposal
-                else if !@page.proposal? && arest.cache['/proposals']?.proposals?
+                if page.proposal 
+                  result = Proposal key: page.proposal, proposal: page.proposal
+                else if !page.proposal? && arest.cache['/proposals']?.proposals?
                   # search to see if we already have this proposal loaded
                   for proposal in arest.cache['/proposals'].proposals
                     if '/' + proposal.slug == loc.url
-                      result = Proposal key: "/proposal/#{proposal.id}"
+                      result = Proposal key: "/proposal/#{proposal.id}", proposal: "/proposal/#{proposal.id}"
                       break 
 
                 result or LOADING_INDICATOR
@@ -297,16 +301,39 @@ Root = ReactiveComponent
   displayName: 'Root'
 
   render : -> 
+
     loc = fetch('location')
     app = fetch('/application')
+    subdomain = fetch '/subdomain'
+    current_user = fetch('/current_user')    
     page = fetch("/page#{loc.url}")
+
+
+    setTimeout ->
+      fetch '/users'
+      if loc.url == '/'
+
+        setTimeout ->
+          fetch '/proposals'
+
+    if !fetch('customizations_signature').signature || !app.web_worker
+      return  DIV 
+                className: 'full_height'
+
+                CustomizationTransition()
+
+                DIV 
+                  style: 
+                    position: 'absolute'
+                    left: '48%'
+                  LOADING_INDICATOR
+
     return ProposalsLoading() if !app.web_worker
 
-    subdomain = fetch '/subdomain'
-    current_user = fetch('/current_user')
 
     fonts = customization('font')
     header_fonts = customization('header_font') or fonts
+
     DIV 
       className: 'full_height'
       # Track whether the user is currently swipping. Used to determine whether
@@ -366,7 +393,13 @@ Root = ReactiveComponent
           
           BrowserHacks()
 
-          Page key: "/page#{loc.url}"
+          if EXPAND_IN_PLACE
+            Page
+              page: "/page#{loc.url}"
+          else 
+            Page 
+              key: "/page#{loc.url}"
+              page: "/page#{loc.url}"
 
       Tooltip()
       Popover()
@@ -376,8 +409,8 @@ Root = ReactiveComponent
         app = fetch('/application')   
 
         DIV null, 
-          if app.dev
-            Development()
+          # if app.dev
+          #   Development()
 
           if current_user.is_super_admin || app.su
             SU()
@@ -388,7 +421,7 @@ Root = ReactiveComponent
     #       top. There are global interdependencies to unwind as well.
 
     loc = fetch('location')
-    page = fetch("/page#{loc.url}")
+    page = get_page()
 
     if !fetch('auth').form && page.proposal
 
@@ -424,9 +457,11 @@ Root = ReactiveComponent
         save wysiwyg_editor
 
 
+
 # exports...
 window.Franklin = Root
 
+window.get_page = -> fetch("/page#{fetch('location').url}")
 
 require './app_loader'
 

@@ -5,14 +5,12 @@ class HtmlController < ApplicationController
 
   def index
 
-    if Rails.env.development?
-      if params[:domain]
-        candidate_subdomain = Subdomain.find_by_name(params[:domain])
-        if candidate_subdomain && session[:default_subdomain] != params[:domain]
-          session[:default_subdomain] = candidate_subdomain.name
-          redirect_to request.fullpath 
-          return
-        end
+    if Rails.env.development? && params[:domain]
+      candidate_subdomain = Subdomain.find_by_name(params[:domain])
+      if candidate_subdomain && session[:default_subdomain] != params[:domain]
+        session[:default_subdomain] = candidate_subdomain.name
+        redirect_to request.fullpath 
+        return
       end
     end
 

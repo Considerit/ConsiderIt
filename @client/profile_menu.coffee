@@ -76,6 +76,7 @@ window.ProfileMenu = ReactiveComponent
                     marginTop: 1
 
                 SPAN 
+                  key: 'username'
                   style: 
                     color: if menu_showing then '#777'
                     fontSize: 18
@@ -84,6 +85,7 @@ window.ProfileMenu = ReactiveComponent
                     paddingRight: 12
                   current_user.name
                 I 
+                  key: 'caret'
                   className: 'fa fa-caret-down'
                   style: 
                     visibility: if menu_showing then 'hidden'
@@ -162,6 +164,7 @@ window.ProfileMenu = ReactiveComponent
 
               for config in settings
                 LI 
+                  key: config.name
                   style: 
                     marginBottom: 6
 
@@ -258,7 +261,7 @@ window.ProfileMenu = ReactiveComponent
           fontWeight: 600
           padding: '4px 12px'
           fontSize: 21
-          borderRadius: if ! @local.show_verify then 8
+          borderRadius: if !@local.show_verify then 8
           position: 'relative'
           cursor: 'pointer'
 

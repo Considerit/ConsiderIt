@@ -107,7 +107,7 @@ def permit(action, object = nil, user = nil)
       return Permission::INSUFFICIENT_PRIVILEGES 
     end
 
-  when 'read proposal', 'access forum', 'read opinion'
+  when 'read proposal', 'access forum', 'read opinion' # if you try to use object (a proposal object), you need to change Proposal.summaries, which doesn't pass in a proposal object
     if !user.is_admin?(subdomain) && !Permitted::matchSomeRole(subdomain.user_roles, ['visitor'], user) 
       if !user.registered
         return Permission::NOT_LOGGED_IN 

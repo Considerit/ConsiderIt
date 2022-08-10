@@ -110,6 +110,7 @@ window.Homepage = ReactiveComponent
 
                 for message in messages
                   DIV 
+                    key: message
                     style: 
                       marginBottom: 24 
                       fontStyle: 'italic'
@@ -149,7 +150,7 @@ window.Homepage = ReactiveComponent
 
   typeset : -> 
     subdomain = fetch('/subdomain')
-    if subdomain.name == 'RANDOM2015' && $('.MathJax').length == 0
+    if subdomain.name == 'RANDOM2015' && !document.querySelector('.MathJax')
       MathJax.Hub.Queue(["Typeset", MathJax.Hub, ".proposal_homepage_name"])
 
   componentDidMount : -> @typeset()
@@ -277,7 +278,7 @@ ProposalsLoading = ReactiveComponent
 
       translator "loading_indicator", "Loading...there is much to consider!"
 
-  componentWillMount: -> 
+  UNSAFE_componentWillMount: -> 
     @int = setInterval => 
       @local.cnt += 1 
       save @local 

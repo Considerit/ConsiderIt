@@ -128,7 +128,7 @@ window.EditProposal = ReactiveComponent
             translator("engage.edit_proposal.description_label", "Details")
           
           WysiwygEditor
-            key:"description-#{proposal.key}"
+            editor_key:"description-#{proposal.key}"
             style: _.extend {}, input_style,
               minHeight: 20
             html: if @props.fresh then null else proposal.description
@@ -158,18 +158,21 @@ window.EditProposal = ReactiveComponent
 
                 [
                   OPTION 
+                    key: 'new-cat'
                     style: 
                       fontStyle: 'italic'
                     value: 'new category'
                     'Create new category'
 
                   OPTION 
+                    key: 'nothing'
                     disabled: "disabled"
                     '--------'
                 ]
 
               for list_key in available_lists
-                OPTION  
+                OPTION 
+                  key: list_key 
                   value: list_key.substring(5)
                   get_list_title list_key, true 
 
@@ -331,9 +334,9 @@ window.EditProposal = ReactiveComponent
     name = document.getElementById("name").value 
     description = fetch("description-#{proposal.key}").html
 
-    category = @refs.category.getDOMNode().value
+    category = @refs.category.value
     if current_user.is_admin && category == 'new category'
-      category = @refs.new_category.getDOMNode().value    
+      category = @refs.new_category.value    
     category = null if category == ''
 
     active = document.getElementById('open_for_discussion').checked

@@ -43,6 +43,7 @@ window.AvatarInput = ReactiveComponent
         IMG 
           alt: ''
           id: 'avatar_preview'
+          ref: 'avatar_preview'
           style: 
             width: 60
             display: if !@local.preview then 'none'
@@ -67,17 +68,17 @@ window.AvatarInput = ReactiveComponent
         accept: "image/jpg, image/jpeg, image/pjpeg, image/png, image/x-png, image/gif, image/webp"        
         style: {marginTop: 24, verticalAlign: 'top'}
         onChange: (ev) => 
-          input = $('#user_avatar')[0]
+          input = ev.target
           if input.files && input.files[0]
             reader = new FileReader()
             reader.onload = (e) =>
               @local.preview = true 
               @local.newly_uploaded = e.target.result
               save @local
-              $("#avatar_preview").attr 'src', e.target.result
+              @refs.avatar_preview.setAttribute 'src', e.target.result
             reader.readAsDataURL input.files[0]
           else
-            $("#avatar_preview").attr('src', asset('no_image_preview.png'))
+            @refs.avatar_preview.setAttribute 'src', asset('no_image_preview.png')
 
 window.upload_avatar = ->
   current_user = fetch '/current_user'

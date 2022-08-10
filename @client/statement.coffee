@@ -22,7 +22,7 @@ window.BUBBLE_WRAP = ReactiveComponent
       width: 50
       height: 50
       left: -64
-      boxShadow: '-1px 2px 0 0 #eeeeee;'
+      boxShadow: '-1px 2px 0 0 #eeeeee'
 
     DIV
       style: 
@@ -32,7 +32,7 @@ window.BUBBLE_WRAP = ReactiveComponent
 
       if @props.user 
         Avatar
-          key: @props.user 
+          key: @props.user.key or @props.user 
           style: pic_style
           hide_popover: false 
           anonymous: @props.anon
@@ -57,7 +57,7 @@ window.BUBBLE_WRAP = ReactiveComponent
 
 
         DIV 
-          style: css.crossbrowserify mouth_style
+          style: mouth_style
 
           Bubblemouth 
             apex_xfrac: 0

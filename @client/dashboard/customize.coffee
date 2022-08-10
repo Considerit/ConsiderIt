@@ -319,7 +319,7 @@ JSONEditorTextArea = ReactiveComponent
 
   componentDidMount: -> 
 
-    editor = new JSONEditor @getDOMNode(), 
+    editor = new JSONEditor ReactDOM.findDOMNode(@), 
       mode: 'code'
       modes: ['tree', 'code']
       onChange: =>
@@ -354,7 +354,7 @@ CodeMirrorTextArea = ReactiveComponent
 
         cm.replaceSelection o, "end", "+input"
 
-    @m = CodeMirror.fromTextArea @refs.field.getDOMNode(), _.defaults (@props.opts or {}),        
+    @m = CodeMirror.fromTextArea @refs.field, _.defaults (@props.opts or {}),        
           lineNumbers: true
           matchBrackets: true
           indentUnit: 2

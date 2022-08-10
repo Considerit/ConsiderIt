@@ -126,8 +126,6 @@ CustomizeGoogleTranslate = ReactiveComponent
 
           DIV 
             className: 'google-translate-candidate-container'
-            style: 
-              margin: 'auto'
 
 
 
@@ -178,7 +176,7 @@ CustomizeTitle = ReactiveComponent
       if is_admin && edit_forum.editing
 
         AutoGrowTextArea 
-          ref: 'primary_input'
+          id: 'banner_primary_input'
           className: 'banner_title'
           defaultValue: title
           style: @props.style
@@ -196,9 +194,13 @@ CustomizeTitle = ReactiveComponent
           onDoubleClick: if is_admin then => 
             edit_forum.editing = true 
             save edit_forum
-            setTimeout => 
-              @refs.primary_input?.getDOMNode().focus()
-              @refs.primary_input?.getDOMNode().setSelectionRange(-1, -1) # put cursor at end
+            int = setInterval => 
+              textarea = document.getElementById('banner_primary_input')
+              if textarea
+                textarea.focus()
+                textarea.setSelectionRange(-1, -1) # put cursor at end
+                clearInterval(int)
+            , 10
 
 
 CustomizeDescription = ReactiveComponent
@@ -240,7 +242,7 @@ CustomizeDescription = ReactiveComponent
 
           """
         WysiwygEditor
-          key: "forum-description"
+          editor_key: "forum-description"
           style: @props.style
           horizontal: true
           html: description
@@ -263,8 +265,8 @@ CustomizeDescription = ReactiveComponent
               @local.focus_on_mount = true
               save edit_forum
               setTimeout => 
-                @refs.primary_input?.getDOMNode().focus()
-                @refs.primary_input?.getDOMNode().setSelectionRange(-1, -1) # put cursor at end
+                @refs.primary_input?.focus()
+                @refs.primary_input?.setSelectionRange(-1, -1) # put cursor at end
         else if @props.opts.supporting_text
           @props.opts.supporting_text()
 
@@ -275,14 +277,11 @@ UploadFileSVG = (opts) ->
     height: opts.height or 100
     width: opts.height or 100
     fill: opts.fill or '#fff'
-    xmlns: "http://www.w3.org/2000/svg" 
-    'xmlns:xlink': "http://www.w3.org/1999/xlink" 
-    version: "1.1" 
     x: 0
     y: 0
     viewBox: "0 0 100 100"
     style: 
-      'enable-background': "new 0 0 100 100" 
+      enableBackground: "new 0 0 100 100" 
 
 UploadableLogo = (opts) ->
   edit_forum = fetch 'edit_forum'
@@ -335,14 +334,11 @@ UploadableLogo = (opts) ->
           height: delete_size
           width: delete_size
           fill: '#fff'
-          xmlns: "http://www.w3.org/2000/svg" 
-          'xmlns:xlink': "http://www.w3.org/1999/xlink" 
-          version: "1.1" 
           x: 0
           y: 0
           viewBox: "0 0 511.995 511.995"
           style: 
-            'enable-background': "new 0 0 511.995 511.995" 
+            enableBackground: "new 0 0 511.995 511.995" 
 
           dangerouslySetInnerHTML: __html: """
             <g>
@@ -837,13 +833,13 @@ window.EditBanner = ReactiveComponent
 
     delete_masthead = (e) =>
       edit_banner.masthead_preview = '*delete*' 
-      @refs.masthead_file_input.getDOMNode().value = ''
+      @refs.masthead_file_input.value = ''
       @delete_masthead = true 
       save edit_banner
 
     delete_logo = (e) =>
       edit_banner.logo_preview = '*delete*' 
-      @refs.logo_file_input.getDOMNode().value = ''
+      @refs.logo_file_input.value = ''
       @delete_logo = true 
       save edit_banner
 
@@ -944,8 +940,8 @@ window.EditBanner = ReactiveComponent
 
 
   componentDidUpdate: -> 
-    submit_masthead = @refs.masthead_file_input?.getDOMNode().files?.length > 0
-    submit_logo =     @refs.logo_file_input?.getDOMNode().files?.length > 0
+    submit_masthead = @refs.masthead_file_input?.files?.length > 0
+    submit_logo =     @refs.logo_file_input?.files?.length > 0
     
     if submit_masthead || submit_logo || @delete_logo || @delete_masthead
       @submit_files()
@@ -970,8 +966,8 @@ window.EditBanner = ReactiveComponent
       success: (response) =>
         @delete_logo = false 
         @delete_masthead = false     
-        @refs.masthead_file_input?.getDOMNode().value = null
-        @refs.logo_file_input?.getDOMNode().value = null
+        @refs.masthead_file_input?.value = null
+        @refs.logo_file_input?.value = null
 
         try 
           resp = JSON.parse(response)
@@ -995,7 +991,7 @@ window.EditBanner = ReactiveComponent
 window.PhotoBanner = (opts) -> 
   opts ?= {}
   
-  homepage = fetch('location').url == '/'
+  homepage = EXPAND_IN_PLACE || fetch('location').url == '/'
   subdomain = fetch '/subdomain'
   edit_banner = fetch 'edit_banner'
   edit_forum = fetch 'edit_forum'

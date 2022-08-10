@@ -8,7 +8,7 @@ require './dock'
 
 
 old_BUTTON = BUTTON
-window.BUTTON = React.createClass
+window.BUTTON = React.createFactory createReactClass
   displayName: 'modified_BUTTON'
   render: -> 
     new_props = {}
@@ -53,14 +53,14 @@ window.AutoGrowTextArea = ReactiveComponent
   componentDidMount : -> 
     @checkAndSetHeight()
     if @props.focus_on_mount 
-      @refs.input.getDOMNode().focus()
+      @refs.input.focus()
 
   componentDidUpdate : -> @checkAndSetHeight()
 
   checkAndSetHeight : ->
-    scroll_height = @getDOMNode().scrollHeight
+    scroll_height = ReactDOM.findDOMNode(@).scrollHeight
     max_height = @props.max_height or 600
-    client_height = @getDOMNode().clientHeight
+    client_height = ReactDOM.findDOMNode(@).clientHeight
     if scroll_height > client_height
 
       h = Math.min scroll_height + 5, max_height
@@ -75,12 +75,20 @@ window.AutoGrowTextArea = ReactiveComponent
     if !@local.height
       @local.height = @props.min_height
 
-    @transferPropsTo TEXTAREA
-      className: 'AutoGrowTextArea'
+    className = "AutoGrowTextArea #{if @props.className then @props.className else ''} skiptranslate"
+
+    props = _.extend {}, @props,
+      className: className
       onChange: @onChange
       rows: 1
       style: _.extend {}, (@props.style or {}), {height: @local.height}
       ref: 'input'
+    
+    for prop_to_strip in ['parents', 'min_height', 'focus_on_mount', 'onHeightChange']
+      if prop_to_strip of props
+        delete props[prop_to_strip]
+
+    TEXTAREA props
 
 
 window.CharacterCountTextInput = ReactiveComponent
@@ -93,6 +101,18 @@ window.CharacterCountTextInput = ReactiveComponent
     count_style = @props.count_style or {}
 
     class_name = "is_counted"
+
+    props = _.extend {}, @props,
+      ref: 'input' 
+      className: class_name
+      onChange: =>
+       @local.count = ReactDOM.findDOMNode(@refs.input).value.length
+       save(@local)
+
+    for prop_to_strip in ['parents', 'count_style', 'focus_on_mount']
+      if prop_to_strip of props
+        delete props[prop_to_strip]
+
     DIV 
       style: 
         position: 'relative' 
@@ -109,16 +129,11 @@ window.CharacterCountTextInput = ReactiveComponent
           characters_left: @props.maxLength - @local.count
           "{characters_left, plural, one {# character} other {# characters}} left"
 
-      @transferPropsTo TEXTAREA
-        ref: 'input' 
-        className: class_name
-        onChange: =>
-         @local.count = $(@getDOMNode()).find('textarea').val().length
-         save(@local)
+      TEXTAREA props
 
   componentDidMount: ->
     if @props.focus_on_mount
-      @refs.input.getDOMNode().focus()
+      @refs.input.focus()
 
 
 # Quill = require './vendor/quill-1.0.js'
@@ -127,7 +142,7 @@ window.WysiwygEditor = ReactiveComponent
   displayName: 'WysiwygEditor'
 
   render : ->
-    my_data = fetch @props.key
+    my_data = fetch @props.editor_key
     subdomain = fetch '/subdomain'
     wysiwyg_editor = fetch 'wysiwyg_editor'
 
@@ -173,14 +188,25 @@ window.WysiwygEditor = ReactiveComponent
       # },
     ]
 
+
+    close_if_nothing_in_menu_focused = =>
+      setTimeout => 
+        if !$$.closest(document.activeElement, "##{id}")
+          wysiwyg_editor = fetch 'wysiwyg_editor'
+          wysiwyg_editor.showing = false
+          save wysiwyg_editor
+      , 0
+
+
     if fetch('/current_user').is_admin || @props.allow_html
       toolbar_items.push 
         className: 'fa fa-code'
         title: 'Directly edit HTML'
         onClick: => @local.edit_code = true; save @local
 
+    id = @props.editor_key.replace(/\//g, '__')
     DIV 
-      id: @props.key
+      id: id
       style: 
         position: 'relative'
 
@@ -197,7 +223,7 @@ window.WysiwygEditor = ReactiveComponent
             fontSize: 18
           defaultValue: my_data.html
           onChange: (e) => 
-            my_data = fetch(@props.key)
+            my_data = fetch(@props.editor_key)
             my_data.html = e.target.value
             save my_data
 
@@ -224,16 +250,17 @@ window.WysiwygEditor = ReactiveComponent
                 left: if !toolbar_horizontal then -32
                 top: if toolbar_horizontal then -25 else 0
                 display: 'block'
-                visibility: if wysiwyg_editor.showing != @props.key then 'hidden'
+                visibility: if wysiwyg_editor.showing != @props.editor_key then 'hidden'
 
               onFocus: (e) => 
                 if !@local.focused_toolbar_item && !@local.just_unfocused
 
-                  if !@local.focused_toolbar_item?
+                  if @local.focused_toolbar_item in [undefined, null]
                     @local.focused_toolbar_item = 0 
                     save @local
-
-                  @refs["toolbaritem-#{@local.focused_toolbar_item}"].getDOMNode().focus()
+                
+                if @local.focused_toolbar_item not in [undefined, null] 
+                  ReactDOM.findDOMNode(@refs["toolbaritem-#{@local.focused_toolbar_item}"]).focus()
 
               onKeyDown: (e) => 
 
@@ -250,12 +277,14 @@ window.WysiwygEditor = ReactiveComponent
                       i = 0
                   @local.focused_toolbar_item = i
                   save @local 
-                  @refs["toolbaritem-#{i}"].getDOMNode().focus()
+
+                  ReactDOM.findDOMNode(@refs["toolbaritem-#{i}"]).focus()
                   e.preventDefault()
 
               for button, idx in toolbar_items
                 do (idx) =>
                   BUTTON
+                    key: button.title or idx
                     ref: "toolbaritem-#{idx}"
                     tabIndex: if @local.focused_toolbar_item == idx then 0 else -1
                     className: button.className
@@ -288,22 +317,17 @@ window.WysiwygEditor = ReactiveComponent
                       , 0
                       save @local 
 
-                      # if the focus isn't still on an element inside of this menu, 
-                      # then we should close the menu                
-                      setTimeout => 
-                        if $(document.activeElement).closest(@getDOMNode()).length == 0
-                          wysiwyg_editor = fetch 'wysiwyg_editor'
-                          wysiwyg_editor.showing = false
-                          save wysiwyg_editor
-                      , 0
+                      close_if_nothing_in_menu_focused()
 
           DIV 
             style: _.defaults {}, @props.container_style, 
-              outline: if fetch('wysiwyg_editor').showing == @props.key then "2px solid #{focus_color()}"
+              outline: if fetch('wysiwyg_editor').showing == @props.editor_key then "2px solid #{focus_color()}"
             className: 'wysiwyg_text' # for formatting like proposals 
           
             DIV 
+              className: 'skiptranslate'
               id: 'editor'
+              ref: 'editor'
               dangerouslySetInnerHTML:{__html: @initial_html}
               onFocus: (e) => 
                 # Show the toolbar on focus
@@ -313,18 +337,10 @@ window.WysiwygEditor = ReactiveComponent
                 # in the same way that clicking outside a point closes it. 
                 # See Root.resetSelection.
                 wysiwyg_editor = fetch 'wysiwyg_editor'
-                wysiwyg_editor.showing = @props.key
+                wysiwyg_editor.showing = @props.editor_key
                 save wysiwyg_editor
 
-              onBlur: => 
-                # if the focus isn't still on an element inside of this menu, 
-                # then we should close the menu                
-                setTimeout => 
-                  if $(document.activeElement).closest(@getDOMNode()).length == 0
-                    wysiwyg_editor = fetch 'wysiwyg_editor'
-                    wysiwyg_editor.showing = false
-                    save wysiwyg_editor
-                , 0
+              onBlur: close_if_nothing_in_menu_focused
 
               style: @props.style
 
@@ -334,13 +350,13 @@ window.WysiwygEditor = ReactiveComponent
     return if !@supports_Quill
 
     getHTML = => 
-      @getDOMNode().querySelector(".ql-editor").innerHTML
+      ReactDOM.findDOMNode(@).querySelector(".ql-editor").innerHTML
 
     # Attach the Quill wysiwyg editor
-    @editor = new Quill $(@getDOMNode()).find('#editor')[0],    
+    @editor = new Quill @refs.editor,
       modules: 
         toolbar: 
-          container: $(@getDOMNode()).find('#toolbar')[0]
+          container: @refs.toolbar
       styles: true #if/when we want to define all styles, set to false
       placeholder: @props.placeholder
 
@@ -348,7 +364,7 @@ window.WysiwygEditor = ReactiveComponent
     delete keyboard.bindings[9]    # 9 is the key code for tab; restore tabbing for accessibility
 
     @editor.on 'text-change', (delta, old_contents, source) =>
-      my_data = fetch @props.key
+      my_data = fetch @props.editor_key
       my_data.html = getHTML()
 
       if source == 'user' && my_data.html.indexOf(' style') > -1

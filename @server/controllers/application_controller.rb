@@ -26,9 +26,9 @@ class ApplicationController < ActionController::Base
 
   def application
     dirty_key '/application'
-    dirty_key '/subdomain' # just to eliminate a couple renders
+    # dirty_key '/subdomain' # just to eliminate a couple renders
     dirty_key '/current_user' # just to eliminate a couple renders
-    dirty_key '/users'
+    # dirty_key '/users'
     for lang in [ (current_user[:lang] || "en"), (current_subdomain[:lang] || "en"), "en"].uniq
       dirty_key "/translations/#{lang}"
       dirty_key "/translations/#{current_subdomain.name}/#{lang}"
@@ -263,6 +263,9 @@ protected
 
       elsif key.match "/subdomain/"
         response.append Subdomain.find(key[11..key.length]).as_json({:include_id => true})
+
+      elsif key == "/subdomains"
+        response.append Subdomain.all.map { |s| s.as_json({:include_id => true})  }
 
       elsif key == '/current_user'
         response.append current_user.current_user_hash(form_authenticity_token)

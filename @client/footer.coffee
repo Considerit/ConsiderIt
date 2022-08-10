@@ -64,6 +64,7 @@ window.DefaultFooter = ReactiveComponent
           color: 'white'
 
         DIV 
+          key: 'back2top'
           dangerouslySetInnerHTML: __html: """
             <style>
             .custom-shape-divider-top-1651729272 {
@@ -113,6 +114,7 @@ window.DefaultFooter = ReactiveComponent
                 marginBottom: 18
 
               A 
+                key: 'considerit-link'
                 href: 'https://github.com/Considerit/ConsiderIt'
                 style: 
                   textDecoration: 'underline'
@@ -133,6 +135,7 @@ window.DefaultFooter = ReactiveComponent
 
 
               A 
+                key: 'create-forum'
                 href: 'https://consider.it'
                 style: 
                   display: 'inline-block'
@@ -151,32 +154,42 @@ window.DefaultFooter = ReactiveComponent
           # more info
 
           DIV 
+            key: 'more_info'
             style: 
               fontSize: 12
               textAlign: 'center'
               marginTop: 20
 
             SPAN 
+              key: 'considerit-errata'
               style: 
                 display: 'flex'
                 alignItems: 'center'
                 justifyContent: 'center'
 
-              DIV null,
-                '© Consider.it LLC. All rights reserved. '
+              DIV 
+                key: 'privacy & terms'
+  
+                SPAN 
+                  key: 'copyright'
+                  '© Consider.it LLC. All rights reserved. '
 
                 TRANSLATE
+                  key: 'footer policies'
                   id: 'footer.policies'
                   privacy_link: 
                     component: A 
                     args: 
+                      key: 'privacy_link'
                       href: '/privacy_policy'
                       style: 
                         textDecoration: 'underline'
 
                   terms_link:
+                    key: 'terms'
                     component: A 
                     args: 
+                      key: 'terms_link'
                       href: '/terms_of_service'
                       style: 
                         textDecoration: 'underline'
@@ -184,6 +197,7 @@ window.DefaultFooter = ReactiveComponent
                   "<privacy_link>Privacy</privacy_link> and <terms_link>Terms</terms_link>."
 
               DIV 
+                key: 'bug reports'
                 style: 
                   marginLeft: 40
 
@@ -192,6 +206,7 @@ window.DefaultFooter = ReactiveComponent
                   link: 
                     component: A
                     args: 
+                      key: 'mailto'
                       style: 
                         textDecoration: 'underline'                    
                       href: 'mailto:help@consider.it'
@@ -211,14 +226,14 @@ require './logo'
 window.TechnologyByConsiderit = ReactiveComponent
   displayName: 'TechnologyByConsiderit'
   render : -> 
-    @props.size ||= 20
+    size = @props.size or 20
 
     color = @props.color or logo_red
     DIV 
       style: 
         textAlign: 'left'
         display: 'inline-block'
-        fontSize: @props.size
+        fontSize: size
       "Technology by "
       A 
         onMouseEnter: => 
@@ -236,7 +251,7 @@ window.TechnologyByConsiderit = ReactiveComponent
           left: 3
         
         drawLogo 
-          height: @props.size + 5
+          height: size + 5
           main_text_color: color
           o_text_color: color
           clip: false

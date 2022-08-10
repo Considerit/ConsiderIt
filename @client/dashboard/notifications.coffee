@@ -159,6 +159,7 @@ window.Notifications = ReactiveComponent
 
         for u in ['hour', 'day', 'week', 'month']
           OPTION
+            key: u
             value: "1_#{u}"
             if u == 'day'
               translator "email_notifications.frequency.daily", 'daily'
@@ -189,6 +190,7 @@ window.Notifications = ReactiveComponent
                 checked ||= settings[evnt].email_trigger
 
               LI 
+                key: trigger.name
                 style: 
                   display: 'block'
                   padding: '10px 0'

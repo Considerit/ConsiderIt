@@ -157,6 +157,7 @@ window.ShowHostQuestions = ReactiveComponent
         for [label, render, question] in host_questions
           field_id = render?.props?.id or render?[0]?.props?.id
           LI 
+            key: label
             style: 
               marginBottom: 24
 
@@ -230,6 +231,7 @@ window.ShowHostQuestions = ReactiveComponent
 
           when 'text'
             input = INPUT
+              key: label
               style: _.defaults question.input_style or {}, 
                 marginBottom: 6
                 width: 300
@@ -254,6 +256,7 @@ window.ShowHostQuestions = ReactiveComponent
             input = 
 
               DIV 
+                key: label
                 style: 
                   marginBottom: 10
 
@@ -303,6 +306,7 @@ window.ShowHostQuestions = ReactiveComponent
 
           when 'checklist'
             input = DIV 
+              key: label
               style: 
                 margin: "10px 18px"
 
@@ -312,7 +316,8 @@ window.ShowHostQuestions = ReactiveComponent
 
                   options_checked = (opt.split(OTHER_SEPARATOR)[0] for opt in current_user.tags[question.tag]?.split(CHECKLIST_SEPARATOR) or [])
                   is_checked = options_checked.indexOf(option) > -1
-                  DIV null,
+                  DIV 
+                    key: key
 
                     INPUT
                       id: slugify("#{key}-inputBox")
@@ -338,8 +343,8 @@ window.ShowHostQuestions = ReactiveComponent
 
                         if question.open_text_option == option && event.target.checked
                           int = setInterval =>
-                            if @refs["open_value-#{question.tag}"] && !@refs["open_value-#{question.tag}"].getDOMNode().getAttribute('disabled')
-                              @refs["open_value-#{question.tag}"].getDOMNode().focus()
+                            if @refs["open_value-#{question.tag}"] && !@refs["open_value-#{question.tag}"].getAttribute('disabled')
+                              @refs["open_value-#{question.tag}"].focus()
                               clearInterval(int)
                           , 10
 
@@ -387,19 +392,21 @@ window.ShowHostQuestions = ReactiveComponent
 
                   if question.open_text_option == event.target.value
                     int = setInterval =>
-                      if @refs["open_value-#{question.tag}"] && !@refs["open_value-#{question.tag}"].getDOMNode().getAttribute('disabled')
-                        @refs["open_value-#{question.tag}"].getDOMNode().focus()
+                      if @refs["open_value-#{question.tag}"] && !@refs["open_value-#{question.tag}"].getAttribute('disabled')
+                        @refs["open_value-#{question.tag}"].focus()
                         clearInterval(int)
                     , 10
 
 
                 [
                   OPTION 
+                    key: 'none'
                     value: ''
                     disabled: true 
                     hidden: true
                   for value in question.options
                     OPTION  
+                      key: value
                       value: value
                       value
                 ]
@@ -427,7 +434,7 @@ window.ShowHostQuestions = ReactiveComponent
         #         style: 
         #           color: '#888'
         #           fontSize: 12
-        #         translator('optional')
+        #         translator('optional', 'optional')
 
         #   label = [op, label] 
 

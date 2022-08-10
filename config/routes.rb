@@ -57,7 +57,10 @@ ConsiderIt::Application.routes.draw do
     get "/payments/successful" => 'product_page#stripe_successful'
     get "/payments/failed" => 'product_page#stripe_failed'  
     get "/payments/payment_intent" => 'product_page#stripe_create_payment_intent'    
-    get "/payments/public_key" => 'product_page#stripe_public'    
+    get "/payments/public_key" => 'product_page#stripe_public' 
+
+    # legal agreements
+    get "/legal/:name" => "product_page#legal"   
   end 
 
   get "/login_via_saml" => 'current_user#login_via_saml'
@@ -134,7 +137,8 @@ ConsiderIt::Application.routes.draw do
   get '/moderation/:id' => 'moderation#show'
 
   match "/moderation/:id" => 'moderation#update', :via => :put
-  post '/dashboard/message' => 'direct_message#create', :as => 'message'
+
+  match '/dashboard/message' => 'direct_message#create', :via => [:put]
 
   post "/dashboard/data_import_export" => 'import_data#create'
 

@@ -232,7 +232,7 @@ customizations.default =
 
   new_proposal_fields: -> 
    name:  translator("engage.edit_proposal.summary_label", "Summary")
-   description: translator("engage.edit_proposal.description_label", "Details") + " (#{translator('optional')})" 
+   description: translator("engage.edit_proposal.description_label", "Details") + " (#{translator('optional', 'optional')})" 
    additional_fields: []
    create_description: (fields) -> fields.description
 

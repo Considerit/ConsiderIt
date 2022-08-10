@@ -4,8 +4,8 @@
 
 styles += """
   .google-translate-candidate-container {
-    width: 158px;
     height: 25px;
+    min-width: 190px;
   }
 """
 window.GoogleTranslate = ReactiveComponent
@@ -37,6 +37,7 @@ window.GoogleTranslate = ReactiveComponent
       DIV 
         key: "google_translate_element_#{@local.key}"
         id: "google_translate_element_#{@local.key}"
+        ref: 'translation_el'
         style: style
 
   insertTranslationWidget: -> 
@@ -63,13 +64,24 @@ window.GoogleTranslate = ReactiveComponent
     # of an element with a class of google-translate-candidate-container
     @placer_int = setInterval =>
       wrapper = document.querySelector '.google-translate-candidate-container'
-      return if !wrapper
+      translate_el = google?.translate?.TranslateElement
+
+      return if !wrapper || !translate_el
+
       coords = getCoords(wrapper)
-      if coords.left != @local.left || coords.top != @local.top
-        @local.left = coords.left
-        @local.top = coords.top
+
+      left = coords.left + coords.width / 2 - @refs.translation_el.clientWidth / 2
+      top = coords.top
+
+      # set by Google Translate when a language is selected, which screws up the top calculation
+      if document.body.style.top == "40px" 
+        top -= 40
+
+      if @local.left != left || top != @local.top
+        @local.left = left
+        @local.top = top
         save @local
-    , 100
+    , 500
 
   componentWillUnmount: ->
     clearInterval @int

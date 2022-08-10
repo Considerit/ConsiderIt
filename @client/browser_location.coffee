@@ -17,6 +17,37 @@ require './browser_hacks'
 ######
 # Public API
 
+
+parseURL = (url) ->
+  parser = document.createElement('a')
+  parser.href = url
+
+  pathname = parser.pathname or '/'
+  if pathname[0] != '/'
+    pathname = "/#{pathname}"
+  searchObject = {}
+
+  alt_search = new URLSearchParams(parser.search)
+
+  queries = parser.search.replace(/^\?/, '').split('&')  
+  i = 0
+  while i < queries.length
+    if queries[i].length > 0
+      split = queries[i].split('=')
+      searchObject[split[0]] = alt_search.get(split[0])
+    i++
+
+  {
+    protocol: parser.protocol
+    host: parser.host
+    hostname: parser.hostname
+    port: parser.port
+    pathname: pathname
+    search: parser.search
+    searchObject: searchObject
+    hash: parser.hash
+  }
+
 ####
 # loadPage
 #
@@ -62,31 +93,32 @@ window.loadPage = (url, query_params) ->
 
 old_A = A
 window.is_swipping = false
-window.A = React.createClass
+window.A = React.createFactory createReactClass
   displayName: 'modified_A'
   render : -> 
 
-    props = @props
-    if @props.href
-      @_onclick = @props.onClick or (-> null)
+    props = _.extend {}, @props
+    if props.href
+      @_onclick = props.onClick or (-> null)
 
       if browser.is_mobile
-        @props.onTouchEnd = (e) => 
+        props.onTouchEnd = (e) => 
           # don't follow the link if the user is in the middle of swipping
           if !is_swipping
             @handleClick(e)
 
         if browser.is_android_browser
-          @props.onClick = (e) -> e.preventDefault(); e.stopPropagation()
+          props.onClick = (e) -> e.preventDefault(); e.stopPropagation()
 
       else
-        @props.onClick = @handleClick
+        props.onClick = @handleClick
 
 
     old_A props, props.children
 
   handleClick: (event) -> 
-    node = @getDOMNode()
+    node = ReactDOM.findDOMNode(@)
+    no_scroll = node.getAttribute('data-no-scroll')
     href = node.getAttribute('href') 
               # use getAttribute rather than .href so we 
               # can easily check relative vs absolute url
@@ -108,16 +140,15 @@ window.A = React.createClass
       loadPage href
       @_onclick event
 
-      # setTimeout =>
+      setTimeout =>
         # When we navigate to another internal page, we typically want the 
         # page to be scrolled to the top of the new page. The programmer can
         # set "data-no-scroll" on the link if they wish to prevent this 
         # behavior.
-      if !@getDOMNode().getAttribute('data-no-scroll')
-        window.scrollTo(0, 0)
-      # , 100
+        if !no_scroll || no_scroll == 'false'
+          window.scrollTo(0, 0)
+      , 1
                       
-      return false
     else
       @_onclick event
 
@@ -179,13 +210,16 @@ window.BrowserLocation = ReactiveComponent
 
         el ||= document.querySelector("[name=\"#{loc.hash}\"]") || document.querySelector("#p#{loc.hash}")
 
+
         if el
           # If there are docked elements, we want to scroll a bit 
           # before the element so that the docked elements don't 
           # obscure the section headings
           docks = fetch('docking_station')
           seek_below = docks.y_stack or 50
-          $(window).scrollTop getCoords(el).top - seek_below
+          
+          window.scrollTo 0, getCoords(el).top - seek_below
+
           el.focus()
           clearInterval int 
       , 100

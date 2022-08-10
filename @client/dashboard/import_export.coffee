@@ -68,14 +68,17 @@ window.DataDash = ReactiveComponent
           className: 'explanation'
           "A download will begin in a couple seconds after hitting export. The zip file contains four spreadsheets: opinions, points, proposals, and users."
 
-        BUTTON
+        INPUT
           type: 'submit'
           className: 'btn' 
           style: 
             marginTop: 18
             fontSize: 20
 
-          'Export'
+          onClick: => 
+            show_flash(translator('admin.flashes.export_started', "Your export has started. It can take a little while."))
+
+          value: 'Export'
 
 
 
@@ -121,6 +124,7 @@ window.DataDash = ReactiveComponent
 
           for table in tables
             DIV
+              key: table
               style: 
                 display: 'flex'
 
@@ -156,6 +160,7 @@ window.DataDash = ReactiveComponent
           if current_user.is_super_admin
             [
               DIV 
+                key: 'generate_inclusions'
                 style: 
                   padding: '20px 0 20px 20px' 
                 INPUT type: 'checkbox', name: 'generate_inclusions', id: 'generate_inclusions'
@@ -169,6 +174,7 @@ window.DataDash = ReactiveComponent
                   """
 
               DIV 
+                key: 'assign_pics'
                 style: 
                   padding: '20px 0 20px 20px' 
                 INPUT type: 'checkbox', name: 'assign_pics', id: 'assign_pics'
@@ -187,7 +193,8 @@ window.DataDash = ReactiveComponent
 
             onClick: (e) => 
               e.preventDefault()
-              $('html, #submit_import').css('cursor', 'wait')
+
+              $$.setStyles 'html, #submit_import', {cursor: 'wait'}
 
               ajax_submit_files_in_form
                 form: '#import_data'
@@ -203,14 +210,15 @@ window.DataDash = ReactiveComponent
                     @local.errors = data[0].errors
                     save @local
                   else
-                    $('html, #submit_import').css('cursor', '')
+                    $$.setStyles 'html, #submit_import', {cursor: ''}
+
                     # clear out statebus 
                     arest.clear_matching_objects((key) -> key.match( /\/page\// ))
                     @local.errors = null
                     @local.successes = data[0]
                     save @local
                 error: (result) => 
-                  $('html, #submit_import').css('cursor', '')
+                  $$.setStyles 'html, #submit_import', {cursor: ''}
                   @local.successes = null                      
                   @local.errors = ['Unknown error parsing the files. Email tkriplean@gmail.com.']
                   save @local

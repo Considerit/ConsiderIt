@@ -785,7 +785,7 @@ OpinionViews = ReactiveComponent
                 style: 
                   left: triangle_left
                   bottom: if browser.is_mobile then -27 else -25
-                dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="#979797"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
+                dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13"><g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="#979797"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
 
 
           SPAN 
@@ -922,10 +922,17 @@ construct_view_for_attribute = (attribute) ->
 
   pass = (u) -> 
     user = fetch(u)
+
+    return false if !user.tags
+
     val_for_user = user.tags[attr_key]
     is_array = Array.isArray(val_for_user)
 
     passing_vals = (val for val,enabled of opinion_views_ui.visible_attribute_values[attr_key] when enabled)
+
+    if 'either' in passing_vals
+      passing_vals.push 'true'
+      passing_vals.push 'false'
 
     passes = false
     for passing_val in passing_vals
@@ -1025,6 +1032,7 @@ InteractiveOpinionViews = ReactiveComponent
                   attr_name = "#{attr_name.substring(0,37)}..."
                   shortened = true
                 LI 
+                  key: attr_name
                   style: 
                     display: 'inline-block'
 
@@ -1049,6 +1057,7 @@ InteractiveOpinionViews = ReactiveComponent
         continue if !opinion_views_ui.activated_attributes[attribute.key]
         do (attribute) => 
           DIV 
+            key: attribute.key
             className: 'attribute_wrapper'
 
             DIV 
@@ -1062,13 +1071,23 @@ InteractiveOpinionViews = ReactiveComponent
               if attribute.render 
                 attribute.render()
               else 
+                is_grouped = opinion_views_ui.group_by == attribute.key
+
+                true_false = !is_grouped && true in attribute.options && false in attribute.options && attribute.options.length == 2
+                
+                if true_false
+                  options = ['true', 'false', 'either']
+                else 
+                  options = attribute.options
+
                 UL null, 
 
-                  for val in attribute.options
-                    is_grouped = opinion_views_ui.group_by == attribute.key
-                    checked = !!opinion_views_ui.visible_attribute_values[attribute.key][val]
-
-                    val_name = "#{val}" 
+                  for val in options                      
+                    if true_false && opinion_views_ui.visible_attribute_values[attribute.key]['true'] && opinion_views_ui.visible_attribute_values[attribute.key]['false']
+                      checked = val == 'either'
+                    else 
+                      checked = !!opinion_views_ui.visible_attribute_values[attribute.key][val]
+                    val_name = "#{val}"
                     shortened = false 
                     if val_name.length > 25
                       val_name = "#{val_name.substring(0,22)}..."
@@ -1076,6 +1095,7 @@ InteractiveOpinionViews = ReactiveComponent
 
                     do (val) => 
                       LI 
+                        key: "#{val}:#{attribute.name}"
                         "data-attribute": attribute.name
                         "data-value": val
                         style: 
@@ -1084,16 +1104,21 @@ InteractiveOpinionViews = ReactiveComponent
                         LABEL 
                           className: "attribute_value_selector"
                           title: if shortened then val 
+
                           SPAN
                             className: if is_grouped then 'toggle_switch' else ''
 
                             INPUT 
-                              type: 'checkbox'
-                              # className: 'bigger'
+                              type: if true_false then 'radio' else 'checkbox'
                               value: val
                               checked: checked
                               onChange: (e) ->
                                 # create a view on the fly for this attribute
+                                if true_false
+                                  opinion_views_ui.visible_attribute_values[attribute.key][true] = false
+                                  opinion_views_ui.visible_attribute_values[attribute.key][false] = false
+                                  opinion_views_ui.visible_attribute_values[attribute.key]["either"] = false
+
                                 opinion_views_ui.visible_attribute_values[attribute.key][val] = e.target.checked
                                 save opinion_views_ui
                                 construct_view_for_attribute(attribute)
@@ -1171,6 +1196,7 @@ InteractiveOpinionViews = ReactiveComponent
               continue if !attribute.options
               do (attribute) =>
                 OPTION 
+                  key: idx
                   value: idx 
                   attribute.name or attribute.question
     
@@ -1367,6 +1393,7 @@ NonInteractiveOpinionViews = ReactiveComponent
       for mini in minimized_views
         do (mini) ->
           LI  
+            key: mini.label
             className: 'minimized_view_wrapper'
 
             SPAN 
@@ -1697,6 +1724,11 @@ styles += """
     cursor: pointer;
     margin-right: 18px;
   }
+
+  .attribute_value_selector > span {
+    display: flex; 
+    align-items: center;
+  }
   .attribute_value_selector input {
 
   }
@@ -1705,6 +1737,7 @@ styles += """
     font-size: 12px;
     font-weight: 400;
     letter-spacing: -1px;
+    text-transform: capitalize; 
   }
 
   .opinion-date-filter {
@@ -1802,6 +1835,7 @@ window.ToggleButtons = (items, view_state, style) ->
       do (item) =>
         key = item.key or item.label
         LI 
+          key: key
           className: if view_state.active == key then 'active'
           'data-view-state': key
           

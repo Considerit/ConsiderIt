@@ -48,7 +48,7 @@ toggle_modes = ->
           auth.form = if auth.form == 'create account' then 'login' else 'create account'
           save auth
           setTimeout =>
-            $('#user_email')[0].focus()
+            document.getElementById('user_email')?.focus()
           , 0
 
         toggle_to
@@ -216,7 +216,7 @@ window.CreateAccount = ReactiveComponent
                   marginLeft: 4
                   display: 'inline-block'
 
-                " (#{translator('optional')})"
+                " (#{translator('optional', 'optional')})"
 
             avatar_field
 

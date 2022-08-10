@@ -10,6 +10,10 @@ window.Header = ReactiveComponent
     current_user = fetch('/current_user')
     subdomain = fetch('/subdomain')
 
+
+    root = fetch('root')
+
+
     # auth = fetch('auth')
     # return SPAN null if auth.form && auth.form not in ['edit profile']
 
@@ -18,7 +22,7 @@ window.Header = ReactiveComponent
 
     
     loc = fetch('location')
-    is_homepage = loc.url == '/'
+    is_homepage = EXPAND_IN_PLACE || loc.url == '/'
     
 
     header_bonus = customization('header_bonus') # currently used for things like inserting google font
@@ -77,7 +81,7 @@ window.Header = ReactiveComponent
             backgroundColor: '#eee'
             color: '#f00'
             padding: '5px 20px'
-            display: if @root.server_error then 'block' else 'none'
+            display: if root.server_error then 'block' else 'none'
 
           translator "engage.server_error", 'Warning: there was a server error!'
 

@@ -33,9 +33,9 @@ document.addEventListener "keypress", (e) ->
     graph.on = !graph.on
     save graph
 
-for el of React.DOM
+for el of ReactDOMFactories
   if !window[el.toUpperCase()] 
-    this[el.toUpperCase()] = React.DOM[el]
+    this[el.toUpperCase()] = ReactDOMFactories[el]
 
 ######
 # StateGraph

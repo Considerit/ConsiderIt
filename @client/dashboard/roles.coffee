@@ -216,6 +216,7 @@ RadioWildcardRolesSection = (opts) ->
           type: 'radio'
           name: "radio_#{role.name}"
           checked: subdomain.roles[role.name].indexOf('*') > -1
+          readOnly: true
         
         LABEL
           htmlFor: "forum_open_#{role.name}"
@@ -228,6 +229,7 @@ RadioWildcardRolesSection = (opts) ->
           type: 'radio'
           name: "radio_#{role.name}"
           checked: subdomain.roles[role.name].indexOf('*') == -1
+          readOnly: true
 
         LABEL
           htmlFor: "forum_restricted_#{role.name}"
@@ -340,6 +342,7 @@ ModalAddRolesAndInvite = ReactiveComponent
 
           render_anchor: (menu_showing) =>
             INPUT 
+              key: 'filter'
               id: 'filter'
               type: 'text'
               style: {fontSize: 18, width: 350, padding: '3px 6px'}
@@ -359,11 +362,13 @@ ModalAddRolesAndInvite = ReactiveComponent
           render_option: (user) ->
             [
               SPAN 
+                key: 'name' 
                 style: 
                   fontWeight: 600
                 user.name 
 
               SPAN
+                key: 'email'
                 style: 
                   opacity: .7
                   paddingLeft: 8
@@ -441,6 +446,7 @@ ModalAddRolesAndInvite = ReactiveComponent
             AutoGrowTextArea 
               id: 'custom_email_message'
               name: 'custom_email_message'
+              ref: 'custom_email_message'
               placeholder: '(optional) custom message'
               style: {width: '90%', fontSize: 18, padding: '8px 14px'}
 
@@ -469,7 +475,7 @@ ModalAddRolesAndInvite = ReactiveComponent
                   target.invitations = []
 
                 invitation = {role: role, keys_or_emails: @local.added}
-                invitation.message = $('#custom_email_message').val()              
+                invitation.message = ReactDOM.findDOMNode(@refs.custom_email_message).value
                 target.invitations.push invitation
               
               @local.added = []

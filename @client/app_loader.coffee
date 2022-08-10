@@ -37,16 +37,17 @@
 
   document.body.appendChild style
 
+  container = document.getElementById('content')
+
+  root = ReactDOM.createRoot(container)
+
   switch app
 
     when 'franklin'      
-      if 'ontouchend' in document #detect touch support
-        React.initializeTouchEvents(true)
-
-      React.renderComponent Franklin({key: 'root'}), document.getElementById('content')
+      root.render Franklin()
 
     when 'proposal_embed'
-      React.renderComponent ProposalEmbed({key: app_meta.getAttribute('proposal')}), document.getElementById('content')
+      root.render ProposalEmbed({proposal: app_meta.getAttribute('proposal')})
 
 
 )()

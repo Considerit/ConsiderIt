@@ -103,7 +103,7 @@ window.Flash = ReactiveComponent
       DIV
         id: 'flash'
         className: if is_error then 'error'
-        ariaLive: "off"
+        'aria-live': "off"
         role: 'status'
         tabIndex: -1
 

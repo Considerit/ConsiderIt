@@ -58,12 +58,14 @@ window.TRANSLATE = (args, native_text) ->
   if !tr.in_situ_translations
     translation 
   else 
-    IN_SITU_TRANSLATOR _.extend({lang_used, target_lang, message, native_text}, args), translation
+    props = _.extend({lang_used, target_lang, message, native_text}, args)
+    props.translation_key = props.key
+    IN_SITU_TRANSLATOR props, translation
 
 IN_SITU_TRANSLATOR = ReactiveComponent
   displayName: 'InSituTranslator'
   render: ->
-    key = @props.key or '/translations'
+    key = @props.translation_key or '/translations'
     target_lang = @props.target_lang
 
     translated = @props.lang_used == target_lang
@@ -146,9 +148,9 @@ DEVELOPMENT_LANGUAGE = 'en'
 translation_cache = {}
 translations_loaded = false 
 window.T = window.t = window.translator = (args, native_text) -> 
-  if !native_text
-    native_text = ""
-    console.error("Native text for translation is null", args, native_text)
+  # if !native_text
+  #   native_text = ""
+  #   console.error("Native text for translation is null", args, native_text)
 
   if translations_loaded 
     cache_key = JSON.stringify(args, native_text)
@@ -261,7 +263,7 @@ TranslationsDash = ReactiveComponent
 
 
         SELECT 
-          value: local.translating_lang
+          value: local.translating_lang or subdomain.lang or 'en'
           style: 
             fontSize: 20
             marginLeft: 14
@@ -269,10 +271,10 @@ TranslationsDash = ReactiveComponent
           onChange: (ev) => 
             local.translating_lang = ev.target.value
             save local
-          defaultValue: subdomain.lang or 'en'
 
           for [k,v] in all_langs
             OPTION 
+              key: k
               value: k
               "#{v} (#{k})"
 
@@ -334,15 +336,15 @@ TranslationsDash = ReactiveComponent
 
             BUTTON
               onClick: => 
-                abbrev = @refs.newlang_abbrev.getDOMNode().value
-                label = @refs.newlang_label.getDOMNode().value
+                abbrev = @refs.newlang_abbrev.value
+                label = @refs.newlang_label.value
 
                 if abbrev not of translations.available_languages
                   translations.available_languages[abbrev] = label 
                   save translations
 
-                  @refs.newlang_abbrev.getDOMNode().value = ""
-                  @refs.newlang_label.getDOMNode().value = ""
+                  @refs.newlang_abbrev.value = ""
+                  @refs.newlang_label.value = ""
 
               "Add"
 
@@ -475,7 +477,8 @@ TranslationsForLang = ReactiveComponent
 
             rows = []
 
-            rows.push TR null,              
+            rows.push TR
+              key: 'preamble'              
               TD 
                 colSpan: cols.length 
                 style: 
@@ -500,12 +503,14 @@ TranslationsForLang = ReactiveComponent
 
 
             rows.push TR 
+              key: 'header'
               style: 
                 backgroundColor: '#dfdfdf'
 
 
               for col in cols
                 TH
+                  key: col
                   style: 
                     textAlign: 'left'
                     padding: "4px 6px"
@@ -574,6 +579,7 @@ TranslationsForLang = ReactiveComponent
                             else 
                               proposer = current_user 
                             LI 
+                              key: name
                               style: 
                                 padding: "2px 0px 8px 0px"
                                 listStyle: 'none'

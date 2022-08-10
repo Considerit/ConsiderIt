@@ -18,7 +18,7 @@
         if (url[0] === '/')
             server_fetch(url)
 
-        update_cache(extend({key: url}, defaults))
+        update_cache(extend({key: url}, defaults), true)
         return cache[url]
     }
 
@@ -62,13 +62,18 @@
     var new_index = 0
     var affected_keys = new Set()
     var re_render_timer = null
-    function update_cache(object) {
+    function update_cache(object, from_fetch) {
         function recurse(object) {
             // Recurses into object and folds it into the cache.
 
             // If this object has a key, update the cache for it
             var key = object && object.key
             if (key) {
+                // if (!key || !key.match) {
+                //     console.trace()
+                //     console.log(key)
+                // }
+
                 // Change /new/thing to /new/thing/45
                 if (key.match(new RegExp('^/new/'))     // Starts with /new/
                     && !key.match(new RegExp('/\\d+$'))) // Doesn't end in a /number
@@ -84,7 +89,9 @@
                         cache[key][k] = object[k]  // pointers to this object
 
                 // Remember this key for re-rendering
-                affected_keys.add(key)
+                if (!from_fetch) {
+                    affected_keys.add(key)
+                }
             }
 
             // Now recurse into this object.
@@ -262,11 +269,13 @@
         return ""
     }
 
-    window.loading_indicator = React.DOM.div({style: {height: '100%', width: '100%'},
+    window.loading_indicator = React.createFactory(ReactDOMFactories.div)({style: {height: '100%', width: '100%'},
                                        className: 'loading'}, 'Loading')
+
     function error_indicator(message) {
-        return React.DOM.div(null, 'Error! ' + message)
+        return ReactDOMFactories.div(null, 'Error! ' + message)
     }
+
 
     // ****************
     // Wrapper for React Components
@@ -274,10 +283,12 @@
     var components_count = 0
     var dirty_components = {}
     var execution_context = []  // The stack of components that are being rendered
+
     function ReactiveComponent(component) {
+
         // STEP 1: Define get() and save()
         component.fetch = component.data = component.get = function (key, defaults) {
-            if (!this._lifeCycleState || this._lifeCycleState == 'UNMOUNTED')
+            if (!this.isMounted)
                 throw Error('Component ' + this.name + ' (' + this.local_key
                             + ') is tryin to get data(' + key + ') after it died.')
 
@@ -328,8 +339,8 @@
         }
 
         // We register the component when mounting it into the DOM
-        wrap(component, 'componentWillMount',
-             function () { 
+        wrap(component, 'UNSAFE_componentWillMount',
+            function () { 
 
                  // STEP 1. Register the component's basic info
                  if (component.displayName === undefined)
@@ -338,20 +349,25 @@
                  this.local_key = 'component/' + components_count++
                  components[this.local_key] = this
 
-                 // You can pass an object in as a key if you want:
-                 if (this.props.key && this.props.key.key)
-                     this.props.key = this.props.key.key
+
+                 // This is broken now that React doesn't allow props to be modified
+                 // // You can pass an object in as a key if you want:
+                 // var my_props = get_current_props_for_component_instance(this)
+                 // if (my_props.key && my_props.key.key)
+                 //     my_props.key = my_props.key.key
+
 
                  // XXX Putting this into WillMount probably won't let you use the
                  // mounted_key inside getInitialState!  But you should be using
                  // activerest state anyway, right?
-                 this.mounted_key = this.props.key
+                 this.mounted_key = this._reactInternals.key
 
                  // STEP 2: Create shortcuts e.g. `this.foo' for all parents up the
                  // tree, and this component's local key
                  
                  function add_shortcut (obj, shortcut_name, to_key) {
                      //console.log('Giving '+obj.name+' shorcut @'+shortcut_name+'='+to_key)
+                     // console.log('shortcut', obj, shortcut_name, to_key)
                      delete obj[name]
                      Object.defineProperty(obj, shortcut_name, {
                          get: function () {
@@ -368,15 +384,16 @@
                  add_shortcut(this, 'local', this.local_key)
                  
                  // ...and now for all parents
-                 var parents = this.props.parents.concat([this.local_key])
-                 for (var i=0; i<parents.length; i++) {
-                     var name = components[parents[i]].name
-                     var key = components[parents[i]].props.key
-                     if (!key && cache[name] !== undefined)
-                         key = name
-                     add_shortcut(this, name, key)
-                 }
-             })
+                 // (I don't use parent shortcuts anymore, and consider them an anti-pattern)
+                 // var parents = this.props.parents.concat([this.local_key])
+                 // for (var i=0; i<parents.length; i++) {
+                 //     var name = components[parents[i]].name
+                 //     var key = components[parents[i]].mounted_key //props.key
+                 //     if (!key && cache[name] !== undefined)
+                 //         key = name
+                 //     add_shortcut(this, name, key)
+                 // }
+            })
 
         wrap(component, 'render', function () {
             // Render will need to clear the component's old
@@ -394,12 +411,16 @@
         })
 
         wrap(component, 'componentDidMount', function () {
-            this.getDOMNode().setAttribute('data-widget', component.displayName)
+            ReactDOM.findDOMNode(this).setAttribute('data-widget', component.displayName)
+            if (this.mounted_key)
+                ReactDOM.findDOMNode(this).setAttribute('data-key', this.mounted_key)              
         })
         wrap(component, 'componentDidUpdate', function () {
-            this.getDOMNode().setAttribute('data-widget', component.displayName)
+            ReactDOM.findDOMNode(this).setAttribute('data-widget', component.displayName)
+            if (this.mounted_key)
+                ReactDOM.findDOMNode(this).setAttribute('data-key', this.mounted_key)              
         })
-        wrap(component, 'getDefaultProps')
+        // wrap(component, 'getDefaultProps')
         //wrap(component, 'componentWillReceiveProps')
         wrap(component, 'componentWillUnmount', function () {
             // Clean up
@@ -446,7 +467,7 @@
 
         // Now create the actual React class with this definition, and
         // return it.
-        var react_class = React.createClass(component)
+        var react_class = React.createFactory(createReactClass(component))
         var result = function (props, children) {
             props = props || {}
             props.parents = execution_context.slice()

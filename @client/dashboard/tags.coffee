@@ -86,9 +86,9 @@ UserTags = ReactiveComponent
           autoComplete: 'off'
           'aria-label': "Name or email..."
           placeholder: "Name or email..."
-          value: if selected_user then selected_user.name
-          onChange: => 
-            @local.filtered = $(@getDOMNode()).find('#filter').val()?.toLowerCase()
+          value: if selected_user then selected_user.name else ""
+          onChange: (ev) => 
+            @local.filtered = ev.target.value?.toLowerCase()
             change_selected_user null 
             save(@local)
           onKeyPress: (e) => 
@@ -101,12 +101,16 @@ UserTags = ReactiveComponent
             @local.selecting = true
             save(@local)
             e.stopPropagation()
-            $(document).on 'click.tags', (e) =>
+            e.preventDefault()
+
+            @handle_click ?= (e) =>
               if e.target.id != 'filter'
                 @local.selecting = false
                 save @local
-                $(document).off('click.tags')
-            return false
+                document.removeEventListener 'click', @handle_click
+
+            document.addEventListener 'click', @handle_click
+
 
       # Dropdown, autocomplete menu for adding existing users
       if @local.selecting
@@ -128,13 +132,13 @@ UserTags = ReactiveComponent
             for user,idx in available_users
               do (user) => 
                 LI 
+                  key: user.key                
                   className: 'invite_menu_item'
                   style: 
                     padding: '2px 12px'
                     fontSize: 18
                     cursor: 'pointer'
                     borderBottom: '1px solid #fafafa'
-                  key: idx
 
                   onMouseEnter: (e) =>
                     @local.hovered_user = user.key
@@ -249,8 +253,8 @@ UserTags = ReactiveComponent
                 for tags in [selected_user.tags, @local.new_tags]
 
                   for k,v of tags
-                    new_k = @refs[k].getDOMNode().value
-                    new_v = @refs["#{k}-val"].getDOMNode().value
+                    new_k = @refs[k].value
+                    new_v = @refs["#{k}-val"].value
                     if new_k?.length > 0 # && new_v?.length > 0
                       update[new_k] = new_v
 
@@ -263,7 +267,8 @@ UserTags = ReactiveComponent
               value: 'Update'
 
       # all users...
-      DIV 
+      DIV
+        key: 'all users' 
         style: 
           marginTop: 12
 
@@ -271,7 +276,8 @@ UserTags = ReactiveComponent
         for tag, vals of all_tags 
           show_all = Object.keys(vals).length < 15 || !!@local.show_all?[tag]
 
-          DIV null, 
+          DIV 
+            key: tag
             H2
               style: 
                 fontSize: 36
@@ -306,6 +312,7 @@ UserTags = ReactiveComponent
 
                 for v,users of vals
                   UL
+                    key: v
                     style: 
                       listStyle: 'none'
                       display: 'inline'
@@ -327,6 +334,7 @@ UserTags = ReactiveComponent
               for v,users of vals 
                 do (tag, v) =>
                   DIV 
+                    key: "#{v}-#{tag}"
                     style: 
                       marginBottom: 18
                     onKeyDown: (e) => 
@@ -369,6 +377,7 @@ UserTags = ReactiveComponent
                       for user in users
                         do (user) => 
                           SPAN 
+                            key: user.key
                             draggable: true  
                             onDragStart: (ev) =>
                               if @local.control_depressed

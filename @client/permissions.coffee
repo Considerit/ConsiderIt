@@ -113,6 +113,9 @@ permit = (action) ->
 
     when 'update opinion'
       proposal = fetch arguments[1]
+      if !arguments[2]
+        return Permission.INSUFFICIENT_PRIVILEGES
+      # console.log arguments[2]
       opinion = fetch arguments[2]
 
       return Permission.INSUFFICIENT_PRIVILEGES if opinion.user != fetch('/current_user').user
@@ -235,12 +238,13 @@ AccessControlled =
 
     ####
     # HACK: Clear out statebus if current_user changed. See comment below.
-    local_but_not_component_unique = fetch "local-#{@page.key}"
+    page = get_page()
+    local_but_not_component_unique = fetch "local-#{page.key}"
     access_attrs = ['verified', 'logged_in', 'email']
     if local_but_not_component_unique._last_current_user && @data().permission_denied
       if @_relevant_current_user_values_have_changed(access_attrs)
         delete @data().permission_denied
-        arest.serverFetch @page.key
+        arest.serverFetch page.key
     ####
 
 
@@ -277,7 +281,7 @@ AccessControlled =
   
   _relevant_current_user_values_have_changed: (access_attrs) ->
     current_user = fetch '/current_user' 
-    last_values = fetch "local-#{@page.key}"
+    last_values = fetch "local-#{get_page().key}"
 
     reduced_user = _.map access_attrs, (attr) -> current_user[attr] 
     for el,idx in reduced_user

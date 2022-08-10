@@ -251,6 +251,7 @@ window.EditPage = ReactiveComponent
                                        when ag_lst not in @ordered_lists)
 
               LI 
+                key: lst
                 "data-idx": idx
                 "data-list-key": lst
                 className: "draggable-wrapper #{if wildcard then 'wildcard'}"
@@ -442,7 +443,8 @@ window.EditPage = ReactiveComponent
       FIELDSET null,
 
         for option in page_types
-          DIV null,
+          DIV 
+            key: option.id
 
             DIV 
               className: 'radio_group'
@@ -537,13 +539,15 @@ window.EditPage = ReactiveComponent
 
         for option in list_orderings
           OPTION
+            key: option.value
             value: option.value
             option.label 
 
       if option.explanation
         for option in list_orderings
           if option.value == (@local.list_sort_method or current_list_sort_method)
-            DIV 
+            DIV
+              key: option.value 
               className: 'explanation field_explanation'
               option.explanation
 
@@ -579,6 +583,7 @@ window.EditPage = ReactiveComponent
 
       WysiwygEditor
         key: "#{@props.page_name}-preamble"
+        editor_key: "#{@props.page_name}-preamble"
         horizontal: true
         html: current_preamble
         allow_html: true
@@ -647,6 +652,7 @@ window.EditPage = ReactiveComponent
 
           for tab in get_tabs()
             OPTION
+              key: tab.name
               value: tab.name
               tab.name 
 
@@ -783,13 +789,13 @@ window.EditPage = ReactiveComponent
       document.body.classList.remove('dragging-list')
 
 
-    for list in @getDOMNode().querySelectorAll('[draggable]')
+    for list in ReactDOM.findDOMNode(@).querySelectorAll('[draggable]')
       list.removeEventListener('dragstart', @onDragStart) 
       list.removeEventListener('dragend', @onDragEnd) 
       list.addEventListener('dragstart', @onDragStart) 
       list.addEventListener('dragend', @onDragEnd)       
 
-    for list in @getDOMNode().querySelectorAll('[data-idx]')
+    for list in ReactDOM.findDOMNode(@).querySelectorAll('[data-idx]')
       list.removeEventListener('dragover', @onDragOver)
       list.removeEventListener('dragleave', @onDragLeave)      
       list.removeEventListener('drop', @onDrop) 
@@ -803,13 +809,13 @@ window.EditPage = ReactiveComponent
 
   componentWillUnmount: -> 
     if @initialized
-      for list in @getDOMNode().querySelectorAll('[draggable]')
+      for list in ReactDOM.findDOMNode(@).querySelectorAll('[draggable]')
         list.removeEventListener('dragstart', @onDragStart) 
         list.removeEventListener('dragend', @onDragEnd) 
         list.addEventListener('dragstart', @onDragStart) 
         list.addEventListener('dragend', @onDragEnd)       
 
-      for list in @getDOMNode().querySelectorAll('[data-idx]')
+      for list in ReactDOM.findDOMNode(@).querySelectorAll('[data-idx]')
         list.removeEventListener('dragover', @onDragOver)
         list.removeEventListener('dragleave', @onDragLeave)      
         list.removeEventListener('drop', @onDrop) 

@@ -31,26 +31,6 @@ window.styles += """
     margin: 0; 
     
   }
-
-  .LIST-fat-header-field {
-    background-color: white;
-    border: 1px solid #eaeaea;
-    border-radius: 8px;
-    outline-color: #ccc;
-    line-height: 1.4;
-    padding: 8px 12px;
-    /* margin-top: -9px; */
-    margin-left: -13px;
-
-  }
-
-  .LIST-field-edit-label {
-    font-size: 14px;
-    display: inline-block;
-    font-weight: 400;
-    margin-top: 18px;
-  }
-
 """
 
 get_list_padding = ->
@@ -63,7 +43,6 @@ get_list_padding = ->
   else 
     right = Math.max 36, LIST_PADDING() + LIST_PADDING() / 6
     left  = Math.max 36, LIST_PADDING() - LIST_PADDING() / 6
-
 
   "#{top}px #{right}px #{bottom}px #{left}px"
 
@@ -98,20 +77,23 @@ window.List = ReactiveComponent
 
     is_collapsed = list_state.collapsed
 
+    sty =         
+      marginBottom: 40
+      position: 'relative'
+      padding: get_list_padding()
+
+    if screencasting()
+      _.extend sty,
+        boxShadow: 'none'
+        borderTop: 'none'
+        paddingTop: 0 
+
     ARTICLE
       key: list_key
       id: list_key.substring(5).toLowerCase()
-      style: 
-        marginBottom: 40
-        position: 'relative'
-        padding: get_list_padding()
-
-        boxShadow: if screencasting() then 'none'
-        borderTop: if screencasting() then 'none'
-        paddingTop: if screencasting() then 0
+      style: sty
 
       A name: list_link(list_key)
-
 
       ListHeader 
         list: list
@@ -188,8 +170,6 @@ ListItems = ReactiveComponent
 
 
 
-    RenderListItem = customization('RenderListItem') or CollapsedProposal
-
     if @props.combines_these_lists
       hues = getNiceRandomHues @props.combines_these_lists.length
       colors = {}
@@ -243,28 +223,32 @@ ListItems = ReactiveComponent
           list_key: list_key
           combines_these_lists: @props.combines_these_lists  
 
-    DIV null, 
+    proposals_to_render = (p for p,idx in proposals when idx < @props.show_first_num_items && passes_running_timelapse_simulation(p.created_at))
 
-      UL null, 
-        for proposal,idx in proposals
-          continue if idx > @props.show_first_num_items - 1
+    sorted_key = (p.key for p in proposals_to_render).join('###')
 
-          continue if !passes_running_timelapse_simulation(proposal.created_at)
+    DIV null,
 
-          RenderListItem
-            key: "collapsed#{proposal.key}"
-            proposal: proposal.key
-            show_category: !!@props.combines_these_lists
-            category_color: if @props.combines_these_lists then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], .9, .8)
-            focused_on: @props.proposal_focused_on && @props.proposal_focused_on.key == proposal.key
+      FLIPPER
+        flipKey: sorted_key
+
+        UL null, 
+          for proposal,idx in proposals_to_render
+
+            CollapsedProposal
+              key: "collapsed#{proposal.key}"
+              proposal: proposal.key
+              show_category: !!@props.combines_these_lists
+              category_color: if @props.combines_these_lists then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], .9, .8)
+              focused_on: @props.proposal_focused_on && @props.proposal_focused_on.key == proposal.key
 
 
-        if proposals.length > @props.show_first_num_items 
-          show_all_button()
+          if proposals.length > @props.show_first_num_items 
+            show_all_button()
 
 
-        if @props.show_new_button
-          render_new()
+          if @props.show_new_button
+            render_new()
 
 
 
@@ -408,7 +392,7 @@ window.ListHeader = ReactiveComponent
           fresh: @props.fresh
           combines_these_lists: @props.combines_these_lists
 
-      if @props.proposals_count > 0 && !customization('questionaire', list_key, subdomain) && !is_collapsed && !customization('list_no_filters', list_key, subdomain)
+      if @props.proposals_count > 0 && !is_collapsed && !customization('list_no_filters', list_key, subdomain)
         list_actions
           list: @props.list
           add_new: !@props.combines_these_lists && customization('list_permit_new_items', list_key, subdomain) && !is_collapsed && @props.proposals_count > 4
@@ -429,33 +413,33 @@ styles += """
     border-radius: 8px;
 
   }
-  [data-widget="NewList"] h1.LIST-header {
+  button[data-widget="NewList"] h1.LIST-header {
     position: relative;
     left: -42px;
     display: flex;
     align-items: center;
   }
 
-  [data-widget="NewList"] h1.LIST-header svg {
+  button[data-widget="NewList"] h1.LIST-header svg {
     margin-right: 13px;
   }
 
 
-  [data-widget="NewList"] .subbutton_button {
+  button[data-widget="NewList"] .subbutton_button {
     color: #{focus_blue};
     font-weight: 700;
   }
 
-  [data-widget="NewList"]:hover .subbutton_button, [data-widget="NewList"]:hover .separator {
+  button[data-widget="NewList"]:hover .subbutton_button, button[data-widget="NewList"]:hover .separator {
     text-decoration: underline;
   }
 
-  [data-widget="NewList"] .separator {
+  button[data-widget="NewList"] .separator {
     // padding: 0 12px;
     font-weight: 300;
     color: #{focus_blue};
   }
-  [data-widget="NewList"] .subheader {
+  button[data-widget="NewList"] .subheader {
     color: #656565;
     font-size: 16px;
     position: relative;
@@ -505,7 +489,7 @@ window.NewList = ReactiveComponent
             SPAN null,
               SPAN 
                 className: 'separator'
-                dangerouslySetInnerHTML: __html: "&nbsp;&nbsp;#{t('or')}&nbsp;&nbsp;"
+                dangerouslySetInnerHTML: __html: "&nbsp;&nbsp;#{t('or', 'or')}&nbsp;&nbsp;"
               SPAN 
                 className: 'subbutton_button closed'
                 'an open-ended question'
@@ -617,7 +601,7 @@ EditableTitle = ReactiveComponent
 
             BUTTON 
               tabIndex: if !list_uncollapseable then 0
-              'aria-label': "#{title}. #{translator('Expand or collapse list.')}"
+              'aria-label': "#{title}. #{translator('accessibility-expand-or-collapse-list', 'Expand or collapse list.')}"
               'aria-pressed': !is_collapsed
 
               onClick: if !list_uncollapseable then (e) -> 
@@ -796,7 +780,7 @@ window.get_lists_for_page = (tab) ->
   tabs_config = get_tabs()
 
   if tabs_config
-    eligible_lists = get_tab(tab).lists
+    eligible_lists = get_tab(tab)?.lists
   else
     eligible_lists = customization 'lists'
     if eligible_lists && '*-' in eligible_lists

@@ -18,8 +18,8 @@ window.OpinionSlider = ReactiveComponent
   displayName: 'OpinionSlider'
 
   render : ->
-    @proposal ||= fetch(@props.proposal)
-    slider = fetch @props.key
+    proposal = fetch @props.proposal
+    slider = fetch @props.slider_key
 
     your_opinion = @props.your_opinion
 
@@ -62,7 +62,7 @@ window.OpinionSlider = ReactiveComponent
         @drawFeedback() 
 
       Slider
-        key: @props.key
+        slider_key: @props.slider_key
         width: @props.width
         handle_height: SLIDER_HANDLE_SIZE()
         base_height: 2 # 6
@@ -72,13 +72,13 @@ window.OpinionSlider = ReactiveComponent
                     else 
                       'transparent'
         # base_endpoint: if slider.docked then 'square' else 'sharp'
-        regions: customization('slider_regions', @proposal)
+        regions: customization('slider_regions', proposal)
         polarized: true
         draw_helpers: @props.focused && !slider.has_moved
         handle: if @props.backgrounded 
                   slider_handle.flat 
                 else 
-                  customization('slider_handle', @proposal) or slider_handle.flat
+                  customization('slider_handle', proposal) or slider_handle.flat
         handle_props: 
           color: if @props.backgrounded then '#ccc' else focus_color()
           detail: @props.focused
@@ -96,7 +96,7 @@ window.OpinionSlider = ReactiveComponent
                  id: "sliders.instructions-with-proposal"
                  negative_pole: @props.pole_labels[0]
                  positive_pole: @props.pole_labels[1]
-                 proposal_name: @proposal.name
+                 proposal_name: proposal.name
                  "Express your opinion on a slider from {negative_pole} to {positive_pole} about {proposal_name}"
         readable_text: (value) => 
           if value > .03
@@ -110,11 +110,12 @@ window.OpinionSlider = ReactiveComponent
 
 
   saveYourOpinionNotice : -> 
+    proposal = fetch @props.proposal
     your_opinion = @props.your_opinion
-    slider = fetch @props.key
+    slider = fetch @props.slider_key
     current_user = fetch '/current_user'
 
-    return SPAN null if (!TWO_COL() && customization('discussion_enabled', @proposal))  || \
+    return SPAN null if (!TWO_COL() && customization('discussion_enabled', proposal))  || \
                          current_user.logged_in || slider.is_moving
     
 
@@ -166,27 +167,28 @@ window.OpinionSlider = ReactiveComponent
         style: _.extend style, 
           left: (slider.value + 1) / 2 * @props.width - s.width / 2 - 10
 
-        onClick: => save_opinion(@proposal)
+        onClick: => save_opinion(proposal)
 
         notice 
 
   drawFeedback: -> 
-    slider = fetch @props.key
-    default_feedback = (value, proposal) -> 
+    proposal = fetch @props.proposal
+    slider = fetch @props.slider_key
+    default_feedback = (value) -> 
       if Math.abs(value) < 0.02
         translator "sliders.feedback.neutral", "You are neutral"
       else 
         "#{Math.round(value * 100)}%"
 
-    labels = customization 'slider_pole_labels', @proposal
+    labels = customization 'slider_pole_labels', proposal
     slider_feedback = 
 
       if !slider.has_moved 
-        TRANSLATE "sliders.slide_prompt", 'Slide Your Overall Opinion'
+        translator "sliders.slide_prompt", 'Slide Your Overall Opinion'
       else if func = labels.slider_feedback or default_feedback
-        func slider.value, @proposal
+        func slider.value, proposal
       else if TWO_COL() 
-        TRANSLATE "sliders.slide_feedback_short", "Your opinion"
+        translator "sliders.slide_feedback_short", "Your opinion"
       else 
         ''
 
@@ -194,7 +196,7 @@ window.OpinionSlider = ReactiveComponent
 
     feedback_style = 
       pointerEvents: 'none' 
-      fontSize: if TWO_COL() then 22 else 30
+      fontSize: if TWO_COL() then "22px" else "30px"
       fontWeight: if !TWO_COL() then 700
       color: if @props.backgrounded then '#eee' else focus_color()
       textAlign: 'center'
@@ -225,9 +227,10 @@ window.OpinionSlider = ReactiveComponent
       slider_feedback
 
   handleMouseUp: (e) ->
-    slider = fetch @props.key
+    slider = fetch @props.slider_key
     your_opinion = @props.your_opinion
     mode = get_proposal_mode()
+    proposal = fetch @props.proposal
     
     e.stopPropagation()
 
@@ -236,15 +239,15 @@ window.OpinionSlider = ReactiveComponent
     # when we've been dragging on the results page.
     transition = !TWO_COL() && \
        (slider.value == your_opinion.stance || mode == 'results') &&
-       customization('discussion_enabled', @proposal)
+       customization('discussion_enabled', proposal)
 
     if transition
 
 
       if your_opinion.published
-        can_opine = permit 'update opinion', @proposal, your_opinion
+        can_opine = permit 'update opinion', proposal, your_opinion
       else
-        can_opine = permit 'publish opinion', @proposal
+        can_opine = permit 'publish opinion', proposal
 
       if can_opine > 0
         new_page = if mode == 'results' then 'crafting' else 'results'

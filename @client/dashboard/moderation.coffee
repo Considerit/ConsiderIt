@@ -126,6 +126,7 @@ window.ModerationDash = ReactiveComponent
 
           for option in moderation_options
             OPTION 
+              key: option.value
               value: option.value
               option.label 
 
@@ -158,6 +159,7 @@ window.ModerationDash = ReactiveComponent
           do (model) => 
             active = @local.model == model
             LI 
+              key: model
               style: 
                 display: 'inline-block'
 
@@ -169,12 +171,11 @@ window.ModerationDash = ReactiveComponent
                   fontSize: 18
                   marginLeft: 12
                   marginRight: 12
+                  marginBottom: if active then -1
                   border: '1px solid #bbb'
                   borderBottom: 'none'
                   borderRadius: '4px 4px 0 0px'
-                  padding: '6px 14px 2px 14px'
-                  paddingBottom: if active then 3
-                  marginBottom: if active then -1
+                  padding: "6px 14px #{if active then 3 else 2}px 14px"
 
                 onClick: => select_class(model)
 
@@ -246,6 +247,7 @@ window.ModerationDash = ReactiveComponent
             for item in items[@local.show_category].items
               ModerateItem 
                 key: item.key
+                item: item.key
 
 
 
@@ -273,7 +275,7 @@ ModerateItem = ReactiveComponent
   displayName: 'ModerateItem'
 
   render : ->
-    item = fetch @props.key
+    item = fetch @props.item
 
     class_name = item.moderatable_type
     moderatable = fetch(item.moderatable)
@@ -336,6 +338,7 @@ ModerateItem = ReactiveComponent
                 style: 
                   opacity: .5
                 BUBBLE_WRAP 
+                  key: point.key
                   title: point.nutshell 
                   anon: point.hide_name
                   user: point.user
@@ -345,6 +348,7 @@ ModerateItem = ReactiveComponent
 
                 for comment in _.uniq( _.map(comments.comments, (c) -> c.key).concat(moderatable.key)) when comment != moderatable.key
                   BUBBLE_WRAP 
+                    key: comment
                     title: fetch(comment).body
                     user: fetch(comment).user
                     width: '100%'
@@ -403,7 +407,7 @@ ModerateItem = ReactiveComponent
             SELECT
               style: 
                 fontSize: 18
-              value: proposal.cluster
+              value: proposal.cluster or ''
               ref: 'category'
               onChange: (e) =>
                 proposal.cluster = e.target.value
@@ -411,6 +415,7 @@ ModerateItem = ReactiveComponent
 
               for list_key in get_all_lists()
                 OPTION  
+                  key: list_key
                   value: list_key.substring(5)
                   get_list_title list_key, true
 
@@ -429,12 +434,12 @@ ModerateItem = ReactiveComponent
 
 
             LABEL 
-              htmlFor: "pass-#{@props.key}"
+              htmlFor: "pass-#{@props.item}"
 
               INPUT 
                 name: 'moderation'
                 type: 'radio'
-                id: "pass-#{@props.key}"
+                id: "pass-#{@props.item}"
                 value: 1
                 defaultChecked: item.status == 1
                 onChange: judge
@@ -447,11 +452,11 @@ ModerateItem = ReactiveComponent
               backgroundColor: '#ffc92a'
 
             LABEL 
-              htmlFor: "quar-#{@props.key}"
+              htmlFor: "quar-#{@props.item}"
               INPUT 
                 name: 'moderation'
                 type: 'radio'
-                id: "quar-#{@props.key}"
+                id: "quar-#{@props.item}"
                 value: 2
                 defaultChecked: item.status == 2
                 onChange: judge
@@ -464,12 +469,12 @@ ModerateItem = ReactiveComponent
               backgroundColor: '#f94747'
 
             LABEL 
-              htmlFor: "fail-#{@props.key}"
+              htmlFor: "fail-#{@props.item}"
 
               INPUT 
                 name: 'moderation'
                 type: 'radio'
-                id: "fail-#{@props.key}"
+                id: "fail-#{@props.item}"
                 value: 0
                 defaultChecked: item.status == 0
                 onChange: judge
@@ -580,11 +585,13 @@ BanHammer = ReactiveComponent
               render_option: (user) ->
                 [
                   SPAN 
+                    key: 'user name'
                     style: 
                       fontWeight: 600
                     user.name 
 
                   SPAN
+                    key: 'user email'
                     style: 
                       opacity: .7
                       paddingLeft: 8
@@ -701,15 +708,16 @@ DirectMessage = ReactiveComponent
         'cancel'
 
   submitMessage : -> 
-    # TODO: convert to using arest create method; waiting on full dash porting
-    $el = $(@getDOMNode())
-    attrs = 
-      recipient: @props.to
-      subject: $el.find('.message_subject').val()
-      body: $el.find('.message_body').val()
-      sender_mask: @props.sender_mask or fetch('/current_user').name
-      authenticity_token: fetch('/current_user').csrf
+    el = ReactDOM.findDOMNode(@)
 
-    $.ajax '/dashboard/message', data: attrs, type: 'POST', success: => 
+    new_message = 
+      key: '/dashboard/message'
+      recipient: @props.to
+      subject: el.querySelector('#message_subject').value
+      body: el.querySelector('#message_body').value 
+      sender_mask: @props.sender_mask or fetch('/current_user').name
+      # authenticity_token: fetch('/current_user').csrf
+
+    save new_message, =>
       @props.parent.messaging = null
       save @props.parent

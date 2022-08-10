@@ -443,9 +443,9 @@ window.Tab = ReactiveComponent
         else 
           tab_name = tab.name
           if @props.go_to_hash
-            $el = $(document.querySelector("[name='#{@props.go_to_hash}']"))
-            if $el
-              $el.ensureInView
+            el = document.querySelector("[name='#{@props.go_to_hash}']")
+            if el
+              $$.ensureInView el, 
                 position: 'top'
                 scroll: true
 
@@ -547,7 +547,7 @@ window.Tab = ReactiveComponent
     return if @tab_draggable || !fetch('edit_forum').editing || @props.tab.add_new
     @tab_draggable = true 
 
-    tab = @getDOMNode()
+    tab = ReactDOM.findDOMNode(@)
 
     drag_data = fetch 'list/tab_drag'
 
@@ -660,7 +660,7 @@ window.Tab = ReactiveComponent
   removeTabDraggability: -> 
     return if !@tab_draggable || fetch('edit_forum').editing || @props.tab.add_new
     @tab_draggable = false
-    tab = @getDOMNode()
+    tab = ReactDOM.findDOMNode(@)
 
 
     tab.removeEventListener('dragstart', @onDragStartTab) 

@@ -43,7 +43,7 @@ Development = ReactiveComponent
       tabIndex: 0 
 
       onTouchEnd: (e) => @local.hover_top = true; save @local
-      onMouseEnter: (e) => @getDOMNode().focus(); @local.hover_top = true; save @local
+      onMouseEnter: (e) => ReactDOM.findDOMNode(@).focus(); @local.hover_top = true; save @local
       onMouseLeave: (e) => @local.search = ''; @local.hover_top = @local.hover_second = false; save @local
 
       onKeyDown: (e) => 

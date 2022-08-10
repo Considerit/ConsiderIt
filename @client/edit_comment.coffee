@@ -2,7 +2,8 @@ window.EditComment = ReactiveComponent
   displayName: 'EditComment'
 
   render : -> 
-    permitted = permit 'create comment', @proposal
+    proposal = fetch @props.proposal
+    permitted = permit 'create comment', proposal
 
     DIV 
       className: 'comment_entry'
@@ -82,7 +83,7 @@ window.EditComment = ReactiveComponent
                 translator 'engage.permissions.login_to_participate', 'Create an account to participate'
 
 
-              if '*' not in @proposal.roles.participant
+              if '*' not in proposal.roles.participant
                 DIV style: {fontSize: 11},
                   translator 'engage.permissions.only_some_participate', 'Only some accounts are authorized to participate.'
 

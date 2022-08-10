@@ -28,7 +28,7 @@ clear_tooltip = ->
   save tooltip
 
 toggle_tooltip = (e) ->
-  tooltip_el = e.target.closest('[data-tooltip]')
+  tooltip_el = $$.closest(e.target, '[data-tooltip]')
   if tooltip_el?
     tooltip = fetch('tooltip')
     if tooltip.coords
@@ -37,12 +37,12 @@ toggle_tooltip = (e) ->
       show_tooltip(e)
 
 show_tooltip = (e) ->
-  tooltip_el = e.target.closest('[data-tooltip]')
+  tooltip_el = $$.closest(e.target, '[data-tooltip]')
   if tooltip_el?
     name = tooltip_el.getAttribute('data-tooltip')
     tooltip = fetch 'tooltip'
     if tooltip.tip != name 
-      tooltip.coords = $(tooltip_el).offset()
+      tooltip.coords = $$.offset(tooltip_el)
       tooltip.coords.left += tooltip_el.offsetWidth / 2
       tooltip.tip = name
       save tooltip
@@ -61,13 +61,9 @@ document.addEventListener "click", toggle_tooltip
 document.body.addEventListener "mouseover", show_tooltip, true
 document.body.addEventListener "mouseleave", hide_tooltip, true
 
+$$.add_delegated_listener document.body, 'focusin', '[data-tooltip]', show_tooltip
+$$.add_delegated_listener document.body, 'focusout', '[data-tooltip]', hide_tooltip
 
-$('body').on 'focusin', '[data-tooltip]', show_tooltip
-$('body').on 'focusout', '[data-tooltip]', hide_tooltip
-
-# focus/blur don't seem to work at document level
-# document.addEventListener "focus", show_tooltip, true
-# document.addEventListener "blur", hide_tooltip, true
 
 
 
@@ -140,7 +136,7 @@ window.Tooltip = ReactiveComponent
     if !tooltip.rendered_size && tooltip.coords 
 
       tooltip.rendered_size = 
-        width: @getDOMNode().offsetWidth
-        height: @getDOMNode().offsetHeight
+        width: ReactDOM.findDOMNode(@).offsetWidth
+        height: ReactDOM.findDOMNode(@).offsetHeight
       save tooltip
 

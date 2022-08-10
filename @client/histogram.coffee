@@ -1,6 +1,9 @@
 require './browser_hacks'
 require './histogram_layout'
-require './histogram_lab'
+
+# require './histogram_lab'  # for testing only
+
+
 # md5 = require './vendor/md5' 
 
 ##
@@ -24,7 +27,7 @@ require './histogram_lab'
 #     Whether individual users can be selected on the histogram
 #   enable_range_selection (default = false)
 #     Whether ranges can be selected on the histogram
-#   selection_state (default = @props.key)
+#   selection_state (default = @props.histo_key)
 #     The state key at which selection state will be updated
 #   draw_base (default = false)
 #     Whether to draw a base with +/- labels. If a slider is attached,
@@ -209,7 +212,6 @@ window.Histogram = ReactiveComponent
 
       if @local.avatar_size != avatar_radius * 2
         @local.avatar_size = avatar_radius * 2
-        save @local
         dirtied = true 
 
       @last_key = histocache_key
@@ -219,11 +221,11 @@ window.Histogram = ReactiveComponent
     @props.draw_base_labels ?= true
 
 
-    @props.enable_individual_selection &&= opinions.length > 0
-    @props.enable_range_selection &&= opinions.length > 1
+    enable_individual_selection = @props.enable_individual_selection && @opinions.length > 0
+    @enable_range_selection = @props.enable_range_selection && opinions.length > 1
 
     # whether to show the shaded opinion selection region in the histogram
-    draw_selection_area = @props.enable_range_selection &&
+    draw_selection_area = @enable_range_selection &&
                             !opinion_views.active_views.single_opinion_selected && 
                             !@props.backgrounded &&
                             (opinion_views.active_views.region_selected || 
@@ -234,7 +236,10 @@ window.Histogram = ReactiveComponent
 
     histo_height = @props.height + REGION_SELECTION_VERTICAL_PADDING
     
+    @id = "histo-#{@local.key.replace(/\//g, '__')}"
     histogram_props = 
+      id: @id
+      key: 'histogram'
       tabIndex: if !@props.backgrounded then 0
 
       className: 'histogram'
@@ -242,34 +247,40 @@ window.Histogram = ReactiveComponent
       'aria-labelledby': if !@props.backgrounded then "##{proposal.id}-histo-label"
       'aria-describedby': if !@props.backgrounded then "##{proposal.id}-histo-description"
 
-      style: css.crossbrowserify
+      style:
         width: @props.width
         height: histo_height
         position: 'relative'
         borderBottom: if @props.draw_base then @props.base_style or "1px solid #999"
         userSelect: 'none'
+        MozUserSelect: 'none'
+        WebkitUserSelect: 'none'
+        msUserSelect: 'none'
+
+
       onKeyDown: (e) =>
         if e.which == 32 # SPACE toggles navigation
           @local.navigating_inside = !@local.navigating_inside 
           save @local 
           e.preventDefault() # prevent scroll jumping
           if @local.navigating_inside
-            @refs["avatar-0"]?.getDOMNode().focus()
+            @refs["avatar-0"]?.focus()
           else 
-            @getDOMNode().focus()
+            ReactDOM.findDOMNode(@).focus()
         else if e.which == 13 && !@local.navigating_inside # ENTER 
           @local.navigating_inside = true 
-          @refs["avatar-0"]?.getDOMNode().focus()
+          @refs["avatar-0"]?.focus()
           save @local 
         else if e.which == 27 && @local.navigating_inside
           @local.navigating_inside = false
-          @getDOMNode().focus() 
+          ReactDOM.findDOMNode(@).focus() 
           save @local 
       onBlur: (e) => 
         setTimeout => 
           # if the focus isn't still on this histogram, 
           # then we should reset its navigation
-          if @local.navigating_inside && $(document.activeElement).closest(@getDOMNode()).length == 0
+
+          if @local.navigating_inside && !$$.closest(document.activeElement, "##{@id}")
             @local.navigating_inside = false; save @local
         , 0
 
@@ -289,7 +300,7 @@ window.Histogram = ReactiveComponent
       exp = translator "engage.slider_feedback.neutral", "Neutral"
 
 
-    if @props.enable_range_selection || @props.enable_individual_selection
+    if @enable_range_selection || enable_individual_selection
       if !browser.is_mobile
         _.extend histogram_props,
           onClick: @onClick
@@ -321,6 +332,7 @@ window.Histogram = ReactiveComponent
 
     DIV histogram_props, 
       DIV 
+        key: 'accessibility-histo-label'
         id: "##{proposal.id}-histo-label"
         className: 'hidden'
         
@@ -330,6 +342,7 @@ window.Histogram = ReactiveComponent
           "Histogram showing {num_opinions, plural, one {# opinion} other {# opinions}}"
 
       DIV 
+        key: 'accessibility-histo-description'
         id: "##{proposal.id}-histo-description"
         className: 'hidden'
 
@@ -350,7 +363,7 @@ window.Histogram = ReactiveComponent
 
       # A little padding at the top to give some space for selecting
       # opinion regions with lots of people stacked high      
-      DIV style: {height: @local.region_selected_vertical_padding}
+      DIV key: 'vert-padding', style: {height: @local.region_selected_vertical_padding}
 
       # Draw the opinion selection area + region resizing border
       if draw_selection_area
@@ -359,19 +372,20 @@ window.Histogram = ReactiveComponent
 
 
       DIV 
+        key: 'histoavatars'
         style: 
           paddingTop: histo_height - @props.height
-          'content-visibility': 'auto'
+          contentVisibility: 'auto'
 
         HistoAvatars
-          key: @props.proposal.key or @props.proposal        
+          histo_key: @props.proposal.key or @props.proposal        
           dirtied: dirtied
           weights: @weights
           salience: @salience
           groups: @groups
           avatar_size: @local.avatar_size 
-          enable_individual_selection: @props.enable_individual_selection
-          enable_range_selection: @props.enable_range_selection
+          enable_individual_selection: enable_individual_selection
+          enable_range_selection: @enable_range_selection
           height: @props.height 
           backgrounded: @props.backgrounded
           opinions: @opinions 
@@ -391,12 +405,14 @@ window.Histogram = ReactiveComponent
     }
 
     [SPAN
+      key: 'oppose'
       style: _.extend {}, label_style,
         position: 'absolute'
         left: 0
 
       get_slider_label("slider_pole_labels.oppose", @props.proposal, subdomain)
     SPAN
+      key: 'support'
       style: _.extend {}, label_style,
         position: 'absolute'
         right: 0
@@ -417,8 +433,9 @@ window.Histogram = ReactiveComponent
     selection_left = Math.max 0, left
 
 
-    return DIV null if !is_histogram_controlling_region_selection(@props.key) 
+    return DIV {key: 'selection_label'} if !is_histogram_controlling_region_selection(@props.histo_key) 
     DIV 
+      key: 'selection_label'
       style:
         height: @props.height + REGION_SELECTION_VERTICAL_PADDING
         position: 'absolute'
@@ -432,13 +449,16 @@ window.Histogram = ReactiveComponent
 
       if !opinion_views.active_views.region_selected
         DIV
-          style: css.crossbrowserify
+          style: 
             fontSize: 12
             textAlign: 'center'
             whiteSpace: 'nowrap'
             marginTop: -3 #-9
             marginLeft: -4
             userSelect: 'none'
+            MozUserSelect: 'none'
+            WebkitUserSelect: 'none'
+            msUserSelect: 'none'            
             pointerEvents: 'none'
 
           TRANSLATE "engage.histogram.select_these_opinions", 'highlight opinions'
@@ -469,14 +489,14 @@ window.Histogram = ReactiveComponent
         if @weights[user_key] == 0 || @salience[user_key] < 1
           clear_histogram_managed_opinion_views opinion_views
         else 
-          select_single_opinion user_opinion, @props.key
+          select_single_opinion user_opinion, @props.histo_key
 
       else
         max = @local.mouse_opinion_value + REGION_SELECTION_WIDTH
         min = @local.mouse_opinion_value - REGION_SELECTION_WIDTH
 
         is_deselection = \
-          !is_histogram_controlling_region_selection(@props.key) || ( \
+          !is_histogram_controlling_region_selection(@props.histo_key) || ( \
           region_selected && 
            (!@local.touched || inRange(@local.mouse_opinion_value, min, max)))
 
@@ -484,19 +504,18 @@ window.Histogram = ReactiveComponent
           clear_histogram_managed_opinion_views opinion_views
           if ev.type == 'touchstart'
             @local.mouse_opinion_value = null
-        else if @props.enable_range_selection
+        else if @enable_range_selection
           clear_histogram_managed_opinion_views opinion_views, 'single_opinion_selected'
 
           @users_in_region = @getUsersInRegion()
           opinion_views.active_views.region_selected =
-            created_by: @props.key 
+            created_by: @props.histo_key 
             opinion_value: @local.mouse_opinion_value
             get_salience: (u, opinion, proposal) => 
               if @users_in_region[u.key || u] 
                 1
               else
                 .1
-
 
       save opinion_views
       save @local
@@ -515,8 +534,8 @@ window.Histogram = ReactiveComponent
   getOpinionValueAtFocus: (ev) -> 
     # Calculate the mouse_opinion_value (the slider value about which we determine
     # the selection region) based on the mouse offset within the histogram element.
-    h_x = @getDOMNode().getBoundingClientRect().left + window.pageXOffset
-    h_w = @getDOMNode().offsetWidth
+    h_x = ReactDOM.findDOMNode(@).getBoundingClientRect().left + window.pageXOffset
+    h_w = ReactDOM.findDOMNode(@).offsetWidth
     m_x = ev.pageX or ev.touches[0].pageX
 
     translatePixelXToStance m_x - h_x, h_w
@@ -524,8 +543,8 @@ window.Histogram = ReactiveComponent
   onMouseMove: (ev) ->     
 
     return if fetch(namespaced_key('slider', @props.proposal)).is_moving  || \
-              @props.backgrounded || !@props.enable_range_selection || \
-              !is_histogram_controlling_region_selection(@props.key)
+              @props.backgrounded || !@enable_range_selection || \
+              !is_histogram_controlling_region_selection(@props.histo_key)
 
     ev.stopPropagation()
 
@@ -570,7 +589,7 @@ window.Histogram = ReactiveComponent
 
     opinion_views = fetch 'opinion_views'
     active = opinion_views.active_views
-    originating_histogram = (active.single_opinion_selected or active.region_selected)?.created_by == @props.key
+    originating_histogram = (active.single_opinion_selected or active.region_selected)?.created_by == @props.histo_key
 
     return if originating_histogram
 
@@ -638,9 +657,6 @@ window.Histogram = ReactiveComponent
           rando_order: .1
           topple_towers: .05
           density_modified_jostle: 1
-
-      # requestAnimationFrame =>
-      #   if @isMounted()
 
       has_groups = Object.keys(@groups).length > 0
       delegate_layout_task
@@ -723,7 +739,7 @@ window.styles += """
 
 
 
-$('body').on 'keydown', '.avatar[data-opinion]', (e) ->
+$$.add_delegated_listener document.body, 'keydown', '.avatar[data-opinion]', (e) ->
   if e.which == 13 || e.which == 32 # ENTER or SPACE 
     user_opinion = fetch e.target.getAttribute 'data-opinion'
     select_single_opinion user_opinion, 'keydown'
@@ -764,7 +780,7 @@ HistoAvatars = ReactiveComponent
 
     DIV 
       id: @props.histocache_key
-      key: @props.key or @local.key
+      key: @props.histo_key or @local.key
       ref: 'histo'
       'data-receive-viewport-visibility-updates': 2
       'data-component': @local.key      
@@ -773,7 +789,7 @@ HistoAvatars = ReactiveComponent
         position: 'relative'
         top: -1
         cursor: if !@props.backgrounded && 
-                    @props.enable_range_selection then 'pointer'
+                    @enable_range_selection then 'pointer'
 
       if @local.in_viewport
 

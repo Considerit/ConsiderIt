@@ -37,11 +37,11 @@ window.EditList = ReactiveComponent
     return SPAN null if !current_user.is_admin
 
     admin_actions = [
-      {action: 'edit', label: translator('edit')}
+      {action: 'edit', label: translator('edit', 'edit')}
       {action: 'copy_link', label: translator('engage.list-configuration.copy_link', 'copy link')}
       {action: 'list_order', label: translator('engage.list-configuration.reorder_topics', 'reorder lists')}
       {action: 'close', label: translator('engage.list-configuration.close', 'close to participation')}
-      {action: 'delete', label: translator('delete')}
+      {action: 'delete', label: translator('delete', 'delete')}
     ]
 
     DIV null,
@@ -135,10 +135,21 @@ window.EditList = ReactiveComponent
 
 
 styles += """
-  [data-widget="ModalNewList"] .LIST-fat-header-field {
-    margin-left: 0;
+  .LIST-fat-header-field {
+    background-color: white;
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+    outline-color: #ccc;
+    line-height: 1.4;
+    padding: 8px 12px;
   }
 
+  .LIST-field-edit-label {
+    font-size: 14px;
+    display: inline-block;
+    font-weight: 400;
+    margin-top: 18px;
+  }
 """
 
 
@@ -273,6 +284,7 @@ window.ModalNewList = ReactiveComponent
                 span: 
                   component: SPAN 
                   args: 
+                    key: 'title'
                     style: 
                       fontWeight: 700
 
@@ -315,6 +327,7 @@ window.ModalNewList = ReactiveComponent
                       span: 
                         component: SPAN 
                         args: 
+                          key: 'span'
                           style: 
                             fontWeight: 700
 
@@ -340,8 +353,8 @@ window.ModalNewList = ReactiveComponent
                       """
 
                     WysiwygEditor
-
                       key: "#{list_key}-description"
+                      editor_key: "#{list_key}-description"
                       horizontal: true
                       html: customization('list_description', list_key)
                       # placeholder: if !@props.fresh then translator("engage.list_description", "(optional) Description")
@@ -380,6 +393,7 @@ window.ModalNewList = ReactiveComponent
                     span: 
                       component: SPAN 
                       args: 
+                        key: 'span'
                         style: 
                           fontWeight: 700
 
@@ -478,8 +492,8 @@ window.ModalNewList = ReactiveComponent
 
 
                     selection_made_callback: (option) => 
-                      @refs.oppose_slider.getDOMNode().value = option.oppose
-                      @refs.support_slider.getDOMNode().value = option.support
+                      @refs.oppose_slider.value = option.oppose
+                      @refs.support_slider.value = option.support
 
 
                       edit_list.slider_pole_labels = 
@@ -489,10 +503,10 @@ window.ModalNewList = ReactiveComponent
 
 
                       setTimeout =>
-                        $(@refs.slider_config.getDOMNode()).ensureInView()
+                        $$.ensureInView @refs.slider_config
 
                         if option.oppose == ''
-                          moveCursorToEnd @refs.oppose_slider.getDOMNode()
+                          moveCursorToEnd @refs.oppose_slider
 
                       , 100
 
@@ -593,6 +607,7 @@ window.ModalNewList = ReactiveComponent
                     span: 
                       component: SPAN 
                       args: 
+                        key: 'span'
                         style: 
                           fontWeight: 700
 
@@ -766,7 +781,7 @@ window.ModalNewList = ReactiveComponent
   setFocusOnTitle: ->
     if !@initialized && @refs.input?
       setTimeout =>
-        moveCursorToEnd @refs.input?.getDOMNode()
+        moveCursorToEnd ReactDOM.findDOMNode(@refs.input)
       @initialized = true
 
 

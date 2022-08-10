@@ -56,9 +56,6 @@ window.NewProposal = ReactiveComponent
     
           if permitted
             list_state.adding_new_proposal = list_key; save(list_state)
-            # setTimeout =>
-            #   $("##{list_name}-name").focus()
-            # , 0
           else 
             e.stopPropagation()
             reset_key 'auth', 
@@ -195,7 +192,7 @@ window.NewProposal = ReactiveComponent
 
             WysiwygEditor
               id: "#{list_name}-details"
-              key:"description-new-proposal-#{list_name}"
+              editor_key:"description-new-proposal-#{list_name}"
               #placeholder: translator("engage.edit_proposal.description.placeholder", 'Add details here')  
               'aria-label': translator("engage.edit_proposal.description.placeholder", 'Add details here')  
               container_style: 
@@ -222,7 +219,7 @@ window.NewProposal = ReactiveComponent
 
               WysiwygEditor
                 id: "#{list_name}-#{additional_field}"
-                key:"#{additional_field}-new-proposal-#{list_name}"
+                editor_key:"#{additional_field}-new-proposal-#{list_name}"
                 'aria-label': proposal_fields[additional_field]
                 container_style: 
                   padding: '6px 8px'
@@ -300,7 +297,7 @@ window.NewProposal = ReactiveComponent
                 active = true 
 
                 if @props.combines_these_lists && @refs.category
-                  category = @refs.category.getDOMNode().value
+                  category = @refs.category.value
                 else 
                   category = list_key 
                 category = category.substring(5)
@@ -330,7 +327,7 @@ window.NewProposal = ReactiveComponent
 
                     show_flash("Your response has been added")
 
-                    ensure_in_viewport_when_appears("[data-name=\"#{slugify(proposal.name)}\"]")
+                    $$.ensure_in_viewport_when_appears "[data-name=\"#{slugify(proposal.name)}\"]"
                       
                     # delete loc.query_params.new_proposal
                     # save loc            
@@ -386,7 +383,7 @@ window.NewProposal = ReactiveComponent
           width: guidelines_w + 28
           height: guidelines_h
           viewBox: "-4 0 #{guidelines_w+20 + 9} #{guidelines_h}"
-          style: css.crossbrowserify
+          style:
             position: 'absolute'
             transform: 'scaleX(-1)'
             left: -20

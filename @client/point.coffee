@@ -1,3 +1,5 @@
+require "./comment"
+
 
 ##
 # Point
@@ -6,16 +8,20 @@ window.Point = ReactiveComponent
   displayName: 'Point'
 
   render : ->
-    point = @data()
+    point = fetch @props.point
 
-    is_selected = get_selected_point() == @props.key
+    return SPAN null if !point.proposal
+
+    proposal = fetch point.proposal
+
+    is_selected = get_selected_point() == @props.point
 
     current_user = fetch('/current_user')
 
 
     renderIncluders = (draw_all_includers) =>
 
-      if @data().includers
+      if point.includers
 
         if draw_all_includers
           includers = @buildIncluders()
@@ -41,7 +47,7 @@ window.Point = ReactiveComponent
             curr_column = Math.floor(i / s.rows)
             side_offset = curr_column * s.col_gap + i * s.dx
             top_offset = (i % s.rows) * s.dy 
-            left_right = if @data().is_pro then 'left' else 'right'
+            left_right = if point.is_pro then 'left' else 'right'
             style = 
               top: top_offset
               position: 'absolute'
@@ -116,7 +122,7 @@ window.Point = ReactiveComponent
       height: 25
       width: 25
       top: 0
-    left_or_right = if @data().is_pro && @props.rendered_as != 'decision_board_point'
+    left_or_right = if point.is_pro && @props.rendered_as != 'decision_board_point'
                       'right' 
                     else 
                       'left'
@@ -138,7 +144,7 @@ window.Point = ReactiveComponent
 
     LI
       key: "point-#{point.id}"
-      'data-id': @props.key
+      'data-id': @props.point
       className: "point #{@props.rendered_as} #{if point.is_pro then 'pro' else 'con'} #{if customization('disable_comments') && !expand_to_see_details then 'commenting-disabled' else ''}"
       onClick: @selectPoint
       onTouchEnd: @selectPoint
@@ -155,14 +161,62 @@ window.Point = ReactiveComponent
             left: 0
             top: -2
 
-          if @data().is_pro then '•' else '•'
+          if point.is_pro then '•' else '•'
 
       DIV 
+        ref: 'point_content'
         className:'point_content'
         style : point_content_style
         tabIndex: 0
         onBlur: (e) => @local.has_focus = false; save(@local)
         onFocus: (e) => @local.has_focus = true; save(@local)
+        draggable: @props.enable_dragging
+        "data-point": point.key
+
+        onDragEnd: (ev) =>
+          # @refs.point_content.style.visibility = 'visible'
+          @refs.point_content.style.opacity = 1
+
+        onDragStart: (ev) =>
+          if @props.enable_dragging
+            point = fetch @props.point
+            dnd_points = fetch 'drag and drop points'
+            dnd_points.dragging = point.key 
+            ev.dataTransfer.setData('text/plain', point.key)
+
+            # because DnD setdata is broke ass
+            dragging = fetch 'point-dragging'
+            dragging.point = point.key
+
+            ev.dataTransfer.effectAllowed = "move"
+            ev.dataTransfer.dropEffect = "move"     
+
+
+            #######################
+            # There is a big bug with dragging and dropping elements whose parent has been moved with 
+            # transform translate. The ghosting is way off, safari (15 at the moment) can't seem to 
+            # properly locate the element to make a ghost bitmap of the screen. So we'll create our 
+            # own ghost point outside the translated parents. Note that this hack for some reason
+            # *doesn't work* in Chrome or Firefox (but the original bug isn't in them). 
+            # So we'll have to keep an eye on this for each release of Safari to make sure the 
+            # hack is still appropriate.
+            if window.safari || window.parent?.safari
+              ghost = @refs.point_content.cloneNode()
+              ghost.innerHTML = @refs.point_content.innerHTML
+
+              content = document.getElementById('content')
+              content.appendChild ghost
+              ev.dataTransfer.setDragImage ghost, 0, 0
+
+              setTimeout ->
+                content.removeChild ghost
+
+            setTimeout =>
+              @refs.point_content.style.opacity = .3
+
+
+
+
 
         if @props.rendered_as != 'decision_board_point'
 
@@ -182,7 +236,7 @@ window.Point = ReactiveComponent
           DIV 
             'role': 'presentation'
             key: 'community_point_mouth'
-            style: css.crossbrowserify mouth_style
+            style: mouth_style
 
             Bubblemouth 
               apex_xfrac: 0
@@ -216,7 +270,7 @@ window.Point = ReactiveComponent
             translator
               id: "engage.point_explanation"
               author: if point.hide_name then anonymous_label() else fetch(point.user).name
-              num_inclusions: @data().includers.length
+              num_inclusions: point.includers.length
               comment_count: point.comment_count
               """By {author}. 
                  { num_inclusions, plural, =0 {} one {Important to one person.} other {Important to # people.} } 
@@ -246,7 +300,7 @@ window.Point = ReactiveComponent
               if !screencasting() && !embedded_demo() && fetch('/subdomain').name != 'galacticfederation'
                 [
                   prettyDate(point.created_at)
-                  SPAN style: paddingLeft: 8
+                  SPAN key: 'padding', style: paddingLeft: 8
                 ]
 
               if !customization('disable_comments')
@@ -280,7 +334,7 @@ window.Point = ReactiveComponent
                 onClick: ((e) =>
                   e.stopPropagation()
                   points = fetch(@props.your_points_key)
-                  points.editing_points.push(@props.key)
+                  points.editing_points.push(@props.point)
                   save(points))
                 translator 'engage.edit_button', 'edit'
 
@@ -298,7 +352,7 @@ window.Point = ReactiveComponent
                 onClick: (e) =>
                   e.stopPropagation()
                   if confirm('Delete this point forever?')
-                    destroy @props.key
+                    destroy @props.point
                 translator 'engage.delete_button', 'delete'
 
       if @props.rendered_as != 'decision_board_point' 
@@ -314,13 +368,13 @@ window.Point = ReactiveComponent
 
 
       if TWO_COL() || (!TWO_COL() && @props.enable_dragging)
-        your_opinion = @proposal.your_opinion
+        your_opinion = proposal.your_opinion
         if your_opinion.key 
           fetch your_opinion
         if your_opinion?.published
-          can_opine = permit 'update opinion', @proposal, your_opinion
+          can_opine = permit 'update opinion', proposal, your_opinion
         else
-          can_opine = permit 'publish opinion', @proposal
+          can_opine = permit 'publish opinion', proposal
 
         included = @included()
         includePoint = (e) => 
@@ -329,9 +383,7 @@ window.Point = ReactiveComponent
 
           return unless e.type != 'click' || \
                         (!browser.is_android_browser && e.type == 'click')
-          if included
-            @remove()
-          else 
+          if !included
             @include()
 
         if !TWO_COL() && @props.enable_dragging
@@ -356,17 +408,17 @@ window.Point = ReactiveComponent
               backgroundColor: 'transparent'
               border: 'none'              
               display: if get_selected_point() then 'none'
-            onFocus: (e) => @local.focused_include = true; save @local
+            onFocus: (e) => 
+              @local.focused_include = true; save @local
             onBlur: (e) => @local.focused_include = false; save @local
             onTouchEnd: includePoint
             onClick: includePoint
             onKeyDown: (e) => 
               if e.which == 13 || e.which == 32
-
-                next = $(e.target).closest('.point').next().find('.point_content')
                 includePoint(e)
-                valence = if @data().is_pro then 'pros' else 'cons'
+                valence = if point.is_pro then 'pros' else 'cons'
 
+                next = $$.closest(e.target, '.point').nextElementSibling.querySelector('.point_content')
                 next.focus()
                 e.preventDefault()
 
@@ -404,6 +456,12 @@ window.Point = ReactiveComponent
             onTouchEnd: includePoint
             onClick: includePoint
 
+            onKeyDown: (e) => 
+              if e.which == 13 || e.which == 32
+                includePoint(e)
+                e.preventDefault()
+                e.stopPropagation()
+
             I
               className: 'fa fa-thumbs-o-up'
               style: 
@@ -415,16 +473,15 @@ window.Point = ReactiveComponent
 
       if is_selected
         Discussion
-          key:"/comments/#{point.id}"
+          key: "/comments/#{point.id}"
+          comments: "/comments/#{point.id}"
           point: point.key
           rendered_as: @props.rendered_as
 
   componentDidMount : ->    
-    @setDraggability()
     @ensureDiscussionIsInViewPort()
 
   componentDidUpdate : -> 
-    @setDraggability()
     @ensureDiscussionIsInViewPort()
 
 
@@ -434,92 +491,61 @@ window.Point = ReactiveComponent
   #   - Scroll to new point when scrolled down to bottom of long 
   #     discussion & click a new point below it
   ensureDiscussionIsInViewPort : ->
-    is_selected = get_selected_point() == @props.key
+    is_selected = get_selected_point() == @props.point
     if @local.is_selected != is_selected
       if is_selected
-        if browser.is_mobile
-          $(@getDOMNode()).moveToTop {scroll: false}
-        else
-          $(@getDOMNode()).ensureInView {scroll: false}
         
-        i = setInterval ->
-              if $('#open_point').length > 0 
-                $('#open_point').focus()
+        i = setInterval =>
+              discussion = document.getElementById('open_point')
+              if discussion 
+                if browser.is_mobile
+                  $$.moveToTop ReactDOM.findDOMNode(@)
+                  discussion.focus()
+
+                else
+                  $$.ensureInView discussion,
+                    scroll: true
+                    offset_buffer: 50 + $$.height(ReactDOM.findDOMNode(@))
+                    callback: -> 
+                      discussion.focus()
+
                 clearInterval i
             , 10
 
       @local.is_selected = is_selected
       save @local
 
-  setDraggability : ->
-    # Ability to drag include this point if a community point, 
-    # or drag remove for point on decision board
-    # also: disable for results page
 
-    $point_content = $(@getDOMNode()).find('.point_content')
-    revert = 
-      if @props.rendered_as == 'community_point' 
-        'invalid' 
-      else (valid) =>
-        if !valid
-          @remove()
-        valid
 
-    if $point_content.hasClass "ui-draggable"
-      $point_content.draggable(if @props.enable_dragging then 'enable' else 'disable' ) 
-    else
-      $point_content.draggable
-        revert: revert
-        disabled: !@props.enable_dragging
 
   included: -> 
-    your_opinion = @proposal.your_opinion
+    point = fetch @props.point
+    proposal = fetch point.proposal
+    your_opinion = proposal.your_opinion
     your_opinion.point_inclusions ?= []
-    your_opinion.point_inclusions.indexOf(@props.key) > -1
-
-  remove: -> 
-
-    pnt = fetch @props.key 
-
-    validate_first = pnt.user == fetch('/current_user').user && pnt.includers.length < 2
-
-
-    if !validate_first || confirm('Are you sure you want to remove your point? It will be gone forever.')
-
-      your_opinion = @proposal.your_opinion
-      your_opinion.point_inclusions ?= []
-      your_opinion.point_inclusions = _.without your_opinion.point_inclusions, \
-                                                @props.key
-
-      your_opinion.key ?= "/new/opinion"
-      save(your_opinion)
-      window.writeToLog
-        what: 'removed point'
-        details: 
-          point: @props.key
-    else 
-      $point_content = $(@getDOMNode()).find('.point_content')
-      $point_content.css 'left', '-11px'
-      $point_content.css 'top', '-11px'
-
+    your_opinion.point_inclusions.indexOf(@props.point) > -1
+    
   include: -> 
-    your_opinion = @proposal.your_opinion
+    point = fetch @props.point 
+    proposal = fetch point.proposal
+
+    your_opinion = proposal.your_opinion
     your_opinion.key ?= "/new/opinion"
 
     your_opinion.published = true 
     your_opinion.point_inclusions ?= []
-    your_opinion.point_inclusions.push @data().key
+    your_opinion.point_inclusions.push @props.point
     save(your_opinion)
 
     window.writeToLog
       what: 'included point'
       details: 
-        point: @data().key
+        point: @props.point
 
 
   selectPoint: (e) ->
     e.stopPropagation()
-    point = @data()
+    point = fetch @props.point
 
     return if !point.text && customization('disable_comments')
 
@@ -533,28 +559,28 @@ window.Point = ReactiveComponent
 
 
     loc = fetch('location')
-    if get_selected_point() == @props.key # deselect
+    if get_selected_point() == @props.point # deselect
       delete loc.query_params.selected
       what = 'deselected a point'
 
       document.activeElement.blur()
     else
       what = 'selected a point'
-      loc.query_params.selected = @props.key
+      loc.query_params.selected = @props.point
 
     save loc
 
     window.writeToLog
       what: what
       details: 
-        point: @props.key
+        point: @props.point
 
 
   ## ##
   # On hovering over a point, highlight the people who included this 
   # point in the Histogram.
   highlightIncluders : -> 
-    point = @data()
+    point = fetch @props.point
     includers = point.includers
 
     # For point authors who chose not to sign their points, remove them from 
@@ -566,7 +592,7 @@ window.Point = ReactiveComponent
 
     opinion_views = fetch 'opinion_views'
     opinion_views.active_views.point_includers =
-      created_by: @props.key 
+      created_by: @props.point 
       point: point.key 
       get_salience: (u, opinion, proposal) ->
         if (u.key or u) in includers 
@@ -583,12 +609,13 @@ window.Point = ReactiveComponent
       save opinion_views
 
   buildIncluders : -> 
-    point = @data()
+    point = fetch @props.point 
+    proposal = fetch point.proposal
 
     includers = point.includers
 
     opinion_views = fetch 'opinion_views'
-    {weights, salience, groups} = compose_opinion_views null, @proposal
+    {weights, salience, groups} = compose_opinion_views null, proposal
 
     includers = (i for i in includers when salience[i] == 1 && weights[i] > 0)
 
@@ -600,19 +627,18 @@ window.Point = ReactiveComponent
 
 styles += """
 
-/* war! disabled jquery UI draggable class defined with !important */
-.point_content.ui-draggable-disabled {
+.point_content[draggable="false"] {
   cursor: pointer !important; }
 
-.commenting-disabled .point_content.ui-draggable-disabled {
-  cursor: auto !important; }
+.commenting-disabled .point_content[draggable="false"] {
+  cursor: auto; }
 
 
 .commenting-disabled .point_details_tease {
   cursor: auto;
 }
 
-#{css.grab_cursor('.point_content.ui-draggable')}
+#{css.grab_cursor('.point_content[draggable="true"]')}
 
 .community_point .point_content {
   border-radius: 16px;
@@ -662,262 +688,3 @@ styles += """
   left: -10px; }
 
 """
-
-
-window.Comment = ReactiveComponent
-  displayName: 'Comment'
-
-  render: -> 
-    comment = @data()
-    current_user = fetch '/current_user'
-
-    if comment.editing
-      # Sharing keys, with some non-persisted client data getting saved...
-      EditComment fresh: false, point: comment.point, key: comment.key
-
-    else
-
-      DIV 
-        key: comment.key
-        "data-id": comment.key
-        className: 'comment_entry'
-
-        # Comment author name
-        DIV className: 'comment_entry_name',
-          fetch(comment.user).name + ':'
-
-        # Comment author icon
-        Avatar
-          key: comment.user
-          hide_popover: true
-          set_bg_color: true
-          style: 
-            position: 'absolute'
-            width: 50
-            height: 50
-
-        # Comment body
-        DIV className: 'comment_entry_body',
-          splitParagraphs(comment.body)
-
-        # Delete/edit button
-        if current_user.user == comment.user
-          if permit('update comment', comment) > 0
-            comment_action_style = 
-              color: '#444'
-              textDecoration: 'underline'
-              cursor: 'pointer',
-              padding: '0 10px 0 0'
-              backgroundColor: 'transparent'
-              border: 'none'
-            DIV style: { marginLeft: 60}, 
-              BUTTON
-                'data-action' : 'delete-comment'
-                style: comment_action_style
-                onClick: do (key = comment.key) => (e) =>
-                  e.stopPropagation()
-                  if confirm('Delete this comment forever?')
-                    destroy(key)
-
-                translator('engage.delete_button', 'delete')
-
-              BUTTON
-                style: comment_action_style
-                onClick: do (key = comment.key) => (e) =>
-                  e.stopPropagation()
-                  comment.editing = true
-                  save comment
-                translator('engage.edit_button', 'edit')
-
-# edit comments, comments...
-styles += """
-.comment_entry {
-  margin-bottom: 25px;
-  min-height: 60px;
-  position: relative; }
-
-.comment_entry_name {
-  font-weight: 600;
-  color: #666666; }
-
-.comment_entry_body {
-  margin-left: 60px;
-  word-wrap: break-word;
-  position: relative; }
-  .comment_entry_body a {
-    text-decoration: underline; }
-  .comment_entry_body strong {
-    font-weight: 600; }
-  .comment_entry_body p {
-    margin-bottom: 1em; }
-"""
-
-
-
-
-window.Discussion = ReactiveComponent
-  displayName: 'Discussion'
-
-  render : -> 
-
-    point = fetch @props.point
-    proposal = fetch point.proposal
-    is_pro = point.is_pro
-
-    your_opinion = proposal.your_opinion
-    if your_opinion.key 
-      fetch your_opinion
-    your_opinion.point_inclusions ?= []
-    point_included = _.contains(your_opinion.point_inclusions, point.key)
-    in_wings = get_proposal_mode() == 'crafting' && !point_included
-
-    comments = @discussion.comments
-    
-    comments.sort (a,b) -> a.created_at > b.created_at
-
-    discussion_style =
-      width: DECISION_BOARD_WIDTH() #+ POINT_WIDTH() / 2
-      border: "3px solid #{focus_color()}"
-      position: 'absolute'
-      zIndex: 100
-      padding: '20px 40px'
-      borderRadius: 16
-      backgroundColor: 'white'
-      outline: 'none' #'1px dotted #ccc'
-      boxShadow: if @local.has_focus then "0 0 7px #{focus_color()}"
-
-    # Reconfigure discussion board position
-    side = if is_pro then 'right' else 'left'
-    if in_wings
-      discussion_style[side] = POINT_WIDTH() + 13
-      discussion_style['top'] = 20
-    else
-      discussion_style[side] = if is_pro then -23 else -30
-      discussion_style['marginTop'] = 18
-
-    # Reconfigure bubble mouth position
-    mouth_style =
-      position: 'absolute'
-
-    if in_wings
-      mouth_style[side] = -29
-
-      trans_func = 'rotate(270deg)'
-      if is_pro
-        trans_func += ' scaleY(-1)'
-
-      _.extend mouth_style, 
-        transform: trans_func
-        top: 19
-
-    else
-      _.extend mouth_style, 
-        left: if is_pro then 335 else 100
-        top: -28
-        transform: if !is_pro then 'scaleX(-1)'
-
-    close_point = (e) ->
-      loc = fetch('location')
-      delete loc.query_params.selected
-      save loc
-      e.preventDefault()
-      e.stopPropagation()
-
-    HEADING = if @props.rendered_as != 'decision_board_point' then H4 else H5
-    SECTION 
-      id: 'open_point'
-      style: discussion_style
-      tabIndex: 0
-      onClick: (e) -> e.stopPropagation()
-      onTouchEnd: (e) -> e.stopPropagation()
-      onKeyDown: (e) => 
-        if e.which == 27 # ESC
-          close_point e 
-      onBlur: (e) => @local.has_focus = false; save @local 
-      onFocus: (e) => @local.has_focus = true; save @local
-
-      DIV 
-        style: css.crossbrowserify mouth_style
-
-        Bubblemouth 
-          apex_xfrac: 1.1
-          width: 36
-          height: 28
-          fill: 'white', 
-          stroke: focus_color(), 
-          stroke_width: 11
-
-      BUTTON
-        'aria-label': 'close point' 
-        onClick: close_point
-
-
-        style: 
-          position: 'absolute'
-          right: 8
-          top: 8
-          fontSize: 24
-          color: '#aaa'
-          backgroundColor: 'transparent'
-          border: 'none'
-        'x'
-
-      if point.text?.length > 0 
-        SECTION 
-          style: 
-            marginBottom: 24
-            marginTop: 10
-
-          HEADING
-            style:
-              textAlign: 'left'
-              fontSize: 24
-              color: focus_color()
-              fontWeight: 600
-              marginBottom: 10
-            #t('Author’s Explanation')
-            translator 'engage.author_explanation', 'Author’s Explanation'
-
-          DIV 
-            className: 'point_details'
-            splitParagraphs(point.text)
-          
-
-      if !customization('disable_comments')
-        SECTION null,
-          HEADING
-            style:
-              textAlign: 'left'
-              fontSize: 24
-              color: focus_color()
-              marginBottom: 25
-              marginTop: 10
-              fontWeight: 600
-
-            translator "engage.point_details_heading", 'Discuss this Point'
-
-          DIV className: 'comments',
-            for comment in comments
-              Comment key: comment.key
-
-          # Write a new comment
-          EditComment fresh: true, point: arest.key_id(@props.key)
-
-  # HACK! Save the height of the open point, which will be added 
-  # to the min height of the reasons region to accommodate the
-  # absolutely positioned element. 
-
-  componentDidUpdate : -> 
-    @setHeight()
-
-  componentDidMount : -> 
-    @setHeight()
-
-  setHeight : -> 
-    s = fetch('reasons_height_adjustment')
-
-    dist_from_parent = $(@getDOMNode()).offset().top - $('.reasons_region').offset().top
-    open_point_height = $(@getDOMNode()).height() + dist_from_parent
-    if s.open_point_height != open_point_height
-      s.open_point_height = open_point_height
-      save s

@@ -153,13 +153,13 @@ Proposal = ReactiveComponent
   displayName: 'Root'
 
   render : -> 
-    @proposal = fetch @props.key
+    @proposal = fetch @props.proposal
 
     users = fetch '/users'
 
     return DIV(null, LOADING_INDICATOR) if !@proposal.name
 
-    width = @getDOMNode().offsetWidth
+    width = ReactDOM.findDOMNode(@).offsetWidth
     histo_width = width - 100
 
     w = 34
@@ -191,7 +191,7 @@ Proposal = ReactiveComponent
             width: histo_width
               
           Histogram
-            key: namespaced_key('histogram', @proposal)
+            histo_key: namespaced_key('histogram', @proposal)
             proposal: @proposal
             opinions: opinionsForProposal(@proposal)
             width: histo_width
@@ -222,7 +222,7 @@ Proposal = ReactiveComponent
 
             SPAN 
               key: 'slider_bubblemouth'
-              style: css.crossbrowserify
+              style:
                 left: 35 - w / 2
                 top: 8
                 position: 'absolute'

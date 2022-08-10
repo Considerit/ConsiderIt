@@ -44,7 +44,7 @@ window.Modal =
   accessibility_on_keydown: (e) ->
     # cancel on ESC if a cancel button has been defined
     if e.key == 'Escape' || e.keyCode == 27
-      @refs.cancel_dialog?.getDOMNode().click()
+      @refs.cancel_dialog?.click()
 
     # trap focus
     is_tab_pressed = e.key == 'Tab' or e.keyCode == 9
@@ -66,14 +66,14 @@ window.Modal =
 
     return
 
-  componentWillMount: ->
+  UNSAFE_componentWillMount: ->
     @scroll_Y = window.scrollY
 
   componentDidMount: ->
     @componentDidUpdate()
     
   componentDidUpdate: ->
-    modal = @refs?.dialog?.getDOMNode() or document.querySelector '[role=dialog]'
+    modal = @refs?.dialog or document.querySelector '[role=dialog]'
     return if !modal || @mounted
     @mounted = true
 
@@ -150,7 +150,7 @@ window.wrap_in_modal = (width, click_lightbox_callback, children) ->
       id: 'modal'
       ref: 'dialog'
       role: 'dialog'
-      # 'aria-labeledby': 'AUTH_task'
+      # 'aria-labelledby': 'AUTH_task'
       # 'aria-describedby': if options.goal then 'AUTH_goal'
 
       onClick: if click_lightbox_callback then click_lightbox_callback

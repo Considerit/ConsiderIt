@@ -932,11 +932,3 @@ window.ProposalScoresPopover =  ReactiveComponent
                 "#{Math.round(overall_avg * 100)}%" 
               else 
                 "#{if diff > 0 then '+' else ''}#{Math.round(diff * 100)}%"
-
-
-
-
-
-
-
-

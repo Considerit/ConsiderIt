@@ -57,7 +57,10 @@ ConsiderIt::Application.routes.draw do
     get "/payments/successful" => 'product_page#stripe_successful'
     get "/payments/failed" => 'product_page#stripe_failed'  
     get "/payments/payment_intent" => 'product_page#stripe_create_payment_intent'    
-    get "/payments/public_key" => 'product_page#stripe_public'    
+    get "/payments/public_key" => 'product_page#stripe_public' 
+
+    # legal agreements
+    get "/legal/:name" => "product_page#legal"   
   end 
 
   get "/login_via_saml" => 'current_user#login_via_saml'

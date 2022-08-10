@@ -129,6 +129,7 @@ window.EditProfile = ReactiveComponent
               padding: '10px 18px'
               borderRadius: 8
               border: 'none'
+              backgroundColor: '#efefef'
               boxShadow: '0 1px 2px rgba(0,0,0,.2)'
 
             onClick: (ev) =>

@@ -298,7 +298,7 @@ if !browser.is_mobile
       left: -36px;
     }
     .radio_group input[type='radio']:checked{
-      border: 20px solid #{focus_blue};
+      border: 10px solid #{focus_blue};
     }
 
     .radio_group {

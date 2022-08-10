@@ -304,6 +304,8 @@ Root = ReactiveComponent
 
     loc = fetch('location')
     app = fetch('/application')
+    subdomain = fetch '/subdomain'
+    current_user = fetch('/current_user')    
     page = fetch("/page#{loc.url}")
 
 
@@ -328,8 +330,6 @@ Root = ReactiveComponent
 
     return ProposalsLoading() if !app.web_worker
 
-    subdomain = fetch '/subdomain'
-    current_user = fetch('/current_user')
 
     fonts = customization('font')
     header_fonts = customization('header_font') or fonts

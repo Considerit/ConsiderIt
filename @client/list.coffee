@@ -780,7 +780,7 @@ window.get_lists_for_page = (tab) ->
   tabs_config = get_tabs()
 
   if tabs_config
-    eligible_lists = get_tab(tab).lists
+    eligible_lists = get_tab(tab)?.lists
   else
     eligible_lists = customization 'lists'
     if eligible_lists && '*-' in eligible_lists

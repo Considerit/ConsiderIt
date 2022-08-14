@@ -79,7 +79,7 @@ setResponsive = ->
   point_font_size = 14
 
   homepage_width = Math.min content_width, 1100
-  homepage_width = 60 * Math.floor(homepage_width / 60)
+  homepage_width = Math.round(homepage_width)
 
     
 
@@ -92,7 +92,6 @@ setResponsive = ->
     
     DOCUMENT_WIDTH: document_width
     WINDOW_WIDTH: w
-    WHITESPACE: whitespace
     BODY_WIDTH: body_width
     PROPOSAL_HISTO_WIDTH: proposal_histo_width
     DECISION_BOARD_WIDTH: decision_board_width

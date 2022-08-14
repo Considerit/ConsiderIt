@@ -15,12 +15,6 @@ require './tabs'
 styles += """
   .main_background {
     background-color: #{main_background_color};
-    
-
-    /* texture */
-    /* background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23d6d6d6' fill-opacity='0.7' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E"); */
-
-    background-attachment: fixed;
   }
 
   .main_background.one-col, .main_background .one-col, .one-col.navigation_wrapper {
@@ -40,7 +34,7 @@ styles += """
   }
 
   :not(.one-col) #homepagetab {
-    width: calc(var(--HOMEPAGE_WIDTH) + 2 * var(--LIST_PADDING));
+    width: calc(var(--HOMEPAGE_WIDTH) + var(--LIST_PADDING-RIGHT) + var(--LIST_PADDING-LEFT));
   }
 
   .sized_for_homepage {
@@ -136,7 +130,7 @@ window.Homepage = ReactiveComponent
               if get_tabs()
                 DIV 
                   style: 
-                    paddingTop: 48
+                    paddingTop: 68
 
                   DIV 
                     style: 

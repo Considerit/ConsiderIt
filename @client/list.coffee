@@ -6,15 +6,20 @@ require './edit_list'
 window.column_sizes = (args) ->
   args ||= {}
   width = args.width or HOMEPAGE_WIDTH()
+
+
   author_avatar_spacing = 58 # PROPOSAL_AUTHOR_AVATAR_SIZE + PROPOSAL_AUTHOR_AVATAR_GUTTER
 
-
   if !ONE_COL()
-    width -= author_avatar_spacing
     gutter = 50
     score_w = 48
-    first = author_avatar_spacing + Math.min 500, Math.floor(width * .6) - gutter - score_w
-    second = Math.max 303, width - first -  gutter
+
+    width -= author_avatar_spacing
+    # width -= score_w
+    width -= gutter
+
+    first = author_avatar_spacing + Math.min 500, Math.floor(width * .6)
+    second = Math.max 303, width - first
   else 
     gutter = author_avatar_spacing
     score_w = 0 
@@ -39,7 +44,7 @@ window.styles += """
   }
 
   [data-widget="List"] {
-    margin-bottom: 120px;
+    margin-bottom: 60px;
     position: relative; 
     padding: var(--LIST_PADDING-FULL);   
   }
@@ -528,7 +533,7 @@ window.NewList = ReactiveComponent
       BUTTON
         style: 
           padding: if @props.no_padding then "0px"
-          
+
         onClick: (e) =>
           @local.editing = true 
           @local.default_open_ended = e.target.classList.contains('open')

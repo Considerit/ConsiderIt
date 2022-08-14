@@ -31,6 +31,10 @@ task :fix_active_in => :environment do
   User.fix_active_in
 end
 
+task :clear_old_users => :environment do 
+  User.where(:registered=>false).where("created_at < ?", 2.months.ago).where("complete_profile = 0").where("reset_password_token is null").destroy_all
+end
+
 task :migrate_moderation => :environment do 
   Subdomain.all.each do |s|
     moderatable_models = ['points', 'comments', 'proposals']

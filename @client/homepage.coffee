@@ -39,6 +39,11 @@ styles += """
     padding: 24px 0px 140px 12px;
   }
 
+  .sized_for_homepage {
+    margin: auto;
+    width: var(--HOMEPAGE_WIDTH);
+  }
+
 
 """
 window.Homepage = ReactiveComponent
@@ -86,7 +91,9 @@ window.Homepage = ReactiveComponent
           width: if !ONE_COL() then HOMEPAGE_WIDTH() + LIST_PADDING() * 2
 
         if !fetch('/proposals').proposals
-          ProposalsLoading()   
+          DIV 
+            className: 'sized_for_homepage'
+            ProposalsLoading()   
         else 
 
           if fetch('edit_forum').editing
@@ -97,6 +104,7 @@ window.Homepage = ReactiveComponent
           else 
             DIV null,
               DIV 
+                className: 'sized_for_homepage'
                 style: 
                   padding: "0px #{LIST_PADDING() + LIST_PADDING() / 6}px 0px #{LIST_PADDING() - LIST_PADDING() / 6}px"
 
@@ -163,24 +171,6 @@ window.proposal_editor = (proposal) ->
 
   return editor != '-' and editor
 
-
-window.column_sizes = (args) ->
-  args ||= {}
-  width = args.width or HOMEPAGE_WIDTH()
-
-  if !ONE_COL()
-    width -= 58
-    gutter = 50
-    score_w = 48
-    first = Math.min 500, Math.floor(width * .6) - gutter - score_w
-    second = Math.max 303, width - first -  gutter - score_w
-  else 
-    gutter = 58
-    score_w = 0 
-    first = width - gutter # Math.floor(width * .6) - gutter - score_w
-    second = width - gutter # width - first -  gutter - score_w
-
-  {first, second, gutter, score_w}
 
 
 window.TagHomepage = ReactiveComponent

@@ -226,9 +226,11 @@ customizations.default =
 
   user_tags: {}
 
-  font: "Montserrat, 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
-  header_font: "Montserrat, 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
-  mono_font: "'Fira Mono', Montserrat, 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
+
+  # Trebuchet MS, palantino, and optima are intriguing web-safe fonts
+  font: "Montserrat, 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
+  header_font: "Montserrat Alternates, Montserrat, 'Optima', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
+  mono_font: "'Fira Mono', 'Courier New', Montserrat, monospace"
 
   new_proposal_fields: -> 
    name:  translator("engage.edit_proposal.summary_label", "Summary")

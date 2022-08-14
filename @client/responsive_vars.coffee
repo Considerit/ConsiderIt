@@ -32,6 +32,12 @@ require './browser_hacks'
 #    body_width <= 700
 #    
 #
+
+
+
+
+
+
 setResponsive = -> 
   responsive = fetch('responsive_vars')
 
@@ -118,9 +124,10 @@ styles += """
   :root {
     --WINDOW_WIDTH: 100vw;
     --SAAS_PAGE_WIDTH: min(1120px, calc(100vw - 2 * 24px));
+    --HOMEPAGE_WIDTH:  min(1138px, max(900px, 100vw) - calc(2 * max(80px, 9vw)));
   }
 """
-     
+
 # Initialize the responsive variables on page load.
 setResponsive()
 

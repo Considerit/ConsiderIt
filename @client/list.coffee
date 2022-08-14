@@ -2,15 +2,45 @@ require './modal'
 require './edit_list'
 
 
+
+window.column_sizes = (args) ->
+  args ||= {}
+  width = args.width or HOMEPAGE_WIDTH()
+  author_avatar_spacing = 58 # PROPOSAL_AUTHOR_AVATAR_SIZE + PROPOSAL_AUTHOR_AVATAR_GUTTER
+
+
+  if !ONE_COL()
+    width -= author_avatar_spacing
+    gutter = 50
+    score_w = 48
+    first = author_avatar_spacing + Math.min 500, Math.floor(width * .6) - gutter - score_w
+    second = Math.max 303, width - first -  gutter
+  else 
+    gutter = author_avatar_spacing
+    score_w = 0 
+    first = width - gutter
+    second = width - gutter
+
+  {first, second, gutter, score_w}
+
+
 window.styles += """
+  :root {
+    --PROPOSAL_AUTHOR_AVATAR_SIZE: 40px;
+    --PROPOSAL_AUTHOR_AVATAR_GUTTER: 18px; 
+  }
 
   [data-widget="List"], [data-widget="NewList"], .draggable-wrapper {
     background-color: white;
-    /* border: 1px solid #e1e1e1; */
     border: none;
     border-radius: 8px;
     box-shadow: -1px 1px 2px rgb(0 0 0 / 15%);
     border-top: 1px solid #f3f3f3;
+  }
+
+  [data-widget="List"] {
+    margin-bottom: 120px;
+    position: relative;    
   }
 
   .one-col [data-widget="List"], .one-col [data-widget="NewList"] {
@@ -19,9 +49,9 @@ window.styles += """
   }
 
   .LIST-header {
-    font-size: 32px;
+    font-size: 34px;
     font-weight: 700;
-    text-align: left;     
+    text-align: left;
   }
 
   .LIST-header button {
@@ -30,6 +60,17 @@ window.styles += """
     padding: 0; 
     margin: 0; 
     
+  }
+
+  .LIST_item_connector {
+    display: none;
+    /* position: absolute;
+    height: calc(100% - var(--PROPOSAL_AUTHOR_AVATAR_SIZE) - 28px);
+    width: 1px;
+    background-color: #ccc;
+    left: calc(50% - var(--HOMEPAGE_WIDTH) / 2 + var(--PROPOSAL_AUTHOR_AVATAR_SIZE)/2);
+    top: 28px;  /* half the line height of the list header */
+    z-index: 0; */ 
   }
 """
 
@@ -48,7 +89,6 @@ get_list_padding = ->
 
 window.list_link = (list_key) ->
   list_key.substring(5).toLowerCase().replace(/ /g, '_')
-
 
 SHOW_FIRST_N_PROPOSALS = 6
 
@@ -78,8 +118,6 @@ window.List = ReactiveComponent
     is_collapsed = list_state.collapsed
 
     sty =         
-      marginBottom: 40
-      position: 'relative'
       padding: get_list_padding()
 
     if screencasting()
@@ -94,6 +132,10 @@ window.List = ReactiveComponent
       style: sty
 
       A name: list_link(list_key)
+
+      DIV
+        ref: 'LIST_item_connector'
+        className: 'LIST_item_connector'
 
       ListHeader 
         list: list
@@ -118,8 +160,12 @@ window.List = ReactiveComponent
             show_new_button: (@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || (permitted > 0 || permitted == Permission.NOT_LOGGED_IN)
             proposal_focused_on: @props.proposal_focused_on
 
-      if customization('footer', list_key) && !is_collapsed
-        customization('footer', list_key)()
+
+      DIV 
+        className: "sized_for_homepage"
+
+        if customization('footer', list_key) && !is_collapsed
+          customization('footer', list_key)()
 
 
 
@@ -201,7 +247,7 @@ ListItems = ReactiveComponent
           SPAN 
             className: 'monospaced'
             style: 
-              paddingLeft: 18
+              paddingLeft: "var(--PROPOSAL_AUTHOR_AVATAR_GUTTER)"
               color: '#444'
               fontWeight: 400
             "+#{proposals.length - @props.show_first_num_items}"
@@ -211,13 +257,12 @@ ListItems = ReactiveComponent
     render_new = =>
       LI 
         key: "new#{list_key}"
+        className: "sized_for_homepage"
         style: 
-          margin: 0 
           padding: 0
           listStyle: 'none'
-          display: 'inline-block'
-          marginBottom: 20
-          marginTop: 6
+          margin: "6px auto 20px auto"
+          position: 'relative'
           
         NewProposal 
           list_key: list_key
@@ -335,7 +380,13 @@ window.delete_list = (list_key, page, suppress_confirmation) ->
 
 
 
+styles += """
+  [data-widget="ListHeader"] {  
 
+  }
+
+
+"""
 
 
 window.ListHeader = ReactiveComponent
@@ -355,11 +406,12 @@ window.ListHeader = ReactiveComponent
     DIVIDER = customization 'list_divider', list_key, subdomain
 
     wrapper_style = 
-      width: HOMEPAGE_WIDTH()
+      # width: HOMEPAGE_WIDTH()
       marginBottom: if !is_collapsed then 16 #24
       position: 'relative'
 
     DIV 
+      # className: "sized_for_homepage"
       style: wrapper_style 
 
       DIVIDER?()
@@ -369,21 +421,21 @@ window.ListHeader = ReactiveComponent
           position: 'relative'
 
 
-        DIV 
-          style: 
-            width:  HOMEPAGE_WIDTH()
-            margin:  'auto'
+        # DIV 
+        #   style: 
+        #     width:  HOMEPAGE_WIDTH()
+        #     margin:  'auto'
 
-          EditableTitle
-            list: @props.list
-            fresh: @props.fresh
+        EditableTitle
+          list: @props.list
+          fresh: @props.fresh
 
-          if !is_collapsed
-            DIV null, 
-              if description?.length > 0 || typeof(description) == 'function'
-                EditableDescription
-                  list: @props.list
-                  fresh: @props.fresh
+        if !is_collapsed
+          DIV null, 
+            if description?.length > 0 || typeof(description) == 'function'
+              EditableDescription
+                list: @props.list
+                fresh: @props.fresh
 
 
       if @props.allow_editing
@@ -409,7 +461,6 @@ styles += """
     margin-top: 55px;
     display: block;
     position: relative;
-    width: 100%;
     border-radius: 8px;
 
   }
@@ -468,6 +519,7 @@ window.NewList = ReactiveComponent
 
     else 
       BUTTON 
+        className: "sized_for_homepage"
         style: 
           padding: if !@props.no_padding then get_list_padding()
 
@@ -586,9 +638,9 @@ EditableTitle = ReactiveComponent
         DIV
           onMouseEnter: => @local.hover_label = true; save @local 
           onMouseLeave: => @local.hover_label = false; save @local
-          className: 'LIST-header'          
+          # className: 'LIST-header'          
           style: _.defaults {}, customization('list_label_style', list_key, subdomain) or {}, 
-            fontFamily: header_font()              
+            fontFamily: header_font()
             position: 'relative'
             textAlign: 'left'
             outline: 'none'
@@ -630,9 +682,9 @@ styles += """
     font-size: 16px;
     font-weight: 400;
     color: black;
-    margin-top: 8px;
+    margin-top: 2px;
     margin-bottom: 18px;
-    font-style: italic;
+    /* font-style: italic; */
   }
 
 """
@@ -685,7 +737,7 @@ window.list_actions = (props) ->
 
     DIV 
       style: 
-        width: column_sizes().first + 58
+        width: column_sizes().first
         marginRight: column_sizes().gutter
         display: 'flex'
 

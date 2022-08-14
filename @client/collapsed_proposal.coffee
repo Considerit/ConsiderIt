@@ -15,7 +15,6 @@ styles += """
     padding: 0px;
     list-style: none;    
     display: flex;
-    margin: 0;
   }
 
   .one-col [data-widget="CollapsedProposal"] {
@@ -30,7 +29,7 @@ styles += """
     font-weight: 700;
     text-decoration: underline;
     color: #000;
-    font-size: 17px;
+    font-size: 18px;
   }
 
   [data-widget="CollapsedProposal"] .description_on_homepage {
@@ -47,9 +46,8 @@ styles += """
 
 
   [data-widget="CollapsedProposal"] .proposal_info {
-    display: inline-block;
+    display: flex;
     position: relative;
-    margin-left: -58px;
   }
 
   [data-widget="CollapsedProposal"] .proposal_histo {
@@ -77,7 +75,8 @@ styles += """
 
   [data-widget="CollapsedProposal"] .proposal_name {
     display: inline-block;
-    padding-bottom: 20px;
+    padding-bottom: 28px;
+    padding-left: var(--PROPOSAL_AUTHOR_AVATAR_GUTTER);
   }
 
   [data-widget="CollapsedProposal"] .metadata {
@@ -88,8 +87,8 @@ styles += """
 
 
   [data-widget="CollapsedProposal"] .proposal_pic, [data-widget="CollapsedProposal"] [data-widget="Avatar"] {
-    height: 40px;
-    width: 40px;
+    height: var(--PROPOSAL_AUTHOR_AVATAR_SIZE);
+    width: var(--PROPOSAL_AUTHOR_AVATAR_SIZE);
     border-radius: 0px;
     background-color: #ddd;
   }
@@ -267,15 +266,13 @@ window.CollapsedProposal = ReactiveComponent
           className: 'proposal_info'
           style: 
             width: col_sizes.first 
-            marginLeft: 58
 
           
 
           # icon or bullet
           DIV 
             style: 
-              position: 'absolute'
-              left: -58
+              position: 'relative'
               top: if icons then 4
 
 
@@ -299,8 +296,8 @@ window.CollapsedProposal = ReactiveComponent
                     key: editor
                     user: editor
                     style:
-                      height: 40
-                      width: 40
+                      height: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
+                      width: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
 
                 else # no author specified
                   SPAN 

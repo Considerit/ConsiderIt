@@ -255,6 +255,7 @@ window.Notifications = ReactiveComponent
           style: 
             position: 'relative'
             marginLeft: 62
+            width: 500
 
           for proposal in watched_proposals
             do (proposal) => 
@@ -264,7 +265,6 @@ window.Notifications = ReactiveComponent
                   key: "unfollow-#{proposal.key or proposal}"
                   proposal: proposal
                   show_category: true
-                  width: 500
                   hide_scores: true
                   hide_icons: true
                   hide_metadata: true

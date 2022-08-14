@@ -39,9 +39,14 @@ styles += """
     padding: 24px 0px 140px 12px;
   }
 
+  :not(.one-col) #homepagetab {
+    width: calc(var(--HOMEPAGE_WIDTH) + 2 * var(--LIST_PADDING));
+  }
+
   .sized_for_homepage {
     margin: auto;
     width: var(--HOMEPAGE_WIDTH);
+    padding: 0px var(--LIST_PADDING-RIGHT) 0px var(--LIST_PADDING-LEFT);
   }
 
 
@@ -87,8 +92,6 @@ window.Homepage = ReactiveComponent
       DIV
         id: 'homepagetab'
         role: if get_tabs() then "tabpanel"
-        style: 
-          width: if !ONE_COL() then HOMEPAGE_WIDTH() + LIST_PADDING() * 2
 
         if !fetch('/proposals').proposals
           DIV 
@@ -104,9 +107,7 @@ window.Homepage = ReactiveComponent
           else 
             DIV null,
               DIV 
-                className: 'sized_for_homepage'
-                style: 
-                  padding: "0px #{LIST_PADDING() + LIST_PADDING() / 6}px 0px #{LIST_PADDING() - LIST_PADDING() / 6}px"
+                className: 'sized_for_homepage'                  
 
                 if customization('auth_callout')
                   DIV 

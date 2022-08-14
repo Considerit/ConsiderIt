@@ -56,7 +56,7 @@ window.EditList = ReactiveComponent
 
           wrapper_style: 
             position: 'absolute'
-            right: -LIST_PADDING() + 10
+            right: "calc(-1 * var(--LIST_PADDING) + 10px)"
             top: 12
             minWidth: 'auto'
             paddingLeft: 40

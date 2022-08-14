@@ -40,7 +40,8 @@ window.styles += """
 
   [data-widget="List"] {
     margin-bottom: 120px;
-    position: relative;    
+    position: relative; 
+    padding: var(--LIST_PADDING-FULL);   
   }
 
   .one-col [data-widget="List"], .one-col [data-widget="NewList"] {
@@ -74,18 +75,32 @@ window.styles += """
   }
 """
 
-get_list_padding = ->
-  top = if ONE_COL() then 12 else 48
+responsive_style_registry.list_padding = -> 
+
+  top =    if ONE_COL() then 12 else 48
   bottom = if ONE_COL() then 12 else 48 
 
-  if WINDOW_WIDTH() <= 955
-    right = Math.max 36, LIST_PADDING()
-    left  = Math.max 36, LIST_PADDING()
-  else 
-    right = Math.max 36, LIST_PADDING() + LIST_PADDING() / 6
-    left  = Math.max 36, LIST_PADDING() - LIST_PADDING() / 6
+  list_padding = if ONE_COL() then 12 else 80
 
-  "#{top}px #{right}px #{bottom}px #{left}px"
+  if WINDOW_WIDTH() <= 955
+    right = Math.max 36, list_padding
+    left  = Math.max 36, list_padding
+  else 
+    right = Math.max 36, list_padding + list_padding / 6
+    left  = Math.max 36, list_padding - list_padding / 6
+
+  """
+    :root {
+      --LIST_PADDING: #{list_padding}px;
+      --LIST_PADDING-FULL: #{top}px #{right}px #{bottom}px #{left}px;
+      --LIST_PADDING-TOP: #{top}px;
+      --LIST_PADDING-RIGHT: #{right}px;
+      --LIST_PADDING-LEFT: #{left}px;
+      --LIST_PADDING-BOTTOM: #{bottom}px;
+    }
+  """
+
+
 
 window.list_link = (list_key) ->
   list_key.substring(5).toLowerCase().replace(/ /g, '_')
@@ -116,20 +131,15 @@ window.List = ReactiveComponent
     list_state.collapsed ?= customization('list_is_archived', list_key)
 
     is_collapsed = list_state.collapsed
-
-    sty =         
-      padding: get_list_padding()
-
-    if screencasting()
-      _.extend sty,
-        boxShadow: 'none'
-        borderTop: 'none'
-        paddingTop: 0 
+    
 
     ARTICLE
       key: list_key
       id: list_key.substring(5).toLowerCase()
-      style: sty
+      style:  if screencasting()
+                boxShadow: 'none'
+                borderTop: 'none'
+                paddingTop: 0 
 
       A name: list_link(list_key)
 
@@ -161,11 +171,8 @@ window.List = ReactiveComponent
             proposal_focused_on: @props.proposal_focused_on
 
 
-      DIV 
-        className: "sized_for_homepage"
-
-        if customization('footer', list_key) && !is_collapsed
-          customization('footer', list_key)()
+      if customization('footer', list_key) && !is_collapsed
+        customization('footer', list_key)()
 
 
 
@@ -257,7 +264,6 @@ ListItems = ReactiveComponent
     render_new = =>
       LI 
         key: "new#{list_key}"
-        className: "sized_for_homepage"
         style: 
           padding: 0
           listStyle: 'none'
@@ -411,7 +417,6 @@ window.ListHeader = ReactiveComponent
       position: 'relative'
 
     DIV 
-      # className: "sized_for_homepage"
       style: wrapper_style 
 
       DIVIDER?()
@@ -462,8 +467,10 @@ styles += """
     display: block;
     position: relative;
     border-radius: 8px;
-
+    padding: var(--LIST_PADDING-FULL);
+    width: 100%;
   }
+
   button[data-widget="NewList"] h1.LIST-header {
     position: relative;
     left: -42px;
@@ -518,11 +525,10 @@ window.NewList = ReactiveComponent
 
 
     else 
-      BUTTON 
-        className: "sized_for_homepage"
+      BUTTON
         style: 
-          padding: if !@props.no_padding then get_list_padding()
-
+          padding: if @props.no_padding then "0px"
+          
         onClick: (e) =>
           @local.editing = true 
           @local.default_open_ended = e.target.classList.contains('open')

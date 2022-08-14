@@ -220,6 +220,8 @@ Page = ReactiveComponent
       STYLE 
         dangerouslySetInnerHTML: __html: customization('style')
 
+
+
       if access_granted
         Header
           key: 'page_header'
@@ -360,6 +362,7 @@ Root = ReactiveComponent
       HomepageTabTransition()
       BrowserLocation()
       GoogleTranslate()
+      ResponsiveStyles()
 
 
 

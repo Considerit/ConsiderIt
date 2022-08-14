@@ -187,8 +187,7 @@ window.Proposal = ReactiveComponent
             can_opine: can_opine
 
 
-      if true || mode == 'results' # && !embedded_demo()
-        w = HOMEPAGE_WIDTH() + LIST_PADDING() * 2
+      if false || mode == 'results' # && !embedded_demo()
 
         DIV 
           className: "main_background navigation_wrapper #{if ONE_COL() then 'one-col' else ''}"
@@ -234,11 +233,10 @@ window.Proposal = ReactiveComponent
             style: 
               margin: '32px auto 0px auto'
               paddingBottom: 48
-              width: w
+              width: "calc(var(--HOMEPAGE_WIDTH) + 2 * var(--LIST_PADDING))"
 
 
             (customization('ProposalNavigation') or GroupedProposalNavigation) # or NextProposals)
-              width: w
               proposal: proposal.key
 
 

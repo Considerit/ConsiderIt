@@ -559,6 +559,17 @@ window.location_origin = ->
 ## Styles
 ############
 
+window.responsive_style_registry = {}
+window.ResponsiveStyles = ReactiveComponent
+  displayName: "ResponsiveStyles"
+  render: ->
+    DIV null,
+      for k, responsive_style of responsive_style_registry
+        STYLE
+          key: k
+          dangerouslySetInnerHTML: __html: responsive_style()
+
+
 window.focus_color = -> focus_blue
 
 ## CSS functions

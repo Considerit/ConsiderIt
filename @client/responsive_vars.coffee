@@ -51,7 +51,7 @@ setResponsive = ->
   document_width = Math.max(900, w)
 
   # There will be at least 80px of whitespace on either side of the document
-  gutter = Math.max(80, w / 11)
+  gutter = Math.max(80, .09 * w )
   content_width = document_width - 2 * gutter
 
   whitespace = Math.max(100, w / 10)
@@ -81,6 +81,8 @@ setResponsive = ->
   homepage_width = Math.min content_width, 1100
   homepage_width = 60 * Math.floor(homepage_width / 60)
 
+    
+
 
   if browser.is_mobile && portrait
     point_font_size += 4
@@ -90,7 +92,6 @@ setResponsive = ->
     
     DOCUMENT_WIDTH: document_width
     WINDOW_WIDTH: w
-    GUTTER: gutter
     WHITESPACE: whitespace
     BODY_WIDTH: body_width
     PROPOSAL_HISTO_WIDTH: proposal_histo_width
@@ -106,7 +107,6 @@ setResponsive = ->
     PORTRAIT_MOBILE: portrait && browser.is_mobile
     LANDSCAPE_MOBILE: !portrait && browser.is_mobile
     HOMEPAGE_WIDTH: homepage_width
-    LIST_PADDING: if one_col then 12 else 80
     SAAS_PAGE_WIDTH: Math.min(1120, w - 2 * 24)
 
   
@@ -124,7 +124,7 @@ styles += """
   :root {
     --WINDOW_WIDTH: 100vw;
     --SAAS_PAGE_WIDTH: min(1120px, calc(100vw - 2 * 24px));
-    --HOMEPAGE_WIDTH:  min(1138px, max(900px, 100vw) - calc(2 * max(80px, 9vw)));
+    --HOMEPAGE_WIDTH:  min(1100px, max(900px, 100vw) - calc(2 * max(80px, 9vw)));
   }
 """
 

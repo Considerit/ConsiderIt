@@ -163,6 +163,11 @@ class HtmlController < ApplicationController
       keywords = "Internet health, Internet, Mozilla, Internet research, privacy, decentralization, digital inclusion, Web literacy, digital divide, digital rights"
       @favicon = '/images/internethealthreport/favicon.png'
 
+    when 'seattlefoodactionplan'
+      title = "What do you think of the Seattle Food Action Plan?"
+      description = "We’re updating Seattle’s Food Action Plan and want to hear from you! Provide us your feedback now through August 26"
+      image = "#{request.protocol}#{view_context.asset_path('images/seattlefoodactionplan/socialmedia.png').gsub(/\/\//,'')}"
+
     else
       banner = current_subdomain.customization_json['banner'] || {}
       title = banner.fetch('title', current_subdomain.name)

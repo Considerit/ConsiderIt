@@ -279,22 +279,8 @@ Page = ReactiveComponent
                       fontSize: 16
                     "Check if the url is correct. The author may also have deleted it. Good luck!"
 
-              else if EXPAND_IN_PLACE
+              else
                 Homepage key: 'homepage'
-
-              else 
-                result = null
-
-                if page.proposal 
-                  result = Proposal key: page.proposal, proposal: page.proposal
-                else if !page.proposal? && arest.cache['/proposals']?.proposals?
-                  # search to see if we already have this proposal loaded
-                  for proposal in arest.cache['/proposals'].proposals
-                    if '/' + proposal.slug == loc.url
-                      result = Proposal key: "/proposal/#{proposal.id}", proposal: "/proposal/#{proposal.id}"
-                      break 
-
-                result or LOADING_INDICATOR
                 
 
       Footer(key: 'page_footer') if access_granted
@@ -397,13 +383,9 @@ Root = ReactiveComponent
           
           BrowserHacks()
 
-          if EXPAND_IN_PLACE
-            Page
-              page: "/page#{loc.url}"
-          else 
-            Page 
-              key: "/page#{loc.url}"
-              page: "/page#{loc.url}"
+          Page
+            page: "/page#{loc.url}"
+
 
       Tooltip()
       Popover()

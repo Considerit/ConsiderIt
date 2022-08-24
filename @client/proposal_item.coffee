@@ -223,6 +223,13 @@ window.ProposalItem = ReactiveComponent
         DIV 
           className: 'opinion-block-wrapper'
 
+
+          OpinionBlock
+            proposal: proposal.key
+            expansion_state_changed: @expansion_state_changed
+            is_expanded: @is_expanded
+            list_key: @props.list_key
+
       DIV 
         className: 'bottom_closer'
         onClick: => toggle_expand(@props.list_key, proposal)
@@ -963,5 +970,10 @@ styles += """
 """
 
 
+OpinionBlock = ReactiveComponent
+  displayName: 'OpinionBlock'
+
+  render: ->
+    DIV null, ''
 
 

@@ -39,7 +39,7 @@ window.EditList = ReactiveComponent
     admin_actions = [
       {action: 'edit', label: translator('edit', 'edit')}
       {action: 'copy_link', label: translator('engage.list-configuration.copy_link', 'copy link')}
-      {action: 'list_order', label: translator('engage.list-configuration.reorder_topics', 'reorder lists')}
+      {action: 'list_order', label: translator('engage.list-configuration.reorder_topics', 'reorder')}
       {action: 'close', label: translator('engage.list-configuration.close', 'close to participation')}
       {action: 'delete', label: translator('delete', 'delete')}
     ]

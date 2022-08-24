@@ -542,16 +542,21 @@ styles += """
   button[data-widget="NewList"] .subbutton_button {
     color: #{focus_blue};
     font-weight: 700;
+    border-bottom-width: 2px;
+    border-bottom-color: transparent;
+    border-bottom-style: solid;
+    transition: border-bottom 1s;
   }
 
   button[data-widget="NewList"]:hover .subbutton_button, button[data-widget="NewList"]:hover .separator {
-    text-decoration: underline;
+    border-bottom-color: #{focus_blue};
+    #text-decoration: underline;
   }
 
   button[data-widget="NewList"] .separator {
     // padding: 0 12px;
-    font-weight: 300;
-    color: #{focus_blue};
+    font-weight: 400;
+    color: #{focus_blue + "ab"};
   }
   button[data-widget="NewList"] .subheader {
     color: #656565;
@@ -598,13 +603,14 @@ window.NewList = ReactiveComponent
             'Add a request for feedback' 
 
           if wide_layout
-            SPAN null,
+            [
               SPAN 
                 className: 'separator'
                 dangerouslySetInnerHTML: __html: "&nbsp;&nbsp;#{t('or', 'or')}&nbsp;&nbsp;"
               SPAN 
                 className: 'subbutton_button closed'
                 'an open-ended question'
+            ]
 
         if wide_layout
           DIV 
@@ -613,14 +619,14 @@ window.NewList = ReactiveComponent
             SPAN 
               style: 
                 position: 'relative'
-                left: 250 
+                left: 206 
 
               'on a fixed set of proposals'
 
             SPAN 
               style: 
                 position: 'relative'
-                left: 539
+                left: 446
               'for community ideation'
 
         else 

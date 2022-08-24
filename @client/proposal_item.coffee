@@ -66,7 +66,7 @@ styles += """
   [data-widget="ProposalItem"] .proposal-block-container {
     display: flex;
     justify-content: center;
-    margin-bottom: 24px;
+    margin: 24px 0px;
   }
 
   .is_collapsed[data-widget="ProposalItem"] .proposal-block-container {
@@ -438,10 +438,27 @@ ProposalBlock = ReactiveComponent
 
 
 
-TITLE_FONT_SIZE_COLLAPSED = 17
-TITLE_FONT_SIZE_EXPANDED = 26
+TITLE_FONT_SIZE_COLLAPSED = 19
 
 styles += """
+
+  :root {
+    --proposal_title_underline_color: #000000;
+  }
+
+  [data-widget="ProposalText"] .proposal-title span {
+    border-bottom-width: 2px;
+    border-style: solid;
+    border-color: #{focus_blue + "ad"}; /* with some transparency */
+    transition: border-color 1s;
+  }
+
+  [data-widget="ProposalText"] .proposal-title:hover span {
+    border-color: #000;
+    border-style: solid;
+
+  }
+
 
   [data-widget="ProposalText"] .proposal-title {
     max-width: 900px;
@@ -456,14 +473,20 @@ styles += """
   }
 
   [data-widget="ProposalText"] .proposal-title {
+
+
     font-size: #{TITLE_FONT_SIZE_COLLAPSED}px;
     font-weight: 700;
-    text-decoration: underline;
-    overflow: hidden;
+    /* text-decoration: underline; */
     cursor: pointer;
 
     transform-origin: 0 0;
-    transition-property: transform, height, width;
+    transition-property: transform, height, width, color;
+
+    color: #111;
+  }
+
+  [data-widget="ProposalText"] .proposal-title:hover,  .is_expanded [data-widget="ProposalText"] .proposal-title {
   }
 
   .is_expanded [data-widget="ProposalText"] .proposal-title {
@@ -484,11 +507,12 @@ styles += """
 
     padding: 8px 0px;
 
+    color: #333;
   }
 
   .is_collapsed [data-widget="ProposalText"] .proposal-description {
     max-height: 50px;
-    color: #444;
+    color: #555;
   }
 
   .is_expanded [data-widget="ProposalText"] .proposal-description.fully_expanded {
@@ -613,6 +637,20 @@ ProposalText = ReactiveComponent
   capture_title_dimensions: ->
     title_el = @refs.proposal_title
     desc_el = @refs.proposal_description
+
+    if !@fonts_loaded 
+      @fonts_loaded = document.fonts.check "14px #{customization('font').split(',')[0]}"
+      
+      if !@fonts_loaded && !@wait_for_fonts 
+        @wait_for_fonts = setInterval =>  
+          @capture_title_dimensions()
+
+      if @fonts_loaded && @wait_for_fonts
+        clearInterval @wait_for_fonts
+
+      return if !@fonts_loaded
+
+
     # Get collapsed and uncollapsed width
     if @is_expanded 
       if !@expanded_width?
@@ -632,6 +670,7 @@ ProposalText = ReactiveComponent
         # desc_el = desc_el.children[0]
         # predict height of rendered description
         if desc_el 
+          proposal = fetch @props.proposal
           computed_style = window.getComputedStyle(desc_el)
           div = document.createElement("div")
           div.style.fontSize = computed_style.fontSize
@@ -639,10 +678,11 @@ ProposalText = ReactiveComponent
           div.style.fontWeight = computed_style.fontWeight
           div.style.paddingTop = computed_style.paddingTop
           div.style.paddingBottom = computed_style.paddingBottom
+          div.classList.add('wysiwyg_text')
           # div.style.zIndex = 3
           # div.style.position = 'relative'
           div.style.visibility = 'hidden'
-          div.innerHTML = desc_el.innerHTML
+          div.innerHTML = proposal.description
           parent = document.getElementById('content')
           parent.appendChild div 
           @expanded_height = div.clientHeight
@@ -651,7 +691,7 @@ ProposalText = ReactiveComponent
           @expanded_height = 0
 
 
-    else if !@collapsed_height?
+    else if !@collapsed_height?      
       @collapsed_height = title_el.clientHeight
       title_el.style.height = "#{@collapsed_height}px"
 
@@ -765,10 +805,14 @@ ProposalText = ReactiveComponent
                   key: 'proposal-link'
                   # href: proposal_url(proposal)
                   # "data-no-scroll": EXPAND_IN_PLACE
-                  className: 'separated'
-                  style: 
-                    textDecoration: 'none'
-                    whiteSpace: 'nowrap'                        
+                  # className: 'separated'
+                  className: 'separated pros_cons_count monospaced'
+                  onClick: => toggle_expand(@props.list_key, proposal)
+                    
+                  onKeyPress: (e) => 
+                    if e.which == 32 || e.which == 13
+                      toggle_expand(@props.list_key, proposal)
+
                   TRANSLATE
                     key: 'point-count'
                     id: "engage.point_count"
@@ -776,17 +820,30 @@ ProposalText = ReactiveComponent
 
                     "{cnt, plural, one {# pro or con} other {# pros & cons}}"
 
-                if proposal.active && permit('create point', proposal, subdomain) > 0 && WINDOW_WIDTH() > 955
+                if false && proposal.active && permit('create point', proposal, subdomain) > 0 && WINDOW_WIDTH() > 955
 
                   SPAN 
                     key: 'give-opinion'
-                    # href: proposal_url(proposal)
-                    # "data-no-scroll": EXPAND_IN_PLACE
-                    className: 'separated give-your-opinion'                          
+                    className: 'pros_cons_count'
+                    # style: 
+                    #   color: focus_blue
+                    #   borderColor: focus_blue      
+                    onClick: => toggle_expand(@props.list_key, proposal)
+                      
+                    onKeyPress: (e) => 
+                      if e.which == 32 || e.which == 13
+                        toggle_expand(@props.list_key, proposal)
+
+
+                    
                     TRANSLATE
                       id: "engage.add_your_own"
 
                       "give your opinion"
+                    SPAN 
+                      style: 
+                        borderBottom: 'none'
+                      " >>"
               ]
           ]
 
@@ -865,7 +922,7 @@ styles += """
   [data-widget="ProposalText"] .proposal-metadata {
     font-size: 12px;
     color: #555;
-    margin-top: 6px;
+    margin-top: 8px;
   }
 
 
@@ -884,6 +941,22 @@ styles += """
     border: 1px solid #eee;
     box-shadow: 0 1px 1px rgba(160,160,160,.8);
     white-space: nowrap;
+  }
+
+
+  .proposal-metadata .pros_cons_count {
+    padding: 0;
+    border-width: 0 0 1px 0;
+    background: transparent;
+    border-style: solid;
+    border-color: #aaa;
+    white-space: nowrap;
+    transition: border-color 1s;
+    cursor: pointer;
+    text-decoration: none;
+  } 
+  .proposal-metadata .pros_cons_count:hover {
+    border-color: #444;
   }
 
 

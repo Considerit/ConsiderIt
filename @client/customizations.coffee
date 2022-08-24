@@ -227,10 +227,11 @@ customizations.default =
   user_tags: {}
 
 
+  # IBM Plex Sans
   # Trebuchet MS, palantino, and optima are intriguing web-safe fonts
-  font: "Montserrat, Avenir Next, Trebuchet MS, segoe ui, Helvetica Neue, Ubuntu, Verdana, sans-serif"
-  header_font: "Montserrat,  'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
-  mono_font: "Menlo, Consolas, Monaco, Fira Mono, Liberation Mono, Lucida Console, monospace"
+  font: "IBM Plex Sans, Helvetica Neue, sans-serif"
+  header_font: "IBM Plex Sans Condensed, IBM Plex Sans, Helvetica Neue, sans-serif"
+  mono_font: "IBM Plex Mono, Menlo, Consolas, Monaco, Fira Mono, Liberation Mono, Lucida Console, monospace"
 
   new_proposal_fields: -> 
    name:  translator("engage.edit_proposal.summary_label", "Summary")

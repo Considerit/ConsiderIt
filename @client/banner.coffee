@@ -1110,13 +1110,11 @@ window.PhotoBanner = (opts) ->
         // }
 
         .PhotoBanner > .wrapper .CustomizeTitle .banner_title {
-          font-size: 42px;
+          font-size: 50px;
           font-weight: 700;
           font-family: #{header_font()};
           text-align: center;
           margin-bottom: #{if has_description || edit_forum.editing then 28 else 0}px;
-
-          font-weight: 800;
           text-shadow: 0px 1px 2px rgba(0,0,0,.4);
         }
 

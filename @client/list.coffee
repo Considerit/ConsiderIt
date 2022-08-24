@@ -273,7 +273,7 @@ ListItems = ReactiveComponent
         style: 
           padding: 0
           listStyle: 'none'
-          margin: "6px auto 20px auto"
+          margin: "24px auto"
           position: 'relative'
           
         NewProposal 

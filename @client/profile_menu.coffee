@@ -34,7 +34,7 @@ window.ProfileMenu = ReactiveComponent
 
     menu_options = _.compact menu_options
 
-    light_background = loc.url != '/' || is_light_background() 
+    light_background = !is_a_dialogue_page() || is_light_background() 
 
 
     edit_forum = fetch 'edit_forum'

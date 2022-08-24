@@ -318,6 +318,10 @@
 
                 try {
                     var result = original_method && original_method.apply(this, arguments)
+                    // if (method == 'render') {
+                    //     console.log(this.name, result)
+                    //     result = DIV({"data-widget": this.name}, result)
+                    // }
                 } catch (e) {
                     execution_context = []
                     if (this.is_waiting()){
@@ -345,25 +349,26 @@
                  // STEP 1. Register the component's basic info
                  if (component.displayName === undefined)
                      throw 'Component needs a displayName'
-                 this.name = component.displayName.toLowerCase().replace(' ', '_')
+                 this.name = component.displayName.replace(' ', '_')
                  this.local_key = 'component/' + components_count++
                  components[this.local_key] = this
-
-
-                 // This is broken now that React doesn't allow props to be modified
-                 // // You can pass an object in as a key if you want:
-                 // var my_props = get_current_props_for_component_instance(this)
-                 // if (my_props.key && my_props.key.key)
-                 //     my_props.key = my_props.key.key
-
 
                  // XXX Putting this into WillMount probably won't let you use the
                  // mounted_key inside getInitialState!  But you should be using
                  // activerest state anyway, right?
                  this.mounted_key = this._reactInternals.key
 
-                 // STEP 2: Create shortcuts e.g. `this.foo' for all parents up the
-                 // tree, and this component's local key
+                 // // You can pass an object in as a key if you want:
+                 // console.log("GOT KEY!", component.displayName, this._reactInternals.key)
+                 if (this.mounted_key && this.mounted_key.key){
+                     // This is broken now that React doesn't allow props to be modified                 
+                     // this.props.key = this.props.key.key
+                     console.error("component", component.displayName, " received an object as a key")
+                 }
+
+
+
+                 // STEP 2: Create shortcut for this component's local key
                  
                  function add_shortcut (obj, shortcut_name, to_key) {
                      //console.log('Giving '+obj.name+' shorcut @'+shortcut_name+'='+to_key)
@@ -380,19 +385,8 @@
                          configurable: true })
                  }
 
-                 // ...first for @local
                  add_shortcut(this, 'local', this.local_key)
                  
-                 // ...and now for all parents
-                 // (I don't use parent shortcuts anymore, and consider them an anti-pattern)
-                 // var parents = this.props.parents.concat([this.local_key])
-                 // for (var i=0; i<parents.length; i++) {
-                 //     var name = components[parents[i]].name
-                 //     var key = components[parents[i]].mounted_key //props.key
-                 //     if (!key && cache[name] !== undefined)
-                 //         key = name
-                 //     add_shortcut(this, name, key)
-                 // }
             })
 
         wrap(component, 'render', function () {
@@ -420,7 +414,6 @@
             if (this.mounted_key)
                 ReactDOM.findDOMNode(this).setAttribute('data-key', this.mounted_key)              
         })
-        // wrap(component, 'getDefaultProps')
         //wrap(component, 'componentWillReceiveProps')
         wrap(component, 'componentWillUnmount', function () {
             // Clean up
@@ -429,6 +422,7 @@
             delete components[this.local_key]
             delete dirty_components[this.local_key]
         })
+
         component.shouldComponentUpdate = function (next_props, next_state) {
             // This component definitely needs to update if it is marked as dirty
             if (dirty_components[this.local_key] !== undefined) return true

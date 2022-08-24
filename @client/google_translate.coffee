@@ -12,12 +12,9 @@ window.GoogleTranslate = ReactiveComponent
   displayName: 'GoogleTranslate'
 
   render: -> 
-    loc = fetch 'location'
-    homepage = loc.url == '/'
-
     return SPAN null if embedded_demo()
 
-    style = if customization('google_translate_style') && homepage 
+    style = if customization('google_translate_style') && is_a_dialogue_page() 
               s = JSON.parse JSON.stringify customization('google_translate_style')
               delete s.prominent if s.prominent
               delete s.callout if s.callout

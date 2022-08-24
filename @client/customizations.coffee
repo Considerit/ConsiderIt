@@ -228,9 +228,9 @@ customizations.default =
 
 
   # Trebuchet MS, palantino, and optima are intriguing web-safe fonts
-  font: "Montserrat, 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
-  header_font: "Montserrat Alternates, Montserrat, 'Optima', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
-  mono_font: "'Fira Mono', 'Courier New', Montserrat, monospace"
+  font: "Montserrat, Avenir Next, Trebuchet MS, segoe ui, Helvetica Neue, Ubuntu, Verdana, sans-serif"
+  header_font: "Montserrat,  'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
+  mono_font: "Menlo, Consolas, Monaco, Fira Mono, Liberation Mono, Lucida Console, monospace"
 
   new_proposal_fields: -> 
    name:  translator("engage.edit_proposal.summary_label", "Summary")
@@ -260,7 +260,7 @@ masthead_only = ["kamakakoi","seattletimes","kevin","ihub","SilverLakeNC",\
 LegacyImageHeader = (opts) ->
   subdomain = fetch '/subdomain'   
   loc = fetch 'location'    
-  homepage = loc.url == '/'
+  homepage = is_a_dialogue_page()
 
   return SPAN null if !subdomain.name
 

@@ -125,6 +125,14 @@ window.Homepage = ReactiveComponent
                       marginBottom: 24
                     dangerouslySetInnerHTML: __html: preamble
 
+
+              if (proposal_editing = fetch('proposal_editing')).editing
+                EditProposal 
+                  proposal: proposal_editing.editing
+                  done_callback: (e) =>
+                    proposal_editing.editing = null
+                    save proposal_editing
+
               get_current_tab_view()
 
               if get_tabs()

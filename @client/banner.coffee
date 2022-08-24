@@ -95,7 +95,7 @@ CustomizeGoogleTranslate = ReactiveComponent
               "Helps support multi-lingual forums."
 
 
-      if trns?.prominent && fetch('location').url == '/'
+      if trns?.prominent # && fetch('location').url == '/'
         DIV
           className: "translator"
           
@@ -991,7 +991,7 @@ window.EditBanner = ReactiveComponent
 window.PhotoBanner = (opts) -> 
   opts ?= {}
   
-  homepage = EXPAND_IN_PLACE || fetch('location').url == '/'
+  homepage = is_a_dialogue_page()
   subdomain = fetch '/subdomain'
   edit_banner = fetch 'edit_banner'
   edit_forum = fetch 'edit_forum'
@@ -1196,7 +1196,7 @@ window.PhotoBanner = (opts) ->
 
 
 window.MediaBanner = -> 
-  homepage = fetch('location').url == '/'
+  homepage = is_a_dialogue_page()
   subdomain = fetch '/subdomain'
   edit_banner = fetch 'edit_banner'
 
@@ -1328,7 +1328,7 @@ window.ShortHeader = (opts) ->
 
   return SPAN null if !subdomain.name
 
-  homepage = loc.url == '/'
+  homepage = is_a_dialogue_page()
 
   opts ||= {}
   _.defaults opts, (customization('forum_header') or {}),
@@ -1419,7 +1419,7 @@ window.ShortHeader = (opts) ->
 
 window.HawaiiHeader = (opts) ->
 
-  homepage = fetch('location').url == '/'
+  homepage = is_a_dialogue_page()
   subdomain = fetch '/subdomain'
 
   return SPAN null if !subdomain.name 
@@ -1546,7 +1546,7 @@ window.HawaiiHeader = (opts) ->
 
 window.SeattleHeader = (opts) -> 
 
-  homepage = fetch('location').url == '/'
+  homepage = is_a_dialogue_page()
   subdomain = fetch '/subdomain'
 
   return SPAN null if !subdomain.name 

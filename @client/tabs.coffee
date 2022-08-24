@@ -33,6 +33,8 @@ window.SubdomainSaveRateLimiter =
       , 500
 
 
+
+
 # handles tab query parameter based on tabs state
 window.HomepageTabTransition = ReactiveComponent
   displayName: "HomepageTabTransition"
@@ -47,6 +49,33 @@ window.HomepageTabTransition = ReactiveComponent
 
         if loc.query_params.tab && get_tab(decodeURIComponent(loc.query_params.tab))
           tab_state.active_tab = decodeURIComponent(loc.query_params.tab)
+        else if is_a_dialogue_page() && loc.url != '/' # if we have a focus on a particular item
+          slug = loc.url.substring(1)
+
+          look_for_tab_for_proposal = ->
+            proposal = null
+            find_tab = null
+            for k,v of arest.cache
+              if v.slug? && v.slug == slug
+                proposal = v
+                break
+
+            if proposal
+              list = get_list_for_proposal proposal
+              tab = get_page_for_list list
+
+              tab_state.active_tab = tab
+              save tab_state
+
+              if find_tab != null
+                clearInterval find_tab
+
+            proposal
+
+          result = look_for_tab_for_proposal()
+          if !result 
+            find_tab = setInterval look_for_tab_for_proposal, 100
+
         else 
           tab_state.active_tab = default_tab
 
@@ -54,10 +83,9 @@ window.HomepageTabTransition = ReactiveComponent
 
         save tab_state
 
-      if loc.url != '/' && loc.query_params.tab
-        delete loc.query_params.tab
-        save loc
-      else if loc.url == '/' && loc.query_params.tab != tab_state.active_tab
+
+
+      if loc.query_params.tab != tab_state.active_tab
         loc.query_params.tab = tab_state.active_tab
         save loc
 
@@ -171,7 +199,13 @@ window.delete_tab = (tab_name, skip_confirmation) ->
 
     save subdomain
 
+window.get_page_for_list = (list_key) -> 
+  for page in get_tabs() or []    
+    for list in get_lists_for_page(page.name)
+      if list.key == list_key
+        return page.name
 
+  return null
 
 
 styles += """
@@ -452,6 +486,9 @@ window.Tab = ReactiveComponent
 
         loc.query_params.tab = tab_name
         save loc  
+        if loc.url != '/'
+          loadPage '/', loc.query_params
+
         document.activeElement.blur()
 
 

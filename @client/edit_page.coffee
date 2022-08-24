@@ -341,8 +341,7 @@ window.EditPage = ReactiveComponent
 
         else 
 
-          NewList
-            no_padding: true
+          NewList()
 
           # BUTTON
           #   className: "add_new_list"

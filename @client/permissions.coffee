@@ -194,7 +194,7 @@ window.recourse = (permission, goal) ->
   loc = fetch 'location'
   auth = fetch 'auth'
 
-  goal ?= "To access this #{if loc.url == '/' then 'forum' else 'page'},"
+  goal ?= "To access this #{if is_a_dialogue_page() then 'forum' else 'page'},"
   
   switch permission
 

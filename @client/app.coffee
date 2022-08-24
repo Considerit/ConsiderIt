@@ -38,6 +38,7 @@ require './point'
 require './legal'
 require './statement'
 require './proposal'
+require './proposal_item'
 require './viewport_visibility_sensor'
 require './icons'
 require './google_translate'
@@ -159,7 +160,7 @@ LocationTransition = ReactiveComponent
   render : -> 
     loc = fetch 'location'
 
-    if loc.url == '/' && loc.query_params.edit_forum
+    if is_a_dialogue_page() && loc.query_params.edit_forum
       edit_forum = fetch 'edit_forum'
       edit_forum.editing = true
       save edit_forum      
@@ -181,7 +182,7 @@ LocationTransition = ReactiveComponent
 
 
       edit_forum = fetch 'edit_forum'
-      if edit_forum.editing && loc.url != '/'
+      if edit_forum.editing && !is_a_dialogue_page()
         stop_editing_forum()
         
       #######
@@ -230,7 +231,7 @@ Page = ReactiveComponent
 
       MAIN 
         role: 'main'
-        className: if loc.url == '/' || EXPAND_IN_PLACE then 'main_background'
+        className: if is_a_dialogue_page() then 'main_background'
         style: 
           position: 'relative'
           # zIndex: 1
@@ -313,7 +314,7 @@ Root = ReactiveComponent
 
     setTimeout ->
       fetch '/users'
-      if loc.url == '/'
+      if is_a_dialogue_page()
 
         setTimeout ->
           fetch '/proposals'

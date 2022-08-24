@@ -17,6 +17,8 @@ require './browser_hacks'
 ######
 # Public API
 
+window.is_a_dialogue_page = ->
+  fetch('location').url.indexOf('/dashboard') == -1
 
 parseURL = (url) ->
   parser = document.createElement('a')

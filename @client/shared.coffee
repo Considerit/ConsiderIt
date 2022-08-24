@@ -56,9 +56,7 @@ window.pad = (num, len) ->
 
 
 window.back_to_homepage_button = (style, text) -> 
-  loc = fetch('location')
-  homepage = loc.url == '/'
-
+  loc = fetch 'location'
   hash = loc.url.split('/')[1].replace('-', '_')
 
   NAV 
@@ -71,7 +69,7 @@ window.back_to_homepage_button = (style, text) ->
       href: "/##{hash}"
       style: _.defaults {}, style,
         fontSize: 43
-        visibility: if homepage || !customization('has_homepage') then 'hidden' else 'visible'
+        visibility: if is_a_dialogue_page() || !customization('has_homepage') then 'hidden' else 'visible'
         color: 'black'
         display: 'flex'
         alignItems: 'center'

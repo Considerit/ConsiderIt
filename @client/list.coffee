@@ -1,6 +1,6 @@
 require './modal'
 require './edit_list'
-
+require './proposal_item'
 
 
 window.column_sizes = (args) ->
@@ -29,10 +29,12 @@ window.column_sizes = (args) ->
   {first, second, gutter, score_w}
 
 
+window.PROPOSAL_AUTHOR_AVATAR_SIZE = 40
 window.styles += """
   :root {
-    --PROPOSAL_AUTHOR_AVATAR_SIZE: 40px;
-    --PROPOSAL_AUTHOR_AVATAR_GUTTER: 18px; 
+    --PROPOSAL_AUTHOR_AVATAR_SIZE: #{PROPOSAL_AUTHOR_AVATAR_SIZE}px;
+    --PROPOSAL_AUTHOR_AVATAR_GUTTER: 18px;
+    --PROPOSAL_BULLET_GUTTER: 12px; 
   }
 
   [data-widget="List"], [data-widget="NewList"], .draggable-wrapper {
@@ -136,7 +138,7 @@ window.List = ReactiveComponent
     list_state.collapsed ?= customization('list_is_archived', list_key)
 
     is_collapsed = list_state.collapsed
-    
+      
 
     ARTICLE
       key: list_key
@@ -162,19 +164,18 @@ window.List = ReactiveComponent
       if !is_collapsed && !@props.fresh
         
         permitted = permit('create proposal', list_key)
-        DIV null, 
 
-          ListItems 
-            list: list 
-            key: "#{list.key}-items"
-            fresh: @props.fresh
-            show_first_num_items: if list_state.show_all_proposals then 999999 else list_state.show_first_num_items
-            combines_these_lists: @props.combines_these_lists
-            # show_new_button: (list_state.show_all_proposals || proposals.length <= list_state.show_first_num_items) && \
-            #    ((@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || (permitted > 0 || permitted == Permission.NOT_LOGGED_IN) )
-            show_new_button: (@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || (permitted > 0 || permitted == Permission.NOT_LOGGED_IN)
-            proposal_focused_on: @props.proposal_focused_on
-
+        ListItems 
+          list: list 
+          key: "#{list.key}-items"
+          fresh: @props.fresh
+          show_first_num_items: if list_state.show_all_proposals then 999999 else list_state.show_first_num_items
+          combines_these_lists: @props.combines_these_lists
+          # show_new_button: (list_state.show_all_proposals || proposals.length <= list_state.show_first_num_items) && \
+          #    ((@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || (permitted > 0 || permitted == Permission.NOT_LOGGED_IN) )
+          show_new_button: (@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || (permitted > 0 || permitted == Permission.NOT_LOGGED_IN)
+          proposal_focused_on: @props.proposal_focused_on
+          expansion_key: @props.expansion_key
 
       if customization('footer', list_key) && !is_collapsed
         customization('footer', list_key)()
@@ -282,31 +283,81 @@ ListItems = ReactiveComponent
     proposals_to_render = (p for p,idx in proposals when idx < @props.show_first_num_items && passes_running_timelapse_simulation(p.created_at))
 
     sorted_key = (p.key for p in proposals_to_render).join('###')
-
-    DIV null,
-
-      FLIPPER
-        flipKey: sorted_key
-
-        UL null, 
-          for proposal,idx in proposals_to_render
-
-            CollapsedProposal
-              key: "collapsed#{proposal.key}"
-              proposal: proposal.key
-              show_category: !!@props.combines_these_lists
-              category_color: if @props.combines_these_lists then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], .9, .8)
-              focused_on: @props.proposal_focused_on && @props.proposal_focused_on.key == proposal.key
+    list_order_has_changed = @last_sorted_key? && @last_sorted_key != sorted_key
+    @last_sorted_key = sorted_key
 
 
-          if proposals.length > @props.show_first_num_items 
-            show_all_button()
+
+    expansion_key = @get_expansion_key()
+
+    more_expanded = @last_expansion_key? && expansion_key.length > @last_expansion_key.length
+    expansion_state_changed = @last_expansion_key? && @last_expansion_key != expansion_key 
+
+    @last_expansion_key = expansion_key
 
 
-          if @props.show_new_button
-            render_new()
+    # This flipper tracks list order and proposal expansion. 
+    # Be wary of a bug in react-flip-toolkit that interferes 
+    # with nested flippers working.
+    FLIPPER
+      flipKey: sorted_key + expansion_key
+      # retainTransform: true
+      # spring: 
+      #   stiffness: 400
+      #   damping: 600
+      staggerConfig: 
+        default: 
+          speed: .1
+        "item-wrapper-#{list_key}":
+          reverse: !more_expanded
 
 
+
+      DIV null,
+        
+
+        FLIPPED 
+          flipId: "list_height_setter-#{list_key}"
+          shouldFlip: => expansion_state_changed
+          opacity: true
+
+
+          UL 
+            ref: 'list_wrapper'
+            for proposal,idx in proposals_to_render
+
+              ProposalItem
+                key: "collapsed#{proposal.key}"
+                proposal: proposal.key
+                list_key: list_key
+                list_order_has_changed: list_order_has_changed
+                show_category: !!@props.combines_these_lists
+                category_color: if @props.combines_these_lists then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], .9, .8)
+
+
+            if proposals.length > @props.show_first_num_items 
+              FLIPPED 
+                flipId: "show-all-#{list_key}"
+                translate: true
+                shouldFlip: => expansion_state_changed
+
+                show_all_button()
+
+
+            if @props.show_new_button
+              FLIPPED 
+                flipId: "new-button-#{list_key}"
+                translate: true
+                shouldFlip: => expansion_state_changed
+
+                render_new()
+
+
+  get_expansion_key: ->
+
+    expanded_state = fetch "proposal_expansions-#{@props.list.key}"
+    expansion_key = ("#{key}-#{state}" for key, state of expanded_state when key != 'key').join('###')
+    expansion_key    
 
 
 __remove_this_list = (list_key, page) ->
@@ -531,8 +582,6 @@ window.NewList = ReactiveComponent
 
     else 
       BUTTON
-        style: 
-          padding: if @props.no_padding then "0px"
 
         onClick: (e) =>
           @local.editing = true 
@@ -832,7 +881,10 @@ window.get_list_sort_method = (tab) ->
   get_tab(tab)?.list_sort_method or customization('list_sort_method') or \
     (if customization('lists') || get_tabs() then 'fixed' else 'newest_item')
 
-
+window.get_list_for_proposal = (proposal) ->
+  if !proposal.key
+    proposal = fetch proposal
+  "list/#{(proposal.cluster or 'Proposals').trim()}"  
 
 lists_ordered_by_most_recent_update = {}
 lists_ordered_by_randomized = {}
@@ -896,7 +948,7 @@ window.get_lists_for_page = (tab) ->
       proposals: []
 
   for proposal in proposals.proposals 
-    list_key = "list/#{(proposal.cluster or 'Proposals').trim()}"
+    list_key = get_list_for_proposal(proposal)
     if list_key of lists_with_proposals
       lists_with_proposals[list_key].proposals.push proposal
 

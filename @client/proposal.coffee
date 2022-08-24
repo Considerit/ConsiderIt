@@ -89,10 +89,11 @@ window.Proposal = ReactiveComponent
 
     is_loading = !proposal.slug || !fetch("/page/#{proposal.slug}").proposal
 
+    # TODO: get this to work again without getting in re-render infinite loop
+    # if doc.title != proposal.name
+    #   doc.title = proposal.name
+    #   save doc
 
-    if doc.title != proposal.name
-      doc.title = proposal.name
-      save doc
 
     your_opinion = proposal.your_opinion
     if your_opinion.key 
@@ -102,14 +103,16 @@ window.Proposal = ReactiveComponent
 
     return DIV(null) if !proposal.roles
 
-    mode = get_proposal_mode()
 
     if your_opinion.key
       can_opine = permit 'update opinion', proposal, your_opinion
     else
       can_opine = permit 'publish opinion', proposal
 
-    # change to results page if user entered crafting page when it is not permitted
+    mode = get_proposal_mode()
+
+
+    # # change to results page if user entered crafting page when it is not permitted
     if mode == 'crafting' && 
         !(can_opine in [Permission.PERMITTED, Permission.UNVERIFIED_EMAIL, \
                         Permission.NOT_LOGGED_IN, Permission.INSUFFICIENT_INFORMATION] || 
@@ -132,112 +135,119 @@ window.Proposal = ReactiveComponent
 
         ParticipationStatus {can_opine}
 
-        if (customization('opinion_callout')?[proposal.cluster] or (customization('opinion_callout') && _.isFunction(customization('opinion_callout'))))
-          (customization('opinion_callout')?[proposal.cluster] or customization('opinion_callout'))()
-        else 
-          H1
-            style: _.defaults {}, customization('list_title_style'),
-              fontSize: 32
-              fontWeight: 500
-              textAlign: 'center'
-              marginTop: 18
-              display: if embedded_demo() then 'none'
+        # if (customization('opinion_callout')?[proposal.cluster] or (customization('opinion_callout') && _.isFunction(customization('opinion_callout'))))
+        #   (customization('opinion_callout')?[proposal.cluster] or customization('opinion_callout'))()
+        # else 
+        #   H1
+        #     style: _.defaults {}, customization('list_title_style'),
+        #       fontSize: 32
+        #       fontWeight: 500
+        #       textAlign: 'center'
+        #       marginTop: 18
+        #       display: if embedded_demo() then 'none'
 
-            if mode == 'crafting' || (just_you && current_user.logged_in)
-              TRANSLATE
-                id: "engage.opinion_header"
-                'What do you think?'
-            else 
-              list_i18n().opinion_header("list/#{proposal.cluster}")
+        #     if mode == 'crafting' || (just_you && current_user.logged_in)
+        #       TRANSLATE
+        #         id: "engage.opinion_header"
+        #         'What do you think?'
+        #     else 
+        #       list_i18n().opinion_header("list/#{proposal.cluster}")
 
 
-        if !embedded_demo()      
-          OpinionViews
-            more_views_positioning: 'centered'
-            disable_switching: mode == 'crafting'
-            style: 
-              width: if get_participant_attributes().length > 0 then HOMEPAGE_WIDTH() else Math.max(660,PROPOSAL_HISTO_WIDTH()) # REASONS_REGION_WIDTH()
-              margin: '8px auto 20px auto'
-              position: 'relative'
+        # if !embedded_demo()      
+        #   OpinionViews
+        #     more_views_positioning: 'centered'
+        #     disable_switching: mode == 'crafting'
+        #     style: 
+        #       width: if get_participant_attributes().length > 0 then HOMEPAGE_WIDTH() else Math.max(660,PROPOSAL_HISTO_WIDTH()) # REASONS_REGION_WIDTH()
+        #       margin: '8px auto 20px auto'
+        #       position: 'relative'
 
-        if mode != 'crafting' && !embedded_demo()
-          DIV 
-            style: 
-              width: PROPOSAL_HISTO_WIDTH()
-              margin: 'auto'
-              position: 'relative'
+        # if mode != 'crafting' && !embedded_demo()
 
-            DIV 
-              style: 
-                position: 'absolute'
-                zIndex: 1
-                left: '100%'
-                marginLeft: 30
-                top: if screencasting() then 120 else 170
+        #   DIV 
+        #     style: 
+        #       width: PROPOSAL_HISTO_WIDTH()
+        #       margin: 'auto'
+        #       position: 'relative'
 
-              HistogramScores
-                proposal: proposal.key
 
-        if is_loading
-          LOADING_INDICATOR
-        else
+        #     FLIPPED 
+        #       flipId: "proposal_scores-#{proposal.key}"
+
+
+        #       DIV 
+        #         style: 
+        #           position: 'absolute'
+        #           zIndex: 1
+        #           left: '100%'
+        #           marginLeft: 30
+        #           top: if screencasting() then 120 else 170
+
+
+        #         HistogramScores
+        #           proposal: proposal.key
+
+        # if is_loading
+        #   LOADING_INDICATOR
+        # else
           
-          Pro_Con_Widget 
-            proposal: proposal.key
-            can_opine: can_opine
+        #   Pro_Con_Widget 
+        #     proposal: proposal.key
+        #     can_opine: can_opine
 
 
-      if false || mode == 'results' # && !embedded_demo()
+      # if false && mode == 'results' # && !embedded_demo()
 
-        DIV 
-          className: "main_background navigation_wrapper #{if ONE_COL() then 'one-col' else ''}"
-          style: 
-            marginTop: 88
-            position: 'relative'
+      #   DIV 
+      #     className: "main_background navigation_wrapper #{if ONE_COL() then 'one-col' else ''}"
+      #     style: 
+      #       marginTop: 88
+      #       position: 'relative'
 
-          STYLE 
-            dangerouslySetInnerHTML: __html: """
-              .navigation_wrapper:not(.one-col)::after {
-                content: ' ';
-                position: absolute;
-                left: 0;
-                width: 100%;
-                top: -50px;
-                z-index: 10;
-                display: block;
-                height: 50px;
-                background-size: 50px 100%;
-                background-image: linear-gradient(135deg, #{main_background_color} 25%, transparent 25%), linear-gradient(225deg, #{main_background_color} 25%, transparent 25%);
-                background-position: 0 0;
-                transform: scaleY(-1);
-              }
+      #     STYLE 
+      #       dangerouslySetInnerHTML: __html: """
+      #         .navigation_wrapper:not(.one-col)::after {
+      #           content: ' ';
+      #           position: absolute;
+      #           left: 0;
+      #           width: 100%;
+      #           top: -50px;
+      #           z-index: 10;
+      #           display: block;
+      #           height: 50px;
+      #           background-size: 50px 100%;
+      #           background-image: linear-gradient(135deg, #{main_background_color} 25%, transparent 25%), linear-gradient(225deg, #{main_background_color} 25%, transparent 25%);
+      #           background-position: 0 0;
+      #           transform: scaleY(-1);
+      #         }
 
-              .navigation_wrapper:not(.one-col)::before {
-                content: ' ';
-                position: absolute;
-                left: 0;
-                width: 100%;
-                top: -51px;
-                z-index: 9;
-                display: block;
-                height: 51px;
-                background-size: 50px 100%;
-                background-image: linear-gradient(135deg, #babdc3 25%, transparent 25%), linear-gradient(225deg, #babdc3 25%, transparent 25%);
-                background-position: 0 0;
-                transform: scaleY(-1);
-              }
-            """
-
-
-          DIV   
-            style: 
-              margin: '32px auto 0px auto'
-              paddingBottom: 48
-              width: "calc(var(--HOMEPAGE_WIDTH) + 2 * var(--LIST_PADDING))"
+      #         .navigation_wrapper:not(.one-col)::before {
+      #           content: ' ';
+      #           position: absolute;
+      #           left: 0;
+      #           width: 100%;
+      #           top: -51px;
+      #           z-index: 9;
+      #           display: block;
+      #           height: 51px;
+      #           background-size: 50px 100%;
+      #           background-image: linear-gradient(135deg, #babdc3 25%, transparent 25%), linear-gradient(225deg, #babdc3 25%, transparent 25%);
+      #           background-position: 0 0;
+      #           transform: scaleY(-1);
+      #         }
+      #       """
 
 
-            (customization('ProposalNavigation') or GroupedProposalNavigation) # or NextProposals)
-              proposal: proposal.key
+      #     DIV   
+      #       style: 
+      #         margin: '32px auto 0px auto'
+      #         paddingBottom: 48
+      #         width: "calc(var(--HOMEPAGE_WIDTH) + 2 * var(--LIST_PADDING))"
+
+
+      #       (customization('ProposalNavigation') or GroupedProposalNavigation) # or NextProposals)
+      #         proposal: proposal.key
 
 
 

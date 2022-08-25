@@ -659,7 +659,8 @@ OpinionViews = ReactiveComponent
 
 
     is_admin = fetch('/current_user').is_admin
-    show_others = (!customization('hide_opinions') || is_admin) && !@props.disable_switching
+    show_others = (!customization('hide_opinions') || is_admin) # && !@props.disable_switching
+
     show_all_not_available = !show_others
 
     view_buttons = [ 
@@ -667,7 +668,7 @@ OpinionViews = ReactiveComponent
         key: 'all'
         label: translator 'opinion_views.view_buttons_all', 'All opinions'
         callback: clear_all
-        disabled: !show_others
+        disabled: !show_others || @props.disable_switching
       }
       {
         key: 'you'
@@ -680,7 +681,7 @@ OpinionViews = ReactiveComponent
       {
         key: 'custom'
         label: translator 'opinion_views.view_buttons_custom', 'Custom view'
-        disabled: !show_others
+        disabled: !show_others || @props.disable_switching
         callback: (item, previous_state) => 
           if previous_state == 'custom'
             if user_has_set_a_view()

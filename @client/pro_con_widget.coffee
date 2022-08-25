@@ -340,6 +340,7 @@ window.Pro_Con_Widget = ReactiveComponent
         pc = fetch edit_mode
         EditPoint 
           key: if pc.adding_new_point then "new_point_#{valence}" else pc.editing_points[0]
+          point: if !pc.adding_new_point then pc.editing_points[0]
           proposal: @props.proposal
           fresh: pc.adding_new_point
           valence: valence
@@ -913,6 +914,7 @@ PointsList = ReactiveComponent
                !browser.is_mobile
               EditPoint 
                 key: point.key
+                point: point.key
                 proposal: @props.proposal
                 fresh: false
                 valence: @props.valence

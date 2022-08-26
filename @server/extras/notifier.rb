@@ -153,7 +153,9 @@ module Notifier
     for user in watchers
 
       # User is already marked for getting a digest
-      next if subdomain.digest_triggered_for.fetch(user.id, false)
+      # Update: actually, lets reset the timer, so that we wait for the 
+      #         current flurry of activity to die down to notify folks
+      # next if subdomain.digest_triggered_for.fetch(user.id, false)
 
       # Remove the event protagonist so that the person who triggered an event 
       # doesn't get notified
@@ -170,7 +172,7 @@ module Notifier
       # don't trigger if they've said this event doesn't trigger them
       next if !Notifier.valid_triggering_event(user, event_type, event_object, settings)
 
-      subdomain.digest_triggered_for[user.id] = true
+      subdomain.digest_triggered_for["#{user.id}"] = Time.current.iso8601(3)
 
     end
     subdomain.save

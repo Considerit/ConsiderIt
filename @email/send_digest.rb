@@ -1,11 +1,26 @@
 require Rails.root.join('@server', 'extras', 'translations')
 
+NOTIFICATION_LAG = 15.minutes
+
 def send_digest(subdomain, user, subscription_settings, deliver = true, since = nil, force = false)
 
   send_emails = subscription_settings['send_emails']
 
+  subdomain.digest_triggered_for ||= {}
+
+  if subdomain.digest_triggered_for["#{user.id}"] == true  # lazy migration, can be removed after, say, 10/22
+    subdomain.digest_triggered_for["#{user.id}"] = (Time.current - 20.minutes).iso8601(3)
+  end
+
+  if force && !subdomain.digest_triggered_for["#{user.id}"] # just used for testing in the /rails/mailers previews
+    subdomain.digest_triggered_for["#{user.id}"] = (Time.current - 20.minutes).iso8601(3)
+  end
+
+  triggered_at = subdomain.digest_triggered_for["#{user.id}"]
+
   return if !send_emails || \
             (!force && !due_for_notification(user, subdomain)) || \
+            (!triggered_at || Time.current - Time.iso8601(triggered_at) < NOTIFICATION_LAG) || \
             (subdomain.customization_json['email_notifications_disabled'] && (!user.super_admin || subdomain.name != 'galacticfederation'))
 
   last_digest_sent_at = last_sent_at(user, subdomain)
@@ -17,13 +32,18 @@ def send_digest(subdomain, user, subscription_settings, deliver = true, since = 
     end
   end
 
-
   new_activity = get_new_activity(subdomain, user, since.to_s)
+
+  has_activity_to_report = false 
+  new_activity.each do |k,v|
+    has_activity_to_report ||= v.count > 0
+  end 
+
+  return if !has_activity_to_report
+
   mail = DigestMailer.digest(subdomain, user, new_activity, last_digest_sent_at, send_emails)
 
-  
-  subdomain.digest_triggered_for ||= {}
-  subdomain.digest_triggered_for[user.id] = false
+  subdomain.digest_triggered_for["#{user.id}"] = false
   subdomain.save
   
   pp "delivering to #{user.name}"
@@ -37,13 +57,13 @@ def send_digest(subdomain, user, subscription_settings, deliver = true, since = 
 end
 
 
-NOTIFICATION_LAG = 15.minutes
 
 def get_new_activity(subdomain, user, since)
 
+  start_period = Time.parse(since).utc - NOTIFICATION_LAG
+  end_period   = Time.current.utc - NOTIFICATION_LAG
 
-  start_period = Time.parse(since) - NOTIFICATION_LAG
-  end_period = Time.now() - NOTIFICATION_LAG
+
 
   pp "#{since}: <#{start_period}, #{end_period}>"
   new_proposals = {}

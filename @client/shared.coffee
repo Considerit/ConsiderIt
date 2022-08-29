@@ -578,15 +578,6 @@ window.css = {}
 
 css.crossbrowserify = (styles) -> styles # legacy method now no-op-ing
 
-css.grayscale = (props) ->
-  if browser.is_mobile
-    console.log "CAUTION: grayscale filter on mobile can cause crashes"
-    
-  _.extend props,
-    WebkitFilter: 'grayscale(100%)'
-    filter: 'grayscale(100%)'  
-  props
-
 css.grab_cursor = (selector)->
   """
   #{selector} {

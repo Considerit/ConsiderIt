@@ -3,7 +3,7 @@ RATE_LIMIT = 100
 update_scheduled = false 
 
 
-is_el_visible = (el, scrollY, innerHeight, slop) ->
+window.is_el_visible = (el, scrollY, innerHeight, slop) ->
   slop ?= 1
   slop -= 1
   el_top = -scrollY

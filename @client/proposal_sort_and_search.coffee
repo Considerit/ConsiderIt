@@ -73,6 +73,7 @@ window.invalidate_proposal_sorts = ->
 
 window.sorted_proposals = (proposals, sort_key, require_force) ->
 
+
   if sort_key not of proposal_sort_keys 
     proposal_sort_keys[sort_key] = true
 
@@ -105,7 +106,7 @@ window.sorted_proposals = (proposals, sort_key, require_force) ->
     # jumping around all the time.  
 
     keys = (p.key for p in (proposals or []))
-    order = md5 keys
+    order = JSON.stringify keys
 
     sorted = fetch sort_key
     if !sorted.cache
@@ -116,7 +117,7 @@ window.sorted_proposals = (proposals, sort_key, require_force) ->
         force_resort: true
       save sorted 
     else 
-      cached_order = md5 sorted.cache
+      cached_order = JSON.stringify sorted.cache
 
     # alright, same order
     if cached_order == order

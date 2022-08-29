@@ -1393,7 +1393,7 @@ NonInteractiveOpinionViews = ReactiveComponent
       for mini in minimized_views
         do (mini) ->
           LI  
-            key: mini.label
+            key: mini.name
             className: 'minimized_view_wrapper'
 
             SPAN 

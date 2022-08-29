@@ -52,7 +52,7 @@ window.OpinionSlider = ReactiveComponent
       height: SLIDER_HANDLE_SIZE()
 
     if @props.backgrounded
-      css.grayscale slider_style
+      slider_style.filter = 'grayscale(100%)'
 
     DIV 
       className: 'opinion_slider'
@@ -154,7 +154,6 @@ window.OpinionSlider = ReactiveComponent
           goal: 'To participate, please introduce yourself.'
           after: =>
             save_opinion(proposal)
-
 
     DIV 
       style: 

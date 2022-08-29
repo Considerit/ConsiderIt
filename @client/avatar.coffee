@@ -252,8 +252,11 @@ window.AvatarPopover = ReactiveComponent
 #      Don't show a real picture and show "anonymous" in the popover. 
 
 
+props_to_strip = ['user', 'anonymous', 'set_bg_color', 'custom_bg_color', 'hide_popover', 'parents', 'img_size']
 window.avatar = (user, props) ->
   attrs = _.clone props
+
+
 
   if !user.key 
     if user == arest.cache['/current_user']?.user 
@@ -313,10 +316,11 @@ window.avatar = (user, props) ->
     width: style?.width
     height: style?.width
 
-
-  for prop_to_strip in ['user', 'anonymous', 'set_bg_color', 'custom_bg_color', 'hide_popover', 'parents', 'img_size']
+  for prop_to_strip in props_to_strip
     if prop_to_strip of attrs
       delete attrs[prop_to_strip]
+
+
 
   if src
     # attrs.alt = if props.hide_popover then '' else popover 
@@ -346,8 +350,8 @@ window.Avatar = ReactiveComponent
 
 styles += """
 .avatar {
-  position: relative;
-  vertical-align: top;
+  /* position: relative;
+  vertical-align: top; */
   border: none;
   display: inline-block;
   margin: 0;

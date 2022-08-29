@@ -105,6 +105,9 @@ positionAvatarsWithJustLayout = (opts) ->
 top_level.calculateAvatarRadius = (width, height, opinions, weights, {fill_ratio}) -> 
   fill_ratio ?= .25
 
+  if !width || !height 
+    return 0
+
   opinions.sort (a,b) -> a.stance - b.stance
 
   # find most dense region of opinions

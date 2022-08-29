@@ -1,11 +1,13 @@
+require './opinion_block'
 
-ANIMATION_SPEED = .8
+
+window.ANIMATION_SPEED_ITEM_EXPANSION = 1.8
 window.PROPOSAL_DESCRIPTION_MAX_HEIGHT_ON_EXPAND = 500
 
 styles += """
   .proposal_item_animation {
-    transition-duration: #{ANIMATION_SPEED}s;
-    transition-timing-function: ease-out;
+    transition-duration: #{ANIMATION_SPEED_ITEM_EXPANSION}s;
+    transition-timing-function: linear;
     transition-delay: 0ms;    
   }
 
@@ -36,11 +38,12 @@ styles += """
 
   /* The wrapper for the expanded item */
 
+
   [data-widget="ProposalItem"]::after {
     content: "";    
     opacity: 0;
 
-    transition: opacity #{2 * ANIMATION_SPEED}s;
+    transition-property: opacity;
 
     position: absolute;
     z-index: -1;
@@ -55,10 +58,21 @@ styles += """
     border-radius: 4px;    
   }
 
-  .is_expanded[data-widget="ProposalItem"]::after {
+
+  .is_expanded.animation-resting[data-widget="ProposalItem"]::after {
     opacity: 1;
+    transition-duration: #{2 * ANIMATION_SPEED_ITEM_EXPANSION}s;
   }
 
+  .is_collapsed[data-widget="ProposalItem"]::after {
+    transition-duration: #{ANIMATION_SPEED_ITEM_EXPANSION / 10 }s;
+  }
+
+  .collapsing[data-widget="ProposalItem"]::after {
+    transition-duration: #{ANIMATION_SPEED_ITEM_EXPANSION / 10 }s;
+
+    opacity: 0;
+  }
 
 
   /* Container for the proposal */
@@ -95,7 +109,6 @@ styles += """
 
   [data-widget="ProposalItem"] .opinion-block-wrapper {
     width: 100%;
-    height: 40px;
 
     position: relative;
     z-index: 1;
@@ -118,7 +131,7 @@ styles += """
     cursor: pointer;
   }
   .is_expanded .bottom_closer {
-    transition: opacity #{2 * ANIMATION_SPEED}s;    
+    transition: opacity #{2 * ANIMATION_SPEED_ITEM_EXPANSION}s;    
     opacity: 1;
     display: inline-block;    
   }
@@ -163,11 +176,21 @@ window.ProposalItem = ReactiveComponent
 
       # TODO: why should this be shouldInvert, rather than shouldFlip? 
       shouldInvert: => @expansion_state_changed 
+      onStartImmediate: (el) =>
+        if @expansion_state_changed 
+          direction = if @is_expanded then 'expanding' else 'collapsing'
+          el.classList.add "animating-expansion", direction
+          el.classList.remove "animation-resting"
+
+      onComplete: (el) =>
+        direction = if @is_expanded then 'expanding' else 'collapsing'        
+        el.classList.remove 'animating-expansion', direction
+        el.classList.add "animation-resting"
 
       LI
         "data-widget": 'ProposalItem'
         key: proposal.key
-        className: if @is_expanded then 'is_expanded' else 'is_collapsed'
+        className: "#{if @is_expanded then 'is_expanded' else 'is_collapsed'}"
         "data-name": slugify(proposal.name)
         id: 'p' + (proposal.slug or "#{proposal.id}").replace('-', '_')  # Initial 'p' is because all ids must begin 
                                                                          # with letter. seeking to hash was failing 
@@ -212,6 +235,13 @@ window.ProposalItem = ReactiveComponent
                 show_category: @props.show_category
                 category_color: @props.category_color
 
+      FLIPPED
+        flipId: "proposal-slidergram-spacing-#{proposal.key}"
+        shouldFlip: => false && @expansion_state_changed
+
+        DIV 
+          className: "proposal-slidergram-spacing"
+
 
       FLIPPED
         flipId: "opinion-block-#{proposal.key}"
@@ -223,12 +253,17 @@ window.ProposalItem = ReactiveComponent
         DIV 
           className: 'opinion-block-wrapper'
 
+          FLIPPED 
+            inverseFlipId: "opinion-block-#{proposal.key}"
+            shouldInvert: => @expansion_state_changed 
 
-          OpinionBlock
-            proposal: proposal.key
-            expansion_state_changed: @expansion_state_changed
-            is_expanded: @is_expanded
-            list_key: @props.list_key
+            DIV null, # annoying empty DIV because FLIPPED doesn't seem to transfer to a new component
+
+              OpinionBlock
+                proposal: proposal.key
+                expansion_state_changed: @expansion_state_changed
+                is_expanded: @is_expanded
+                list_key: @props.list_key
 
       DIV 
         className: 'bottom_closer'
@@ -284,6 +319,19 @@ styles += """
     flex-shrink: 0;
   }
 
+  .proposal-slidergram-spacing {
+    width: var(--PROPOSAL_AUTHOR_AVATAR_SIZE);
+    height: var(--PROPOSAL_AUTHOR_AVATAR_SIZE);
+    flex-grow: 0;
+    flex-shrink: 0;    
+  }
+
+  .is_expanded .proposal-slidergram-spacing {
+    width: 0;
+    height: 0;
+  }
+
+
   .using_bullets .proposal-avatar-spacing {
     width: var(--PROPOSAL_BULLET_GUTTER);
   }
@@ -303,9 +351,6 @@ styles += """
     flex-shrink: 1;
   }
 
-  .is_expanded[data-widget="ProposalItem"] .proposal-text {
-
-  }
 
   .debugging [data-widget="ProposalBlock"] .proposal-text {
     background-color: #aaa;
@@ -498,15 +543,13 @@ styles += """
 
   .is_expanded [data-widget="ProposalText"] .proposal-title {
     transform: scale(1.5);
-  }
+  } 
 
   [data-widget="ProposalText"] .proposal-description {
     overflow: hidden;
 
     font-size: 16px;
     font-weight: 400;
-
-    overflow-y: hidden;
 
     max-height: 50px; /* this value will get overridden to min(estimated_desc_height, PROPOSAL_DESCRIPTION_MAX_HEIGHT_ON_EXPAND) in javascript */
 
@@ -599,7 +642,7 @@ ProposalText = ReactiveComponent
       flipId: "proposal-text-animation-starter-#{proposal.key}"
       opacity: true
       shouldFlip: => @expansion_state_changed
-      onStart: (el) =>
+      onStartImmediate: (el) =>
         name_el = el.querySelector('.proposal-title')
         desc_el = el.querySelector('.proposal-description')
 
@@ -970,10 +1013,34 @@ styles += """
 """
 
 
-OpinionBlock = ReactiveComponent
-  displayName: 'OpinionBlock'
+AVATAR_TRANSITION = ANIMATION_SPEED_ITEM_EXPANSION
+COLLAPSE_DELAY = 0 # ANIMATION_SPEED_ITEM_EXPANSION * 2
+styles += """
 
-  render: ->
-    DIV null, ''
+  .animating-expansion .histoavatars-container {
+    content-visibility: visible;
+  }
+
+
+  [data-widget="ProposalItem"] .avatar {
+    transition: width #{AVATAR_TRANSITION}s, height #{AVATAR_TRANSITION}s, transform #{AVATAR_TRANSITION}s;
+  }
+
+  /* 
+  .animating-expansion .avatar {
+    transition: width #{AVATAR_TRANSITION}s, height #{AVATAR_TRANSITION}s, transform #{.001}s;
+  }
+
+  .animating-expansion.collapsing .avatar {
+    transition: width #{AVATAR_TRANSITION}s #{COLLAPSE_DELAY}s, height #{AVATAR_TRANSITION}s #{COLLAPSE_DELAY}s, transform #{.001}s #{COLLAPSE_DELAY}s;
+  }
+
+  */
+
+  .animating-expansion .the_handle, .animating-expansion .slider_base {
+    visibility: hidden;
+  }
+"""
+
 
 

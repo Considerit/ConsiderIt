@@ -157,6 +157,7 @@ window.Slider = ReactiveComponent
     DIV 
       ref: 'base'
       key: 'slider_base'
+      className: 'slider_base'
       style : slider_base_style
       onClick: @handleMouseClick
 
@@ -170,7 +171,7 @@ window.Slider = ReactiveComponent
             key: "tick-#{tick_position}"
             style: 
               position: 'absolute'
-              left: tick_position - (if Math.abs(tick_position - slider_base_style.width) < 2 then 1 else 0) 
+              left: "#{(tick_position - (if Math.abs(tick_position - slider_base_style.width) < 2 then 1 else 0)) / props.width * 100}%" 
               top: 0
               width: 1
               height: (props.ticks.height or 5) * (if Math.abs(tick_position - slider_base_style.width / 2) < 3 then 2 else 1)

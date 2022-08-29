@@ -11,7 +11,7 @@ window.column_sizes = (args) ->
   author_avatar_spacing = 58 # PROPOSAL_AUTHOR_AVATAR_SIZE + PROPOSAL_AUTHOR_AVATAR_GUTTER
 
   if !ONE_COL()
-    gutter = 50
+    gutter = author_avatar_spacing
     score_w = 48
 
     width -= author_avatar_spacing
@@ -299,12 +299,23 @@ ListItems = ReactiveComponent
     # This flipper tracks list order and proposal expansion. 
     # Be wary of a bug in react-flip-toolkit that interferes 
     # with nested flippers working.
+
+    # noWobble: { stiffness: 200, damping: 26 },  // 7.692
+    # gentle: { stiffness: 120, damping: 14 },    // 8.571
+    # veryGentle: { stiffness: 130, damping: 17 },// 8.571
+    # wobbly: { stiffness: 180, damping: 12 },    // 7.647
+    # stiff: { stiffness: 260, damping: 26 }      // 10
+
     FLIPPER
       flipKey: sorted_key + expansion_key
-      # retainTransform: true
+      # spring: "noWobble"
+      spring: 
+        stiffness: 600
+        damping: 400
       # spring: 
-      #   stiffness: 400
-      #   damping: 600
+      #   stiffness: 200 * .5
+      #   damping: 26 * .5
+
       staggerConfig: 
         default: 
           speed: .1

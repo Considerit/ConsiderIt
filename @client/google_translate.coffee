@@ -49,6 +49,27 @@ window.GoogleTranslate = ReactiveComponent
         # gaId: 'UA-55365750-2'
       }, "google_translate_element_#{@local.key}"
 
+  setPosition: -> 
+    wrapper = document.querySelector '.google-translate-candidate-container'
+    translate_el = google?.translate?.TranslateElement
+
+    return if !wrapper || !translate_el
+
+    coords = getCoords(wrapper)
+
+    left = coords.left + coords.width / 2 - @refs.translation_el.clientWidth / 2
+    top = coords.top
+
+    # set by Google Translate when a language is selected, which screws up the top calculation
+    if document.body.style.top == "40px" 
+      top -= 40
+
+    if @local.left != left || top != @local.top
+      @local.left = left
+      @local.top = top
+      save @local   
+       
+
   componentDidMount: -> 
 
     @int = setInterval => 
@@ -60,25 +81,10 @@ window.GoogleTranslate = ReactiveComponent
     # location of this element will shadow the position of the first instance
     # of an element with a class of google-translate-candidate-container
     @placer_int = setInterval =>
-      wrapper = document.querySelector '.google-translate-candidate-container'
-      translate_el = google?.translate?.TranslateElement
-
-      return if !wrapper || !translate_el
-
-      coords = getCoords(wrapper)
-
-      left = coords.left + coords.width / 2 - @refs.translation_el.clientWidth / 2
-      top = coords.top
-
-      # set by Google Translate when a language is selected, which screws up the top calculation
-      if document.body.style.top == "40px" 
-        top -= 40
-
-      if @local.left != left || top != @local.top
-        @local.left = left
-        @local.top = top
-        save @local
+      requestAnimationFrame @setPosition
     , 500
+
+    @setPosition()
 
   componentWillUnmount: ->
     clearInterval @int

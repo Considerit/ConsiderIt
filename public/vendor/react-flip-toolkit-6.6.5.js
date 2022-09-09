@@ -66,13 +66,23 @@
                 flipCallbacks[id] &&
                 flipCallbacks[id].onExit;
         });
+
+        // **********
+        // This is a very expensive operation for Consider.it when a big list is animating in. Commenting
+        // it out *seems* to be ok, but I'm not 100% sure. So I'm going to only do it if there are a small
+        // number (arbitrary) of entering elements. 
+        // **********
+
         // make sure appearing elements aren't taken into account by the filterFlipDescendants function
-        enteringElementIds.forEach(function (id) {
-            var element = getElement(id);
-            if (element) {
-                element.dataset.isAppearing = 'true';
-            }
-        });
+        if (enteringElementIds.length < 4) {
+            enteringElementIds.forEach(function (id) {
+                var element = getElement(id);
+                if (element) {
+                    element.dataset.isAppearing = 'true';
+                }
+            });
+        }
+
         var hideEnteringElements = function () {
             animatedEnteringElementIds.forEach(function (id) {
                 var element = getElement(id);
@@ -1693,14 +1703,17 @@
         // clear temp markup that was added to facilitate FLIP
         // namely, in the filterFlipDescendants function
         var cleanupTempDataAttributes = function () {
-            unflippedIds
-                .filter(function (id) { return flippedElementPositionsAfterUpdate[id]; })
-                .forEach(function (id) {
-                var element = getElement(id);
-                if (element) {
-                    element.removeAttribute(DATA_IS_APPEARING);
-                }
-            });
+            // I *think* we can just globally clear it, at least for Considerit's use cases. 
+            // The original approach was very expensive with tons of calls to querySelectorAll, per element
+            document.querySelectorAll("[" + DATA_IS_APPEARING + "]").forEach(function(element) { element.removeAttribute(DATA_IS_APPEARING) });
+            // unflippedIds
+            //     .filter(function (id) { return flippedElementPositionsAfterUpdate[id]; })
+            //     .forEach(function (id) {
+            //     var element = getElement(id);
+            //     if (element) {
+            //         element.removeAttribute(DATA_IS_APPEARING);
+            //     }
+            // });
         };
         cleanupTempDataAttributes();
         if (handleEnterUpdateDelete) {

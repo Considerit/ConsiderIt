@@ -92,16 +92,21 @@
         %script{:src => "#{@vendor}/vendor/react-18.2.js", :type => 'text/javascript'}
         %script{:src => "#{@vendor}/vendor/react-dom-18.2.js", :type => 'text/javascript'}
         %script{:src => "#{@vendor}/vendor/prop-types.js", :type => 'text/javascript'}
-        %script{:src => "#{@vendor}/vendor/react-flip-toolkit-6.6.5.js", :type => 'text/javascript'}
-
       - else 
         %script{:src => "#{@vendor}/vendor/react-18.2.min.js", :type => 'text/javascript'}
         %script{:src => "#{@vendor}/vendor/react-dom-18.2.min.js", :type => 'text/javascript'}
         %script{:src => "#{@vendor}/vendor/prop-types.min.js", :type => 'text/javascript'}
-        %script{:src => "#{@vendor}/vendor/react-flip-toolkit-6.6.5.min.js", :type => 'text/javascript'}
+
 
       %script{:src => "#{@vendor}/vendor/create-react-class.min.js", :type => 'text/javascript'}
       %script{:src => "#{@vendor}/vendor/react-dom-factories-1.0.2.js", :type => 'text/javascript'}
+
+      - if @app != 'product_page'
+
+        %script{:src => "#{@vendor}/vendor/rematrix-0.20.0.min.js", :type => 'text/javascript'}        
+        %script{:src => "#{@vendor}/vendor/flip-toolkit-7.0.16.min.js", :type => 'text/javascript'}
+        %script{:src => "#{@vendor}/vendor/react-flip-toolkit-7.0.16.min.js", :type => 'text/javascript'}
+
 
 
       %script{:src => "#{@vendor}/vendor/underscore.js", :type => 'text/javascript'}

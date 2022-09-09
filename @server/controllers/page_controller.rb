@@ -48,7 +48,7 @@ class PageController < ApplicationController
       # your_opinion = Opinion.get_or_make(proposal)
 
       dirty_key "/page/#{proposal.slug}"
-      dirty_key '/users'
+      # dirty_key '/users'
     end
 
     render :json => []

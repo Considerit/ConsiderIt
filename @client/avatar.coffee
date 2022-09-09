@@ -382,3 +382,94 @@ img.avatar:after {
 }
 
 """
+
+
+
+
+
+
+cached_avatars = {}
+missing_images = {}
+
+window.getCanvasAvatar = (user) ->
+  cached_avatars[user.key or user] or cached_avatars.default
+
+createFallbackIcon = (user) ->
+  # create a gray-ish avatar for folks who don't have an avatar (or if its broken)
+  # Note: this is actually kinda expensive on large forums, in memory and cpu
+  canv = cached_avatars[user.key] = document.createElement('canvas')
+  canv.width = canv.height = 50 * window.devicePixelRatio
+  rx = canv.width / 2
+  ctx = canv.getContext("2d")
+  ctx.arc(rx, rx, rx, 0, 2 * Math.PI)            
+  user.bg_color ?= hsv2rgb(Math.random() / 5 + .6, Math.random() / 8 + .025, Math.random() / 4 + .4)
+  ctx.fillStyle = user.bg_color
+  ctx.fill()
+
+window.LoadAvatars = ReactiveComponent
+  displayName: "LoadAvatars" 
+  render: ->
+    users = fetch '/users'
+    loading = fetch('avatar_loading')
+    SPAN null
+
+  create_avatar: (img) -> 
+    canv = document.createElement('canvas')
+    canv.width = img.width
+    canv.height = img.height
+    ctx = canv.getContext('2d')
+
+    ctx.arc(img.width / 2, img.height / 2, img.height / 2, 0, Math.PI * 2)
+    ctx.clip()
+
+    ctx.drawImage img, 0, 0
+    canv
+
+  load: -> 
+    users = fetch '/users'
+    loading = fetch('avatar_loading')
+    app = arest.cache['/application'] or fetch('/application')
+
+    if !cached_avatars.default
+      createFallbackIcon({key: 'default'})
+
+    avatars_to_load = []
+    for user in users.users
+      if user.key not of cached_avatars and user.key not of missing_images
+        if user.avatar_file_name 
+          avatars_to_load.push user
+          
+        createFallbackIcon(user)
+        
+
+
+    if avatars_to_load.length > 0 
+      if !loading.loading
+        loading.loading = true 
+        save loading 
+
+        @loading_cnt = 0
+
+        for user in avatars_to_load
+          @loading_cnt += 1
+
+          pic = new Image()
+          pic.onload = do(user, pic) => => 
+            cached_avatars[user.key] = @create_avatar pic
+            @loading_cnt -= 1
+            if @loading_cnt == 0
+              loading.loading = false
+              save loading
+          pic.onerror = do(user) => =>
+            @loading_cnt -= 1
+            missing_images[user.key] = 1
+
+          setTimeout do(user, pic) -> -> 
+            pic.src = avatarUrl user, 'large'
+
+      else 
+        setTimeout @load, 10   
+
+  componentDidMount: -> @load()
+  componentDidUpdate: -> @load()
+

@@ -282,7 +282,7 @@ ListItems = ReactiveComponent
 
     proposals_to_render = (p for p,idx in proposals when idx < @props.show_first_num_items && passes_running_timelapse_simulation(p.created_at))
 
-    sorted_key = (p.key for p in proposals_to_render).join('###')
+    sorted_key = md5 (p.key for p in proposals_to_render).join('###')
     list_order_has_changed = @last_sorted_key? && @last_sorted_key != sorted_key
     @last_sorted_key = sorted_key
 
@@ -295,6 +295,9 @@ ListItems = ReactiveComponent
 
     @last_expansion_key = expansion_key
 
+    expanded_state = fetch "proposal_expansions-#{list.key}"
+
+    url = fetch('location').url
 
     # This flipper tracks list order and proposal expansion. 
     # Be wary of a bug in react-flip-toolkit that interferes 
@@ -308,13 +311,7 @@ ListItems = ReactiveComponent
 
     FLIPPER
       flipKey: sorted_key + expansion_key
-      # spring: "noWobble"
-      spring: 
-        stiffness: 600
-        damping: 400
-      # spring: 
-      #   stiffness: 200 * .5
-      #   damping: 26 * .5
+      spring: PROPOSAL_ITEM_SPRING
 
       staggerConfig: 
         default: 
@@ -336,14 +333,15 @@ ListItems = ReactiveComponent
           UL 
             ref: 'list_wrapper'
             for proposal,idx in proposals_to_render
-
               ProposalItem
                 key: "collapsed#{proposal.key}"
                 proposal: proposal.key
                 list_key: list_key
-                list_order_has_changed: list_order_has_changed
+                list_order: sorted_key
                 show_category: !!@props.combines_these_lists
                 category_color: if @props.combines_these_lists then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], .9, .8)
+                is_expanded: !!expanded_state[proposal.key]
+                accessed_by_url: url == "/#{proposal.slug}"
 
 
             if proposals.length > @props.show_first_num_items 
@@ -616,9 +614,11 @@ window.NewList = ReactiveComponent
           if wide_layout
             [
               SPAN 
+                key: 'separator'
                 className: 'separator'
                 dangerouslySetInnerHTML: __html: "&nbsp;&nbsp;#{t('or', 'or')}&nbsp;&nbsp;"
               SPAN 
+                key: 'text'
                 className: 'subbutton_button closed'
                 'an open-ended question'
             ]

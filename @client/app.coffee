@@ -18,7 +18,9 @@ require './edit_list'
 require './edit_page'
 require './customizations'
 require './form'
-require './histogram'
+# require './histogram'
+# require './histogram-webgl'
+require './histogram-canvas'
 require './proposal_sort_and_search'
 require './opinion_views'
 require './tabs'
@@ -350,6 +352,7 @@ Root = ReactiveComponent
       BrowserLocation()
       GoogleTranslate()
       ResponsiveStyles()
+      LoadAvatars?()
 
 
 

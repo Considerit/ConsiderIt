@@ -1,7 +1,12 @@
 require './opinion_block'
 
 
-window.ANIMATION_SPEED_ITEM_EXPANSION = 1.8
+window.ANIMATION_SPEED_ITEM_EXPANSION = 0.8
+window.PROPOSAL_ITEM_SPRING = # 4000 / 800 is decent
+  stiffness: 4000  #600
+  damping: 800
+
+
 window.PROPOSAL_DESCRIPTION_MAX_HEIGHT_ON_EXPAND = 500
 
 styles += """
@@ -23,6 +28,10 @@ styles += """
     left: calc(-1 * var(--LIST_PADDING-LEFT));
     width: calc(100% + var(--LIST_PADDING-LEFT) + var(--LIST_PADDING-RIGHT) );
 
+  }
+
+  .is_collapsed[data-widget="ProposalItem"] {
+    content-visibility: auto;    
   }
 
   .is_expanded[data-widget="ProposalItem"] {
@@ -61,7 +70,7 @@ styles += """
 
   .is_expanded.animation-resting[data-widget="ProposalItem"]::after {
     opacity: 1;
-    transition-duration: #{2 * ANIMATION_SPEED_ITEM_EXPANSION}s;
+    transition-duration: #{1 * ANIMATION_SPEED_ITEM_EXPANSION}s;
   }
 
   .is_collapsed[data-widget="ProposalItem"]::after {
@@ -80,7 +89,7 @@ styles += """
   [data-widget="ProposalItem"] .proposal-block-container {
     display: flex;
     justify-content: center;
-    margin: 24px 0px;
+    padding-bottom: 24px;
   }
 
   .is_collapsed[data-widget="ProposalItem"] .proposal-block-container {
@@ -95,10 +104,6 @@ styles += """
     width: 100%;        
   }
 
-  .is_collapsed[data-widget="ProposalItem"] .proposal-block-wrapper {
-
-  }
-
   .is_expanded[data-widget="ProposalItem"] .proposal-block-wrapper {
     margin-top: 24px;
   }
@@ -108,14 +113,12 @@ styles += """
 
 
   [data-widget="ProposalItem"] .opinion-block-wrapper {
-    width: 100%;
+    padding-right: 48px;
 
     position: relative;
     z-index: 1;
   }
 
-  .is_collapsed[data-widget="ProposalItem"] .opinion-block-wrapper {
-  }
   .is_expanded[data-widget="ProposalItem"] .opinion-block-wrapper {
     margin-bottom: 24px;
     margin-top: 10px;
@@ -156,16 +159,27 @@ styles += """
 window.ProposalItem = ReactiveComponent
   displayName: 'ProposalItem'
 
+
+  shouldFlip: ->
+    @expansion_state_changed
+
+  onAnimationStart: (el) -> 
+    if @shouldFlip() 
+      direction = if @is_expanded then 'expanding' else 'collapsing'
+      el.classList.add "animating-expansion", direction
+      el.classList.remove "animation-resting"
+
+  onAnimationDone: (el) => 
+    direction = if @is_expanded then 'expanding' else 'collapsing'        
+    el.classList.remove 'animating-expansion', direction
+    el.classList.add "animation-resting"
+
   render : ->
     proposal = fetch @props.proposal
-    subdomain = fetch '/subdomain'
 
-    can_edit = permit('update proposal', proposal, subdomain) > 0
+    @is_expanded = @props.is_expanded
 
-    expanded_state = fetch "proposal_expansions-#{@props.list_key}"
-    @is_expanded = expanded_state[proposal.key]
-
-    @expansion_state_changed = (@expansion_state_changed? || fetch('location').url == "/#{proposal.slug}") && @last_expansion != @is_expanded
+    @expansion_state_changed = (@expansion_state_changed? || @props.accessed_by_url) && @last_expansion != @is_expanded
     @last_expansion = @is_expanded
 
 
@@ -175,17 +189,10 @@ window.ProposalItem = ReactiveComponent
       stagger: "item-wrapper-#{@props.list_key}"
 
       # TODO: why should this be shouldInvert, rather than shouldFlip? 
-      shouldInvert: => @expansion_state_changed 
-      onStartImmediate: (el) =>
-        if @expansion_state_changed 
-          direction = if @is_expanded then 'expanding' else 'collapsing'
-          el.classList.add "animating-expansion", direction
-          el.classList.remove "animation-resting"
+      shouldInvert: @shouldFlip
+      onStartImmediate: @onAnimationStart
+      onComplete: @onAnimationDone
 
-      onComplete: (el) =>
-        direction = if @is_expanded then 'expanding' else 'collapsing'        
-        el.classList.remove 'animating-expansion', direction
-        el.classList.add "animation-resting"
 
       LI
         "data-widget": 'ProposalItem'
@@ -196,92 +203,104 @@ window.ProposalItem = ReactiveComponent
                                                                          # with letter. seeking to hash was failing 
                                                                          # on proposals whose name began with number.
 
-        FLIPPED 
-          inverseFlipId: proposal.key
-          shouldInvert: => @expansion_state_changed
+        ProposalItemWrapper
+          proposal: @props.proposal
+          expansion_state_changed: @expansion_state_changed
+          is_expanded: @is_expanded
+          list_key: @props.list_key
+          show_category: @props.show_category
+          category_color: @props.category_color
 
-          @draw_wrapper()
 
 
 
-  draw_wrapper: ->
+
+
+
+ProposalItemWrapper = ReactiveComponent
+  displayName: 'ProposalItemWrapper'
+
+  shouldFlip: ->
+    @props.expansion_state_changed
+
+  toggle_expand: -> 
+    toggle_expand(@props.list_key, @props.proposal)
+
+  toggle_expand_key: (e) ->
+    if e.which == 32 || e.which == 13
+      toggle_expand(@props.list_key, @props.proposal)
+
+
+  render: ->
     proposal = fetch @props.proposal
 
-    DIV 
-      className: "proposal-block-container"
+    FLIPPED 
+      inverseFlipId: proposal.key
+      shouldInvert: @shouldFlip
 
+      DIV 
+        className: "proposal-block-container"
 
+        FLIPPED
+          flipId: "proposal-block-#{proposal.key}"
+          stagger: "content-#{@props.list_key}"
+          shouldFlip: @shouldFlip
+          delayUntil: proposal.key
 
-      FLIPPED
-        flipId: "proposal-block-#{proposal.key}"
-        stagger: "content-#{@props.list_key}"
-        shouldFlip: => @expansion_state_changed
-        delayUntil: proposal.key
+          DIV 
+            className: 'proposal-block-wrapper'
 
-        DIV 
-          className: 'proposal-block-wrapper'
+            FLIPPED 
+              inverseFlipId: "proposal-block-#{proposal.key}"
+              shouldInvert: @shouldFlip
 
-          FLIPPED 
-            inverseFlipId: "proposal-block-#{proposal.key}"
-            shouldInvert: => @expansion_state_changed 
+              DIV null, # annoying empty DIV because FLIPPED doesn't seem to transfer to a new component
 
-            DIV null, # annoying empty DIV because FLIPPED doesn't seem to transfer to a new component
+                ProposalBlock
+                  proposal: proposal.key
+                  expansion_state_changed: @props.expansion_state_changed
+                  is_expanded: @props.is_expanded
+                  list_key: @props.list_key
+                  show_category: @props.show_category
+                  category_color: @props.category_color
 
-              ProposalBlock
-                proposal: proposal.key
-                expansion_state_changed: @expansion_state_changed
-                is_expanded: @is_expanded
-                list_key: @props.list_key
-                show_category: @props.show_category
-                category_color: @props.category_color
-
-      FLIPPED
-        flipId: "proposal-slidergram-spacing-#{proposal.key}"
-        shouldFlip: => false && @expansion_state_changed
+        # FLIPPED
+        #   flipId: "proposal-slidergram-spacing-#{proposal.key}"
+        #   shouldFlip: => false && @expansion_state_changed
 
         DIV 
           className: "proposal-slidergram-spacing"
 
 
-      FLIPPED
-        flipId: "opinion-block-#{proposal.key}"
-        stagger: "content-#{@props.list_key}"
-        shouldFlip: => @expansion_state_changed
-        delayUntil: proposal.key
+        FLIPPED
+          flipId: "opinion-block-#{proposal.key}"
+          stagger: "content-#{@props.list_key}"
+          shouldFlip: @shouldFlip
+          delayUntil: proposal.key
 
+          DIV 
+            className: 'opinion-block-wrapper'
 
-        DIV 
-          className: 'opinion-block-wrapper'
+            FLIPPED 
+              inverseFlipId: "opinion-block-#{proposal.key}"
+              shouldInvert: @shouldFlip
 
-          FLIPPED 
-            inverseFlipId: "opinion-block-#{proposal.key}"
-            shouldInvert: => @expansion_state_changed 
+              DIV null, # annoying empty DIV because FLIPPED doesn't seem to transfer to a new component
 
-            DIV null, # annoying empty DIV because FLIPPED doesn't seem to transfer to a new component
+                OpinionBlock
+                  proposal: proposal.key
+                  expansion_state_changed: @props.expansion_state_changed
+                  is_expanded: @props.is_expanded
+                  list_key: @props.list_key
 
-              OpinionBlock
-                proposal: proposal.key
-                expansion_state_changed: @expansion_state_changed
-                is_expanded: @is_expanded
-                list_key: @props.list_key
+        BUTTON 
+          className: 'bottom_closer'
+          onClick: @toggle_expand
+            
+          onKeyPress: @toggle_expand_key
 
-      DIV 
-        className: 'bottom_closer'
-        onClick: => toggle_expand(@props.list_key, proposal)
-          
-        onKeyPress: (e) => 
-          if e.which == 32 || e.which == 13
-            toggle_expand(@props.list_key, proposal)
+          double_up_icon(40)
 
-        double_up_icon(40)
-
-  componentDidMount: -> 
-    proposal = fetch @props.proposal
-
-    # if we've loaded this page from url, ensure that it is open
-    loc = fetch 'location'
-    if loc.url == "/#{proposal.slug}"
-      toggle_expand @props.list_key, proposal, true
       
 
 
@@ -338,7 +357,7 @@ styles += """
 
 
 
-  [data-widget="ProposalBlock"] [data-widget="Avatar"], [data-widget="ProposalBlock"] .proposal_pic{
+  [data-widget="ProposalBlock"] [data-widget="Avatar"], [data-widget="ProposalBlock"] .proposal_pic {
     height: var(--PROPOSAL_AUTHOR_AVATAR_SIZE);
     width: var(--PROPOSAL_AUTHOR_AVATAR_SIZE);
     border-radius: 0;  
@@ -348,7 +367,7 @@ styles += """
 
   [data-widget="ProposalBlock"] .proposal-text {
     flex-grow: 1;
-    flex-shrink: 1;
+    flex-shrink: 1; 
   }
 
 
@@ -408,26 +427,26 @@ ProposalBlock = ReactiveComponent
         className: "proposal-avatar-spacing"
 
 
-      FLIPPED
-        flipId: "proposal-text-#{proposal.key}"
-        shouldFlip: => @expansion_state_changed
+      # FLIPPED
+      #   flipId: "proposal-text-#{proposal.key}"
+      #   shouldFlip: => @expansion_state_changed
 
-        DIV 
-          className: 'proposal-text'
+      DIV 
+        className: 'proposal-text'
 
 
-          FLIPPED 
-            inverseFlipId: "proposal-text-#{proposal.key}"
-            shouldInvert: => @expansion_state_changed
+        # FLIPPED 
+        #   inverseFlipId: "proposal-text-#{proposal.key}"
+        #   shouldInvert: => @expansion_state_changed
 
-            DIV null,
-              ProposalText
-                proposal: proposal.key
-                expansion_state_changed: @expansion_state_changed
-                is_expanded: @is_expanded
-                list_key: @props.list_key
-                show_category: @props.show_category
-                category_color: @props.category_color
+        # DIV null,
+        ProposalText
+          proposal: proposal.key
+          expansion_state_changed: @expansion_state_changed
+          is_expanded: @is_expanded
+          list_key: @props.list_key
+          show_category: @props.show_category
+          category_color: @props.category_color
 
 
   draw_avatar_or_bullet: ->
@@ -627,9 +646,33 @@ toggle_expand = (list_key, proposal, ensure_open) ->
 
 
 
+expanded_item_sizes = null
+collapsed_item_sizes = null
 
 ProposalText = ReactiveComponent
   displayName: 'ProposalText'
+
+  toggle_expand: -> 
+    toggle_expand(@props.list_key, @props.proposal)
+
+  shouldFlip: ->
+    @props.expansion_state_changed
+
+  setDimensions: -> 
+    name_el = @refs.proposal_title
+    desc_el = @refs.proposal_description
+
+    if @is_expanded 
+      name_el.style.width = "#{Math.min(900, @collapsed_title_width)}px"
+      name_el.style.height = "#{@collapsed_title_height * 1.5}px"
+
+      if desc_el
+        @setExpandedSizes() if !@expanded_description_height
+        desc_el.style.maxHeight = "#{Math.min(@expanded_description_height, PROPOSAL_DESCRIPTION_MAX_HEIGHT_ON_EXPAND)}px"
+    else 
+      name_el.style.height = "#{@collapsed_title_height}px"
+      if desc_el
+        desc_el.style.maxHeight = null
 
   render: -> 
     proposal = fetch @props.proposal
@@ -641,36 +684,21 @@ ProposalText = ReactiveComponent
     FLIPPED
       flipId: "proposal-text-animation-starter-#{proposal.key}"
       opacity: true
-      shouldFlip: => @expansion_state_changed
-      onStartImmediate: (el) =>
-        name_el = el.querySelector('.proposal-title')
-        desc_el = el.querySelector('.proposal-description')
-
-        if @is_expanded 
-          name_el.style.width = "#{@collapsed_width}px"
-          name_el.style.height = "#{@collapsed_height * 1.5}px"
-
-          if desc_el
-            desc_el.style.maxHeight = "#{Math.min(@expanded_height, PROPOSAL_DESCRIPTION_MAX_HEIGHT_ON_EXPAND)}px"
-        else 
-          name_el.style.height = "#{@collapsed_height}px"
-          if desc_el
-            desc_el.style.maxHeight = null
+      shouldFlip: @shouldFlip
+      onStartImmediate: @setDimensions
 
       DIV 
         "data-widget": 'ProposalText'
         className: 'proposal-text-block'
 
-
         DIV 
           ref: 'proposal_title'
           className: "proposal-title proposal_item_animation"
           "data-proposal": proposal.key
-          onClick: => toggle_expand(@props.list_key, proposal)
-            
+          onClick: @toggle_expand
           onKeyPress: (e) => 
             if e.which == 32 || e.which == 13
-              toggle_expand(@props.list_key, proposal)
+              @toggle_expand()
 
           SPAN null,
             proposal.name
@@ -684,74 +712,89 @@ ProposalText = ReactiveComponent
 
         @draw_edit_and_delete()
 
-  capture_title_dimensions: ->
-    title_el = @refs.proposal_title
-    desc_el = @refs.proposal_description
 
+  waitForFonts: (cb) ->
     if !@fonts_loaded 
       @fonts_loaded = document.fonts.check "14px #{customization('font').split(',')[0]}"
       
       if !@fonts_loaded && !@wait_for_fonts 
         @wait_for_fonts = setInterval =>  
-          @capture_title_dimensions()
+          cb?()
 
       if @fonts_loaded && @wait_for_fonts
         clearInterval @wait_for_fonts
 
-      return if !@fonts_loaded
+      return @fonts_loaded
+    true
 
 
-    # Get collapsed and uncollapsed width
-    if @is_expanded 
-      if !@expanded_width?
-        @expanded_width = Math.min(900, title_el.clientWidth)
-    else if !@collapsed_width?
-      @collapsed_width = Math.min(900, title_el.clientWidth)
 
-    if title_el && !title_el.style.width
-      title_el.style.width = "#{title_el.clientWidth}px"
-    if desc_el && !desc_el.style.width
-      desc_el.style.width = "#{desc_el.clientWidth}px"
+  setCollapsedSizes: (expand_after_set) ->
+    return if !@waitForFonts(=> @setCollapsedSizes(expand_after_set)) || @is_expanded || @collapsed_title_height?
+    title_el = @refs.proposal_title
 
-    # Get collapsed and uncollapsed height
-    if @is_expanded 
-      if !@expanded_height?
+    if !collapsed_item_sizes
+      collapsed_item_sizes = 
+        title_width: title_el.clientWidth
 
-        # desc_el = desc_el.children[0]
-        # predict height of rendered description
-        if desc_el 
-          proposal = fetch @props.proposal
-          computed_style = window.getComputedStyle(desc_el)
-          div = document.createElement("div")
-          div.style.fontSize = computed_style.fontSize
-          div.style.width = "#{desc_el.clientWidth}px"
-          div.style.fontWeight = computed_style.fontWeight
-          div.style.paddingTop = computed_style.paddingTop
-          div.style.paddingBottom = computed_style.paddingBottom
-          div.classList.add('wysiwyg_text')
-          # div.style.zIndex = 3
-          # div.style.position = 'relative'
-          div.style.visibility = 'hidden'
-          div.innerHTML = proposal.description
-          parent = document.getElementById('content')
-          parent.appendChild div 
-          @expanded_height = div.clientHeight
-          parent.removeChild div
-        else 
-          @expanded_height = 0
+    @collapsed_title_height = title_el.clientHeight
+    @collapsed_title_width = collapsed_item_sizes.title_width
+
+    # wait to make the update so that we don't continuously trigger layout reflow
+    requestAnimationFrame => 
+      title_el.style.height = "#{@collapsed_title_height}px"
+
+      if expand_after_set
+        # If we've loaded this item by url, ensure that it is expanded
+        # Doing this here because we have to do it after we capture the
+        # collapsed size.
+        toggle_expand @props.list_key, fetch(@props.proposal), true
 
 
-    else if !@collapsed_height?      
-      @collapsed_height = title_el.clientHeight
-      title_el.style.height = "#{@collapsed_height}px"
+
+  setExpandedSizes: ->
+    return if !@waitForFonts(@setExpandedSizes) || !@is_expanded || @expanded_description_height?
+
+    desc_el = @refs.proposal_description
+
+    if !expanded_item_sizes
+      expanded_item_sizes = 
+        desc_width: desc_el.clientWidth
+
+    # predict height of rendered description
+    if desc_el && (proposal = fetch(@props.proposal)).description?.length > 0
+      
+      computed_style = window.getComputedStyle(desc_el)
+      sty = 
+        fontSize: computed_style.fontSize
+        width: "#{expanded_item_sizes.desc_width}px"
+        fontWeight: computed_style.fontWeight
+        paddingTop: computed_style.paddingTop
+        paddingBottom: computed_style.paddingBottom
+
+      sty.width = "#{expanded_item_sizes.desc_width}px"
+      el = document.createElement("div")
+      el.classList.add 'wysiwyg_text'
+      @expanded_description_height = heightWhenRendered(proposal.description, sty, el)
+    else 
+      @expanded_description_height = 0
 
 
 
   componentDidMount: ->
-    @capture_title_dimensions()
+    requestAnimationFrame =>
+      loc = fetch 'location'
+      @setCollapsedSizes(loc.url == "/#{fetch(@props.proposal).slug}")
+
+
+
 
   componentDidUpdate: ->
-    @capture_title_dimensions()
+    requestAnimationFrame =>
+      loc = fetch 'location'
+      @setCollapsedSizes()
+
+
 
 
   draw_description: ->  
@@ -810,7 +853,7 @@ ProposalText = ReactiveComponent
       flipId: "proposal-metadata-#{proposal.key}"
       translate: true
       scale: false
-      shouldFlip: => @expansion_state_changed
+      shouldFlip: @shouldFlip
 
 
       DIV
@@ -1013,29 +1056,11 @@ styles += """
 """
 
 
-AVATAR_TRANSITION = ANIMATION_SPEED_ITEM_EXPANSION
-COLLAPSE_DELAY = 0 # ANIMATION_SPEED_ITEM_EXPANSION * 2
 styles += """
 
   .animating-expansion .histoavatars-container {
     content-visibility: visible;
   }
-
-
-  [data-widget="ProposalItem"] .avatar {
-    transition: width #{AVATAR_TRANSITION}s, height #{AVATAR_TRANSITION}s, transform #{AVATAR_TRANSITION}s;
-  }
-
-  /* 
-  .animating-expansion .avatar {
-    transition: width #{AVATAR_TRANSITION}s, height #{AVATAR_TRANSITION}s, transform #{.001}s;
-  }
-
-  .animating-expansion.collapsing .avatar {
-    transition: width #{AVATAR_TRANSITION}s #{COLLAPSE_DELAY}s, height #{AVATAR_TRANSITION}s #{COLLAPSE_DELAY}s, transform #{.001}s #{COLLAPSE_DELAY}s;
-  }
-
-  */
 
   .animating-expansion .the_handle, .animating-expansion .slider_base {
     visibility: hidden;

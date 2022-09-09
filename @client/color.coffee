@@ -67,7 +67,7 @@ window.rgb2hsl = (rgb) ->
   s: s
   l: l
 
-window.hsv2rgb = (h,s,v) -> 
+window.hsv2rgb = (h,s,v, as_array) -> 
   h_i = Math.floor(h*6)
   f = h*6 - h_i
   p = v * (1 - s)
@@ -80,7 +80,12 @@ window.hsv2rgb = (h,s,v) ->
   [r, g, b] = [t, p, v] if h_i==4
   [r, g, b] = [v, p, q] if h_i==5
 
-  "rgb(#{Math.round(r*256)}, #{Math.round(g*256)}, #{Math.round(b*256)})"
+  if as_array
+    [r, g, b]
+  else 
+    "rgb(#{Math.round(r*256)}, #{Math.round(g*256)}, #{Math.round(b*256)})"
+
+
 
 
 window.addOpacity = (color, opacity) -> 

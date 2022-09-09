@@ -31,7 +31,9 @@ window.$$ =
       null
 
   height: (el) -> 
-    Math.round el.getBoundingClientRect().height
+    # console.log "HEIGHT", Math.round(el.getBoundingClientRect().height), el.clientHeight, el.offsetHeight
+    # Math.round el.getBoundingClientRect().height
+    Math.round el.clientHeight
 
   width: (el) -> 
     Math.round el.getBoundingClientRect().width
@@ -62,6 +64,9 @@ window.$$ =
 
 
   ensureInView: (el, options = {}) ->
+    if !el
+      options.callback()
+      return
 
     _.defaults options,
       fill_threshold: 0

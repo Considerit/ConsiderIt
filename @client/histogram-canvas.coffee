@@ -364,17 +364,7 @@ window.Histogram = ReactiveComponent
       if draw_selection_area
         @drawSelectionArea()
 
-      if @props.flip && false
-        FLIPPED 
-          inverseFlipId: flip_id
-          shouldInvert: => @props.flip_state_changed
-          DIV null, 
-            FLIPPED 
-              flipId: flip_id + 'slidergram-avatars'
-              shouldFlip: => @props.flip_state_changed
-              @setTheStage {histo_height, enable_individual_selection}
-      else 
-        @setTheStage {histo_height, enable_individual_selection}
+      @setTheStage {histo_height, enable_individual_selection}
 
 
       if @props.draw_base 
@@ -819,7 +809,11 @@ HistoAvatars = ReactiveComponent
     if !@ready_to_draw() 
       return
 
-    avatars_loaded = fetch('avatar_loading') # subscribe so that we can re-render when avatars available
+    # re-render when avatars available
+    avatars_loaded = fetch('avatar_loading') 
+    if avatars_loaded.loaded && !@avatars_loaded
+      @dirty_canvas = true
+    @avatars_loaded = avatars_loaded.loaded
 
     users = fetch '/users'
     histocache = @getAvatarPositions()

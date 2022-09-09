@@ -444,7 +444,7 @@ window.LoadAvatars = ReactiveComponent
 
 
     if avatars_to_load.length > 0 
-      if !loading.loading
+      if !loading.loaded && !loading.loading
         loading.loading = true 
         save loading 
 
@@ -459,6 +459,7 @@ window.LoadAvatars = ReactiveComponent
             @loading_cnt -= 1
             if @loading_cnt == 0
               loading.loading = false
+              loading.loaded = true
               save loading
           pic.onerror = do(user) => =>
             @loading_cnt -= 1

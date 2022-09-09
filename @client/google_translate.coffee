@@ -40,7 +40,6 @@ window.GoogleTranslate = ReactiveComponent
   insertTranslationWidget: -> 
     subdomain = fetch '/subdomain'
 
-
     new google.translate.TranslateElement {
         pageLanguage: subdomain.lang
         layout: google.translate.TranslateElement.InlineLayout.SIMPLE
@@ -55,19 +54,33 @@ window.GoogleTranslate = ReactiveComponent
 
     return if !wrapper || !translate_el
 
-    coords = getCoords(wrapper)
+    set_coords = (coords) =>
+      left = coords.left + coords.width / 2 - @refs.translation_el.clientWidth / 2
+      top = coords.top
 
-    left = coords.left + coords.width / 2 - @refs.translation_el.clientWidth / 2
-    top = coords.top
+      # set by Google Translate when a language is selected, which screws up the top calculation
+      if document.body.style.top == "40px" 
+        top -= 40
 
-    # set by Google Translate when a language is selected, which screws up the top calculation
-    if document.body.style.top == "40px" 
-      top -= 40
+      if @local.left != left || top != @local.top
+        @local.left = left
+        @local.top = top
+        save @local   
 
-    if @local.left != left || top != @local.top
-      @local.left = left
-      @local.top = top
-      save @local   
+    observer = new IntersectionObserver (entries) =>
+      for entry in entries
+        coords = entry.boundingClientRect
+        coords.left += window.pageXOffset
+        coords.top += window.pageYOffset
+        set_coords
+          left: coords.left + window.pageXOffset
+          top: coords.top + window.pageYOffset
+          width: coords.width
+      observer.disconnect()
+    observer.observe(wrapper)
+
+
+      
        
 
   componentDidMount: -> 
@@ -75,6 +88,7 @@ window.GoogleTranslate = ReactiveComponent
     @int = setInterval => 
       if google?.translate?.TranslateElement?
         @insertTranslationWidget()
+        @setPosition()
         clearInterval @int 
     , 20
 
@@ -83,8 +97,6 @@ window.GoogleTranslate = ReactiveComponent
     @placer_int = setInterval =>
       requestAnimationFrame @setPosition
     , 500
-
-    @setPosition()
 
   componentWillUnmount: ->
     clearInterval @int

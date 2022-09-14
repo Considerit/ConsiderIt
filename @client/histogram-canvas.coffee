@@ -133,6 +133,8 @@ REGION_SELECTION_VERTICAL_PADDING = 30
 window.show_histogram_layout = false
 
 
+DEVICE_PIXEL_RATIO = window.devicePixelRatio
+
 is_histogram_controlling_region_selection = (key) -> 
   opinion_views = fetch 'opinion_views'
   active = opinion_views.active_views
@@ -186,12 +188,13 @@ styles += """
     -ms-user-select: none;
   }
   .histoavatars-container {
-    content-visibility: auto; /* enables browsers to not draw expensive histograms in many situations */
+    // content-visibility: auto; /* enables browsers to not draw expensive histograms in many situations */
   }
 """
 
 window.Histogram = ReactiveComponent
   displayName : 'Histogram'
+
 
   render: -> 
     subdomain = fetch '/subdomain'
@@ -232,7 +235,7 @@ window.Histogram = ReactiveComponent
                                 @local.mouse_opinion_value && 
                                 !@local.hovering_over_avatar))
 
-
+    @flip_state_changed = @props.flip_state_changed
     histo_height = @props.height + REGION_SELECTION_VERTICAL_PADDING
     
     @id = "histo-#{@local.key.replace(/\//g, '__')}"
@@ -326,6 +329,7 @@ window.Histogram = ReactiveComponent
     if @props.flip 
       flip_id = "histogram-#{proposal.key}"
 
+
     histo = DIV histogram_props, 
       DIV 
         key: 'accessibility-histo-label'
@@ -367,44 +371,54 @@ window.Histogram = ReactiveComponent
       @setTheStage {histo_height, enable_individual_selection}
 
 
-      if @props.draw_base 
-        base = DIV 
-                 className: 'slidergram-base' 
-                 style: 
-                   width: '100%'
-                   height: @props.base_style?.height or 1
-                   backgroundColor: @props.base_style?.color or "#999"
+      if @props.draw_base || @props.draw_base_labels
+
+        if @props.draw_base
+          base = DIV 
+                   key: 'slidergram-base'
+                   className: 'slidergram-base' 
+                   style: 
+                     width: '100%'
+                     height: @props.base_style?.height or 1
+                     backgroundColor: @props.base_style?.color or "#999"
+        else 
+          base = SPAN null
+
+        if @props.draw_base_labels
+          labels = @drawHistogramLabels(subdomain, proposal)
+        else 
+          labels = SPAN null
         
         if @props.flip
           FLIPPED 
             inverseFlipId: flip_id
-            shouldInvert: => @props.flip_state_changed
+            shouldInvert: @props.shouldFlip
+            shouldFlipIgnore: @props.shouldFlipIgnore
+            
+
             DIV null, 
+
               FLIPPED 
                 flipId: flip_id + 'slidergram-base'
-                shouldFlip: => @props.flip_state_changed
+                shouldFlip: @props.shouldFlip
+                shouldFlipIgnore: @props.shouldFlipIgnore
+
                 base
 
-        else 
-          base
+              labels
+
+        else
+          [base, labels]
 
 
-      if @props.draw_base_labels
-        if @props.flip 
-          FLIPPED 
-            inverseFlipId: flip_id
-            shouldInvert: => @props.flip_state_changed
-
-            DIV null,
-              @drawHistogramLabels(subdomain, proposal)
-        else 
-          @drawHistogramLabels(subdomain, proposal)
     
 
     if @props.flip
       FLIPPED 
         flipId: flip_id
-        shouldFlip: => @props.flip_state_changed
+        shouldFlip: @props.shouldFlip
+        shouldFlipIgnore: @props.shouldFlipIgnore
+        onComplete: @onAnimationDone
         translate: true
         histo
     else 
@@ -471,12 +485,14 @@ window.Histogram = ReactiveComponent
         FLIPPED
           key: 'negative'
           flipId: "histogram-#{proposal.key}-negative-pole"
-          shouldFlip: => @props.flip_state_changed
+          shouldFlip: @props.shouldFlip
+          shouldFlipIgnore: @props.shouldFlipIgnore
           negative
         FLIPPED
           key: 'positive'
           flipId: "histogram-#{proposal.key}-positive-pole"
-          shouldFlip: => @props.flip_state_changed
+          shouldFlip: @props.shouldFlip
+          shouldFlipIgnore: @props.shouldFlipIgnore
           positive
       ]
 
@@ -715,7 +731,7 @@ HistoAvatars = ReactiveComponent
       id: @props.histocache_key
       key: @props.histo_key or @local.key
       ref: 'histo'
-      'data-receive-viewport-visibility-updates': 1.5
+      'data-receive-viewport-visibility-updates': 2
       'data-visibility-name': 'histogram'
       'data-component': @local.key      
       style: 
@@ -725,9 +741,14 @@ HistoAvatars = ReactiveComponent
         position: 'relative'
         cursor: if !@props.backgrounded && 
                     @enable_range_selection then 'pointer'
+        # borderLeft: "3px solid black"
+        # borderRight: "3px solid black"
 
       CANVAS
         ref: 'canvas'
+        # style: 
+        #   borderLeft: "3px solid red"
+        #   borderRight: "3px solid red"
 
   componentDidMount: ->   
     @PhysicsSimulation()
@@ -791,13 +812,13 @@ HistoAvatars = ReactiveComponent
             @resizing_canvas.height = Math.round(height)
             @resizing_canvas.top = Math.round(top)
         onComplete: do(ani) => =>
-          if ani == @resize_canvas.ani 
+          if ani == @resize_canvas.ani
             @resizing_canvas = false
 
     else # immediate
-      if canv.width != width * window.devicePixelRatio || canv.height != height * window.devicePixelRatio || @current_top != top
-        canv.width = width * window.devicePixelRatio
-        canv.height = height * window.devicePixelRatio
+      if canv.width != width * DEVICE_PIXEL_RATIO || canv.height != height * DEVICE_PIXEL_RATIO || @current_top != top
+        canv.width = width * DEVICE_PIXEL_RATIO
+        canv.height = height * DEVICE_PIXEL_RATIO
         canv.style.width = "#{width}px"
         canv.style.height = "#{height}px" 
         canv.style.transform = "translateY(#{top}px)"
@@ -824,6 +845,7 @@ HistoAvatars = ReactiveComponent
 
     @sleeping ?= true
 
+    canvas_resize_needed = false
     # initialize canvas, get things started
     if !@ctx
       @ctx = canvas.getContext('2d')
@@ -831,12 +853,10 @@ HistoAvatars = ReactiveComponent
       @dirty_canvas = true
 
     # resize canvas if our target canvas size has changed
-    else if (canvas.width != @props.width  * window.devicePixelRatio || canvas.height != @adjusted_height * window.devicePixelRatio || @current_top != -@cut_off_buffer) &&
+    else if (canvas.width != @props.width  * DEVICE_PIXEL_RATIO || canvas.height != @adjusted_height * DEVICE_PIXEL_RATIO || @current_top != -@cut_off_buffer) &&
             (!@resizing_canvas || @resizing_canvas.target_width != @props.width || @resizing_canvas.target_height != @adjusted_height || @resizing_canvas.target_top != -@cut_off_buffer)
-      @resize_canvas(@props.width, @adjusted_height, -@cut_off_buffer, true)      
+      canvas_resize_needed = true      
     
-    
-
     @wake()
 
     new_animation_needed = false
@@ -873,6 +893,7 @@ HistoAvatars = ReactiveComponent
       ReactFlipToolkit.spring
         config: PROPOSAL_ITEM_SPRING
         onUpdate: do (ani) => (val) =>
+
           return if ani != @current_ani
           for key, __ of @updates_needed
             sprite = @sprites[key]
@@ -883,11 +904,28 @@ HistoAvatars = ReactiveComponent
         onComplete: do (ani) => =>
           return if ani != @current_ani
           @updates_needed = {}
+    
+    if canvas_resize_needed
+      @resize_canvas(@props.width, @adjusted_height, -@cut_off_buffer, true)
 
   wake: -> 
     if @sleeping
       @sleeping = false 
       @tick()
+
+
+  drawToBuffer: -> 
+    @buffer ?= document.createElement 'canvas'
+    @buff_ctx ?= @buffer.getContext '2d'          
+    @buffer.width = (@resizing_canvas?.width or @refs.canvas.width) * DEVICE_PIXEL_RATIO
+    @buffer.height = (@resizing_canvas?.height or @refs.canvas.height) * DEVICE_PIXEL_RATIO
+    # @buff_ctx.clearRect(0, 0, @buffer.width, @buffer.height)
+
+    for key, sprite of @sprites
+      @buff_ctx.drawImage sprite.img, sprite.x * DEVICE_PIXEL_RATIO, sprite.y * DEVICE_PIXEL_RATIO, sprite.width * DEVICE_PIXEL_RATIO, sprite.height * DEVICE_PIXEL_RATIO
+    # @dirty_canvas = true
+    @tick()
+
 
   tick: -> 
     render_required = @dirty_canvas || !!@resizing_canvas || Object.keys(@updates_needed).length > 0
@@ -902,15 +940,8 @@ HistoAvatars = ReactiveComponent
           @dirty_canvas = false        
           @renderScene()
 
-        setTimeout => 
-          @buffer ?= document.createElement 'canvas'
-          @buff_ctx ?= @buffer.getContext '2d'          
-          @buffer.width = (@resizing_canvas?.width or @refs.canvas.width) * window.devicePixelRatio
-          @buffer.height = (@resizing_canvas?.height or @refs.canvas.height) * window.devicePixelRatio
-          for key, sprite of @sprites
-            @buff_ctx.drawImage sprite.img, sprite.x * window.devicePixelRatio, sprite.y * window.devicePixelRatio, sprite.width * window.devicePixelRatio, sprite.height * window.devicePixelRatio
-          # @dirty_canvas = true
-          @tick()
+        setTimeout @drawToBuffer
+          
 
     else 
       requestAnimationFrame => 
@@ -925,8 +956,9 @@ HistoAvatars = ReactiveComponent
     if @resizing_canvas
       @resize_canvas @resizing_canvas.width, @resizing_canvas.height, @resizing_canvas.top 
 
-    ctx.clearRect(0, 0, @refs.canvas.width * window.devicePixelRatio, @refs.canvas.height * window.devicePixelRatio)
-    # ctx.rect 0, 0, @refs.canvas.width * window.devicePixelRatio, @refs.canvas.height * window.devicePixelRatio
+    ctx.clearRect(0, 0, @refs.canvas.width * DEVICE_PIXEL_RATIO, @refs.canvas.height * DEVICE_PIXEL_RATIO)
+
+    # ctx.rect 0, 0, @refs.canvas.width * DEVICE_PIXEL_RATIO, @refs.canvas.height * DEVICE_PIXEL_RATIO
     # ctx.fillStyle = 'black'
     # ctx.fill()
 
@@ -934,7 +966,7 @@ HistoAvatars = ReactiveComponent
       ctx.drawImage @buffer, 0, 0
     else 
       for key, sprite of @sprites
-        ctx.drawImage sprite.img, sprite.x * window.devicePixelRatio, sprite.y * window.devicePixelRatio, sprite.width * window.devicePixelRatio, sprite.height * window.devicePixelRatio
+        ctx.drawImage sprite.img, sprite.x * DEVICE_PIXEL_RATIO, sprite.y * DEVICE_PIXEL_RATIO, sprite.width * DEVICE_PIXEL_RATIO, sprite.height * DEVICE_PIXEL_RATIO
 
 
   render2: ->
@@ -991,10 +1023,6 @@ HistoAvatars = ReactiveComponent
           has_groups = !!groups
           if has_groups
             colors = get_color_for_groups groups 
-
-
-          if @props.flip
-            shouldFlip = => @props.flip_state_changed
 
           for opinion, idx in @props.opinions
           
@@ -1142,8 +1170,9 @@ HistoAvatars = ReactiveComponent
 
 
 
-num_layout_workers = 4
+num_layout_workers = 10
 num_layout_tasks_delegated = 0
+# num_completed = 0
 window.delegate_layout_task = (opts) -> 
   after_loaded = ->
     histo_layout_worker = histo_layout_workers[num_layout_tasks_delegated % num_layout_workers]  
@@ -1176,7 +1205,8 @@ configure_histo_layout_web_worker = ->
       local.histocache[histocache_key] = 
         hash: histocache_key
         positions: positions
-
+      # num_completed += 1
+      # console.log {num_layout_tasks_delegated, num_completed}
       save local
 
     for worker in histo_layout_workers

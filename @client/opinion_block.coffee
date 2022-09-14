@@ -19,6 +19,7 @@ styles += """
 window.OpinionBlock = ReactiveComponent
   displayName: 'OpinionBlock'
 
+
   render: ->
     proposal = fetch @props.proposal 
     subdomain = fetch '/subdomain'
@@ -27,7 +28,6 @@ window.OpinionBlock = ReactiveComponent
     show_proposal_scores = !@props.hide_scores && customization('show_proposal_scores', proposal, subdomain) && WINDOW_WIDTH() > 955
     show_proposal_scores = false 
 
-    @expansion_state_changed = @props.expansion_state_changed
     @is_expanded = @props.is_expanded
 
     slider_interpretation = (value) => 
@@ -54,7 +54,8 @@ window.OpinionBlock = ReactiveComponent
 
         FLIPPED 
           flipId: "proposal_scores-#{proposal.key}"
-
+          shouldFlipIgnore: @props.shouldFlipIgnore
+          shouldFlip: @props.shouldFlip
           DIV 
             className: 'proposal_scores'
 
@@ -76,7 +77,6 @@ window.Slidergram = ReactiveComponent
 
   render: ->
 
-    @expansion_state_changed = @props.expansion_state_changed
     @is_expanded = @props.is_expanded
 
     proposal = fetch @props.proposal 
@@ -146,8 +146,8 @@ window.Slidergram = ReactiveComponent
         draw_base: true
         draw_base_labels: !slider_regions
         flip: true
-        flip_state_changed: @props.expansion_state_changed
-
+        shouldFlip: @props.shouldFlip
+        shouldFlipIgnore: @props.shouldFlipIgnore
 
       Slider 
         slider_key: "homepage_slider#{proposal.key}"

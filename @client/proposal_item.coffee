@@ -1,7 +1,7 @@
 require './opinion_block'
 
 
-window.ANIMATION_SPEED_ITEM_EXPANSION = 0.8
+window.ANIMATION_SPEED_ITEM_EXPANSION = 1
 window.PROPOSAL_ITEM_SPRING = # 4000 / 800 is decent
   stiffness: 4000  #600
   damping: 800
@@ -16,7 +16,7 @@ styles += """
     transition-delay: 0ms;    
   }
 
-  [data-widget="ProposalItem"] {
+  .ProposalItem {
     min-height: 84px;
     position: relative;
     list-style: none;    
@@ -30,11 +30,7 @@ styles += """
 
   }
 
-  .is_collapsed[data-widget="ProposalItem"] {
-    content-visibility: auto;    
-  }
-
-  .is_expanded[data-widget="ProposalItem"] {
+  .is_expanded.ProposalItem {
     left: calc(-4 * var(--LIST_PADDING-LEFT));
     width: calc(100% + 8 * var(--LIST_PADDING-LEFT) );
 
@@ -43,12 +39,32 @@ styles += """
     z-index: 2; /* put it above surrounding ProposalItems */
 
   } 
-    
+
+
+  .is_collapsed.ProposalItem {
+    content-visibility: auto; /* Content-visibility can be very expensive. Specifically, React Flip Toolkit
+                                 has to call getBoundingClientRect on all Flipped elements to figure out how 
+                                 to animate them. content-visibility will prevent the rendering
+                                 of out-of-viewport items (as intended!), but this means that getBoundingClientRect
+                                 call on an unpainted item will trigger a reflow and style re-calc. *for 
+                                 each element*. This creates significant jank in the beginning of an animation
+                                 when there are a decent number of out-of-viewport items.  
+                                 Note: I've made a forked version of react-flip-trip that almost entirely
+                                       eliminates this expense. But content-visibility is also expensive when
+                                       scrolling long lists.
+                                 */    
+  }
+
+  /* When changing list order, content-visibility: auto cuts things off */
+
+  .list_order_event .is_collapsed.ProposalItem {
+    content-visibility: visible;
+  }
+
 
   /* The wrapper for the expanded item */
 
-
-  [data-widget="ProposalItem"]::after {
+  .ProposalItem::after {
     content: "";    
     opacity: 0;
 
@@ -67,44 +83,138 @@ styles += """
     border-radius: 4px;    
   }
 
-
-  .is_expanded.animation-resting[data-widget="ProposalItem"]::after {
+  .is_expanded.animation-resting.ProposalItem::after {
     opacity: 1;
     transition-duration: #{1 * ANIMATION_SPEED_ITEM_EXPANSION}s;
   }
 
-  .is_collapsed[data-widget="ProposalItem"]::after {
+  .is_collapsed.ProposalItem::after {
     transition-duration: #{ANIMATION_SPEED_ITEM_EXPANSION / 10 }s;
   }
 
-  .collapsing[data-widget="ProposalItem"]::after {
+  .collapsing.ProposalItem::after {
     transition-duration: #{ANIMATION_SPEED_ITEM_EXPANSION / 10 }s;
 
     opacity: 0;
   }
+"""
 
 
+
+
+
+window.ProposalItem = ReactiveComponent
+  displayName: 'ProposalItem'
+
+  shouldFlipIgnore: -> 
+    !(@expansion_state_changed || @local.in_viewport || (@list_order_state_changed && @props.num_proposals < 30))
+
+  shouldFlip: ->
+    @expansion_state_changed || (@list_order_state_changed && @props.num_proposals < 30)
+
+  onAnimationStart: (el) -> 
+    if @shouldFlip() 
+
+      direction = if @is_expanded then 'expanding' else 'collapsing'
+      el.classList.add "animating-expansion", direction
+      el.classList.remove "animation-resting"
+
+
+  onAnimationDone: (el, dd, was_canceled) ->
+    if @shouldFlip()  
+
+      direction = if @is_expanded then 'expanding' else 'collapsing'        
+      el.classList.remove 'animating-expansion', direction
+      el.classList.add "animation-resting"
+
+      # Should only happen if the animation has completed, not if it is interrupted.
+      # Otherwise the next animation will be messed up. 
+      if !was_canceled
+        @expansion_state_changed = false 
+        @list_order_state_changed = false
+
+  render : ->
+    proposal = fetch @props.proposal
+
+    @is_expanded = @props.is_expanded
+
+    @expansion_state_changed = (@expansion_state_changed? || @props.accessed_by_url) && @last_expansion != @is_expanded
+    @list_order_state_changed = @list_order_state_changed? && @last_list_order != @props.list_order
+
+    @last_expansion = @is_expanded
+    @last_list_order = @props.list_order
+
+
+
+    # console.log "RENDERING", @props.proposal, @expansion_state_changed #, @local.in_viewport, {safe_for_flip_to_ignore}
+    FLIPPED 
+      key: proposal.key
+      flipId: proposal.key
+      stagger: "item-wrapper-#{@props.list_key}"
+
+      shouldInvert: @shouldFlip # TODO: why should this be shouldInvert, rather than shouldFlip? 
+      onStartImmediate: @onAnimationStart
+      onComplete: @onAnimationDone
+
+      shouldFlipIgnore: @shouldFlipIgnore
+
+
+      LI
+        "data-widget": 'ProposalItem'
+        key: proposal.key
+        className: "ProposalItem #{if @is_expanded then 'is_expanded' else 'is_collapsed'}"
+        "data-name": slugify(proposal.name)
+
+        'data-visibility-name': 'ProposalItem'
+        'data-receive-viewport-visibility-updates': 2
+        'data-component': @local.key
+
+        id: 'p' + (proposal.slug or "#{proposal.id}").replace('-', '_')  # Initial 'p' is because all ids must begin 
+                                                                         # with letter. seeking to hash was failing 
+                                                                         # on proposals whose name began with number.
+
+        FLIPPED 
+          inverseFlipId: proposal.key
+          shouldInvert: @shouldFlip
+          shouldFlipIgnore: @shouldFlipIgnore
+
+          DIV null,
+
+            ProposalItemWrapper
+              proposal: @props.proposal
+              is_expanded: @is_expanded
+              list_key: @props.list_key
+              show_category: @props.show_category
+              category_color: @props.category_color
+
+              shouldFlip: @shouldFlip
+              shouldFlipIgnore: @shouldFlipIgnore
+
+
+
+
+styles += """
   /* Container for the proposal */
 
-  [data-widget="ProposalItem"] .proposal-block-container {
+  .proposal-block-container {
     display: flex;
     justify-content: center;
     padding-bottom: 24px;
   }
 
-  .is_collapsed[data-widget="ProposalItem"] .proposal-block-container {
+  .is_collapsed .proposal-block-container {
     flex-direction: row;
   }
-  .is_expanded[data-widget="ProposalItem"] .proposal-block-container {
+  .is_expanded .proposal-block-container {
     flex-direction: column;
   }
 
-  [data-widget="ProposalItem"] .proposal-block-wrapper {
+  .proposal-block-wrapper {
     margin-top: 0;
     width: 100%;        
   }
 
-  .is_expanded[data-widget="ProposalItem"] .proposal-block-wrapper {
+  .is_expanded .proposal-block-wrapper {
     margin-top: 24px;
   }
 
@@ -112,14 +222,16 @@ styles += """
   /* The container for the opinion area */
 
 
-  [data-widget="ProposalItem"] .opinion-block-wrapper {
+  .opinion-block-wrapper {
     padding-right: 48px;
 
     position: relative;
     z-index: 1;
+
+    top: 10px;  /* move it down so that overflowing avatars don't get chopped off at the top */
   }
 
-  .is_expanded[data-widget="ProposalItem"] .opinion-block-wrapper {
+  .is_expanded .opinion-block-wrapper {
     margin-bottom: 24px;
     margin-top: 10px;
   }
@@ -132,6 +244,8 @@ styles += """
     left: calc(50% - 20px);
     bottom: -26px;
     cursor: pointer;
+    background-color: transparent;
+    border: none;
   }
   .is_expanded .bottom_closer {
     transition: opacity #{2 * ANIMATION_SPEED_ITEM_EXPANSION}s;    
@@ -145,10 +259,10 @@ styles += """
 
 
 
-  .debugging[data-widget="ProposalItem"] .opinion-block-wrapper {
+  .debugging .opinion-block-wrapper {
     background-color: #eee;    
   }
-  .debugging[data-widget="ProposalItem"] .proposal-block-wrapper {
+  .debugging .proposal-block-wrapper {
     background-color: #eaeaea;
   }
 
@@ -156,72 +270,8 @@ styles += """
 """
 
 
-window.ProposalItem = ReactiveComponent
-  displayName: 'ProposalItem'
-
-
-  shouldFlip: ->
-    @expansion_state_changed
-
-  onAnimationStart: (el) -> 
-    if @shouldFlip() 
-      direction = if @is_expanded then 'expanding' else 'collapsing'
-      el.classList.add "animating-expansion", direction
-      el.classList.remove "animation-resting"
-
-  onAnimationDone: (el) => 
-    direction = if @is_expanded then 'expanding' else 'collapsing'        
-    el.classList.remove 'animating-expansion', direction
-    el.classList.add "animation-resting"
-
-  render : ->
-    proposal = fetch @props.proposal
-
-    @is_expanded = @props.is_expanded
-
-    @expansion_state_changed = (@expansion_state_changed? || @props.accessed_by_url) && @last_expansion != @is_expanded
-    @last_expansion = @is_expanded
-
-
-    FLIPPED 
-      key: proposal.key
-      flipId: proposal.key
-      stagger: "item-wrapper-#{@props.list_key}"
-
-      # TODO: why should this be shouldInvert, rather than shouldFlip? 
-      shouldInvert: @shouldFlip
-      onStartImmediate: @onAnimationStart
-      onComplete: @onAnimationDone
-
-
-      LI
-        "data-widget": 'ProposalItem'
-        key: proposal.key
-        className: "#{if @is_expanded then 'is_expanded' else 'is_collapsed'}"
-        "data-name": slugify(proposal.name)
-        id: 'p' + (proposal.slug or "#{proposal.id}").replace('-', '_')  # Initial 'p' is because all ids must begin 
-                                                                         # with letter. seeking to hash was failing 
-                                                                         # on proposals whose name began with number.
-
-        ProposalItemWrapper
-          proposal: @props.proposal
-          expansion_state_changed: @expansion_state_changed
-          is_expanded: @is_expanded
-          list_key: @props.list_key
-          show_category: @props.show_category
-          category_color: @props.category_color
-
-
-
-
-
-
-
 ProposalItemWrapper = ReactiveComponent
   displayName: 'ProposalItemWrapper'
-
-  shouldFlip: ->
-    @props.expansion_state_changed
 
   toggle_expand: -> 
     toggle_expand(@props.list_key, @props.proposal)
@@ -234,83 +284,81 @@ ProposalItemWrapper = ReactiveComponent
   render: ->
     proposal = fetch @props.proposal
 
-    FLIPPED 
-      inverseFlipId: proposal.key
-      shouldInvert: @shouldFlip
+    DIV 
+      className: "proposal-block-container"
 
-      DIV 
-        className: "proposal-block-container"
-
-        FLIPPED
-          flipId: "proposal-block-#{proposal.key}"
-          stagger: "content-#{@props.list_key}"
-          shouldFlip: @shouldFlip
-          delayUntil: proposal.key
-
-          DIV 
-            className: 'proposal-block-wrapper'
-
-            FLIPPED 
-              inverseFlipId: "proposal-block-#{proposal.key}"
-              shouldInvert: @shouldFlip
-
-              DIV null, # annoying empty DIV because FLIPPED doesn't seem to transfer to a new component
-
-                ProposalBlock
-                  proposal: proposal.key
-                  expansion_state_changed: @props.expansion_state_changed
-                  is_expanded: @props.is_expanded
-                  list_key: @props.list_key
-                  show_category: @props.show_category
-                  category_color: @props.category_color
-
-        # FLIPPED
-        #   flipId: "proposal-slidergram-spacing-#{proposal.key}"
-        #   shouldFlip: => false && @expansion_state_changed
+      FLIPPED
+        flipId: "proposal-block-#{proposal.key}"
+        stagger: "content-#{@props.list_key}"
+        shouldFlip: @props.shouldFlip
+        shouldFlipIgnore: @props.shouldFlipIgnore
+        # delayUntil: proposal.key
 
         DIV 
-          className: "proposal-slidergram-spacing"
+          className: 'proposal-block-wrapper'
+
+          FLIPPED 
+            inverseFlipId: "proposal-block-#{proposal.key}"
+            shouldInvert: @props.shouldFlip
+            shouldFlipIgnore: @props.shouldFlipIgnore
+
+            DIV null, # annoying empty DIV because FLIPPED doesn't seem to transfer to a new component
+
+              ProposalBlock
+                proposal: proposal.key
+                is_expanded: @props.is_expanded
+                list_key: @props.list_key
+                show_category: @props.show_category
+                category_color: @props.category_color
+                shouldFlip: @props.shouldFlip
+                shouldFlipIgnore: @props.shouldFlipIgnore
+
+      DIV 
+        className: "proposal-slidergram-spacing"
 
 
-        FLIPPED
-          flipId: "opinion-block-#{proposal.key}"
-          stagger: "content-#{@props.list_key}"
-          shouldFlip: @shouldFlip
-          delayUntil: proposal.key
+      FLIPPED
+        flipId: "opinion-block-#{proposal.key}"
+        stagger: "content-#{@props.list_key}"
+        shouldFlip: @props.shouldFlip
+        shouldFlipIgnore: @props.shouldFlipIgnore
+        # delayUntil: proposal.key
 
-          DIV 
-            className: 'opinion-block-wrapper'
+        DIV 
+          className: 'opinion-block-wrapper'
 
-            FLIPPED 
-              inverseFlipId: "opinion-block-#{proposal.key}"
-              shouldInvert: @shouldFlip
+          FLIPPED 
+            inverseFlipId: "opinion-block-#{proposal.key}"
+            shouldInvert: @props.shouldFlip
+            shouldFlipIgnore: @props.shouldFlipIgnore
 
-              DIV null, # annoying empty DIV because FLIPPED doesn't seem to transfer to a new component
+            DIV null, # annoying empty DIV because FLIPPED doesn't seem to transfer to a new component
 
-                OpinionBlock
-                  proposal: proposal.key
-                  expansion_state_changed: @props.expansion_state_changed
-                  is_expanded: @props.is_expanded
-                  list_key: @props.list_key
+              OpinionBlock
+                proposal: proposal.key
+                is_expanded: @props.is_expanded
+                list_key: @props.list_key
+                shouldFlip: @props.shouldFlip
+                shouldFlipIgnore: @props.shouldFlipIgnore
 
-        BUTTON 
-          className: 'bottom_closer'
-          onClick: @toggle_expand
-            
-          onKeyPress: @toggle_expand_key
+      BUTTON 
+        className: 'bottom_closer'
+        onClick: @toggle_expand
+          
+        onKeyPress: @toggle_expand_key
 
-          double_up_icon(40)
+        double_up_icon(40)
 
       
 
 
 
 styles += """
-  [data-widget="ProposalBlock"] {
+  .ProposalBlock {
     display: flex;
   }
 
-  [data-widget="ProposalBlock"] .proposal-avatar-wrapper {
+  .ProposalBlock .proposal-avatar-wrapper {
     flex-grow: 0;
     flex-shrink: 0;
     /* width: var(--PROPOSAL_AUTHOR_AVATAR_SIZE); */
@@ -327,7 +375,7 @@ styles += """
     flex-grow: 0;
     flex-shrink: 0;    
   }
-  .is_expanded[data-widget="ProposalItem"] .proposal-left-spacing {
+  .is_expanded .proposal-left-spacing {
     width: calc(4 * var(--LIST_PADDING-LEFT));
   }
 
@@ -357,7 +405,7 @@ styles += """
 
 
 
-  [data-widget="ProposalBlock"] [data-widget="Avatar"], [data-widget="ProposalBlock"] .proposal_pic {
+  .ProposalBlock .avatar, .ProposalBlock .proposal_pic {
     height: var(--PROPOSAL_AUTHOR_AVATAR_SIZE);
     width: var(--PROPOSAL_AUTHOR_AVATAR_SIZE);
     border-radius: 0;  
@@ -365,13 +413,13 @@ styles += """
 
 
 
-  [data-widget="ProposalBlock"] .proposal-text {
+  .ProposalBlock .proposal-text {
     flex-grow: 1;
     flex-shrink: 1; 
   }
 
 
-  .debugging [data-widget="ProposalBlock"] .proposal-text {
+  .debugging .proposal-text {
     background-color: #aaa;
   }
 
@@ -402,52 +450,43 @@ ProposalBlock = ReactiveComponent
   render: -> 
     proposal = fetch @props.proposal
 
-    @expansion_state_changed = @props.expansion_state_changed
     @is_expanded = @props.is_expanded
 
     icons = @should_use_avatar()
 
+
     DIV 
-      className: "proposal-block #{if !icons then "using_bullets" else ''}"
+      className: "ProposalBlock #{if !icons then "using_bullets" else ''}"
       "data-widget": 'ProposalBlock'
 
+      DIV 
+        className: 'proposal-left-spacing'
 
-      FLIPPED
-        flipId: "proposal-left-spacing-#{proposal.key}"
-        shouldFlip: => @expansion_state_changed
+      FLIPPED  # needed for list-order change
+        flipId: "proposal-avatars-#{proposal.key}"
+        shouldFlip: @props.shouldFlip
+        shouldFlipIgnore: @props.shouldFlipIgnore
+        translate: true
 
         DIV 
-          className: 'proposal-left-spacing'
-
-      DIV 
-        className: 'proposal-avatar-wrapper proposal_item_animation'
-        @draw_avatar_or_bullet()
+          className: 'proposal-avatar-wrapper proposal_item_animation'
+          @draw_avatar_or_bullet()
 
       DIV 
         className: "proposal-avatar-spacing"
 
 
-      # FLIPPED
-      #   flipId: "proposal-text-#{proposal.key}"
-      #   shouldFlip: => @expansion_state_changed
-
       DIV 
         className: 'proposal-text'
 
-
-        # FLIPPED 
-        #   inverseFlipId: "proposal-text-#{proposal.key}"
-        #   shouldInvert: => @expansion_state_changed
-
-        # DIV null,
         ProposalText
           proposal: proposal.key
-          expansion_state_changed: @expansion_state_changed
           is_expanded: @is_expanded
           list_key: @props.list_key
           show_category: @props.show_category
           category_color: @props.category_color
-
+          shouldFlip: @props.shouldFlip
+          shouldFlipIgnore: @props.shouldFlipIgnore
 
   draw_avatar_or_bullet: ->
     proposal = fetch @props.proposal
@@ -517,33 +556,33 @@ styles += """
     --proposal_title_underline_color: #000000;
   }
 
-  [data-widget="ProposalText"] .proposal-title span {
+  .ProposalText .proposal-title span {
     border-bottom-width: 2px;
     border-style: solid;
     border-color: #{focus_blue + "ad"}; /* with some transparency */
     transition: border-color 1s;
   }
 
-  [data-widget="ProposalText"] .proposal-title:hover span {
+  .ProposalText .proposal-title:hover span {
     border-color: #000;
     border-style: solid;
 
   }
 
 
-  [data-widget="ProposalText"] .proposal-title {
+  .ProposalText .proposal-title {
     max-width: 900px;
   }
 
-  [data-widget="ProposalText"] .proposal-description-wrapper {
+  .ProposalText .proposal-description-wrapper {
     max-width: 600px;  
   }
 
-  [data-widget="ProposalText"] .proposal-metadata {
+  .ProposalText .proposal-metadata {
     height: 20px;
   }
 
-  [data-widget="ProposalText"] .proposal-title {
+  .ProposalText .proposal-title {
 
 
     font-size: #{TITLE_FONT_SIZE_COLLAPSED}px;
@@ -557,14 +596,14 @@ styles += """
     color: #111;
   }
 
-  [data-widget="ProposalText"] .proposal-title:hover,  .is_expanded [data-widget="ProposalText"] .proposal-title {
+  .ProposalText .proposal-title:hover,  .is_expanded .ProposalText .proposal-title {
   }
 
-  .is_expanded [data-widget="ProposalText"] .proposal-title {
+  .is_expanded .ProposalText .proposal-title {
     transform: scale(1.5);
   } 
 
-  [data-widget="ProposalText"] .proposal-description {
+  .ProposalText .proposal-description {
     overflow: hidden;
 
     font-size: 16px;
@@ -579,12 +618,12 @@ styles += """
     color: #333;
   }
 
-  .is_collapsed [data-widget="ProposalText"] .proposal-description {
+  .is_collapsed .ProposalText .proposal-description {
     max-height: 50px;
     color: #555;
   }
 
-  .is_expanded [data-widget="ProposalText"] .proposal-description.fully_expanded {
+  .is_expanded .ProposalText .proposal-description.fully_expanded {
     max-height: 9999px;
   }
 
@@ -593,21 +632,21 @@ styles += """
     opacity: 0;
     transition: opacity 1s;
   }
-  [data-widget="ProposalItem"]:hover .edit_and_delete_block, .is_expanded[data-widget="ProposalItem"] .edit_and_delete_block {
+  .ProposalItem:hover .edit_and_delete_block, .is_expanded .edit_and_delete_block {
     opacity: 1;
   }
 
 
 
-  .debugging [data-widget="ProposalText"] .proposal-title {
+  .debugging .ProposalText .proposal-title {
     background-color: #aa7711;
   }
 
-  .debugging [data-widget="ProposalText"] .proposal-description-wrapper {
+  .debugging .ProposalText .proposal-description-wrapper {
     background-color: #f1f1f1;
   }
 
-  .debugging [data-widget="ProposalText"] .proposal-metadata {
+  .debugging .ProposalText .proposal-metadata {
     background-color: #11aa77;
   }
 
@@ -652,11 +691,9 @@ collapsed_item_sizes = null
 ProposalText = ReactiveComponent
   displayName: 'ProposalText'
 
+
   toggle_expand: -> 
     toggle_expand(@props.list_key, @props.proposal)
-
-  shouldFlip: ->
-    @props.expansion_state_changed
 
   setDimensions: -> 
     name_el = @refs.proposal_title
@@ -677,19 +714,25 @@ ProposalText = ReactiveComponent
   render: -> 
     proposal = fetch @props.proposal
 
-    @expansion_state_changed = @props.expansion_state_changed
     @is_expanded = @props.is_expanded
 
 
-    FLIPPED
+    FLIPPED 
       flipId: "proposal-text-animation-starter-#{proposal.key}"
-      opacity: true
-      shouldFlip: @shouldFlip
+      translate: true  # needed for list-order change
+      shouldFlip: @props.shouldFlip
       onStartImmediate: @setDimensions
+      shouldFlipIgnore: @props.shouldFlipIgnore
 
       DIV 
         "data-widget": 'ProposalText'
-        className: 'proposal-text-block'
+        className: 'ProposalText'
+        ref: 'root'
+
+        'data-visibility-name': 'ProposalText'
+        'data-receive-viewport-visibility-updates': 2
+        'data-component': @local.key
+
 
         DIV 
           ref: 'proposal_title'
@@ -730,7 +773,7 @@ ProposalText = ReactiveComponent
 
 
   setCollapsedSizes: (expand_after_set) ->
-    return if !@waitForFonts(=> @setCollapsedSizes(expand_after_set)) || @is_expanded || @collapsed_title_height?
+    return if !@waitForFonts(=> @setCollapsedSizes(expand_after_set)) || @is_expanded || @collapsed_title_height? || !@local.in_viewport #!@refs.root.closest(".ProposalItem[data-in-viewport='true']")
     title_el = @refs.proposal_title
 
     if !collapsed_item_sizes
@@ -828,18 +871,18 @@ ProposalText = ReactiveComponent
       className: 'proposal-description proposal_item_animation wysiwyg_text'
       ref: 'proposal_description'
 
-      FLIPPED 
-        inverseFlipId: "proposal-description-wrapper-#{proposal.key}"
-        shouldInvert: => @expansion_state_changed
-        scale: true 
+      # FLIPPED 
+      #   inverseFlipId: "proposal-description-wrapper-#{proposal.key}"
+      #   shouldInvert: => @expansion_state_changed
+      #   scale: true 
 
-        DIV 
-          style:
-            maxHeight: if @local.description_collapsed then @max_description_height
-            overflow: if @local.description_collapsed then 'hidden'
-            display: if embedded_demo() then 'none'
+      DIV 
+        style:
+          maxHeight: if @local.description_collapsed then @max_description_height
+          overflow: if @local.description_collapsed then 'hidden'
+          display: if embedded_demo() then 'none'
 
-          result
+        result
 
 
   draw_metadata: -> 
@@ -849,119 +892,119 @@ ProposalText = ReactiveComponent
     icons = customization('show_proposer_icon', proposal, subdomain) && !@props.hide_icons && !customization('anonymize_everything')
     opinion_publish_permission = permit('publish opinion', proposal, subdomain)
 
-    FLIPPED
-      flipId: "proposal-metadata-#{proposal.key}"
-      translate: true
-      scale: false
-      shouldFlip: @shouldFlip
+    # FLIPPED
+    #   flipId: "proposal-metadata-#{proposal.key}"
+    #   translate: true
+    #   scale: false
+    #   shouldFlip: @shouldFlip
 
 
-      DIV
-        className: 'proposal-metadata monospaced'   
+    DIV
+      className: 'proposal-metadata monospaced'   
 
-        if customization('proposal_meta_data', null, subdomain)?
-          customization('proposal_meta_data', null, subdomain)(proposal)
+      if customization('proposal_meta_data', null, subdomain)?
+        customization('proposal_meta_data', null, subdomain)(proposal)
 
-        else if !@props.hide_metadata && customization('show_proposal_meta_data', null, subdomain)
-          show_author_name_in_meta_data = !icons && (editor = proposal_editor(proposal)) && editor == proposal.user && !customization('anonymize_everything')
-          show_timestamp = !screencasting() && subdomain.name != 'galacticfederation'
-          show_discussion_info = customization('discussion_enabled', proposal, subdomain)
-          show_cluster = @props.show_category && proposal.cluster
-          is_closed = opinion_publish_permission == Permission.DISABLED
-          read_only = opinion_publish_permission == Permission.INSUFFICIENT_PRIVILEGES
+      else if !@props.hide_metadata && customization('show_proposal_meta_data', null, subdomain)
+        show_author_name_in_meta_data = !icons && (editor = proposal_editor(proposal)) && editor == proposal.user && !customization('anonymize_everything')
+        show_timestamp = !screencasting() && subdomain.name != 'galacticfederation'
+        show_discussion_info = customization('discussion_enabled', proposal, subdomain)
+        show_cluster = @props.show_category && proposal.cluster
+        is_closed = opinion_publish_permission == Permission.DISABLED
+        read_only = opinion_publish_permission == Permission.INSUFFICIENT_PRIVILEGES
 
-          [
-            if show_timestamp
-              SPAN 
-                key: 'date'
-                className: 'separated'
+        [
+          if show_timestamp
+            SPAN 
+              key: 'date'
+              className: 'separated'
 
-                # if !show_author_name_in_meta_data
-                #   TRANSLATE 'engage.proposal_metadata_date_added', "Added: "
-                
-                prettyDate(proposal.created_at)
+              # if !show_author_name_in_meta_data
+              #   TRANSLATE 'engage.proposal_metadata_date_added', "Added: "
+              
+              prettyDate(proposal.created_at)
 
 
-            if show_author_name_in_meta_data
-              SPAN 
-                key: 'author name'
-                className: 'separated'
+          if show_author_name_in_meta_data
+            SPAN 
+              key: 'author name'
+              className: 'separated'
+
+              TRANSLATE
+                id: 'engage.proposal_author'
+                name: fetch(editor)?.name 
+                " by {name}"
+
+          if show_discussion_info
+            [
+              SPAN
+                key: 'proposal-link'
+                # href: proposal_url(proposal)
+                # "data-no-scroll": EXPAND_IN_PLACE
+                # className: 'separated'
+                className: 'separated pros_cons_count monospaced'
+                onClick: => toggle_expand(@props.list_key, proposal)
+                  
+                onKeyPress: (e) => 
+                  if e.which == 32 || e.which == 13
+                    toggle_expand(@props.list_key, proposal)
 
                 TRANSLATE
-                  id: 'engage.proposal_author'
-                  name: fetch(editor)?.name 
-                  " by {name}"
+                  key: 'point-count'
+                  id: "engage.point_count"
+                  cnt: proposal.point_count
 
-            if show_discussion_info
-              [
-                SPAN
-                  key: 'proposal-link'
-                  # href: proposal_url(proposal)
-                  # "data-no-scroll": EXPAND_IN_PLACE
-                  # className: 'separated'
-                  className: 'separated pros_cons_count monospaced'
+                  "{cnt, plural, one {# pro or con} other {# pros & cons}}"
+
+              if false && proposal.active && permit('create point', proposal, subdomain) > 0 && WINDOW_WIDTH() > 955
+
+                SPAN 
+                  key: 'give-opinion'
+                  className: 'pros_cons_count'
+                  # style: 
+                  #   color: focus_blue
+                  #   borderColor: focus_blue      
                   onClick: => toggle_expand(@props.list_key, proposal)
                     
                   onKeyPress: (e) => 
                     if e.which == 32 || e.which == 13
                       toggle_expand(@props.list_key, proposal)
 
+
+                  
                   TRANSLATE
-                    key: 'point-count'
-                    id: "engage.point_count"
-                    cnt: proposal.point_count
+                    id: "engage.add_your_own"
 
-                    "{cnt, plural, one {# pro or con} other {# pros & cons}}"
-
-                if false && proposal.active && permit('create point', proposal, subdomain) > 0 && WINDOW_WIDTH() > 955
-
+                    "give your opinion"
                   SPAN 
-                    key: 'give-opinion'
-                    className: 'pros_cons_count'
-                    # style: 
-                    #   color: focus_blue
-                    #   borderColor: focus_blue      
-                    onClick: => toggle_expand(@props.list_key, proposal)
-                      
-                    onKeyPress: (e) => 
-                      if e.which == 32 || e.which == 13
-                        toggle_expand(@props.list_key, proposal)
-
-
-                    
-                    TRANSLATE
-                      id: "engage.add_your_own"
-
-                      "give your opinion"
-                    SPAN 
-                      style: 
-                        borderBottom: 'none'
-                      " >>"
-              ]
-          ]
+                    style: 
+                      borderBottom: 'none'
+                    " >>"
+            ]
+        ]
 
 
 
-        if show_cluster
-          SPAN 
-            style: 
-              padding: '1px 2px'
-              color: @props.category_color or 'black'
-              fontWeight: 500
+      if show_cluster
+        SPAN 
+          style: 
+            padding: '1px 2px'
+            color: @props.category_color or 'black'
+            fontWeight: 500
 
-            get_list_title "list/#{proposal.cluster}", true, subdomain
+          get_list_title "list/#{proposal.cluster}", true, subdomain
 
-        if is_closed
-          SPAN 
-            style: 
-              padding: '0 16px'
-            TRANSLATE "engage.proposal_closed.short", 'closed'
+      if is_closed
+        SPAN 
+          style: 
+            padding: '0 16px'
+          TRANSLATE "engage.proposal_closed.short", 'closed'
 
-        else if read_only
-          SPAN 
-            style: 
-              padding: '0 16px'
-            TRANSLATE "engage.proposal_read_only.short", 'read-only'
+      else if read_only
+        SPAN 
+          style: 
+            padding: '0 16px'
+          TRANSLATE "engage.proposal_read_only.short", 'read-only'
 
 
   draw_edit_and_delete: ->
@@ -1012,7 +1055,7 @@ ProposalText = ReactiveComponent
 
 
 styles += """
-  [data-widget="ProposalText"] .proposal-metadata {
+  .ProposalText .proposal-metadata {
     font-size: 12px;
     color: #555;
     margin-top: 8px;
@@ -1020,13 +1063,13 @@ styles += """
 
 
 
-  [data-widget="ProposalText"] .proposal-metadata .separated {
+  .ProposalText .proposal-metadata .separated {
     padding-right: 4px;
     margin-right: 12px;
     font-weight: 400;
   }
 
-  [data-widget="ProposalText"] .proposal-metadata .separated.give-your-opinion {
+  .ProposalText .proposal-metadata .separated.give-your-opinion {
     text-decoration: none;
     background-color: #f7f7f7;
     border-radius: 8px;

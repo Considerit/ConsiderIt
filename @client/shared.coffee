@@ -1,3 +1,22 @@
+
+# oldClientRect = Element.prototype.getBoundingClientRect
+# cnt = 0
+# tot = 0 
+# Element.prototype.getBoundingClientRect = ->
+#   # console.log "client rect", this
+#   cnt += 1
+#   perf = performance.now()
+
+#   rect = oldClientRect.apply(this, arguments)
+#   t = performance.now() - perf
+#   tot += t
+#   console.log cnt, t, tot
+#   # if t > 0 
+#   #   console.log this
+#   rect 
+
+
+
 window.styles = ""
 
 require './responsive_vars'
@@ -132,17 +151,18 @@ setInterval ->
 do ->
   idle_time_before_subdomain_fetch = 30 * 60 * 1000
 
+  last_activity = Date.now()
+
   reload_subdomain = ->
-    # console.log "Idle for #{idle_time_before_subdomain_fetch / 1000}s, fetching subdomain"
-    arest.serverFetch '/subdomain'
+    # console.log "Idle for #{(Date.now() - last_activity) / 1000}s, fetching subdomain?", Date.now() - last_activity >= idle_time_before_subdomain_fetch
+    if Date.now() - last_activity >= idle_time_before_subdomain_fetch
+      arest.serverFetch '/subdomain'
 
-  time = 0
+  timer = setInterval reload_subdomain, 60 * 1000
+
   resetTimer = ->
-    # console.log('resetting timer')
-    if time
-      clearTimeout(time)
-    time = setTimeout(reload_subdomain, idle_time_before_subdomain_fetch)
-
+    last_activity = Date.now()
+      
   window.addEventListener('load', resetTimer, true)
   for event in ['mousedown', 'mousemove', 'keydown', 'touchstart']
     document.addEventListener(event, resetTimer, true)
@@ -180,8 +200,8 @@ window.getCoords = (el) ->
   docEl = document.documentElement
 
   offset = 
-    top: rect.top + window.pageYOffset - docEl.clientTop
-    left: rect.left + window.pageXOffset - docEl.clientLeft
+    top: rect.top + window.pageYOffset #- docEl.clientTop
+    left: rect.left + window.pageXOffset #- docEl.clientLeft
 
   _.extend offset,
     width: rect.width

@@ -78,7 +78,7 @@ sense_viewport_visibility_changes = ->
       for el, idx in els 
         visible = !!visibility[idx]
         state = fetch el.getAttribute 'data-component'
-        # el.setAttribute 'data-in-viewport', visible
+        el.setAttribute 'data-in-viewport', visible
         if !state.in_viewport? || state.in_viewport != visible 
           state.in_viewport = visible 
           save state

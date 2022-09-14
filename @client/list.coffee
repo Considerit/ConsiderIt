@@ -286,6 +286,9 @@ ListItems = ReactiveComponent
     list_order_has_changed = @last_sorted_key? && @last_sorted_key != sorted_key
     @last_sorted_key = sorted_key
 
+    if list_order_has_changed
+      schedule_viewport_position_check()
+
 
 
     expansion_key = @get_expansion_key()
@@ -297,21 +300,27 @@ ListItems = ReactiveComponent
 
     expanded_state = fetch "proposal_expansions-#{list.key}"
 
+    len = proposals_to_render.length
+
     url = fetch('location').url
 
     # This flipper tracks list order and proposal expansion. 
     # Be wary of a bug in react-flip-toolkit that interferes 
     # with nested flippers working.
 
-    # noWobble: { stiffness: 200, damping: 26 },  // 7.692
-    # gentle: { stiffness: 120, damping: 14 },    // 8.571
-    # veryGentle: { stiffness: 130, damping: 17 },// 8.571
-    # wobbly: { stiffness: 180, damping: 12 },    // 7.647
-    # stiff: { stiffness: 260, damping: 26 }      // 10
-
     FLIPPER
       flipKey: sorted_key + expansion_key
       spring: PROPOSAL_ITEM_SPRING
+
+      onStart: (el) -> 
+        el.classList.add "flipping"
+        if expansion_state_changed
+          el.classList.add "expansion_event"
+        if list_order_has_changed
+          el.classList.add "list_order_event"
+
+      onComplete: (el) -> 
+        el.classList.remove "flipping", "expansion_event", "list_order_event"
 
       staggerConfig: 
         default: 
@@ -342,6 +351,7 @@ ListItems = ReactiveComponent
                 category_color: if @props.combines_these_lists then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], .9, .8)
                 is_expanded: !!expanded_state[proposal.key]
                 accessed_by_url: url == "/#{proposal.slug}"
+                num_proposals: len
 
 
             if proposals.length > @props.show_first_num_items 

@@ -421,7 +421,7 @@ window.EditPage = ReactiveComponent
     page_types = [
       {id: PAGE_TYPES.DEFAULT, label: "Standard page",    description: "Displays the proposal lists configured above."}
       {id: PAGE_TYPES.ABOUT,   label: 'Background page',  description: "Give supplementary background information about the engagement."}
-      {id: PAGE_TYPES.ALL,     label: '"Show all" page"', description: "Aggregate and show all proposal lists from other pages."}
+      {id: PAGE_TYPES.ALL,     label: '"Show all" page', description: "Aggregate and show all proposal lists from other pages."}
     ]
 
     DIV 

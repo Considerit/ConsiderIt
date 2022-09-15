@@ -322,11 +322,11 @@ ListItems = ReactiveComponent
       onComplete: (el) -> 
         el.classList.remove "flipping", "expansion_event", "list_order_event"
 
-      staggerConfig: 
-        default: 
-          speed: .1
-        "item-wrapper-#{list_key}":
-          reverse: !more_expanded
+      # staggerConfig: 
+      #   default: 
+      #     speed: .1
+      #   "item-wrapper-#{list_key}":
+      #     reverse: !more_expanded
 
 
 

@@ -2,14 +2,19 @@ require './opinion_block'
 
 
 window.ANIMATION_SPEED_ITEM_EXPANSION = 0.6
-window.PROPOSAL_ITEM_SPRING = # 4000 / 800 is decent
-  stiffness: 4000  #600
-  damping: 800
+# window.PROPOSAL_ITEM_SPRING = # 4000 / 800 is decent
+#   stiffness: 4000  #600
+#   damping: 800
 
+window.PROPOSAL_ITEM_SPRING = 'gentle'
 
 window.PROPOSAL_DESCRIPTION_MAX_HEIGHT_ON_EXPAND = 500
 
 styles += """
+  .prep_for_flip {
+    transform-origin: 0px 0px;    
+  }
+
   .proposal_item_animation {
     transition-duration: #{ANIMATION_SPEED_ITEM_EXPANSION}s;
     transition-timing-function: linear;
@@ -41,7 +46,7 @@ styles += """
   } 
 
 
-  .is_collapsed.ProposalItem {
+  :not(.collapsing).is_collapsed.ProposalItem {
     content-visibility: auto; /* Content-visibility can be very expensive. Specifically, React Flip Toolkit
                                  has to call getBoundingClientRect on all Flipped elements to figure out how 
                                  to animate them. content-visibility will prevent the rendering
@@ -107,21 +112,28 @@ window.ProposalItem = ReactiveComponent
   displayName: 'ProposalItem'
 
   shouldFlipIgnore: -> 
-    !(@expansion_state_changed || @local.in_viewport || (@list_order_state_changed && @props.num_proposals < 30))
+    # !(@expansion_state_changed || @local.in_viewport || (@list_order_state_changed && @props.num_proposals < 30))
+    !(@local.in_viewport || (@list_order_state_changed && @props.num_proposals < 30))
 
   shouldFlip: ->
-    @expansion_state_changed || (@list_order_state_changed && @props.num_proposals < 30)
+    # # console.log "SHOULD FLIP?", @props.proposal, @expansion_state_changed || (@list_order_state_changed && @props.num_proposals < 30)
+    # @expansion_state_changed || (@list_order_state_changed && @props.num_proposals < 30)
+    # @expansion_state_changed || (@list_order_state_changed && @props.num_proposals < 30)
+    @local.in_viewport || (@list_order_state_changed && @props.num_proposals < 30)
+
+  expansion_state_updated: ->
+    @expansion_state_changed
 
   onAnimationStart: (el) -> 
-    if @shouldFlip() 
-
+    if @expansion_state_updated()
+      @animating = true
       direction = if @is_expanded then 'expanding' else 'collapsing'
       el.classList.add "animating-expansion", direction
       el.classList.remove "animation-resting"
 
 
-  onAnimationDone: (el, dd, was_canceled) ->
-    if @shouldFlip()  
+  onAnimationDone: (el, dd) ->
+    if @expansion_state_updated()
 
       direction = if @is_expanded then 'expanding' else 'collapsing'        
       el.classList.remove 'animating-expansion', direction
@@ -129,9 +141,12 @@ window.ProposalItem = ReactiveComponent
 
       # Should only happen if the animation has completed, not if it is interrupted.
       # Otherwise the next animation will be messed up. 
-      if !was_canceled
-        @expansion_state_changed = false 
-        @list_order_state_changed = false
+      @animating = false 
+      requestAnimationFrame => 
+        if !@animating
+          @expansion_state_changed = false 
+          @list_order_state_changed = false
+
 
   render : ->
     proposal = fetch @props.proposal
@@ -150,7 +165,7 @@ window.ProposalItem = ReactiveComponent
     FLIPPED 
       key: proposal.key
       flipId: proposal.key
-      stagger: "item-wrapper-#{@props.list_key}"
+      # stagger: "item-wrapper-#{@props.list_key}"
 
       shouldInvert: @shouldFlip # TODO: why should this be shouldInvert, rather than shouldFlip? 
       onStartImmediate: @onAnimationStart
@@ -162,7 +177,7 @@ window.ProposalItem = ReactiveComponent
       LI
         "data-widget": 'ProposalItem'
         key: proposal.key
-        className: "ProposalItem #{if @is_expanded then 'is_expanded' else 'is_collapsed'}"
+        className: "prep_for_flip ProposalItem #{if @is_expanded then 'is_expanded' else 'is_collapsed'}"
         "data-name": slugify(proposal.name)
 
         'data-visibility-name': 'ProposalItem'
@@ -172,13 +187,13 @@ window.ProposalItem = ReactiveComponent
         id: 'p' + (proposal.slug or "#{proposal.id}").replace('-', '_')  # Initial 'p' is because all ids must begin 
                                                                          # with letter. seeking to hash was failing 
                                                                          # on proposals whose name began with number.
-
         FLIPPED 
           inverseFlipId: proposal.key
           shouldInvert: @shouldFlip
           shouldFlipIgnore: @shouldFlipIgnore
 
-          DIV null,
+          DIV 
+            className: 'prep_for_flip'
 
             ProposalItemWrapper
               proposal: @props.proposal
@@ -189,6 +204,8 @@ window.ProposalItem = ReactiveComponent
 
               shouldFlip: @shouldFlip
               shouldFlipIgnore: @shouldFlipIgnore
+
+              expansion_state_changed: @expansion_state_updated
 
 
 
@@ -289,20 +306,21 @@ ProposalItemWrapper = ReactiveComponent
 
       FLIPPED
         flipId: "proposal-block-#{proposal.key}"
-        stagger: "content-#{@props.list_key}"
+        # stagger: "content-#{@props.list_key}"
         shouldFlip: @props.shouldFlip
         shouldFlipIgnore: @props.shouldFlipIgnore
         # delayUntil: proposal.key
 
         DIV 
-          className: 'proposal-block-wrapper'
+          className: 'proposal-block-wrapper prep_for_flip'
 
           FLIPPED 
             inverseFlipId: "proposal-block-#{proposal.key}"
             shouldInvert: @props.shouldFlip
             shouldFlipIgnore: @props.shouldFlipIgnore
 
-            DIV null, # annoying empty DIV because FLIPPED doesn't seem to transfer to a new component
+            DIV 
+              className: 'prep_for_flip' # annoying empty DIV because FLIPPED doesn't seem to transfer to a new component
 
               ProposalBlock
                 proposal: proposal.key
@@ -312,6 +330,7 @@ ProposalItemWrapper = ReactiveComponent
                 category_color: @props.category_color
                 shouldFlip: @props.shouldFlip
                 shouldFlipIgnore: @props.shouldFlipIgnore
+                expansion_state_changed: @props.expansion_state_changed
 
       DIV 
         className: "proposal-slidergram-spacing"
@@ -319,20 +338,21 @@ ProposalItemWrapper = ReactiveComponent
 
       FLIPPED
         flipId: "opinion-block-#{proposal.key}"
-        stagger: "content-#{@props.list_key}"
+        # stagger: "content-#{@props.list_key}"
         shouldFlip: @props.shouldFlip
         shouldFlipIgnore: @props.shouldFlipIgnore
         # delayUntil: proposal.key
 
         DIV 
-          className: 'opinion-block-wrapper'
+          className: 'prep_for_flip opinion-block-wrapper'
 
           FLIPPED 
             inverseFlipId: "opinion-block-#{proposal.key}"
             shouldInvert: @props.shouldFlip
             shouldFlipIgnore: @props.shouldFlipIgnore
 
-            DIV null, # annoying empty DIV because FLIPPED doesn't seem to transfer to a new component
+            DIV 
+              className: 'prep_for_flip' # annoying empty DIV because FLIPPED doesn't seem to transfer to a new component
 
               OpinionBlock
                 proposal: proposal.key
@@ -467,6 +487,7 @@ ProposalBlock = ReactiveComponent
         shouldFlip: @props.shouldFlip
         shouldFlipIgnore: @props.shouldFlipIgnore
         translate: true
+        className: 'prep_for_flip'
 
         DIV 
           className: 'proposal-avatar-wrapper proposal_item_animation'
@@ -487,6 +508,7 @@ ProposalBlock = ReactiveComponent
           category_color: @props.category_color
           shouldFlip: @props.shouldFlip
           shouldFlipIgnore: @props.shouldFlipIgnore
+          expansion_state_changed: @props.expansion_state_changed
 
   draw_avatar_or_bullet: ->
     proposal = fetch @props.proposal
@@ -556,11 +578,6 @@ styles += """
     --proposal_title_underline_color: #000000;
   }
 
-
-  .ProposalText {
-    transform-origin: 0 0;    
-  }
-
   .ProposalText .proposal-title {
     max-width: 900px;
   }
@@ -570,7 +587,7 @@ styles += """
   }
 
   .ProposalText .proposal-title-text {
-    transition-property: transform;    
+    # transition-property: transform;    
     transform: scale(1);
     transform-origin: 0 0;
 
@@ -581,7 +598,6 @@ styles += """
   }
 
   .proposal-title-invert-container {
-    transform-origin: 0 0;
     position: relative;
     z-index: 1;
   } 
@@ -707,7 +723,6 @@ toggle_expand = (list_key, proposal, ensure_open) ->
 
 
 
-expanded_item_sizes = null
 collapsed_item_width = null
 
 ProposalText = ReactiveComponent
@@ -724,104 +739,99 @@ ProposalText = ReactiveComponent
 
     has_description = proposal.description || customization('proposal_description')
 
-    FLIPPED 
-      flipId: "proposal-text-animation-starter-#{proposal.key}"
-      translate: true  # needed for list-order change
-      shouldFlip: @props.shouldFlip
-      shouldFlipIgnore: @props.shouldFlipIgnore
+    DIV 
+      id: "proposal-text-#{proposal.id}"
+      "data-widget": 'ProposalText'
+      className: "ProposalText #{if has_description then 'has-description' else 'no-description'}"
+      ref: 'root'
 
-      DIV 
-        id: "proposal-text-#{proposal.id}"
-        "data-widget": 'ProposalText'
-        className: "ProposalText #{if has_description then 'has-description' else 'no-description'}"
-        ref: 'root'
-
-        'data-visibility-name': 'ProposalText'
-        'data-receive-viewport-visibility-updates': 2
-        'data-component': @local.key
+      'data-visibility-name': 'ProposalText'
+      'data-receive-viewport-visibility-updates': 2
+      'data-component': @local.key
 
 
-        STYLE 
-          dangerouslySetInnerHTML: __html: """
-             .is_collapsed #proposal-text-#{proposal.id} .proposal-title {
-               height: #{@local.collapsed_title_height}px;
-             }
+      STYLE 
+        dangerouslySetInnerHTML: __html: """
+           .is_collapsed #proposal-text-#{proposal.id} .proposal-title {
+             height: #{@local.collapsed_title_height}px;
+           }
 
-             .is_expanded #proposal-text-#{proposal.id} .proposal-title {
-               height: #{1.5 * @local.collapsed_title_height}px;
-             }
+           .is_expanded #proposal-text-#{proposal.id} .proposal-title {
+             height: #{1.5 * @local.collapsed_title_height}px;
+           }
 
-             #proposal-text-#{proposal.id} .proposal-title-text {
-                width: #{collapsed_item_width}px;
-             }
+           #proposal-text-#{proposal.id} .proposal-title-text {
+              width: #{collapsed_item_width}px;
+           }
 
-          """
+        """
 
+      DIV null,
 
-        # FLIPPED 
-        #   flipId: "proposal-text-animation-starter-#{proposal.key}"
-        #   shouldInvert: @props.shouldFlip
-        #   shouldFlipIgnore: @props.shouldFlipIgnore
-
-        DIV null,
-
-          FLIPPED 
-            flipId: "proposal-text-sizer-#{proposal.key}"
-            shouldFlip: @props.shouldFlip
-            shouldFlipIgnore: @props.shouldFlipIgnore
-
-            DIV 
-              ref: 'proposal_title'
-              className: "proposal-title proposal_item_animation"
-              "data-proposal": proposal.key
-              onClick: @toggle_expand
-              onKeyPress: (e) => 
-                if e.which == 32 || e.which == 13
-                  @toggle_expand()
-
-
-              FLIPPED 
-                flipId: "proposal-text-sizer-#{proposal.key}"
-                shouldInvert: @props.shouldFlip
-                shouldFlipIgnore: @props.shouldFlipIgnore
-
-                DIV 
-                  className: 'proposal-title-invert-container' 
-                          # a container for the flipper's transform to apply to w/o messing 
-                          # with the transform applied to the title text
-                  DIV 
-                    ref: 'proposal_title_text'
-                    className: 'proposal_item_animation proposal-title-text'              
-
-                    SPAN 
-                      className: 'proposal-title-text-inline'
-                      proposal.name
-
+        FLIPPED 
+          flipId: "proposal-title-placer-#{proposal.key}"
+          shouldFlip: @props.shouldFlip
+          shouldFlipIgnore: @props.shouldFlipIgnore
 
           DIV 
-            className: 'proposal-description-wrapper'
-            ref: 'proposal-description-wrapper'
+            ref: 'proposal_title'
+            className: "prep_for_flip proposal-title"
+            "data-proposal": proposal.key
+            onClick: @toggle_expand
+            onKeyPress: (e) => 
+              if e.which == 32 || e.which == 13
+                @toggle_expand()
+
 
             FLIPPED 
-              flipId: "proposal-description-placer-#{proposal.key}"
-              #translate: true
-              shouldFlip: @props.shouldFlip
+              flipId: "proposal-title-placer-#{proposal.key}"
+              shouldInvert: @props.shouldFlip
               shouldFlipIgnore: @props.shouldFlipIgnore
 
-              @draw_description()
+
+              DIV 
+                className: 'prep_for_flip proposal-title-invert-container' 
+                        # a container for the flipper's transform to apply to w/o messing 
+                        # with the transform applied to the title text
+
+                DIV 
+                  ref: 'proposal_title_text'
+                  className: 'proposal-title-text'              
+
+                  SPAN 
+                    className: 'proposal-title-text-inline'
+                    proposal.name
 
 
-          FLIPPED 
-            flipId: "proposal-meta-placer-#{proposal.key}"
-            translate: true
-            shouldFlip: @props.shouldFlip
-            shouldFlipIgnore: @props.shouldFlipIgnore
+        FLIPPED 
+          flipId: "proposal-description-placer-#{proposal.key}"
+          shouldFlip: @props.shouldFlip
+          shouldFlipIgnore: @props.shouldFlipIgnore
+          onSpringUpdate: if @props.expansion_state_changed() then (value) => 
+            if @props.expansion_state_changed()            
+              start = if @is_expanded then 1 else 1.5 
+              end = if @is_expanded then 1.5 else 1 
+              @refs.proposal_title_text.style.transform = "scale(#{ start + (end - start) * value })"
 
-            DIV null, 
+          DIV 
+            className: 'proposal-description-wrapper prep_for_flip'
+            ref: 'proposal-description-wrapper'
 
-              @draw_metadata()
+            @draw_description()
 
-              @draw_edit_and_delete()
+
+        FLIPPED 
+          flipId: "proposal-meta-placer-#{proposal.key}"
+          translate: true
+          shouldFlip: @props.shouldFlip
+          shouldFlipIgnore: @props.shouldFlipIgnore
+
+          DIV 
+            className: 'prep_for_flip'
+
+            @draw_metadata()
+
+            @draw_edit_and_delete()
 
 
   waitForFonts: (cb) ->
@@ -909,7 +919,8 @@ ProposalText = ReactiveComponent
 
         FLIPPED 
           inverseFlipId: "proposal-description-placer-#{proposal.key}"
-          shouldInvert: => @shouldFlip
+          scale: true # this allows it to expand down, but also allows the description to move when sorting happens
+          shouldInvert: @shouldFlip
           shouldFlipIgnore: @shouldFlipIgnore
 
           result

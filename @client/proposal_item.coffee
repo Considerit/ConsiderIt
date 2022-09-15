@@ -1,7 +1,7 @@
 require './opinion_block'
 
 
-window.ANIMATION_SPEED_ITEM_EXPANSION = 1
+window.ANIMATION_SPEED_ITEM_EXPANSION = 0.6
 window.PROPOSAL_ITEM_SPRING = # 4000 / 800 is decent
   stiffness: 4000  #600
   damping: 800
@@ -556,52 +556,70 @@ styles += """
     --proposal_title_underline_color: #000000;
   }
 
-  .ProposalText .proposal-title span {
-    border-bottom-width: 2px;
-    border-style: solid;
-    border-color: #{focus_blue + "ad"}; /* with some transparency */
-    transition: border-color 1s;
+
+  .ProposalText {
+    transform-origin: 0 0;    
   }
-
-  .ProposalText .proposal-title:hover span {
-    border-color: #000;
-    border-style: solid;
-
-  }
-
 
   .ProposalText .proposal-title {
     max-width: 900px;
   }
 
+  .ProposalText.has-description .proposal-title {
+    margin-bottom: 8px;
+  }
+
+  .ProposalText .proposal-title-text {
+    transition-property: transform;    
+    transform: scale(1);
+    transform-origin: 0 0;
+
+    font-size: #{TITLE_FONT_SIZE_COLLAPSED}px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #111;
+  }
+
+  .proposal-title-invert-container {
+    transform-origin: 0 0;
+    position: relative;
+    z-index: 1;
+  } 
+
+  .is_expanded .ProposalText .proposal-title-invert-container {
+    position: absolute;
+  }
+
+  .is_expanded .ProposalText .proposal-title-text {
+    transform: scale(1.5);
+  } 
+
+
+  .ProposalText .proposal-title-text-inline {
+    border-bottom-width: 2px;
+    border-style: solid;
+    border-color: #{focus_blue + "ad"}; /* with some transparency */
+    transition: border-color 1s;
+
+
+  }
+
+  .ProposalText .proposal-title-text-inline:hover {
+    border-color: #000;
+  }
+
+
+
+
+
+
+
+
+
   .ProposalText .proposal-description-wrapper {
     max-width: 600px;  
   }
 
-  .ProposalText .proposal-metadata {
-    height: 20px;
-  }
-
-  .ProposalText .proposal-title {
-
-
-    font-size: #{TITLE_FONT_SIZE_COLLAPSED}px;
-    font-weight: 700;
-    /* text-decoration: underline; */
-    cursor: pointer;
-
-    transform-origin: 0 0;
-    transition-property: transform, height, width, color;
-
-    color: #111;
-  }
-
-  .ProposalText .proposal-title:hover,  .is_expanded .ProposalText .proposal-title {
-  }
-
-  .is_expanded .ProposalText .proposal-title {
-    transform: scale(1.5);
-  } 
 
   .ProposalText .proposal-description {
     overflow: hidden;
@@ -609,11 +627,11 @@ styles += """
     font-size: 16px;
     font-weight: 400;
 
-    max-height: 50px; /* this value will get overridden to min(estimated_desc_height, PROPOSAL_DESCRIPTION_MAX_HEIGHT_ON_EXPAND) in javascript */
+    // max-height: 50px; /* this value will get overridden to min(estimated_desc_height, PROPOSAL_DESCRIPTION_MAX_HEIGHT_ON_EXPAND) in javascript */
 
-    transition-property: color, max-height;
+    transition-property: color;
 
-    padding: 8px 0px;
+    // padding: 8px 0px;
 
     color: #333;
   }
@@ -621,6 +639,10 @@ styles += """
   .is_collapsed .ProposalText .proposal-description {
     max-height: 50px;
     color: #555;
+  }
+
+  .is_expanded .ProposalText .proposal-description {
+    max-height: 500px;
   }
 
   .is_expanded .ProposalText .proposal-description.fully_expanded {
@@ -686,7 +708,7 @@ toggle_expand = (list_key, proposal, ensure_open) ->
 
 
 expanded_item_sizes = null
-collapsed_item_sizes = null
+collapsed_item_width = null
 
 ProposalText = ReactiveComponent
   displayName: 'ProposalText'
@@ -695,38 +717,23 @@ ProposalText = ReactiveComponent
   toggle_expand: -> 
     toggle_expand(@props.list_key, @props.proposal)
 
-  setDimensions: -> 
-    name_el = @refs.proposal_title
-    desc_el = @refs.proposal_description
-
-    if @is_expanded 
-      name_el.style.width = "#{Math.min(900, @collapsed_title_width)}px"
-      name_el.style.height = "#{@collapsed_title_height * 1.5}px"
-
-      if desc_el
-        @setExpandedSizes() if !@expanded_description_height
-        desc_el.style.maxHeight = "#{Math.min(@expanded_description_height, PROPOSAL_DESCRIPTION_MAX_HEIGHT_ON_EXPAND)}px"
-    else 
-      name_el.style.height = "#{@collapsed_title_height}px"
-      if desc_el
-        desc_el.style.maxHeight = null
-
   render: -> 
     proposal = fetch @props.proposal
 
     @is_expanded = @props.is_expanded
 
+    has_description = proposal.description || customization('proposal_description')
 
     FLIPPED 
       flipId: "proposal-text-animation-starter-#{proposal.key}"
       translate: true  # needed for list-order change
       shouldFlip: @props.shouldFlip
-      onStartImmediate: @setDimensions
       shouldFlipIgnore: @props.shouldFlipIgnore
 
       DIV 
+        id: "proposal-text-#{proposal.id}"
         "data-widget": 'ProposalText'
-        className: 'ProposalText'
+        className: "ProposalText #{if has_description then 'has-description' else 'no-description'}"
         ref: 'root'
 
         'data-visibility-name': 'ProposalText'
@@ -734,26 +741,87 @@ ProposalText = ReactiveComponent
         'data-component': @local.key
 
 
-        DIV 
-          ref: 'proposal_title'
-          className: "proposal-title proposal_item_animation"
-          "data-proposal": proposal.key
-          onClick: @toggle_expand
-          onKeyPress: (e) => 
-            if e.which == 32 || e.which == 13
-              @toggle_expand()
+        STYLE 
+          dangerouslySetInnerHTML: __html: """
+             .is_collapsed #proposal-text-#{proposal.id} .proposal-title {
+               height: #{@local.collapsed_title_height}px;
+             }
 
-          SPAN null,
-            proposal.name
+             .is_expanded #proposal-text-#{proposal.id} .proposal-title {
+               height: #{1.5 * @local.collapsed_title_height}px;
+             }
 
-        DIV 
-          className: 'proposal-description-wrapper'
-          ref: 'proposal-description-wrapper'
-          @draw_description()
+             #proposal-text-#{proposal.id} .proposal-title-text {
+                width: #{collapsed_item_width}px;
+             }
 
-        @draw_metadata()
+          """
 
-        @draw_edit_and_delete()
+
+        # FLIPPED 
+        #   flipId: "proposal-text-animation-starter-#{proposal.key}"
+        #   shouldInvert: @props.shouldFlip
+        #   shouldFlipIgnore: @props.shouldFlipIgnore
+
+        DIV null,
+
+          FLIPPED 
+            flipId: "proposal-text-sizer-#{proposal.key}"
+            shouldFlip: @props.shouldFlip
+            shouldFlipIgnore: @props.shouldFlipIgnore
+
+            DIV 
+              ref: 'proposal_title'
+              className: "proposal-title proposal_item_animation"
+              "data-proposal": proposal.key
+              onClick: @toggle_expand
+              onKeyPress: (e) => 
+                if e.which == 32 || e.which == 13
+                  @toggle_expand()
+
+
+              FLIPPED 
+                flipId: "proposal-text-sizer-#{proposal.key}"
+                shouldInvert: @props.shouldFlip
+                shouldFlipIgnore: @props.shouldFlipIgnore
+
+                DIV 
+                  className: 'proposal-title-invert-container' 
+                          # a container for the flipper's transform to apply to w/o messing 
+                          # with the transform applied to the title text
+                  DIV 
+                    ref: 'proposal_title_text'
+                    className: 'proposal_item_animation proposal-title-text'              
+
+                    SPAN 
+                      className: 'proposal-title-text-inline'
+                      proposal.name
+
+
+          DIV 
+            className: 'proposal-description-wrapper'
+            ref: 'proposal-description-wrapper'
+
+            FLIPPED 
+              flipId: "proposal-description-placer-#{proposal.key}"
+              #translate: true
+              shouldFlip: @props.shouldFlip
+              shouldFlipIgnore: @props.shouldFlipIgnore
+
+              @draw_description()
+
+
+          FLIPPED 
+            flipId: "proposal-meta-placer-#{proposal.key}"
+            translate: true
+            shouldFlip: @props.shouldFlip
+            shouldFlipIgnore: @props.shouldFlipIgnore
+
+            DIV null, 
+
+              @draw_metadata()
+
+              @draw_edit_and_delete()
 
 
   waitForFonts: (cb) ->
@@ -773,64 +841,26 @@ ProposalText = ReactiveComponent
 
 
   setCollapsedSizes: (expand_after_set) ->
-    return if !@waitForFonts(=> @setCollapsedSizes(expand_after_set)) || @is_expanded || @collapsed_title_height? || !@local.in_viewport #!@refs.root.closest(".ProposalItem[data-in-viewport='true']")
+    return if !@waitForFonts(=> @setCollapsedSizes(expand_after_set)) || @is_expanded || @local.collapsed_title_height? || !@local.in_viewport #!@refs.root.closest(".ProposalItem[data-in-viewport='true']")
+    
     title_el = @refs.proposal_title
-
-    if !collapsed_item_sizes
-      collapsed_item_sizes = 
-        title_width: title_el.clientWidth
-
-    @collapsed_title_height = title_el.clientHeight
-    @collapsed_title_width = collapsed_item_sizes.title_width
+    collapsed_item_width ?= title_el.clientWidth
+    @local.collapsed_title_height = title_el.clientHeight
+    save @local
 
     # wait to make the update so that we don't continuously trigger layout reflow
-    requestAnimationFrame => 
-      title_el.style.height = "#{@collapsed_title_height}px"
-
-      if expand_after_set
+    if expand_after_set
+      requestAnimationFrame => 
         # If we've loaded this item by url, ensure that it is expanded
         # Doing this here because we have to do it after we capture the
         # collapsed size.
         toggle_expand @props.list_key, fetch(@props.proposal), true
 
 
-
-  setExpandedSizes: ->
-    return if !@waitForFonts(@setExpandedSizes) || !@is_expanded || @expanded_description_height?
-
-    desc_el = @refs.proposal_description
-
-    if !expanded_item_sizes
-      expanded_item_sizes = 
-        desc_width: desc_el.clientWidth
-
-    # predict height of rendered description
-    if desc_el && (proposal = fetch(@props.proposal)).description?.length > 0
-      
-      computed_style = window.getComputedStyle(desc_el)
-      sty = 
-        fontSize: computed_style.fontSize
-        width: "#{expanded_item_sizes.desc_width}px"
-        fontWeight: computed_style.fontWeight
-        paddingTop: computed_style.paddingTop
-        paddingBottom: computed_style.paddingBottom
-
-      sty.width = "#{expanded_item_sizes.desc_width}px"
-      el = document.createElement("div")
-      el.classList.add 'wysiwyg_text'
-      @expanded_description_height = heightWhenRendered(proposal.description, sty, el)
-    else 
-      @expanded_description_height = 0
-
-
-
   componentDidMount: ->
     requestAnimationFrame =>
       loc = fetch 'location'
       @setCollapsedSizes(loc.url == "/#{fetch(@props.proposal).slug}")
-
-
-
 
   componentDidUpdate: ->
     requestAnimationFrame =>
@@ -868,21 +898,21 @@ ProposalText = ReactiveComponent
       result = DIV dangerouslySetInnerHTML:{__html: proposal.description}
 
     DIV 
-      className: 'proposal-description proposal_item_animation wysiwyg_text'
+      className: 'proposal-description wysiwyg_text proposal_item_animation'
       ref: 'proposal_description'
-
-      # FLIPPED 
-      #   inverseFlipId: "proposal-description-wrapper-#{proposal.key}"
-      #   shouldInvert: => @expansion_state_changed
-      #   scale: true 
 
       DIV 
         style:
-          maxHeight: if @local.description_collapsed then @max_description_height
-          overflow: if @local.description_collapsed then 'hidden'
+          # maxHeight: if @local.description_collapsed then @max_description_height
+          # overflow: if @local.description_collapsed then 'hidden'
           display: if embedded_demo() then 'none'
 
-        result
+        FLIPPED 
+          inverseFlipId: "proposal-description-placer-#{proposal.key}"
+          shouldInvert: => @shouldFlip
+          shouldFlipIgnore: @shouldFlipIgnore
+
+          result
 
 
   draw_metadata: -> 
@@ -1059,8 +1089,8 @@ styles += """
     font-size: 12px;
     color: #555;
     margin-top: 8px;
+    height: 20px;
   }
-
 
 
   .ProposalText .proposal-metadata .separated {

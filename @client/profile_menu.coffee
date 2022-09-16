@@ -81,7 +81,6 @@ window.ProfileMenu = ReactiveComponent
                     color: if menu_showing then '#777'
                     fontSize: 18
                     position: 'relative'
-                    top: -4
                     paddingRight: 12
                   current_user.name
                 I 
@@ -104,6 +103,8 @@ window.ProfileMenu = ReactiveComponent
               borderRadius: 8
               padding: '3px 4px'
               fontWeight: 600
+              display: 'flex'
+              alignItems: 'center'
             
             anchor_when_open_style: 
               backgroundColor: 'transparent'

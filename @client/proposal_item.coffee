@@ -240,7 +240,7 @@ styles += """
 
 
   .opinion-block-wrapper {
-    padding-right: 48px;
+    // padding-right: 48px;
 
     position: relative;
     z-index: 1;
@@ -258,20 +258,21 @@ styles += """
 
   .bottom_closer {
     position: absolute;
-    left: calc(50% - 20px);
+    left: calc(50% - 26px);
     bottom: -26px;
     cursor: pointer;
     background-color: transparent;
     border: none;
+    opacity: 0;        
   }
-  .is_expanded .bottom_closer {
+
+  :not(.expanding).is_expanded .bottom_closer {
     transition: opacity #{2 * ANIMATION_SPEED_ITEM_EXPANSION}s;    
     opacity: 1;
     display: inline-block;    
   }
   .is_collapsed .bottom_closer {
     pointer-events: none;
-    opacity: 0;    
   }
 
 
@@ -438,14 +439,6 @@ styles += """
     flex-shrink: 1; 
   }
 
-
-  .debugging .proposal-text {
-    background-color: #aaa;
-  }
-
-  .debugging .proposal-avatar-spacing, .debugging .proposal-left-spacing {
-    background-color: green;
-  }
 
 """
 
@@ -624,14 +617,6 @@ styles += """
     border-color: #000;
   }
 
-
-
-
-
-
-
-
-
   .ProposalText .proposal-description-wrapper {
     max-width: 600px;  
   }
@@ -672,20 +657,6 @@ styles += """
   }
   .ProposalItem:hover .edit_and_delete_block, .is_expanded .edit_and_delete_block {
     opacity: 1;
-  }
-
-
-
-  .debugging .ProposalText .proposal-title {
-    background-color: #aa7711;
-  }
-
-  .debugging .ProposalText .proposal-description-wrapper {
-    background-color: #f1f1f1;
-  }
-
-  .debugging .ProposalText .proposal-metadata {
-    background-color: #11aa77;
   }
 
 """
@@ -868,11 +839,20 @@ ProposalText = ReactiveComponent
 
 
   setCollapsedSizes: (expand_after_set) ->
-    return if !@waitForFonts(=> @setCollapsedSizes(expand_after_set)) || @is_expanded || @local.collapsed_title_height? || !@local.in_viewport #!@refs.root.closest(".ProposalItem[data-in-viewport='true']")
+    return if !@waitForFonts(=> @setCollapsedSizes(expand_after_set)) || @local.collapsed_title_height? || !@local.in_viewport #!@refs.root.closest(".ProposalItem[data-in-viewport='true']")
     
-    title_el = @refs.proposal_title
-    collapsed_item_width ?= title_el.clientWidth
-    @local.collapsed_title_height = title_el.clientHeight
+    title_el = @refs.proposal_title_text
+
+    if !@is_expanded && !collapsed_item_width?
+      collapsed_item_width = title_el.clientWidth
+
+    
+    if @is_expanded
+      @local.collapsed_title_height = title_el.getBoundingClientRect().height
+
+    else 
+      @local.collapsed_title_height = title_el.clientHeight      
+
     save @local
 
     # wait to make the update so that we don't continuously trigger layout reflow
@@ -1084,7 +1064,7 @@ ProposalText = ReactiveComponent
           proposal_editing.callback = =>
             delete @local.collapsed_title_height
             save @local
-            
+
           save proposal_editing
 
           e.stopPropagation()

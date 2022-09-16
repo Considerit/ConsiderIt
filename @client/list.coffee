@@ -205,6 +205,11 @@ styles += """
     margin-top: 12px;
     margin-bottom: 8px;
   }
+
+  .ListItems {
+    min-height: 0px;
+    transition: min-height 0s ease-out;
+  }
 """
 
 
@@ -305,7 +310,14 @@ ListItems = ReactiveComponent
         if expansion_state_changed
           el.classList.add "expansion_event"
           if !more_expanded && @last_expanded_height?
-            @refs.list_wrapper.style.height = "#{@last_expanded_height}px"
+            @refs.list_wrapper.style.transitionDuration = "0s"
+            @refs.list_wrapper.style.minHeight = "#{@last_expanded_height}px"
+
+            setTimeout =>
+              requestAnimationFrame => 
+                @refs.list_wrapper.style.transitionDuration = "1s"
+                @refs.list_wrapper.style.minHeight = null
+            , 600
 
         if list_order_has_changed
           el.classList.add "list_order_event"
@@ -313,15 +325,14 @@ ListItems = ReactiveComponent
       onComplete: (el) => 
         el.classList.remove "flipping", "expansion_event", "list_order_event"
 
-        if expansion_state_changed
-          if !more_expanded
-            @refs.list_wrapper.style.height = null
-          else 
-            @last_expanded_height = @refs.list_wrapper.clientHeight
+        if expansion_state_changed && more_expanded
+          @last_expanded_height = @refs.list_wrapper.clientHeight
         
 
       UL 
+        className: 'ListItems'
         ref: 'list_wrapper'
+
         for proposal,idx in proposals_to_render
           ProposalItem
             key: "collapsed#{proposal.key}"

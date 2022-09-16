@@ -240,7 +240,7 @@ styles += """
 
 
   .opinion-block-wrapper {
-    // padding-right: 48px;
+    padding-right: 48px;
 
     position: relative;
     z-index: 1;
@@ -251,6 +251,7 @@ styles += """
   .is_expanded .opinion-block-wrapper {
     margin-bottom: 24px;
     margin-top: 10px;
+    padding-right: 0px;
   }
 
 

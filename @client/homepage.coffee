@@ -131,7 +131,11 @@ window.Homepage = ReactiveComponent
                   proposal: proposal_editing.editing
                   done_callback: (e) =>
                     proposal_editing.editing = null
+                    if proposal_editing.callback
+                      proposal_editing.callback()
+                      delete proposal_editing.callback
                     save proposal_editing
+
 
               get_current_tab_view()
 
@@ -188,7 +192,6 @@ window.TagHomepage = ReactiveComponent
 
       List
         key: aggregate_list_key
-        proposal_focused_on: @props.proposal_focused_on
         combines_these_lists: get_all_lists()
         list: 
           key: "list/#{aggregate_list_key}"
@@ -211,22 +214,13 @@ window.SimpleHomepage = ReactiveComponent
     
     lists = get_lists_for_page(current_tab).slice()
 
-    if @props.proposal_focused_on
-      list_focused_on = "list/#{@props.proposal_focused_on.cluster or 'Proposals'}"
-      for list,idx in lists 
-        if list.key == list_focused_on
-          lists.splice idx, 1 
-          lists.unshift list
-          break
-
     DIV null, 
       for list, index in lists or []
         List
-          proposal_focused_on: if @props.proposal_focused_on && list.key == list_focused_on then @props.proposal_focused_on
           key: list.key
           list: list 
 
-      if !@props.proposal_focused_on && current_user.is_admin && current_tab not in ['About', 'FAQ'] && get_tab(current_tab)?.type not in [PAGE_TYPES.ABOUT, PAGE_TYPES.ALL]
+      if current_user.is_admin && current_tab not in ['About', 'FAQ'] && get_tab(current_tab)?.type not in [PAGE_TYPES.ABOUT, PAGE_TYPES.ALL]
         NewList()
           
 

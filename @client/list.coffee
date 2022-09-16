@@ -174,7 +174,6 @@ window.List = ReactiveComponent
           # show_new_button: (list_state.show_all_proposals || proposals.length <= list_state.show_first_num_items) && \
           #    ((@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || (permitted > 0 || permitted == Permission.NOT_LOGGED_IN) )
           show_new_button: (@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || (permitted > 0 || permitted == Permission.NOT_LOGGED_IN)
-          proposal_focused_on: @props.proposal_focused_on
           expansion_key: @props.expansion_key
 
       if customization('footer', list_key) && !is_collapsed
@@ -218,15 +217,6 @@ ListItems = ReactiveComponent
 
     sort_key = "sorted-proposals-#{list_key}"
     proposals = if !@props.fresh then sorted_proposals(list.proposals, sort_key, true) or [] else []
-
-    if @props.proposal_focused_on
-      proposals = proposals.slice()
-      for proposal,idx in proposals
-        if proposal.key == @props.proposal_focused_on.key
-          proposals.splice idx, 1
-          proposals.unshift proposal
-          break
-
 
 
     if @props.combines_these_lists
@@ -289,8 +279,6 @@ ListItems = ReactiveComponent
     if list_order_has_changed
       schedule_viewport_position_check()
 
-
-
     expansion_key = @get_expansion_key()
 
     more_expanded = @last_expansion_key? && expansion_key.length > @last_expansion_key.length
@@ -312,64 +300,57 @@ ListItems = ReactiveComponent
       flipKey: sorted_key + expansion_key
       spring: PROPOSAL_ITEM_SPRING
 
-      onStart: (el) -> 
+      onStart: (el) => 
         el.classList.add "flipping"
         if expansion_state_changed
           el.classList.add "expansion_event"
+          if !more_expanded && @last_expanded_height?
+            @refs.list_wrapper.style.height = "#{@last_expanded_height}px"
+
         if list_order_has_changed
           el.classList.add "list_order_event"
 
-      onComplete: (el) -> 
+      onComplete: (el) => 
         el.classList.remove "flipping", "expansion_event", "list_order_event"
 
-      # staggerConfig: 
-      #   default: 
-      #     speed: .1
-      #   "item-wrapper-#{list_key}":
-      #     reverse: !more_expanded
-
-
-
-      DIV null,
+        if expansion_state_changed
+          if !more_expanded
+            @refs.list_wrapper.style.height = null
+          else 
+            @last_expanded_height = @refs.list_wrapper.clientHeight
         
 
-        FLIPPED 
-          flipId: "list_height_setter-#{list_key}"
-          shouldFlip: => expansion_state_changed
-          opacity: true
+      UL 
+        ref: 'list_wrapper'
+        for proposal,idx in proposals_to_render
+          ProposalItem
+            key: "collapsed#{proposal.key}"
+            proposal: proposal.key
+            list_key: list_key
+            list_order: sorted_key
+            show_category: !!@props.combines_these_lists
+            category_color: if @props.combines_these_lists then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], .9, .8)
+            is_expanded: !!expanded_state[proposal.key]
+            accessed_by_url: url == "/#{proposal.slug}"
+            num_proposals: len
 
 
-          UL 
-            ref: 'list_wrapper'
-            for proposal,idx in proposals_to_render
-              ProposalItem
-                key: "collapsed#{proposal.key}"
-                proposal: proposal.key
-                list_key: list_key
-                list_order: sorted_key
-                show_category: !!@props.combines_these_lists
-                category_color: if @props.combines_these_lists then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], .9, .8)
-                is_expanded: !!expanded_state[proposal.key]
-                accessed_by_url: url == "/#{proposal.slug}"
-                num_proposals: len
+        if proposals.length > @props.show_first_num_items 
+          FLIPPED 
+            flipId: "show-all-#{list_key}"
+            translate: true
+            shouldFlip: => expansion_state_changed
+
+            show_all_button()
 
 
-            if proposals.length > @props.show_first_num_items 
-              FLIPPED 
-                flipId: "show-all-#{list_key}"
-                translate: true
-                shouldFlip: => expansion_state_changed
+        if @props.show_new_button
+          FLIPPED 
+            flipId: "new-button-#{list_key}"
+            translate: true
+            shouldFlip: => expansion_state_changed
 
-                show_all_button()
-
-
-            if @props.show_new_button
-              FLIPPED 
-                flipId: "new-button-#{list_key}"
-                translate: true
-                shouldFlip: => expansion_state_changed
-
-                render_new()
+            render_new()
 
 
   get_expansion_key: ->

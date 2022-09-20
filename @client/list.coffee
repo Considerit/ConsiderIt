@@ -35,6 +35,8 @@ window.styles += """
     --PROPOSAL_AUTHOR_AVATAR_SIZE: #{PROPOSAL_AUTHOR_AVATAR_SIZE}px;
     --PROPOSAL_AUTHOR_AVATAR_GUTTER: 18px;
     --PROPOSAL_BULLET_GUTTER: 12px; 
+    --LIST_GUTTER: calc(var(--PROPOSAL_AUTHOR_AVATAR_SIZE) + var(--PROPOSAL_AUTHOR_AVATAR_GUTTER));
+
   }
 
   [data-widget="List"], [data-widget="NewList"], .draggable-wrapper {
@@ -803,20 +805,38 @@ EditableDescription = ReactiveComponent
             dangerouslySetInnerHTML: {__html: para}
 
 
+
+styles += """
+  .list_actions {
+    margin-bottom: 50px;
+    margin-top: 24px;
+    display: flex;
+    align-items: baseline;
+
+    flex-direction: row;
+
+    position: relative;
+    left: calc(-1 * var(--LIST_PADDING-LEFT));
+    width: calc(100% + var(--LIST_PADDING-LEFT) + var(--LIST_PADDING-RIGHT) );
+  }
+
+  .opinion-view-container {
+    flex-shrink: 0;    
+  }
+
+"""
 window.list_actions = (props) -> 
   list_key = props.list.key
 
   DIV   
     className: 'list_actions'
-    style: 
-      marginBottom: 50
-      marginTop: 24
-      display: 'flex'
-      alignItems: 'baseline'
 
     DIV 
+      className: 'proposal-left-spacing'
+        
+    DIV 
       style: 
-        width: column_sizes().first
+        width: '100%' # column_sizes().first
         marginRight: column_sizes().gutter
         display: 'flex'
 
@@ -835,17 +855,22 @@ window.list_actions = (props) ->
           
           ManualProposalResort {sort_key}
 
-        
+    DIV 
+      className: 'proposal-slidergram-spacing'        
 
-    OpinionViews
-      style: 
-        width: if ONE_COL() then 400 else column_sizes().second
+    DIV 
+      className: 'opinion-view-container'
 
-      more_views_positioning: 'right'
+      OpinionViews
+        style: 
+          width: if ONE_COL() then 400 else column_sizes().second
 
-      additional_width: column_sizes().gutter + column_sizes().first
+        more_views_positioning: 'right'
 
+        additional_width: column_sizes().gutter + column_sizes().first
 
+    DIV 
+      className: "proposal-score-spacing"
 
 
 window.get_list_title = (list_key, include_category_value, subdomain) -> 

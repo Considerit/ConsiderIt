@@ -414,7 +414,6 @@ styles += """
   .proposal-left-spacing {
     /* width: 1px;  // removing the spacing causes a bit of a jump when animating back */
     width: var(--LIST_PADDING-LEFT);
-    height: var(--PROPOSAL_AUTHOR_AVATAR_SIZE);
     flex-grow: 0;
     flex-shrink: 0;    
   }
@@ -424,14 +423,12 @@ styles += """
 
   .proposal-avatar-spacing {
     width: var(--PROPOSAL_AUTHOR_AVATAR_GUTTER);
-    height: var(--PROPOSAL_AUTHOR_AVATAR_SIZE);
     flex-grow: 0;
     flex-shrink: 0;
   }
 
   .proposal-slidergram-spacing {
     width: var(--PROPOSAL_AUTHOR_AVATAR_SIZE);
-    height: var(--PROPOSAL_AUTHOR_AVATAR_SIZE);
     flex-grow: 0;
     flex-shrink: 0;    
   }

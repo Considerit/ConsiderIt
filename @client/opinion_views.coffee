@@ -100,7 +100,7 @@ window.get_participant_attributes = ->
           attributes.push 
             key: name
             name: tag.view_name or tag.name or tag.self_report?.question or name
-            pass: do(name, tag) -> (u, value) -> 
+            pass: if (tag.self_report?.input or tag.input) != 'checklist' then do(name, tag) -> (u, value) -> 
               result = tag.compute?(u) or fetch(u).tags[name]
               if value?
                 result == value
@@ -926,7 +926,10 @@ construct_view_for_attribute = (attribute) ->
     return false if !user.tags
 
     val_for_user = user.tags[attr_key]
-    is_array = Array.isArray(val_for_user)
+
+    if attribute.input_type == 'checklist' && val_for_user
+      val_for_user = val_for_user.split(',')
+      is_array = true
 
     passing_vals = (val for val,enabled of opinion_views_ui.visible_attribute_values[attr_key] when enabled)
 
@@ -948,6 +951,8 @@ construct_view_for_attribute = (attribute) ->
           passes ||= undefined == val  
 
       else 
+
+
         passes ||= val_for_user == passing_val || (is_array && passing_val in val_for_user)
 
 

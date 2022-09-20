@@ -151,6 +151,8 @@ window.ProposalItem = ReactiveComponent
   render : ->
     proposal = fetch @props.proposal
 
+    return if !proposal.name
+
     @is_expanded = @props.is_expanded
 
     @expansion_state_changed = (@expansion_state_changed? || @props.accessed_by_url) && @last_expansion != @is_expanded
@@ -159,9 +161,6 @@ window.ProposalItem = ReactiveComponent
     @last_expansion = @is_expanded
     @last_list_order = @props.list_order
 
-
-
-    # console.log "RENDERING", @props.proposal, @expansion_state_changed #, @local.in_viewport, {safe_for_flip_to_ignore}
     FLIPPED 
       key: proposal.key
       flipId: proposal.key
@@ -868,14 +867,14 @@ ProposalText = ReactiveComponent
 
 
   setCollapsedSizes: (expand_after_set) ->
-    return if !@waitForFonts(=> @setCollapsedSizes(expand_after_set)) || @local.collapsed_title_height? || !@local.in_viewport #!@refs.root.closest(".ProposalItem[data-in-viewport='true']")
-    
+    if !@waitForFonts(=> @setCollapsedSizes(expand_after_set)) || @local.collapsed_title_height? || (!@local.in_viewport && !expand_after_set) #!@refs.root.closest(".ProposalItem[data-in-viewport='true']")
+      return
+
     title_el = @refs.proposal_title_text
 
     if !@is_expanded && !collapsed_item_width?
       collapsed_item_width = title_el.clientWidth
 
-    
     if @is_expanded
       @local.collapsed_title_height = title_el.getBoundingClientRect().height
 

@@ -714,7 +714,6 @@ $$.add_delegated_listener document.body, 'keydown', '.avatar[data-opinion]', (e)
     select_single_opinion user_opinion, 'keydown'
 
 
-DOUBLE_BUFFER = true
 hit_region_avatars = {}
 hit_region_color_to_user_map = {}
 
@@ -815,7 +814,7 @@ HistoAvatars = ReactiveComponent
       @resizing_canvas = 
         width: width 
         height: height
-        target_width: width
+        target_width: width + 50
         target_height: height
         target_top: top
 
@@ -826,7 +825,7 @@ HistoAvatars = ReactiveComponent
       ReactFlipToolkit.spring
         config: PROPOSAL_ITEM_SPRING
         values: 
-          width:  [parseInt(canv.style.width),  width]
+          width:  [parseInt(canv.style.width),  width + 50]
           height: [parseInt(canv.style.height), height]
           top:    [@current_top,    top]
         onUpdate: do(ani) => ({ width, height, top }) =>
@@ -996,7 +995,9 @@ HistoAvatars = ReactiveComponent
     @buffer.width = (@resizing_canvas?.width or @refs.canvas.width) * DEVICE_PIXEL_RATIO
     @buffer.height = (@resizing_canvas?.height or @refs.canvas.height) * DEVICE_PIXEL_RATIO
 
-    for key, sprite of @sprites
+    histocache = @getAvatarPositions()?.positions or {}
+    for key, __ of histocache
+      sprite = @sprites[key]
       updating_opacity = sprite.target_opacity != sprite.from_opacity || sprite.opacity != 1
       if updating_opacity
         @buff_ctx.save()
@@ -1018,7 +1019,9 @@ HistoAvatars = ReactiveComponent
     @hit_region_buffer.height = (@resizing_canvas?.height or @refs.canvas.height) * DEVICE_PIXEL_RATIO
     @hit_ctx.clearRect(0, 0, @buffer.width, @buffer.height)
 
-    for key, sprite of @sprites
+    histocache = @getAvatarPositions()?.positions or {}
+    for key, __ of histocache
+      sprite = @sprites[key]
       if key not of hit_region_avatars
         user = fetch(key)
         hit_region_avatars[key] = createHitRegionAvatar user
@@ -1035,21 +1038,14 @@ HistoAvatars = ReactiveComponent
       @sleeping = true
       return
 
-    if DOUBLE_BUFFER
-      requestAnimationFrame =>
+    requestAnimationFrame =>
 
-        if @buffer? 
-          @dirty_canvas = false        
-          @renderScene()
-
-        setTimeout @drawToBuffer
-          
-
-    else 
-      requestAnimationFrame => 
-        @dirty_canvas = false
+      if @buffer? 
+        @dirty_canvas = false        
         @renderScene()
-        @tick()
+
+      setTimeout @drawToBuffer
+          
 
   
 
@@ -1064,13 +1060,7 @@ HistoAvatars = ReactiveComponent
     # ctx.fillStyle = 'black'
     # ctx.fill()
 
-    if DOUBLE_BUFFER
-      ctx.drawImage @buffer, 0, 0
-      # ctx.drawImage @hit_region_buffer, 0, 0
-      
-    else 
-      for key, sprite of @sprites
-        ctx.drawImage sprite.img, sprite.x * DEVICE_PIXEL_RATIO, sprite.y * DEVICE_PIXEL_RATIO, sprite.width * DEVICE_PIXEL_RATIO, sprite.height * DEVICE_PIXEL_RATIO
+    ctx.drawImage @buffer, 0, 0
 
   userAtPosition: (e) -> 
 

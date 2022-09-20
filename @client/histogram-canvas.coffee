@@ -135,12 +135,16 @@ window.show_histogram_layout = false
 
 DEVICE_PIXEL_RATIO = window.devicePixelRatio
 
-is_histogram_controlling_region_selection = (key) -> 
+get_originating_histogram = -> 
   opinion_views = fetch 'opinion_views'
   active = opinion_views.active_views
-  originating_histogram = opinion_views.active_views.region_selected?.created_by
+  originating_histogram = active.region_selected?.created_by
   
-  !originating_histogram? || originating_histogram == key
+  originating_histogram
+
+is_histogram_controlling_region_selection = (key) -> 
+  opinion_views = fetch 'opinion_views'
+  get_originating_histogram() == key
 
 window.clear_histogram_managed_opinion_views = (opinion_views, field) ->
   opinion_views ?= fetch 'opinion_views'
@@ -150,6 +154,7 @@ window.clear_histogram_managed_opinion_views = (opinion_views, field) ->
     delete opinion_views.active_views.single_opinion_selected
     delete opinion_views.active_views.region_selected
     delete opinion_views.active_views.point_includers
+
   save opinion_views
 
 
@@ -235,7 +240,6 @@ window.Histogram = ReactiveComponent
                                 @local.mouse_opinion_value && 
                                 !@local.hovering_over_avatar))
 
-    @flip_state_changed = @props.flip_state_changed
     histo_height = @props.height + REGION_SELECTION_VERTICAL_PADDING
     
     @id = "histo-#{@local.key.replace(/\//g, '__')}"
@@ -368,7 +372,7 @@ window.Histogram = ReactiveComponent
       if draw_selection_area
         @drawSelectionArea()
 
-      @setTheStage {histo_height, enable_individual_selection}
+      @drawAvatars {histo_height, enable_individual_selection, onClick: histogram_props.onClick}
 
 
       if @props.draw_base || @props.draw_base_labels
@@ -424,7 +428,7 @@ window.Histogram = ReactiveComponent
     else 
       histo
 
-  setTheStage: ({histo_height, enable_individual_selection}) -> 
+  drawAvatars: ({histo_height, enable_individual_selection, onClick}) -> 
 
     DIV 
       className: 'histoavatars-container'
@@ -447,6 +451,7 @@ window.Histogram = ReactiveComponent
         opinions: @opinions 
         navigating_inside: @local.navigating_inside
         layout_params: @props.layout_params
+        onClick: onClick
 
 
 
@@ -503,7 +508,7 @@ window.Histogram = ReactiveComponent
 
     opinion_views = fetch 'opinion_views'
 
-    anchor = opinion_views.active_views.single_opinion_selected or @local.mouse_opinion_value
+    anchor = opinion_views.active_views.single_opinion_selected or opinion_views.active_views?.region_selected?.opinion_value or @local.mouse_opinion_value
     left = ((anchor + 1)/2 - REGION_SELECTION_WIDTH/2) * @props.width
     base_width = REGION_SELECTION_WIDTH * @props.width
     selection_width = Math.min( \
@@ -512,7 +517,7 @@ window.Histogram = ReactiveComponent
     selection_left = Math.max 0, left
 
 
-    return DIV {key: 'selection_label'} if !is_histogram_controlling_region_selection(@props.histo_key) 
+    return DIV {key: 'selection_label'} if !is_histogram_controlling_region_selection(@props.histo_key) && get_originating_histogram()
     DIV 
       key: 'selection_label'
       style:
@@ -542,14 +547,12 @@ window.Histogram = ReactiveComponent
 
           TRANSLATE "engage.histogram.select_these_opinions", 'highlight opinions'
 
-  onClick: (ev) -> 
+  onClick: (ev, user) -> 
 
     ev.stopPropagation()
 
     opinion_views = fetch 'opinion_views'
 
-    single_selection = opinion_views.active_views.single_opinion_selected
-    region_selected = opinion_views.active_views.region_selected
 
     if @props.backgrounded
       if @props.on_click_when_backgrounded
@@ -559,10 +562,10 @@ window.Histogram = ReactiveComponent
       if ev.type == 'touchstart'
         @local.mouse_opinion_value = @getOpinionValueAtFocus(ev)
 
-      is_clicking_user = ev.target.classList.contains('avatar')
+      is_clicking_user = !!user
 
       if is_clicking_user
-        user_key = ev.target.getAttribute('data-user')
+        user_key = user
         user_opinion = _.findWhere @opinions, {user: user_key}
 
         if @weights[user_key] == 0 || @salience[user_key] < 1
@@ -571,12 +574,15 @@ window.Histogram = ReactiveComponent
           select_single_opinion user_opinion, @props.histo_key
 
       else
+        some_region_selected = !!opinion_views.active_views.region_selected
+
         max = @local.mouse_opinion_value + REGION_SELECTION_WIDTH
         min = @local.mouse_opinion_value - REGION_SELECTION_WIDTH
 
+
         is_deselection = \
-          !is_histogram_controlling_region_selection(@props.histo_key) || ( \
-          region_selected && 
+          (is_histogram_controlling_region_selection(@props.histo_key)) || ( \
+          some_region_selected && 
            (!@local.touched || inRange(@local.mouse_opinion_value, min, max)))
 
         if is_deselection
@@ -623,7 +629,7 @@ window.Histogram = ReactiveComponent
 
     return if fetch(namespaced_key('slider', @props.proposal)).is_moving  || \
               @props.backgrounded || !@enable_range_selection || \
-              !is_histogram_controlling_region_selection(@props.histo_key)
+              (!is_histogram_controlling_region_selection(@props.histo_key) && get_originating_histogram())
 
     ev.stopPropagation()
 
@@ -670,10 +676,11 @@ window.Histogram = ReactiveComponent
     active = opinion_views.active_views
     originating_histogram = (active.single_opinion_selected or active.region_selected)?.created_by == @props.histo_key
 
-    return if originating_histogram
-
-    @local.mouse_opinion_value = null
+    @local.mouse_opinion_value = null    
     save @local
+
+    # return if originating_histogram
+
 
 
 
@@ -705,6 +712,9 @@ $$.add_delegated_listener document.body, 'keydown', '.avatar[data-opinion]', (e)
 
 
 DOUBLE_BUFFER = true
+hit_region_avatars = {}
+hit_region_color_to_user_map = {}
+
 
 # Draw the avatars in the histogram. Placement is determined by the layout algorithm.
 HistoAvatars = ReactiveComponent 
@@ -712,7 +722,9 @@ HistoAvatars = ReactiveComponent
 
   render: -> 
     
+    
     histocache_key = @histocache_key()
+
     if !@local.avatar_sizes?[histocache_key]
       @local.avatar_sizes ?= {}
       radius = calculateAvatarRadius @props.width, @props.height, @props.opinions, @props.weights, 
@@ -728,7 +740,7 @@ HistoAvatars = ReactiveComponent
     @adjusted_height = @props.height + @cut_off_buffer 
 
     DIV 
-      id: @props.histocache_key
+      id: histocache_key
       key: @props.histo_key or @local.key
       ref: 'histo'
       'data-receive-viewport-visibility-updates': 2
@@ -746,18 +758,18 @@ HistoAvatars = ReactiveComponent
 
       CANVAS
         ref: 'canvas'
-        # style: 
-        #   borderLeft: "3px solid red"
-        #   borderRight: "3px solid red"
+        onClick: @handleClick
+        onMouseMove: @handleMouseMove
+        onMouseOut: @handleMouseOut
 
   componentDidMount: ->   
     @PhysicsSimulation()
     schedule_viewport_position_check()
-    @setTheStage()
+    @updateAvatars()
 
   componentDidUpdate: -> 
     @PhysicsSimulation()
-    @setTheStage()
+    @updateAvatars()
 
   ready_to_draw: ->
     users = fetch '/users'    
@@ -773,13 +785,15 @@ HistoAvatars = ReactiveComponent
     histocache
 
 
-  animate_to: (sprite, x, y, r) ->
+  animate_to: (sprite, x, y, r, opacity) ->
     sprite.from_x = sprite.x
     sprite.from_y = sprite.y
     sprite.from_size = sprite.width
     sprite.target_x = x 
     sprite.target_y = y
     sprite.target_size = r * 2
+    sprite.from_opacity = sprite.opacity
+    sprite.target_opacity = opacity
 
     @updates_needed[sprite.key] = 1
 
@@ -823,10 +837,10 @@ HistoAvatars = ReactiveComponent
         canv.style.height = "#{height}px" 
         canv.style.transform = "translateY(#{top}px)"
         @current_top = top
+        @canvas_bounding_rect = null
 
 
-  setTheStage: -> 
-
+  updateAvatars: -> 
     if !@ready_to_draw() 
       return
 
@@ -857,14 +871,24 @@ HistoAvatars = ReactiveComponent
             (!@resizing_canvas || @resizing_canvas.target_width != @props.width || @resizing_canvas.target_height != @adjusted_height || @resizing_canvas.target_top != -@cut_off_buffer)
       canvas_resize_needed = true      
     
-    @wake()
+    opinion_views = fetch 'opinion_views'
+
+    groups = get_user_groups_from_views @props.groups 
+    has_groups = !!groups
+    if has_groups
+      colors = get_color_for_groups groups 
+
+
 
     new_animation_needed = false
+    @user_to_opinion_map ?= {}
     for opinion, idx in @props.opinions
     
 
       user = fetch opinion.user
       o = fetch(opinion) # subscribe to changes so physics sim will get rerun...
+
+      @user_to_opinion_map[user.key] = o.key
 
       pos = histocache?.positions?[user.key]
       continue if !pos
@@ -874,21 +898,54 @@ HistoAvatars = ReactiveComponent
       r = Math.round pos[2]
       width = height = r * 2
 
+
+      opacity = if @props.backgrounded then 0.1 else (@props.salience[user.key] or 1)
+
+
       if user.key not of @sprites
-        @sprites[user.key] = {x, y, r, width, height, key: user.key}
+        @sprites[user.key] = {x, y, r, width, height, opacity, key: user.key}
         @dirty_canvas = true
 
-      sprite = @sprites[user.key]
+      sprite = @sprites[user.key]      
       sprite.img = getCanvasAvatar(user)
 
-      if (sprite.x != x && sprite.target_x != x) || (sprite.y != y && sprite.target_y != y) || (sprite.width != r * 2 && sprite.target_size != r * 2)
-        @animate_to(sprite, x, y, r)
+      if has_groups && @props.groups[user.key]?
+        if @props.groups[user.key].length == 1
+          group = @props.groups[user.key][0]
+          sprite.img = getGroupIcon(group, colors[group])
+        else 
+          num = @props.groups[user.key].length
+
+          canv = document.createElement('canvas')
+          canv.width = canv.height = 50 * window.devicePixelRatio
+          rx = canv.width / 2
+          ctx = canv.getContext("2d")
+
+          for group, idx in @props.groups[user.key]
+            color = colors[group]
+            ctx.save()
+            ctx.beginPath()
+            ctx.moveTo(rx,rx)
+            ctx.arc rx, rx, rx, idx * 2 * Math.PI / num, (idx + 1) * 2 * Math.PI / num
+            ctx.fillStyle = color
+            ctx.fill()
+            ctx.restore()
+
+          sprite.img = canv
+
+
+      if (sprite.x != x && sprite.target_x != x) || (sprite.y != y && sprite.target_y != y) || \
+         (sprite.width != r * 2 && sprite.target_size != r * 2) || \
+         (sprite.opacity != opacity)
+
+        @animate_to(sprite, x, y, r, opacity)
         new_animation_needed = true
 
     if new_animation_needed
       @current_ani ?= 0
       @current_ani += 1 
       ani = @current_ani
+      @dirty_canvas = true
 
       ReactFlipToolkit.spring
         config: PROPOSAL_ITEM_SPRING
@@ -900,13 +957,23 @@ HistoAvatars = ReactiveComponent
             sprite.x = sprite.from_x + (sprite.target_x - sprite.from_x) * val
             sprite.y = sprite.from_y + (sprite.target_y - sprite.from_y) * val
             sprite.width = sprite.height = sprite.from_size + (sprite.target_size - sprite.from_size) * val
-
+            sprite.opacity = sprite.from_opacity + (sprite.target_opacity - sprite.from_opacity) * val
         onComplete: do (ani) => =>
           return if ani != @current_ani
+          for key, __ of @updates_needed
+            sprite = @sprites[key]
+            sprite.x = sprite.from_x = sprite.target_x
+            sprite.y = sprite.from_y = sprite.target_y
+            sprite.width = sprite.height = sprite.from_size = sprite.target_size
+            sprite.opacity = sprite.from_opacity = sprite.target_opacity
           @updates_needed = {}
+
+
     
     if canvas_resize_needed
       @resize_canvas(@props.width, @adjusted_height, -@cut_off_buffer, true)
+
+    @wake()
 
   wake: -> 
     if @sleeping
@@ -919,12 +986,38 @@ HistoAvatars = ReactiveComponent
     @buff_ctx ?= @buffer.getContext '2d'          
     @buffer.width = (@resizing_canvas?.width or @refs.canvas.width) * DEVICE_PIXEL_RATIO
     @buffer.height = (@resizing_canvas?.height or @refs.canvas.height) * DEVICE_PIXEL_RATIO
-    # @buff_ctx.clearRect(0, 0, @buffer.width, @buffer.height)
 
     for key, sprite of @sprites
+      updating_opacity = sprite.target_opacity != sprite.from_opacity || sprite.opacity != 1
+      if updating_opacity
+        @buff_ctx.save()
+        @buff_ctx.globalAlpha = sprite.opacity
       @buff_ctx.drawImage sprite.img, sprite.x * DEVICE_PIXEL_RATIO, sprite.y * DEVICE_PIXEL_RATIO, sprite.width * DEVICE_PIXEL_RATIO, sprite.height * DEVICE_PIXEL_RATIO
-    # @dirty_canvas = true
+      
+      if updating_opacity
+        @buff_ctx.restore()
+
     @tick()
+
+  updateHitRegion: -> 
+    hit_key = "#{@last_key}-#{@buffer.width}-#{@buffer.height}"
+    return if @last_hit_region_key == hit_key
+
+    @hit_region_buffer ?= document.createElement 'canvas'
+    @hit_ctx ?= @hit_region_buffer.getContext '2d'          
+    @hit_region_buffer.width = (@resizing_canvas?.width or @refs.canvas.width) * DEVICE_PIXEL_RATIO
+    @hit_region_buffer.height = (@resizing_canvas?.height or @refs.canvas.height) * DEVICE_PIXEL_RATIO
+    @hit_ctx.clearRect(0, 0, @buffer.width, @buffer.height)
+
+    for key, sprite of @sprites
+      if key not of hit_region_avatars
+        user = fetch(key)
+        hit_region_avatars[key] = createHitRegionAvatar user
+        hit_region_color_to_user_map[user.hit_region_color] = key
+
+      @hit_ctx.drawImage hit_region_avatars[key], sprite.x * DEVICE_PIXEL_RATIO, sprite.y * DEVICE_PIXEL_RATIO, sprite.width * DEVICE_PIXEL_RATIO, sprite.height * DEVICE_PIXEL_RATIO
+
+    @last_hit_region_key = hit_key
 
 
   tick: -> 
@@ -964,130 +1057,97 @@ HistoAvatars = ReactiveComponent
 
     if DOUBLE_BUFFER
       ctx.drawImage @buffer, 0, 0
+      # ctx.drawImage @hit_region_buffer, 0, 0
+      
     else 
       for key, sprite of @sprites
         ctx.drawImage sprite.img, sprite.x * DEVICE_PIXEL_RATIO, sprite.y * DEVICE_PIXEL_RATIO, sprite.width * DEVICE_PIXEL_RATIO, sprite.height * DEVICE_PIXEL_RATIO
 
+  userAtPosition: (e) -> 
 
-  render2: ->
-    users = fetch '/users'
+    return if !@buffer
+    canvas = @refs.canvas
 
-    histocache_key = @histocache_key()
-    if !@local.avatar_sizes?[histocache_key]
-      @local.avatar_sizes ?= {}
-      radius = calculateAvatarRadius @props.width, @props.height, @props.opinions, @props.weights, 
-                        fill_ratio: @getFillRatio()
-      @local.avatar_sizes[histocache_key] = 2 * radius
+    @updateHitRegion()
 
-    @avatar_size = @local.avatar_sizes[histocache_key]
-    
+    @canvas_bounding_rect = canvas.getBoundingClientRect()
 
-    histocache = @local.histocache?[histocache_key]
-    
-    if !histocache
-      histocache = @local.histocache?[@last_key] # try old one if current one temporarily doesn't exist yet
+    x = (e.clientX - @canvas_bounding_rect.left) / (@canvas_bounding_rect.right - @canvas_bounding_rect.left) * canvas.width
+    y = (e.clientY - @canvas_bounding_rect.top) / (@canvas_bounding_rect.bottom - @canvas_bounding_rect.top) * canvas.height
 
+    pixel = @hit_ctx.getImageData(x, y, 1, 1).data
+    color = "rgb(#{pixel[0]},#{pixel[1]},#{pixel[2]})"
 
-    @last_key = histocache_key
+    user = hit_region_color_to_user_map[color]
+
+    user
 
 
-    DIV 
-      id: @props.histocache_key
-      key: @props.histo_key or @local.key
-      ref: 'histo'
-      'data-receive-viewport-visibility-updates': 1.5
-      'data-visibility-name': 'histogram'      
-      'data-component': @local.key      
-      style: 
-        height: @props.height
-        cursor: if !@props.backgrounded && 
-                    @enable_range_selection then 'pointer'
-
-      DIV null,
-        if @local.in_viewport && users.users && histocache
-
-          base_avatar_diameter = 70 # @avatar_size 
-
-          # There are a few avatar styles that might be applied depending on state:
-          # Regular, for when no user is selected
-          regular_avatar_style =
-            width: base_avatar_diameter
-            height: base_avatar_diameter
-
-          if !@props.enable_individual_selection
-            regular_avatar_style.cursor = 'auto'
-
-          opinion_views = fetch 'opinion_views'  
-
-          groups = get_user_groups_from_views @props.groups 
-          has_groups = !!groups
-          if has_groups
-            colors = get_color_for_groups groups 
-
-          for opinion, idx in @props.opinions
-          
-
-            user = fetch opinion.user
-            o = fetch(opinion) # subscribe to changes so physics sim will get rerun...
-
-            # sub_creation = new Date(fetch('/subdomain').created_at).getTime()
-            # creation = new Date(o.created_at).getTime()
-            # opacity = .05 + .95 * (creation - sub_creation) / (Date.now() - sub_creation)
-
-            className = 'histo_avatar'
-            
-            salience = if @props.backgrounded then 0.1 else @props.salience[user.key]
-
-            if salience < 1
-              avatar_style = _.extend({}, regular_avatar_style, {opacity: salience, cursor: 'default'})  
-
-            else
-              avatar_style = _.extend {}, regular_avatar_style
-
-            if has_groups && @props.groups[user.key]?
-              if @props.groups[user.key].length == 1
-                group = @props.groups[user.key][0]
-                avatar_style.backgroundColor = colors[group]
-              else 
-                gcolors = []
-                for group in @props.groups[user.key]
-                  gcolors.push colors[group]
-                gradient = ""
-                size = 1 / gcolors.length / 8
-                for gcolor,idx in gcolors
-                  gradient += ", #{gcolor} #{100 * idx * size}%, #{gcolor} #{100 * (idx + 1) * size}%"
-
-                avatar_style.background = "repeating-linear-gradient(45deg #{gradient})"
+  handleMouseMove: (e) ->
+    user = @userAtPosition(e)
+    id = null
 
 
-            pos = histocache?.positions?[user.key]
-            if pos 
-              custom_size = 2 * pos[2] != base_avatar_diameter
+    if user 
+      backgrounded = (@sprites[user].target_opacity or @sprites[user].opacity) < 1
 
-              avatar_style = _.extend {}, avatar_style
 
-              if pos 
-                avatar_style.transform = "translate(#{pos[0]}px, #{pos[1]}px)"
+      if backgrounded
+        cursor = 'auto'
+      else 
+        cursor = 'pointer'
+        id = "#{@props.histo_key}-#{user}"
+    else 
+      cursor = 'auto'
 
-                if pos[2] && custom_size
-                  avatar_style.transform = "#{avatar_style.transform} scale(#{2 * pos[2] / base_avatar_diameter})"
 
-                  # avatar_style.width = avatar_style.height = 2 * pos[2]
 
-            else 
-              continue
+    if @refs.canvas.style.cursor != cursor
+      @refs.canvas.style.cursor = cursor
 
-            avatar user,
-              key: idx
-              'data-opinion': opinion.key or opinion
-              focusable: @props.navigating_inside && salience == 1
-              hide_popover: @props.backgrounded || salience < 1
-              className: className
-              # alt: "<user>: #{alt}"
-              anonymous: customization('anonymize_everything')
-              style: avatar_style
-              set_bg_color: true
-              custom_bg_color: avatar_style.background || avatar_style.backgroundColor
+
+    if fetch('popover').element_in_focus != id
+
+      if user && !backgrounded
+
+        histocache = @getAvatarPositions()
+        pos = histocache?.positions?[user]
+
+        coords = 
+          top:  pos[1] + @canvas_bounding_rect.top  + window.pageYOffset - document.documentElement.clientTop + pos[2]
+          left: pos[0] + @canvas_bounding_rect.left + window.pageXOffset - document.documentElement.clientLeft + pos[2]
+          height: 2 * pos[2]
+          width: 2 * pos[2]
+
+        opts = 
+          id: id
+          user: user
+          anon: customization('anonymize_everything')
+          opinion: @user_to_opinion_map[user]
+          coords: coords
+
+      else 
+        opts = null
+
+      update_avatar_popover_from_canvas_histo opts
+
+
+  handleMouseOut: (e) -> 
+    @refs.canvas.style.cursor = 'auto'
+    update_avatar_popover_from_canvas_histo()
+
+  handleClick: (e) ->
+    user = @userAtPosition(e)
+    if user 
+      if (@sprites[user].target_opacity or @sprites[user].opacity) < 1
+        user = null
+
+    update_avatar_popover_from_canvas_histo()
+
+    @props.onClick?(e, user)
+
+
+
 
 
   histocache_key: -> # based on variables that could alter the layout

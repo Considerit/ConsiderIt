@@ -11,8 +11,9 @@ zero_popover = ->
   popover.size_checked = undefined
   save popover
 
-window.clear_popover = (immediate, cb) ->
+clear_popover = (immediate, cb) ->
   popover = fetch('popover')
+  return if !popover.id
 
   if immediate
     zero_popover()
@@ -24,14 +25,11 @@ window.clear_popover = (immediate, cb) ->
       if !popover.has_focus && popover.id == id && !popover.element_in_focus
         zero_popover()
         cb?()
-    , 250
+    , 200
 
 
 
-
-
-
-window.hide_popover = (e) ->
+hide_popover = (e) ->
   if e.target.getAttribute('data-popover')
     if e.target.getAttribute('data-title')
       e.target.setAttribute('title', e.target.getAttribute('data-title'))
@@ -45,16 +43,48 @@ window.hide_popover = (e) ->
           e.target.removeAttribute 'data-previous_zindex'
 
 
-window.toggle_popover = (e) ->
+toggle_popover = (e) ->
   if e.target.getAttribute('data-popover')
     popover = fetch('popover')
     if popover.element_in_focus
       hide_popover(e)
     else 
-      show_popover(e) 
+      show_popover_from_dom(e) 
 
 
-window.show_popover = (e) ->
+
+DELAY_TO_SHOW_POPOVER = 400
+
+show_popover = (config) -> 
+
+window.update_avatar_popover_from_canvas_histo = (opts) -> 
+  popover = fetch 'popover'
+
+  if !opts
+    popover.element_in_focus = null
+    clear_popover false
+    return
+
+
+  {id, user, coords, anon, opinion} = opts
+
+  popover.element_in_focus = id
+
+  setTimeout -> 
+    if popover.element_in_focus == id
+      if popover.id != id
+        clear_popover true
+        popover.id = id 
+        popover.render = -> 
+          AvatarPopover {key: user, user, anon, opinion}
+
+      popover.coords = coords
+      save popover
+
+  , DELAY_TO_SHOW_POPOVER
+
+
+show_popover_from_dom = (e) ->
   if e.target.getAttribute('data-popover')
     popover = fetch 'popover'
 
@@ -108,7 +138,7 @@ window.show_popover = (e) ->
         popover.coords = calc_coords(e.target) 
 
         save popover
-    , 400
+    , DELAY_TO_SHOW_POPOVER
     e.preventDefault()
 
 
@@ -121,10 +151,10 @@ calc_coords = (el) ->
 
 
 
-document.addEventListener "mouseover", show_popover
+document.addEventListener "mouseover", show_popover_from_dom
 document.addEventListener "mouseout", hide_popover
 
-$$.add_delegated_listener document.body, 'focusin', '[data-popover]', show_popover
+$$.add_delegated_listener document.body, 'focusin', '[data-popover]', show_popover_from_dom
 $$.add_delegated_listener document.body, 'focusout', '[data-popover]', hide_popover
 
 $$.add_delegated_listener document.body, 'click', '[data-popover]', toggle_popover

@@ -26,7 +26,9 @@ window.OpinionBlock = ReactiveComponent
     current_user = fetch '/current_user'
 
     show_proposal_scores = !@props.hide_scores && customization('show_proposal_scores', proposal, subdomain) && WINDOW_WIDTH() > 955
-    show_proposal_scores = false 
+    
+    console.log {show_proposal_scores}
+    # show_proposal_scores = false 
 
     @is_expanded = @props.is_expanded
 

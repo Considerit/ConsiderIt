@@ -108,7 +108,10 @@ window.AvatarPopover = ReactiveComponent
                 if attribute.pass 
                   user_val = attribute.pass(user)
                   user_val ?= unreported
-                  user_val = ["#{user_val}"]
+                  if typeof user_val == "string" && user_val?.indexOf ',' > -1 
+                    user_val = user_val.split(',')          
+                  else 
+                    user_val = ["#{user_val}"]
                 else 
                   user_val = user.tags[attribute.key] 
                   user_val ?= unreported
@@ -119,6 +122,8 @@ window.AvatarPopover = ReactiveComponent
                     user_val = [user_val]
 
                 continue if !is_grouped && !user_val
+
+                
 
                 LI 
                   key: attribute.name
@@ -137,6 +142,7 @@ window.AvatarPopover = ReactiveComponent
                     attribute.name 
 
                   for val in user_val
+
                     SPAN 
                       key: val or unreported
                       style: 
@@ -394,17 +400,48 @@ missing_images = {}
 window.getCanvasAvatar = (user) ->
   cached_avatars[user.key or user] or cached_avatars.default
 
-createFallbackIcon = (user) ->
+
+colors_used = {}
+window.createHitRegionAvatar = (user) -> 
+  
+  while !color? || color of colors_used
+    r = Math.round(Math.random() * 255)
+    g = Math.round(Math.random() * 255)
+    b = Math.round(Math.random() * 255)
+    color = "rgb(#{r},#{g},#{b})"
+  colors_used[color] = true
+
+  user.hit_region_color = color
+  createUserIcon user.hit_region_color
+
+
+group_colored_icons = {}
+window.getGroupIcon = (key, color) ->
+  if key not of group_colored_icons
+    group_colored_icons[key] = createUserIcon color
+  group_colored_icons[key]
+
+
+
+# Note: this is actually kinda expensive on large forums, in memory and cpu
+createUserIcon = (fill) ->
+
   # create a gray-ish avatar for folks who don't have an avatar (or if its broken)
   # Note: this is actually kinda expensive on large forums, in memory and cpu
-  canv = cached_avatars[user.key] = document.createElement('canvas')
+  canv = document.createElement('canvas')
   canv.width = canv.height = 50 * window.devicePixelRatio
   rx = canv.width / 2
   ctx = canv.getContext("2d")
   ctx.arc(rx, rx, rx, 0, 2 * Math.PI)            
-  user.bg_color ?= hsv2rgb(Math.random() / 5 + .6, Math.random() / 8 + .025, Math.random() / 4 + .4)
-  ctx.fillStyle = user.bg_color
+  ctx.fillStyle = fill
   ctx.fill()
+  canv
+
+
+createFallbackIcon = (user) ->
+  user.bg_color ?= hsv2rgb(Math.random() / 5 + .6, Math.random() / 8 + .025, Math.random() / 4 + .4)  # create a gray-ish avatar for folks who don't have an avatar (or if its broken)
+  createUserIcon user.bg_color
+
 
 window.LoadAvatars = ReactiveComponent
   displayName: "LoadAvatars" 
@@ -427,11 +464,13 @@ window.LoadAvatars = ReactiveComponent
 
   load: -> 
     users = fetch '/users'
+    return if !users.users 
+
     loading = fetch('avatar_loading')
     app = arest.cache['/application'] or fetch('/application')
 
     if !cached_avatars.default
-      createFallbackIcon({key: 'default'})
+      cached_avatars.default = createFallbackIcon({key: 'default'})
 
     avatars_to_load = []
     for user in users.users
@@ -439,7 +478,7 @@ window.LoadAvatars = ReactiveComponent
         if user.avatar_file_name 
           avatars_to_load.push user
           
-        createFallbackIcon(user)
+        cached_avatars[user.key] = createFallbackIcon(user)
         
 
 

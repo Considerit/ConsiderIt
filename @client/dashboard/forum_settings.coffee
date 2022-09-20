@@ -414,7 +414,7 @@ window.ForumSettingsDash = ReactiveComponent
 
           FIELDSET null,
 
-            for option in [{label: 'Free Forum', value: 0}, {label: 'Unlimited Forum', value: 1}, {label: 'Enterprise Forum', value: 2}]
+            for option in [{label: 'Free Forum', value: 0}, {label: 'Premium Forum', value: 1}, {label: 'Enterprise Forum', value: 2}]
               DIV 
                 key: option.label
 

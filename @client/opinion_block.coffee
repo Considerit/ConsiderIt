@@ -1,10 +1,5 @@
 
 styles += """
-  .is_collapsed .proposal_scores {
-    position: absolute;
-    left: calc(100%);
-    top: 9px;    
-  }
 
   [data-widget="OpinionBlock"] .slidergram_wrapper {
     display: flex;
@@ -13,6 +8,8 @@ styles += """
   .is_expanded [data-widget="OpinionBlock"] .slidergram_wrapper {
     justify-content: center;
   }
+
+
 """
 
 
@@ -24,11 +21,6 @@ window.OpinionBlock = ReactiveComponent
     proposal = fetch @props.proposal 
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
-
-    show_proposal_scores = !@props.hide_scores && customization('show_proposal_scores', proposal, subdomain) && WINDOW_WIDTH() > 955
-    
-    console.log {show_proposal_scores}
-    # show_proposal_scores = false 
 
     @is_expanded = @props.is_expanded
 
@@ -50,20 +42,6 @@ window.OpinionBlock = ReactiveComponent
 
         Slidergram @props
 
-    
-      # little score feedback
-      if show_proposal_scores        
-
-        FLIPPED 
-          flipId: "proposal_scores-#{proposal.key}"
-          shouldFlipIgnore: @props.shouldFlipIgnore
-          shouldFlip: @props.shouldFlip
-          DIV 
-            className: 'proposal_scores'
-
-
-            HistogramScores
-              proposal: proposal.key
 
 
 styles += """

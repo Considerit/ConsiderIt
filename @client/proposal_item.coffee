@@ -46,7 +46,7 @@ styles += """
   } 
 
 
-  :not(.collapsing).is_collapsed.ProposalItem {
+  :not(.collapsing):not([data-in-viewport="true"]).is_collapsed.ProposalItem {
     content-visibility: auto; /* Content-visibility can be very expensive. Specifically, React Flip Toolkit
                                  has to call getBoundingClientRect on all Flipped elements to figure out how 
                                  to animate them. content-visibility will prevent the rendering
@@ -207,6 +207,8 @@ window.ProposalItem = ReactiveComponent
 
               expansion_state_changed: @expansion_state_updated
 
+              hide_scores: @props.hide_scores
+
 
 
 
@@ -240,8 +242,6 @@ styles += """
 
 
   .opinion-block-wrapper {
-    padding-right: 48px;
-
     position: relative;
     z-index: 1;
 
@@ -253,6 +253,7 @@ styles += """
     margin-top: 10px;
     padding-right: 0px;
   }
+
 
 
   /* The double up arrow at the bottom of an expanded proposal that will collapse the proposal */
@@ -302,6 +303,8 @@ ProposalItemWrapper = ReactiveComponent
 
   render: ->
     proposal = fetch @props.proposal
+    subdomain = fetch '/subdomain'
+    show_proposal_scores = !@props.hide_scores && customization('show_proposal_scores', proposal, subdomain) && WINDOW_WIDTH() > 955
 
     DIV 
       className: "proposal-block-container"
@@ -362,6 +365,25 @@ ProposalItemWrapper = ReactiveComponent
                 list_key: @props.list_key
                 shouldFlip: @props.shouldFlip
                 shouldFlipIgnore: @props.shouldFlipIgnore
+
+      if show_proposal_scores 
+        DIV 
+          className: 'proposal-score-spacing'
+
+    
+      # little score feedback
+      if show_proposal_scores        
+
+        # FLIPPED 
+        #   flipId: "proposal_scores-#{proposal.key}"
+        #   shouldFlipIgnore: @props.shouldFlipIgnore
+        #   shouldFlip: @props.shouldFlip
+
+        DIV 
+          className: 'proposal_scores'
+
+          HistogramScores
+            proposal: proposal.key
 
       BUTTON 
         className: 'bottom_closer'
@@ -426,6 +448,12 @@ styles += """
   }
 
 
+  .proposal-score-spacing {
+    width: 120px;
+    height: 2px;
+    flex-grow: 0;
+    flex-shrink: 0;        
+  }
 
   .ProposalBlock .avatar, .ProposalBlock .proposal_pic {
     height: var(--PROPOSAL_AUTHOR_AVATAR_SIZE);
@@ -573,7 +601,7 @@ styles += """
   }
 
   .ProposalText .proposal-title {
-    max-width: 900px;
+    max-width: 700px;
   }
 
   .ProposalText.has-description .proposal-title {
@@ -619,7 +647,7 @@ styles += """
   }
 
   .ProposalText .proposal-description-wrapper {
-    max-width: 600px;  
+    max-width: 500px;  
   }
 
 
@@ -1159,7 +1187,15 @@ styles += """
 
 
 
+styles += """
 
+  .is_collapsed .proposal_scores {
+    position: absolute;
+    left: calc(100% - 80px);
+    top: 23px;    
+  }
+
+"""
 
 
 
@@ -1308,6 +1344,8 @@ window.ProposalScoresPopover =  ReactiveComponent
     visible_groups = Object.keys group_scores
     visible_groups.sort (a,b) -> group_scores[b].avg - group_scores[a].avg
 
+    histocache = @local.histocache?[@local.key]?.positions
+
     w = col_sizes.second
     h = 70
     if !@local.histocache?
@@ -1330,6 +1368,8 @@ window.ProposalScoresPopover =  ReactiveComponent
           rando_order: 0
           topple_towers: .05
           density_modified_jostle: 0
+
+
 
     group_avatar_style = 
       borderRadius: '50%'
@@ -1368,12 +1408,13 @@ window.ProposalScoresPopover =  ReactiveComponent
           height: h
           position: 'relative'
 
-        if @local.histocache?.positions
-
+        if histocache
           for group in visible_groups
-            pos = @local.histocache.positions[group]
+            pos = histocache[group]
             {avg, cnt} = group_scores[group]
+
             DIV 
+              key: group
               "data-tooltip": "#{group}: #{cnt} opinions with #{Math.round(100 * avg)}% #{if is_weighted then 'weighted' else ''} avg"
               style: _.extend {}, group_avatar_style,
                 width:  pos[2] * 2
@@ -1430,6 +1471,7 @@ window.ProposalScoresPopover =  ReactiveComponent
           diff = avg - overall_avg
 
           LI 
+            key: group
             style: 
               fontSize: 14
               display: 'flex'

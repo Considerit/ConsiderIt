@@ -250,8 +250,8 @@ window.Histogram = ReactiveComponent
 
       className: 'histogram'
       'aria-hidden': @props.backgrounded
-      'aria-labelledby': if !@props.backgrounded then "##{proposal.id}-histo-label"
-      'aria-describedby': if !@props.backgrounded then "##{proposal.id}-histo-description"
+      'aria-labelledby': if !@props.backgrounded then "histo-label-#{proposal.id}"
+      'aria-describedby': if !@props.backgrounded then "histo-description-#{proposal.id}"
 
       style:
         width: @props.width
@@ -337,17 +337,17 @@ window.Histogram = ReactiveComponent
     histo = DIV histogram_props, 
       DIV 
         key: 'accessibility-histo-label'
-        id: "##{proposal.id}-histo-label"
+        id: "histo-label-#{proposal.id}"
         className: 'hidden'
         
         translator 
           id: "engage.histogram.explanation"
           num_opinions: opinions.length 
-          "Histogram showing {num_opinions, plural, one {# opinion} other {# opinions}}"
+          "Histogram showing {num_opinions, plural, one {# opinion} other {# opinions}} about this proposal."
 
       DIV 
         key: 'accessibility-histo-description'
-        id: "##{proposal.id}-histo-description"
+        id: "histo-description-#{proposal.id}"
         className: 'hidden'
 
         translator 
@@ -357,9 +357,11 @@ window.Histogram = ReactiveComponent
           negative_pole: get_slider_label("slider_pole_labels.oppose", @props.proposal, subdomain)
           positive_pole: get_slider_label("slider_pole_labels.support", @props.proposal, subdomain)
 
-          """{num_opinions, plural, one {one person's opinion of} other {# people's opinion, with an average of}} {avg_score} 
+          """
+          This histogram displays the opinions of everyone who has given an opinion about this proposal. The 
+          opinions are given on a spectrum from {negative_pole} to {positive_pole}. In this histogram, 
+          {num_opinions, plural, one {one person's opinion of} other {# people's opinion, with an average of}} {avg_score} 
              on a spectrum from {negative_pole} to {positive_pole}. 
-             Press ENTER or SPACE to enable tab navigation of each person's opinion, and ESCAPE to exit the navigation.
           """         
 
 
@@ -520,6 +522,7 @@ window.Histogram = ReactiveComponent
     return DIV {key: 'selection_label'} if !is_histogram_controlling_region_selection(@props.histo_key) && get_originating_histogram()
     DIV 
       key: 'selection_label'
+      'aria-hidden': true
       style:
         height: @props.height + REGION_SELECTION_VERTICAL_PADDING
         position: 'absolute'
@@ -739,6 +742,8 @@ HistoAvatars = ReactiveComponent
     @cut_off_buffer = @avatar_size / 2
     @adjusted_height = @props.height + @cut_off_buffer 
 
+    proposal = fetch @props.histo_key
+
     DIV 
       id: histocache_key
       key: @props.histo_key or @local.key
@@ -761,6 +766,10 @@ HistoAvatars = ReactiveComponent
         onClick: @handleClick
         onMouseMove: @handleMouseMove
         onMouseOut: @handleMouseOut
+        role: "img" 
+        'aria-labelledby': if !@props.backgrounded then "histo-label-#{proposal.id}"
+        'aria-describedby': if !@props.backgrounded then "histo-description-#{proposal.id}"
+
 
   componentDidMount: ->   
     @PhysicsSimulation()

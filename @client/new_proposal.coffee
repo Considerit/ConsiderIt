@@ -84,7 +84,7 @@ window.NewProposal = ReactiveComponent
         fontSize: 14
         display: 'block'
 
-      w = column_sizes().first
+      w = ITEM_TEXT_WIDTH()
       showing_proposer = customization('show_proposer_icon', list_key)
       proposal_fields = customization('new_proposal_fields', list_key)()
 

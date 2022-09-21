@@ -3,31 +3,6 @@ require './edit_list'
 require './proposal_item'
 
 
-window.column_sizes = (args) ->
-  args ||= {}
-  width = args.width or HOMEPAGE_WIDTH()
-
-
-  author_avatar_spacing = 58 # PROPOSAL_AUTHOR_AVATAR_SIZE + PROPOSAL_AUTHOR_AVATAR_GUTTER
-
-  if !ONE_COL()
-    gutter = author_avatar_spacing
-    score_w = 48
-
-    width -= author_avatar_spacing
-    # width -= score_w
-    width -= gutter
-
-    first = author_avatar_spacing + Math.min 500, Math.floor(width * .6)
-    second = Math.max 303, width - first
-  else 
-    gutter = author_avatar_spacing
-    score_w = 0 
-    first = width - gutter
-    second = width - gutter
-
-  {first, second, gutter, score_w}
-
 
 window.PROPOSAL_AUTHOR_AVATAR_SIZE = 40
 window.styles += """
@@ -37,6 +12,8 @@ window.styles += """
     --PROPOSAL_BULLET_GUTTER: 12px; 
     --LIST_GUTTER: calc(var(--PROPOSAL_AUTHOR_AVATAR_SIZE) + var(--PROPOSAL_AUTHOR_AVATAR_GUTTER));
 
+    --ITEM_TEXT_WIDTH:    calc( .6 * (var(--HOMEPAGE_WIDTH) - 2 * var(--LIST_GUTTER)) );
+    --ITEM_OPINION_WIDTH: calc( .4 * (var(--HOMEPAGE_WIDTH) - 2 * var(--LIST_GUTTER)) );
   }
 
   [data-widget="List"], [data-widget="NewList"], .draggable-wrapper {
@@ -821,7 +798,18 @@ styles += """
   }
 
   .opinion-view-container {
-    flex-shrink: 0;    
+    flex-shrink: 0;  
+    width: var(--ITEM_OPINION_WIDTH);  
+  }
+
+  .one-col .opinion-view-container {  
+    width: 400px;      
+  }
+
+  .sort_menu_wrapper {
+    width: 100%;
+    margin-right: var(--LIST_GUTTER); 
+    display: flex;
   }
 
 """
@@ -835,11 +823,7 @@ window.list_actions = (props) ->
       className: 'proposal-left-spacing'
         
     DIV 
-      style: 
-        width: '100%' # column_sizes().first
-        marginRight: column_sizes().gutter
-        display: 'flex'
-
+      className: 'sort_menu_wrapper'
 
       if props.can_sort
         # [ SortProposalsMenu(), FilterProposalsMenu() ]
@@ -862,12 +846,8 @@ window.list_actions = (props) ->
       className: 'opinion-view-container'
 
       OpinionViews
-        style: 
-          width: if ONE_COL() then 400 else column_sizes().second
-
         more_views_positioning: 'right'
-
-        additional_width: column_sizes().gutter + column_sizes().first
+        additional_width: LIST_GUTTER() + ITEM_TEXT_WIDTH()
 
     DIV 
       className: "proposal-score-spacing"

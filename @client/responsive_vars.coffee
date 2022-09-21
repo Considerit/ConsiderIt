@@ -85,7 +85,9 @@ setResponsive = ->
   if browser.is_mobile && portrait
     point_font_size += 4
 
-  one_col = w < 900
+  one_col = w < 950
+
+  list_gutter = 58 # also author_avatar_size + author_avatar_gutter
   new_vals = 
     
     DOCUMENT_WIDTH: document_width
@@ -105,9 +107,13 @@ setResponsive = ->
     LANDSCAPE_MOBILE: !portrait && browser.is_mobile
     HOMEPAGE_WIDTH: homepage_width
     SAAS_PAGE_WIDTH: Math.min(1120, w - 2 * 24)
+
     LIST_ITEM_EXPANSION_SCALE: if one_col then 1 else 1.5
 
-  
+    # keep in sync with css variables of same name defined in list.coffee
+    LIST_GUTTER: list_gutter
+    ITEM_TEXT_WIDTH:    if one_col then homepage_width - list_gutter else .6 * (homepage_width - 2 * list_gutter)
+    ITEM_OPINION_WIDTH: if one_col then homepage_width - list_gutter else .4 * (homepage_width - 2 * list_gutter)
 
 
   # only update if we have a change

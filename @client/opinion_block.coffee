@@ -1,18 +1,44 @@
+HISTOGRAM_HEIGHT_COLLAPSED = 40
+HISTOGRAM_HEIGHT_EXPANDED = 170
+
 
 styles += """
-  .one-col [data-widget="OpinionBlock"] {
+  .OpinionBlock {
     display: flex;
     flex-direction: row;
+    position: relative;
   }
 
-  [data-widget="OpinionBlock"] .slidergram_wrapper {
-    display: flex;
-  }
-
-  .is_expanded [data-widget="OpinionBlock"] .slidergram_wrapper {
+  .is_expanded .OpinionBlock {
     justify-content: center;
   }
 
+  .is_expanded .OpinionBlock .proposal-score-spacing {
+    width: 0;
+  }
+
+  .OpinionBlock .slidergram_wrapper {
+    display: flex;
+  }
+
+  .is_expanded .OpinionBlock .slidergram_wrapper {
+    justify-content: center;
+  }
+
+
+  .proposal_scores {
+    position: absolute;
+  }
+
+  .is_collapsed .proposal_scores {
+    left: calc(100% - 80px);
+    top: 23px;    
+  }
+
+  .is_expanded .proposal_scores {
+    left: calc(50% + var(--ITEM_OPINION_WIDTH) / 2 * 2 + 36px);
+    top: #{HISTOGRAM_HEIGHT_EXPANDED}px;
+  }
 
 """
 
@@ -28,6 +54,8 @@ window.OpinionBlock = ReactiveComponent
 
     @is_expanded = @props.is_expanded
 
+    show_proposal_scores = !@props.hide_scores && customization('show_proposal_scores', proposal, subdomain) && WINDOW_WIDTH() > 955
+
     slider_interpretation = (value) => 
       if value > .03
         "#{(value * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.support", proposal, subdomain)}"
@@ -39,13 +67,13 @@ window.OpinionBlock = ReactiveComponent
 
     # Histogram for Proposal
     DIV 
-      "data-widget": 'OpinionBlock'
+      className: 'OpinionBlock'
 
       if ONE_COL()
         [
-          DIV className: 'proposal-left-spacing'
-          DIV className: 'proposal-avatar-wrapper'
-          DIV className: 'proposal-avatar-spacing'
+          DIV key: 'left', className: 'proposal-left-spacing'
+          DIV key: 'avatar', className: 'proposal-avatar-wrapper'
+          DIV key: 'right', className: 'proposal-avatar-spacing'
         ]
 
 
@@ -54,13 +82,33 @@ window.OpinionBlock = ReactiveComponent
 
         Slidergram @props
 
+      if show_proposal_scores 
+        DIV 
+          className: 'proposal-score-spacing'
+
+    
+      # little score feedback
+      if show_proposal_scores        
+
+        FLIPPED 
+          flipId: "proposal_scores-#{proposal.key}"
+          shouldFlipIgnore: @props.shouldFlipIgnore
+          shouldFlip: @props.shouldFlip
+
+          DIV 
+            className: 'proposal_scores'
+
+            HistogramScores
+              proposal: proposal.key
 
 
 styles += """
-  [data-widget="Slidergram"] {
-    display: inline-block;
+  .Slidergram {
     position: relative;
-    top: -26px;
+  }
+
+  .is_collapsed .Slidergram {
+    top: -26px;    
   }
 """
 
@@ -74,9 +122,6 @@ window.Slidergram = ReactiveComponent
     proposal = fetch @props.proposal 
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
-
-    col_sizes = column_sizes
-                  width: @props.width
 
     # watching = current_user.subscriptions[proposal.key] == 'watched'
     # return if !watching && fetch('homepage_filter').watched
@@ -112,7 +157,7 @@ window.Slidergram = ReactiveComponent
     opinion_views = fetch 'opinion_views'
     just_you = opinion_views.active_views['just_you']
 
-    width = col_sizes.second * (if @is_expanded && !ONE_COL() then 2 else 1)
+    width = ITEM_OPINION_WIDTH() * (if @is_expanded && !ONE_COL() then 2 else 1)
 
     slider_interpretation = (value) => 
       if value > .03
@@ -123,9 +168,7 @@ window.Slidergram = ReactiveComponent
         translator "engage.slider_feedback.neutral", "Neutral"
 
     DIV 
-      "data-widget": "Slidergram"
-      # style: 
-      #   width: width
+      className: 'Slidergram'
 
 
 
@@ -135,7 +178,7 @@ window.Slidergram = ReactiveComponent
         proposal: proposal.key
         opinions: opinions
         width: width
-        height: if !@is_expanded then 40 else if screencasting() then 120 else 170
+        height: if !@is_expanded then HISTOGRAM_HEIGHT_COLLAPSED else HISTOGRAM_HEIGHT_EXPANDED
         enable_individual_selection: !@props.disable_selection && !browser.is_mobile
         enable_range_selection: !just_you && !browser.is_mobile && !ONE_COL()
         draw_base: true

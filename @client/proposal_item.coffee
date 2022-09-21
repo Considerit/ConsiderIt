@@ -223,7 +223,7 @@ styles += """
   .is_collapsed .proposal-block-container {
     flex-direction: row;
   }
-  .is_expanded .proposal-block-container {
+  .one-col .is_collapsed .proposal-block-container, .is_expanded .proposal-block-container {
     flex-direction: column;
   }
 
@@ -401,10 +401,10 @@ styles += """
     display: flex;
   }
 
-  .ProposalBlock .proposal-avatar-wrapper {
+  .proposal-avatar-wrapper {
     flex-grow: 0;
     flex-shrink: 0;
-    /* width: var(--PROPOSAL_AUTHOR_AVATAR_SIZE); */
+    width: var(--PROPOSAL_AUTHOR_AVATAR_SIZE);
     transition-property: padding-top;    
   }
   .is_expanded .using_bullets .proposal-avatar-wrapper {
@@ -538,8 +538,7 @@ ProposalBlock = ReactiveComponent
 
       style: 
         position: 'relative'
-        top: if icons then 4
-
+        top: if icons then 7
 
       if icons
         editor = proposal_editor(proposal)
@@ -624,9 +623,6 @@ styles += """
     position: absolute;
   }
 
-  .is_expanded .ProposalText .proposal-title-text {
-    transform: scale(1.5);
-  } 
 
 
   .ProposalText .proposal-title-text-inline {
@@ -640,10 +636,6 @@ styles += """
 
   .ProposalText .proposal-title-text-inline:hover {
     border-color: #000;
-  }
-
-  .ProposalText .proposal-description-wrapper {
-    max-width: 500px;  
   }
 
 
@@ -753,8 +745,8 @@ ProposalText = ReactiveComponent
       opacity: true
       onSpringUpdate: if @props.expansion_state_changed() then (value) => 
         if @props.expansion_state_changed()            
-          start = if @is_expanded then 1 else 1.5 
-          end = if @is_expanded then 1.5 else 1 
+          start = if @is_expanded then 1 else LIST_ITEM_EXPANSION_SCALE() 
+          end = if @is_expanded then LIST_ITEM_EXPANSION_SCALE() else 1 
           @refs.proposal_title_text.style.transform = "scale(#{ start + (end - start) * value })"
 
       DIV 
@@ -770,16 +762,28 @@ ProposalText = ReactiveComponent
 
         STYLE 
           dangerouslySetInnerHTML: __html: """
+
+             .is_expanded .ProposalText .proposal-title-text {
+               transform: scale(#{LIST_ITEM_EXPANSION_SCALE()});
+             } 
+
              .is_collapsed #proposal-text-#{proposal.id} .proposal-title {
                height: #{@local.collapsed_title_height}px;
              }
 
              .is_expanded #proposal-text-#{proposal.id} .proposal-title {
-               height: #{1.5 * @local.collapsed_title_height}px;
+               height: #{LIST_ITEM_EXPANSION_SCALE() * @local.collapsed_title_height}px;
              }
 
              #proposal-text-#{proposal.id} .proposal-title-text {
                 width: #{collapsed_item_width}px;
+             }
+
+             .is_collapsed #proposal-text-#{proposal.id} .proposal-description-wrapper {
+                max-width: #{collapsed_item_width}px;
+             }
+             .is_expanded #proposal-text-#{proposal.id} .proposal-description-wrapper {
+                max-width: #{collapsed_item_width * LIST_ITEM_EXPANSION_SCALE()}px;
              }
 
           """
@@ -864,7 +868,7 @@ ProposalText = ReactiveComponent
 
 
   setCollapsedSizes: (expand_after_set) ->
-    if !@waitForFonts(=> @setCollapsedSizes(expand_after_set)) || @local.collapsed_title_height? || (!@local.in_viewport && !expand_after_set) #!@refs.root.closest(".ProposalItem[data-in-viewport='true']")
+    if !@waitForFonts(=> @setCollapsedSizes(expand_after_set)) || (!@local.in_viewport && !expand_after_set) # || @local.collapsed_title_height?
       return
 
     title_el = @refs.proposal_title_text

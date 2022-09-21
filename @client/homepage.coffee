@@ -24,17 +24,17 @@ styles += """
 
 
   #homepagetab {
-    margin: 0px auto;
-    position: relative;
-    padding: 24px 0px 140px 0;
+    position: relative;    
   }
 
   .one-col #homepagetab {
-    padding: 24px 0px 140px 12px;
+    padding: 24px 0px 140px 24px;
   }
 
-  :not(.one-col) #homepagetab {
+  .Homepage:not(.one-col) #homepagetab {
     width: calc(var(--HOMEPAGE_WIDTH) + var(--LIST_PADDING-RIGHT) + var(--LIST_PADDING-LEFT));
+    padding: 24px 0px 140px 0;
+    margin: 0px auto;
   }
 
   .sized_for_homepage {
@@ -81,7 +81,7 @@ window.Homepage = ReactiveComponent
 
     DIV 
       key: "homepage_#{subdomain.name}"      
-      className: "main_background #{if ONE_COL() then 'one-col' else ''}"
+      className: "Homepage main_background #{if ONE_COL() then 'one-col' else ''}"
 
       DIV
         id: 'homepagetab'

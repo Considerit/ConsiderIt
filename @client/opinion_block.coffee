@@ -1,5 +1,9 @@
 
 styles += """
+  .one-col [data-widget="OpinionBlock"] {
+    display: flex;
+    flex-direction: row;
+  }
 
   [data-widget="OpinionBlock"] .slidergram_wrapper {
     display: flex;
@@ -36,6 +40,14 @@ window.OpinionBlock = ReactiveComponent
     # Histogram for Proposal
     DIV 
       "data-widget": 'OpinionBlock'
+
+      if ONE_COL()
+        [
+          DIV className: 'proposal-left-spacing'
+          DIV className: 'proposal-avatar-wrapper'
+          DIV className: 'proposal-avatar-spacing'
+        ]
+
 
       DIV 
         className: 'slidergram_wrapper'
@@ -100,7 +112,7 @@ window.Slidergram = ReactiveComponent
     opinion_views = fetch 'opinion_views'
     just_you = opinion_views.active_views['just_you']
 
-    width = col_sizes.second * (if @is_expanded then 2 else 1)
+    width = col_sizes.second * (if @is_expanded && !ONE_COL() then 2 else 1)
 
     slider_interpretation = (value) => 
       if value > .03
@@ -114,6 +126,9 @@ window.Slidergram = ReactiveComponent
       "data-widget": "Slidergram"
       # style: 
       #   width: width
+
+
+
               
       Histogram
         histo_key: "histogram-#{proposal.slug}"

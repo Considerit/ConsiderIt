@@ -78,9 +78,7 @@ setResponsive = ->
 
   point_font_size = 14
 
-  homepage_width = Math.min content_width, 1100
-  homepage_width = Math.round(homepage_width)
-
+  homepage_width = Math.round Math.min content_width, 1100
     
 
 
@@ -107,6 +105,7 @@ setResponsive = ->
     LANDSCAPE_MOBILE: !portrait && browser.is_mobile
     HOMEPAGE_WIDTH: homepage_width
     SAAS_PAGE_WIDTH: Math.min(1120, w - 2 * 24)
+    LIST_ITEM_EXPANSION_SCALE: if one_col then 1 else 1.5
 
   
 

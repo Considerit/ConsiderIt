@@ -86,14 +86,14 @@ window.styles += """
 
 responsive_style_registry.list_padding = -> 
 
-  top =    if ONE_COL() then 12 else 48
-  bottom = if ONE_COL() then 12 else 48 
+  top =    if ONE_COL() then 0 else 48
+  bottom = if ONE_COL() then 0 else 48 
 
-  list_padding = if ONE_COL() then 12 else 80
+  list_padding = if ONE_COL() then 0 else 80
 
   if WINDOW_WIDTH() <= 955
-    right = Math.max 36, list_padding
-    left  = Math.max 36, list_padding
+    right = if ONE_COL() then 4 else Math.max 36, list_padding
+    left  = if ONE_COL() then 4 else Math.max 36, list_padding
   else 
     right = Math.max 36, list_padding + list_padding / 6
     left  = Math.max 36, list_padding - list_padding / 6

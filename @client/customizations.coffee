@@ -255,7 +255,7 @@ masthead_only = ["kamakakoi","seattletimes","kevin","ihub","SilverLakeNC",\
 
 
 # The old image banner + optional text description below
-LegacyImageHeader = (opts) ->
+window.LegacyImageHeader = (opts) ->
   subdomain = fetch '/subdomain'   
   loc = fetch 'location'    
   homepage = loc.url == '/'

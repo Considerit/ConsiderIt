@@ -168,6 +168,7 @@ window.select_single_opinion = (user_opinion, created_by) ->
     opinion_views.active_views.single_opinion_selected =
       created_by: created_by
       opinion: user_opinion.key 
+      user: user_opinion.user
       opinion_value: user_opinion.stance 
       get_salience: (u, opinion, proposal) =>
         if (u.key or u) == user_opinion.user
@@ -717,6 +718,10 @@ $$.add_delegated_listener document.body, 'keydown', '.avatar[data-opinion]', (e)
 hit_region_avatars = {}
 hit_region_color_to_user_map = {}
 
+window.last_histogram_position = {}
+
+
+SKIP_FRAMES = 1
 
 # Draw the avatars in the histogram. Placement is determined by the layout algorithm.
 HistoAvatars = ReactiveComponent 
@@ -743,6 +748,8 @@ HistoAvatars = ReactiveComponent
 
     proposal = fetch @props.histo_key
 
+
+
     DIV 
       id: histocache_key
       key: @props.histo_key or @local.key
@@ -751,6 +758,7 @@ HistoAvatars = ReactiveComponent
       'data-visibility-name': 'histogram'
       'data-component': @local.key      
       style: 
+        # backgroundColor: 'red'
         transform: "translateZ(0)"
         height: @props.height
         width: @props.width
@@ -789,6 +797,8 @@ HistoAvatars = ReactiveComponent
     
     if !histocache
       histocache = @local.histocache?[@last_key] # try old one if current one temporarily doesn't exist yet
+
+    last_histogram_position[@props.histo_key] = histocache
 
     histocache
 
@@ -962,10 +972,12 @@ HistoAvatars = ReactiveComponent
           return if ani != @current_ani
           for key, __ of @updates_needed
             sprite = @sprites[key]
+
             sprite.x = sprite.from_x + (sprite.target_x - sprite.from_x) * val
             sprite.y = sprite.from_y + (sprite.target_y - sprite.from_y) * val
             sprite.width = sprite.height = sprite.from_size + (sprite.target_size - sprite.from_size) * val
             sprite.opacity = sprite.from_opacity + (sprite.target_opacity - sprite.from_opacity) * val
+        
         onComplete: do (ani) => =>
           return if ani != @current_ani
           for key, __ of @updates_needed
@@ -990,22 +1002,52 @@ HistoAvatars = ReactiveComponent
 
 
   drawToBuffer: -> 
-    @buffer ?= document.createElement 'canvas'
-    @buff_ctx ?= @buffer.getContext '2d'          
-    @buffer.width = (@resizing_canvas?.width or @refs.canvas.width) * DEVICE_PIXEL_RATIO
-    @buffer.height = (@resizing_canvas?.height or @refs.canvas.height) * DEVICE_PIXEL_RATIO
 
     histocache = @getAvatarPositions()?.positions or {}
-    for key, __ of histocache
-      sprite = @sprites[key]
-      updating_opacity = sprite.target_opacity != sprite.from_opacity || sprite.opacity != 1
-      if updating_opacity
-        @buff_ctx.save()
-        @buff_ctx.globalAlpha = sprite.opacity
-      @buff_ctx.drawImage sprite.img, sprite.x * DEVICE_PIXEL_RATIO, sprite.y * DEVICE_PIXEL_RATIO, sprite.width * DEVICE_PIXEL_RATIO, sprite.height * DEVICE_PIXEL_RATIO
-      
-      if updating_opacity
-        @buff_ctx.restore()
+
+    @skip_frame = false 
+    if SKIP_FRAMES
+      skippable = 0 
+      tot = 0
+      opacity_updated = false 
+      for key, __ of histocache
+        sprite = @sprites[key]
+        updating_opacity = sprite.target_opacity != sprite.from_opacity || sprite.opacity != 1
+
+        if updating_opacity
+          opacity_updated = true
+          break
+
+        if (sprite.last_render_x && Math.abs(sprite.x - sprite.last_render_x) < SKIP_FRAMES) &&
+           (sprite.last_render_y && Math.abs(sprite.y - sprite.last_render_y) < SKIP_FRAMES) &&
+           (sprite.last_render_size && Math.abs(sprite.width - sprite.last_render_size) < SKIP_FRAMES)
+          skippable += 1
+        tot += 1
+
+      @skip_frame = !opacity_updated && skippable / tot > .5
+
+
+    if !@skip_frame
+
+      @buffer ?= document.createElement 'canvas'
+      @buff_ctx ?= @buffer.getContext '2d'          
+      @buffer.width = (@resizing_canvas?.width or @refs.canvas.width) * DEVICE_PIXEL_RATIO
+      @buffer.height = (@resizing_canvas?.height or @refs.canvas.height) * DEVICE_PIXEL_RATIO
+
+      for key, __ of histocache
+        sprite = @sprites[key]
+        updating_opacity = sprite.target_opacity != sprite.from_opacity || sprite.opacity != 1
+        if updating_opacity
+          @buff_ctx.save()
+          @buff_ctx.globalAlpha = sprite.opacity
+        @buff_ctx.drawImage sprite.img, sprite.x * DEVICE_PIXEL_RATIO, sprite.y * DEVICE_PIXEL_RATIO, sprite.width * DEVICE_PIXEL_RATIO, sprite.height * DEVICE_PIXEL_RATIO
+        
+        if updating_opacity 
+          @buff_ctx.restore()
+
+        sprite.last_render_x = sprite.x
+        sprite.last_render_y = sprite.y
+        sprite.last_render_size = sprite.width
 
     @tick()
 
@@ -1040,7 +1082,7 @@ HistoAvatars = ReactiveComponent
 
     requestAnimationFrame =>
 
-      if @buffer? 
+      if @buffer? && !@skip_frame 
         @dirty_canvas = false        
         @renderScene()
 
@@ -1096,6 +1138,10 @@ HistoAvatars = ReactiveComponent
       else 
         cursor = 'pointer'
         id = "#{@props.histo_key}-#{user}"
+
+      e.stopPropagation()
+      e.preventDefault()
+
     else 
       cursor = 'auto'
 
@@ -1264,6 +1310,7 @@ configure_histo_layout_web_worker = ->
       local.histocache[histocache_key] = 
         hash: histocache_key
         positions: positions
+
       # num_completed += 1
       # console.log {num_layout_tasks_delegated, num_completed}
       save local

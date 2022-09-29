@@ -746,8 +746,9 @@ HistoAvatars = ReactiveComponent
     @last_key = histocache_key
 
     # give the canvas extra space at the top so that overflow avatars on the top aren't cut off
-    @cut_off_buffer = @avatar_size / 2
-    @adjusted_height = @props.height + @cut_off_buffer 
+    @cut_off_buffer = @props.height / 2 #@avatar_size / 2
+    @adjusted_height = @props.height +     @cut_off_buffer 
+    @adjusted_width  = @props.width  + 2 * @cut_off_buffer
 
     proposal = fetch @props.histo_key
 
@@ -819,7 +820,7 @@ HistoAvatars = ReactiveComponent
     @updates_needed[sprite.key] = 1
 
 
-  resize_canvas: (width, height, top, animate) ->
+  resize_canvas: (width, height, top, left, animate) ->
     canv = @refs.canvas
     @wake()
 
@@ -830,6 +831,7 @@ HistoAvatars = ReactiveComponent
         target_width: width + 50
         target_height: height
         target_top: top
+        target_left: left
 
       @resize_canvas.ani ?= 0 
       @resize_canvas.ani += 1
@@ -841,23 +843,28 @@ HistoAvatars = ReactiveComponent
           width:  [parseInt(canv.style.width),  width + 50]
           height: [parseInt(canv.style.height), height]
           top:    [@current_top,    top]
-        onUpdate: do(ani) => ({ width, height, top }) =>
+          left:   [@current_left,   left]
+        onUpdate: do(ani) => ({ width, height, top, left }) =>
           if ani == @resize_canvas.ani 
             @resizing_canvas.width = Math.round(width)
             @resizing_canvas.height = Math.round(height)
             @resizing_canvas.top = Math.round(top)
+            @resizing_canvas.left = Math.round(left)
         onComplete: do(ani) => =>
           if ani == @resize_canvas.ani
             @resizing_canvas = false
 
     else # immediate
-      if canv.width != width * DEVICE_PIXEL_RATIO || canv.height != height * DEVICE_PIXEL_RATIO || @current_top != top
+      if canv.width != width * DEVICE_PIXEL_RATIO || canv.height != height * DEVICE_PIXEL_RATIO || @current_top != top || @current_left != left
         canv.width = width * DEVICE_PIXEL_RATIO
         canv.height = height * DEVICE_PIXEL_RATIO
         canv.style.width = "#{width}px"
         canv.style.height = "#{height}px" 
-        canv.style.transform = "translateY(#{top}px)"
+        canv.style.transform = "translate(#{left}px, #{top}px)"
+
         @current_top = top
+        @current_left = left 
+
         @canvas_bounding_rect = null
 
 
@@ -884,12 +891,12 @@ HistoAvatars = ReactiveComponent
     # initialize canvas, get things started
     if !@ctx
       @ctx = canvas.getContext('2d')
-      @resize_canvas @props.width, @adjusted_height, -@cut_off_buffer
+      @resize_canvas @adjusted_width, @adjusted_height, -@cut_off_buffer, -@cut_off_buffer
       @dirty_canvas = true
 
     # resize canvas if our target canvas size has changed
-    else if (canvas.width != @props.width  * DEVICE_PIXEL_RATIO || canvas.height != @adjusted_height * DEVICE_PIXEL_RATIO || @current_top != -@cut_off_buffer) &&
-            (!@resizing_canvas || @resizing_canvas.target_width != @props.width || @resizing_canvas.target_height != @adjusted_height || @resizing_canvas.target_top != -@cut_off_buffer)
+    else if (canvas.width != @adjusted_width * DEVICE_PIXEL_RATIO || canvas.height != @adjusted_height * DEVICE_PIXEL_RATIO || @current_top != -@cut_off_buffer || @current_left != -@cut_off_buffer) &&
+            (!@resizing_canvas || @resizing_canvas.target_width != @adjusted_width || @resizing_canvas.target_height != @adjusted_height || @resizing_canvas.target_top != -@cut_off_buffer || @resizing_canvas.target_left != -@cut_off_buffer)
       canvas_resize_needed = true      
     
     opinion_views = fetch 'opinion_views'
@@ -914,7 +921,7 @@ HistoAvatars = ReactiveComponent
       pos = histocache?.positions?[user.key]
       continue if !pos
 
-      x = Math.round pos[0]
+      x = Math.round pos[0] + @cut_off_buffer
       y = Math.round pos[1] + @cut_off_buffer # + @avatar_size / 2 # give spacing
       r = Math.round pos[2]
       width = height = r * 2
@@ -954,13 +961,13 @@ HistoAvatars = ReactiveComponent
 
           sprite.img = canv
 
-
       if (sprite.x != x && sprite.target_x != x) || (sprite.y != y && sprite.target_y != y) || \
          (sprite.width != r * 2 && sprite.target_size != r * 2) || \
          (sprite.opacity != opacity)
 
         @animate_to(sprite, x, y, r, opacity)
         new_animation_needed = true
+
 
     if new_animation_needed
       @current_ani ?= 0
@@ -994,7 +1001,7 @@ HistoAvatars = ReactiveComponent
 
     
     if canvas_resize_needed
-      @resize_canvas(@props.width, @adjusted_height, -@cut_off_buffer, true)
+      @resize_canvas(@adjusted_width, @adjusted_height, -@cut_off_buffer, -@cut_off_buffer, true)
 
     @wake()
 
@@ -1093,7 +1100,7 @@ HistoAvatars = ReactiveComponent
   renderScene: -> 
     ctx = @ctx
     if @resizing_canvas
-      @resize_canvas @resizing_canvas.width, @resizing_canvas.height, @resizing_canvas.top 
+      @resize_canvas @resizing_canvas.width, @resizing_canvas.height, @resizing_canvas.top, @resizing_canvas.left
 
     ctx.clearRect(0, 0, @refs.canvas.width * DEVICE_PIXEL_RATIO, @refs.canvas.height * DEVICE_PIXEL_RATIO)
 

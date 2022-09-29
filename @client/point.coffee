@@ -492,7 +492,7 @@ window.Point = ReactiveComponent
   #     discussion & click a new point below it
   ensureDiscussionIsInViewPort : ->
     is_selected = get_selected_point() == @props.point
-    if @local.is_selected != is_selected
+    if !!@local.is_selected != !!is_selected
       if is_selected
         
         i = setInterval =>

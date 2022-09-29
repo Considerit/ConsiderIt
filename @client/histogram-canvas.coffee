@@ -589,11 +589,17 @@ window.Histogram = ReactiveComponent
           some_region_selected && 
            (!@local.touched || inRange(@local.mouse_opinion_value, min, max)))
 
+        # page resizes because of changing pros/cons shown unless we fix the height of the reasons region 
+        reasons_region_el = ReactDOM.findDOMNode(@).closest('.OpinionBlock').querySelector('.reasons_region')
+
         if is_deselection
           clear_histogram_managed_opinion_views opinion_views
           if ev.type == 'touchstart'
             @local.mouse_opinion_value = null
+          reasons_region_el.style.minHeight = null
         else if @enable_range_selection
+
+          reasons_region_el.style.minHeight = "#{$$.height(reasons_region_el)}px"
           clear_histogram_managed_opinion_views opinion_views, 'single_opinion_selected'
 
           @users_in_region = @getUsersInRegion()
@@ -676,15 +682,12 @@ window.Histogram = ReactiveComponent
   onMouseLeave: (ev) ->     
     return if fetch(namespaced_key('slider', @props.proposal)).is_moving
 
-    opinion_views = fetch 'opinion_views'
-    active = opinion_views.active_views
-    originating_histogram = (active.single_opinion_selected or active.region_selected)?.created_by == @props.histo_key
-
     @local.mouse_opinion_value = null    
     save @local
 
-    # return if originating_histogram
-
+    opinion_views = fetch 'opinion_views'
+    if opinion_views.active_views.region_selected
+      clear_histogram_managed_opinion_views opinion_views
 
 
 
@@ -1005,27 +1008,22 @@ HistoAvatars = ReactiveComponent
 
     histocache = @getAvatarPositions()?.positions or {}
 
-    @skip_frame = false 
+    @skip_frame = !!SKIP_FRAMES 
     if SKIP_FRAMES
-      skippable = 0 
-      tot = 0
-      opacity_updated = false 
       for key, __ of histocache
         sprite = @sprites[key]
+        continue if !sprite
         updating_opacity = sprite.target_opacity != sprite.from_opacity || sprite.opacity != 1
 
         if updating_opacity
-          opacity_updated = true
+          @skip_frame = false
           break
 
-        if (sprite.last_render_x && Math.abs(sprite.x - sprite.last_render_x) < SKIP_FRAMES) &&
-           (sprite.last_render_y && Math.abs(sprite.y - sprite.last_render_y) < SKIP_FRAMES) &&
-           (sprite.last_render_size && Math.abs(sprite.width - sprite.last_render_size) < SKIP_FRAMES)
-          skippable += 1
-        tot += 1
-
-      @skip_frame = !opacity_updated && skippable / tot > .5
-
+        if (!sprite.last_render_x?    || Math.abs(sprite.x - sprite.last_render_x) > SKIP_FRAMES) ||
+           (!sprite.last_render_y?    || Math.abs(sprite.y - sprite.last_render_y) > SKIP_FRAMES) ||
+           (!sprite.last_render_size? || Math.abs(sprite.width - sprite.last_render_size) > SKIP_FRAMES)
+          @skip_frame = false
+          break
 
     if !@skip_frame
 
@@ -1036,6 +1034,7 @@ HistoAvatars = ReactiveComponent
 
       for key, __ of histocache
         sprite = @sprites[key]
+        continue if !sprite
         updating_opacity = sprite.target_opacity != sprite.from_opacity || sprite.opacity != 1
         if updating_opacity
           @buff_ctx.save()

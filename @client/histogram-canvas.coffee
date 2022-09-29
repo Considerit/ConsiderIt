@@ -596,10 +596,12 @@ window.Histogram = ReactiveComponent
           clear_histogram_managed_opinion_views opinion_views
           if ev.type == 'touchstart'
             @local.mouse_opinion_value = null
-          reasons_region_el.style.minHeight = null
-        else if @enable_range_selection
 
-          reasons_region_el.style.minHeight = "#{$$.height(reasons_region_el)}px"
+          if reasons_region_el
+            reasons_region_el.style.minHeight = null
+        else if @enable_range_selection
+          if reasons_region_el
+            reasons_region_el.style.minHeight = "#{$$.height(reasons_region_el)}px"
           clear_histogram_managed_opinion_views opinion_views, 'single_opinion_selected'
 
           @users_in_region = @getUsersInRegion()
@@ -822,6 +824,8 @@ HistoAvatars = ReactiveComponent
 
   resize_canvas: (width, height, top, left, animate) ->
     canv = @refs.canvas
+    return if !canv 
+
     @wake()
 
     if animate
@@ -1088,7 +1092,7 @@ HistoAvatars = ReactiveComponent
 
     requestAnimationFrame =>
 
-      if @buffer? && !@skip_frame 
+      if @buffer? && !@skip_frame && @refs.canvas
         @dirty_canvas = false        
         @renderScene()
 

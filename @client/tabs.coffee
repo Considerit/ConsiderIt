@@ -45,7 +45,8 @@ window.HomepageTabTransition = ReactiveComponent
       tab_state = fetch 'homepage_tabs'
       default_tab = customization('homepage_default_tab') or get_tabs()[0]?.name or 'Show all'
 
-      if !tab_state.active_tab? || (loc.query_params.tab && loc.query_params.tab != tab_state.active_tab)
+      tab_state_changing = (loc.query_params.tab && loc.query_params.tab != tab_state.active_tab)
+      if !tab_state.active_tab? || tab_state_changing
 
         if loc.query_params.tab && get_tab(decodeURIComponent(loc.query_params.tab))
           tab_state.active_tab = decodeURIComponent(loc.query_params.tab)
@@ -78,6 +79,13 @@ window.HomepageTabTransition = ReactiveComponent
 
         else 
           tab_state.active_tab = default_tab
+
+        if tab_state_changing
+          # clear out all records of expanded proposals
+          for k,v of arest.cache 
+            if k.startsWith 'proposal_expansions-'
+              for kk, vv of v
+                v[kk] = false
 
 
 

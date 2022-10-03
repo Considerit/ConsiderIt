@@ -591,9 +591,12 @@ to_date_str = (ms) ->
 
 
 
-clear_all = ->
+clear_all = (local_state) ->
   opinion_views = fetch 'opinion_views'
   opinion_views_ui = fetch 'opinion_views_ui'
+
+  opinion_views_ui.last_interacted_with = local_state.key or local_state
+  save opinion_views_ui
 
   to_remove = []
   for k,v of opinion_views.active_views
@@ -613,8 +616,8 @@ clear_all = ->
   date_state.start = date_state.end = date_state.active = null 
   save date_state
 
-reset_to_all = ->
-  clear_all()
+reset_to_all = (local_state) ->
+  clear_all(local_state)
   is_admin = fetch('/current_user').is_admin  
   show_others = !customization('hide_opinions') || is_admin
   opinion_views_ui = fetch 'opinion_views_ui'  
@@ -643,19 +646,23 @@ user_has_set_a_view = ->
   view_is_set
 
 
+
+
 OpinionViews = ReactiveComponent
   displayName: 'OpinionViews'
 
   render : -> 
-    @local.minimized ?= true 
 
 
     return SPAN null if !fetch('/subdomain').name
+    local_state = fetch @props.ui_key or @local.key
 
+    local_state.minimized ?= true 
 
     has_other_filters = get_participant_attributes().length > 0
     opinion_views = fetch 'opinion_views'
     opinion_views_ui = fetch 'opinion_views_ui'
+
 
 
     is_admin = fetch('/current_user').is_admin
@@ -666,7 +673,7 @@ OpinionViews = ReactiveComponent
       {
         key: 'all'
         label: translator 'opinion_views.view_buttons_all', 'All opinions'
-        callback: clear_all
+        callback: -> clear_all(local_state)
         disabled: !show_others
       }
       {
@@ -674,7 +681,7 @@ OpinionViews = ReactiveComponent
         label: translator 'opinion_views.view_buttons_you', 'Just you'
         disabled: @props.disable_switching
         callback: ->
-          clear_all()
+          clear_all(local_state)
           toggle_opinion_filter just_you_filter
       }
       {
@@ -684,19 +691,19 @@ OpinionViews = ReactiveComponent
         callback: (item, previous_state) => 
           if previous_state == 'custom'
             if user_has_set_a_view()
-              @local.minimized = !@local.minimized
-              save @local
+              local_state.minimized = !local_state.minimized
+              save local_state
             else 
-              reset_to_all()
+              reset_to_all(local_state)
 
           else 
-            @local.minimized = false
-            clear_all()
+            local_state.minimized = false
+            clear_all(local_state)
       }
     ]
 
     reset_to_default_view = (force_all) ->
-      clear_all()
+      clear_all(local_state)
 
       dfault = customization('opinion_views_default')
 
@@ -764,10 +771,10 @@ OpinionViews = ReactiveComponent
           ToggleButtons view_buttons, opinion_views_ui, 
             minWidth: 290
 
-          if opinion_views_ui.active == 'custom' 
+          if opinion_views_ui.active == 'custom' && opinion_views_ui.last_interacted_with == local_state.key
             triangle_left = (@local.view_state_left or 60) + 35
 
-            if @local.minimized
+            if local_state.minimized
               if user_has_set_a_view()
                 DIV 
                   className: 'custom_view_triangle'
@@ -778,14 +785,14 @@ OpinionViews = ReactiveComponent
                     height: 0 
                     borderLeft: '12px solid transparent'
                     borderRight: '12px solid transparent'                    
-                    borderTop: '7px solid #2478CC'
+                    borderTop: "7px solid #{focus_blue}"
             else 
               DIV 
                 className: 'custom_view_triangle'
                 style: 
                   left: triangle_left
-                  bottom: if browser.is_mobile then -27 else -25
-                dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13"><g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="#979797"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
+                  bottom: if browser.is_mobile then -29 else -27
+                dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="rgb(182,182,182)"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
 
 
           SPAN 
@@ -794,55 +801,7 @@ OpinionViews = ReactiveComponent
               left: '100%'
             @MinimizeExpandButton()
 
-      if opinion_views_ui.active == 'custom'
-        needs_expansion = @props.additional_width && @props.style?.width
 
-        width = 0
-        if needs_expansion 
-          if has_other_filters 
-            width = if ONE_COL() then Math.min(720, @props.style.width) else @props.style.width + @props.additional_width 
-          else 
-            width = Math.min(720, @props.style.width + @props.additional_width)
-
-        DIV
-          style: 
-            width: if width then width
-            position: 'relative'
-            right: if needs_expansion then width - @props.style.width 
-
-
-          if @local.minimized 
-
-            DIV 
-              style:
-                marginTop: 12
-
-              NonInteractiveOpinionViews
-                more_views_positioning: @props.more_views_positioning
-
-          else 
-            DIV 
-              style:
-                marginTop: 18
-
-              DIV 
-                style: 
-                  border: '1px solid #B6B6B6'
-                  borderRadius: 8
-                  width: 'fit-content'
-                  maxWidth: if width then width
-
-                  margin: if @props.more_views_positioning == 'centered' then 'auto'
-                  float: if @props.more_views_positioning == 'right' then 'right'
-
-                
-                DIV 
-                  style: 
-                    padding: '0px 24px'
-
-                  InteractiveOpinionViews()
-
-          DIV style: clear: 'both'
 
 
   MinimizeExpandButton: ->
@@ -868,10 +827,13 @@ OpinionViews = ReactiveComponent
           translator 'opinion_views.minimize_minimize', 'minimize'
 
   shadow_view_state_offset: ->
-    left = document.querySelector('[data-view-state="custom"]')?.offsetLeft    
-    
+    ww = WINDOW_WIDTH()
+    return if @local.view_state_left? && ww == @left_set_for_window_width
+
+    left = @refs.custom?.offsetLeft
     if left != @local.view_state_left
       @local.view_state_left = left 
+      @left_set_for_window_width = ww
       save @local
 
   componentDidUpdate: -> @shadow_view_state_offset()
@@ -986,6 +948,70 @@ set_group_by_attribute = (attribute) ->
     options: attribute.options
 
   toggle_group view, true
+
+
+styles += """
+.opinion_view_interaction_wrapper {
+  max-height: 0;
+  overflow-y: hidden;
+  transition: max-height 0.5s;
+}
+.opinion_view_interaction_wrapper.showing_custom {
+  max-height: 1200px;
+}
+
+"""
+
+window.OpinionViewInteractionWrapper = ReactiveComponent
+  displayName: 'OpinionViewInteractionWrapper'
+
+  render: ->
+    opinion_views_ui = fetch 'opinion_views_ui'
+    local_state = fetch @props.ui_key or @local
+
+
+    DIV 
+      className: "opinion_view_interaction_wrapper #{if opinion_views_ui.active == 'custom' && opinion_views_ui.last_interacted_with == local_state.key then 'showing_custom' else ''}"
+
+      if opinion_views_ui.active == 'custom'
+        width = @props.width
+
+        DIV
+          style: 
+            position: 'relative'
+
+          if local_state.minimized || opinion_views_ui.last_interacted_with != local_state.key
+
+            DIV 
+              style:
+                marginTop: 12
+                width: if width then width
+
+              NonInteractiveOpinionViews
+                more_views_positioning: @props.more_views_positioning
+
+          else 
+            DIV 
+              style:
+                display: 'flex'
+                justifyContent: if @props.more_views_positioning == 'centered' then 'center' else 'flex-end'
+
+              DIV 
+                style: 
+                  border: '1px solid #B6B6B6'
+                  borderRadius: 8
+                  width: 'fit-content'
+                  maxWidth: if width then width
+
+                
+                DIV 
+                  style: 
+                    padding: '0px 24px'
+
+                  InteractiveOpinionViews()
+
+
+
 
 
 InteractiveOpinionViews = ReactiveComponent
@@ -1428,7 +1454,7 @@ NonInteractiveOpinionViews = ReactiveComponent
                 onClick: ->
                   mini.toggle()
                   if !user_has_set_a_view()
-                    reset_to_all()
+                    reset_to_all(local_state)
 
                 'x'
 
@@ -1702,9 +1728,9 @@ styles += """
   }
 
   .minimized_view {
-    color: #1059a2;
+    color: #{focus_blue};
     /* border: 1px solid #2478cc; */
-    background-color: #e4edf7;
+    background-color: #e9edfb;
     width: fit-content;
     position: relative;
     display: inline-block;
@@ -1840,6 +1866,7 @@ window.ToggleButtons = (items, view_state, style) ->
       do (item) =>
         key = item.key or item.label
         LI 
+          ref: key
           key: key
           className: if view_state.active == key then 'active'
           'data-view-state': key

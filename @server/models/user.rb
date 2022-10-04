@@ -408,29 +408,56 @@ class User < ApplicationRecord
     end
   end
 
+
+  #####################
   # Check to see if this user has been referenced by email in any 
   # roles or permissions settings. If so, replace the email with the
   # user's key. 
-  def update_roles_and_permissions
-    ActsAsTenant.without_tenant do 
-      for cls in [Subdomain, Proposal]
-        objs_with_user_in_role = cls.where("roles LIKE ?", "%\"#{self.email}\"%") 
-                                         # this is case insensitive
 
-        for obj in objs_with_user_in_role
-          for role, users in obj.roles 
-            if users.include?(self.email)  
-              pp "UPDATING ROLES, replacing #{self.email} with #{self.id} for #{obj.name}"
-              users.delete self.email
-              users.append "/user/#{self.id}"
-            end
-          end 
-          obj.save 
-        end
+  def __replace_email_with_key(obj) 
+    for role, users in obj.roles 
+      if users.include?(self.email)  
+        pp "UPDATING ROLES, replacing #{self.email} with #{self.id} for #{obj.name}"
+        users.delete self.email
+        users.append "/user/#{self.id}"
       end
-    end
-  end
+    end 
+    obj.save 
+  end 
 
+  def update_roles_and_permissions
+
+    if JSON.dump(current_subdomain.roles).index(self.email)
+      __replace_email_with_key(current_subdomain)
+    end
+
+    proposals_with_user_in_role = current_subdomain.proposals.where("roles LIKE ?", "%\"#{self.email}\"%") 
+                                     # this is case insensitive
+
+    for obj in proposals_with_user_in_role
+      __replace_email_with_key(obj)
+    end
+
+    # This is slow, and I don't think it is necessary given that this method is called whenever someone logs in.   
+    # ActsAsTenant.without_tenant do 
+    #   for cls in [Subdomain, Proposal]
+    #     objs_with_user_in_role = cls.where("roles LIKE ?", "%\"#{self.email}\"%") 
+    #                                      # this is case insensitive
+
+    #     for obj in objs_with_user_in_role
+    #       for role, users in obj.roles 
+    #         if users.include?(self.email)  
+    #           pp "UPDATING ROLES, replacing #{self.email} with #{self.id} for #{obj.name}"
+    #           users.delete self.email
+    #           users.append "/user/#{self.id}"
+    #         end
+    #       end 
+    #       obj.save 
+    #     end
+    #   end
+    # end
+  end
+  ##################
 
 
 

@@ -496,6 +496,7 @@ class CurrentUserController < ApplicationController
     set_current_user(user)
 
     current_user.add_to_active_in
+    current_user.update_roles_and_permissions
 
     dirty_key '/proposals'
     if user.is_admin?

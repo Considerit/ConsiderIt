@@ -1,15 +1,3 @@
-styles += """
-
-  .proposal_scores {
-    position: absolute;
-  }
-
-  .is_collapsed .proposal_scores {
-    left: calc(100% - 80px);
-    top: 23px;    
-  }
-
-"""
 
 
 

@@ -197,7 +197,7 @@ class HtmlController < ApplicationController
 
       @proposal = proposal
       @host = current_subdomain.url
-      @oembed_url = CGI.escape "https://" + @host + "/" + @proposal.slug + "?results=true"
+      @oembed_url = CGI.escape "https://" + @host + "/" + @proposal.slug
     end
 
     meta = [

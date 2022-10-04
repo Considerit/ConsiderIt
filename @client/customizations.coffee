@@ -201,8 +201,6 @@ customizations.default =
   list_permit_new_items: true
   homepage_show_new_proposal_button: true
 
-  show_crafting_page_first: false
-
   show_proposal_meta_data: true 
 
   slider_handle: slider_handle.flat
@@ -230,7 +228,9 @@ customizations.default =
   # IBM Plex Sans
   # Trebuchet MS, palantino, and optima are intriguing web-safe fonts
   font: "IBM Plex Sans, Helvetica Neue, sans-serif"
-  header_font: "IBM Plex Sans Condensed, IBM Plex Sans, Helvetica Neue, sans-serif"
+  # header_font: "IBM Plex Sans Condensed, IBM Plex Sans, Helvetica Neue, sans-serif"
+  header_font: "IBM Plex Sans, IBM Plex Sans, Helvetica Neue, sans-serif"
+
   mono_font: "IBM Plex Mono, Menlo, Consolas, Monaco, Fira Mono, Liberation Mono, Lucida Console, monospace"
 
   new_proposal_fields: -> 

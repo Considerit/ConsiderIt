@@ -287,7 +287,7 @@ ModerateItem = ReactiveComponent
       tease = "#{moderatable.nutshell.substring(0, 120)}..."
       header = moderatable.nutshell
       details = moderatable.text 
-      href = "/#{proposal.slug}?results=true&selected=#{point.key}"
+      href = "/#{proposal.slug}?selected=#{point.key}"
     else if class_name == 'Comment'
       point = fetch(moderatable.point)
       proposal = fetch(point.proposal)
@@ -295,7 +295,7 @@ ModerateItem = ReactiveComponent
       tease = "#{moderatable.body.substring(0, 120)}..."
       header = moderatable.body
       details = ''
-      href = "/#{proposal.slug}?results=true&selected=#{point.key}"      
+      href = "/#{proposal.slug}?selected=#{point.key}"      
     else if class_name == 'Proposal'
       proposal = moderatable
       tease = "#{proposal.name.substring(0, 120)}..."

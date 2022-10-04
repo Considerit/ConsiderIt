@@ -8,52 +8,10 @@ require "./opinion_views"
 
 
 
-#######
-# State stored in query params
-# TODO: eliminate
-window.get_proposal_mode = -> 
-  loc = fetch('location')
-
-  if loc.url == '/'
-    return null
-  else if (loc.query_params?.results && loc.query_params?.results != 'false') || TWO_COL()
-    'results' 
-  else 
-    'crafting'
-
-window.get_selected_point = -> 
-  fetch('location').query_params.selected
 
 
-window.updateProposalMode = (proposal_mode, triggered_by) ->
-  loc = fetch('location')
 
-  if proposal_mode == 'results' && loc.query_params.results ||
-      proposal_mode == 'crafting' && !loc.query_params.results
-    return
 
-  if proposal_mode == 'results'
-    loc.query_params.results = true
-  else
-    delete loc.query_params.results
-
-  delete loc.query_params.selected
-
-  save loc
-
-  histo_el = document.querySelector('[data-widget="Proposal"] .histogram')
-
-  if proposal_mode == 'results' && histo_el
-    
-    $$.ensureInView histo_el,
-      offset_buffer: 0
-
-  window.writeToLog
-    what: 'toggle proposal mode'
-    details: 
-      from: get_proposal_mode()
-      to: proposal_mode
-      triggered_by: triggered_by 
   
 
 
@@ -117,7 +75,7 @@ window.Proposal = ReactiveComponent
         !(can_opine in [Permission.PERMITTED, Permission.UNVERIFIED_EMAIL, \
                         Permission.NOT_LOGGED_IN, Permission.INSUFFICIENT_INFORMATION] || 
          (can_opine == Permission.DISABLED && your_opinion.key))
-      updateProposalMode('results', 'permission not granted for crafting')
+      update_proposal_mode('results', 'permission not granted for crafting')
     
     
     opinion_views = fetch 'opinion_views'

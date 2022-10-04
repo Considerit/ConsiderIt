@@ -475,6 +475,7 @@ window.widthWhenRendered = (str, style) ->
 
     el = document.createElement 'span'
     el.id = "width_test"
+    el.style.setProperty 'position', 'absolute'    
     el.style.setProperty 'visibility', 'hidden'
     el.innerHTML = "<span>#{str}</span>"
 
@@ -495,6 +496,7 @@ window.heightWhenRendered = (str, style, el) ->
   key = JSON.stringify _.extend({str: str}, style)
   if key not of height_cache
     el ?= document.createElement 'div'
+    el.style.position = 'absolute'
     el.style.visibility = 'hidden'
     el.innerHTML = "<div>#{str}</div>"
 
@@ -533,6 +535,9 @@ window.sizeWhenRendered = (str, style) ->
     style.display ||= 'inline-block'
 
     test = document.createElement("div")
+    test.style.position = 'absolute'
+    test.style.visibility = 'hidden'
+    
     test.innerHTML = "<div>#{str}</div>"
     for k,v of style
 
@@ -582,6 +587,7 @@ window.location_origin = ->
 ############
 
 window.responsive_style_registry = {}
+
 window.ResponsiveStyles = ReactiveComponent
   displayName: "ResponsiveStyles"
   render: ->

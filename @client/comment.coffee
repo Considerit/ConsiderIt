@@ -107,7 +107,7 @@ window.Discussion = ReactiveComponent
       fetch your_opinion
     your_opinion.point_inclusions ?= []
     point_included = _.contains(your_opinion.point_inclusions, point.key)
-    in_wings = get_proposal_mode() == 'crafting' && !point_included
+    in_wings = get_proposal_mode(proposal) == 'crafting' && !point_included
 
     comments = fetch(@props.comments).comments
     

@@ -19,7 +19,6 @@ require './edit_page'
 require './customizations'
 require './form'
 # require './histogram'
-# require './histogram-webgl'
 require './histogram-canvas'
 require './proposal_sort_and_search'
 require './opinion_views'
@@ -32,7 +31,7 @@ require './opinion_slider'
 require './tooltip'
 require './popover'
 require './flash'
-# require './development'
+require './development'
 require './su'
 require './edit_point'
 require './edit_comment'
@@ -190,6 +189,7 @@ LocationTransition = ReactiveComponent
       #######
 
       @last_location = loc.url
+
     SPAN null
 
 
@@ -398,8 +398,8 @@ Root = ReactiveComponent
         app = fetch('/application')   
 
         DIV null, 
-          # if app.dev
-          #   Development()
+          if app.dev
+            Development()
 
           if current_user.is_super_admin || app.su
             SU()
@@ -412,16 +412,12 @@ Root = ReactiveComponent
     loc = fetch('location')
     page = get_page()
 
+
     if !fetch('auth').form && page.proposal
 
       opinion_views = fetch 'opinion_views'
 
       if get_selected_point()
-        window.writeToLog
-          what: 'deselected a point'
-          details:
-            point: get_selected_point()
-
         delete loc.query_params.selected
         save loc
 
@@ -444,6 +440,7 @@ Root = ReactiveComponent
       if selected.isCollapsed
         wysiwyg_editor.showing = false
         save wysiwyg_editor
+
 
 
 

@@ -76,7 +76,7 @@ window.$$ =
       speed: null
       callback: ->
 
-    el_height = $$.height(el)
+    el_height = $$.height(el) + (options.extra_height or 0)
 
     el_top = $$.offset(el).top
     el_bottom = el_top + el_height

@@ -53,7 +53,7 @@ toggle_popover = (e) ->
 
 
 
-DELAY_TO_SHOW_POPOVER = 400
+DELAY_TO_SHOW_POPOVER = 800
 
 show_popover = (config) -> 
 

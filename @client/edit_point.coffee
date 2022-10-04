@@ -7,9 +7,12 @@ window.EditPoint = ReactiveComponent
 
   render : ->
     proposal = fetch @props.proposal
-    @local = @data @local_key,
-      sign_name : if @props.fresh then true else !@data().hide_name
-      add_details : false
+    point = fetch @props.point 
+
+    if !@local.sign_name?
+      _.defaults @local, 
+        sign_name : if @props.fresh then true else !point.hide_name
+        add_details : false
 
     mobile = browser.is_mobile
 
@@ -70,7 +73,7 @@ window.EditPoint = ReactiveComponent
           'aria-label': translator('engage.point_summary_placeholder', 'A succinct summary of your point.')
           placeholder:  translator('engage.point_summary_placeholder', 'A succinct summary of your point.')
           required: 'required'
-          defaultValue: if @props.fresh then null else @data().nutshell
+          defaultValue: if @props.fresh then null else point.nutshell
           style: _.extend {}, textarea_style,
             minHeight: 75
           count_style: 
@@ -93,7 +96,7 @@ window.EditPoint = ReactiveComponent
           'aria-label': translator('engage.point_description_placeholder', 'Add background or evidence.')  
           placeholder: translator('engage.point_description_placeholder', 'Add background or evidence.')  
           min_height: if PORTRAIT_MOBILE() then 150 else 80
-          defaultValue: if @props.fresh then null else @data().text
+          defaultValue: if @props.fresh then null else point.text
           style: textarea_style
           onHeightChange: => 
             s = fetch('reasons_height_adjustment')
@@ -307,7 +310,6 @@ window.EditPoint = ReactiveComponent
 
   done : ->
     your_points = fetch @props.your_points_key
-
     if @props.fresh
       your_points.adding_new_point = false
     else
@@ -328,7 +330,7 @@ window.EditPoint = ReactiveComponent
     if !@props.fresh
       # If we're updating an existing point, we just have to update
       # some of the fields from the form
-      point = @data()
+      point = fetch @props.point
       point.nutshell = nutshell
       point.text = text
       point.hide_name = hide_name

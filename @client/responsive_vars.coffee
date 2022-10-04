@@ -101,7 +101,6 @@ setResponsive = ->
     AUTH_WIDTH: if browser.is_mobile then content_width else Math.max decision_board_width, 820
     TWO_COL: two_col
     ONE_COL: one_col
-    SLIDER_HANDLE_SIZE: if two_col then 65 else 36
     CONTENT_WIDTH: content_width
     PORTRAIT_MOBILE: portrait && browser.is_mobile
     LANDSCAPE_MOBILE: !portrait && browser.is_mobile
@@ -114,7 +113,6 @@ setResponsive = ->
     LIST_GUTTER: list_gutter
     ITEM_TEXT_WIDTH:    if one_col then homepage_width - list_gutter else .6 * (homepage_width - 2 * list_gutter)
     ITEM_OPINION_WIDTH: if one_col then homepage_width - list_gutter else .4 * (homepage_width - 2 * list_gutter)
-
 
   # only update if we have a change
   # (something like this should go into statebus)

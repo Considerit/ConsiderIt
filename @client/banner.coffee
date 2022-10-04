@@ -1332,9 +1332,6 @@ window.ImageHeader = (opts) ->
     text: customization('banner')?.title
     external_link: subdomain.external_project_url
 
-  if !opts.background_image_url
-    throw 'LegacyImageHeader can\'t be used without a masthead'
-
   is_light = is_light_background()
     
   DIV 

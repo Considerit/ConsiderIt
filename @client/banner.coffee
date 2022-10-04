@@ -1319,6 +1319,42 @@ window.MediaBanner = ->
           src: bg
 
 
+window.ImageHeader = (opts) ->
+  subdomain = fetch '/subdomain'   
+  loc = fetch 'location'    
+
+  return SPAN null if !subdomain.name
+
+  opts ||= {}
+  _.defaults opts, 
+    background_color: customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
+    background_image_url: customization('banner')?.background_image_url
+    text: customization('banner')?.title
+    external_link: subdomain.external_project_url
+
+  if !opts.background_image_url
+    throw 'LegacyImageHeader can\'t be used without a masthead'
+
+  is_light = is_light_background()
+    
+  DIV 
+    style: 
+      backgroundColor: opts.background_color
+
+    IMG 
+      alt: opts.background_image_alternative_text
+      src: opts.background_image_url
+      style: 
+        width: '100%'
+
+    if opts.text
+      H1 style: {textAlign: 'center', color: 'white', margin: 'auto', fontSize: 60, fontWeight: 700, position: 'relative', paddingTop: 30}, 
+        opts.text
+
+    CustomizeBackground()
+
+    HomepageTabs(opts)
+
 
 
 # A small header with text and optionally a logo

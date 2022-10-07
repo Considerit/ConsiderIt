@@ -255,17 +255,18 @@ masthead_only = ["kamakakoi","seattletimes","kevin","ihub","SilverLakeNC",\
 
 
 setTimeout ->
-  # The old image banner + optional text description below
-  window.LegacyImageHeader = ImageHeader
+  if ImageHeader?
+    # The old image banner + optional text description below
+    window.LegacyImageHeader = ImageHeader
 
 
-  for sub in text_and_masthead
-    customizations_by_file[sub.toLowerCase()] = 
-      HomepageHeader: LegacyImageHeader
+    for sub in text_and_masthead
+      customizations_by_file[sub.toLowerCase()] = 
+        HomepageHeader: LegacyImageHeader
 
-  for sub in masthead_only
-    customizations_by_file[sub.toLowerCase()] = 
-      HomepageHeader: LegacyImageHeader
+    for sub in masthead_only
+      customizations_by_file[sub.toLowerCase()] = 
+        HomepageHeader: LegacyImageHeader
 
 
 

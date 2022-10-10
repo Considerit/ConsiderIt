@@ -96,13 +96,13 @@ window.Slider = ReactiveComponent
       handle_height: 6
       base_height: 6
       base_endpoint: 'square'
-      base_color: 'rgb(160, 160, 160)'
+      base_color: 'rgb(200, 200, 200)'
       polarized: false
       draw_helpers: false
       respond_to_click: true
 
 
-  render : ->
+  render: ->
 
     props = @full_props()
 
@@ -147,6 +147,7 @@ window.Slider = ReactiveComponent
       backgroundColor: props.base_color
       position: 'absolute'
 
+    slider = fetch props.slider_key
 
     if typeof(props.base_endpoint) == 'string'
       endpoints = [props.base_endpoint, props.base_endpoint]
@@ -160,6 +161,17 @@ window.Slider = ReactiveComponent
       className: 'slider_base'
       style : slider_base_style
       onClick: @handleMouseClick
+
+
+      if props.show_val_highlighter
+        DIV 
+          style: 
+            height: props.base_height + 2
+            backgroundColor: focus_color()
+            position: 'relative'
+            top: -1
+            width: "#{Math.abs(100 * slider.value * (if props.polarized then .5 else 1))}%"
+            left: if !props.polarized then 0 else if slider.value < 0 then "#{50 + 50 * slider.value}%" else '50%'
 
       if props.ticks 
         num_ticks = 2 / props.ticks.increment
@@ -347,10 +359,10 @@ window.Slider = ReactiveComponent
     
     e.preventDefault()
 
-    # Initiate dragging
-    slider = fetch props.slider_key
-    slider.is_moving = true
-    save slider
+    # # Initiate dragging
+    # slider = fetch props.slider_key
+    # slider.is_moving = true
+    # save slider
 
     # adjust for starting location - offset
     @local.starting_adjustment = (parseInt(e.currentTarget.style.left, 10) || 0) - \
@@ -366,6 +378,7 @@ window.Slider = ReactiveComponent
   # While sliding
   handleMouseMove: (e) ->
     props = @full_props()
+
     e.preventDefault() # prevents text selection of surrounding elements
 
     slider = fetch props.slider_key
@@ -381,6 +394,7 @@ window.Slider = ReactiveComponent
         else
           x
 
+    slider.is_moving = true
     slider.has_moved = true
 
     # normalize position of handle into slider value
@@ -402,15 +416,15 @@ window.Slider = ReactiveComponent
     # if there is some delay in removing the event handlers.
     slider = fetch props.slider_key
 
-    return if !slider.is_moving
+    props.onMouseUpCallback?(e)
 
-    e.preventDefault()
+    if slider.is_moving
+      e.preventDefault()
 
-    # Turn off dragging
-    slider.is_moving = false
-    save slider
+      # Turn off dragging
+      slider.is_moving = false
+      save slider
 
-    props.onMouseUpCallback(e) if props.onMouseUpCallback
 
     document.removeEventListener "mousemove", @handleMouseMove
     document.removeEventListener "mouseup", @handleMouseUp
@@ -438,7 +452,7 @@ window.Slider = ReactiveComponent
 
       save slider
 
-      props.onClickCallback(e) if props.onClickCallback
+      props.onClickCallback?(e) 
 
 
 

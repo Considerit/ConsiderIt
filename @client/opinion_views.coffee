@@ -19,6 +19,8 @@ window.compose_opinion_views = (opinions, proposal, opinion_views) ->
   opinion_views.active_views ?= {}
   active_views = opinion_views.active_views
 
+  proposal = fetch proposal
+
   if !opinions
     opinions = opinionsForProposal(proposal)
 
@@ -27,8 +29,10 @@ window.compose_opinion_views = (opinions, proposal, opinion_views) ->
   groups = {}
 
   has_groups = false
+  data_loaded = {}
   for view_name, view of active_views
     has_groups ||= view.get_group?
+    data_loaded[view_name] = !view.ready? || view.ready(opinions, proposal)
 
   for o in opinions
     weight = 1
@@ -38,8 +42,10 @@ window.compose_opinion_views = (opinions, proposal, opinion_views) ->
       u_groups = []
 
     u = o.user.key or o.user
-
+    
     for view_name, view of active_views
+      continue if !data_loaded[view_name]
+
       if view.get_salience?
         s = view.get_salience(u, o, proposal)
         if s < min_salience
@@ -52,6 +58,8 @@ window.compose_opinion_views = (opinions, proposal, opinion_views) ->
           u_groups = u_groups.concat ggg
         else 
           u_groups.push ggg
+
+
     weights[u] = weight
     salience[u] = min_salience
     if has_groups      
@@ -260,6 +268,8 @@ default_weights = ->
       key: 'weighed_by_deliberative'
       name: translator 'opinion_views.weights_tradeoffs', 'Tradeoffs recognized'
       label: translator 'opinion_views.weights_tradeoffs_label', 'Add weight to opinions that acknowledge both pro and con tradeoffs.'
+      ready: (opinions, proposal) -> 
+        !!fetch("/points").points
       weight: (u, opinion, proposal) ->
         point_inclusions = opinion.point_inclusions or []
         pros = 0 
@@ -292,6 +302,9 @@ default_weights = ->
       key: 'weighed_by_influence'
       name: translator 'opinion_views.weights_influence', 'Influence'
       label: translator 'opinion_views.weights_influence_label', 'Add weight to the opinions of people who have contributed proposals and pro/con reasons that other people have found valuable.'
+      ready: ->
+        !!fetch('/proposals').proposals && !!fetch('/points').points
+
       weight: (u, opinion, proposal) ->
         if !influencer_scores_initialized
           build_influencer_network()
@@ -378,6 +391,7 @@ _activate_opinion_view = (view, view_type, replace_existing) ->
       name: view.name
       view_type: view_type
       continuous_value: view.continuous_value
+      ready: view.ready
       get_salience: (u, opinion, proposal) ->
         if view.salience?
           view.salience u, opinion, proposal
@@ -691,6 +705,9 @@ OpinionViews = ReactiveComponent
         callback: (item, previous_state) => 
           if previous_state == 'custom'
             if user_has_set_a_view()
+              opinion_views_ui.last_interacted_with = local_state.key or local_state
+              save opinion_views_ui
+
               local_state.minimized = !local_state.minimized
               save local_state
             else 
@@ -765,16 +782,16 @@ OpinionViews = ReactiveComponent
 
         SPAN 
           style: 
-            display: 'flex'
+            # display: 'flex'
             position: 'relative'
 
           ToggleButtons view_buttons, opinion_views_ui, 
             minWidth: 290
 
-          if opinion_views_ui.active == 'custom' && opinion_views_ui.last_interacted_with == local_state.key
-            triangle_left = (@local.view_state_left or 60) + 35
+          if opinion_views_ui.active == 'custom'
+            triangle_left = ( (if local_state.minimized then @local.view_state_left_minimized else @local.view_state_left) or 60) + 35
 
-            if local_state.minimized
+            if local_state.minimized || opinion_views_ui.last_interacted_with != local_state.key
               if user_has_set_a_view()
                 DIV 
                   className: 'custom_view_triangle'
@@ -799,17 +816,23 @@ OpinionViews = ReactiveComponent
             style: 
               position: 'absolute'
               left: '100%'
+              top: 0
             @MinimizeExpandButton()
 
 
 
 
   MinimizeExpandButton: ->
-    return SPAN(null) if !user_has_set_a_view() || fetch('opinion_views_ui').active != 'custom'
+    opinion_views_ui = fetch('opinion_views_ui')
+    return SPAN(null) if !user_has_set_a_view() || opinion_views_ui.active != 'custom'
+    local_state = fetch @props.ui_key or @local.key
 
     toggle_expanded = (e) =>
-      @local.minimized = !@local.minimized
-      save @local
+      opinion_views_ui.last_interacted_with = local_state.key or local_state
+      save opinion_views_ui
+
+      local_state.minimized = !local_state.minimized
+      save local_state
 
     DIV null,
       BUTTON 
@@ -821,20 +844,33 @@ OpinionViews = ReactiveComponent
           whiteSpace: 'nowrap'
           marginLeft: 4
 
-        if @local.minimized
+        if local_state.minimized
           translator 'opinion_views.minimize_configure', 'configure view'
         else 
           translator 'opinion_views.minimize_minimize', 'minimize'
 
   shadow_view_state_offset: ->
     ww = WINDOW_WIDTH()
-    return if @local.view_state_left? && ww == @left_set_for_window_width
+    local_state = fetch @props.ui_key or @local.key
+    opinion_views_ui = fetch('opinion_views_ui')
+
+    return if opinion_views_ui.active != 'custom' || \
+              (!local_state.minimized && @local.view_state_left? && ww == @left_set_for_window_width) || \
+              ( local_state.minimized && @local.view_state_left_minimized? && ww == @left_set_for_window_width_minimized)
 
     left = @refs.custom?.offsetLeft
-    if left != @local.view_state_left
-      @local.view_state_left = left 
-      @left_set_for_window_width = ww
-      save @local
+
+    if local_state.minimized
+      if left != @local.view_state_left_minimized
+        @local.view_state_left_minimized = left 
+        @left_set_for_window_width_minimized = ww
+        save @local
+
+    else 
+      if left != @local.view_state_left
+        @local.view_state_left = left 
+        @left_set_for_window_width = ww
+        save @local
 
   componentDidUpdate: -> @shadow_view_state_offset()
   componentDidMount: -> @shadow_view_state_offset()
@@ -971,7 +1007,7 @@ window.OpinionViewInteractionWrapper = ReactiveComponent
 
 
     DIV 
-      className: "opinion_view_interaction_wrapper #{if opinion_views_ui.active == 'custom' && opinion_views_ui.last_interacted_with == local_state.key then 'showing_custom' else ''}"
+      className: "opinion_view_interaction_wrapper #{if opinion_views_ui.active == 'custom' && (opinion_views_ui.last_interacted_with == local_state.key || local_state.minimized) then 'showing_custom' else ''}"
 
       if opinion_views_ui.active == 'custom'
         width = @props.width
@@ -984,10 +1020,11 @@ window.OpinionViewInteractionWrapper = ReactiveComponent
 
             DIV 
               style:
-                marginTop: 12
-                width: if width then width
+                marginTop: 0
+                # width: if width then width
 
               NonInteractiveOpinionViews
+                ui_key: @props.ui_key
                 more_views_positioning: @props.more_views_positioning
 
           else 
@@ -1008,7 +1045,8 @@ window.OpinionViewInteractionWrapper = ReactiveComponent
                   style: 
                     padding: '0px 24px'
 
-                  InteractiveOpinionViews()
+                  InteractiveOpinionViews
+                    ui_key: @props.ui_key
 
 
 
@@ -1422,7 +1460,7 @@ NonInteractiveOpinionViews = ReactiveComponent
         textAlign: 'right' # if @props.more_views_positioning == 'centered' then 'center' else 'right'
 
       for mini in minimized_views
-        do (mini) ->
+        do (mini) =>
           LI  
             key: mini.name
             className: 'minimized_view_wrapper'
@@ -1451,7 +1489,9 @@ NonInteractiveOpinionViews = ReactiveComponent
 
               BUTTON 
                 className: "minimized_view_close" 
-                onClick: ->
+                onClick: =>
+                  local_state = fetch @props.ui_key or @local
+
                   mini.toggle()
                   if !user_has_set_a_view()
                     reset_to_all(local_state)
@@ -1710,9 +1750,10 @@ styles += """
   }
 
   .minimized_view_close {
-    position: absolute;
-    right: -22px;
-    top: 1px;
+    margin-top: 1px;
+    margin-left: 22px;
+    color: #{focus_color()};
+
   }
   .minimized_view_list {
     list-style: none;
@@ -1792,6 +1833,7 @@ styles += """
 
 styles += """
   .toggle_buttons {
+    position: relative;
     list-style: none;
     margin: auto;
     text-align: center;

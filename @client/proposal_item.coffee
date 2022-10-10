@@ -1,14 +1,21 @@
-require './opinion_block'
-require './histogram_scores'
 
 window.ANIMATION_SPEED_ITEM_EXPANSION = 0.6
+
+window.STAGE1_DELAY = 0
+window.STAGE2_DELAY = ANIMATION_SPEED_ITEM_EXPANSION * 2
+window.STAGE3_DELAY = ANIMATION_SPEED_ITEM_EXPANSION * 4
+
 # window.PROPOSAL_ITEM_SPRING = # 4000 / 800 is decent
 #   stiffness: 4000  #600
 #   damping: 800
 
-window.PROPOSAL_ITEM_SPRING = 'gentle'
+window.PROPOSAL_ITEM_SPRING = { stiffness: 130, damping: 17 } # 'gentle'
 
 window.PROPOSAL_DESCRIPTION_MAX_HEIGHT_ON_EXPAND = 500
+
+require './opinion_block'
+require './histogram_scores'
+
 
 styles += """
   .prep_for_flip {
@@ -21,27 +28,29 @@ styles += """
     transition-delay: 0ms;    
   }
 
+  .ProposalItem, .show-all-proposals {
+    position: relative;
+    left: calc(-1 * var(--LIST_PADDING-LEFT));
+    width: calc(100% + var(--LIST_PADDING-LEFT) + var(--LIST_PADDING-RIGHT) );
+  }
+
   .ProposalItem {
     min-height: 84px;
-    position: relative;
     list-style: none;    
     padding: 0px;
-    margin: 0;
+    margin: 0px 0px 22px 0px;
 
     top: 0;
 
-    left: calc(-1 * var(--LIST_PADDING-LEFT));
-    width: calc(100% + var(--LIST_PADDING-LEFT) + var(--LIST_PADDING-RIGHT) );
-
+    z-index: 1;
   }
 
   .is_expanded.ProposalItem {
-    left: calc(-4 * var(--LIST_PADDING-LEFT));
-    width: calc(100% + 8 * var(--LIST_PADDING-LEFT) );
-
+    width: calc( 100% + 8 * var(--LIST_PADDING-LEFT) );
+    left:  calc( -4 * var(--LIST_PADDING-LEFT) );
     top: -24px;
 
-    z-index: 2; /* put it above surrounding ProposalItems */
+    z-index: 3; /* put it above surrounding ProposalItems */
 
   } 
 
@@ -67,41 +76,17 @@ styles += """
   }
 
 
-  /* The wrapper for the expanded item */
-
-  .ProposalItem::after {
-    content: "";    
-    opacity: 0;
-
-    transition-property: opacity;
-
+  /* partially implemented experimental lightbox */
+  /* .is_expanded.ProposalItem:before {
+    content: "";
+    background-color: rgba(0,0,0,.15);
     position: absolute;
-    z-index: -1;
-
-    left: 0px;
-    top: 0px;
-    width: 100%;
-    height: 100%;
-
-    background-image: linear-gradient(180deg, #F6F7F8 0%, #F6F7F8 4%, #FFFFFF 150px, #FFFFFF 92%, #F6F7F8 100%);
-    box-shadow: 0 1px 3px rgba(0,0,0,.25);    
-    border-radius: 4px;    
-  }
-
-  .is_expanded.animation-resting.ProposalItem::after {
-    opacity: 1;
-    transition-duration: #{1 * ANIMATION_SPEED_ITEM_EXPANSION}s;
-  }
-
-  .is_collapsed.ProposalItem::after {
-    transition-duration: #{ANIMATION_SPEED_ITEM_EXPANSION / 10 }s;
-  }
-
-  .collapsing.ProposalItem::after {
-    transition-duration: #{ANIMATION_SPEED_ITEM_EXPANSION / 10 }s;
-
-    opacity: 0;
-  }
+    height: 999999px;
+    width: 999999px;
+    top: -9999px;
+    left: -9999px;
+    z-index: 2;
+  } */
 """
 
 
@@ -133,8 +118,7 @@ window.ProposalItem = ReactiveComponent
 
 
   onAnimationDone: (el, dd) ->
-    if @expansion_state_updated()
-
+    if @expansion_state_updated() || el.classList.contains('animating-expansion')
       direction = if @is_expanded then 'expanding' else 'collapsing'        
       el.classList.remove 'animating-expansion', direction
       el.classList.add "animation-resting"
@@ -180,7 +164,7 @@ window.ProposalItem = ReactiveComponent
         "data-name": slugify(proposal.name)
 
         'data-visibility-name': 'ProposalItem'
-        'data-receive-viewport-visibility-updates': 2
+        'data-receive-viewport-visibility-updates': 4
         'data-component': @local.key
 
         id: 'p' + (proposal.slug or "#{proposal.id}").replace('-', '_')  # Initial 'p' is because all ids must begin 
@@ -217,7 +201,6 @@ styles += """
   .proposal-block-container {
     display: flex;
     justify-content: center;
-    padding-bottom: 24px;
   }
 
   .is_collapsed .proposal-block-container {
@@ -251,6 +234,7 @@ styles += """
     margin-bottom: 24px;
     margin-top: 10px;
     padding-right: 0px;
+    padding-bottom: 64px;    
   }
 
 
@@ -278,6 +262,89 @@ styles += """
 
 
 
+
+
+  /* The wrapper for the expanded item */
+
+  .opinion-block-wrapper::after {
+    content: "";    
+    opacity: 0;
+
+    transition-property: opacity, box-shadow;
+
+    position: absolute;
+    z-index: -1;
+
+    top: 0px;
+    height: 100%;
+
+    #left: 0px;
+    #width: 100%;
+
+    width: min( var(--WINDOW_WIDTH), 100% );
+    left:  max(12px, (100% - var(--WINDOW_WIDTH) ) / 2 + 12px );
+
+
+
+    box-shadow: 0px 0px 0px rgba(0,0,0,.25);    
+
+    background-color: white;
+    border-radius: 128px;
+  }
+
+  .one-col .opinion-block-wrapper::after {
+    left: max(-18px, (100% - var(--WINDOW_WIDTH) ) / 2 - 18px);
+  }
+
+
+  .is_expanded .opinion-block-wrapper::after {
+    opacity: 1;
+    transition-duration: #{.5 * ANIMATION_SPEED_ITEM_EXPANSION}s;
+    box-shadow: 0px 0px 3px rgba(0,0,0,.25);    
+
+  }
+
+  .is_expanded:not(.flipping) .opinion-block-wrapper::after {
+    background-image: linear-gradient(180deg, #f3f4f5 75px, #FFFFFF 150px, #FFFFFF 90%, #f3f4f5 96%);
+  }
+
+  /* 
+  .is_collapsed .opinion-block-wrapper::after {
+    transition-duration: #{ANIMATION_SPEED_ITEM_EXPANSION / 10 }s;
+  }
+
+  .collapsing .opinion-block-wrapper::after {
+    transition-duration: #{ANIMATION_SPEED_ITEM_EXPANSION / 10 }s;
+
+    opacity: 0;
+  } */
+
+
+  .custom-shape-divider-top-1664224812 {
+      pointer-events: none;
+      position: absolute;
+      top: -39px;
+      left: 0;
+      width: 100%;
+      overflow: hidden;
+      line-height: 0;
+  }
+
+  .custom-shape-divider-top-1664224812 svg {
+      position: relative;
+      display: block;
+      width: calc(100% + 1.3px);
+      height: 39px;
+      transform: scaleY(-1);
+      filter: drop-shadow(0px 0px 1px rgb(0 0 0 / 0.25));
+  }
+
+  .custom-shape-divider-top-1664224812 .shape-fill {
+      fill: #f3f4f5;
+  }
+
+
+
   .debugging .opinion-block-wrapper {
     background-color: #eee;    
   }
@@ -293,12 +360,13 @@ ProposalItemWrapper = ReactiveComponent
   displayName: 'ProposalItemWrapper'
 
   toggle_expand: -> 
-    toggle_expand(@props.list_key, @props.proposal)
+    toggle_expand
+      list_key: @props.list_key
+      proposal: fetch @props.proposal
 
   toggle_expand_key: (e) ->
     if e.which == 32 || e.which == 13
-      toggle_expand(@props.list_key, @props.proposal)
-
+      @toggle_expand()
 
   render: ->
     proposal = fetch @props.proposal
@@ -350,6 +418,15 @@ ProposalItemWrapper = ReactiveComponent
         DIV 
           className: 'prep_for_flip opinion-block-wrapper'
 
+          if @props.is_expanded
+            DIV 
+              className: "custom-shape-divider-top-1664224812"
+              dangerouslySetInnerHTML: __html: """
+                <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M649.97 0L550.03 0 599.91 54.12 649.97 0z" class="shape-fill"></path>
+                </svg>
+                """
+
           FLIPPED 
             inverseFlipId: "opinion-block-#{proposal.key}"
             shouldInvert: @props.shouldFlip
@@ -366,32 +443,13 @@ ProposalItemWrapper = ReactiveComponent
                 shouldFlipIgnore: @props.shouldFlipIgnore
                 hide_scores: @props.hide_scores
 
-      # if show_proposal_scores 
-      #   DIV 
-      #     className: 'proposal-score-spacing'
 
-    
-      # # little score feedback
-      # if show_proposal_scores        
+          BUTTON 
+            className: 'bottom_closer'
+            onClick: @toggle_expand
+            onKeyPress: @toggle_expand_key
 
-      #   # FLIPPED 
-      #   #   flipId: "proposal_scores-#{proposal.key}"
-      #   #   shouldFlipIgnore: @props.shouldFlipIgnore
-      #   #   shouldFlip: @props.shouldFlip
-
-      #   DIV 
-      #     className: 'proposal_scores'
-
-      #     HistogramScores
-      #       proposal: proposal.key
-
-      BUTTON 
-        className: 'bottom_closer'
-        onClick: @toggle_expand
-          
-        onKeyPress: @toggle_expand_key
-
-        double_up_icon(40)
+            double_up_icon(40)
 
       
 
@@ -408,8 +466,12 @@ styles += """
     width: var(--PROPOSAL_AUTHOR_AVATAR_SIZE);
     transition-property: padding-top;    
   }
+  .using_bullets .proposal-avatar-wrapper {
+    width: 12px;
+    padding-top: 2px;
+  }
   .is_expanded .using_bullets .proposal-avatar-wrapper {
-    padding-top: 4px;
+    padding-top: 9px;
   }
 
   .proposal-left-spacing {
@@ -417,6 +479,7 @@ styles += """
     width: var(--LIST_PADDING-LEFT);
     flex-grow: 0;
     flex-shrink: 0;    
+    position: relative;
   }
   .is_expanded .proposal-left-spacing {
     width: calc(4 * var(--LIST_PADDING-LEFT));
@@ -446,7 +509,7 @@ styles += """
 
 
   .proposal-score-spacing {
-    width: 120px;
+    width: 111px;
     height: 2px;
     flex-grow: 0;
     flex-shrink: 0;        
@@ -501,6 +564,9 @@ ProposalBlock = ReactiveComponent
       DIV 
         className: 'proposal-left-spacing'
 
+        @draw_edit_and_delete()
+
+
       FLIPPED  # needed for list-order change
         flipId: "proposal-avatars-#{proposal.key}"
         shouldFlip: @props.shouldFlip
@@ -510,7 +576,11 @@ ProposalBlock = ReactiveComponent
 
         DIV 
           className: 'proposal-avatar-wrapper proposal_item_animation'
+
           @draw_avatar_or_bullet()
+
+
+
 
       DIV 
         className: "proposal-avatar-spacing"
@@ -577,10 +647,87 @@ ProposalBlock = ReactiveComponent
           CIRCLE cx: 100, cy: 100, r: 80, fill: '#000000'
 
 
+  draw_edit_and_delete: ->
+    proposal = fetch @props.proposal
+    subdomain = fetch '/subdomain'
+    can_edit = permit('update proposal', proposal, subdomain) > 0
+
+    return SPAN null if !can_edit
+
+    DIV
+      className: 'edit_and_delete_block'
+
+
+      BUTTON 
+        className: 'like_link'   
+        "aria-label": TRANSLATE 'engage.edit_button', 'edit'
+        "data-tooltip": TRANSLATE 'engage.edit_button', 'edit'
+        style: 
+          marginRight: 4
+
+        onClick: (e) => 
+          proposal_editing = fetch('proposal_editing')
+          proposal_editing.editing = proposal.key
+
+          proposal_editing.callback = =>
+            delete @local.collapsed_title_height
+            save @local
+
+          save proposal_editing
+
+          e.stopPropagation()
+          e.preventDefault()
+          
+        edit_icon 18, 18, '#444'
+
+      if permit('delete proposal', proposal, subdomain) > 0
+        BUTTON
+          className: 'like_link'
+
+          "data-tooltip": TRANSLATE 'engage.delete_button', 'delete'
+          "aria-label": TRANSLATE 'engage.delete_button', 'delete'
+
+          onClick: => 
+            if confirm('Delete this proposal forever?')
+              destroy(proposal.key)
+              loadPage('/')
+
+
+          trash_icon 18, 18, '#444'
 
 
 
+styles += """
+  .edit_and_delete_block {
+    opacity: 0;
+    transition: opacity 1s;
+    position: absolute;
+    padding-top: 12px;
+    top: 7px;
+    left: 14px;
+  }
 
+  .is_expanded .edit_and_delete_block, .ProposalItem:hover .edit_and_delete_block {
+    right: 12px;
+    left: auto;
+    opacity: 1;
+  }
+
+  .one-col .is_expanded .edit_and_delete_block, .one-col .ProposalItem:hover .edit_and_delete_block {
+    right: 2px;
+    top: -4px;
+  }
+
+  .edit_and_delete_block button {
+    opacity: .3;
+    transition: opacity .6s ease;
+  }
+
+  .edit_and_delete_block button:hover {
+    opacity: 1;
+  }
+
+"""
 
 
 
@@ -589,6 +736,9 @@ ProposalBlock = ReactiveComponent
 
 
 TITLE_FONT_SIZE_COLLAPSED = 19
+
+COLLAPSED_MAX_HEIGHT = 50
+EXPANDED_MAX_HEIGHT = 500
 
 styles += """
 
@@ -640,7 +790,7 @@ styles += """
   }
 
 
-  .ProposalText .proposal-description {
+  .proposal-description {
     overflow: hidden;
 
     font-size: 16px;
@@ -655,74 +805,89 @@ styles += """
     color: #333;
   }
 
-  .is_collapsed .ProposalText .proposal-description {
-    max-height: 50px;
+  .is_collapsed .proposal-description {
+    max-height: #{COLLAPSED_MAX_HEIGHT}px;
     color: #555;
   }
 
-  .is_expanded .ProposalText .proposal-description {
-    max-height: 500px;
+  .is_expanded .proposal-description {
+    max-height: #{EXPANDED_MAX_HEIGHT}px;
   }
 
-  .is_expanded .ProposalText .proposal-description.fully_expanded {
+  .is_expanded .proposal-description.fully_expanded {
     max-height: 9999px;
   }
 
-
-  .edit_and_delete_block {
-    opacity: 0;
-    transition: opacity 1s;
-  }
-  .ProposalItem:hover .edit_and_delete_block, .is_expanded .edit_and_delete_block {
+  [data-widget="ListItems"]:not(.expansion_event) .is_collapsed .transparency_fade {
+    background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 34%, rgba(255,255,255,0) 100%);
+    bottom: 0px;
+    height: 18px;
+    position: absolute;
+    pointer-events: none;
     opacity: 1;
+  }
+  .transparency_fade {
+    opacity: 0;
+    transition: opacity #{ANIMATION_SPEED_ITEM_EXPANSION}s ease;
+  }
+
+  [data-widget="ListItems"].flipping .expand_full_text {
+    opacity: 0;
+  }
+  .expand_full_text {
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 24px 0px 10px 0px;
+    font-weight: 600;
+    text-align: left;
+    border: none;
+    width: 100%;
+    background-color: transparent;
   }
 
 """
 
-proposal_url = (proposal, prefer_crafting_page) ->
-  # The special thing about this function is that it only links to
-  # "?results=true" if the proposal has an opinion.
-
+proposal_url = (proposal) ->
   proposal = fetch proposal
-  result = "/#{proposal.slug}"
-  subdomain = fetch '/subdomain'
+  return "/#{proposal.slug}"
 
-  if TWO_COL() || !proposal.active || (!customization('show_crafting_page_first', proposal, subdomain) && !prefer_crafting_page) || !customization('discussion_enabled', proposal, subdomain)
-    result += '?results=true'
+window.personal_view_available = (proposal) ->
+  proposal = fetch proposal  
+  !TWO_COL() && proposal.active && customization('discussion_enabled', proposal) 
 
-  return result
 
-toggle_expand = (list_key, proposal, ensure_open) ->
+
+toggle_expand = ({list_key, proposal, ensure_open, prefer_personal_view}) ->
   proposal = fetch proposal
   expanded_state = fetch "proposal_expansions-#{list_key}"
 
   return if ensure_open && expanded_state[proposal.key]
 
   el = document.querySelector(".proposal-title[data-proposal='#{proposal.key}']")
+
   $$.ensureInView el,
+    extra_height: 400
     callback: =>
+      loc = fetch 'location'
       expanded_state[proposal.key] = !expanded_state[proposal.key]
       if !expanded_state[proposal.key]
         delete expanded_state[proposal.key]
-        loadPage "/"
+
+        update_proposal_mode proposal, null
+        loadPage "/", if loc.query_params?.tab then {tab: loc.query_params.tab} else {}
       else 
-        loadPage proposal_url(proposal)
+        loadPage proposal_url(proposal), if loc.query_params?.selected then {selected: loc.query_params.selected} else {}
+
+        current_user = fetch '/current_user'
+        opinion_views = fetch 'opinion_views'
+        just_you = opinion_views.active_views['just_you']
+
+        personal_view_preferred = prefer_personal_view || (just_you && current_user.logged_in)
+
+        mode = if personal_view_available(proposal) && personal_view_preferred then 'crafting' else 'results' 
+        update_proposal_mode proposal, mode
 
       save expanded_state
-
-
-
-collapsed_item_width = null
-
-# Whenever the window resizes, we need to invalidate the stored sizes
-requestAnimationFrame ->
-  window.addEventListener "resize", ->
-    collapsed_item_width = null
-    for k,v of arest.cache
-      if k[0] != '/' && v.collapsed_title_height?
-        delete v.collapsed_title_height
-        save v
-
 
 
 ProposalText = ReactiveComponent
@@ -730,7 +895,9 @@ ProposalText = ReactiveComponent
 
 
   toggle_expand: -> 
-    toggle_expand(@props.list_key, @props.proposal)
+    toggle_expand 
+      list_key: @props.list_key
+      proposal: @props.proposal
 
   render: -> 
     proposal = fetch @props.proposal
@@ -738,6 +905,10 @@ ProposalText = ReactiveComponent
     @is_expanded = @props.is_expanded
 
     has_description = proposal.description || customization('proposal_description')
+
+    if !@is_expanded && @local.description_fully_expanded
+      @local.description_fully_expanded = false
+
 
     FLIPPED
       flipId: "proposal-title-starter-#{proposal.key}"
@@ -748,7 +919,8 @@ ProposalText = ReactiveComponent
         if @props.expansion_state_changed()            
           start = if @is_expanded then 1 else LIST_ITEM_EXPANSION_SCALE() 
           end = if @is_expanded then LIST_ITEM_EXPANSION_SCALE() else 1 
-          @refs.proposal_title_text.style.transform = "scale(#{ start + (end - start) * value })"
+          if @refs.proposal_title_text
+            @refs.proposal_title_text.style.transform = "scale(#{ start + (end - start) * value })"
 
       DIV 
         id: "proposal-text-#{proposal.id}"
@@ -776,15 +948,16 @@ ProposalText = ReactiveComponent
                height: #{LIST_ITEM_EXPANSION_SCALE() * @local.collapsed_title_height}px;
              }
 
-             #proposal-text-#{proposal.id} .proposal-title-text {
-                width: #{collapsed_item_width}px;
+             #proposal-text-#{proposal.id} .proposal-title-text, .transparency_fade {
+                width: #{ITEM_TEXT_WIDTH()}px;
              }
 
              .is_collapsed #proposal-text-#{proposal.id} .proposal-description-wrapper {
-                max-width: #{collapsed_item_width}px;
+                max-width: #{ITEM_TEXT_WIDTH()}px;
+                position: relative; /* for transparency fade */
              }
              .is_expanded #proposal-text-#{proposal.id} .proposal-description-wrapper {
-                max-width: #{collapsed_item_width * LIST_ITEM_EXPANSION_SCALE()}px;
+                max-width: #{ITEM_TEXT_WIDTH() * LIST_ITEM_EXPANSION_SCALE()}px;
              }
 
           """
@@ -849,7 +1022,6 @@ ProposalText = ReactiveComponent
 
               @draw_metadata()
 
-              @draw_edit_and_delete()
 
 
   waitForFonts: (cb) ->
@@ -869,13 +1041,11 @@ ProposalText = ReactiveComponent
 
 
   setCollapsedSizes: (expand_after_set) ->
-    if !@waitForFonts(=> @setCollapsedSizes(expand_after_set)) || (!@local.in_viewport && !expand_after_set) || (@local.collapsed_title_height? && @is_expanded && @sized_at_window_width == WINDOW_WIDTH())
+    if !@waitForFonts(=> @setCollapsedSizes(expand_after_set)) || (!@local.in_viewport && !expand_after_set) || (@local.collapsed_title_height? && @sized_at_window_width == WINDOW_WIDTH())
       return
+    proposal = fetch @props.proposal
 
     title_el = @refs.proposal_title_text
-
-    if !@is_expanded && !collapsed_item_width?
-      collapsed_item_width = title_el.clientWidth
 
     if @is_expanded
       @local.collapsed_title_height = title_el.getBoundingClientRect().height
@@ -883,8 +1053,25 @@ ProposalText = ReactiveComponent
     else 
       @local.collapsed_title_height = title_el.clientHeight      
 
-    save @local
     @sized_at_window_width = WINDOW_WIDTH()
+    save @local
+
+
+    if proposal.description 
+      el = document.createElement 'div'
+      el.classList.add 'proposal-description'
+
+      # do we need to show the transparency fade when collapsed?
+      height = heightWhenRendered proposal.description, \
+                                  {width:"#{ITEM_TEXT_WIDTH()}px"}, el
+
+      @exceeds_collapsed_description_height = height >= COLLAPSED_MAX_HEIGHT
+
+      # do we need to show a show full text button when expanded? 
+      height = heightWhenRendered proposal.description, \
+                                  {width: "#{ITEM_TEXT_WIDTH() * LIST_ITEM_EXPANSION_SCALE()}px"}, el
+      @super_long_description = height >= EXPANDED_MAX_HEIGHT
+
 
     # wait to make the update so that we don't continuously trigger layout reflow
     if expand_after_set
@@ -892,7 +1079,10 @@ ProposalText = ReactiveComponent
         # If we've loaded this item by url, ensure that it is expanded
         # Doing this here because we have to do it after we capture the
         # collapsed size.
-        toggle_expand @props.list_key, fetch(@props.proposal), true
+        toggle_expand 
+          list_key: @props.list_key
+          proposal: proposal
+          ensure_open: true
 
 
   componentDidMount: ->
@@ -906,14 +1096,13 @@ ProposalText = ReactiveComponent
       @setCollapsedSizes()
 
 
-
-
   draw_description: ->  
     proposal = fetch @props.proposal
+    cust_desc = customization('proposal_description')
 
-    return DIV null if !proposal.description
+    return DIV null if !proposal.description && !cust_desc
 
-    if cust_desc = customization('proposal_description')
+    if cust_desc
       if typeof(cust_desc) == 'function'
         result = cust_desc(proposal)
       else if cust_desc[proposal.cluster] # is associative, indexed by list name
@@ -935,23 +1124,46 @@ ProposalText = ReactiveComponent
     else 
       result = DIV dangerouslySetInnerHTML:{__html: proposal.description}
 
-    DIV 
-      className: 'proposal-description wysiwyg_text proposal_item_animation'
-      ref: 'proposal_description'
-
+    DIV null,
       DIV 
-        style:
-          # maxHeight: if @local.description_collapsed then @max_description_height
-          # overflow: if @local.description_collapsed then 'hidden'
-          display: if embedded_demo() then 'none'
+        className: "proposal-description wysiwyg_text proposal_item_animation #{if @local.description_fully_expanded then 'fully_expanded' else ''}"
+        ref: 'proposal_description'
 
-        FLIPPED 
-          inverseFlipId: "proposal-description-placer-#{proposal.key}"
-          scale: true # this allows it to expand down, but also allows the description to move when sorting happens
-          shouldInvert: @shouldFlip
-          shouldFlipIgnore: @shouldFlipIgnore
+        DIV 
+          style:
+            # display: if embedded_demo() then 'none'
+            position: 'relative'
 
-          result
+          FLIPPED 
+            inverseFlipId: "proposal-description-placer-#{proposal.key}"
+            scale: true # this allows it to expand down, but also allows the description to move when sorting happens
+            shouldInvert: @shouldFlip
+            shouldFlipIgnore: @shouldFlipIgnore
+
+            result
+
+        if @exceeds_collapsed_description_height || cust_desc
+          DIV className: 'transparency_fade'
+
+      if @super_long_description && @props.is_expanded && !@local.description_fully_expanded && !embedded_demo()
+        BUTTON
+          className: 'expand_full_text'
+
+          onMouseDown: => 
+            @local.description_fully_expanded = true
+            save(@local)
+
+          onKeyDown: (e) =>
+            if e.which == 13 || e.which == 32 # ENTER or SPACE
+              @local.description_collapsed = true
+              e.preventDefault()
+              document.activeElement.blur()
+              save(@local)
+
+          TRANSLATE 
+            id: 'engage.show_full_proposal_description'
+            'Show full text'
+
 
 
   draw_metadata: -> 
@@ -1002,11 +1214,16 @@ ProposalText = ReactiveComponent
               SPAN
                 key: 'proposal-link'
                 className: 'separated pros_cons_count monospaced'
-                onClick: => toggle_expand(@props.list_key, proposal)
+                onClick: => 
+                  toggle_expand
+                    list_key: @props.list_key
+                    proposal: proposal
                   
                 onKeyPress: (e) => 
                   if e.which == 32 || e.which == 13
-                    toggle_expand(@props.list_key, proposal)
+                    toggle_expand
+                      list_key: @props.list_key
+                      proposal: proposal
 
                 TRANSLATE
                   key: 'point-count'
@@ -1015,16 +1232,21 @@ ProposalText = ReactiveComponent
 
                   "{cnt, plural, one {# pro or con} other {# pros & cons}}"
 
-              if false && proposal.active && permit('create point', proposal, subdomain) > 0 && WINDOW_WIDTH() > 955
+              if proposal.active && WINDOW_WIDTH() > 955
 
                 SPAN 
                   key: 'give-opinion'
-                  className: 'pros_cons_count'
-                  onClick: => toggle_expand(@props.list_key, proposal)
+                  className: 'small-give-your-opinion'
+                  onClick: => 
+                    toggle_expand
+                      list_key: @props.list_key
+                      proposal: proposal                    
                     
                   onKeyPress: (e) => 
                     if e.which == 32 || e.which == 13
-                      toggle_expand(@props.list_key, proposal)
+                      toggle_expand
+                        list_key: @props.list_key
+                        proposal: proposal
 
 
                   
@@ -1032,10 +1254,11 @@ ProposalText = ReactiveComponent
                     id: "engage.add_your_own"
 
                     "give your opinion"
-                  SPAN 
-                    style: 
-                      borderBottom: 'none'
-                    " >>"
+
+                  # SPAN 
+                  #   style: 
+                  #     borderBottom: 'none'
+                  #   " >>"
             ]
         ]
 
@@ -1063,54 +1286,7 @@ ProposalText = ReactiveComponent
           TRANSLATE "engage.proposal_read_only.short", 'read-only'
 
 
-  draw_edit_and_delete: ->
-    proposal = fetch @props.proposal
-    subdomain = fetch '/subdomain'
-    can_edit = permit('update proposal', proposal, subdomain) > 0
 
-    return SPAN null if !can_edit
-
-    DIV
-      className: 'edit_and_delete_block'
-
-      BUTTON 
-        className: 'like_link'              
-        onClick: (e) => 
-          proposal_editing = fetch('proposal_editing')
-          proposal_editing.editing = proposal.key
-
-          proposal_editing.callback = =>
-            delete @local.collapsed_title_height
-            save @local
-
-          save proposal_editing
-
-          e.stopPropagation()
-          e.preventDefault()
-          
-        style:
-          marginRight: 10
-          color: focus_color()
-          padding: 0
-          fontSize: 12
-          fontWeight: 600
-        TRANSLATE 'engage.edit_button', 'edit'
-
-      if permit('delete proposal', proposal, subdomain) > 0
-        BUTTON
-          className: 'like_link'
-          style:
-            marginRight: 10
-            color: focus_color()
-            padding: 0
-            fontSize: 12
-            fontWeight: 600
-
-          onClick: => 
-            if confirm('Delete this proposal forever?')
-              destroy(proposal.key)
-              loadPage('/')
-          TRANSLATE 'engage.delete_button', 'delete'
 
 
 
@@ -1120,7 +1296,6 @@ styles += """
     font-size: 12px;
     color: #555;
     margin-top: 8px;
-    height: 20px;
   }
 
 
@@ -1156,6 +1331,20 @@ styles += """
     border-color: #444;
   }
 
+  .proposal-metadata .small-give-your-opinion {
+    color: white;
+    background-color: #{focus_color()};
+    font-weight: 600;
+    cursor: pointer;
+    font-family: #{customization('font')};
+    border-radius: 4px;
+    padding: 2px 8px;
+  }
+
+  .is_expanded .proposal-metadata .small-give-your-opinion {
+    display: none;
+  }
+
 
 """
 
@@ -1166,12 +1355,6 @@ styles += """
     content-visibility: visible;
   }
 
-  .slider {
-    opacity: 1;
-  }
-  .flipping .slider {
-    opacity: 0; 
-  }
 """
 
 

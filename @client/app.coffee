@@ -38,7 +38,6 @@ require './edit_comment'
 require './point'
 require './legal'
 require './statement'
-require './proposal'
 require './proposal_item'
 require './viewport_visibility_sensor'
 require './icons'
@@ -233,7 +232,7 @@ Page = ReactiveComponent
 
       MAIN 
         role: 'main'
-        className: if is_a_dialogue_page() then 'main_background'
+        className: "#{if is_a_dialogue_page() then 'main_background' else ''} #{if embedded_demo() then 'embedded-demo' else ''}"
         style: 
           position: 'relative'
           # zIndex: 1

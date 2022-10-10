@@ -382,7 +382,7 @@ set_default_sort = ->
           break
 
     if !found
-      if def_sort = customization('homepage_default_sort_order')
+      if def_sort = customization('default_proposal_sort_order')
         def = null 
         for s in sort_options
           if s.name == def_sort

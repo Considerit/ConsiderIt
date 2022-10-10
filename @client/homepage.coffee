@@ -17,18 +17,17 @@ styles += """
     background-color: #{main_background_color};
   }
 
-  .main_background.one-col, .main_background .one-col, .one-col.navigation_wrapper {
+  .main_background.one-col, .main_background .one-col, .one-col.navigation_wrapper, .embedded-demo.main_background {
     background-image: none;
     background-color: white;
   }
-
 
   #homepagetab {
     position: relative;    
   }
 
   .one-col #homepagetab {
-    padding: 24px 0px 140px 24px;
+    padding: 24px 0px 140px 36px;
   }
 
   .Homepage:not(.one-col) #homepagetab {
@@ -36,6 +35,11 @@ styles += """
     padding: 24px 0px 140px 0;
     margin: 0px auto;
   }
+
+  .Homepage:not(.one-col).embedded-demo #homepagetab {
+    padding-top: 0;
+  }
+
 
   .sized_for_homepage {
     margin: auto;
@@ -81,7 +85,7 @@ window.Homepage = ReactiveComponent
 
     DIV 
       key: "homepage_#{subdomain.name}"      
-      className: "Homepage main_background #{if ONE_COL() then 'one-col' else ''}"
+      className: "Homepage main_background #{if ONE_COL() then 'one-col' else ''} #{if embedded_demo() then 'embedded-demo' else ''}"
 
       DIV
         id: 'homepagetab'
@@ -139,7 +143,7 @@ window.Homepage = ReactiveComponent
 
               get_current_tab_view()
 
-              if get_tabs()
+              if get_tabs() && !embedded_demo()
                 DIV 
                   style: 
                     paddingTop: 68

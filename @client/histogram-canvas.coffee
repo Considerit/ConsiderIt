@@ -220,6 +220,7 @@ window.Histogram = ReactiveComponent
     
 
     {weights, salience, groups} = compose_opinion_views opinions, proposal
+
     @weights = weights
     @salience = salience 
     @groups = groups
@@ -748,9 +749,9 @@ HistoAvatars = ReactiveComponent
     @last_key = histocache_key
 
     # give the canvas extra space at the top so that overflow avatars on the top aren't cut off
-    @cut_off_buffer = @props.height / 2 #@avatar_size / 2
-    @adjusted_height = @props.height +     @cut_off_buffer 
-    @adjusted_width  = @props.width  + 2 * @cut_off_buffer
+    @cut_off_buffer = Math.round @props.height / 2 #@avatar_size / 2
+    @adjusted_height = Math.round @props.height +     @cut_off_buffer 
+    @adjusted_width  = Math.round @props.width  + 2 * @cut_off_buffer
 
     proposal = fetch @props.histo_key
 
@@ -826,7 +827,8 @@ HistoAvatars = ReactiveComponent
     canv = @refs.canvas
     return if !canv 
 
-    @wake()
+    
+
 
     if animate
       @resizing_canvas = 
@@ -858,17 +860,24 @@ HistoAvatars = ReactiveComponent
           if ani == @resize_canvas.ani
             @resizing_canvas = false
 
+      @wake()
+
     else # immediate
-      if canv.width != width * DEVICE_PIXEL_RATIO || canv.height != height * DEVICE_PIXEL_RATIO || @current_top != top || @current_left != left
+      reset_bounding_rect = false
+      if canv.width != width * DEVICE_PIXEL_RATIO || canv.height != height * DEVICE_PIXEL_RATIO
         canv.width = width * DEVICE_PIXEL_RATIO
         canv.height = height * DEVICE_PIXEL_RATIO
         canv.style.width = "#{width}px"
         canv.style.height = "#{height}px" 
-        canv.style.transform = "translate(#{left}px, #{top}px)"
+        reset_bounding_rect = true
 
+      if @current_top != top || @current_left != left
+        canv.style.transform = "translate(#{left}px, #{top}px)"
         @current_top = top
         @current_left = left 
+        reset_bounding_rect = true
 
+      if reset_bounding_rect
         @canvas_bounding_rect = null
 
 
@@ -878,11 +887,12 @@ HistoAvatars = ReactiveComponent
 
     # re-render when avatars available
     avatars_loaded = fetch('avatar_loading') 
-    if avatars_loaded.loaded && !@avatars_loaded
+    if avatars_loaded.loaded && @avatars_loaded != avatars_loaded.loaded
       @dirty_canvas = true
     @avatars_loaded = avatars_loaded.loaded
 
     users = fetch '/users'
+
     histocache = @getAvatarPositions()
 
     canvas = @refs.canvas
@@ -892,6 +902,7 @@ HistoAvatars = ReactiveComponent
     @sleeping ?= true
 
     canvas_resize_needed = false
+
     # initialize canvas, get things started
     if !@ctx
       @ctx = canvas.getContext('2d')
@@ -902,6 +913,7 @@ HistoAvatars = ReactiveComponent
     else if (canvas.width != @adjusted_width * DEVICE_PIXEL_RATIO || canvas.height != @adjusted_height * DEVICE_PIXEL_RATIO || @current_top != -@cut_off_buffer || @current_left != -@cut_off_buffer) &&
             (!@resizing_canvas || @resizing_canvas.target_width != @adjusted_width || @resizing_canvas.target_height != @adjusted_height || @resizing_canvas.target_top != -@cut_off_buffer || @resizing_canvas.target_left != -@cut_off_buffer)
       canvas_resize_needed = true      
+
     
     opinion_views = fetch 'opinion_views'
 
@@ -912,8 +924,15 @@ HistoAvatars = ReactiveComponent
 
 
 
-    new_animation_needed = false
+
+    new_animation_needed = false 
+
+    @dirty_canvas ||= @last_drawn != histocache.hash
+
+    @last_drawn = histocache.hash
+
     @user_to_opinion_map ?= {}
+
     for opinion, idx in @props.opinions
     
 
@@ -926,7 +945,7 @@ HistoAvatars = ReactiveComponent
       continue if !pos
 
       x = Math.round pos[0] + @cut_off_buffer
-      y = Math.round pos[1] + @cut_off_buffer # + @avatar_size / 2 # give spacing
+      y = Math.round pos[1] + @cut_off_buffer 
       r = Math.round pos[2]
       width = height = r * 2
 
@@ -936,7 +955,7 @@ HistoAvatars = ReactiveComponent
 
       if user.key not of @sprites
         @sprites[user.key] = {x, y, r, width, height, opacity, key: user.key}
-        @dirty_canvas = true
+
 
       sprite = @sprites[user.key]      
       sprite.img = getCanvasAvatar(user)
@@ -972,7 +991,6 @@ HistoAvatars = ReactiveComponent
         @animate_to(sprite, x, y, r, opacity)
         new_animation_needed = true
 
-
     if new_animation_needed
       @current_ani ?= 0
       @current_ani += 1 
@@ -1007,20 +1025,24 @@ HistoAvatars = ReactiveComponent
     if canvas_resize_needed
       @resize_canvas(@adjusted_width, @adjusted_height, -@cut_off_buffer, -@cut_off_buffer, true)
 
+
     @wake()
 
   wake: -> 
     if @sleeping
+      @buffered_frame_ready = false
       @sleeping = false 
       @tick()
 
 
-  drawToBuffer: -> 
+  prepareNextFrame: (force) -> 
+
+    force ?= @dirty_canvas
 
     histocache = @getAvatarPositions()?.positions or {}
 
-    @skip_frame = !!SKIP_FRAMES 
-    if SKIP_FRAMES
+    @skip_frame = !!SKIP_FRAMES && !force
+    if SKIP_FRAMES && !force
       for key, __ of histocache
         sprite = @sprites[key]
         continue if !sprite
@@ -1038,7 +1060,6 @@ HistoAvatars = ReactiveComponent
 
     if !@skip_frame
 
-      @buffer ?= document.createElement 'canvas'
       @buff_ctx ?= @buffer.getContext '2d'          
       @buffer.width = (@resizing_canvas?.width or @refs.canvas.width) * DEVICE_PIXEL_RATIO
       @buffer.height = (@resizing_canvas?.height or @refs.canvas.height) * DEVICE_PIXEL_RATIO
@@ -1058,8 +1079,8 @@ HistoAvatars = ReactiveComponent
         sprite.last_render_x = sprite.x
         sprite.last_render_y = sprite.y
         sprite.last_render_size = sprite.width
+      @buffered_frame_ready = true
 
-    @tick()
 
   updateHitRegion: -> 
     hit_key = "#{@last_key}-#{@buffer.width}-#{@buffer.height}"
@@ -1086,33 +1107,49 @@ HistoAvatars = ReactiveComponent
 
   tick: -> 
     render_required = @dirty_canvas || !!@resizing_canvas || Object.keys(@updates_needed).length > 0
+
     if !render_required
+      if @skip_frame # force a final render if final frame was skipped
+        @prepareNextFrame true
+        @renderScene()
+
       @sleeping = true
       return
 
+    # @dirty_canvas = false
     requestAnimationFrame =>
 
-      if @buffer? && !@skip_frame && @refs.canvas
-        @dirty_canvas = false        
+      if !@buffer?
+        @buffer = document.createElement 'canvas'  # for double buffering
+        @prepareNextFrame true
         @renderScene()
+        @tick()
 
-      setTimeout @drawToBuffer
-          
+      else
+        setTimeout => 
+          @prepareNextFrame()
+          @tick()
+
+        @renderScene()
 
   
 
   renderScene: -> 
-    ctx = @ctx
+    return if !@buffered_frame_ready || !@refs.canvas
+
     if @resizing_canvas
       @resize_canvas @resizing_canvas.width, @resizing_canvas.height, @resizing_canvas.top, @resizing_canvas.left
 
-    ctx.clearRect(0, 0, @refs.canvas.width * DEVICE_PIXEL_RATIO, @refs.canvas.height * DEVICE_PIXEL_RATIO)
 
-    # ctx.rect 0, 0, @refs.canvas.width * DEVICE_PIXEL_RATIO, @refs.canvas.height * DEVICE_PIXEL_RATIO
-    # ctx.fillStyle = 'black'
-    # ctx.fill()
+    @ctx.clearRect(0, 0, @refs.canvas.width * DEVICE_PIXEL_RATIO, @refs.canvas.height * DEVICE_PIXEL_RATIO)
 
-    ctx.drawImage @buffer, 0, 0
+    # @ctx.rect 0, 0, @refs.canvas.width * DEVICE_PIXEL_RATIO, @refs.canvas.height * DEVICE_PIXEL_RATIO
+    # @ctx.fillStyle = 'black'
+    # @ctx.fill()
+
+    @ctx.drawImage @buffer, 0, 0
+    @dirty_canvas = false
+    @buffered_frame_ready = false
 
   userAtPosition: (e) -> 
 
@@ -1169,8 +1206,8 @@ HistoAvatars = ReactiveComponent
         pos = histocache?.positions?[user]
 
         coords = 
-          top:  pos[1] + @canvas_bounding_rect.top  + window.pageYOffset - document.documentElement.clientTop + pos[2]
-          left: pos[0] + @canvas_bounding_rect.left + window.pageXOffset - document.documentElement.clientLeft + pos[2]
+          top:  pos[1] + @canvas_bounding_rect.top  + window.pageYOffset - document.documentElement.clientTop + @cut_off_buffer
+          left: pos[0] + @canvas_bounding_rect.left + window.pageXOffset - document.documentElement.clientLeft + pos[2] + @cut_off_buffer
           height: 2 * pos[2]
           width: 2 * pos[2]
 
@@ -1206,8 +1243,9 @@ HistoAvatars = ReactiveComponent
 
 
   histocache_key: -> # based on variables that could alter the layout
-    key = """#{JSON.stringify( (Math.round(fetch(o.key).stance * 100) for o in @props.opinions) )} #{JSON.stringify(@props.weights)} #{JSON.stringify(@props.groups)} (#{@props.width}, #{@props.height})"""
+    key = """#{JSON.stringify( (fetch(o.key).stance for o in @props.opinions) )} #{JSON.stringify(@props.weights)} #{JSON.stringify(@props.groups)} (#{@props.width}, #{@props.height})"""
     md5 key
+      
 
   getFillRatio: -> 
     if @props.layout_params?.fill_ratio

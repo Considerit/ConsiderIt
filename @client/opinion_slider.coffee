@@ -14,6 +14,13 @@ require './slider'
 require './shared'
 require './customizations'
 
+
+styles += """
+  .OpinionSlider {
+    position: relative;
+  }
+"""
+
 window.OpinionSlider = ReactiveComponent
   displayName: 'OpinionSlider'
 
@@ -28,10 +35,9 @@ window.OpinionSlider = ReactiveComponent
 
     opinion_views = fetch 'opinion_views'
     hist_selection = opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
-    show_handle = @props.permitted && !hist_selection
+    show_handle = @props.draw_handle && !hist_selection
 
-
-
+    mode = get_proposal_mode(proposal)
 
     # Update the slider value when the server gets back to us
     if slider.value != your_opinion.stance && (!slider.has_moved || @opinion_key != your_opinion.key)
@@ -42,46 +48,52 @@ window.OpinionSlider = ReactiveComponent
       @opinion_key = your_opinion.key # handle case where opinion is deleted, we want the slider 
                                       # value to reset
 
+    slider_interpretation = (value) => 
+      if value > .03
+        "#{(value * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.support", proposal, subdomain)}"
+      else if value < -.03 
+        "#{-1 * (value * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.oppose", proposal, subdomain)}"
+      else 
+        translator "engage.slider_feedback.neutral", "Neutral"
 
     ####
-    # Define slider layout
-    slider_style = 
-      position: 'relative'
-      left: - (@props.width - PROPOSAL_HISTO_WIDTH()) / 2
-      width: @props.width
-      height: SLIDER_HANDLE_SIZE()
+    # Define slider layout      
 
-    if @props.backgrounded
-      slider_style.filter = 'grayscale(100%)'
+    rtrn = DIV 
+      className: 'OpinionSlider'
+      style: 
+        width: @props.width
+        filter: if @props.backgrounded then 'grayscale(100%)'
 
-    DIV 
-      className: 'opinion_slider'
-      style : slider_style
-
-      if (@props.focused || TWO_COL()) && show_handle
+      if (@props.focused || (TWO_COL() && @props.is_expanded)) && show_handle
         @drawFeedback() 
 
       Slider
         slider_key: @props.slider_key
+        readable_text: slider_interpretation
         width: @props.width
-        handle_height: SLIDER_HANDLE_SIZE()
-        base_height: 2 # 6
-        # base_color: 'transparent'
-        base_color: if slider.docked
+
+        base_height: @props.base_height or 2
+
+        base_color: if mode == 'crafting' #slider.docked
                       'rgb(175, 215, 255)' 
                     else 
-                      'transparent'
+                      'rgb(153, 153, 153)'
+
+
         # base_endpoint: if slider.docked then 'square' else 'sharp'
         regions: customization('slider_regions', proposal)
         polarized: true
         draw_helpers: @props.focused && !slider.has_moved
-        handle: if @props.backgrounded 
-                  slider_handle.flat 
-                else 
-                  customization('slider_handle', proposal) or slider_handle.flat
+
+        handle: @props.handle or slider_handle.flat
+        handle_height: @props.handle_height
+        handle_width: @props.handle_width
+
         handle_props: 
           color: if @props.backgrounded then '#ccc' else focus_color()
           detail: @props.focused
+
         handle_style: 
           transition: "transform #{TRANSITION_SPEED}ms"
           transform: "scale(#{if !@props.focused then 1 else 1.75})"
@@ -89,9 +101,11 @@ window.OpinionSlider = ReactiveComponent
         
         onMouseUpCallback: @handleMouseUp
         respond_to_click: false
-        ticks: 
-          increment: .5
-          height: 5
+        offset: @props.offset
+        # ticks: 
+        #   increment: .5
+        #   height: if @props.is_expanded then 5 else 2
+
         label: translator
                  id: "sliders.instructions-with-proposal"
                  negative_pole: @props.pole_labels[0]
@@ -106,7 +120,27 @@ window.OpinionSlider = ReactiveComponent
           else 
             translator "sliders.feedback-short.neutral", "Neutral"
 
+        show_val_highlighter: @props.show_val_highlighter
+
+
+        flip: !!@props.shouldFlip
+        shouldFlip: @props.shouldFlip
+        shouldFlipIgnore: @props.shouldFlipIgnore
+
+
       @saveYourOpinionNotice()
+
+
+    if @props.flip
+      FLIPPED 
+        flipId: "Opinion-slider-#{@props.slider_key}"
+        shouldFlip: @props.shouldFlip
+        shouldFlipIgnore: @props.shouldFlipIgnore
+
+        rtrn
+
+    else 
+      rtrn
 
 
   saveYourOpinionNotice : -> 
@@ -136,10 +170,7 @@ window.OpinionSlider = ReactiveComponent
     s = sizeWhenRendered notice, style
 
     save_opinion = (proposal) -> 
-      if your_opinion.published
-        can_opine = permit 'update opinion', proposal, your_opinion
-      else
-        can_opine = permit 'publish opinion', proposal
+      can_opine = @props.permitted()
 
       if can_opine > 0
         your_opinion.published = true
@@ -153,7 +184,9 @@ window.OpinionSlider = ReactiveComponent
           form: 'create account'
           goal: 'To participate, please introduce yourself.'
           after: =>
-            save_opinion(proposal)
+            can_opine = @props.permitted()
+            if can_opine > 0
+              save_opinion(proposal)
 
     DIV 
       style: 
@@ -228,55 +261,58 @@ window.OpinionSlider = ReactiveComponent
   handleMouseUp: (e) ->
     slider = fetch @props.slider_key
     your_opinion = @props.your_opinion
-    mode = get_proposal_mode()
+    mode = get_proposal_mode(@props.proposal)
     proposal = fetch @props.proposal
     
     e.stopPropagation()
 
-    # Clicking on the slider handle should transition us between 
-    # crafting <=> results. We should also transition to crafting 
-    # when we've been dragging on the results page.
-    transition = !TWO_COL() && \
-       (slider.value == your_opinion.stance || mode == 'results') &&
-       customization('discussion_enabled', proposal)
-
-    if transition
+    # Clicking on the slider handle should transition us between crafting <=> results
+    transition = @props.is_expanded && personal_view_available(proposal) && \
+                 slider.value == your_opinion.stance
 
 
-      if your_opinion.published
-        can_opine = permit 'update opinion', proposal, your_opinion
-      else
-        can_opine = permit 'publish opinion', proposal
+    finish_mouseup = =>
+      # We save the slider's position to the server only on mouse-up.
+      # This way you can drag it with good performance.
+      can_opine = @props.permitted() > 0
+      if your_opinion.stance != slider.value
+        if can_opine
+          your_opinion.stance = slider.value
+          your_opinion.published = true
+          your_opinion.key ?= "/new/opinion"
+            
+          save your_opinion, -> 
+            show_flash(translator('engage.flashes.opinion_saved', "Your opinion has been saved"))
+          
+            update = fetch('homepage_you_updated_proposal')
+            update.dummy = !update.dummy
+            save update
 
-      if can_opine > 0
+          window.writeToLog 
+            what: 'move slider'
+            details: {stance: slider.value}
+        else 
+          slider.value = 0
+          save slider
+
+      if transition
         new_page = if mode == 'results' then 'crafting' else 'results'
-        updateProposalMode new_page, 'click_slider'
-      else
-        # trigger authentication
-        reset_key 'auth',
-          form: 'create account'
-          goal: 'To participate, please introduce yourself.'
-          after: =>
-            new_page = if mode == 'results' then 'crafting' else 'results'
-            updateProposalMode new_page, 'click_slider'
+        update_proposal_mode proposal, new_page, 'click_slider'
 
 
+    can_opine = @props.permitted() > 0 
 
+    if can_opine > 0
 
-    # We save the slider's position to the server only on mouse-up.
-    # This way you can drag it with good performance.
-    if your_opinion.stance != slider.value
-      your_opinion.stance = slider.value
-      if !transition && fetch('/current_user').logged_in
-        your_opinion.published = true
-      your_opinion.key ?= "/new/opinion"
-        
-      save your_opinion, -> 
-        show_flash(translator('engage.flashes.opinion_saved', "Your opinion has been saved"))
-      
-      window.writeToLog 
-        what: 'move slider'
-        details: {stance: slider.value}
+      finish_mouseup()
+
+    else
+      # trigger authentication
+      reset_key 'auth',
+        form: 'create account'
+        goal: 'To participate, please introduce yourself.'
+        after: finish_mouseup
+
 
 
 

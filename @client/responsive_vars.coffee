@@ -111,8 +111,8 @@ setResponsive = ->
 
     # keep in sync with css variables of same name defined in list.coffee
     LIST_GUTTER: list_gutter
-    ITEM_TEXT_WIDTH:    if one_col then homepage_width - list_gutter else .6 * (homepage_width - 2 * list_gutter)
-    ITEM_OPINION_WIDTH: if one_col then homepage_width - list_gutter else .4 * (homepage_width - 2 * list_gutter)
+    ITEM_TEXT_WIDTH:    if one_col then homepage_width - list_gutter else if embedded_demo() then .6 * homepage_width else .6 * (homepage_width - 2 * list_gutter)
+    ITEM_OPINION_WIDTH: if one_col then homepage_width - list_gutter else if embedded_demo() then .4 * homepage_width else .4 * (homepage_width - 2 * list_gutter)
 
   # only update if we have a change
   # (something like this should go into statebus)

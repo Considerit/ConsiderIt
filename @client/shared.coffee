@@ -19,8 +19,19 @@
 
 window.styles = ""
 
+
+window.screencasting = ->
+  window.__screencasting ?= fetch('location').query_params?.screencasting == 'true'
+  window.__screencasting
+
+window.embedded_demo = ->
+  window.__embedded_demo ?= fetch('location').query_params?.embedded_demo == 'true' || location.search.indexOf('embedded_demo') > -1
+  window.__embedded_demo
+
+
 require './responsive_vars'
 require './color'
+
 
 
 #############
@@ -55,13 +66,7 @@ window.ajax_submit_files_in_form = (opts) ->
 
 
 
-window.screencasting = ->
-  window.__screencasting ?= fetch('location').query_params.screencasting == 'true'
-  window.__screencasting
 
-window.embedded_demo = ->
-  window.__embedded_demo ?= fetch('location').query_params.embedded_demo == 'true'
-  window.__embedded_demo
     
 window.pad = (num, len) -> 
   str = num
@@ -408,9 +413,23 @@ window.shared_local_key = (key_or_object) ->
 
 
 window.reset_key = (obj_or_key, updates) -> 
+
+  resetting_totally = !updates
+
   updates = updates or {}
   if !obj_or_key.key
     obj_or_key = fetch obj_or_key
+
+  updates.key = obj_or_key.key
+
+  if obj_or_key.key == 'auth' && obj_or_key.after? 
+    if !resetting_totally 
+      updates.after ?= obj_or_key.after # preserve after auth callback through updates to auth state
+    else 
+      obj_or_key.after?()
+
+
+  return if _.isEqual obj_or_key, updates
 
   for own k,v of obj_or_key
     if k != 'key'

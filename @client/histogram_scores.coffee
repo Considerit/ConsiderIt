@@ -1,5 +1,10 @@
 
+styles += """
+  .embedded-demo .HistogramScores {
+    display: none;
+  }
 
+"""
 
 window.HistogramScores = ReactiveComponent
   displayName: 'HistogramScores'
@@ -38,6 +43,7 @@ window.HistogramScores = ReactiveComponent
       is_weighted ||= view.view_type == 'weight'
 
     DIV 
+      className: 'HistogramScores'
       'aria-hidden': true
       ref: 'score'
       style: 

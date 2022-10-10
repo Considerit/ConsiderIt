@@ -16,7 +16,8 @@ window.styles += """
     --ITEM_OPINION_WIDTH: calc( .4 * (var(--HOMEPAGE_WIDTH) - 2 * var(--LIST_GUTTER)) );
   }
 
-  [data-widget="List"], [data-widget="NewList"], .draggable-wrapper {
+
+  .List, .NewList, .draggable-wrapper {
     background-color: white;
     border: none;
     border-radius: 8px;
@@ -24,30 +25,22 @@ window.styles += """
     border-top: 1px solid #f3f3f3;
   }
 
-  [data-widget="List"] {
+
+  .List {
     margin-bottom: 60px;
     position: relative; 
     padding: var(--LIST_PADDING-FULL);   
   }
 
-  .one-col [data-widget="List"], .one-col [data-widget="NewList"] {
+  .one-col .List, .one-col .NewList, .embedded-demo .List, .embedded-demo .NewList {
     border-top: none;
     box-shadow: none;
   }
 
-  .LIST-header {
-    font-size: 34px;
-    font-weight: 700;
-    text-align: left;
+  .embedded-demo .List {
+    padding: 0;
   }
 
-  .LIST-header button {
-    border: none;
-    background-color: transparent;
-    padding: 0; 
-    margin: 0; 
-    
-  }
 
   .LIST_item_connector {
     display: none;
@@ -121,6 +114,7 @@ window.List = ReactiveComponent
 
     ARTICLE
       key: list_key
+      className: "List"
       id: list_key.substring(5).toLowerCase()
       style:  if screencasting()
                 boxShadow: 'none'
@@ -166,7 +160,6 @@ styles += """
     list-style: none;
     position: relative;
     margin-top: -105px;
-    width: 105%;
     z-index: 10;    
   }
 
@@ -507,7 +500,7 @@ window.ListHeader = ReactiveComponent
 
 
 styles += """
-  button[data-widget="NewList"] {
+  button.NewList {
     text-align: left;
     margin-top: 55px;
     display: block;
@@ -517,19 +510,19 @@ styles += """
     width: 100%;
   }
 
-  button[data-widget="NewList"] h1.LIST-header {
+  button.NewList h1.LIST-header {
     position: relative;
     left: -42px;
     display: flex;
     align-items: center;
   }
 
-  button[data-widget="NewList"] h1.LIST-header svg {
+  button.NewList h1.LIST-header svg {
     margin-right: 13px;
   }
 
 
-  button[data-widget="NewList"] .subbutton_button {
+  button.NewList .subbutton_button {
     color: #{focus_blue};
     font-weight: 700;
     border-bottom-width: 2px;
@@ -538,17 +531,17 @@ styles += """
     transition: border-bottom 1s;
   }
 
-  button[data-widget="NewList"]:hover .subbutton_button, button[data-widget="NewList"]:hover .separator {
+  button.NewList:hover .subbutton_button, button.NewList:hover .separator {
     border-bottom-color: #{focus_blue};
     #text-decoration: underline;
   }
 
-  button[data-widget="NewList"] .separator {
+  button.NewList .separator {
     // padding: 0 12px;
     font-weight: 400;
     color: #{focus_blue + "ab"};
   }
-  button[data-widget="NewList"] .subheader {
+  button.NewList .subheader {
     color: #656565;
     font-size: 16px;
     position: relative;
@@ -577,6 +570,7 @@ window.NewList = ReactiveComponent
 
     else 
       BUTTON
+        className: 'NewList'
 
         onClick: (e) =>
           @local.editing = true 
@@ -662,6 +656,32 @@ window.list_i18n = ->
       , "Opinions about this #{item_name}"
 
 
+
+styles += """
+  .LIST-header {
+    font-size: 34px;
+    font-weight: 700;
+    text-align: left;
+  }
+
+  .LIST-header button {
+    border: none;
+    background-color: transparent;
+    padding: 0; 
+    margin: 0; 
+    position: absolute;
+    padding-right: 20px;
+    padding-top: 12px;
+    display: inline-block;
+    cursor: pointer;
+  }
+
+  .embedded-demo .LIST-header button {
+    display: none;
+  }
+
+"""
+
 EditableTitle = ReactiveComponent
   displayName: 'EditableTitle'
 
@@ -720,13 +740,8 @@ EditableTitle = ReactiveComponent
 
               'aria-hidden': true
               style: 
-                position: 'absolute'
                 left: -tw - 20
                 top: if is_collapsed then -14 else 5
-                paddingRight: 20
-                paddingTop: 12
-                display: 'inline-block'
-                cursor: 'pointer'
                 transform: if !is_collapsed then 'rotate(90deg)'
                 transition: 'transform .25s, top .25s'
 
@@ -784,9 +799,11 @@ EditableDescription = ReactiveComponent
 
 
 styles += """
-  .list_actions {
+  .list_actions_wrapper {
     margin-bottom: 50px;
-    margin-top: 24px;
+    margin-top: 24px;    
+  }
+  .list_actions {
     display: flex;
     align-items: baseline;
 
@@ -816,41 +833,52 @@ styles += """
 window.list_actions = (props) -> 
   list_key = props.list.key
 
-  DIV   
-    className: 'list_actions'
+  DIV 
+    className: 'list_actions_wrapper'
 
-    DIV 
-      className: 'proposal-left-spacing'
-        
-    DIV 
-      className: 'sort_menu_wrapper'
+    DIV   
+      className: 'list_actions'
 
-      if props.can_sort
-        # [ SortProposalsMenu(), FilterProposalsMenu() ]
-        SortProposalsMenu()
-
-
-      if !props.fresh
-        sort_key = "sorted-proposals-#{list_key}"
-        SPAN 
-          style: 
-            display: 'inline-block'
-            marginLeft: 12
+      DIV 
+        className: 'proposal-left-spacing'
           
-          ManualProposalResort {sort_key}
+      DIV 
+        className: 'sort_menu_wrapper'
 
-    DIV 
-      className: 'proposal-slidergram-spacing'        
+        if props.can_sort
+          # [ SortProposalsMenu(), FilterProposalsMenu() ]
+          SortProposalsMenu()
 
-    DIV 
-      className: 'opinion-view-container'
 
-      OpinionViews
-        more_views_positioning: 'right'
-        additional_width: LIST_GUTTER() + ITEM_TEXT_WIDTH()
+        if !props.fresh
+          sort_key = "sorted-proposals-#{list_key}"
+          SPAN 
+            style: 
+              display: 'inline-block'
+              marginLeft: 12
+            
+            ManualProposalResort {sort_key}
 
-    DIV 
-      className: "proposal-score-spacing"
+      DIV 
+        className: 'proposal-slidergram-spacing'        
+
+      DIV 
+        className: 'opinion-view-container'
+
+        OpinionViews
+          ui_key: "opinion-views-#{list_key}"
+          style: 
+            marginBottom: 20
+
+
+      DIV 
+        className: "proposal-score-spacing"
+
+    DIV null,
+      OpinionViewInteractionWrapper
+        ui_key: "opinion-views-#{list_key}"
+        more_views_positioning: 'right'      
+        width: Math.min (if ONE_COL() then 400 else 720), ITEM_OPINION_WIDTH() + LIST_GUTTER() + ITEM_TEXT_WIDTH()
 
 
 window.get_list_title = (list_key, include_category_value, subdomain) -> 

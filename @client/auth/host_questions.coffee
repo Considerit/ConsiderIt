@@ -374,7 +374,8 @@ window.ShowHostQuestions = ReactiveComponent
                         
 
           when 'dropdown'
-            input = DIV null,
+            input = DIV
+              key: "#{question.tag}-wrapper"
 
               SELECT
                 id: slugify("#{question.tag}inputBox")

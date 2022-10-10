@@ -306,7 +306,7 @@ window.Reasons = ReactiveComponent
         pc = fetch edit_mode
         EditPoint 
           key: if pc.adding_new_point then "new_point_#{valence}" else pc.editing_points[0]
-          point: if pc.adding_new_point then "new_point_#{valence}" else pc.editing_points[0]
+          point: if !pc.adding_new_point then pc.editing_points[0]
           proposal: @props.proposal
           fresh: pc.adding_new_point
           valence: valence

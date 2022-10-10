@@ -65,13 +65,13 @@ class PointController < ApplicationController
 
       point.save
 
-      point.publish
-
       opinion.include(point)
       # Include into the user's opinion
       if !opinion.published
         opinion.publish
       end
+
+      point.publish
 
       original_id = key_id(params[:key])
       result = point.as_json

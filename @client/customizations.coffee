@@ -257,69 +257,18 @@ masthead_only = ["kamakakoi","seattletimes","kevin","ihub","SilverLakeNC",\
                  "Actuality", 'cimsec', 'sosh', 'swotconsultants']
 
 
-# The old image banner + optional text description below
-LegacyImageHeader = (opts) ->
-  subdomain = fetch '/subdomain'   
-  loc = fetch 'location'    
-  homepage = is_a_dialogue_page()
+setTimeout ->
+  if ImageHeader?
+    # The old image banner + optional text description below
+    window.LegacyImageHeader = ImageHeader
 
-  return SPAN null if !subdomain.name
+    for sub in text_and_masthead
+      customizations_by_file[sub.toLowerCase()] = 
+        HomepageHeader: LegacyImageHeader
 
-  opts ||= {}
-  _.defaults opts, 
-    background_color: customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
-    background_image_url: customization('banner')?.background_image_url
-    text: customization('banner')?.title
-    external_link: subdomain.external_project_url
-
-  if !opts.background_image_url
-    throw 'LegacyImageHeader can\'t be used without a masthead'
-
-  is_light = is_light_background()
-    
-  DIV null,
-
-    IMG 
-      alt: opts.background_image_alternative_text
-      src: opts.background_image_url
-      style: 
-        width: '100%'
-
-    if homepage && opts.external_link 
-      A
-        href: opts.external_link
-        style: 
-          display: 'block'
-          position: 'absolute'
-          left: 10
-          top: 17
-          color: if !is_light then 'white'
-          fontSize: 18
-
-        '< project homepage'
-
-    else 
-      back_to_homepage_button
-        position: 'relative'
-        marginLeft: 20
-        display: 'inline-block'
-        color: if !is_light then 'white'
-        verticalAlign: 'middle'
-        marginTop: 5
-
-     
-    if opts.text
-      H1 style: {color: 'white', margin: 'auto', fontSize: 60, fontWeight: 700, position: 'relative', top: 50}, 
-        opts.text
-
-
-for sub in text_and_masthead
-  customizations_by_file[sub.toLowerCase()] = 
-    HomepageHeader: LegacyImageHeader
-
-for sub in masthead_only
-  customizations_by_file[sub.toLowerCase()] = 
-    HomepageHeader: LegacyImageHeader
+    for sub in masthead_only
+      customizations_by_file[sub.toLowerCase()] = 
+        HomepageHeader: LegacyImageHeader
 
 
 

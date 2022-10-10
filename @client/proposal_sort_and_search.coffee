@@ -71,6 +71,7 @@ window.invalidate_proposal_sorts = ->
     v.force_resort = true
     save v
 
+
 window.sorted_proposals = (proposals, sort_key, require_force) ->
 
 
@@ -721,7 +722,10 @@ ManualProposalResort = ReactiveComponent
 
         # 'data-tooltip': if !browser.is_mobile then translator "engage.sort_order.out-of-order-tooltip", "A re-sort may be needed because someone else added or updated their opinion, or you selected an opinion view that filtered or weighed opinions differently."
 
-        onClick: invalidate_proposal_sorts
+        onClick: (e) => 
+          invalidate_proposal_sorts()
+          e.stopPropagation()
+          e.preventDefault()
 
         SVG 
           width: 17

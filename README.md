@@ -27,16 +27,7 @@ Because Consider.it LLC retains permission to relicense the Consider.it source c
 On the state of Consider.it
 ---------------------------
 
-Consider.it was open sourced after several years of being closed source. And it is mostly just my code. Unfortunate consequences include: inconsistant styling, some hardcoding to production environment, substandard documentation, obscure commit messages, hardcoded references to specific customers, leaky abstractions, lack of releases and versioning, and a lack of tests. Sorry!
-
-I'm also working on next generation prototypes that build on what we've learned over the past five years applying Consider.it, and eventually be merged back here. The next Considerit will be more general (right now, it forces a structure of lists of proposals, with each proposal having pros/cons and each pro or con having comments), and the structure will be modifiable as a conversation progresses so that facilitators can use the best structure for the situation. The "Slidergram" widget will also be factored out and generalized. 
-
-The roadmap is:
-1. Refactor to a more generalized and recursive point/opinion data model, subsuming "proposals", "points", and "comments"
-2. Eliminate "crafting view" for creating a position and make it lists of points+sliders through and through
-3. Design & develop user contributions <---> profile/reputation <---> notifications value loop
-
-There are other developments I'm interested in (Slack integration, analytics dashboard, verified accounts, Blockchain backed data, etc) but I believe the above are more important for the platform.  
+Feel free to weigh in on design and development priorities! See https://consider.consider.it.
 
 Built on
 --------
@@ -64,4 +55,4 @@ Time permitting, Travis would like collaborate with you! Well, as long as you ar
 
 Note that there are still lots of todos to lower the barrier to making contributions, such as identifying good first-time projects. In the meantime, please be patient! And if you want to be a brave, early helper, please reach out to [travis@consider.it](travis@consider.it).
 
-Note that if you want your pull requests to be merged, you'll first have to agree to our [Contributor License Agreement](https://www.clahub.com/agreements/Considerit/ConsiderIt). This gives me the ability to dual license Consider.it, while you retain your rights to your contribution.
+Note that if you want your pull requests to be merged, you'll first have to agree to a Contributor License Agreement. This gives me the option to dual license Consider.it in the future, while you retain your rights to your contribution.

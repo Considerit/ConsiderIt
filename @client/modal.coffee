@@ -69,55 +69,66 @@ window.Modal =
   UNSAFE_componentWillMount: ->
     @scroll_Y = window.scrollY
 
+    # The timeout is b/c if we have a string of modal windows open, the scrollY position restored in the willUnmount 
+    # handler won't run before this componentWillMount handler, thus losing the original scrollY position.
+    setTimeout =>  
+      if !@scroll_Y
+        @scroll_Y = window.scrollY
+
   componentDidMount: ->
     @componentDidUpdate()
     
   componentDidUpdate: ->
+
     modal = @refs?.dialog or document.querySelector '[role=dialog]'
     return if !modal || @mounted
     @mounted = true
 
-    @focused_element_before_opening = document.activeElement
+    # The setTimout here is explained in the WillMount handler
+    setTimeout =>
 
-    ######################################
-    # For capturing focus inside the modal
-    # add all the elements inside modal which you want to make focusable
-    focusable_elements = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      @focused_element_before_opening = document.activeElement
 
-    # select the modal by it's id
-    @first_focusable_element = modal.querySelectorAll(focusable_elements)[0]
-    # get first element to be focused inside modal
-    focusable_content = modal.querySelectorAll(focusable_elements)
-    @last_focusable_element = focusable_content[focusable_content.length - 1]
+      ######################################
+      # For capturing focus inside the modal
+      # add all the elements inside modal which you want to make focusable
+      focusable_elements = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
 
-    # get last element to be focused inside modal
-    document.addEventListener 'keydown', @accessibility_on_keydown
+      # select the modal by it's id
+      @first_focusable_element = modal.querySelectorAll(focusable_elements)[0]
+      # get first element to be focused inside modal
+      focusable_content = modal.querySelectorAll(focusable_elements)
+      @last_focusable_element = focusable_content[focusable_content.length - 1]
 
-    try 
-      modal.querySelector('input:not([disabled])')?.focus()
-    catch e 
-      console.error e
+      # get last element to be focused inside modal
+      document.addEventListener 'keydown', @accessibility_on_keydown
 
-    #####################
-    # For preventing scroll outside of the modal, and allowing scroll within, 
-    # all while making it seem like the whole page is scrollable. 
-    _.extend modal.style,
-      position: 'fixed'
-      top: "0px"
-      left: "0px"
-      width: '100vw'
-      height: '100vh'
-      overflow: 'auto'
-      zIndex: 99999
-      paddingBottom: if browser.is_mobile then "150px"
+      try 
+        modal.querySelector('input:not([disabled])')?.focus()
+      catch e 
+        console.error e
 
-    scroll_bar_width = window.innerWidth - document.body.offsetWidth
-    _.extend document.body.style,
-      marginRight: scroll_bar_width
-      overflow: 'hidden'
-      position: 'fixed'
-      top: "-#{@scroll_Y}px"
-      width: '100vw'
+      #####################
+      # For preventing scroll outside of the modal, and allowing scroll within, 
+      # all while making it seem like the whole page is scrollable. 
+      _.extend modal.style,
+        position: 'fixed'
+        top: "0px"
+        left: "0px"
+        width: '100vw'
+        height: '100vh'
+        overflow: 'auto'
+        zIndex: 99999
+        paddingBottom: if browser.is_mobile then "150px"
+
+      scroll_bar_width = window.innerWidth - document.body.offsetWidth
+
+      _.extend document.body.style,
+        marginRight: scroll_bar_width
+        overflow: 'hidden'
+        position: 'fixed'
+        top: "-#{@scroll_Y}px"
+        width: '100vw'
 
 
 
@@ -127,6 +138,7 @@ window.Modal =
     # return the focus to the element that had focus when the modal was launched
     if @focused_element_before_opening && document.body.contains(@focused_element_before_opening)
       @focused_element_before_opening.focus()
+
     document.removeEventListener 'keydown', @accessibility_on_keydown
 
     _.extend document.body.style,

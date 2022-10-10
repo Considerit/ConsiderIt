@@ -396,6 +396,7 @@ img.avatar:after {
 
 cached_avatars = {}
 missing_images = {}
+loaded_images = {}
 
 window.getCanvasAvatar = (user) ->
   cached_avatars[user.key or user] or cached_avatars.default
@@ -464,6 +465,7 @@ window.LoadAvatars = ReactiveComponent
 
   load: -> 
     users = fetch '/users'
+    current_user = fetch '/current_user'  # subscribe for changes to login status & avatar
     return if !users.users 
 
     loading = fetch('avatar_loading')
@@ -473,17 +475,26 @@ window.LoadAvatars = ReactiveComponent
       cached_avatars.default = createFallbackIcon({key: 'default'})
 
     avatars_to_load = []
-    for user in users.users
-      if user.key not of cached_avatars and user.key not of missing_images
-        if user.avatar_file_name 
-          avatars_to_load.push user
-          
-        cached_avatars[user.key] = createFallbackIcon(user)
+    all_users = users.users.slice() or []
+    if current_user.user not in all_users
+      all_users.push current_user.user
+
+    for user in all_users
+      user = fetch user # subscribe to changes to avatar
+
+
+      if user.avatar_file_name
+
+        if user.avatar_file_name not of loaded_images && \
+           user.avatar_file_name not of missing_images
+
+          avatars_to_load.push user 
+
+      cached_avatars[user.key] ?= createFallbackIcon(user)
         
 
-
     if avatars_to_load.length > 0 
-      if !loading.loaded && !loading.loading
+      if !loading.loading
         loading.loading = true 
         save loading 
 
@@ -494,15 +505,15 @@ window.LoadAvatars = ReactiveComponent
 
           pic = new Image()
           pic.onload = do(user, pic) => => 
-            cached_avatars[user.key] = @create_avatar pic
+            loaded_images[user.avatar_file_name] = cached_avatars[user.key] = @create_avatar pic
             @loading_cnt -= 1
             if @loading_cnt == 0
               loading.loading = false
-              loading.loaded = true
+              loading.loaded = md5 JSON.stringify Object.keys(loaded_images)
               save loading
           pic.onerror = do(user) => =>
             @loading_cnt -= 1
-            missing_images[user.key] = 1
+            missing_images[user.avatar_file_name] = 1
 
           setTimeout do(user, pic) -> -> 
             pic.src = avatarUrl user, 'large'

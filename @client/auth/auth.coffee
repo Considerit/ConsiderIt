@@ -65,7 +65,21 @@ window.AuthCallout = ReactiveComponent
                     
 
               "<BUTTON1>Create an Account</BUTTON1> to share your thoughts"
-          else 
+          else if embedded_demo()
+            DIV null, 
+              BUTTON 
+                key: 'create_button'
+                'data-action': 'create'
+                onClick: (e) =>
+                  reset_key 'auth',
+                    form: 'create account'
+                style: create_account_button_style
+                className: "btn create_account"
+                "Choose a persona"
+
+              "to participate here"
+
+          else
             TRANSLATE
               id: 'create_account.call_out'
               BUTTON1: 
@@ -112,11 +126,12 @@ window.AuthTransition = ReactiveComponent
 
     # Once the user logs in, we will stop showing the log-in screen 
     # and execute any callbacks
-    if (!@local.logged_in_last_render && current_user.logged_in && !auth.show_user_questions_after_account_creation) || \
+    # Note: The very first auth.form != 'user questions' is solely for handling the auto-login for galactic federation.
+    #       Without it, it would reset the auth, which would cause the callback to prematurely execute
+    if (auth.form != 'user questions' && !@local.logged_in_last_render && current_user.logged_in && !auth.show_user_questions_after_account_creation) || \
        (auth.form == 'verify email' && current_user.verified) || \
        (auth.form == 'user questions' && (current_user.completed_host_questions && !auth.show_user_questions_after_account_creation)) || \
        (auth.form == 'create account via invitation' && !current_user.needs_to_complete_profile)
-      auth.after?()
       reset_key auth
 
 
@@ -165,7 +180,14 @@ window.AuthTransition = ReactiveComponent
           trying_to: 'create account'
         save current_user
 
-        reset_key 'auth'
+
+        reset_key 'auth',
+          form: 'user questions'
+          goal: ""
+          after: auth.after
+          show_user_questions_after_account_creation: auth.show_user_questions_after_account_creation
+
+
       else if current_user.tags.federation_allegiance && current_user.name == 'temp'
         allegiance = current_user.tags.federation_allegiance
         id = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 15)

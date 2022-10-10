@@ -385,6 +385,8 @@ window.Point = ReactiveComponent
                         (!browser.is_android_browser && e.type == 'click')
           if !included
             @include()
+          else 
+            @remove()
 
         if !TWO_COL() && @props.enable_dragging
           right = (included && point.is_pro) || (!included && !point.is_pro)
@@ -541,6 +543,19 @@ window.Point = ReactiveComponent
       what: 'included point'
       details: 
         point: @props.point
+
+  remove: -> 
+    point = fetch @props.point 
+    proposal = fetch point.proposal
+
+    your_opinion = proposal.your_opinion
+    your_opinion.key ?= "/new/opinion"
+
+    idx = your_opinion.point_inclusions.indexOf point.key
+
+    if idx > -1
+      your_opinion.point_inclusions.splice(idx, 1)
+      save(your_opinion)
 
 
   selectPoint: (e) ->

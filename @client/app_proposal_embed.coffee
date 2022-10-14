@@ -7,7 +7,7 @@ require './histogram-canvas'
 require './shared'
 require './tooltip'
 require 'dashboard/translations'
-require './proposal'
+require './item'
 
 
 window.focus_color = -> focus_blue

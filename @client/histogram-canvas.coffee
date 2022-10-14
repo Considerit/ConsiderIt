@@ -526,7 +526,7 @@ window.Histogram = ReactiveComponent
       key: 'selection_label'
       'aria-hidden': true
       style:
-        height: @props.height + REGION_SELECTION_VERTICAL_PADDING
+        height: @props.height + REGION_SELECTION_VERTICAL_PADDING + 2
         position: 'absolute'
         width: selection_width
         backgroundColor: "rgb(246, 247, 249)"
@@ -807,6 +807,14 @@ HistoAvatars = ReactiveComponent
 
     last_histogram_position[@props.histo_key] = histocache
 
+    if !!histocache && !histocache.ordered_users?
+      users = Object.keys(histocache.positions or {})
+      current_user = fetch '/current_user'
+      if current_user.key && (idx = users.indexOf(current_user.user)) > -1
+        users.splice idx, 1
+        users.push current_user.user
+      histocache.ordered_users = users
+
     histocache
 
 
@@ -1039,11 +1047,11 @@ HistoAvatars = ReactiveComponent
 
     force ?= @dirty_canvas
 
-    histocache = @getAvatarPositions()?.positions or {}
+    histocache = @getAvatarPositions()
 
     @skip_frame = !!SKIP_FRAMES && !force
     if SKIP_FRAMES && !force
-      for key, __ of histocache
+      for key in histocache?.ordered_users or []
         sprite = @sprites[key]
         continue if !sprite
         updating_opacity = sprite.target_opacity != sprite.from_opacity || sprite.opacity != 1
@@ -1064,7 +1072,8 @@ HistoAvatars = ReactiveComponent
       @buffer.width = (@resizing_canvas?.width or @refs.canvas.width) * DEVICE_PIXEL_RATIO
       @buffer.height = (@resizing_canvas?.height or @refs.canvas.height) * DEVICE_PIXEL_RATIO
 
-      for key, __ of histocache
+
+      for key in histocache?.ordered_users or []
         sprite = @sprites[key]
         continue if !sprite
         updating_opacity = sprite.target_opacity != sprite.from_opacity || sprite.opacity != 1
@@ -1092,8 +1101,8 @@ HistoAvatars = ReactiveComponent
     @hit_region_buffer.height = (@resizing_canvas?.height or @refs.canvas.height) * DEVICE_PIXEL_RATIO
     @hit_ctx.clearRect(0, 0, @buffer.width, @buffer.height)
 
-    histocache = @getAvatarPositions()?.positions or {}
-    for key, __ of histocache
+    histocache = @getAvatarPositions()
+    for key in histocache?.ordered_users or []
       sprite = @sprites[key]
       if key not of hit_region_avatars
         user = fetch(key)

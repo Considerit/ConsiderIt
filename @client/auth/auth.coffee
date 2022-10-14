@@ -29,11 +29,6 @@ window.AuthCallout = ReactiveComponent
     create_account_button_style = 
                     backgroundColor: selected_color
                     marginRight: 8
-                    # border: 'none'
-                    # fontWeight: 700
-                    # padding: "4px 18px"
-                    # color: 'white'   
-                    # borderRadius: 16   
     DIV  
       style: 
         width: '100%'
@@ -51,49 +46,7 @@ window.AuthCallout = ReactiveComponent
             fontWeight: 600
             textAlign: 'center'
 
-          if subdomain.SSO_domain
-
-            TRANSLATE
-              id: 'create_account.call_out'
-              BUTTON1: 
-                component: A 
-                args: 
-                  className: "btn create_account"
-                  href: '/login_via_saml'
-                  treat_as_external_link: true
-                  style: create_account_button_style
-                    
-
-              "<BUTTON1>Create an Account</BUTTON1> to share your thoughts"
-          else if embedded_demo()
-            DIV null, 
-              BUTTON 
-                key: 'create_button'
-                'data-action': 'create'
-                onClick: (e) =>
-                  reset_key 'auth',
-                    form: 'create account'
-                style: create_account_button_style
-                className: "btn create_account"
-                "Choose a persona"
-
-              "to participate here"
-
-          else
-            TRANSLATE
-              id: 'create_account.call_out'
-              BUTTON1: 
-                component: BUTTON 
-                args: 
-                  key: 'create_button'
-                  'data-action': 'create'
-                  onClick: (e) =>
-                    reset_key 'auth',
-                      form: 'create account'
-                  style: create_account_button_style
-                  className: "btn create_account"
-              "<BUTTON1>Create an Account</BUTTON1> to share your thoughts"
-
+          AUTH_CALLOUT_BUTTONS(create_account_button_style)
           if '*' not in subdomain.roles.participant
             DIV 
               style: 
@@ -103,6 +56,52 @@ window.AuthCallout = ReactiveComponent
         
         if @props.children 
           @props.children
+          
+window.AUTH_CALLOUT_BUTTONS = (button_style) ->
+  button_style ?= {}
+  subdomain = fetch '/subdomain'
+  if subdomain.SSO_domain
+
+    TRANSLATE
+      id: 'create_account.call_out'
+      BUTTON1: 
+        component: A 
+        args: 
+          className: "btn create_account"
+          href: '/login_via_saml'
+          treat_as_external_link: true
+          style: button_style
+            
+
+      "<BUTTON1>Create an Account</BUTTON1> to share your thoughts"
+  else if embedded_demo()
+    DIV null, 
+      BUTTON 
+        key: 'create_button'
+        'data-action': 'create'
+        onClick: (e) =>
+          reset_key 'auth',
+            form: 'create account'
+        style: button_style
+        className: "btn create_account"
+        "Choose a persona"
+
+      "to participate here"
+
+  else
+    TRANSLATE
+      id: 'create_account.call_out'
+      BUTTON1: 
+        component: BUTTON 
+        args: 
+          key: 'create_button'
+          'data-action': 'create'
+          onClick: (e) =>
+            reset_key 'auth',
+              form: 'create account'
+          style: button_style
+          className: "btn create_account"
+      "<BUTTON1>Create an Account</BUTTON1> to share your thoughts"
 
 # AuthTransition doesn't actually render anything.  It just handles state
 # transitions for current_user, e.g. for CSRF and logging in and out.

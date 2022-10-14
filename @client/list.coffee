@@ -1,6 +1,6 @@
 require './modal'
 require './edit_list'
-require './proposal_item'
+require './item'
 
 
 

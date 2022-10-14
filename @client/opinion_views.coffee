@@ -717,6 +717,27 @@ OpinionViews = ReactiveComponent
           else 
             local_state.minimized = false
             clear_all(local_state)
+        draw_when_active: =>
+          if local_state.minimized || opinion_views_ui.last_interacted_with != local_state.key
+            if user_has_set_a_view()
+              DIV 
+                className: 'custom_view_triangle'
+                style: 
+                  left: "calc(50% - 12px)"
+                  bottom: if browser.is_mobile then -5 else -5                  
+                  width: 0
+                  height: 0 
+                  borderLeft: '12px solid transparent'
+                  borderRight: '12px solid transparent'                    
+                  borderTop: "7px solid #{focus_blue}"
+          else 
+            DIV 
+              className: 'custom_view_triangle'
+              style: 
+                left: "calc(50% - 15px)"
+                bottom: if browser.is_mobile then -29 else -27
+              dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="rgb(182,182,182)"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
+
       }
     ]
 
@@ -789,30 +810,6 @@ OpinionViews = ReactiveComponent
           ToggleButtons view_buttons, opinion_views_ui, 
             minWidth: 290
 
-          if opinion_views_ui.active == 'custom'
-            triangle_left = ( (if local_state.minimized then @local.view_state_left_minimized else @local.view_state_left) or 60) + 35
-
-            if local_state.minimized || opinion_views_ui.last_interacted_with != local_state.key
-              if user_has_set_a_view()
-                DIV 
-                  className: 'custom_view_triangle'
-                  style: 
-                    left: triangle_left
-                    bottom: if browser.is_mobile then -5 else -5                  
-                    width: 0
-                    height: 0 
-                    borderLeft: '12px solid transparent'
-                    borderRight: '12px solid transparent'                    
-                    borderTop: "7px solid #{focus_blue}"
-            else 
-              DIV 
-                className: 'custom_view_triangle'
-                style: 
-                  left: triangle_left
-                  bottom: if browser.is_mobile then -29 else -27
-                dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="rgb(182,182,182)"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
-
-
           SPAN 
             style: 
               position: 'absolute'
@@ -850,31 +847,6 @@ OpinionViews = ReactiveComponent
         else 
           translator 'opinion_views.minimize_minimize', 'minimize'
 
-  shadow_view_state_offset: ->
-    ww = WINDOW_WIDTH()
-    local_state = fetch @props.ui_key or @local.key
-    opinion_views_ui = fetch('opinion_views_ui')
-
-    return if opinion_views_ui.active != 'custom' || \
-              (!local_state.minimized && @local.view_state_left? && ww == @left_set_for_window_width) || \
-              ( local_state.minimized && @local.view_state_left_minimized? && ww == @left_set_for_window_width_minimized)
-
-    left = @refs.custom?.offsetLeft
-
-    if local_state.minimized
-      if left != @local.view_state_left_minimized
-        @local.view_state_left_minimized = left 
-        @left_set_for_window_width_minimized = ww
-        save @local
-
-    else 
-      if left != @local.view_state_left
-        @local.view_state_left = left 
-        @left_set_for_window_width = ww
-        save @local
-
-  componentDidUpdate: -> @shadow_view_state_offset()
-  componentDidMount: -> @shadow_view_state_offset()
 
 
 
@@ -1842,6 +1814,7 @@ styles += """
   }
   .toggle_buttons li {
     display: inline-block;
+    position: relative;
   }
   [data-widget="DropMenu"].bluedrop button.dropMenu-anchor {
     border-radius: 8px;
@@ -1919,6 +1892,9 @@ window.ToggleButtons = (items, view_state, style) ->
             onClick: (e) -> toggled(e, item) 
 
             item.label
+
+          if view_state.active == key && item.draw_when_active
+            item.draw_when_active()
 
 window.OpinionViews = OpinionViews
 

@@ -1,6 +1,3 @@
-require '../collapsed_proposal'
-
-
 window.styles += """
   #NOTIFICATIONS {
     font-size: 18px;

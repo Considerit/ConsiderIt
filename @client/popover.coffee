@@ -60,6 +60,8 @@ show_popover = (config) ->
 window.update_avatar_popover_from_canvas_histo = (opts) -> 
   popover = fetch 'popover'
 
+  already_hovering_on_avatar = !!popover.element_in_focus
+
   if !opts
     popover.element_in_focus = null
     clear_popover false
@@ -81,7 +83,7 @@ window.update_avatar_popover_from_canvas_histo = (opts) ->
       popover.coords = coords
       save popover
 
-  , DELAY_TO_SHOW_POPOVER
+  , DELAY_TO_SHOW_POPOVER * (if already_hovering_on_avatar then .15 else 1)
 
 
 show_popover_from_dom = (e) ->

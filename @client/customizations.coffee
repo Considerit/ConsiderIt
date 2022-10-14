@@ -116,7 +116,7 @@ window.customization = (field, object_or_key, subdomain) ->
       # list-level config for proposals
       if key.match(/\/proposal\//)
         proposal = obj
-        list_key = "list/#{proposal.cluster}"
+        list_key = get_list_for_proposal(proposal)
         if subdomain_config[list_key]?
           chain_of_configs.push subdomain_config[list_key]
 

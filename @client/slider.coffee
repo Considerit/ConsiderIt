@@ -166,10 +166,11 @@ window.Slider = ReactiveComponent
       if props.show_val_highlighter
         DIV 
           style: 
-            height: props.base_height + 2
-            backgroundColor: focus_color()
+            height: props.base_height + 4
+            backgroundColor: "rgb(81, 142, 255)"
+            boxShadow: "0 0 #{1.5 * (props.base_height + 4)}px rgb(255 255 255), 0 0 3px rgba(0,0,0,.2) inset"
             position: 'relative'
-            top: -1
+            top: -2
             width: "#{Math.abs(100 * slider.value * (if props.polarized then .5 else 1))}%"
             left: if !props.polarized then 0 else if slider.value < 0 then "#{50 + 50 * slider.value}%" else '50%'
 
@@ -653,7 +654,7 @@ slider_handle.flat = (props) ->
         height: props.handle_height
         width: props.handle_width        
         backgroundColor: focus_color()
-        boxShadow: 'inset 0 -1px 2px rgba(0,0,0,.3), 0 1px 1px rgba(0,0,0,.2)'
+        boxShadow: 'inset 0 -1px 2px rgba(0,0,0,.3)'
 
 
   svg_props = 

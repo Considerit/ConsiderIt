@@ -289,7 +289,6 @@ window.Point = ReactiveComponent
               wordWrap: 'break-word'
               marginTop: '0.5em'
               fontSize: POINT_FONT_SIZE()
-              fontWeight: if browser.high_density_display && !browser.is_mobile then 300 else 400              
               
 
             DIV 
@@ -371,10 +370,9 @@ window.Point = ReactiveComponent
         your_opinion = proposal.your_opinion
         if your_opinion.key 
           fetch your_opinion
-        if your_opinion?.published
-          can_opine = permit 'update opinion', proposal, your_opinion
-        else
-          can_opine = permit 'publish opinion', proposal
+
+
+        can_opine = can_user_opine proposal          
 
         included = @included()
         includePoint = (e) => 

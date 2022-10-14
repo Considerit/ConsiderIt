@@ -16,9 +16,20 @@ window.get_proposal_mode = (proposal) ->
 
 
 window.update_proposal_mode = (proposal, proposal_mode, triggered_by) ->
+  can_opine = can_user_opine proposal
+
+  # permission not granted for crafting
+  if proposal_mode == 'crafting' && 
+      !(can_opine in [Permission.PERMITTED, Permission.UNVERIFIED_EMAIL, \
+                      Permission.NOT_LOGGED_IN, Permission.INSUFFICIENT_INFORMATION] || 
+       (can_opine == Permission.DISABLED && your_opinion.key))
+
+    proposal_mode = 'results' 
+
   local_state = fetch shared_local_key proposal
-  local_state.mode = proposal_mode 
-  save local_state
+  if local_state.mode != proposal_mode 
+    local_state.mode = proposal_mode 
+    save local_state
 
   # window.writeToLog
   #   what: 'toggle proposal mode'
@@ -43,14 +54,19 @@ styles += """
   }
 
 
-  .points_heading_label, .empty-list-callout, .reasons_region .point {
+  .points_by_community .points_heading_label, .empty-list-callout, .reasons_region .point {
     opacity: 0;
   }
-  :not(.expanding).is_expanded .points_heading_label, :not(.expanding).is_expanded .empty-list-callout, :not(.expanding).is_expanded .reasons_region .point {
+
+
+
+  :not(.expanding).is_expanded .points_by_community .points_heading_label, :not(.expanding).is_expanded .empty-list-callout, :not(.expanding).is_expanded .reasons_region .point {
     transition: opacity #{ANIMATION_SPEED_ITEM_EXPANSION}s ease #{STAGE1_DELAY}s;    
     opacity: 1;
   }
 
+
+  /* for collapsed => summary transition */
   :not(.expanding).is_expanded .reasons_region :nth-child(1).point {
     transition-delay: #{STAGE1_DELAY}s;
   }
@@ -71,14 +87,52 @@ styles += """
     transition-delay: #{STAGE1_DELAY + 2.5 * ANIMATION_SPEED_ITEM_EXPANSION}s;
   }
 
+  /* for collapsed => crafting transition */
+  /* :not(.expanding).is_expanded .crafting .points_by_community .points_heading_label, :not(.expanding).is_expanded .crafting .empty-list-callout, :not(.expanding).is_expanded .crafting .reasons_region .point {
+    transition: opacity #{ANIMATION_SPEED_ITEM_EXPANSION}s ease #{STAGE2_DELAY}s;    
+    opacity: 1;
+  }
+
+  :not(.expanding).is_expanded .crafting .reasons_region :nth-child(1).point {
+    transition-delay: #{STAGE2_DELAY}s;
+  }
+
+  :not(.expanding).is_expanded .crafting .reasons_region :nth-child(2).point {
+    transition-delay: #{STAGE2_DELAY + 1 * ANIMATION_SPEED_ITEM_EXPANSION}s;
+  }
+
+  :not(.expanding).is_expanded .crafting .reasons_region :nth-child(3).point {
+    transition-delay: #{STAGE2_DELAY + 1.5 * ANIMATION_SPEED_ITEM_EXPANSION}s;
+  }
+
+  :not(.expanding).is_expanded .crafting .reasons_region :nth-child(4).point {
+    transition-delay: #{STAGE2_DELAY + 2 * ANIMATION_SPEED_ITEM_EXPANSION}s;
+  }
+
+  :not(.expanding).is_expanded .crafting .reasons_region .point {
+    transition-delay: #{STAGE2_DELAY + 2.5 * ANIMATION_SPEED_ITEM_EXPANSION}s;
+  } */
+
+
+
+
+
+
 
   .slow-thought .DecisionBoard {
     opacity: 0;        
   }
 
   :not(.expanding).is_expanded .slow-thought .DecisionBoard {
-    transition: opacity #{3 * ANIMATION_SPEED_ITEM_EXPANSION}s ease #{STAGE2_DELAY}s;    
     opacity: 1;
+    transition-property: opacity; 
+    transition-timing-function: ease;    
+    transition-duration: #{3 * ANIMATION_SPEED_ITEM_EXPANSION}s;
+    transition-delay: 0; 
+  }
+
+  :not(.expanding).is_expanded .slow-thought.summary .DecisionBoard {
+    transition-delay: #{STAGE2_DELAY}s;    
   }
 
 """
@@ -114,10 +168,7 @@ window.Reasons = ReactiveComponent
       minheight += adjustments.edit_point_height or 0
 
 
-    if your_opinion.published
-      can_opine = permit 'update opinion', proposal, your_opinion
-    else
-      can_opine = permit 'publish opinion', proposal
+    can_opine = can_user_opine proposal
 
     draw_handle = can_opine != Permission.INSUFFICIENT_PRIVILEGES && 
                     (can_opine != Permission.DISABLED || your_opinion.published ) && 
@@ -174,7 +225,7 @@ window.Reasons = ReactiveComponent
 
       #reasons
       SECTION 
-        className:'reasons_region'
+        className: "reasons_region"
         style : 
           width: REASONS_REGION_WIDTH()    
           minHeight: if show_all_points then minheight     
@@ -306,7 +357,7 @@ window.Reasons = ReactiveComponent
         pc = fetch edit_mode
         EditPoint 
           key: if pc.adding_new_point then "new_point_#{valence}" else pc.editing_points[0]
-          point: if !pc.adding_new_point then pc.editing_points[0]
+          point: if pc.adding_new_point then "new_point_#{valence}" else pc.editing_points[0]
           proposal: @props.proposal
           fresh: pc.adding_new_point
           valence: valence
@@ -376,10 +427,7 @@ window.DecisionBoard = ReactiveComponent
     if your_opinion.key
       fetch your_opinion
 
-    if your_opinion.published
-      can_opine = permit 'update opinion', proposal, your_opinion
-    else
-      can_opine = permit 'publish opinion', proposal
+    can_opine = can_user_opine proposal
 
     opinion_views = fetch 'opinion_views'
     has_selection = opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
@@ -529,11 +577,9 @@ window.DecisionBoard = ReactiveComponent
         className:'decision_board_body'
         style: decision_board_style
         onClick: => 
-          if mode == 'results'                         
-            if your_opinion.key
-              can_opine = permit 'update opinion', proposal, your_opinion
-            else 
-              can_opine = permit 'publish opinion', proposal
+          if mode == 'results' 
+
+            can_opine = can_user_opine proposal                                  
 
             if can_opine > 0
               update_proposal_mode(proposal, 'crafting', 'give_opinion_button')
@@ -543,12 +589,9 @@ window.DecisionBoard = ReactiveComponent
                 form: 'create account'
                 goal: 'To participate, please introduce yourself.'
                 after: =>
-                  if your_opinion.key
-                    can_opine = permit 'update opinion', proposal, your_opinion
-                  else 
-                    can_opine = permit 'publish opinion', proposal
-                    if can_opine > 0 
-                      update_proposal_mode(proposal, 'crafting', 'give_opinion_button')
+                  can_opine = can_user_opine proposal
+                  if can_opine > 0 
+                    update_proposal_mode(proposal, 'crafting', 'give_opinion_button')
 
 
 
@@ -597,6 +640,13 @@ window.DecisionBoard = ReactiveComponent
                 e.stopPropagation() 
                 update_proposal_mode(proposal, 'crafting', 'give_opinion_button') 
 
+            onKeyPress: (e) => 
+              if e.which == 32 || e.which == 13
+                if mode != 'results'
+                  e.stopPropagation() 
+                  update_proposal_mode(proposal, 'crafting', 'give_opinion_button') 
+
+
             if !current_user.logged_in
               # translator 
               #   id: "engage.log_in_to_give_your_opinion_button"
@@ -605,7 +655,7 @@ window.DecisionBoard = ReactiveComponent
                 id: "engage.give_your_opinion_button"
                 'Give your Reasons'
 
-            else if your_opinion.key 
+            else if your_opinion.point_inclusions?.length > 0 
               translator 
                 id: "engage.update_your_opinion_button"
                 'Update your Reasons'
@@ -626,9 +676,9 @@ window.DecisionBoard = ReactiveComponent
         BUTTON 
           className:'save_opinion_button btn'
           onClick: => update_proposal_mode(proposal, 'results', 'save_button') 
-          'aria-label': translator 'engage.update_opinion_button', 'Show the results'
+          'aria-label': translator 'engage.update_opinion_button', 'Show everyone\'s opinion'
 
-          translator 'engage.update_opinion_button', 'Show the results'
+          translator 'engage.update_opinion_button', 'Show everyone\'s opinion'
 
         
         if !your_opinion.key || (your_opinion.key && permit('update opinion', proposal, your_opinion) < 0)

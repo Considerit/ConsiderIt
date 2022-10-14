@@ -19,6 +19,29 @@ styles += """
   .OpinionSlider {
     position: relative;
   }
+
+  .add_reasons_callout {
+    background-color: #{focus_color()};
+    color: white;
+    font-weight: 600;
+    font-size: 10px;
+    border-radius: 8px;
+    border: none;
+    padding: 4px 12px;
+    position: absolute;
+    opacity: 0;
+    transition: opacity .4s ease;
+  }
+
+  .ProposalItem:hover .add_reasons_callout {
+    opacity: 1;
+  }
+
+  .collapsing.ProposalItem:hover .add_reasons_callout {
+    opacity: 0;
+    display: none;
+  }  
+
 """
 
 window.OpinionSlider = ReactiveComponent
@@ -33,9 +56,7 @@ window.OpinionSlider = ReactiveComponent
     if @props.your_opinion.key
       your_opinion = fetch @props.your_opinion
 
-    opinion_views = fetch 'opinion_views'
-    hist_selection = opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
-    show_handle = @props.draw_handle && !hist_selection
+    show_handle = @props.draw_handle
 
     mode = get_proposal_mode(proposal)
 
@@ -129,7 +150,8 @@ window.OpinionSlider = ReactiveComponent
 
 
       @saveYourOpinionNotice()
-
+      if @props.show_reasons_callout
+        @showReasonsCallout()
 
     if @props.flip
       FLIPPED 
@@ -142,6 +164,36 @@ window.OpinionSlider = ReactiveComponent
     else 
       rtrn
 
+  showReasonsCallout: ->
+    your_opinion = @props.your_opinion
+    proposal = @props.proposal
+
+    BUTTON
+      className: 'add_reasons_callout'
+      style: 
+        left: (your_opinion.stance + 1) / 2 * ITEM_OPINION_WIDTH() - 130 / 2 # 130 = width of "Give your Reasons" 
+        width: 130
+        top: 26
+      onClick: => 
+        toggle_expand
+          proposal: proposal 
+          prefer_personal_view: true                   
+        
+      onKeyPress: (e) => 
+        if e.which == 32 || e.which == 13
+          toggle_expand
+            proposal: proposal
+            prefer_personal_view: true                   
+
+      if your_opinion.point_inclusions?.length > 0 
+        translator 
+          id: "engage.update_your_opinion_button"
+          'Update your Reasons'
+
+      else 
+        translator 
+          id: "engage.give_your_opinion_button"
+          'Give your Reasons'
 
   saveYourOpinionNotice : -> 
     proposal = fetch @props.proposal
@@ -200,6 +252,9 @@ window.OpinionSlider = ReactiveComponent
           left: (slider.value + 1) / 2 * @props.width - s.width / 2 - 10
 
         onClick: => save_opinion(proposal)
+        onKeyPress: (e) => 
+          if e.which == 32 || e.which == 13
+            save_opinion(proposal)
 
         notice 
 
@@ -315,6 +370,15 @@ window.OpinionSlider = ReactiveComponent
 
 
 
+styles += """
+.slider_feedback {
+  //opacity: 0;
+  display: none;
+}
+:not(.expanding).is_expanded .slider_feedback {
+  display: block;
+}
 
+"""
 
 

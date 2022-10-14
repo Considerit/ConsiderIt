@@ -6,7 +6,6 @@ require './browser_location' # for loadPage
 require './proposal_sort_and_search'
 require './opinion_views'
 require './browser_location'
-require './collapsed_proposal'
 require './new_proposal'
 require './list'
 require './tabs'

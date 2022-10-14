@@ -90,7 +90,7 @@ window.$$ =
     #if less than 50% of the viewport is taken up by the el...
     bottom_inside = el_bottom < doc_bottom && (el_bottom - doc_top) > options.fill_threshold * el_height
     top_inside = el_top > doc_top && (doc_bottom - el_top) > options.fill_threshold * el_height    
-    no_adjustment_needed = is_onscreen && top_inside && bottom_inside  
+    no_adjustment_needed = !options.force && is_onscreen && top_inside && bottom_inside  
 
     if !no_adjustment_needed
       switch options.position 

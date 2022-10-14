@@ -10,6 +10,8 @@ styles += """
     text-decoration: none;
     display: flex;
     align-items: center;
+    font-weight: 700;
+    margin-top: 30px;
   }
 
 """

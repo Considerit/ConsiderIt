@@ -189,7 +189,7 @@ window.TagHomepage = ReactiveComponent
   render: -> 
     current_user = fetch('/current_user')
 
-    aggregate_list_key = get_current_tab_name()
+    aggregate_list_key = "list/#{get_current_tab_name()}"
 
     DIV null,
 
@@ -197,7 +197,7 @@ window.TagHomepage = ReactiveComponent
         key: aggregate_list_key
         combines_these_lists: get_all_lists()
         list: 
-          key: "list/#{aggregate_list_key}"
+          key: aggregate_list_key
           name: aggregate_list_key
           proposals: fetch('/proposals').proposals
 

@@ -132,6 +132,7 @@ window.ProposalItem = ReactiveComponent
   render : ->
     proposal = fetch @props.proposal
 
+
     return if !proposal.name
 
     @is_expanded = @props.is_expanded
@@ -757,8 +758,7 @@ window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
   list_key = el.closest('.List').getAttribute('data-key')
 
 
-  expanded_state = fetch "proposal_expansions-list/#{list_key}"
-
+  expanded_state = fetch "proposal_expansions-#{list_key}"
 
   return if ensure_open && expanded_state[proposal.key]
 

@@ -105,13 +105,8 @@
 
         %script{:src => "#{@vendor}/vendor/rematrix-0.20.0.min.js", :type => 'text/javascript'}        
 
-        - if Rails.env.development? && false
-          %script{:src => "#{@vendor}/vendor/flip-toolkit-dev.js", :type => 'text/javascript'}
-          %script{:src => "#{@vendor}/vendor/react-flip-toolkit-dev.js", :type => 'text/javascript'}
-
-        - else 
-          %script{:src => "#{@vendor}/vendor/flip-toolkit.min.js", :type => 'text/javascript'}
-          %script{:src => "#{@vendor}/vendor/react-flip-toolkit.min.js", :type => 'text/javascript'}
+        %script{:src => "#{@vendor}/vendor/flip-toolkit-7.0.17.min.js", :type => 'text/javascript'}
+        %script{:src => "#{@vendor}/vendor/react-flip-toolkit-7.0.17.min.js", :type => 'text/javascript'}
 
 
 

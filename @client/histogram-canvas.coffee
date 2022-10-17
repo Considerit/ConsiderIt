@@ -521,7 +521,7 @@ window.Histogram = ReactiveComponent
     selection_left = Math.max 0, left
 
 
-    return DIV {key: 'selection_label'} if !is_histogram_controlling_region_selection(@props.histo_key) && get_originating_histogram()
+    return DIV {key: 'selection_label'} if (!is_histogram_controlling_region_selection(@props.histo_key) && get_originating_histogram()) || fetch('popover').element_in_focus
     DIV 
       key: 'selection_label'
       'aria-hidden': true
@@ -536,7 +536,7 @@ window.Histogram = ReactiveComponent
         borderTop: "2px solid"
         borderTopColor: if opinion_views.active_views.region_selected then focus_color() else 'transparent'
 
-      if !opinion_views.active_views.region_selected
+      if !opinion_views.active_views.region_selected 
         DIV
           style: 
             fontSize: 12
@@ -688,9 +688,9 @@ window.Histogram = ReactiveComponent
     @local.mouse_opinion_value = null    
     save @local
 
-    opinion_views = fetch 'opinion_views'
-    if opinion_views.active_views.region_selected
-      clear_histogram_managed_opinion_views opinion_views
+    # opinion_views = fetch 'opinion_views'
+    # if opinion_views.active_views.region_selected
+    #   clear_histogram_managed_opinion_views opinion_views
 
 
 
@@ -1181,9 +1181,9 @@ HistoAvatars = ReactiveComponent
 
 
   handleMouseMove: (e) ->
+
     user = @userAtPosition(e)
     id = null
-
 
     if user 
       backgrounded = (@sprites[user].target_opacity or @sprites[user].opacity) < 1

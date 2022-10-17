@@ -244,6 +244,7 @@ window.Reasons = ReactiveComponent
         # Border + bubblemouth that is shown when there is a histogram selection
         GroupSelectionRegion
           proposal: @props.proposal
+          is_expanded: @props.is_expanded
 
         if !TWO_COL() && customization('discussion_enabled', proposal)
           Dock
@@ -1423,10 +1424,12 @@ GroupSelectionRegion = ReactiveComponent
     # draw a bubble mouth
     w = 36; h = 24
 
-    margin = wrapper_width - PROPOSAL_HISTO_WIDTH()
+    slidergram_width = ITEM_OPINION_WIDTH() * (if @props.is_expanded && !ONE_COL() then 2 else 1)
+
+    margin = wrapper_width - slidergram_width
     stance = (region_selected or single_opinion_selected).opinion_value
     if region_selected
-      left = translateStanceToPixelX(1 / 0.75 * stance, PROPOSAL_HISTO_WIDTH()) + margin / 2 - w / 2
+      left = translateStanceToPixelX(1 / 0.75 * stance, slidergram_width) + margin / 2 - w / 2
     else 
       histocache = last_histogram_position[@props.proposal]
       return SPAN null if !histocache

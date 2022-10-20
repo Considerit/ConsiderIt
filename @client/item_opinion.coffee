@@ -27,6 +27,10 @@ styles += """
     width: 0;
   }
 
+  .one-col .is_expanded .fast-thought .proposal-score-spacing, .one-col .is_expanded .fast-thought .proposal-left-spacing, .one-col .is_expanded .fast-thought .proposal-left-spacing, .one-col .is_expanded .fast-thought .proposal-avatar-wrapper, one-col .is_expanded .fast-thought .proposal-avatar-spacing {
+    display: none;
+  }
+
   .OpinionBlock .slidergram_wrapper {
     display: flex;
   }
@@ -88,6 +92,10 @@ styles += """
     font-weight: 400;
     text-align: center;
     margin-bottom: 8px;
+  }
+
+  .one-col .opinion-heading {
+    font-size: 22px;
   }
 
 
@@ -203,7 +211,7 @@ window.OpinionBlock = ReactiveComponent
       SECTION 
         className: 'fast-thought'
 
-        if ONE_COL()
+        if SLIDERGRAM_BELOW()
           [
             DIV key: 'left', className: 'proposal-left-spacing'
             DIV key: 'avatar', className: 'proposal-avatar-wrapper'
@@ -214,7 +222,7 @@ window.OpinionBlock = ReactiveComponent
         DIV 
           className: 'slidergram_wrapper'
 
-          if @is_expanded
+          if @is_expanded && !SUPER_SMALL()
             DIV 
               className: 'opinion-views-container'
 
@@ -310,7 +318,7 @@ window.Slidergram = ReactiveComponent
     opinion_views = fetch 'opinion_views'
     just_you = opinion_views.active_views['just_you']
 
-    width = ITEM_OPINION_WIDTH() * (if @is_expanded && !ONE_COL() then 2 else 1)
+    width = ITEM_OPINION_WIDTH() * (if @is_expanded && !SLIDERGRAM_BELOW() then 2 else 1)
 
     namespaced_slider_key = namespaced_key('slider', proposal)
 
@@ -339,7 +347,7 @@ window.Slidergram = ReactiveComponent
         width: width
         height: if !@is_expanded then HISTOGRAM_HEIGHT_COLLAPSED else HISTOGRAM_HEIGHT_EXPANDED
         enable_individual_selection: !@props.disable_selection && !browser.is_mobile
-        enable_range_selection: !just_you && !browser.is_mobile && !ONE_COL()
+        enable_range_selection: !just_you && !browser.is_mobile && !SLIDERGRAM_BELOW()
         # draw_base: true
         draw_base_labels: !slider_regions
         backgrounded: backgrounded
@@ -383,7 +391,7 @@ window.Slidergram = ReactiveComponent
                 else 
                   customization('slider_handle', proposal) or slider_handle.flat
 
-        handle_height: if !@is_expanded then 22 else if TWO_COL() then 55 else 36
+        handle_height: if !@is_expanded then 22 else if NO_CRAFTING() then 55 else 36
         handle_width: if !@is_expanded then 27
 
         offset: !@is_expanded

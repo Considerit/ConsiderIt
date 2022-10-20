@@ -84,7 +84,7 @@ window.DefaultFooter = ReactiveComponent
             }
 
             .custom-shape-divider-top-1651729272 .shape-fill {
-                fill: #{if fetch('location').url.indexOf('/dashboard') > -1 then 'white' else main_background_color};
+                fill: #{if fetch('location').url.indexOf('/dashboard') > -1 || SLIDERGRAM_BELOW() then 'white' else main_background_color};
             }
             </style>
             <div class="custom-shape-divider-top-1651729272">

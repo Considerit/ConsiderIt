@@ -46,6 +46,10 @@ styles += """
     z-index: 1;
   }
 
+  .one-col .ProposalItem {
+    margin-bottom: 64px;
+  }
+
   .is_expanded.ProposalItem {
     width: calc( 100% + 8 * var(--LIST_PADDING-LEFT) );
     left:  calc( -4 * var(--LIST_PADDING-LEFT) );
@@ -291,7 +295,7 @@ styles += """
   }
 
   .one-col .opinion-block-wrapper::after {
-    left: max(-18px, (100% - var(--WINDOW_WIDTH) ) / 2 - 18px);
+    left: max(-4px, (100% - var(--WINDOW_WIDTH) ) / 2 - 4px);
   }
 
 
@@ -513,6 +517,16 @@ styles += """
     flex-shrink: 0;        
   }
 
+  .one-col .proposal-score-spacing {
+    width: 20px;
+  }
+  @media (max-width: #{SUPER_SMALL_BREAKPOINT}px) {
+    .one-col .proposal-score-spacing {
+      width: 8px;
+    }
+  }
+
+
   .ProposalBlock .avatar, .ProposalBlock .proposal_pic {
     height: var(--PROPOSAL_AUTHOR_AVATAR_SIZE);
     width: var(--PROPOSAL_AUTHOR_AVATAR_SIZE);
@@ -625,8 +639,8 @@ ProposalBlock = ReactiveComponent
             user: editor
             img_size: 'large'
             style:
-              height: PROPOSAL_AUTHOR_AVATAR_SIZE
-              width: PROPOSAL_AUTHOR_AVATAR_SIZE
+              height: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
+              width: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
 
         else # no author specified
           SPAN 
@@ -701,19 +715,40 @@ styles += """
     transition: opacity 1s;
     position: absolute;
     padding-top: 12px;
-    top: 7px;
-    left: 14px;
   }
 
   .is_expanded .edit_and_delete_block, .ProposalItem:hover .edit_and_delete_block {
-    right: 12px;
-    left: auto;
-    opacity: 1;
+    opacity: 1;    
   }
 
-  .one-col .is_expanded .edit_and_delete_block, .one-col .ProposalItem:hover .edit_and_delete_block {
-    right: 2px;
-    top: -4px;
+  @media (min-width: #{SLIDERGRAM_ON_SIDE_BREAKPOINT}px) {
+    .edit_and_delete_block {
+      top: 7px;
+      left: 14px;
+    }
+    .is_expanded .edit_and_delete_block, .ProposalItem:hover .edit_and_delete_block {
+      right: 12px;
+      left: auto;
+    }
+
+  }  
+
+  @media (min-width: #{SUPER_SMALL_BREAKPOINT}px) and (max-width: #{SLIDERGRAM_ON_SIDE_BREAKPOINT}px) {
+    .edit_and_delete_block {
+      right: -3px;
+      top: -1px;
+    }
+  }  
+
+  @media (max-width: #{SUPER_SMALL_BREAKPOINT}px) {
+    .edit_and_delete_block {
+      left: 5px;
+      top: 21px;
+    }
+     
+    .is_expanded .edit_and_delete_block {
+      left: 19px;     
+    }
   }
 
   .edit_and_delete_block button {
@@ -749,7 +784,7 @@ proposal_url = (proposal) ->
 
 window.personal_view_available = (proposal) ->
   proposal = fetch proposal  
-  !TWO_COL() && proposal.active && customization('discussion_enabled', proposal) 
+  !NO_CRAFTING() && proposal.active && customization('discussion_enabled', proposal) 
 
 window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
   proposal = fetch proposal

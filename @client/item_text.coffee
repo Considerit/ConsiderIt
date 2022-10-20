@@ -24,10 +24,7 @@ styles += """
     transform: scale(1);
     transform-origin: 0 0;
 
-    font-size: #{TITLE_FONT_SIZE_COLLAPSED}px;
-    font-weight: 700;
     cursor: pointer;
-    color: #111;
   }
 
   .proposal-title-invert-container {
@@ -40,14 +37,14 @@ styles += """
   }
 
 
-
   .ItemText .proposal-title-text-inline {
     border-bottom-width: 2px;
     border-style: solid;
     border-color: #{focus_blue + "ad"}; /* with some transparency */
     transition: border-color 1s;
-
-
+    font-size: #{TITLE_FONT_SIZE_COLLAPSED}px;
+    font-weight: 700;
+    color: #111;    
   }
 
   .ItemText .proposal-title-text-inline:hover {
@@ -155,7 +152,7 @@ window.ItemText = ReactiveComponent
       shouldFlip: @props.shouldFlip
       shouldFlipIgnore: @props.shouldFlipIgnore
       opacity: true
-      onSpringUpdate: if @props.expansion_state_changed() then (value) => 
+      onSpringUpdate: if @props.expansion_state_changed() && LIST_ITEM_EXPANSION_SCALE() != 1 then (value) => 
         if @props.expansion_state_changed()            
           start = if @is_expanded then 1 else LIST_ITEM_EXPANSION_SCALE() 
           end = if @is_expanded then LIST_ITEM_EXPANSION_SCALE() else 1 
@@ -218,25 +215,28 @@ window.ItemText = ReactiveComponent
                 if e.which == 32 || e.which == 13
                   @toggle_expand()
 
-
               FLIPPED 
-                flipId: "proposal-title-placer-#{proposal.key}"
+                inverseFlipId: "proposal-title-placer-#{proposal.key}"
                 shouldInvert: @props.shouldFlip
                 shouldFlipIgnore: @props.shouldFlipIgnore
-
 
                 DIV 
                   className: 'prep_for_flip proposal-title-invert-container' 
                           # a container for the flipper's transform to apply to w/o messing 
                           # with the transform applied to the title text
 
-                  DIV 
-                    ref: 'proposal_title_text'
-                    className: 'proposal-title-text'              
+                  FLIPPED 
+                    flipId: "proposal-title-#{proposal.key}"
+                    shouldFlip: @props.shouldFlip
+                    shouldFlipIgnore: @props.shouldFlipIgnore
 
-                    SPAN 
-                      className: 'proposal-title-text-inline'
-                      proposal.name
+                    DIV 
+                      ref: 'proposal_title_text'
+                      className: 'proposal-title-text'
+
+                      SPAN 
+                        className: 'proposal-title-text-inline'
+                        proposal.name
 
 
           FLIPPED 

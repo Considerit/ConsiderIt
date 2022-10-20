@@ -6,6 +6,17 @@ styles += """
   button.create_account {
     background-color: #{selected_color};
   }
+  #user_nav {
+    position: absolute;
+    zIndex: 999;
+    right: 30px;
+    font-size: 26px;    
+  }
+  @media (max-width: #{SUPER_SMALL_BREAKPOINT}px) {
+    #user_nav {
+      right: 8px;
+    }
+  }
 """
 
 window.ProfileMenu = ReactiveComponent
@@ -44,10 +55,6 @@ window.ProfileMenu = ReactiveComponent
     DIV
       id: 'user_nav'
       style: _.defaults {}, (customization('profile_menu_style') or {}), (@props.style or {}),
-        position: 'absolute'
-        zIndex: 999
-        right: 30
-        fontSize: 26
         top: if current_user.is_admin && (edit_forum.editing || loc.url.startsWith('/dashboard')) && permit('configure paid feature') < 0 then 57 else 17
 
 

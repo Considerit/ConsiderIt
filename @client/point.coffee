@@ -95,7 +95,7 @@ window.Point = ReactiveComponent
     else if @props.rendered_as == 'community_point'
       _.extend point_content_style,
         padding: 8
-        borderRadius: if TWO_COL() then "16px 16px 0 0" else 16
+        borderRadius: if NO_CRAFTING() then "16px 16px 0 0" else 16
         top: point_content_style.top - 8
         #left: point_content_style.left - 8
         #width: point_content_style.width + 16
@@ -129,7 +129,7 @@ window.Point = ReactiveComponent
     ioffset = -50
     includers_style[left_or_right] = ioffset
 
-    draw_all_includers = @props.rendered_as == 'community_point' || TWO_COL()
+    draw_all_includers = @props.rendered_as == 'community_point' || NO_CRAFTING()
 
     if expand_to_see_details && !is_selected
       append = SPAN 
@@ -218,7 +218,7 @@ window.Point = ReactiveComponent
 
 
 
-        if @props.rendered_as != 'decision_board_point'
+        if @props.rendered_as != 'decision_board_point' && !SUPER_SMALL()
 
           side = if point.is_pro then 'right' else 'left'
           mouth_style = 
@@ -315,12 +315,22 @@ window.Point = ReactiveComponent
                       comment_count: point.comment_count 
                       "{comment_count, plural, one {# comment} other {# comments}}"
 
+              if SUPER_SMALL()
+                SPAN 
+                  key: 3
+                  style: 
+                    float: 'right'
+
+                  "+#{point.includers.length}"
+
+                  
+
 
 
         if current_user.user == point.user
           DIV null,
             if permit('update point', point) > 0 && 
-                (@props.rendered_as == 'decision_board_point' || TWO_COL())
+                (@props.rendered_as == 'decision_board_point' || NO_CRAFTING())
               BUTTON
                 style:
                   fontSize: if browser.is_mobile then 24 else 14
@@ -338,7 +348,7 @@ window.Point = ReactiveComponent
                 translator 'engage.edit_button', 'edit'
 
             if permit('delete point', point) > 0 && 
-                (@props.rendered_as == 'decision_board_point' || TWO_COL())
+                (@props.rendered_as == 'decision_board_point' || NO_CRAFTING())
               BUTTON
                 'data-action': 'delete-point'
                 style:
@@ -354,7 +364,7 @@ window.Point = ReactiveComponent
                     destroy @props.point
                 translator 'engage.delete_button', 'delete'
 
-      if @props.rendered_as != 'decision_board_point' 
+      if @props.rendered_as != 'decision_board_point' && !SUPER_SMALL()
         DIV 
           'aria-hidden': true
           className:'includers'
@@ -366,7 +376,7 @@ window.Point = ReactiveComponent
 
 
 
-      if TWO_COL() || (!TWO_COL() && @props.enable_dragging)
+      if NO_CRAFTING() || (!NO_CRAFTING() && @props.enable_dragging)
         your_opinion = proposal.your_opinion
         if your_opinion.key 
           fetch your_opinion
@@ -386,7 +396,7 @@ window.Point = ReactiveComponent
           else 
             @remove()
 
-        if !TWO_COL() && @props.enable_dragging
+        if !NO_CRAFTING() && @props.enable_dragging
           right = (included && point.is_pro) || (!included && !point.is_pro)
           if right 
             sty = 

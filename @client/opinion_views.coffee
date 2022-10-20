@@ -735,7 +735,7 @@ OpinionViews = ReactiveComponent
               className: 'custom_view_triangle'
               style: 
                 left: "calc(50% - 15px)"
-                bottom: if browser.is_mobile then -29 else -27
+                bottom: if browser.is_mobile || SLIDERGRAM_BELOW() then -29 else -27
               dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="rgb(182,182,182)"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
 
       }
@@ -807,8 +807,7 @@ OpinionViews = ReactiveComponent
             # display: 'flex'
             position: 'relative'
 
-          ToggleButtons view_buttons, opinion_views_ui, 
-            minWidth: 290
+          ToggleButtons view_buttons, opinion_views_ui
 
           SPAN 
             style: 
@@ -1004,7 +1003,7 @@ window.OpinionViewInteractionWrapper = ReactiveComponent
             DIV 
               style:
                 display: 'flex'
-                justifyContent: if @props.more_views_positioning == 'centered' then 'center' else 'flex-end'
+                justifyContent: if @props.more_views_positioning == 'left' then 'flex-start' else if @props.more_views_positioning == 'centered' then 'center' else 'flex-end'
 
               DIV 
                 style: 
@@ -1430,7 +1429,7 @@ NonInteractiveOpinionViews = ReactiveComponent
       className: 'minimized_view_list'
       style: 
         width: if @props.more_views_positioning == 'centered' then 'fit-content'
-        textAlign: 'right' # if @props.more_views_positioning == 'centered' then 'center' else 'right'
+        textAlign: if @props.more_views_positioning == 'left' then 'left' else 'right'
 
       for mini in minimized_views
         do (mini) =>

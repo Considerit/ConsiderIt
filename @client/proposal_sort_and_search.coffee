@@ -684,7 +684,7 @@ ManualProposalResort = ReactiveComponent
   render: -> 
     sort = fetch 'sort_and_filter_proposals'
 
-    if !stale_sort_order(@props.sort_key) || ONE_COL()
+    if !stale_sort_order(@props.sort_key) || SLIDERGRAM_BELOW()
       return SPAN null 
 
     if running_timelapse_simulation?

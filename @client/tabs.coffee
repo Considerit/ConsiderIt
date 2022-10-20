@@ -228,12 +228,13 @@ styles += """
     margin: auto;
     text-align: center;
     list-style: none;
-    width: 900px;
+    max-width: 900px;
   }
 
   #tabs.editing > ul {
     padding-top: 26px;
   }
+
 
 """
 

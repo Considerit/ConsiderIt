@@ -12,21 +12,41 @@ require './tabs'
 
 
 styles += """
-  .main_background {
-    background-color: #{main_background_color};
+
+  @media (min-width: #{SLIDERGRAM_ON_SIDE_BREAKPOINT}px) {
+    .main_background {
+      background-color: #{main_background_color};
+    }
+
   }
 
-  .main_background.one-col, .main_background .one-col, .one-col.navigation_wrapper, .embedded-demo.main_background {
-    background-image: none;
-    background-color: white;
+  @media (max-width: #{SLIDERGRAM_ON_SIDE_BREAKPOINT}px) {
+    .main_background {
+      background-color: white;
+    }
   }
+
+  # .main_background.one-col, .main_background .one-col, .one-col.navigation_wrapper, .embedded-demo.main_background {
+  #   background-image: none;
+  #   background-color: white;
+  # }
 
   #homepagetab {
     position: relative;    
   }
 
   .one-col #homepagetab {
-    padding: 24px 0px 140px 36px;
+    padding: 24px 0px 140px 20px;
+  }
+
+  @media (max-width: #{SUPER_SMALL_BREAKPOINT}px) {
+    .one-col #homepagetab {
+      padding: 24px 0px 140px 8px;
+    }
+  }
+
+  .Homepage {
+    overflow: hidden;
   }
 
   .Homepage:not(.one-col) #homepagetab {
@@ -42,7 +62,7 @@ styles += """
 
   .sized_for_homepage {
     margin: auto;
-    width: var(--HOMEPAGE_WIDTH);
+    /* width: var(--HOMEPAGE_WIDTH); */
     padding: 0px var(--LIST_PADDING-RIGHT) 0px var(--LIST_PADDING-LEFT);
   }
 
@@ -84,7 +104,7 @@ window.Homepage = ReactiveComponent
 
     DIV 
       key: "homepage_#{subdomain.name}"      
-      className: "Homepage main_background #{if ONE_COL() then 'one-col' else ''} #{if embedded_demo() then 'embedded-demo' else ''}"
+      className: "Homepage main_background #{if SLIDERGRAM_BELOW() then 'one-col' else ''} #{if embedded_demo() then 'embedded-demo' else ''}"
 
       DIV
         id: 'homepagetab'
@@ -146,6 +166,7 @@ window.Homepage = ReactiveComponent
                 DIV 
                   style: 
                     paddingTop: 68
+                    paddingRight: if SLIDERGRAM_BELOW() then 36
 
                   DIV 
                     style: 

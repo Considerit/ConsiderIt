@@ -335,9 +335,6 @@ Root = ReactiveComponent
         window.is_swipping = false
         true
 
-      style: 
-        width: DOCUMENT_WIDTH()
-
       
       onClick: @resetSelection
 

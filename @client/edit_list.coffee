@@ -300,7 +300,7 @@ window.ModalNewList = ReactiveComponent
                 focus_on_mount: true
                 style: _.defaults {}, customization('list_label_style', list_key, subdomain) or {}, 
                   fontFamily: header_font()
-                  width: HOMEPAGE_WIDTH() + -200
+                  width: '100%'
 
                 defaultValue: if !@props.fresh then title
                 onChange: (e) ->
@@ -338,7 +338,7 @@ window.ModalNewList = ReactiveComponent
 
                     style:
                       # marginTop: -12
-                      width:  HOMEPAGE_WIDTH() - 200
+                      width:  "100%" # HOMEPAGE_WIDTH() - 200
 
                     STYLE
                       dangerouslySetInnerHTML: __html: """

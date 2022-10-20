@@ -52,6 +52,7 @@ window.Header = ReactiveComponent
       DIV 
         style: 
           margin: '0 auto'
+          # width: BANNER_WIDTH()
 
 
         ProfileMenu()

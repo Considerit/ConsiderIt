@@ -86,7 +86,7 @@ window.OpinionSlider = ReactiveComponent
         width: @props.width
         filter: if @props.backgrounded then 'grayscale(100%)'
 
-      if (@props.focused || (TWO_COL() && @props.is_expanded)) && show_handle
+      if (@props.focused || (NO_CRAFTING() && @props.is_expanded)) && show_handle
         @drawFeedback() 
 
       Slider
@@ -201,7 +201,7 @@ window.OpinionSlider = ReactiveComponent
     slider = fetch @props.slider_key
     current_user = fetch '/current_user'
 
-    return SPAN null if (!TWO_COL() && customization('discussion_enabled', proposal))  || \
+    return SPAN null if (!NO_CRAFTING() && customization('discussion_enabled', proposal))  || \
                          current_user.logged_in || slider.is_moving
     
 
@@ -221,7 +221,7 @@ window.OpinionSlider = ReactiveComponent
     
     s = sizeWhenRendered notice, style
 
-    save_opinion = (proposal) -> 
+    save_opinion = (proposal) => 
       can_opine = @props.permitted()
 
       if can_opine > 0
@@ -274,7 +274,7 @@ window.OpinionSlider = ReactiveComponent
         translator "sliders.slide_prompt", 'Slide Your Overall Opinion'
       else if func = labels.slider_feedback or default_feedback
         func slider.value, proposal
-      else if TWO_COL() 
+      else if NO_CRAFTING() 
         translator "sliders.slide_feedback_short", "Your opinion"
       else 
         ''
@@ -283,8 +283,8 @@ window.OpinionSlider = ReactiveComponent
 
     feedback_style = 
       pointerEvents: 'none' 
-      fontSize: if TWO_COL() then "22px" else "30px"
-      fontWeight: if !TWO_COL() then 700
+      fontSize: if NO_CRAFTING() then "22px" else "30px"
+      fontWeight: if !NO_CRAFTING() then 700
       color: if @props.backgrounded then '#eee' else focus_color()
       textAlign: 'center'
       #visibility: if @props.backgrounded then 'hidden'
@@ -302,7 +302,7 @@ window.OpinionSlider = ReactiveComponent
 
     _.extend feedback_style, 
       position: 'absolute'      
-      top: if !TWO_COL() then -80 else 37
+      top: if !NO_CRAFTING() then -80 else 37
       left: feedback_left
       marginLeft: -feedback_width / 2
       width: feedback_width

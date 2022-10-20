@@ -16,7 +16,7 @@ window.HistogramScores = ReactiveComponent
     opinions = get_opinions_for_proposal opinions, proposal, weights
 
 
-    if opinions.length == 0 || ONE_COL()
+    if opinions.length == 0 || SLIDERGRAM_BELOW()
       return SPAN null
 
     all_groups = get_user_groups_from_views groups

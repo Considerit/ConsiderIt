@@ -47,16 +47,20 @@ window.EditForum = ReactiveComponent
       DIV 
         style: 
           position: 'absolute'
-          left: "50%"
-          top: 8
+          left: if SLIDERGRAM_BELOW() then 24 else "50%"
+          top: 17
           zIndex: 99999
-          marginLeft: -152
+          marginLeft: if !SLIDERGRAM_BELOW() then -152
 
         BUTTON 
 
           onClick: enter_edit
 
-          translator 'forum.edit_button', 'Edit Banner & Forum Structure'
+          if SUPER_SMALL()
+            translator 'forum.edit_button_short', 'Edit Banner'
+          else 
+            translator 'forum.edit_button', 'Edit Banner & Forum Structure'
+
     else 
 
       DIV null,

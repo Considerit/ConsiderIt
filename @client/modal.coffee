@@ -37,6 +37,12 @@ window.styles += """
   border-radius: 16px;
 }
 
+@media (max-width: 700px) {
+  #modal-body {
+    padding: 2.5em 42px 3.5em 42px;
+  }
+}
+
 """
 
 window.Modal =

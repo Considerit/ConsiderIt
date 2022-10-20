@@ -91,8 +91,6 @@ window.Tooltip = ReactiveComponent
       boxShadow: '0 1px 1px rgba(0,0,0,.2)'
       maxWidth: 350
 
-
-
     if tooltip.top || !tooltip.top?
       # place the tooltip above the element
       _.extend style, 

@@ -35,16 +35,14 @@ window.AuthCallout = ReactiveComponent
 
       DIV 
         style: 
-          width: HOMEPAGE_WIDTH()
-          margin: 'auto'
           padding: 12
+          textAlign: 'center'
           # backgroundColor: '#f1f1f1'
         
         DIV 
           style: 
             fontSize: 20
             fontWeight: 600
-            textAlign: 'center'
 
           AUTH_CALLOUT_BUTTONS(create_account_button_style)
           if '*' not in subdomain.roles.participant

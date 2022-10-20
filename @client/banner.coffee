@@ -1118,6 +1118,25 @@ window.PhotoBanner = (opts) ->
           text-shadow: 0px 1px 2px rgba(0,0,0,.4);
         }
 
+        @media (min-width: #{SUPER_SMALL_BREAKPOINT}px) and (max-width: #{SLIDERGRAM_ON_SIDE_BREAKPOINT}px) {
+          .PhotoBanner > .wrapper .CustomizeTitle .banner_title {
+            font-size: 36px;
+          }        
+          .PhotoBanner > .wrapper > .text_block {
+            padding: 48px 32px 32px 32px;
+          }
+
+        }  
+        @media (max-width: #{SUPER_SMALL_BREAKPOINT}px) {
+          .PhotoBanner > .wrapper .CustomizeTitle .banner_title {
+            font-size: 24px;
+          }        
+          .PhotoBanner > .wrapper > .text_block {
+            padding: 36px 24px 24px 24px;
+          }
+        }  
+
+
         .PhotoBanner #tabs {
           margin-top: 100px;
           top: 0;

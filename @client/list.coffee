@@ -4,17 +4,43 @@ require './item'
 
 
 
-window.PROPOSAL_AUTHOR_AVATAR_SIZE = 40
 window.styles += """
+  :after,
   :root {
-    --PROPOSAL_AUTHOR_AVATAR_SIZE: #{PROPOSAL_AUTHOR_AVATAR_SIZE}px;
-    --PROPOSAL_AUTHOR_AVATAR_GUTTER: 18px;
     --PROPOSAL_BULLET_GUTTER: 12px; 
     --LIST_GUTTER: calc(var(--PROPOSAL_AUTHOR_AVATAR_SIZE) + var(--PROPOSAL_AUTHOR_AVATAR_GUTTER));
 
-    --ITEM_TEXT_WIDTH:    calc( .6 * (var(--HOMEPAGE_WIDTH) - 2 * var(--LIST_GUTTER)) );
-    --ITEM_OPINION_WIDTH: calc( .4 * (var(--HOMEPAGE_WIDTH) - 2 * var(--LIST_GUTTER)) );
   }
+
+  @media (max-width: #{SLIDERGRAM_ON_SIDE_BREAKPOINT}px) {
+    :root {
+      --ITEM_TEXT_WIDTH:    calc( var(--HOMEPAGE_WIDTH) - var(--LIST_GUTTER)) );
+      --ITEM_OPINION_WIDTH: calc( var(--HOMEPAGE_WIDTH) - var(--LIST_GUTTER)) );      
+    }
+  }
+
+  @media (min-width: #{SLIDERGRAM_ON_SIDE_BREAKPOINT}px) {
+    :root {
+      --ITEM_TEXT_WIDTH:    calc( .6 * (var(--HOMEPAGE_WIDTH) - 2 * var(--LIST_GUTTER)) );
+      --ITEM_OPINION_WIDTH: calc( .4 * (var(--HOMEPAGE_WIDTH) - 2 * var(--LIST_GUTTER)) );      
+    }
+  }
+
+
+  @media (max-width: #{SUPER_SMALL_BREAKPOINT}px) {
+    :root {
+      --PROPOSAL_AUTHOR_AVATAR_SIZE: #{PROPOSAL_AUTHOR_AVATAR_SIZE_SMALL}px;
+      --PROPOSAL_AUTHOR_AVATAR_GUTTER: #{PROPOSAL_AVATAR_GUTTER_SMALL}px;
+    }
+  }
+
+  @media (min-width: #{SUPER_SMALL_BREAKPOINT}px) {
+    :root {
+      --PROPOSAL_AUTHOR_AVATAR_SIZE: #{PROPOSAL_AUTHOR_AVATAR_SIZE}px;
+      --PROPOSAL_AUTHOR_AVATAR_GUTTER: #{PROPOSAL_AVATAR_GUTTER}px;
+    }
+  }
+
 
 
   .List, .NewList, .draggable-wrapper {
@@ -56,14 +82,14 @@ window.styles += """
 
 responsive_style_registry.list_padding = -> 
 
-  top =    if ONE_COL() then 0 else 48
-  bottom = if ONE_COL() then 0 else 48 
+  top =    if SLIDERGRAM_BELOW() then 0 else 48
+  bottom = if SLIDERGRAM_BELOW() then 0 else 48 
 
-  list_padding = if ONE_COL() then 0 else 80
+  list_padding = if SLIDERGRAM_BELOW() then 0 else 80
 
   if WINDOW_WIDTH() <= 955
-    right = if ONE_COL() then 4 else Math.max 36, list_padding
-    left  = if ONE_COL() then 4 else Math.max 36, list_padding
+    right = if SLIDERGRAM_BELOW() then 4 else Math.max 36, list_padding
+    left  = if SLIDERGRAM_BELOW() then 4 else Math.max 36, list_padding
   else 
     right = Math.max 36, list_padding + list_padding / 6
     left  = Math.max 36, list_padding - list_padding / 6
@@ -247,7 +273,15 @@ ListItems = ReactiveComponent
           list_key: list_key
           combines_these_lists: @props.combines_these_lists  
 
-    proposals_to_render = (p for p,idx in proposals when idx < @props.show_first_num_items && passes_running_timelapse_simulation(p.created_at))
+    loc = fetch 'location'
+    proposals_to_render = []
+    for p, idx in proposals
+      passes_idx_test = idx < @props.show_first_num_items && passes_running_timelapse_simulation(p.created_at)
+      passes_url_test = loc.url == "/#{p.slug}"
+      if passes_idx_test || passes_url_test
+        proposals_to_render.push p
+      if idx >= @props.show_first_num_items && loc.url == '/'
+        break 
 
     sorted_key = md5 (p.key for p in proposals_to_render).join('###')
     list_order_has_changed = @last_sorted_key? && @last_sorted_key != sorted_key
@@ -519,6 +553,8 @@ styles += """
 
   button.NewList h1.LIST-header svg {
     margin-right: 13px;
+    position: relative;
+    top: 3px;
   }
 
 
@@ -580,7 +616,11 @@ window.NewList = ReactiveComponent
         H1
           className: 'LIST-header'
 
-          plus_icon focus_blue
+          
+          SPAN 
+            style: 
+              visibility: if SLIDERGRAM_BELOW() then 'hidden'
+            plus_icon focus_blue
 
           SPAN 
             className: 'subbutton_button open'
@@ -664,6 +704,23 @@ styles += """
     text-align: left;
   }
 
+  @media (min-width: #{SUPER_SMALL_BREAKPOINT}px) and (max-width: #{SLIDERGRAM_ON_SIDE_BREAKPOINT}px) {
+    .LIST-header {
+      font-size: 28px;
+    }  
+  }
+  @media (max-width: #{SUPER_SMALL_BREAKPOINT}px) {
+    .LIST-header {
+      font-size: 22px; 
+      margin-left: 28px; 
+    }  
+  }
+
+  .EditableTitle {
+    margin-right: 24px;
+  }
+
+
   .LIST-header button {
     border: none;
     background-color: transparent;
@@ -706,7 +763,8 @@ EditableTitle = ReactiveComponent
         save list_state
 
 
-    DIV null, 
+    DIV 
+      className: 'EditableTitle'
 
       H1 
         className: 'LIST-header'
@@ -740,7 +798,7 @@ EditableTitle = ReactiveComponent
 
               'aria-hidden': true
               style: 
-                left: -tw - 20
+                left: -tw - (if SLIDERGRAM_BELOW() then 10 else 20)
                 top: if is_collapsed then -14 else 5
                 transform: if !is_collapsed then 'rotate(90deg)'
                 transition: 'transform .25s, top .25s'
@@ -814,13 +872,18 @@ styles += """
     width: calc(100% + var(--LIST_PADDING-LEFT) + var(--LIST_PADDING-RIGHT) );
   }
 
+  .one-col .list_actions {
+    flex-direction: column;
+  }
+
   .opinion-view-container {
     flex-shrink: 0;  
     width: var(--ITEM_OPINION_WIDTH);  
   }
 
   .one-col .opinion-view-container {  
-    width: 400px;      
+    width: auto;  
+    margin-top: 24px;    
   }
 
   .sort_menu_wrapper {
@@ -877,8 +940,8 @@ window.list_actions = (props) ->
     DIV null,
       OpinionViewInteractionWrapper
         ui_key: "opinion-views-#{list_key}"
-        more_views_positioning: 'right'      
-        width: Math.min (if ONE_COL() then 400 else 720), ITEM_OPINION_WIDTH() + LIST_GUTTER() + ITEM_TEXT_WIDTH()
+        more_views_positioning: if SLIDERGRAM_BELOW() then 'left' else 'right'      
+        width: Math.min 720, ITEM_OPINION_WIDTH() + LIST_GUTTER() + ITEM_TEXT_WIDTH()
 
 
 window.get_list_title = (list_key, include_category_value, subdomain) -> 

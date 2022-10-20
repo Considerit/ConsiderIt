@@ -231,7 +231,7 @@ window.Reasons = ReactiveComponent
           minHeight: if show_all_points then minheight     
           position: 'relative'
           paddingBottom: '4em' #padding instead of margin for docking
-          margin: "#{if draw_handle && !TWO_COL() then '24px' else '0'} auto 0 auto"
+          margin: "#{if draw_handle && !NO_CRAFTING() then '24px' else '0'} auto 0 auto"
           display: if !customization('discussion_enabled', proposal) then 'none'
 
         H2
@@ -246,7 +246,7 @@ window.Reasons = ReactiveComponent
           proposal: @props.proposal
           is_expanded: @props.is_expanded
 
-        if !TWO_COL() && customization('discussion_enabled', proposal)
+        if !NO_CRAFTING() && customization('discussion_enabled', proposal)
           Dock
             key: 'decisionboard-dock'
             dock_key: 'decisionboard-dock'
@@ -290,17 +290,17 @@ window.Reasons = ReactiveComponent
             proposal: proposal.key
             reasons_key: 'community_cons'
             rendered_as: 'community_point'
-            points_editable: TWO_COL()
+            points_editable: NO_CRAFTING()
             valence: 'cons'
             points_draggable: mode == 'crafting'
             drop_target: false
             points: buildPointsList \
               proposal, 'cons', \
               (if mode == 'results' then 'score' else 'last_inclusion'), \ 
-              mode == 'crafting' && !TWO_COL(), \
-              mode == 'crafting' || TWO_COL() || (just_you && mode == 'results')
+              mode == 'crafting' && !NO_CRAFTING(), \
+              mode == 'crafting' || NO_CRAFTING() || (just_you && mode == 'results')
             style: 
-              visibility: if !TWO_COL() && mode == 'crafting' && !has_community_points then 'hidden'
+              visibility: if !NO_CRAFTING() && mode == 'crafting' && !has_community_points then 'hidden'
 
 
           #community pros
@@ -309,17 +309,17 @@ window.Reasons = ReactiveComponent
             proposal: proposal.key
             reasons_key: 'community_pros'
             rendered_as: 'community_point'
-            points_editable: TWO_COL()
+            points_editable: NO_CRAFTING()
             valence: 'pros'
             points_draggable: mode == 'crafting'
             drop_target: false
             points: buildPointsList \
               proposal, 'pros', \
               (if mode == 'results' then 'score' else 'last_inclusion'), \ 
-              mode == 'crafting' && !TWO_COL(), \
-              mode == 'crafting' || TWO_COL() || (just_you && mode == 'results')
+              mode == 'crafting' && !NO_CRAFTING(), \
+              mode == 'crafting' || NO_CRAFTING() || (just_you && mode == 'results')
             style: 
-              visibility: if !TWO_COL() && mode == 'crafting' && !has_community_points then 'hidden'
+              visibility: if !NO_CRAFTING() && mode == 'crafting' && !has_community_points then 'hidden'
 
       if !show_all_points
         BUTTON 
@@ -562,7 +562,7 @@ window.DecisionBoard = ReactiveComponent
       H3 
         className: 'hidden'
         style: 
-          display: if !TWO_COL() && mode == 'results' then 'none'
+          display: if !NO_CRAFTING() && mode == 'results' then 'none'
 
         translator 
           id: "engage.opinion_crafting_explanation" 
@@ -830,7 +830,7 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
   if sort_key of stored_points_order && opinion_views.active_views.point_includers
     points = stored_points_order[sort_key]
   else 
-    points = (pnt for pnt in points when (pnt.key of point_inclusions_per_point) || (TWO_COL() && pnt.key in included_points))
+    points = (pnt for pnt in points when (pnt.key of point_inclusions_per_point) || (NO_CRAFTING() && pnt.key in included_points))
 
     # Sort points based on resonance with selected users, or custom sort_field
     sort = (pnt) ->
@@ -997,7 +997,7 @@ window.PointsList = ReactiveComponent
 
     x_pos = if @props.points_draggable
               if @props.valence == 'cons' then 0 else DECISION_BOARD_WIDTH()
-            else if !TWO_COL()
+            else if !NO_CRAFTING()
               DECISION_BOARD_WIDTH() / 2
             else
               0
@@ -1024,7 +1024,7 @@ window.PointsList = ReactiveComponent
 
         transition: "transform #{TRANSITION_SPEED}ms"
         transform: "translate(#{x_pos}px, 0)"
-      if mode == 'crafting' && !TWO_COL()
+      if mode == 'crafting' && !NO_CRAFTING()
 
         [A
           key: 'skip to'
@@ -1424,7 +1424,7 @@ GroupSelectionRegion = ReactiveComponent
     # draw a bubble mouth
     w = 36; h = 24
 
-    slidergram_width = ITEM_OPINION_WIDTH() * (if @props.is_expanded && !ONE_COL() then 2 else 1)
+    slidergram_width = ITEM_OPINION_WIDTH() * (if @props.is_expanded && !SLIDERGRAM_BELOW() then 2 else 1)
 
     margin = wrapper_width - slidergram_width
     stance = (region_selected or single_opinion_selected).opinion_value
@@ -1440,7 +1440,7 @@ GroupSelectionRegion = ReactiveComponent
     DIV 
       style: 
         width: wrapper_width
-        border: "3px solid #{if get_selected_point() then '#eee' else focus_color() }"
+        border: if !SUPER_SMALL() then "3px solid #{if get_selected_point() then '#eee' else focus_color() }"
         height: '100%'
         position: 'absolute'
         borderRadius: 16
@@ -1449,26 +1449,27 @@ GroupSelectionRegion = ReactiveComponent
         top: 4 #18
 
 
-      DIV 
-        style: cssTriangle 'top', \
-                           (if get_selected_point() then '#eee' else focus_color()), \
-                           w, h,               
-                              position: 'relative'
-                              top: -26
-                              left: left
+      if !SUPER_SMALL()
+        DIV 
+          style: cssTriangle 'top', \
+                             (if get_selected_point() then '#eee' else focus_color()), \
+                             w, h,               
+                                position: 'relative'
+                                top: -26
+                                left: left
 
-        DIV
-          style: cssTriangle 'top', 'white', w - 1, h - 1,
-            position: 'relative'
-            left: -(w - 2)/2
-            top: 6
+          DIV
+            style: cssTriangle 'top', 'white', w - 1, h - 1,
+              position: 'relative'
+              left: -(w - 2)/2
+              top: 6
 
 
       if single_opinion_selected
         # display a name for the selected opinion
 
         name_style = 
-          fontSize: "30px"
+          fontSize: if SUPER_SMALL then 18 else 30
           fontWeight: 600
 
         user = fetch(fetch(single_opinion_selected.opinion).user)

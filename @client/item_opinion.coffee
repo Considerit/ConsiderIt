@@ -27,8 +27,15 @@ styles += """
     width: 0;
   }
 
-  .one-col .is_expanded .fast-thought .proposal-score-spacing, .one-col .is_expanded .fast-thought .proposal-left-spacing, .one-col .is_expanded .fast-thought .proposal-left-spacing, .one-col .is_expanded .fast-thought .proposal-avatar-wrapper, one-col .is_expanded .fast-thought .proposal-avatar-spacing {
-    display: none;
+  @media (max-width: #{TABLET_BREAKPOINT}px) {
+    .is_expanded .fast-thought .proposal-score-spacing, 
+    .is_expanded .fast-thought .proposal-left-spacing, 
+    .is_expanded .fast-thought .proposal-left-spacing, 
+    .is_expanded .fast-thought .proposal-avatar-wrapper, 
+    .is_expanded .fast-thought .proposal-avatar-spacing {
+      display: none;
+    }
+
   }
 
   .OpinionBlock .slidergram_wrapper {
@@ -88,16 +95,17 @@ styles += """
 
 
   .opinion-heading {
-    font-size: 34px;
+    font-size: 30px;
     font-weight: 400;
     text-align: center;
     margin-bottom: 8px;
   }
 
-  .one-col .opinion-heading {
-    font-size: 22px;
+  @media (max-width: #{TABLET_BREAKPOINT}px) {
+    .opinion-heading {
+      font-size: 22px;
+    }
   }
-
 
 
 
@@ -117,7 +125,7 @@ window.OpinionBlock = ReactiveComponent
 
     @is_expanded = @props.is_expanded
 
-    mode = get_proposal_mode(proposal)
+    mode = getProposalMode(proposal)
 
     show_proposal_scores = (!@is_expanded || mode != 'crafting') && !@props.hide_scores && customization('show_proposal_scores', proposal, subdomain) && WINDOW_WIDTH() > 955
 
@@ -211,7 +219,7 @@ window.OpinionBlock = ReactiveComponent
       SECTION 
         className: 'fast-thought'
 
-        if SLIDERGRAM_BELOW()
+        if TABLET_SIZE()
           [
             DIV key: 'left', className: 'proposal-left-spacing'
             DIV key: 'avatar', className: 'proposal-avatar-wrapper'
@@ -222,7 +230,7 @@ window.OpinionBlock = ReactiveComponent
         DIV 
           className: 'slidergram_wrapper'
 
-          if @is_expanded && !SUPER_SMALL()
+          if @is_expanded && !PHONE_SIZE()
             DIV 
               className: 'opinion-views-container'
 
@@ -246,20 +254,6 @@ window.OpinionBlock = ReactiveComponent
           className: 'proposal-score-spacing'
 
       
-        # little score feedback
-        if show_proposal_scores        
-
-          FLIPPED 
-            flipId: "proposal_scores-#{proposal.key}"
-            shouldFlipIgnore: @props.shouldFlipIgnore
-            shouldFlip: @props.shouldFlip
-
-            DIV 
-              className: 'proposal_scores'
-
-              HistogramScores
-                proposal: proposal.key
-
       if @is_expanded
         Reasons @props
 
@@ -295,7 +289,7 @@ window.Slidergram = ReactiveComponent
     if your_opinion.key 
       fetch your_opinion.key 
 
-    permitted_to_opine = -> can_user_opine proposal
+    permitted_to_opine = -> canUserOpine proposal
 
     can_opine = permitted_to_opine()
 
@@ -305,7 +299,7 @@ window.Slidergram = ReactiveComponent
 
     draw_slider = can_opine > 0
 
-    mode = get_proposal_mode(proposal)
+    mode = getProposalMode(proposal)
 
     backgrounded = @is_expanded && mode == 'crafting'
 
@@ -318,11 +312,12 @@ window.Slidergram = ReactiveComponent
     opinion_views = fetch 'opinion_views'
     just_you = opinion_views.active_views['just_you']
 
-    width = ITEM_OPINION_WIDTH() * (if @is_expanded && !SLIDERGRAM_BELOW() then 2 else 1)
+    width = ITEM_OPINION_WIDTH() * (if @is_expanded && !TABLET_SIZE() then 2 else 1)
 
     namespaced_slider_key = namespaced_key('slider', proposal)
 
     opinion_focus_elsewhere = (opinion_views.active_views.region_selected || (opinion_views.active_views.single_opinion_selected && !just_you) )
+
 
     # feelings
     DIV 
@@ -339,38 +334,33 @@ window.Slidergram = ReactiveComponent
           proposal_name: proposal.name
           "Evaluations on spectrum from {negative_pole} to {positive_pole} of the proposal {proposal_name}"
 
-         
-      Histogram
-        histo_key: "histogram-#{proposal.slug}"
-        proposal: proposal.key
-        opinions: opinions
-        width: width
-        height: if !@is_expanded then HISTOGRAM_HEIGHT_COLLAPSED else HISTOGRAM_HEIGHT_EXPANDED
-        enable_individual_selection: !@props.disable_selection && !browser.is_mobile
-        enable_range_selection: !just_you && !browser.is_mobile && !SLIDERGRAM_BELOW()
-        # draw_base: true
-        draw_base_labels: !slider_regions
-        backgrounded: backgrounded
+      if opinion_views.active_views.group_by && fetch('opinion_views_ui').aggregate_into_groups
+        AggregatedHistogram 
+          proposal: proposal.key
+          width: width
+          height: if !@is_expanded then HISTOGRAM_HEIGHT_COLLAPSED else HISTOGRAM_HEIGHT_EXPANDED
+          flip: true
+          shouldFlip: @props.shouldFlip
+          shouldFlipIgnore: @props.shouldFlipIgnore
 
-        flip: true
-        shouldFlip: @props.shouldFlip
-        shouldFlipIgnore: @props.shouldFlipIgnore
+      
+      else
+        Histogram
+          histo_key: "histogram-#{proposal.slug}"
+          proposal: proposal.key
+          opinions: opinions
+          width: width
+          height: if !@is_expanded then HISTOGRAM_HEIGHT_COLLAPSED else HISTOGRAM_HEIGHT_EXPANDED
+          enable_individual_selection: !@props.disable_selection && !browser.is_mobile
+          enable_range_selection: !just_you && !browser.is_mobile && !TABLET_SIZE()
+          # draw_base: true
+          draw_base_labels: !slider_regions
+          backgrounded: backgrounded
 
+          flip: true
+          shouldFlip: @props.shouldFlip
+          shouldFlipIgnore: @props.shouldFlipIgnore
 
-      # Dock
-      #   key: 'slider-dock'
-      #   dock_key: "slider-dock-#{proposal.key}"
-      #   docked_key: namespaced_slider_key 
-      #   dock_on_zoomed_screens: true
-      #   constraints : ['decisionboard-dock']
-      #   skip_jut: mode == 'results'
-      #   dockable: => 
-      #     @is_expanded && draw_slider && mode == 'crafting'
-      #   dummy: @is_expanded
-      #   dummy2: WINDOW_WIDTH()
-      #   dummy3: mode
-
-      #   do =>
       OpinionSlider
         key: namespaced_slider_key
         slider_key: namespaced_slider_key
@@ -391,7 +381,7 @@ window.Slidergram = ReactiveComponent
                 else 
                   customization('slider_handle', proposal) or slider_handle.flat
 
-        handle_height: if !@is_expanded then 22 else if NO_CRAFTING() then 55 else 36
+        handle_height: if !@is_expanded then 22 else if TABLET_SIZE() then 55 else 36
         handle_width: if !@is_expanded then 27
 
         offset: !@is_expanded
@@ -406,9 +396,9 @@ window.Slidergram = ReactiveComponent
 
         is_expanded: @props.is_expanded
 
-        show_val_highlighter: !opinion_focus_elsewhere
+        show_val_highlighter: !opinion_focus_elsewhere && (can_opine == Permission.NOT_LOGGED_IN || can_opine > 0)
 
-        show_reasons_callout: !opinion_focus_elsewhere && !@props.is_expanded && your_opinion.key && can_opine > 0
+        show_reasons_callout: (!opinion_focus_elsewhere || TABLET_SIZE()) && !@props.is_expanded
 
 
 
@@ -416,7 +406,7 @@ window.Slidergram = ReactiveComponent
 ParticipationStatus = ReactiveComponent
   displayName: 'ParticipationStatus'
   render: -> 
-    can_opine = can_user_opine @props.proposal
+    can_opine = canUserOpine @props.proposal
 
     return SPAN null if can_opine > 0 || can_opine == Permission.NOT_LOGGED_IN # || can_opine == Permission.DISABLED
 
@@ -479,7 +469,7 @@ ParticipationStatus = ReactiveComponent
 
 
 
-window.can_user_opine = (proposal) ->
+window.canUserOpine = (proposal) ->
   proposal = fetch proposal
   your_opinion = proposal.your_opinion
 

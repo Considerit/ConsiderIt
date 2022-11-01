@@ -41,13 +41,13 @@ positionAvatarsWithJustLayout = (opts) ->
 
   placer = Placer opts  
   nodes = placer.pixelated_layout()
-  while !nodes # continuously reduce the avatar radius until we can place all of them
+  while !nodes && opts.r > 0 # continuously reduce the avatar radius until we can place all of them
     console.error("At least one avatar couldn't be placed with base radius #{opts.r}. Trying again with base radius=#{opts.r - 1}")
     opts.r -= 1
     placer = Placer opts  
     nodes = placer.pixelated_layout()
 
-
+  
 
   # sort so we can optimize by knowing that bodies are ordered by x_target
   nodes.sort (a,b) -> a.x_target - b.x_target

@@ -134,10 +134,6 @@ window.DropMenu = ReactiveComponent
       key: 'dropmenu-wrapper'
       style: wrapper_style
 
-      onTouchEnd: => 
-        @local.show_menu = !@local.show_menu
-        save @local
-
       onMouseLeave: close_menu
 
       onBlur: (e) => 
@@ -148,6 +144,7 @@ window.DropMenu = ReactiveComponent
           el = document.getElementById(id)
           if el && !$$.closest(document.activeElement, "##{id}")
             @local.show_menu = false; save @local
+
         , 0
 
       onKeyDown: (e) => 

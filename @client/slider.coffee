@@ -280,12 +280,11 @@ window.Slider = ReactiveComponent
           e.preventDefault()
 
       onMouseUp: @handleMouseUp
+      onMouseDown: @handleMouseDown
+
       onTouchEnd: @handleMouseUp
       onTouchCancel: @handleMouseUp
-
-      onMouseDown: @handleMouseDown
       onTouchStart: @handleMouseDown
-
       onTouchMove: @handleMouseMove
 
       onBlur: => @local.has_focus = false; save @local
@@ -361,9 +360,9 @@ window.Slider = ReactiveComponent
     e.preventDefault()
 
     # # Initiate dragging
-    # slider = fetch props.slider_key
-    # slider.is_moving = true
-    # save slider
+    slider = fetch props.slider_key
+    slider.is_moving = true
+    save slider
 
     # adjust for starting location - offset
     @local.starting_adjustment = (parseInt(e.currentTarget.style.left, 10) || 0) - \
@@ -381,6 +380,7 @@ window.Slider = ReactiveComponent
     props = @full_props()
 
     e.preventDefault() # prevents text selection of surrounding elements
+    e.stopPropagation()
 
     slider = fetch props.slider_key
 

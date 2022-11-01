@@ -65,7 +65,6 @@ window.Point = ReactiveComponent
 
 
     point_content_style = 
-      width: POINT_WIDTH() #+ 6
       borderWidth: 3
       borderStyle: 'solid'
       borderColor: 'transparent'
@@ -95,7 +94,7 @@ window.Point = ReactiveComponent
     else if @props.rendered_as == 'community_point'
       _.extend point_content_style,
         padding: 8
-        borderRadius: if NO_CRAFTING() then "16px 16px 0 0" else 16
+        borderRadius: if TABLET_SIZE() then "16px 16px 0 0" else 16
         top: point_content_style.top - 8
         #left: point_content_style.left - 8
         #width: point_content_style.width + 16
@@ -129,7 +128,7 @@ window.Point = ReactiveComponent
     ioffset = -50
     includers_style[left_or_right] = ioffset
 
-    draw_all_includers = @props.rendered_as == 'community_point' || NO_CRAFTING()
+    draw_all_includers = @props.rendered_as == 'community_point' || TABLET_SIZE()
 
     if expand_to_see_details && !is_selected
       append = SPAN 
@@ -147,7 +146,7 @@ window.Point = ReactiveComponent
       'data-id': @props.point
       className: "point #{@props.rendered_as} #{if point.is_pro then 'pro' else 'con'} #{if customization('disable_comments') && !expand_to_see_details then 'commenting-disabled' else ''}"
       onClick: @selectPoint
-      onTouchEnd: @selectPoint
+      # onTouchEnd: @selectPoint
       onKeyDown: (e) =>
         if (is_selected && e.which == 27) || e.which == 13 || e.which == 32
           @selectPoint(e)
@@ -173,52 +172,51 @@ window.Point = ReactiveComponent
         draggable: @props.enable_dragging
         "data-point": point.key
 
-        onDragEnd: (ev) =>
+        onDragEnd: if @props.enable_dragging then (ev) =>
           # @refs.point_content.style.visibility = 'visible'
           @refs.point_content.style.opacity = 1
 
-        onDragStart: (ev) =>
-          if @props.enable_dragging
-            point = fetch @props.point
-            dnd_points = fetch 'drag and drop points'
-            dnd_points.dragging = point.key 
-            ev.dataTransfer.setData('text/plain', point.key)
+        onDragStart: if @props.enable_dragging then (ev) =>
+          point = fetch @props.point
+          dnd_points = fetch 'drag and drop points'
+          dnd_points.dragging = point.key 
+          ev.dataTransfer.setData('text/plain', point.key)
 
-            # because DnD setdata is broke ass
-            dragging = fetch 'point-dragging'
-            dragging.point = point.key
+          # because DnD setdata is broke ass
+          dragging = fetch 'point-dragging'
+          dragging.point = point.key
 
-            ev.dataTransfer.effectAllowed = "move"
-            ev.dataTransfer.dropEffect = "move"     
+          # ev.dataTransfer.effectAllowed = "move"
+          # ev.dataTransfer.dropEffect = "move"     
 
 
-            #######################
-            # There is a big bug with dragging and dropping elements whose parent has been moved with 
-            # transform translate. The ghosting is way off, safari (15 at the moment) can't seem to 
-            # properly locate the element to make a ghost bitmap of the screen. So we'll create our 
-            # own ghost point outside the translated parents. Note that this hack for some reason
-            # *doesn't work* in Chrome or Firefox (but the original bug isn't in them). 
-            # So we'll have to keep an eye on this for each release of Safari to make sure the 
-            # hack is still appropriate.
-            if window.safari || window.parent?.safari
-              ghost = @refs.point_content.cloneNode()
-              ghost.innerHTML = @refs.point_content.innerHTML
+          #######################
+          # There is a big bug with dragging and dropping elements whose parent has been moved with 
+          # transform translate. The ghosting is way off, safari (15 at the moment) can't seem to 
+          # properly locate the element to make a ghost bitmap of the screen. So we'll create our 
+          # own ghost point outside the translated parents. Note that this hack for some reason
+          # *doesn't work* in Chrome or Firefox (but the original bug isn't in them). 
+          # So we'll have to keep an eye on this for each release of Safari to make sure the 
+          # hack is still appropriate.
+          if window.safari || window.parent?.safari
+            ghost = @refs.point_content.cloneNode()
+            ghost.innerHTML = @refs.point_content.innerHTML
 
-              content = document.getElementById('content')
-              content.appendChild ghost
-              ev.dataTransfer.setDragImage ghost, 0, 0
+            content = document.getElementById('content')
+            content.appendChild ghost
+            ev.dataTransfer.setDragImage ghost, 0, 0
 
-              setTimeout ->
-                content.removeChild ghost
+            setTimeout ->
+              content.removeChild ghost
 
-            setTimeout =>
-              @refs.point_content.style.opacity = .3
-
+          setTimeout =>
+            @refs.point_content.style.opacity = .3
 
 
 
 
-        if @props.rendered_as != 'decision_board_point' && !SUPER_SMALL()
+
+        if @props.rendered_as != 'decision_board_point' && !PHONE_SIZE()
 
           side = if point.is_pro then 'right' else 'left'
           mouth_style = 
@@ -315,7 +313,7 @@ window.Point = ReactiveComponent
                       comment_count: point.comment_count 
                       "{comment_count, plural, one {# comment} other {# comments}}"
 
-              if SUPER_SMALL()
+              if PHONE_SIZE()
                 SPAN 
                   key: 3
                   style: 
@@ -330,7 +328,7 @@ window.Point = ReactiveComponent
         if current_user.user == point.user
           DIV null,
             if permit('update point', point) > 0 && 
-                (@props.rendered_as == 'decision_board_point' || NO_CRAFTING())
+                (@props.rendered_as == 'decision_board_point' || TABLET_SIZE())
               BUTTON
                 style:
                   fontSize: if browser.is_mobile then 24 else 14
@@ -348,7 +346,7 @@ window.Point = ReactiveComponent
                 translator 'engage.edit_button', 'edit'
 
             if permit('delete point', point) > 0 && 
-                (@props.rendered_as == 'decision_board_point' || NO_CRAFTING())
+                (@props.rendered_as == 'decision_board_point' || TABLET_SIZE())
               BUTTON
                 'data-action': 'delete-point'
                 style:
@@ -364,7 +362,7 @@ window.Point = ReactiveComponent
                     destroy @props.point
                 translator 'engage.delete_button', 'delete'
 
-      if @props.rendered_as != 'decision_board_point' && !SUPER_SMALL()
+      if @props.rendered_as != 'decision_board_point' && !PHONE_SIZE()
         DIV 
           'aria-hidden': true
           className:'includers'
@@ -376,13 +374,13 @@ window.Point = ReactiveComponent
 
 
 
-      if NO_CRAFTING() || (!NO_CRAFTING() && @props.enable_dragging)
+      if TABLET_SIZE() || (!TABLET_SIZE() && @props.enable_dragging)
         your_opinion = proposal.your_opinion
         if your_opinion.key 
           fetch your_opinion
 
 
-        can_opine = can_user_opine proposal          
+        can_opine = canUserOpine proposal          
 
         included = @included()
         includePoint = (e) => 
@@ -396,7 +394,7 @@ window.Point = ReactiveComponent
           else 
             @remove()
 
-        if !NO_CRAFTING() && @props.enable_dragging
+        if !TABLET_SIZE() && @props.enable_dragging
           right = (included && point.is_pro) || (!included && !point.is_pro)
           if right 
             sty = 
@@ -451,7 +449,7 @@ window.Point = ReactiveComponent
               borderRadius: '0 0 16px 16px'
               cursor: 'pointer'
               backgroundColor: if included then focus_color() else 'white'
-              fontSize: 18  
+              fontSize: 16  
               zIndex: 0
               display: if can_opine < 0 then 'none'
               width: '100%'
@@ -572,14 +570,12 @@ window.Point = ReactiveComponent
 
     return if !point.text && customization('disable_comments')
 
-
     # android browser needs to respond to this via a touch event;
     # all other browsers via click event. iOS fails to select 
     # a point if both touch and click are handled...sigh...
-    return unless ( browser.is_mobile && e.type != 'click' ) || \
-                  (!browser.is_mobile && e.type == 'click') || \
-                  e.type == 'keydown'
-
+    # return unless ( browser.is_mobile && e.type != 'click' ) || \
+    #               (!browser.is_mobile && e.type == 'click') || \
+    #               e.type == 'keydown'
 
     loc = fetch('location')
     if get_selected_point() == @props.point # deselect
@@ -638,7 +634,16 @@ window.Point = ReactiveComponent
     includers = point.includers
 
     opinion_views = fetch 'opinion_views'
-    {weights, salience, groups} = compose_opinion_views null, proposal
+
+    # Don't filter point_includers unless we're in single opinion or region select mode. If we didn't 
+    # do that, when you hover over includers in a point, all the other points includers change, which 
+    # is confusing for people.
+    if !opinion_views.active_views.single_opinion_selected && !opinion_views.active_views.region_selected
+      ignore_views = {point_includers: true}
+    else 
+      ignore_views = null
+
+    {weights, salience, groups} = compose_opinion_views null, proposal, ignore_views
 
     includers = (i for i in includers when salience[i] == 1 && weights[i] > 0)
 

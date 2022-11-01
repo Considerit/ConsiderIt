@@ -61,6 +61,7 @@ window.AvatarPopover = ReactiveComponent
       style: 
         padding: '8px 4px'
         position: 'relative'
+        maxWidth: "min(80vw, 800px)"
 
 
       DIV 
@@ -108,16 +109,16 @@ window.AvatarPopover = ReactiveComponent
                 if attribute.pass 
                   user_val = attribute.pass(user)
                   user_val ?= unreported
-                  if typeof user_val == "string" && user_val?.indexOf ',' > -1 
-                    user_val = user_val.split(',')          
+                  if typeof user_val == "string" && user_val?.indexOf CHECKLIST_SEPARATOR > -1 
+                    user_val = user_val.split(CHECKLIST_SEPARATOR)          
                   else 
                     user_val = ["#{user_val}"]
                 else 
                   user_val = user.tags[attribute.key] 
                   user_val ?= unreported
 
-                  if typeof user_val == "string" && user_val?.indexOf ',' > -1 
-                    user_val = user_val.split(',')
+                  if typeof user_val == "string" && user_val?.indexOf CHECKLIST_SEPARATOR > -1 
+                    user_val = user_val.split(CHECKLIST_SEPARATOR)
                   else if is_grouped
                     user_val = [user_val]
 
@@ -128,17 +129,18 @@ window.AvatarPopover = ReactiveComponent
                 LI 
                   key: attribute.name
                   style: 
-                    padding: '1px 0'
+                    padding: '3px 0'
 
-                  SPAN 
+                  DIV 
                     key: 'attribute name'
                     style: 
-                      letterSpacing: -1
-                      fontSize: 10
-                      display: 'inline-block'
-                      paddingRight: 8 
-                      textTransform: 'uppercase'   
-                      color: '#555'              
+                      # letterSpacing: -1
+                      fontSize: 14
+                      fontStyle: 'italic'
+                      # display: 'inline-block'
+                      # paddingRight: 8 
+                      # textTransform: 'uppercase'   
+                      # color: '#555'              
                     attribute.name 
 
                   for val in user_val
@@ -146,7 +148,7 @@ window.AvatarPopover = ReactiveComponent
                     SPAN 
                       key: val or unreported
                       style: 
-                        fontSize: 12
+                        fontSize: 14
                         backgroundColor: if is_grouped then get_color_for_group(val or unreported)
                         color: if is_grouped then 'white'
                         display: 'inline-block'

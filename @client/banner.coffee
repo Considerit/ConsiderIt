@@ -1118,7 +1118,7 @@ window.PhotoBanner = (opts) ->
           text-shadow: 0px 1px 2px rgba(0,0,0,.4);
         }
 
-        @media (min-width: #{SUPER_SMALL_BREAKPOINT}px) and (max-width: #{SLIDERGRAM_ON_SIDE_BREAKPOINT}px) {
+        @media (min-width: #{PHONE_BREAKPOINT}px) and (max-width: #{TABLET_BREAKPOINT}px) {
           .PhotoBanner > .wrapper .CustomizeTitle .banner_title {
             font-size: 36px;
           }        
@@ -1127,7 +1127,7 @@ window.PhotoBanner = (opts) ->
           }
 
         }  
-        @media (max-width: #{SUPER_SMALL_BREAKPOINT}px) {
+        @media (max-width: #{PHONE_BREAKPOINT}px) {
           .PhotoBanner > .wrapper .CustomizeTitle .banner_title {
             font-size: 24px;
           }        

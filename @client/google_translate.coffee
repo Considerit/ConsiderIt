@@ -30,6 +30,11 @@ window.GoogleTranslate = ReactiveComponent
         left: @local.left 
         top: @local.top
         zIndex: 9
+
+      STYLE 
+        dangerouslySetInnerHTML: __html: """
+
+        """        
            
       DIV 
         key: "google_translate_element_#{@local.key}"
@@ -42,7 +47,7 @@ window.GoogleTranslate = ReactiveComponent
 
     new google.translate.TranslateElement {
         pageLanguage: subdomain.lang
-        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        layout: google.translate.TranslateElement.InlineLayout[if WINDOW_WIDTH() < 1180 then 'VERTICAL' else 'SIMPLE']
         multilanguagePage: true
         # gaTrack: #{Rails.env.production?}
         # gaId: 'UA-55365750-2'

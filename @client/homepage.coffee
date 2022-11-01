@@ -13,57 +13,61 @@ require './tabs'
 
 styles += """
 
-  @media (min-width: #{SLIDERGRAM_ON_SIDE_BREAKPOINT}px) {
-    .main_background {
-      background-color: #{main_background_color};
-    }
-
-  }
-
-  @media (max-width: #{SLIDERGRAM_ON_SIDE_BREAKPOINT}px) {
-    .main_background {
-      background-color: white;
-    }
-  }
-
-  # .main_background.one-col, .main_background .one-col, .one-col.navigation_wrapper, .embedded-demo.main_background {
-  #   background-image: none;
-  #   background-color: white;
-  # }
-
   #homepagetab {
     position: relative;    
-  }
-
-  .one-col #homepagetab {
-    padding: 24px 0px 140px 20px;
-  }
-
-  @media (max-width: #{SUPER_SMALL_BREAKPOINT}px) {
-    .one-col #homepagetab {
-      padding: 24px 0px 140px 8px;
-    }
   }
 
   .Homepage {
     overflow: hidden;
   }
 
-  .Homepage:not(.one-col) #homepagetab {
-    width: calc(var(--HOMEPAGE_WIDTH) + var(--LIST_PADDING-RIGHT) + var(--LIST_PADDING-LEFT));
-    padding: 24px 0px 140px 0;
-    margin: 0px auto;
+  @media (min-width: #{TABLET_BREAKPOINT}px) {
+    .main_background {
+      background-color: #{main_background_color};
+    }
+    #homepagetab {
+      width: calc(var(--HOMEPAGE_WIDTH) + var(--LIST_PADDING_RIGHT) + var(--LIST_PADDING_LEFT));
+      padding: 24px 0px 140px 0;
+      margin: 0px auto;
+    }
+
+    .embedded-demo #homepagetab {
+      padding-top: 0;
+    }
+
   }
 
-  .Homepage:not(.one-col).embedded-demo #homepagetab {
-    padding-top: 0;
+  @media (max-width: #{TABLET_BREAKPOINT}px) {
+    .main_background {
+      background-color: white;
+    }
+  }
+
+
+  @media (min-width: #{PHONE_BREAKPOINT}px) and (max-width: #{TABLET_BREAKPOINT}px) {
+    :root {
+      --homepagetab_left_padding: 0px; /* 20px; */
+    }
+    #homepagetab {
+      padding: 24px 0px 140px var(--homepagetab_left_padding);
+    }
+  }
+
+
+  @media (max-width: #{PHONE_BREAKPOINT}px) {
+    :root {
+      --homepagetab_left_padding: 0px; /* 8px; */
+    }    
+    #homepagetab {
+      padding: 24px 0px 140px var(--homepagetab_left_padding);
+    }
   }
 
 
   .sized_for_homepage {
     margin: auto;
     /* width: var(--HOMEPAGE_WIDTH); */
-    padding: 0px var(--LIST_PADDING-RIGHT) 0px var(--LIST_PADDING-LEFT);
+    padding: 0px var(--LIST_PADDING_RIGHT) 0px var(--LIST_PADDING_LEFT);
   }
 
 
@@ -104,7 +108,7 @@ window.Homepage = ReactiveComponent
 
     DIV 
       key: "homepage_#{subdomain.name}"      
-      className: "Homepage main_background #{if SLIDERGRAM_BELOW() then 'one-col' else ''} #{if embedded_demo() then 'embedded-demo' else ''}"
+      className: "Homepage main_background #{if TABLET_SIZE() then 'one-col' else ''} #{if embedded_demo() then 'embedded-demo' else ''}"
 
       DIV
         id: 'homepagetab'
@@ -166,7 +170,7 @@ window.Homepage = ReactiveComponent
                 DIV 
                   style: 
                     paddingTop: 68
-                    paddingRight: if SLIDERGRAM_BELOW() then 36
+                    paddingRight: if TABLET_SIZE() then 36
 
                   DIV 
                     style: 

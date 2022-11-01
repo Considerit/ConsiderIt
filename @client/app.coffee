@@ -322,6 +322,7 @@ Root = ReactiveComponent
 
     fonts = customization('font')
     header_fonts = customization('header_font') or fonts
+    condensed_fonts = customization('condensed_font') or header_fonts
 
     DIV 
       className: 'full_height'
@@ -346,14 +347,13 @@ Root = ReactiveComponent
       HomepageTabTransition()
       BrowserLocation()
       GoogleTranslate()
-      ResponsiveStyles()
       LoadAvatars?()
 
 
 
       STYLE 
         dangerouslySetInnerHTML: __html: """
-          .content, .content input, .content button, .content textarea {
+          .content, input, button, textarea {
             font-family: #{fonts}; 
           }
           .content h1, .content h2, .content h3, .content h1 button, .content h2 button, .content h3 button, .content h4 button {
@@ -363,6 +363,10 @@ Root = ReactiveComponent
 
           .monospaced {
             font-family: #{mono_font()};
+          }
+
+          .condensed {
+            font-family: #{condensed_fonts};
           }
         """
 

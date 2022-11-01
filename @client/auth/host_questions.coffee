@@ -443,6 +443,6 @@ window.ShowHostQuestions = ReactiveComponent
     inputs
 
 
-CHECKLIST_SEPARATOR = ' ;;; ' # the separator for different options selected by the user for checklists
+window.CHECKLIST_SEPARATOR = ' ;;; ' # the separator for different options selected by the user for checklists
 OTHER_SEPARATOR = ' :: '    # the separator for "other" fields that require text entry for checklists and dropdowns
 

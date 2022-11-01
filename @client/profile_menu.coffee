@@ -8,11 +8,11 @@ styles += """
   }
   #user_nav {
     position: absolute;
-    zIndex: 999;
+    z-index: 999;
     right: 30px;
     font-size: 26px;    
   }
-  @media (max-width: #{SUPER_SMALL_BREAKPOINT}px) {
+  @media (max-width: #{PHONE_BREAKPOINT}px) {
     #user_nav {
       right: 8px;
     }

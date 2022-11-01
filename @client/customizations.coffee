@@ -228,9 +228,8 @@ customizations.default =
   # IBM Plex Sans
   # Trebuchet MS, palantino, and optima are intriguing web-safe fonts
   font: "IBM Plex Sans, Helvetica Neue, sans-serif"
-  # header_font: "IBM Plex Sans Condensed, IBM Plex Sans, Helvetica Neue, sans-serif"
   header_font: "IBM Plex Sans, IBM Plex Sans, Helvetica Neue, sans-serif"
-
+  condensed_font: "IBM Plex Sans Condensed, IBM Plex Sans, Helvetica Neue, sans-serif"
   mono_font: "IBM Plex Mono, Menlo, Consolas, Monaco, Fira Mono, Liberation Mono, Lucida Console, monospace"
 
   new_proposal_fields: -> 

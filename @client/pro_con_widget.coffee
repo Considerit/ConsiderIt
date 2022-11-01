@@ -1,6 +1,11 @@
 require "./opinion_views"
 require "./browser_hacks"
 require "./dock"
+require "./list"
+
+
+window.CRAFTING_TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
+
 
 fetch 'decisionboard',
   docked : false
@@ -10,13 +15,14 @@ fetch 'decisionboard',
 window.get_selected_point = -> 
   fetch('location').query_params.selected
 
-window.get_proposal_mode = (proposal) -> 
+window.getProposalMode = (proposal) -> 
   local_state = fetch shared_local_key proposal
   local_state.mode
 
 
 window.update_proposal_mode = (proposal, proposal_mode, triggered_by) ->
-  can_opine = can_user_opine proposal
+  can_opine = canUserOpine proposal
+  proposal = fetch proposal
 
   # permission not granted for crafting
   if proposal_mode == 'crafting' && 
@@ -31,17 +37,96 @@ window.update_proposal_mode = (proposal, proposal_mode, triggered_by) ->
     local_state.mode = proposal_mode 
     save local_state
 
+
   # window.writeToLog
   #   what: 'toggle proposal mode'
   #   details: 
-  #     from: get_proposal_mode()
+  #     from: getProposalMode()
   #     to: proposal_mode
   #     triggered_by: triggered_by 
 
 
 
+responsive_style_registry.push (responsive_vars) -> 
+  content_width = responsive_vars.CONTENT_WIDTH
+  doc_gutter = responsive_vars.DOC_GUTTER
+  w = responsive_vars.WINDOW_WIDTH
+  portrait = responsive_vars.PORTRAIT_MOBILE
+
+
+  ######
+  # only used for crafting mode on large screens
+  whitespace = Math.max(100, w / 10)
+  decision_board_width = Math.min 700, content_width - 2 * doc_gutter - 2 * whitespace + 4 # the four is for the border
+  ######
+
+  point_font_size = 14
+
+  if portrait
+    point_font_size += 2
+
+  {
+    DECISION_BOARD_WIDTH: decision_board_width
+    POINT_FONT_SIZE: point_font_size  
+  }
+
 
 styles += """
+  .slow-thought {
+  }
+
+  @media (min-width: #{TABLET_BREAKPOINT}px) {
+    .slow-thought {
+      --POINT_COLUMN_MARGIN: 16px;
+      --SLOW_WHITESPACE: max(100px, 10vw);
+      --DECISION_BOARD_WIDTH: min(700px, var(--BODY_WIDTH) + 4px);
+      --REASONS_AREA_WIDTH: calc( var(--OPINION_BLOCK_WRAPPER_WIDTH) );
+      --REASONS_AREA_LEFT: calc(  (var(--HOMEPAGE_WIDTH) + var(--LIST_PADDING_RIGHT) + var(--LIST_PADDING_LEFT) - var(--REASONS_AREA_WIDTH)) / 2   );               
+    }
+
+    .results .slow-thought {
+      --BODY_WIDTH: calc(2 * var(--ITEM_OPINION_WIDTH));
+      --POINT_WIDTH: calc(var(--BODY_WIDTH) / 2 - 2 * var(--POINT_COLUMN_MARGIN) );    
+    }
+
+    .crafting .slow-thought {
+      --BODY_WIDTH: calc(var(--CONTENT_WIDTH) - 2 * var(--DOC_GUTTER) - 2 * var(--SLOW_WHITESPACE));
+      --POINT_WIDTH: calc(var(--DECISION_BOARD_WIDTH) / 2 - 30px);
+    }
+
+    .crafting .points_by_community {
+      --POINT_WIDTH: calc( ( var(--OPINION_BLOCK_WRAPPER_WIDTH) - var(--DECISION_BOARD_WIDTH)) / 2 - 5 * var(--POINT_COLUMN_MARGIN)  );
+    }
+
+  }
+
+  @media (max-width: #{TABLET_BREAKPOINT}px) {
+    .slow-thought {
+      --POINT_COLUMN_MARGIN: 9px;
+      --BODY_WIDTH: var(--ITEM_OPINION_WIDTH);
+    }
+  }
+
+  @media (max-width: #{TABLET_BREAKPOINT}px) and (min-width: #{PHONE_BREAKPOINT}px) {
+    .slow-thought {
+      --POINT_WIDTH: calc(var(--BODY_WIDTH) / 2 - 2 * var(--POINT_COLUMN_MARGIN) );
+    }
+  }
+
+  @media (max-width: #{PHONE_BREAKPOINT}px) {
+    .slow-thought {
+      --POINT_WIDTH: calc(var(--BODY_WIDTH) / 2 - 1.5 * var(--POINT_COLUMN_MARGIN) );
+    }
+  }
+
+
+"""
+
+
+
+
+styles += """
+
   .slow-thought {
     position: relative;
     z-index: 1;
@@ -53,14 +138,44 @@ styles += """
     opacity: 1;
   }
 
+  .reasons_region {
+    position: relative;
+    padding-bottom: 4em; /* padding instead of margin for docking */
+    display: flex; 
+    align-items: center;
+    flex-direction: column;
+  }
 
-  .points_by_community .points_heading_label, .empty-list-callout, .reasons_region .point {
-    opacity: 0;
+  @media (min-width: #{TABLET_BREAKPOINT}px) {
+    width: var(--REASONS_AREA_WIDTH);
+    left: var(--REASONS_AREA_LEFT);
+    transition: width #{CRAFTING_TRANSITION_SPEED}ms, left #{CRAFTING_TRANSITION_SPEED}ms;    
+  }
+
+  .points_by_community {
+    display: inline-block;
+    vertical-align: top;
+    margin: 38px var(--POINT_COLUMN_MARGIN) 0 var(--POINT_COLUMN_MARGIN);
+    position: relative;
   }
 
 
+  @media (max-width: #{PHONE_BREAKPOINT}px) {
+    .pros_by_community {
+      margin-right: calc(var(--POINT_COLUMN_MARGIN) / 2);
+    }
 
-  :not(.expanding).is_expanded .points_by_community .points_heading_label, :not(.expanding).is_expanded .empty-list-callout, :not(.expanding).is_expanded .reasons_region .point {
+    .cons_by_community {
+      margin-left: calc(var(--POINT_COLUMN_MARGIN) / 2);
+    }
+
+  }
+
+  .points_by_community .points_heading_label, .empty-list-callout, .reasons_region .point, .give_a_point {
+    opacity: 0;
+  }
+
+  :not(.expanding).is_expanded .points_by_community .points_heading_label, :not(.expanding).is_expanded .empty-list-callout, :not(.expanding).is_expanded .reasons_region .point, :not(.expanding).is_expanded .give_a_point {
     transition: opacity #{ANIMATION_SPEED_ITEM_EXPANSION}s ease #{STAGE1_DELAY}s;    
     opacity: 1;
   }
@@ -86,32 +201,6 @@ styles += """
   :not(.expanding).is_expanded .reasons_region .point {
     transition-delay: #{STAGE1_DELAY + 2.5 * ANIMATION_SPEED_ITEM_EXPANSION}s;
   }
-
-  /* for collapsed => crafting transition */
-  /* :not(.expanding).is_expanded .crafting .points_by_community .points_heading_label, :not(.expanding).is_expanded .crafting .empty-list-callout, :not(.expanding).is_expanded .crafting .reasons_region .point {
-    transition: opacity #{ANIMATION_SPEED_ITEM_EXPANSION}s ease #{STAGE2_DELAY}s;    
-    opacity: 1;
-  }
-
-  :not(.expanding).is_expanded .crafting .reasons_region :nth-child(1).point {
-    transition-delay: #{STAGE2_DELAY}s;
-  }
-
-  :not(.expanding).is_expanded .crafting .reasons_region :nth-child(2).point {
-    transition-delay: #{STAGE2_DELAY + 1 * ANIMATION_SPEED_ITEM_EXPANSION}s;
-  }
-
-  :not(.expanding).is_expanded .crafting .reasons_region :nth-child(3).point {
-    transition-delay: #{STAGE2_DELAY + 1.5 * ANIMATION_SPEED_ITEM_EXPANSION}s;
-  }
-
-  :not(.expanding).is_expanded .crafting .reasons_region :nth-child(4).point {
-    transition-delay: #{STAGE2_DELAY + 2 * ANIMATION_SPEED_ITEM_EXPANSION}s;
-  }
-
-  :not(.expanding).is_expanded .crafting .reasons_region .point {
-    transition-delay: #{STAGE2_DELAY + 2.5 * ANIMATION_SPEED_ITEM_EXPANSION}s;
-  } */
 
 
 
@@ -168,14 +257,14 @@ window.Reasons = ReactiveComponent
       minheight += adjustments.edit_point_height or 0
 
 
-    can_opine = can_user_opine proposal
+    can_opine = canUserOpine proposal
 
     draw_handle = can_opine != Permission.INSUFFICIENT_PRIVILEGES && 
                     (can_opine != Permission.DISABLED || your_opinion.published ) && 
                     !(!current_user.logged_in && '*' not in proposal.roles.participant)
 
 
-    mode = get_proposal_mode(proposal)
+    mode = getProposalMode(proposal)
 
     # if there aren't community_points, then we won't bother showing them
     community_points = (pnt for pnt in fetch("/page/#{proposal.slug}").points or [] when pnt.includers?.length > 0)
@@ -219,20 +308,17 @@ window.Reasons = ReactiveComponent
       style: 
         position: 'relative'
         top: -8
-        overflowY: if !show_all_points then 'hidden'  
-        overflowX: if !show_all_points then 'auto' 
         minHeight: if mode == 'crafting' then 440 else 220
 
       #reasons
       SECTION 
         className: "reasons_region"
         style : 
-          width: REASONS_REGION_WIDTH()    
           minHeight: if show_all_points then minheight     
-          position: 'relative'
-          paddingBottom: '4em' #padding instead of margin for docking
-          margin: "#{if draw_handle && !NO_CRAFTING() then '24px' else '0'} auto 0 auto"
+          padding: "#{if draw_handle && !TABLET_SIZE() then '24px' else '0'} 0 0 0"
           display: if !customization('discussion_enabled', proposal) then 'none'
+          overflowY: if !show_all_points then 'hidden'  
+          overflowX: if !show_all_points then 'auto' 
 
         H2
           className: 'hidden'
@@ -242,11 +328,11 @@ window.Reasons = ReactiveComponent
             'Why people think what they do about the proposal'
 
         # Border + bubblemouth that is shown when there is a histogram selection
-        GroupSelectionRegion
-          proposal: @props.proposal
-          is_expanded: @props.is_expanded
+        if @props.is_expanded
+          GroupSelectionRegion
+            proposal: @props.proposal
 
-        if !NO_CRAFTING() && customization('discussion_enabled', proposal)
+        if !TABLET_SIZE() && customization('discussion_enabled', proposal)
           Dock
             key: 'decisionboard-dock'
             dock_key: 'decisionboard-dock'
@@ -290,17 +376,17 @@ window.Reasons = ReactiveComponent
             proposal: proposal.key
             reasons_key: 'community_cons'
             rendered_as: 'community_point'
-            points_editable: NO_CRAFTING()
+            points_editable: TABLET_SIZE()
             valence: 'cons'
             points_draggable: mode == 'crafting'
             drop_target: false
             points: buildPointsList \
               proposal, 'cons', \
               (if mode == 'results' then 'score' else 'last_inclusion'), \ 
-              mode == 'crafting' && !NO_CRAFTING(), \
-              mode == 'crafting' || NO_CRAFTING() || (just_you && mode == 'results')
+              mode == 'crafting' && !TABLET_SIZE(), \
+              mode == 'crafting' || TABLET_SIZE() || (just_you && mode == 'results')
             style: 
-              visibility: if !NO_CRAFTING() && mode == 'crafting' && !has_community_points then 'hidden'
+              visibility: if !TABLET_SIZE() && mode == 'crafting' && !has_community_points then 'hidden'
 
 
           #community pros
@@ -309,17 +395,17 @@ window.Reasons = ReactiveComponent
             proposal: proposal.key
             reasons_key: 'community_pros'
             rendered_as: 'community_point'
-            points_editable: NO_CRAFTING()
+            points_editable: TABLET_SIZE()
             valence: 'pros'
             points_draggable: mode == 'crafting'
             drop_target: false
             points: buildPointsList \
               proposal, 'pros', \
               (if mode == 'results' then 'score' else 'last_inclusion'), \ 
-              mode == 'crafting' && !NO_CRAFTING(), \
-              mode == 'crafting' || NO_CRAFTING() || (just_you && mode == 'results')
+              mode == 'crafting' && !TABLET_SIZE(), \
+              mode == 'crafting' || TABLET_SIZE() || (just_you && mode == 'results')
             style: 
-              visibility: if !NO_CRAFTING() && mode == 'crafting' && !has_community_points then 'hidden'
+              visibility: if !TABLET_SIZE() && mode == 'crafting' && !has_community_points then 'hidden'
 
       if !show_all_points
         BUTTON 
@@ -334,7 +420,7 @@ window.Reasons = ReactiveComponent
             #border: '1px solid rgba(0,0,0,.5)'                
             cursor: 'pointer'
             display: 'block'
-            width: POINT_WIDTH() * 2 + 18 * 2 + 100 * 2
+            width: "var(--BODY_WIDTH)"
             margin: 'auto'
             position: 'relative'
             zIndex: 1
@@ -349,7 +435,7 @@ window.Reasons = ReactiveComponent
 
 
 
-      if edit_mode && browser.is_mobile && !embedded_demo()
+      if false && edit_mode && browser.is_mobile && !embedded_demo()
         # full screen edit point mode for mobile
         valence = if edit_mode in ['community_pros', 'your_pro_points'] 
                     'pros' 
@@ -428,7 +514,7 @@ window.DecisionBoard = ReactiveComponent
     if your_opinion.key
       fetch your_opinion
 
-    can_opine = can_user_opine proposal
+    can_opine = canUserOpine proposal
 
     opinion_views = fetch 'opinion_views'
     has_selection = opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
@@ -450,7 +536,7 @@ window.DecisionBoard = ReactiveComponent
     wing_points = (pnt for pnt in wing_points when !_.contains(included_points, pnt.key) )
     are_points_in_wings = wing_points.length > 0 
       
-    mode = get_proposal_mode(proposal)
+    mode = getProposalMode(proposal)
 
     decision_board_style =
       borderRadius: 16
@@ -458,9 +544,9 @@ window.DecisionBoard = ReactiveComponent
       borderWidth: 3
       borderColor: focus_color()
       transition: if @last_proposal_mode != mode || @transitioning  
-                    "transform #{TRANSITION_SPEED}ms, " + \
-                    "width #{TRANSITION_SPEED}ms, " + \
-                    "min-height #{TRANSITION_SPEED}ms"
+                    "transform #{CRAFTING_TRANSITION_SPEED}ms, " + \
+                    "width #{CRAFTING_TRANSITION_SPEED}ms, " + \
+                    "min-height #{CRAFTING_TRANSITION_SPEED}ms"
                   else
                     'none'
 
@@ -470,14 +556,13 @@ window.DecisionBoard = ReactiveComponent
     if mode == 'results'
       give_opinion_button_width = 232
       slider = fetch namespaced_key('slider', proposal)
-      gutter = .1 * give_opinion_button_width
 
-      opinion_slider_width = BODY_WIDTH() - 10
-      stance_position = (slider.value + 1) / 2 * opinion_slider_width / BODY_WIDTH()
-      opinion_region_x = -gutter + stance_position * \
-                         (DECISION_BOARD_WIDTH() - \
-                          give_opinion_button_width + \
-                          2 * gutter)
+      opinion_region_x = get_opinion_x_pos_projection
+        slider_val: slider.value
+        from_width: ITEM_OPINION_WIDTH() * (if !TABLET_SIZE() then 2 else 1)
+        to_width: DECISION_BOARD_WIDTH()
+        x_min: 60
+        x_max: 60
 
 
       _.extend decision_board_style,
@@ -485,7 +570,7 @@ window.DecisionBoard = ReactiveComponent
         backgroundColor: focus_color()
         # borderBottom: '1px solid rgba(0,0,0,.6)'
         cursor: 'pointer'
-        transform: "translate(#{opinion_region_x}px, -10px)"
+        transform: "translate(#{opinion_region_x - give_opinion_button_width / 2}px, -10px)"
         minHeight: 32
         width: give_opinion_button_width
 
@@ -497,7 +582,7 @@ window.DecisionBoard = ReactiveComponent
         # borderBottom: "#{decision_board_style.borderWidth}px dashed #{focus_color()}"
         backgroundColor: 'white'
         
-
+    opinion_prompt = getOpinionPrompt {proposal}
 
     SECTION 
       ref: 'DecisionBoard'
@@ -562,7 +647,7 @@ window.DecisionBoard = ReactiveComponent
       H3 
         className: 'hidden'
         style: 
-          display: if !NO_CRAFTING() && mode == 'results' then 'none'
+          display: if !TABLET_SIZE() && mode == 'results' then 'none'
 
         translator 
           id: "engage.opinion_crafting_explanation" 
@@ -571,6 +656,9 @@ window.DecisionBoard = ReactiveComponent
 
       SliderBubblemouth 
         proposal: proposal.key
+        width: 34
+        height: 24
+        top: -24 + 18 + 3 # +18 is because of the decision board translating down 18, 3 is for its border
 
       DIV
         'aria-live': 'polite'
@@ -580,7 +668,7 @@ window.DecisionBoard = ReactiveComponent
         onClick: => 
           if mode == 'results' 
 
-            can_opine = can_user_opine proposal                                  
+            can_opine = canUserOpine proposal                                  
 
             if can_opine > 0
               update_proposal_mode(proposal, 'crafting', 'give_opinion_button')
@@ -590,7 +678,7 @@ window.DecisionBoard = ReactiveComponent
                 form: 'create account'
                 goal: 'To participate, please introduce yourself.'
                 after: =>
-                  can_opine = can_user_opine proposal
+                  can_opine = canUserOpine proposal
                   if can_opine > 0 
                     update_proposal_mode(proposal, 'crafting', 'give_opinion_button')
 
@@ -634,37 +722,22 @@ window.DecisionBoard = ReactiveComponent
               DIV style: {clear: 'both'}
 
           # only shown during results, but needs to be present always for animation
-          BUTTON
-            className: 'give_opinion_button btn'
-            onClick: (e) => 
-              if mode != 'results'
-                e.stopPropagation() 
-                update_proposal_mode(proposal, 'crafting', 'give_opinion_button') 
-
-            onKeyPress: (e) => 
-              if e.which == 32 || e.which == 13
+          if opinion_prompt
+            BUTTON
+              className: 'give_opinion_button btn'
+              onClick: (e) => 
                 if mode != 'results'
                   e.stopPropagation() 
                   update_proposal_mode(proposal, 'crafting', 'give_opinion_button') 
 
+              onKeyPress: (e) => 
+                if e.which == 32 || e.which == 13
+                  if mode != 'results'
+                    e.stopPropagation() 
+                    update_proposal_mode(proposal, 'crafting', 'give_opinion_button') 
 
-            if !current_user.logged_in
-              # translator 
-              #   id: "engage.log_in_to_give_your_opinion_button"
-              #   'Log in to Give your Reasons'
-              translator 
-                id: "engage.give_your_opinion_button"
-                'Give your Reasons'
 
-            else if your_opinion.point_inclusions?.length > 0 
-              translator 
-                id: "engage.update_your_opinion_button"
-                'Update your Reasons'
-
-            else 
-              translator 
-                id: "engage.give_your_opinion_button"
-                'Give your Reasons'
+              opinion_prompt
 
 
 
@@ -735,8 +808,8 @@ window.DecisionBoard = ReactiveComponent
   transition : -> 
     return if @is_waiting()
 
-    speed = if !@last_proposal_mode then 0 else TRANSITION_SPEED
-    mode = get_proposal_mode(@props.proposal)
+    speed = if !@last_proposal_mode then 0 else CRAFTING_TRANSITION_SPEED
+    mode = getProposalMode(@props.proposal)
 
 
     if @last_proposal_mode != mode 
@@ -830,7 +903,7 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
   if sort_key of stored_points_order && opinion_views.active_views.point_includers
     points = stored_points_order[sort_key]
   else 
-    points = (pnt for pnt in points when (pnt.key of point_inclusions_per_point) || (NO_CRAFTING() && pnt.key in included_points))
+    points = (pnt for pnt in points when (pnt.key of point_inclusions_per_point) || (TABLET_SIZE() && pnt.key in included_points))
 
     # Sort points based on resonance with selected users, or custom sort_field
     sort = (pnt) ->
@@ -856,7 +929,7 @@ window.PointsList = ReactiveComponent
 
     proposal = fetch @props.proposal
 
-    mode = get_proposal_mode(proposal)
+    mode = getProposalMode(proposal)
 
 
     if @props.points_editable && !your_points.editing_points
@@ -868,8 +941,8 @@ window.PointsList = ReactiveComponent
     if @props.rendered_as == 'community_point'
       header_prefix = if mode == 'results' then 'top' else "other"
       header_style = 
-        width: "#{POINT_WIDTH()}px"
-        fontSize: "30px"
+        width: "var(--POINT_WIDTH)"
+        fontSize: "27px"
         fontWeight: 400 
         position: 'relative'
         left: if @props.valence == 'cons' then -20 else 20
@@ -883,8 +956,8 @@ window.PointsList = ReactiveComponent
       header_style = 
         fontWeight: 700
         color: focus_color()
-        width: "#{POINT_WIDTH()}px"
-        fontSize: "30px"
+        width: "var(--POINT_WIDTH)"
+        fontSize: "27px"
       wrapper = @drawYourPoints
 
 
@@ -937,8 +1010,7 @@ window.PointsList = ReactiveComponent
             continue if !passes_running_timelapse_simulation(point.created_at)
 
             if @props.points_editable && \
-               point.key in your_points.editing_points && \
-               !browser.is_mobile
+               point.key in your_points.editing_points # && !browser.is_mobile
               EditPoint 
                 key: point.key
                 point: point.key
@@ -995,12 +1067,18 @@ window.PointsList = ReactiveComponent
   drawCommunityPoints: (children) -> 
     proposal = fetch @props.proposal 
 
-    x_pos = if @props.points_draggable
-              if @props.valence == 'cons' then 0 else DECISION_BOARD_WIDTH()
-            else if !NO_CRAFTING()
-              DECISION_BOARD_WIDTH() / 2
-            else
-              0
+    mode = getProposalMode(proposal)
+
+
+    if mode == 'crafting'
+      x_pos = if @props.valence == 'cons' 
+                "calc( -1 * var(--DECISION_BOARD_WIDTH) / 2 )"
+              else 
+                "calc( var(--DECISION_BOARD_WIDTH) / 2  )"
+    else
+      x_pos = 0
+
+
 
     # TODO: The minheight below is not a principled or complete solution to two
     #       sizing issues: 
@@ -1009,22 +1087,17 @@ window.PointsList = ReactiveComponent
     #           2) when filtering the points on result page to a group of opinions 
     #              with few inclusions, the document height can jarringly fluctuate
 
-    mode = get_proposal_mode(proposal)
     SECTION
       key: 'community_points'
       className: "point_list points_by_community #{@props.valence}_by_community"
       style: _.defaults (@props.style or {}),
-        display: 'inline-block'
-        verticalAlign: 'top'
-        width: POINT_WIDTH()
         minHeight: (if points_for_proposal(proposal).length > 4 && mode == 'crafting' then window.innerHeight else 100)
         zIndex: if @columnStandsOut() then 6 else 1
-        margin: '38px 18px 0 18px'
-        position: 'relative'
+        width: "var(--POINT_WIDTH)"
 
-        transition: "transform #{TRANSITION_SPEED}ms"
-        transform: "translate(#{x_pos}px, 0)"
-      if mode == 'crafting' && !NO_CRAFTING()
+        transition: "transform #{CRAFTING_TRANSITION_SPEED}ms, width #{CRAFTING_TRANSITION_SPEED}ms"
+        transform: "translate(#{x_pos}, 0)"
+      if mode == 'crafting' && !TABLET_SIZE()
 
         [A
           key: 'skip to'
@@ -1049,7 +1122,7 @@ window.PointsList = ReactiveComponent
       style: _.defaults (@props.style or {}),
         display: 'inline-block'
         verticalAlign: 'top'        
-        width: POINT_WIDTH()
+        width: "var(--POINT_WIDTH)"
         marginTop: 28
         position: 'relative'
         zIndex: if @columnStandsOut() then 6 else 1        
@@ -1118,7 +1191,7 @@ window.PointsList = ReactiveComponent
 
               "Skip to #{noun} points by others to vote on important ones."
  
-      else if !browser.is_mobile
+      else # if !browser.is_mobile
         EditPoint
           key: "new_point_#{@props.valence}"
           proposal: @props.proposal
@@ -1140,20 +1213,20 @@ window.PointsList = ReactiveComponent
 
     DIV 
       id: "add-point-#{@props.valence}"
+      className: 'give_a_point'
       style: 
         cursor: 'pointer'
         marginTop: 20
 
 
       @drawGhostedPoint
-        width: POINT_WIDTH()
         text: button_text
         is_left: @props.valence == 'cons'
         style: {}
         text_style:
           #color: focus_color()
           textDecoration: 'underline'
-          fontSize: if browser.is_mobile then 24
+          fontSize: if browser.is_mobile then 16
 
 
 
@@ -1168,30 +1241,34 @@ window.PointsList = ReactiveComponent
 
 
     DIV 
+      className: "point-in-decision-board #{if @props.drop_target then 'with-drop-target' else ''}"
       style: 
-        padding: '.25em 0'
+        textAlign: 'center'
         marginTop: '1em'
-        marginLeft: if @props.drop_target then 20 else 9
+        marginLeft: 0 #if @props.drop_target then 20 else 9
         fontSize: POINT_FONT_SIZE()
 
       if @props.drop_target
-        SPAN 
-          'aria-hidden': true
-          style: 
-            fontWeight: if browser.high_density_display then 300 else 400
-          "#{t('or', 'or')} "
-      # SPAN
-      #   'aria-hidden': true
-      #   style: 
-      #     padding: if @props.drop_target then '0 6px' else '0 11px 0 0'
 
-      #   dangerouslySetInnerHTML:{__html: '&bull;'}
+        STYLE 
+          dangerouslySetInnerHTML: __html: """
+            .point-in-decision-board.with-drop-target .write_#{@props.valence}::before {
+              content: "#{t('or', 'or')}";
+              position: absolute;
+              left: -25px;
+              top: 5px;
+              font-weight: #{if browser.high_density_display then 300 else 400};
+              color: black;
+            }
+          """
+
 
       BUTTON 
         className: "write_#{@props.valence} btn"
         style: 
           marginLeft: 8
           backgroundColor: focus_color()
+          position: 'relative'
 
         TRANSLATE 
           id: "engage.add_a_point"
@@ -1214,7 +1291,6 @@ window.PointsList = ReactiveComponent
                          "Drag a {pro_or_con} from the #{left_or_right}"
 
 
-    dt_w = POINT_WIDTH() - 24
     local_proposal = fetch shared_local_key(proposal)
 
     DIV 
@@ -1227,7 +1303,6 @@ window.PointsList = ReactiveComponent
         left: if @props.valence == 'cons' then -18 else 18
 
       @drawGhostedPoint
-        width: POINT_WIDTH() - 24
         text: drop_target_text
         is_left: @props.valence == 'cons'
         style: 
@@ -1240,15 +1315,17 @@ window.PointsList = ReactiveComponent
     proposal = fetch @props.proposal  
     text_style = props.text_style or {}
     style = props.style or {}
-    width = props.width
+
     text = props.text
     is_left = props.is_left
 
-    w = width
     padding_x = 18
     padding_y = 12
-    text_height = heightWhenRendered(text, {fontSize: "#{POINT_FONT_SIZE()}px", width: "#{w - 2 * padding_x}px"})
     stroke_width = 1
+
+    width_calc = "calc( 100% - #{2 * stroke_width}px )"
+    text_height = heightWhenRendered(text, {fontSize: "#{POINT_FONT_SIZE()}px", width: width_calc})
+
     h = Math.max text_height + 2 * padding_y, 85
     s_w = 8
     s_h = 6
@@ -1262,7 +1339,7 @@ window.PointsList = ReactiveComponent
       mouth_style['left'] = -POINT_MOUTH_WIDTH + stroke_width + 1
     else 
       mouth_style['transform'] = 'rotate(90deg)'
-      mouth_style['right'] = -POINT_MOUTH_WIDTH  + stroke_width + 1
+      mouth_style['right'] = -POINT_MOUTH_WIDTH  + stroke_width + 2
 
     local_proposal = fetch shared_local_key(proposal)
 
@@ -1272,13 +1349,13 @@ window.PointsList = ReactiveComponent
         opacity: if local_proposal.has_focus == 'edit point' then .1
 
       SVG 
-        width: w
+        width: "100%"
         height: h
         
 
         DEFS null,
           PATTERN 
-            id: "drop-stripes-#{is_left}-#{width}"
+            id: "drop-stripes-#{is_left}-#{s_w}-#{s_h}"
             width: s_w
             height: s_h 
             patternUnits: "userSpaceOnUse"
@@ -1312,13 +1389,13 @@ window.PointsList = ReactiveComponent
                   strokeOpacity: .2
 
         RECT
-          width: w - 2 * stroke_width
+          width: "99%" #width_calc
           height: h - 2 * stroke_width
           x: stroke_width
           y: stroke_width
           rx: 16
           ry: 16
-          fill: "url(#drop-stripes-#{is_left}-#{width})"
+          fill: "url(#drop-stripes-#{is_left}-#{s_w}-#{s_h})"
           stroke: focus_color()
           strokeWidth: stroke_width
           strokeDasharray: '4, 3'
@@ -1329,11 +1406,7 @@ window.PointsList = ReactiveComponent
           position: 'absolute'
           top: padding_y
           left: padding_x #+ if is_left then 24 else 0
-          width: w - 2 * padding_x
-          # padding: """0 
-          #             #{if @props.valence == 'cons' then 18 else 18+24}px 
-          #             0 
-          #             #{if @props.valence == 'pros' then 18 else 18+24}px"""
+          width: "calc(100% - 2 * #{padding_x}px)"
           
         text
 
@@ -1351,52 +1424,6 @@ window.PointsList = ReactiveComponent
 
 
 
-SliderBubblemouth = ReactiveComponent
-  displayName: 'SliderBubblemouth'
-
-  render : -> 
-    proposal = fetch @props.proposal
-    slider = fetch(namespaced_key('slider', proposal))
-    db = fetch('decision_board')
-
-    w = 34
-    h = 24
-    stroke_width = 11
-
-    mode = get_proposal_mode(proposal)
-
-    if mode == 'crafting'
-      transform = "translate(0, -4px) scale(1,.7)"
-      fill = 'white'
-      if db.user_hovering_on_drop_target
-        dash = "none"
-      else
-        dash = "25, 10"
-    else 
-      transform = "translate(0, -25px) scale(.5,.5) "
-      fill = focus_color()
-      dash = "none"
-
-    DIV 
-      key: 'slider_bubblemouth'
-      style: 
-        left: 10 + translateStanceToPixelX slider.value, DECISION_BOARD_WIDTH() - w - 20
-        top: -h + 18 + 3 # +10 is because of the decision board translating down 18, 3 is for its border
-        position: 'absolute'
-        width: w
-        height: h 
-        zIndex: 10
-        transition: "transform #{TRANSITION_SPEED}ms"
-        transform: transform
-
-      Bubblemouth 
-        apex_xfrac: (slider.value + 1) / 2
-        width: w
-        height: h
-        fill: fill
-        stroke: focus_color()
-        stroke_width: if mode == 'crafting' then stroke_width else 0
-        dash_array: dash
 
 
 
@@ -1419,49 +1446,57 @@ GroupSelectionRegion = ReactiveComponent
     has_histogram_focus = single_opinion_selected || region_selected
     return SPAN null if !has_histogram_focus
 
-    wrapper_width = BODY_WIDTH() + 160
 
     # draw a bubble mouth
     w = 36; h = 24
 
-    slidergram_width = ITEM_OPINION_WIDTH() * (if @props.is_expanded && !SLIDERGRAM_BELOW() then 2 else 1)
+    slidergram_width = ITEM_OPINION_WIDTH() * (if !TABLET_SIZE() then 2 else 1)
+    wrapper_padding = 300
+    wrapper_width = slidergram_width + wrapper_padding
 
     margin = wrapper_width - slidergram_width
     stance = (region_selected or single_opinion_selected).opinion_value
-    if region_selected
-      left = translateStanceToPixelX(1 / 0.75 * stance, slidergram_width) + margin / 2 - w / 2
-    else 
+
+    if !region_selected
       histocache = last_histogram_position[@props.proposal]
       return SPAN null if !histocache
-      histocanv = document.getElementById(histocache.hash)
-      left = margin / 2 + histocache.positions[single_opinion_selected.user][0]
       avatar_height = 2 * histocache.positions[single_opinion_selected.user][2]
+      # stance = (histocache.positions[single_opinion_selected.user][0] + avatar_height / 2) / slidergram_width
+
+    left = get_opinion_x_pos_projection
+      slider_val: stance
+      from_width: slidergram_width
+      to_width: slidergram_width
+      x_min: 0
+      x_max: 0
+
+    left += wrapper_padding / 2
+
 
     DIV 
       style: 
         width: wrapper_width
-        border: if !SUPER_SMALL() then "3px solid #{if get_selected_point() then '#eee' else focus_color() }"
+        border: if !PHONE_SIZE() then "3px solid #{if get_selected_point() then '#eee' else focus_color() }"
         height: '100%'
         position: 'absolute'
-        borderRadius: 16
-        marginLeft: -BODY_WIDTH()/2 - 80
-        left: '50%'
+        borderRadius: 32
+        left: "calc(50% - #{wrapper_width / 2}px)"
         top: 4 #18
 
 
-      if !SUPER_SMALL()
+      if !PHONE_SIZE()
         DIV 
           style: cssTriangle 'top', \
                              (if get_selected_point() then '#eee' else focus_color()), \
                              w, h,               
                                 position: 'relative'
                                 top: -26
-                                left: left
+                                left: left - w / 2
 
           DIV
             style: cssTriangle 'top', 'white', w - 1, h - 1,
               position: 'relative'
-              left: -(w - 2)/2
+              left: -(w - 2) / 2
               top: 6
 
 
@@ -1469,18 +1504,20 @@ GroupSelectionRegion = ReactiveComponent
         # display a name for the selected opinion
 
         name_style = 
-          fontSize: if SUPER_SMALL then 18 else 30
+          fontSize: "#{if PHONE_SIZE() then 18 else 30}px"
           fontWeight: 600
+          whiteSpace: 'nowrap'
 
         user = fetch(fetch(single_opinion_selected.opinion).user)
         name = user.name or anonymous_label()
         title = "#{name}'#{if name[name.length - 1] != 's' then 's' else ''} Opinion"
         name_width = widthWhenRendered(title, name_style)
+
         DIV
           style: _.extend name_style,
             position: 'absolute'
             top: -(avatar_height + 172)
             color: focus_color()
-            left: Math.min(wrapper_width - name_width - 10, Math.max(0, left - name_width / 2))
+            left: "min(#{wrapper_width - name_width}px, max(0px, calc(#{left}px - #{name_width / 2}px)))" #Math.min(wrapper_width - name_width - 10, Math.max(0, left - name_width / 2))
           title 
   

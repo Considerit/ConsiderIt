@@ -277,7 +277,7 @@ window.EditPage = ReactiveComponent
                         width: 22
 
                   DIV
-                    className: 'name LIST-header'
+                    className: 'name LIST-title'
 
                     if wildcard
                       SPAN 

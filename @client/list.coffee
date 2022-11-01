@@ -3,46 +3,105 @@ require './edit_list'
 require './item'
 
 
+PROPOSAL_AUTHOR_AVATAR_SIZE = 40
+PROPOSAL_AVATAR_GUTTER = 18
+PROPOSAL_AUTHOR_AVATAR_SIZE_SMALL = 20
+PROPOSAL_AVATAR_GUTTER_SMALL = 9
+
 
 window.styles += """
   :after,
   :root {
     --PROPOSAL_BULLET_GUTTER: 12px; 
-    --LIST_GUTTER: calc(var(--PROPOSAL_AUTHOR_AVATAR_SIZE) + var(--PROPOSAL_AUTHOR_AVATAR_GUTTER));
+    --AVATAR_SIZE_AND_GUTTER: calc(var(--PROPOSAL_AUTHOR_AVATAR_SIZE) + var(--PROPOSAL_AUTHOR_AVATAR_GUTTER));
 
+    --LIST_PADDING_FULL: var(--LIST_PADDING_TOP) var(--LIST_PADDING_RIGHT) var(--LIST_PADDING_BOTTOM) var(--LIST_PADDING_LEFT);
   }
 
-  @media (max-width: #{SLIDERGRAM_ON_SIDE_BREAKPOINT}px) {
-    :root {
-      --ITEM_TEXT_WIDTH:    calc( var(--HOMEPAGE_WIDTH) - var(--LIST_GUTTER)) );
-      --ITEM_OPINION_WIDTH: calc( var(--HOMEPAGE_WIDTH) - var(--LIST_GUTTER)) );      
+
+  @media (min-width: #{TABLET_BREAKPOINT}px) {
+    :root, :before, :after {
+      --ITEM_TEXT_WIDTH:    calc( .6 * (var(--HOMEPAGE_WIDTH) - var(--LIST_PADDING_LEFT) - var(--AVATAR_SIZE_AND_GUTTER) - var(--PROPOSAL_AUTHOR_AVATAR_SIZE)) );
+      --ITEM_OPINION_WIDTH: calc( .4 * (var(--HOMEPAGE_WIDTH) - var(--LIST_PADDING_RIGHT)) );      
+    
+      --LIST_PADDING_TOP: 48px;
+      --LIST_PADDING_BOTTOM: 48px;
+      --LIST_PADDING_RIGHT: 90px;
+      --LIST_PADDING_LEFT: 66px;
+
     }
   }
 
-  @media (min-width: #{SLIDERGRAM_ON_SIDE_BREAKPOINT}px) {
-    :root {
-      --ITEM_TEXT_WIDTH:    calc( .6 * (var(--HOMEPAGE_WIDTH) - 2 * var(--LIST_GUTTER)) );
-      --ITEM_OPINION_WIDTH: calc( .4 * (var(--HOMEPAGE_WIDTH) - 2 * var(--LIST_GUTTER)) );      
+  @media (max-width: #{TABLET_BREAKPOINT}px) {
+    :root, :before, :after {
+      --ITEM_TEXT_WIDTH:    calc( var(--HOMEPAGE_WIDTH) - var(--AVATAR_SIZE_AND_GUTTER) );
+      --ITEM_OPINION_WIDTH: calc( var(--HOMEPAGE_WIDTH) - var(--AVATAR_SIZE_AND_GUTTER) );  
+
+      --LIST_PADDING_TOP: 0px;
+      --LIST_PADDING_BOTTOM: 0px;
+      --LIST_PADDING_RIGHT: 4px;
+      --LIST_PADDING_LEFT: 4px;
+
     }
   }
 
 
-  @media (max-width: #{SUPER_SMALL_BREAKPOINT}px) {
-    :root {
+  @media (max-width: #{PHONE_BREAKPOINT}px) {
+    :root, :before, :after {
       --PROPOSAL_AUTHOR_AVATAR_SIZE: #{PROPOSAL_AUTHOR_AVATAR_SIZE_SMALL}px;
       --PROPOSAL_AUTHOR_AVATAR_GUTTER: #{PROPOSAL_AVATAR_GUTTER_SMALL}px;
     }
   }
 
-  @media (min-width: #{SUPER_SMALL_BREAKPOINT}px) {
-    :root {
+  @media (min-width: #{PHONE_BREAKPOINT}px) {
+    :root, :before, :after {
       --PROPOSAL_AUTHOR_AVATAR_SIZE: #{PROPOSAL_AUTHOR_AVATAR_SIZE}px;
       --PROPOSAL_AUTHOR_AVATAR_GUTTER: #{PROPOSAL_AVATAR_GUTTER}px;
     }
   }
+"""
+
+responsive_style_registry.unshift (responsive_vars) -> 
+  homepage_width = responsive_vars.HOMEPAGE_WIDTH
+  tablet_size = responsive_vars.TABLET_SIZE
+  phone_size = responsive_vars.PHONE_SIZE
+
+  # list padding; keep in sync with LIST_PADDING_* vars defined above in list.coffee
+  if tablet_size
+    right = left = 4
+    top = bottom = 0
+  else 
+    right = 90
+    left = 66
+    top = bottom = 48
+
+  if phone_size 
+    avatar_spacing = PROPOSAL_AUTHOR_AVATAR_SIZE_SMALL + PROPOSAL_AVATAR_GUTTER_SMALL
+  else 
+    avatar_spacing = PROPOSAL_AUTHOR_AVATAR_SIZE + PROPOSAL_AVATAR_GUTTER
+
+
+  {
+    LIST_PADDING_TOP: top
+    LIST_PADDING_RIGHT: right
+    LIST_PADDING_LEFT: left
+    LIST_PADDING_BOTTOM: bottom
+
+    # keep in sync with css variables of same name defined above in list.coffee
+    AVATAR_SIZE_AND_GUTTER: avatar_spacing
+    AVATAR_SIZE: if phone_size then PROPOSAL_AUTHOR_AVATAR_SIZE_SMALL else PROPOSAL_AUTHOR_AVATAR_SIZE
+    ITEM_TEXT_WIDTH:    if tablet_size then homepage_width - avatar_spacing else if embedded_demo() then .6 * homepage_width else .6 * (homepage_width - left - avatar_spacing - PROPOSAL_AUTHOR_AVATAR_SIZE)
+    ITEM_OPINION_WIDTH: if tablet_size then homepage_width - avatar_spacing else if embedded_demo() then .4 * homepage_width else .4 * (homepage_width - right)
+    LIST_ITEM_EXPANSION_SCALE: if tablet_size then 1 else 1.25
+  }
 
 
 
+
+
+
+
+window.styles += """
   .List, .NewList, .draggable-wrapper {
     background-color: white;
     border: none;
@@ -55,7 +114,7 @@ window.styles += """
   .List {
     margin-bottom: 60px;
     position: relative; 
-    padding: var(--LIST_PADDING-FULL);   
+    padding: var(--LIST_PADDING_FULL);   
   }
 
   .one-col .List, .one-col .NewList, .embedded-demo .List, .embedded-demo .NewList {
@@ -79,33 +138,6 @@ window.styles += """
     z-index: 0; */ 
   }
 """
-
-responsive_style_registry.list_padding = -> 
-
-  top =    if SLIDERGRAM_BELOW() then 0 else 48
-  bottom = if SLIDERGRAM_BELOW() then 0 else 48 
-
-  list_padding = if SLIDERGRAM_BELOW() then 0 else 80
-
-  if WINDOW_WIDTH() <= 955
-    right = if SLIDERGRAM_BELOW() then 4 else Math.max 36, list_padding
-    left  = if SLIDERGRAM_BELOW() then 4 else Math.max 36, list_padding
-  else 
-    right = Math.max 36, list_padding + list_padding / 6
-    left  = Math.max 36, list_padding - list_padding / 6
-
-  """
-    :root {
-      --LIST_PADDING: #{list_padding}px;
-      --LIST_PADDING-FULL: #{top}px #{right}px #{bottom}px #{left}px;
-      --LIST_PADDING-TOP: #{top}px;
-      --LIST_PADDING-RIGHT: #{right}px;
-      --LIST_PADDING-LEFT: #{left}px;
-      --LIST_PADDING-BOTTOM: #{bottom}px;
-    }
-  """
-
-
 
 window.list_link = (list_key) ->
   list_key.substring(5).toLowerCase().replace(/ /g, '_')
@@ -345,8 +377,8 @@ ListItems = ReactiveComponent
             proposal: proposal.key
             list_key: list_key
             list_order: sorted_key
-            show_category: !!@props.combines_these_lists
-            category_color: if @props.combines_these_lists then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], .9, .8)
+            show_list_title: !!@props.combines_these_lists
+            list_title_color: if @props.combines_these_lists then hsv2rgb(colors["list/#{(proposal.cluster or 'Proposals')}"], 1, .7)
             is_expanded: !!expanded_state[proposal.key]
             accessed_by_url: url == "/#{proposal.slug}"
             num_proposals: len
@@ -460,12 +492,59 @@ window.delete_list = (list_key, page, suppress_confirmation) ->
 
 
 styles += """
-  [data-widget="ListHeader"] {  
+  .ListHeader-wrapper {
+    display: flex;
+  }
+
+  @media (max-width: #{TABLET_BREAKPOINT}px) {
+
+    .ListHeader-wrapper {
+      padding-top: 12px;
+      padding-bottom: 12px;
+      position: relative;
+      margin-left: calc(-1 * var(--LIST_PADDING_LEFT) - var(--homepagetab_left_padding) );
+      padding-left: calc(var(--LIST_PADDING_LEFT) + var(--homepagetab_left_padding) );
+      width: calc(100% + var(--LIST_PADDING_LEFT) + var(--LIST_PADDING_RIGHT) + var(--homepagetab_left_padding));
+    }
+
+    .ListHeader-wrapper, button.NewList {
+      background-color: #eee;
+    }
 
   }
 
 
+  .text-wrapper {
+    // padding-left: var(--AVATAR_SIZE_AND_GUTTER);    
+    position: relative;
+    width: 100%;
+  }
+
+  @media (min-width: #{PHONE_BREAKPOINT}px) and (max-width: #{TABLET_BREAKPOINT}px) {
+    .text-wrapper {
+      width: calc(var(--AVATAR_SIZE_AND_GUTTER) + var(--ITEM_TEXT_WIDTH) - 24px);
+      margin-left: 24px;
+    }
+  }
+
+  @media (max-width: #{PHONE_BREAKPOINT}px) {
+    .text-wrapper {
+      margin-left: 24px;
+      width: calc(var(--AVATAR_SIZE_AND_GUTTER) + var(--ITEM_TEXT_WIDTH) - 24px);
+    }
+  }
+
+
+  .avatar-spacing {
+    width: var(--AVATAR_SIZE_AND_GUTTER);
+    min-height: 1px;
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
+
 """
+
+
 
 
 window.ListHeader = ReactiveComponent
@@ -484,46 +563,46 @@ window.ListHeader = ReactiveComponent
 
     DIVIDER = customization 'list_divider', list_key, subdomain
 
-    wrapper_style = 
-      # width: HOMEPAGE_WIDTH()
-      marginBottom: if !is_collapsed then 16 #24
-      position: 'relative'
+      
 
     DIV 
-      style: wrapper_style 
+      className: 'ListHeader'
+      style: 
+        marginBottom: if !is_collapsed then 16 #24 
 
       DIVIDER?()
 
-      DIV 
-        style: 
-          position: 'relative'
 
+      DIV 
+        className: 'ListHeader-wrapper'
+
+        CollapseList list_key          
 
         # DIV 
-        #   style: 
-        #     width:  HOMEPAGE_WIDTH()
-        #     margin:  'auto'
-
-        EditableTitle
-          list: @props.list
-          fresh: @props.fresh
-
-        if !is_collapsed
-          DIV null, 
-            if description?.length > 0 || typeof(description) == 'function'
-              EditableDescription
-                list: @props.list
-                fresh: @props.fresh
+        #   className: 'avatar-spacing'
 
 
-      if @props.allow_editing
-        EditList
-          list: @props.list
-          fresh: @props.fresh
-          combines_these_lists: @props.combines_these_lists
+        DIV 
+          className: 'text-wrapper'
+
+          EditableTitle
+            list: @props.list
+            fresh: @props.fresh
+
+          if !is_collapsed && (description?.length > 0 || typeof(description) == 'function')
+            EditableDescription
+              list: @props.list
+              fresh: @props.fresh
+
+
+        if @props.allow_editing
+          EditList
+            list: @props.list
+            fresh: @props.fresh
+            combines_these_lists: @props.combines_these_lists
 
       if @props.proposals_count > 0 && !is_collapsed && !customization('list_no_filters', list_key, subdomain)
-        list_actions
+        ListActions
           list: @props.list
           add_new: !@props.combines_these_lists && customization('list_permit_new_items', list_key, subdomain) && !is_collapsed && @props.proposals_count > 4
           can_sort: customization('homepage_show_search_and_sort', null, subdomain) && @props.proposals_count > 1 
@@ -540,18 +619,26 @@ styles += """
     display: block;
     position: relative;
     border-radius: 8px;
-    padding: var(--LIST_PADDING-FULL);
+    padding: var(--LIST_PADDING_TOP) 56px var(--LIST_PADDING_BOTTOM) 56px;
     width: 100%;
   }
 
-  button.NewList h1.LIST-header {
-    position: relative;
-    left: -42px;
-    display: flex;
-    align-items: center;
+  @media (max-width: #{TABLET_BREAKPOINT}px) {
+    button.NewList {
+      padding: 24px 12px;
+      border-radius: 0px;
+    }
   }
 
-  button.NewList h1.LIST-header svg {
+  button.NewList .LIST-title {
+    position: relative;
+    // left: -42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  button.NewList .LIST-title svg {
     margin-right: 13px;
     position: relative;
     top: 3px;
@@ -560,7 +647,7 @@ styles += """
 
   button.NewList .subbutton_button {
     color: #{focus_blue};
-    font-weight: 700;
+    // font-weight: 700;
     border-bottom-width: 2px;
     border-bottom-color: transparent;
     border-bottom-style: solid;
@@ -581,6 +668,7 @@ styles += """
     color: #656565;
     font-size: 16px;
     position: relative;
+    text-align: center;
   }
 """
 
@@ -591,7 +679,7 @@ window.NewList = ReactiveComponent
   render: -> 
     subdomain = fetch '/subdomain'
 
-    wide_layout = WINDOW_WIDTH() > 1250 
+    wide_layout = WINDOW_WIDTH() > 1090 
 
     @local.hovering ?= false
 
@@ -614,13 +702,13 @@ window.NewList = ReactiveComponent
           save @local
 
         H1
-          className: 'LIST-header'
+          className: 'LIST-title'
 
           
           SPAN 
             style: 
-              visibility: if SLIDERGRAM_BELOW() then 'hidden'
-            plus_icon focus_blue
+              visibility: 'visible' # if TABLET_SIZE() then 'hidden'
+            plusIcon focus_blue
 
           SPAN 
             className: 'subbutton_button open'
@@ -641,29 +729,27 @@ window.NewList = ReactiveComponent
         if wide_layout
           DIV 
             className: 'subheader'
+            style: 
+              textAlign: 'initial'
 
             SPAN 
               style: 
                 position: 'relative'
-                left: 206 
+                left: 'calc(50% - 300px)'
 
               'on a fixed set of proposals'
 
             SPAN 
               style: 
                 position: 'relative'
-                left: 446
+                left: 'calc(50% + 0px)'
               'for community ideation'
 
         else 
           DIV 
             className: 'subheader'
 
-            SPAN 
-              style: 
-                position: 'relative'
-                left: 0 
-
+            SPAN null,
               'on a fixed set of proposals or in response to an open-ended question'
 
 
@@ -698,44 +784,35 @@ window.list_i18n = ->
 
 
 styles += """
-  .LIST-header {
-    font-size: 34px;
-    font-weight: 700;
+  .LIST-title {
+    font-size: 35px;
+    font-weight: 500;
     text-align: left;
   }
 
-  @media (min-width: #{SUPER_SMALL_BREAKPOINT}px) and (max-width: #{SLIDERGRAM_ON_SIDE_BREAKPOINT}px) {
-    .LIST-header {
+  .LIST-title-wrapper {
+    position: relative;
+    text-align: center;
+    outline: none;
+  }
+
+  @media (min-width: #{PHONE_BREAKPOINT}px) and (max-width: #{TABLET_BREAKPOINT}px) {
+    .LIST-title {
       font-size: 28px;
     }  
   }
-  @media (max-width: #{SUPER_SMALL_BREAKPOINT}px) {
-    .LIST-header {
+  @media (max-width: #{PHONE_BREAKPOINT}px) {
+    .LIST-title {
       font-size: 22px; 
-      margin-left: 28px; 
+      // margin-left: 28px; 
     }  
+
+    .EditableTitle {
+      // margin-right: 24px;
+    }
+
   }
 
-  .EditableTitle {
-    margin-right: 24px;
-  }
-
-
-  .LIST-header button {
-    border: none;
-    background-color: transparent;
-    padding: 0; 
-    margin: 0; 
-    position: absolute;
-    padding-right: 20px;
-    padding-top: 12px;
-    display: inline-block;
-    cursor: pointer;
-  }
-
-  .embedded-demo .LIST-header button {
-    display: none;
-  }
 
 """
 
@@ -743,69 +820,173 @@ EditableTitle = ReactiveComponent
   displayName: 'EditableTitle'
 
   render: -> 
-    current_user = fetch '/current_user'
-
     list = @props.list 
     list_key = list.key
-
-    list_state = fetch list_key
-    is_collapsed = list_state.collapsed
 
     subdomain = fetch '/subdomain'
 
     title = get_list_title list_key, true, subdomain
 
-    list_uncollapseable = customization 'list_uncollapseable', list_key, subdomain
-
-    toggle_list = ->
-      if !list_uncollapseable
-        list_state.collapsed = !list_state.collapsed
-        save list_state
-
-
     DIV 
       className: 'EditableTitle'
 
       H1 
-        className: 'LIST-header'
+        className: 'LIST-title'
         style: # ugly...we only want to show the expand/collapse icon
           fontSize: if title.replace(/^\s+|\s+$/g, '').length == 0 then 0
 
         DIV
-          onMouseEnter: => @local.hover_label = true; save @local 
-          onMouseLeave: => @local.hover_label = false; save @local
-          # className: 'LIST-header'          
-          style: _.defaults {}, customization('list_label_style', list_key, subdomain) or {}, 
-            fontFamily: header_font()
-            position: 'relative'
-            textAlign: 'left'
-            outline: 'none'
-
+          className: 'LIST-title-wrapper condensed'
+          style: customization('list_label_style', list_key, subdomain) or {}
 
           title 
 
-          if !list_uncollapseable
-            tw = 15   
 
-            BUTTON 
-              tabIndex: if !list_uncollapseable then 0
-              'aria-label': "#{title}. #{translator('accessibility-expand-or-collapse-list', 'Expand or collapse list.')}"
-              'aria-pressed': !is_collapsed
 
-              onClick: if !list_uncollapseable then (e) -> 
-                toggle_list()
-                document.activeElement.blur()
+COLLAPSE_ICON_SIZE = 40
 
-              'aria-hidden': true
-              style: 
-                left: -tw - (if SLIDERGRAM_BELOW() then 10 else 20)
-                top: if is_collapsed then -14 else 5
-                transform: if !is_collapsed then 'rotate(90deg)'
-                transition: 'transform .25s, top .25s'
+styles += """
 
-              ChevronRight(tw)
+  .CollapseList {
+    border: none;
+    background-color: transparent;
+    padding: 0; 
+    margin: 0; 
+    line-height: 0;
+    cursor: pointer;
+  }
 
-        
+  .embedded-demo .CollapseList {
+    display: none;
+  }
+
+  @media (min-width: #{TABLET_BREAKPOINT}px) {
+    .CollapseList {
+      transition: transform .25s, top .25s;
+      position: absolute;
+      left: calc(50% - #{COLLAPSE_ICON_SIZE / 2}px);
+      bottom: #{-COLLAPSE_ICON_SIZE / 2}px;
+    }
+
+    .CollapseList svg {
+
+    }
+
+    .CollapseList.collapsed {
+      transform: scaleY(-1);
+    }
+
+    .CollapseList.expanded {
+    }    
+  }
+
+  # @media (min-width: #{PHONE_BREAKPOINT}px) and (max-width: #{TABLET_BREAKPOINT}px) {
+  #   .CollapseList {
+  #     display: none;
+  #   }
+
+  # }
+
+  @media (max-width: #{TABLET_BREAKPOINT}px) {
+    .CollapseList {
+      border: none;
+      background-color: transparent;
+      padding: 0; 
+      margin: 0; 
+      position: absolute;
+      cursor: pointer;
+      transition: transform .25s, top .25s;
+      top: 22px;
+      left: 6px;
+    }
+
+    .CollapseList svg {
+      position: relative;
+      left: 0;
+    }
+
+    .CollapseList.collapsed {
+    }
+
+    .CollapseList.expanded {
+      transform: rotate(90deg);
+    }
+
+    .embedded-demo .CollapseList {
+      display: none;
+    }
+
+  }
+
+
+"""
+
+
+CollapseList = (list_key) -> 
+  subdomain = fetch '/subdomain'
+
+  list_uncollapseable = customization 'list_uncollapseable', list_key, subdomain
+  return SPAN null if list_uncollapseable
+
+  list_state = fetch list_key
+  is_collapsed = list_state.collapsed
+
+  toggle_list = (collapse_button) ->
+    list_el = collapse_button.closest('.List')
+    el = list_el.querySelector('.LIST-title')
+    $$.ensureInView el,
+      # extra_height: if !expanded_state[proposal.key] then 400 else 0
+      # force: mode == 'crafting'
+      callback: ->
+
+        if !list_state.collapsed
+          list_el.style.transition = "max-height 1000ms ease"
+          padding_el = if TABLET_SIZE() then list_el.querySelector('.ListHeader-wrapper') else list_el
+          sty = getComputedStyle padding_el
+
+          list_el.style.maxHeight = "#{list_el.clientHeight}px"
+          list_el.style.overflow = 'hidden'
+
+          # this maxheight calculation isn't right anymore...padding is now elsewhere :-(
+          list_el.style.maxHeight = "calc(#{el.clientHeight}px + #{sty.paddingTop} + #{sty.paddingBottom})"
+
+          setTimeout ->
+
+            list_state.collapsed = !list_state.collapsed
+            save list_state
+
+            setTimeout ->
+              list_el.style.transition = ''
+              list_el.style.maxHeight = ''
+              list_el.style.overflow = ''
+            , 100
+
+          , 1000
+        else 
+          list_state.collapsed = !list_state.collapsed
+          save list_state
+
+
+  BUTTON 
+    className: "CollapseList #{if is_collapsed then 'collapsed' else 'expanded'}"
+    'aria-label': translator('accessibility-expand-or-collapse-list', 'Expand or collapse list.')
+    'aria-pressed': !is_collapsed
+    'data-tooltip': translator('accessibility-expand-or-collapse-list', 'Expand or collapse list.')
+
+    onClick: (e) -> 
+      toggle_list(e.target)
+      document.activeElement.blur()
+
+    'aria-hidden': true
+
+    if !TABLET_SIZE()
+      double_up_icon(COLLAPSE_ICON_SIZE)
+    else 
+      ChevronRight 18
+
+
+
+
 
 
 styles += """
@@ -813,9 +994,14 @@ styles += """
     font-size: 16px;
     font-weight: 400;
     color: black;
-    margin-top: 2px;
+    margin-top: 14px;
     margin-bottom: 18px;
+    padding: 0px var(--AVATAR_SIZE_AND_GUTTER);
     /* font-style: italic; */
+  }
+
+  .LIST-description.single-line {
+    text-align: center;
   }
 
 """
@@ -832,48 +1018,45 @@ EditableDescription = ReactiveComponent
     if Array.isArray(description)
       description = description.join('\n')
 
-    description_style = customization 'list_description_style', list_key
-
+  
     return SPAN null if !description
+
+    is_func = typeof description == 'function'
+
+    description_style = customization 'list_description_style', list_key
+    single_line = false
+
+    if !is_func
+      height = heightWhenRendered "<div class='LIST'><div class='ListHeader-wrapper'><div class='text-wrapper'><div class='LIST-description wysiwyg_text'><div>#{description}</div></div></div></div></div>"
+      single_line = height < 90 # single line + margins should be ~ 54
 
     DIV
       style: _.defaults {}, (description_style or {})
-      className: "LIST-description #{if typeof description != 'function' then 'wysiwyg_text' else ''}"
+      className: "LIST-description #{if !is_func then 'wysiwyg_text' else ''} #{if single_line then 'single-line' else ''}"
 
-      if typeof description == 'function'
+      if is_func
         description()        
       else 
-        desc = description
-        if typeof desc == 'string'
-          desc = [description]
-
-        for para, idx in desc
-          DIV 
-            key: idx
-            style:
-              marginBottom: 10
-            dangerouslySetInnerHTML: {__html: para}
+        DIV 
+          style:
+            marginBottom: 10
+          dangerouslySetInnerHTML: {__html: description}
 
 
 
 styles += """
   .list_actions_wrapper {
-    margin-bottom: 50px;
-    margin-top: 24px;    
+    margin: 24px 0;
   }
-  .list_actions {
+  .ListActions {
     display: flex;
     align-items: baseline;
 
     flex-direction: row;
 
     position: relative;
-    left: calc(-1 * var(--LIST_PADDING-LEFT));
-    width: calc(100% + var(--LIST_PADDING-LEFT) + var(--LIST_PADDING-RIGHT) );
-  }
-
-  .one-col .list_actions {
-    flex-direction: column;
+    left: calc(-1 * var(--LIST_PADDING_LEFT));
+    width: calc(100% + var(--LIST_PADDING_LEFT) + var(--LIST_PADDING_RIGHT) );
   }
 
   .opinion-view-container {
@@ -881,26 +1064,35 @@ styles += """
     width: var(--ITEM_OPINION_WIDTH);  
   }
 
-  .one-col .opinion-view-container {  
-    width: auto;  
-    margin-top: 24px;    
+  @media (max-width: #{TABLET_BREAKPOINT}px) {
+    .ListActions {
+      flex-direction: column;
+      align-items: center;
+      width: calc(var(--AVATAR_SIZE_AND_GUTTER) + var(--ITEM_TEXT_WIDTH));
+      left: 0;
+    }
+
+    .opinion-view-container {  
+      width: auto;  
+    }
   }
 
   .sort_menu_wrapper {
     width: 100%;
-    margin-right: var(--LIST_GUTTER); 
+    margin-left: var(--AVATAR_SIZE_AND_GUTTER); 
     display: flex;
   }
 
 """
-window.list_actions = (props) -> 
+
+window.ListActions = (props) -> 
   list_key = props.list.key
 
   DIV 
     className: 'list_actions_wrapper'
 
     DIV   
-      className: 'list_actions'
+      className: 'ListActions'
 
       DIV 
         className: 'proposal-left-spacing'
@@ -908,7 +1100,7 @@ window.list_actions = (props) ->
       DIV 
         className: 'sort_menu_wrapper'
 
-        if props.can_sort
+        if !TABLET_SIZE() && props.can_sort
           # [ SortProposalsMenu(), FilterProposalsMenu() ]
           SortProposalsMenu()
 
@@ -940,11 +1132,12 @@ window.list_actions = (props) ->
     DIV null,
       OpinionViewInteractionWrapper
         ui_key: "opinion-views-#{list_key}"
-        more_views_positioning: if SLIDERGRAM_BELOW() then 'left' else 'right'      
-        width: Math.min 720, ITEM_OPINION_WIDTH() + LIST_GUTTER() + ITEM_TEXT_WIDTH()
+        more_views_positioning: if TABLET_SIZE() then 'centered' else 'right'      
+        width: ITEM_OPINION_WIDTH() + AVATAR_SIZE_AND_GUTTER() + ITEM_TEXT_WIDTH()
 
 
 window.get_list_title = (list_key, include_category_value, subdomain) -> 
+  subdomain ?= fetch('/subdomain')
   title = customization('list_title', list_key, subdomain)
   if include_category_value
     title ?= category_value list_key, null, subdomain

@@ -14,13 +14,13 @@ window.EditPoint = ReactiveComponent
         sign_name : if @props.fresh then true else !point.hide_name
         add_details : false
 
-    mobile = browser.is_mobile
+    mobile = false && browser.is_mobile
 
     if mobile
       textarea_style = 
         width: '100%'
         overflow: 'hidden'
-        fontSize: if PORTRAIT_MOBILE() then 50 else 30
+        fontSize: 18 # if PORTRAIT_MOBILE() then 50 else 30
         padding: '4px 6px'
 
       # full page mode if we're on mobile      
@@ -48,7 +48,7 @@ window.EditPoint = ReactiveComponent
         position: 'relative'
         fontSize: 14
         zIndex: 1
-        marginTop: if NO_CRAFTING() then 40
+        marginTop: if TABLET_SIZE() then 40
         marginBottom: 15
 
 
@@ -95,7 +95,7 @@ window.EditPoint = ReactiveComponent
           name:'fulltext'
           'aria-label': translator('engage.point_description_placeholder', 'Add background or evidence.')  
           placeholder: translator('engage.point_description_placeholder', 'Add background or evidence.')  
-          min_height: if PORTRAIT_MOBILE() then 150 else 80
+          min_height: 80 # if PORTRAIT_MOBILE() then 150 else 80
           defaultValue: if @props.fresh then null else point.text
           style: textarea_style
           onHeightChange: => 
@@ -137,7 +137,7 @@ window.EditPoint = ReactiveComponent
             'data-action': 'submit-point'
             onClick: @savePoint
             style: 
-              fontSize: if PORTRAIT_MOBILE() then 50 else if LANDSCAPE_MOBILE() then 36
+              # fontSize: if PORTRAIT_MOBILE() then 50 else if LANDSCAPE_MOBILE() then 36
               backgroundColor: focus_color() 
             translator 'engage.done_button', 'Done'             
 
@@ -149,7 +149,7 @@ window.EditPoint = ReactiveComponent
             color: '#888888'
             top: 2 #if mobile then 0 else 2
             marginLeft: 10
-            fontSize: if PORTRAIT_MOBILE() then 50 else if LANDSCAPE_MOBILE() then 36 else 16
+            # fontSize: if PORTRAIT_MOBILE() then 50 else if LANDSCAPE_MOBILE() then 36 else 16
             # right: if mobile then -10 else 20
             position: 'relative'
             padding: if mobile then 10 else 0
@@ -186,7 +186,7 @@ window.EditPoint = ReactiveComponent
 
   UNSAFE_componentWillMount : ->
     # save scroll position and keep it there
-    if browser.is_mobile
+    if false && browser.is_mobile
       @scrollY = window.scrollY
 
   componentDidMount : ->
@@ -194,8 +194,8 @@ window.EditPoint = ReactiveComponent
 
     if proposal.active 
 
-      if !browser.is_mobile # iOS messes this up
-        ReactDOM.findDOMNode(@refs.nutshell).querySelector('#nutshell').focus() 
+      # if !browser.is_mobile # iOS messes this up
+      ReactDOM.findDOMNode(@refs.nutshell).querySelector('#nutshell').focus() 
       
       $$.ensureInView ReactDOM.findDOMNode(@refs.submit_point),
         scroll: false
@@ -210,13 +210,10 @@ window.EditPoint = ReactiveComponent
     s.edit_point_height = 0       
     save s    
 
+  # guidelines/tips for good points
   drawTips : -> 
     proposal = fetch @props.proposal
-    # guidelines/tips for good points
-    mobile = browser.is_mobile
-
-    guidelines_w = if mobile then 'auto' else 230
-    guidelines_h = 238
+    mobile = false && browser.is_mobile
 
     singular =  if @props.valence == 'pros' 
                   get_point_label 'pro', proposal
@@ -225,54 +222,17 @@ window.EditPoint = ReactiveComponent
 
     plural =  get_point_label @props.valence, proposal 
 
-
     DIV 
       id: 'tips_for_new_point'
       style:
         position: if mobile then 'relative' else 'absolute'
-        left: if !mobile then (if @props.valence == 'pros' then -guidelines_w - 25 else POINT_WIDTH() + 15)
-        width: guidelines_w
-        color: focus_color()
+        left: if !mobile then (if @props.valence == 'pros' then "calc(-100% - 15px)" else "calc(100% + 15px)")
+        width: "100%"
+        color: 'white'
         zIndex: 1
         marginBottom: if mobile then 20
-        backgroundColor: if mobile then 'rgba(255,255,255,.85)'
+        backgroundColor: focus_color() 
 
-
-      if !mobile
-        SVG
-          width: guidelines_w + 28
-          height: guidelines_h
-          viewBox: "-4 0 #{guidelines_w+20 + 9} #{guidelines_h}"
-          style: 
-            position: 'absolute'
-            transform: if @props.valence == 'cons' then 'scaleX(-1)'
-            left: if @props.valence == 'cons' then -20
-
-          DEFS null,
-            svg.dropShadow 
-              id: "guidelines-shadow"
-              dx: '0'
-              dy: '2'
-              stdDeviation: "3"
-              opacity: .5
-
-          PATH
-            stroke: focus_color() #'#ccc'
-            strokeWidth: 1
-            fill: "#FFF"
-            filter: 'url(#guidelines-shadow)'
-
-            d: """
-                M#{guidelines_w},33
-                L#{guidelines_w},0
-                L1,0
-                L1,#{guidelines_h} 
-                L#{guidelines_w},#{guidelines_h} 
-                L#{guidelines_w},58
-                L#{guidelines_w + 20},48
-                L#{guidelines_w},33 
-                Z
-               """
       DIV 
         style: 
           padding: if !mobile then '14px 18px'
@@ -282,7 +242,7 @@ window.EditPoint = ReactiveComponent
         SPAN 
           style: 
             fontWeight: 600
-            fontSize: if PORTRAIT_MOBILE() then 70 else if LANDSCAPE_MOBILE() then 36
+            # fontSize: if PORTRAIT_MOBILE() then 70 else if LANDSCAPE_MOBILE() then 36
           translator 
             id: 'engage.write_point_header'
             pro_or_con: capitalize(singular)
@@ -305,7 +265,7 @@ window.EditPoint = ReactiveComponent
                 key: tip
                 style: 
                   paddingBottom: 3
-                  fontSize: if PORTRAIT_MOBILE() then 24 else if LANDSCAPE_MOBILE() then 14
+                  #fontSize: if PORTRAIT_MOBILE() then 24 else if LANDSCAPE_MOBILE() then 14
                 tip  
 
   done : ->

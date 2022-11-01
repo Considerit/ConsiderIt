@@ -37,7 +37,7 @@ styles += """
   }
 
 
-  .ItemText .proposal-title-text-inline {
+  .proposal-title-text-inline {
     border-bottom-width: 2px;
     border-style: solid;
     border-color: #{focus_blue + "ad"}; /* with some transparency */
@@ -47,7 +47,7 @@ styles += """
     color: #111;    
   }
 
-  .ItemText .proposal-title-text-inline:hover {
+  .proposal-title-text-inline:hover {
     border-color: #000;
   }
 
@@ -90,7 +90,7 @@ styles += """
   }
 
   .is_expanded .proposal-description.wysiwyg_text p {
-    max-width: var(--ITEM_TEXT_WIDTH);
+    /* max-width: var(--ITEM_TEXT_WIDTH); */
   }
 
   [data-widget="ListItems"]:not(.expansion_event) .is_collapsed .transparency_fade {
@@ -120,6 +120,24 @@ styles += """
     background-color: transparent;
   }
 
+
+  .show_list_title .proposal-title-text::before {
+    content: attr(data-list-title);
+    color: var(--list-color);
+    position: absolute;
+    top: -16px;
+    padding: 0;
+    font-size: 12px;
+    height: 16px;
+    overflow: hidden;
+
+    font-style: italic;
+    font-weight: 500;
+
+    /* 
+    font-family: IBM Plex mono;
+    */
+  }       
 """
 
 
@@ -138,6 +156,7 @@ window.ItemText = ReactiveComponent
 
   render: -> 
     proposal = fetch @props.proposal
+    subdomain = fetch '/subdomain'
 
     @is_expanded = @props.is_expanded
 
@@ -146,6 +165,12 @@ window.ItemText = ReactiveComponent
     if !@is_expanded && @local.description_fully_expanded
       @local.description_fully_expanded = false
 
+    if @props.show_list_title
+      list_title = get_list_title(get_list_for_proposal(proposal), true)
+      list_title_width = widthWhenRendered(list_title, {fontSize: "12px", fontWeight: "500", fontStyle: "italic"})
+      tw = ITEM_TEXT_WIDTH()
+      if list_title_width > tw
+        list_title = "#{list_title.substring(0, (Math.floor(tw / list_title_width  * list_title.length) - 6))}..."
 
     FLIPPED
       flipId: "proposal-title-starter-#{proposal.key}"
@@ -233,6 +258,9 @@ window.ItemText = ReactiveComponent
                     DIV 
                       ref: 'proposal_title_text'
                       className: 'proposal-title-text'
+                      "data-list-title": if @props.show_list_title then list_title
+                      style: if !@props.show_list_title then {} else
+                        "--list-color": @props.list_title_color or 'black'
 
                       SPAN 
                         className: 'proposal-title-text-inline'
@@ -304,7 +332,7 @@ window.ItemText = ReactiveComponent
       el.classList.add 'proposal-description'
 
       # do we need to show the transparency fade when collapsed?
-      height = heightWhenRendered proposal.description, \
+      height = heightWhenRendered proposal.description.replace(/<p><br><\/p>/g, ''), \
                                   {width:"#{ITEM_TEXT_WIDTH()}px"}, el
 
       @exceeds_collapsed_description_height = height >= COLLAPSED_MAX_HEIGHT
@@ -363,7 +391,7 @@ window.ItemText = ReactiveComponent
         result = DIV dangerouslySetInnerHTML:{__html: proposal.description}
 
     else 
-      result = DIV dangerouslySetInnerHTML:{__html: proposal.description}
+      result = DIV dangerouslySetInnerHTML:{__html: proposal.description.replace(/<p><br><\/p>/g, '')}
 
     DIV null,
       DIV 
@@ -414,8 +442,10 @@ window.ItemText = ReactiveComponent
     icons = customization('show_proposer_icon', proposal, subdomain) && !@props.hide_icons && !customization('anonymize_everything')
     opinion_publish_permission = permit('publish opinion', proposal, subdomain)
 
+    opinion_prompt = getOpinionPrompt {proposal}
+
     DIV
-      className: 'proposal-metadata monospaced'   
+      className: 'proposal-metadata'   
 
       if customization('proposal_meta_data', null, subdomain)?
         customization('proposal_meta_data', null, subdomain)(proposal)
@@ -424,15 +454,27 @@ window.ItemText = ReactiveComponent
         show_author_name_in_meta_data = !icons && (editor = proposal_editor(proposal)) && editor == proposal.user && !customization('anonymize_everything')
         show_timestamp = !screencasting() && subdomain.name != 'galacticfederation'
         show_discussion_info = customization('discussion_enabled', proposal, subdomain)
-        show_cluster = @props.show_category && proposal.cluster
+        show_cluster = @props.show_list_title && proposal.cluster
         is_closed = opinion_publish_permission == Permission.DISABLED
         read_only = opinion_publish_permission == Permission.INSUFFICIENT_PRIVILEGES
+
+
+        {weights, salience, groups} = compose_opinion_views(null, proposal)
+        opinions = get_opinions_for_proposal opinions, proposal, weights
+        overall_cnt = 0
+
+        for o in opinions 
+          continue if salience[o.user.key or o.user] < 1
+          overall_cnt += 1
+
 
         [
           if show_timestamp
             SPAN 
               key: 'date'
-              className: 'separated'
+              className: 'separated monospaced metadata-piece'
+              style: 
+                borderBottom: 'none'
 
               # if !show_author_name_in_meta_data
               #   TRANSLATE 'engage.proposal_metadata_date_added', "Added: "
@@ -443,97 +485,146 @@ window.ItemText = ReactiveComponent
           if show_author_name_in_meta_data
             SPAN 
               key: 'author name'
-              className: 'separated'
+              className: 'separated monospaced metadata-piece'
+              style: 
+                borderBottom: 'none'
 
               TRANSLATE
                 id: 'engage.proposal_author'
                 name: fetch(editor)?.name 
                 " by {name}"
 
+
+          BUTTON 
+            key: 'opinion-count'
+            className: 'opinion-count metadata-piece separated like_link monospaced'
+            onClick: => 
+              toggle_expand
+                proposal: proposal 
+                prefer_personal_view: false                   
+              
+            onKeyPress: (e) => 
+              if e.which == 32 || e.which == 13
+                toggle_expand
+                  proposal: proposal
+                  prefer_personal_view: false                   
+
+            TRANSLATE
+              id: "engage.proposal_score_summary"
+              num_opinions: overall_cnt 
+              "{num_opinions, plural, =0 {no opinions} one {# opinion} other {# opinions} }"
+
+
           if show_discussion_info
-            [
-              SPAN
-                key: 'proposal-link'
-                className: 'separated pros_cons_count monospaced'
-                onClick: => 
+            BUTTON
+              key: 'proposal-link'
+              className: 'pros_cons_count metadata-piece separated like_link monospaced'
+              onClick: => 
+                toggle_expand
+                  proposal: proposal
+                
+              onKeyPress: (e) => 
+                if e.which == 32 || e.which == 13
                   toggle_expand
                     proposal: proposal
-                  
-                onKeyPress: (e) => 
-                  if e.which == 32 || e.which == 13
-                    toggle_expand
-                      proposal: proposal
 
-                TRANSLATE
-                  key: 'point-count'
-                  id: "engage.point_count"
-                  cnt: proposal.point_count
+              TRANSLATE
+                key: 'point-count'
+                id: "engage.point_count"
+                cnt: proposal.point_count
 
-                  "{cnt, plural, one {# pro or con} other {# pros & cons}}"
+                "{cnt, plural, one {# pro or con} other {# pros & cons}}"
 
-              if proposal.active && WINDOW_WIDTH() > 955
+          if opinion_prompt
+            BUTTON 
+              key: 'give-opinion'
+              className: 'small-give-your-opinion metadata-piece separated like_link monospaced'
+              onClick: => 
+                toggle_expand
+                  proposal: proposal 
+                  prefer_personal_view: true                   
+                
+              onKeyPress: (e) => 
+                if e.which == 32 || e.which == 13
+                  toggle_expand
+                    proposal: proposal
+                    prefer_personal_view: true                   
 
-                SPAN 
-                  key: 'give-opinion'
-                  className: 'small-give-your-opinion separated'
-                  onClick: => 
-                    toggle_expand
-                      proposal: proposal 
-                      prefer_personal_view: true                   
-                    
-                  onKeyPress: (e) => 
-                    if e.which == 32 || e.which == 13
-                      toggle_expand
-                        proposal: proposal
-                        prefer_personal_view: true                   
+              opinion_prompt
+
+          if (your_opinion = proposal.your_opinion) && your_opinion.key && permit('update opinion', proposal, your_opinion) > 0
+            remove_opinion = -> 
+              your_opinion.stance = 0
+              your_opinion.point_inclusions = []                   
+              your_opinion.published = false 
+              save your_opinion
+                        
+            BUTTON 
+              key: 'remove_opinion'
+              className: 'small-give-your-opinion metadata-piece separated like_link monospaced'
+              onClick: remove_opinion
+
+              translator "engage.remove_my_opinion", 'Remove your opinion'
 
 
-                  
-                  TRANSLATE
-                    id: "engage.add_your_own"
 
-                    "give your opinion"
-
-                  # SPAN 
-                  #   style: 
-                  #     borderBottom: 'none'
-                  #   " >>"
-            ]
         ]
 
-
-
-      if show_cluster
-        SPAN 
-          style: 
-            padding: '1px 2px'
-            color: @props.category_color or 'black'
-            fontWeight: 500
-
-          get_list_title "list/#{proposal.cluster}", true, subdomain
 
       if is_closed
         SPAN 
           style: 
-            padding: '0 16px'
-          TRANSLATE "engage.proposal_closed.short", 'closed'
+            position: 'relative'
+            top: 2;
+          "data-tooltip": translator 'engage.proposal_closed', 'Closed to new contributions.'
+          
+          closedIcon 
+            size: 12
+            fill: 'rgb(158, 35, 35)'
 
       else if read_only
         SPAN 
           style: 
-            padding: '0 16px'
-          TRANSLATE "engage.proposal_read_only.short", 'read-only'
+            position: 'relative'
+            top: 2;
+          "data-tooltip": translator "engage.proposal_read_only.short", 'read-only'
+
+          closedIcon 
+            size: 12
+            fill: 'rgb(158, 78, 35)'
 
 
+window.getOpinionPrompt = ({proposal, prefer_drag_prompt}) ->
+  proposal = fetch proposal
 
+  perhaps_can_opinine = canUserOpine proposal
 
+  return null unless (perhaps_can_opinine == Permission.NOT_LOGGED_IN || perhaps_can_opinine > 0)
 
+  your_opinion = proposal.your_opinion
+  no_opinion = !fetch('/current_user').logged_in || !your_opinion.key
+
+  discussion_enabled = customization('discussion_enabled', proposal, fetch('/subdomain'))
+
+  if no_opinion || !discussion_enabled
+    # translator 
+    #   id: "engage.log_in_to_give_your_opinion_button"
+    #   'Log in to Give your Reasons'
+
+    if !prefer_drag_prompt || !discussion_enabled
+      translator "engage.give_your_opinion_button", 'Give your Opinion'
+    else 
+      translator "sliders.slide_prompt", 'Slide Your Overall Opinion'
+
+  else if your_opinion.point_inclusions?.length > 0 
+    translator "engage.update_your_opinion_button", 'Update your Reasons'
+
+  else 
+    translator "engage.give_your_reasons_button", 'Give your Reasons'
 
 
 styles += """
-  .ItemText .proposal-metadata {
-    font-size: 12px;
-    color: #666;
+  .ItemText .proposal-metadata  {
     margin-top: 8px;
   }
 
@@ -555,7 +646,10 @@ styles += """
   }
 
 
-  .proposal-metadata .pros_cons_count, .proposal-metadata .small-give-your-opinion {
+  .proposal-metadata .metadata-piece {
+    font-size: 12px;
+    color: #666;
+
     padding: 0;
     border-width: 0 0 1px 0;
     background: transparent;
@@ -566,7 +660,7 @@ styles += """
     cursor: pointer;
     text-decoration: none;
   } 
-  .proposal-metadata .pros_cons_count:hover, .proposal-metadata .small-give-your-opinion:hover {
+  .proposal-metadata .metadata-piece:hover {
     border-color: #444;
   }
 

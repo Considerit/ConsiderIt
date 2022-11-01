@@ -53,20 +53,18 @@ toggle_popover = (e) ->
 
 
 
-DELAY_TO_SHOW_POPOVER = 800
+DELAY_TO_SHOW_POPOVER = 1000
 
-show_popover = (config) -> 
 
 window.update_avatar_popover_from_canvas_histo = (opts) -> 
   popover = fetch 'popover'
 
-  already_hovering_on_avatar = !!popover.element_in_focus
+  already_hovering_on_avatar = !!popover.id
 
   if !opts
     popover.element_in_focus = null
     clear_popover false
     return
-
 
   {id, user, coords, anon, opinion} = opts
 
@@ -83,7 +81,7 @@ window.update_avatar_popover_from_canvas_histo = (opts) ->
       popover.coords = coords
       save popover
 
-  , DELAY_TO_SHOW_POPOVER * (if already_hovering_on_avatar then .15 else 1)
+  , (popover.delay or DELAY_TO_SHOW_POPOVER) * (if already_hovering_on_avatar then .25 else 1)
 
 
 show_popover_from_dom = (e) ->
@@ -118,6 +116,26 @@ show_popover_from_dom = (e) ->
                 user: user
                 anon: anon
                 opinion: e.target.getAttribute('data-opinion')
+        else if e.target.getAttribute('data-group')
+          proposal = e.target.getAttribute('data-popover')
+
+          attribute = e.target.getAttribute('data-attribute')
+          group = e.target.getAttribute('data-group')
+          key = "#{proposal.key}-#{attribute}-#{group}"
+          if key != popover.id 
+            clear_popover(true)
+            popover.id = key 
+            popover.delay = 100
+            popover.render = -> 
+              AggregatedGroupPopover 
+                key: key 
+                proposal: proposal
+                attribute: attribute
+                group: group
+                stance: e.target.getAttribute('data-stance')
+                num_opinions: e.target.getAttribute('data-opinion-count')
+
+
         else if e.target.getAttribute('data-proposal-scores')
           proposal = e.target.getAttribute('data-popover')
           if proposal != popover.id 
@@ -137,14 +155,14 @@ show_popover_from_dom = (e) ->
         else 
           popover.tip = e.target.getAttribute('data-popover')
 
-        popover.coords = calc_coords(e.target) 
+        popover.coords = calc_coords_for_tooltip_or_popover(e.target) 
 
         save popover
-    , DELAY_TO_SHOW_POPOVER
+    , (popover.delay or DELAY_TO_SHOW_POPOVER)
     e.preventDefault()
 
 
-calc_coords = (el) ->
+window.calc_coords_for_tooltip_or_popover = (el) ->
   coords = $$.offset(el)
   coords.width = el.offsetWidth
   coords.height = el.offsetHeight
@@ -162,17 +180,85 @@ $$.add_delegated_listener document.body, 'focusout', '[data-popover]', hide_popo
 $$.add_delegated_listener document.body, 'click', '[data-popover]', toggle_popover
 
 
+window.get_tooltip_or_popover_position = ({popover, tooltip, arrow_size})->
+  popover ?= tooltip
+
+  coords = popover.coords
+  tip = popover.tip
+
+  window_height = window.innerHeight
+  viewport_top = window.scrollY
+  viewport_bottom = viewport_top + window_height
+
+
+  arrow_up = popover.top || !popover.top?
+  try_top = (force) -> 
+
+    top = coords.top + (popover.offsetY or 0) - (popover.rendered_size?.height or 0) - arrow_size.height - 6
+
+    if top < viewport_top && !force
+      arrow_up = false
+      return null
+    else 
+      arrow_up = true
+      top
+
+  try_bottom = (force) -> 
+    top = coords.top + (popover.offsetY or 0) + arrow_size.height + coords.height + 12
+    if top + (popover.rendered_size?.height or 0) + arrow_size.height > viewport_bottom && !force
+      arrow_up = true
+      return null
+    else
+      arrow_up = false 
+      top
+
+  if popover.top || !popover.top? 
+    # place the popover above the element
+    top = try_top()
+    if top == null 
+      top = try_bottom()
+      if top == null
+        top = try_top(true)
+  else 
+    # place the popover below the element
+    top = try_bottom()
+    if top == null 
+      top = try_top()
+      if top == null
+        top = try_bottom(true)
+
+
+  arrow_adjustment = 0 
+  if popover.rendered_size?.width
+    left = coords.left + (popover.offsetX or 0) - popover.rendered_size.width / 2
+
+    if left < 0
+      arrow_adjustment = -1 * left
+      left = 0
+    else if left + popover.rendered_size.width > window.innerWidth
+      arrow_adjustment = (window.innerWidth - popover.rendered_size.width) - left
+      left = window.innerWidth - popover.rendered_size.width
+
+  else 
+    left = -999999 # render it offscreen first to get sizing
+
+
+  {top, left, arrow_up, arrow_adjustment}
+
 window.Popover = ReactiveComponent
   displayName: 'Popover'
 
   render : -> 
     popover = fetch('popover')
-    return SPAN(null) if !popover.coords
+    return SPAN(null) if !popover.coords || !popover.render
 
-    coords = popover.coords
-    tip = popover.tip
+    arrow_size = 
+      height: 10
+      width: 26
 
-    style = _.defaults {}, (@props.style or {}), 
+    {top, left, arrow_up, arrow_adjustment} = get_tooltip_or_popover_position({popover, arrow_size})
+
+    style = _.defaults {top, left}, (@props.style or {}), 
       fontSize: 14
       padding: '4px 8px'
       borderRadius: 8
@@ -181,71 +267,8 @@ window.Popover = ReactiveComponent
       backgroundColor: 'white'
       position: 'absolute'      
       boxShadow: '0 1px 9px rgba(0,0,0,.5)'
-      # maxWidth: 350
+      maxWidth: '80vw'
 
-    arrow_size = 
-      height: 10
-      width: 26
-
-    window_height = window.innerHeight
-    viewport_top = window.scrollY
-    viewport_bottom = viewport_top + window_height
-
-    arrow_up = popover.top || !popover.top?
-    try_top = (force) -> 
-
-      top = coords.top + (popover.offsetY or 0) - (popover.rendered_size?.height or 0) - arrow_size.height - 6
-      if top < viewport_top && !force
-        arrow_up = false
-        return null
-      else 
-        arrow_up = true
-        top
-
-    try_bottom = (force) -> 
-      top = coords.top + (popover.offsetY or 0) + arrow_size.height + coords.height + 12
-      if top + (popover.rendered_size?.height or 0) + arrow_size.height > viewport_bottom && !force
-        arrow_up = true
-        return null
-      else
-        arrow_up = false 
-        top
-
-    if popover.top || !popover.top? 
-      # place the popover above the element
-      top = try_top()
-      if top == null 
-        top = try_bottom()
-        if top == null
-          top = try_top(true)
-    else 
-      # place the popover below the element
-      top = try_bottom()
-      if top == null 
-        top = try_top()
-        if top == null
-          top = try_bottom(true)
-
-
-    arrow_adjustment = 0 
-    if popover.rendered_size?.width
-      left = coords.left + (popover.offsetX or 0) - popover.rendered_size.width / 2
-
-      if left < 0
-        arrow_adjustment = -1 * left
-        left = 0
-      else if left + popover.rendered_size.width > window.innerWidth
-        arrow_adjustment = (window.innerWidth - popover.rendered_size.width) - left
-        left = window.innerWidth - popover.rendered_size.width
-
-    else 
-      left = -999999 # render it offscreen first to get sizing
-
-
-    _.extend style, 
-      top: top
-      left: left
-    
 
     get_focus = ->
       popover.has_focus = true 

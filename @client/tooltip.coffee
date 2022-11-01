@@ -39,15 +39,19 @@ toggle_tooltip = (e) ->
 show_tooltip = (e) ->
   tooltip_el = $$.closest(e.target, '[data-tooltip]')
   if tooltip_el?
-    name = tooltip_el.getAttribute('data-tooltip')
     tooltip = fetch 'tooltip'
+    name = tooltip_el.getAttribute('data-tooltip')
     if tooltip.tip != name 
-      tooltip.coords = $$.offset(tooltip_el)
-      tooltip.coords.left += tooltip_el.offsetWidth / 2
       tooltip.tip = name
-      save tooltip
-    e.preventDefault()
-    e.stopPropagation()
+
+      setTimeout ->
+        if tooltip.tip == name 
+          tooltip.coords = calc_coords_for_tooltip_or_popover(tooltip_el)
+          save tooltip
+      , 100
+
+      e.preventDefault()
+      e.stopPropagation()
 
 tooltip = fetch 'tooltip'
 hide_tooltip = (e) ->
@@ -65,8 +69,6 @@ $$.add_delegated_listener document.body, 'focusin', '[data-tooltip]', show_toolt
 $$.add_delegated_listener document.body, 'focusout', '[data-tooltip]', hide_tooltip
 
 
-
-
 window.Tooltip = ReactiveComponent
   displayName: 'Tooltip'
 
@@ -79,7 +81,13 @@ window.Tooltip = ReactiveComponent
     coords = tooltip.coords
     tip = tooltip.tip
 
-    style = _.defaults {}, (@props.style or {}), 
+    arrow_size = 
+      height: 7
+      width: 14
+
+    {top, left, arrow_up, arrow_adjustment} = get_tooltip_or_popover_position({tooltip, arrow_size})
+
+    style = _.defaults {top, left}, (@props.style or {}), 
       fontSize: 14
       padding: '4px 8px'
       borderRadius: 8
@@ -91,17 +99,6 @@ window.Tooltip = ReactiveComponent
       boxShadow: '0 1px 1px rgba(0,0,0,.2)'
       maxWidth: 350
 
-    if tooltip.top || !tooltip.top?
-      # place the tooltip above the element
-      _.extend style, 
-        top: coords.top + (tooltip.offsetY or 0) - (tooltip.rendered_size?.height or 0) - 12
-        left: if !tooltip.rendered_size then -99999 else coords.left + (tooltip.offsetX or 0) - tooltip.rendered_size?.width / 2
-    else 
-      # place the tooltip below the element
-      _.extend style, 
-        top: coords.top + (tooltip.offsetY or 0)
-        left: if !tooltip.rendered_size then -99999 else coords.left + (tooltip.offsetX or 0) - (tooltip.rendered_size.width or 0)
-
     DIV
       id: 'tooltip'
       role: "tooltip"
@@ -111,23 +108,26 @@ window.Tooltip = ReactiveComponent
       DIV 
         dangerouslySetInnerHTML: {__html: tip}
 
-      if tooltip.top || !tooltip.top?
-        SPAN 
-          className: 'downward_arrow'
-          style: 
-            position: 'absolute'
-            bottom: -7
-            left: if tooltip.positioned != 'right' then "calc(50% - 10px)" 
-            right: if tooltip.positioned == 'right' then 7
 
-      else   
-        SPAN 
-          className: 'upward_arrow'
-          style: 
-            position: 'absolute'
-            left: if tooltip.positioned != 'right' then "calc(50% - 10px)" 
-            top: -7
-            right: if tooltip.positioned == 'right' then 7
+      SVG 
+        width: arrow_size.width
+        height: arrow_size.height 
+        viewBox: "0 0 531.74 460.5"
+        preserveAspectRatio: "none"
+        style: 
+          position: 'absolute'
+          bottom: if arrow_up then -arrow_size.height
+          top: if !arrow_up then -arrow_size.height
+          left: if tooltip.positioned != 'right' then "calc(50% - #{arrow_size.width / 2 + arrow_adjustment}px)" 
+          right: if tooltip.positioned == 'right' then 7       
+          transform: if !arrow_up then 'scale(1,-1)' 
+          display: if tooltip.hide_triangle then 'none' 
+
+        POLYGON
+          stroke: "black" 
+          fill: 'black'
+          points: "530.874,0.5 265.87,459.5 0.866,0.5"
+
 
   componentDidUpdate: ->
     tooltip = fetch('tooltip')

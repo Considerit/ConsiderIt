@@ -18,6 +18,8 @@ require './item_opinion'
 require './histogram_scores'
 
 
+
+
 styles += """
   .prep_for_flip {
     transform-origin: 0px 0px;    
@@ -31,9 +33,8 @@ styles += """
 
   .ProposalItem, .show-all-proposals {
     position: relative;
-    left: calc(-1 * var(--LIST_PADDING-LEFT));
-    width: calc(100% + var(--LIST_PADDING-LEFT) + var(--LIST_PADDING-RIGHT) );
   }
+
 
   .ProposalItem {
     min-height: 84px;
@@ -46,19 +47,35 @@ styles += """
     z-index: 1;
   }
 
-  .one-col .ProposalItem {
-    margin-bottom: 64px;
-  }
+
 
   .is_expanded.ProposalItem {
-    width: calc( 100% + 8 * var(--LIST_PADDING-LEFT) );
-    left:  calc( -4 * var(--LIST_PADDING-LEFT) );
-    top: -24px;
-
     z-index: 3; /* put it above surrounding ProposalItems */
 
   } 
 
+  @media (min-width: #{TABLET_BREAKPOINT}px) {
+    .ProposalItem, .show-all-proposals {
+      left: calc(-1 * var(--LIST_PADDING_LEFT));
+      width: calc(100% + var(--LIST_PADDING_LEFT) + var(--LIST_PADDING_RIGHT) );
+    }
+
+    .show_list_title.ProposalItem {
+      margin-bottom: 48px;
+    }
+
+  }
+
+  @media (max-width: #{TABLET_BREAKPOINT}px) {
+    .ProposalItem {
+      margin-bottom: 64px;
+    }
+
+    .show_list_title.ProposalItem {
+      margin-bottom: 78px;
+    }
+
+  }
 
   :not(.collapsing):not([data-in-viewport="true"]).is_collapsed.ProposalItem {
     content-visibility: auto; /* Content-visibility can be very expensive. Specifically, React Flip Toolkit
@@ -139,6 +156,7 @@ window.ProposalItem = ReactiveComponent
 
     return if !proposal.name
 
+
     @is_expanded = @props.is_expanded
 
     @expansion_state_changed = (@expansion_state_changed? || @props.accessed_by_url) && @last_expansion != @is_expanded
@@ -146,6 +164,8 @@ window.ProposalItem = ReactiveComponent
 
     @last_expansion = @is_expanded
     @last_list_order = @props.list_order
+
+    local_state = fetch shared_local_key proposal
 
     FLIPPED 
       key: proposal.key
@@ -162,7 +182,7 @@ window.ProposalItem = ReactiveComponent
       LI
         "data-widget": 'ProposalItem'
         key: proposal.key
-        className: "prep_for_flip ProposalItem #{if @is_expanded then 'is_expanded' else 'is_collapsed'}"
+        className: "ProposalItem #{if @is_expanded then 'is_expanded' else 'is_collapsed'} #{local_state.mode} #{if @props.show_list_title then 'show_list_title' else ''} prep_for_flip"
         "data-name": slugify(proposal.name)
 
         'data-visibility-name': 'ProposalItem'
@@ -184,8 +204,8 @@ window.ProposalItem = ReactiveComponent
               proposal: @props.proposal
               is_expanded: @is_expanded
               list_key: @props.list_key
-              show_category: @props.show_category
-              category_color: @props.category_color
+              show_list_title: @props.show_list_title
+              list_title_color: @props.list_title_color
 
               shouldFlip: @shouldFlip
               shouldFlipIgnore: @shouldFlipIgnore
@@ -208,7 +228,9 @@ styles += """
   .is_collapsed .proposal-block-container {
     flex-direction: row;
   }
-  .one-col .is_collapsed .proposal-block-container, .is_expanded .proposal-block-container {
+
+  .one-col .is_collapsed .proposal-block-container, 
+  .is_expanded .proposal-block-container {
     flex-direction: column;
   }
 
@@ -217,8 +239,10 @@ styles += """
     width: 100%;        
   }
 
-  .is_expanded .proposal-block-wrapper {
-    margin-top: 24px;
+  @media (max-width: #{TABLET_BREAKPOINT}px) {
+    .proposal-block-wrapper {
+      padding-bottom: 14px;
+    }
   }
 
 
@@ -269,10 +293,9 @@ styles += """
   /* The wrapper for the expanded item */
 
   .opinion-block-wrapper::after {
+
     content: "";    
     opacity: 0;
-
-    transition-property: opacity, box-shadow;
 
     position: absolute;
     z-index: -1;
@@ -280,46 +303,55 @@ styles += """
     top: 0px;
     height: 100%;
 
-    #left: 0px;
-    #width: 100%;
-
-    width: min( var(--WINDOW_WIDTH), 100% );
-    left:  max(12px, (100% - var(--WINDOW_WIDTH) ) / 2 + 12px );
-
-
-
     box-shadow: 0px 0px 0px rgba(0,0,0,.25);    
 
     background-color: white;
     border-radius: 128px;
+
   }
 
-  .one-col .opinion-block-wrapper::after {
-    left: max(-4px, (100% - var(--WINDOW_WIDTH) ) / 2 - 4px);
-  }
+  @media (min-width: #{TABLET_BREAKPOINT}px) {
+    .opinion-block-wrapper, .opinion-block-wrapper::after {
+      --EXPANDED_OPINION_BACKGROUND_GUTTER: 6px;
+      --OPINION_BLOCK_WRAPPER_WIDTH: min( 1400px, 100vw - 2 * var(--EXPANDED_OPINION_BACKGROUND_GUTTER) );
+    }
+
+    .opinion-block-wrapper::after {
+      --container_width: calc(var(--HOMEPAGE_WIDTH) + var(--LIST_PADDING_RIGHT) + var(--LIST_PADDING_LEFT));
+
+      width: var(--OPINION_BLOCK_WRAPPER_WIDTH);
+      left: calc( ( var(--container_width) - var(--OPINION_BLOCK_WRAPPER_WIDTH) ) / 2 );
+    }
+
+    .crafting .opinion-block-wrapper, .crafting .opinion-block-wrapper::after {
+      --OPINION_BLOCK_WRAPPER_WIDTH: min( 2000px, max(95vw, min( 1300px, 100vw - 2 * var(--EXPANDED_OPINION_BACKGROUND_GUTTER) )) );
+    }
+
+    .is_expanded .opinion-block-wrapper::after {
+      transition: opacity #{.5 * ANIMATION_SPEED_ITEM_EXPANSION}s, box-shadow #{.5 * ANIMATION_SPEED_ITEM_EXPANSION}s, width #{CRAFTING_TRANSITION_SPEED}ms, left #{CRAFTING_TRANSITION_SPEED}ms;
+    }
+
+  }  
+
+  @media (max-width: #{TABLET_BREAKPOINT}px) {
+    .opinion-block-wrapper::after {
+      width: 100%;
+      left: 0;
+      border-radius: 64px;
+    }
+  }  
 
 
   .is_expanded .opinion-block-wrapper::after {
     opacity: 1;
-    transition-duration: #{.5 * ANIMATION_SPEED_ITEM_EXPANSION}s;
     box-shadow: 0px 0px 3px rgba(0,0,0,.25);    
+    transition: opacity #{.5 * ANIMATION_SPEED_ITEM_EXPANSION}s, box-shadow #{.5 * ANIMATION_SPEED_ITEM_EXPANSION}s;
 
   }
 
   .is_expanded:not(.flipping) .opinion-block-wrapper::after {
     background-image: linear-gradient(180deg, #f3f4f5 75px, #FFFFFF 150px, #FFFFFF 90%, #f3f4f5 96%);
   }
-
-  /* 
-  .is_collapsed .opinion-block-wrapper::after {
-    transition-duration: #{ANIMATION_SPEED_ITEM_EXPANSION / 10 }s;
-  }
-
-  .collapsing .opinion-block-wrapper::after {
-    transition-duration: #{ANIMATION_SPEED_ITEM_EXPANSION / 10 }s;
-
-    opacity: 0;
-  } */
 
 
   .custom-shape-divider-top-1664224812 {
@@ -346,15 +378,6 @@ styles += """
   }
   .custom-shape-divider-top-1664224812 .shape-fill {
       fill: #f3f4f5;
-  }
-
-
-
-  .debugging .opinion-block-wrapper {
-    background-color: #eee;    
-  }
-  .debugging .proposal-block-wrapper {
-    background-color: #eaeaea;
   }
 
 
@@ -394,8 +417,8 @@ ProposalItemWrapper = ReactiveComponent
                 proposal: proposal.key
                 is_expanded: @props.is_expanded
                 list_key: @props.list_key
-                show_category: @props.show_category
-                category_color: @props.category_color
+                show_list_title: @props.show_list_title
+                list_title_color: @props.list_title_color
                 shouldFlip: @props.shouldFlip
                 shouldFlipIgnore: @props.shouldFlipIgnore
                 expansion_state_changed: @props.expansion_state_changed
@@ -478,13 +501,10 @@ styles += """
 
   .proposal-left-spacing {
     /* width: 1px;  // removing the spacing causes a bit of a jump when animating back */
-    width: var(--LIST_PADDING-LEFT);
+    width: var(--LIST_PADDING_LEFT);
     flex-grow: 0;
     flex-shrink: 0;    
     position: relative;
-  }
-  .is_expanded .proposal-left-spacing {
-    width: calc(4 * var(--LIST_PADDING-LEFT));
   }
 
   .proposal-avatar-spacing {
@@ -511,17 +531,20 @@ styles += """
 
 
   .proposal-score-spacing {
-    width: 111px;
+    width: var(--LIST_PADDING_RIGHT);
     height: 2px;
     flex-grow: 0;
     flex-shrink: 0;        
   }
 
-  .one-col .proposal-score-spacing {
-    width: 20px;
+  @media (min-width: #{PHONE_BREAKPOINT}px) and (max-width: #{TABLET_BREAKPOINT}px) {
+    .proposal-score-spacing {
+      width: 20px;
+    }
   }
-  @media (max-width: #{SUPER_SMALL_BREAKPOINT}px) {
-    .one-col .proposal-score-spacing {
+
+  @media (max-width: #{PHONE_BREAKPOINT}px) {
+    .proposal-score-spacing {
       width: 8px;
     }
   }
@@ -605,8 +628,8 @@ ProposalBlock = ReactiveComponent
           proposal: proposal.key
           is_expanded: @is_expanded
           list_key: @props.list_key
-          show_category: @props.show_category
-          category_color: @props.category_color
+          show_list_title: @props.show_list_title
+          list_title_color: @props.list_title_color
           shouldFlip: @props.shouldFlip
           shouldFlipIgnore: @props.shouldFlipIgnore
           expansion_state_changed: @props.expansion_state_changed
@@ -721,7 +744,7 @@ styles += """
     opacity: 1;    
   }
 
-  @media (min-width: #{SLIDERGRAM_ON_SIDE_BREAKPOINT}px) {
+  @media (min-width: #{TABLET_BREAKPOINT}px) {
     .edit_and_delete_block {
       top: 7px;
       left: 14px;
@@ -733,23 +756,13 @@ styles += """
 
   }  
 
-  @media (min-width: #{SUPER_SMALL_BREAKPOINT}px) and (max-width: #{SLIDERGRAM_ON_SIDE_BREAKPOINT}px) {
+  @media (max-width: #{TABLET_BREAKPOINT}px) {
     .edit_and_delete_block {
-      right: -3px;
-      top: -1px;
+      left: calc(var(--PROPOSAL_AUTHOR_AVATAR_SIZE) / 2 - 18px / 2 + 4px);
+      top: calc(var(--PROPOSAL_AUTHOR_AVATAR_SIZE) + 6px);
     }
-  }  
 
-  @media (max-width: #{SUPER_SMALL_BREAKPOINT}px) {
-    .edit_and_delete_block {
-      left: 5px;
-      top: 21px;
-    }
-     
-    .is_expanded .edit_and_delete_block {
-      left: 19px;     
-    }
-  }
+  }  
 
   .edit_and_delete_block button {
     opacity: .3;
@@ -784,7 +797,7 @@ proposal_url = (proposal) ->
 
 window.personal_view_available = (proposal) ->
   proposal = fetch proposal  
-  !NO_CRAFTING() && proposal.active && customization('discussion_enabled', proposal) 
+  !TABLET_SIZE() && proposal.active && customization('discussion_enabled', proposal) 
 
 window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
   proposal = fetch proposal

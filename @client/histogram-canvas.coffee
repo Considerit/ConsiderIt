@@ -194,6 +194,7 @@ styles += """
     -ms-user-select: none;
   }
   .histoavatars-container {
+    padding-top: #{REGION_SELECTION_VERTICAL_PADDING}px;
     // content-visibility: auto; /* enables browsers to not draw expensive histograms in many situations */
   }
 """
@@ -437,10 +438,6 @@ window.Histogram = ReactiveComponent
     DIV 
       className: 'histoavatars-container'
       key: 'histoavatars'
-      style: 
-        paddingTop: histo_height - @props.height
-        # height: histo_height
-        # backgroundColor: 'red'
 
       HistoAvatars
         histo_key: @props.proposal.key or @props.proposal   
@@ -513,7 +510,7 @@ window.Histogram = ReactiveComponent
     opinion_views = fetch 'opinion_views'
 
     anchor = opinion_views.active_views.single_opinion_selected or opinion_views.active_views?.region_selected?.opinion_value or @local.mouse_opinion_value
-    left = ((anchor + 1)/2 - REGION_SELECTION_WIDTH/2) * @props.width
+    left = ((anchor + 1) / 2 - REGION_SELECTION_WIDTH / 2) * @props.width
     base_width = REGION_SELECTION_WIDTH * @props.width
     selection_width = Math.min( \
                         Math.min(base_width, base_width + left), \
@@ -558,7 +555,6 @@ window.Histogram = ReactiveComponent
 
     opinion_views = fetch 'opinion_views'
 
-
     if @props.backgrounded
       if @props.on_click_when_backgrounded
         @props.on_click_when_backgrounded()
@@ -579,6 +575,10 @@ window.Histogram = ReactiveComponent
           select_single_opinion user_opinion, @props.histo_key
 
       else
+        if opinion_views.active_views.single_opinion_selected
+          clear_histogram_managed_opinion_views opinion_views
+          return
+
         some_region_selected = !!opinion_views.active_views.region_selected
 
         max = @local.mouse_opinion_value + REGION_SELECTION_WIDTH
@@ -1066,7 +1066,7 @@ HistoAvatars = ReactiveComponent
           @skip_frame = false
           break
 
-    if !@skip_frame
+    if !@skip_frame && @buffer && @refs.canvas
 
       @buff_ctx ?= @buffer.getContext '2d'          
       @buffer.width = (@resizing_canvas?.width or @refs.canvas.width) * DEVICE_PIXEL_RATIO
@@ -1181,6 +1181,8 @@ HistoAvatars = ReactiveComponent
 
 
   handleMouseMove: (e) ->
+    # don't show popover if the slider is being moved or we've already selected a user
+    return if fetch(namespaced_key('slider', @props.histo_key)).is_moving || fetch('opinion_views').active_views.single_opinion_selected
 
     user = @userAtPosition(e)
     id = null

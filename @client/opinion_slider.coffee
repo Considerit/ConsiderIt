@@ -21,6 +21,8 @@ styles += """
   }
 
   .add_reasons_callout {
+    --ADD_REASONS_CALLOUT_BUTTON_WIDTH: 130px;
+
     background-color: #{focus_color()};
     color: white;
     font-weight: 600;
@@ -31,9 +33,14 @@ styles += """
     position: absolute;
     opacity: 0;
     transition: opacity .4s ease;
+
+    width: var(--ADD_REASONS_CALLOUT_BUTTON_WIDTH);
+    top: 26
+
+
   }
 
-  .ProposalItem:hover .add_reasons_callout {
+  .ProposalItem:hover .add_reasons_callout, .one-col .ProposalItem .add_reasons_callout {
     opacity: 1;
   }
 
@@ -41,6 +48,13 @@ styles += """
     opacity: 0;
     display: none;
   }  
+
+  .add_reasons_callout.slide_prompt {
+    --ADD_REASONS_CALLOUT_BUTTON_WIDTH: 160px;
+
+    background-color: transparent;
+    color: #{focus_color()};
+  }
 
 """
 
@@ -58,7 +72,7 @@ window.OpinionSlider = ReactiveComponent
 
     show_handle = @props.draw_handle
 
-    mode = get_proposal_mode(proposal)
+    mode = getProposalMode(proposal)
 
     # Update the slider value when the server gets back to us
     if slider.value != your_opinion.stance && (!slider.has_moved || @opinion_key != your_opinion.key)
@@ -86,7 +100,7 @@ window.OpinionSlider = ReactiveComponent
         width: @props.width
         filter: if @props.backgrounded then 'grayscale(100%)'
 
-      if (@props.focused || (NO_CRAFTING() && @props.is_expanded)) && show_handle
+      if (@props.focused || (TABLET_SIZE() && @props.is_expanded)) && show_handle
         @drawFeedback() 
 
       Slider
@@ -116,7 +130,7 @@ window.OpinionSlider = ReactiveComponent
           detail: @props.focused
 
         handle_style: 
-          transition: "transform #{TRANSITION_SPEED}ms"
+          transition: "transform #{CRAFTING_TRANSITION_SPEED}ms"
           transform: "scale(#{if !@props.focused then 1 else 1.75})"
           visibility: if !show_handle then 'hidden'
         
@@ -168,12 +182,20 @@ window.OpinionSlider = ReactiveComponent
     your_opinion = @props.your_opinion
     proposal = @props.proposal
 
+    slide_prompt = !fetch('/current_user').logged_in || !your_opinion.key
+
+    opinion_prompt = getOpinionPrompt
+                       proposal: proposal
+                       prefer_drag_prompt: true 
+
+
+    return SPAN null if !opinion_prompt
+
     BUTTON
-      className: 'add_reasons_callout'
-      style: 
-        left: (your_opinion.stance + 1) / 2 * ITEM_OPINION_WIDTH() - 130 / 2 # 130 = width of "Give your Reasons" 
-        width: 130
-        top: 26
+      className: "add_reasons_callout #{if slide_prompt then 'slide_prompt' else ''}"
+      style:
+        left: "calc( #{(your_opinion.stance + 1) / 2} * var(--ITEM_OPINION_WIDTH) - var(--ADD_REASONS_CALLOUT_BUTTON_WIDTH) / 2)"
+
       onClick: => 
         toggle_expand
           proposal: proposal 
@@ -183,17 +205,18 @@ window.OpinionSlider = ReactiveComponent
         if e.which == 32 || e.which == 13
           toggle_expand
             proposal: proposal
-            prefer_personal_view: true                   
+            prefer_personal_view: true  
 
-      if your_opinion.point_inclusions?.length > 0 
-        translator 
-          id: "engage.update_your_opinion_button"
-          'Update your Reasons'
+      opinion_prompt
 
-      else 
-        translator 
-          id: "engage.give_your_opinion_button"
-          'Give your Reasons'
+      if !slide_prompt
+        SliderBubblemouth 
+          proposal: proposal
+          left: 'calc(50% - 10px)'
+          width: 20
+          height: 8
+          top: 15
+
 
   saveYourOpinionNotice : -> 
     proposal = fetch @props.proposal
@@ -201,7 +224,7 @@ window.OpinionSlider = ReactiveComponent
     slider = fetch @props.slider_key
     current_user = fetch '/current_user'
 
-    return SPAN null if (!NO_CRAFTING() && customization('discussion_enabled', proposal))  || \
+    return SPAN null if (!TABLET_SIZE() && customization('discussion_enabled', proposal))  || \
                          current_user.logged_in || slider.is_moving
     
 
@@ -217,7 +240,7 @@ window.OpinionSlider = ReactiveComponent
       cursor: 'pointer'
       color: focus_color()
 
-    notice = translator "engage.login_to_save_opinion", 'Log in to save your opinion'
+    notice = translator "engage.login_to_save_opinion", 'Log in to add your opinion'
     
     s = sizeWhenRendered notice, style
 
@@ -274,7 +297,7 @@ window.OpinionSlider = ReactiveComponent
         translator "sliders.slide_prompt", 'Slide Your Overall Opinion'
       else if func = labels.slider_feedback or default_feedback
         func slider.value, proposal
-      else if NO_CRAFTING() 
+      else if TABLET_SIZE() 
         translator "sliders.slide_feedback_short", "Your opinion"
       else 
         ''
@@ -283,8 +306,8 @@ window.OpinionSlider = ReactiveComponent
 
     feedback_style = 
       pointerEvents: 'none' 
-      fontSize: if NO_CRAFTING() then "22px" else "30px"
-      fontWeight: if !NO_CRAFTING() then 700
+      fontSize: if TABLET_SIZE() then "22px" else "30px"
+      fontWeight: if !TABLET_SIZE() then 700
       color: if @props.backgrounded then '#eee' else focus_color()
       textAlign: 'center'
       #visibility: if @props.backgrounded then 'hidden'
@@ -294,15 +317,14 @@ window.OpinionSlider = ReactiveComponent
     feedback_left = @props.width * (slider.value + 1) / 2
     feedback_width = widthWhenRendered(slider_feedback, feedback_style) + 10
 
-    # if slider.docked 
-    #   if slider.value > 0
-    #     feedback_left = Math.min(@props.width - feedback_width/2, feedback_left)
-    #   else
-    #     feedback_left = Math.max(feedback_width/2, feedback_left)
+    if slider.value > 0
+      feedback_left = Math.min(@props.width - feedback_width/2, feedback_left)
+    else
+      feedback_left = Math.max(feedback_width/2, feedback_left)
 
     _.extend feedback_style, 
       position: 'absolute'      
-      top: if !NO_CRAFTING() then -80 else 37
+      top: if !TABLET_SIZE() then -80 else 37
       left: feedback_left
       marginLeft: -feedback_width / 2
       width: feedback_width
@@ -316,7 +338,7 @@ window.OpinionSlider = ReactiveComponent
   handleMouseUp: (e) ->
     slider = fetch @props.slider_key
     your_opinion = @props.your_opinion
-    mode = get_proposal_mode(@props.proposal)
+    mode = getProposalMode(@props.proposal)
     proposal = fetch @props.proposal
     
     e.stopPropagation()
@@ -380,5 +402,84 @@ styles += """
 }
 
 """
+
+
+
+
+window.get_opinion_x_pos_projection = ({slider_val, from_width, to_width, x_min, x_max}) ->
+  x_min ?= 0
+  x_max ?= 0
+
+  from_width = from_width - x_min - x_max
+  stance_position = (slider_val + 1) / 2  
+
+  x = from_width * stance_position + (to_width - from_width) / 2
+  x = Math.min x, to_width - x_max
+  x = Math.max x, x_min
+  x
+
+
+require './bubblemouth'
+window.SliderBubblemouth = ReactiveComponent
+  displayName: 'SliderBubblemouth'
+
+  render : -> 
+    proposal = fetch @props.proposal
+    slider = fetch(namespaced_key('slider', proposal))
+    db = fetch('decision_board')
+
+    w = @props.width
+    h = @props.height
+    top = @props.top
+    stroke_width = 11
+
+    if !@props.left
+      x = get_opinion_x_pos_projection
+        slider_val: slider.value
+        from_width: ITEM_OPINION_WIDTH() * (if !TABLET_SIZE() then 2 else 1)
+        to_width: DECISION_BOARD_WIDTH()
+        x_min: @props.x_min or 20
+        x_max: @props.x_max or 20
+
+      left = x - w / 2
+    else 
+      left = @props.left
+
+    mode = getProposalMode(proposal)
+    if mode == 'crafting'
+      transform = "translate(0, -4px) scale(1,.7)"
+      fill = 'white'
+      if db.user_hovering_on_drop_target
+        dash = "none"
+      else
+        dash = "25, 10"
+
+    else 
+      transform = "translate(0, -22px) scale(.6,.6) "
+      fill = focus_color()
+      dash = "none"
+
+
+    DIV 
+      key: 'slider_bubblemouth'
+      style: 
+        left: left
+        top: top
+        position: 'absolute'
+        width: w
+        height: h 
+        zIndex: 10
+        transition: "transform #{CRAFTING_TRANSITION_SPEED}ms"
+        transform: transform
+
+      Bubblemouth 
+        apex_xfrac: (slider.value + 1) / 2
+        width: w
+        height: h
+        fill: fill
+        stroke: focus_color()
+        stroke_width: if mode == 'crafting' then stroke_width else 0
+        dash_array: dash
+
 
 

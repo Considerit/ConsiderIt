@@ -14,9 +14,10 @@ save
   visible_attribute_values: {}
 
 
-window.compose_opinion_views = (opinions, proposal, opinion_views) -> 
+window.compose_opinion_views = (opinions, proposal, opinion_views, ignore) -> 
   opinion_views ?= fetch('opinion_views')
   opinion_views.active_views ?= {}
+  ignore ?= {}
   active_views = opinion_views.active_views
 
   proposal = fetch proposal
@@ -44,7 +45,7 @@ window.compose_opinion_views = (opinions, proposal, opinion_views) ->
     u = o.user.key or o.user
     
     for view_name, view of active_views
-      continue if !data_loaded[view_name]
+      continue if !data_loaded[view_name] || ignore[view_name]
 
       if view.get_salience?
         s = view.get_salience(u, o, proposal)
@@ -130,17 +131,20 @@ window.get_user_groups_from_views = (groups) ->
     for u, u_groups of groups
       for g in u_groups 
         group_set.add g
+
     Array.from group_set
+
   else 
     null 
 
 window.group_colors = {}
 window.get_color_for_groups = (group_array) ->
+  opinion_views = fetch 'opinion_views'  
+  return group_colors if !opinion_views.active_views.group_by
   if i18n().unreported not in group_array
     group_array = group_array.slice()
     group_array.push i18n().unreported
 
-  opinion_views = fetch 'opinion_views'
   colors = getColors(group_array.length, opinion_views.active_views.group_by.continuous_value)
 
   for color,idx in colors 
@@ -735,7 +739,7 @@ OpinionViews = ReactiveComponent
               className: 'custom_view_triangle'
               style: 
                 left: "calc(50% - 15px)"
-                bottom: if browser.is_mobile || SLIDERGRAM_BELOW() then -29 else -27
+                bottom: if browser.is_mobile || TABLET_SIZE() then -29 else -27
               dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="rgb(182,182,182)"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
 
       }
@@ -898,7 +902,7 @@ construct_view_for_attribute = (attribute) ->
     val_for_user = user.tags[attr_key]
 
     if attribute.input_type == 'checklist' && val_for_user
-      val_for_user = val_for_user.split(',')
+      val_for_user = val_for_user.split(CHECKLIST_SEPARATOR)
       is_array = true
 
     passing_vals = (val for val,enabled of opinion_views_ui.visible_attribute_values[attr_key] when enabled)
@@ -950,7 +954,7 @@ set_group_by_attribute = (attribute) ->
     group: (u, opinion, proposal) -> 
       group_val = (if attribute.pass then attribute.pass(u) else fetch(u).tags[opinion_views_ui.group_by]) or i18n().unreported
       if attribute.input_type == 'checklist'
-        group_val.split(',')
+        group_val.split(CHECKLIST_SEPARATOR)
       else 
         group_val
     options: attribute.options
@@ -1048,6 +1052,97 @@ InteractiveOpinionViews = ReactiveComponent
     activated_weights = get_activated_weights()
 
     DIV null, 
+      if attributes.length > 1 
+        cur_val = -1
+        for attr, idx in attributes
+          if opinion_views_ui.group_by == attr.key 
+            cur_val = idx
+        DIV 
+          className: 'opinion_view_row color_code'
+          style: 
+            borderTop: '1px dotted #DEDDDD' 
+
+          group_by_icon()
+
+          LABEL 
+            className: 'opinion_view_name'
+            translator 'opinion_views.view_type_group', 'Color code by'
+            ':'
+
+          SELECT 
+            style: 
+              maxWidth: '75%'
+              marginRight: 12
+              borderColor: '#bbb'
+              backgroundColor: '#f9f9f9'
+              borderRadius: 2
+
+            onChange: (ev) -> 
+              if ev.target.value != null
+                attribute = attributes[ev.target.value]
+                opinion_views_ui.group_by = attribute?.key
+              else 
+                opinion_views_ui.group_by = null
+
+              if opinion_views_ui.group_by && (!opinion_views_ui.activated_attributes[opinion_views_ui.group_by] ||  \
+                                  (o for o,val of opinion_views_ui.visible_attribute_values[opinion_views_ui.group_by] when val).length == 0)
+                            # if no attribute value is selected, which mean all are enabled, select them all
+                opinion_views_ui.activated_attributes[opinion_views_ui.group_by] = true 
+                for option in attribute.options 
+                  opinion_views_ui.visible_attribute_values[attribute.key][option] = true
+              save opinion_views_ui
+
+              if opinion_views_ui.group_by
+                set_group_by_attribute attribute 
+
+              else 
+                delete opinion_views.active_views.group_by
+                save opinion_views
+
+
+            value: cur_val
+
+            OPTION 
+              value: null
+              ""
+            for attribute,idx in attributes 
+              continue if !attribute.options
+              do (attribute) =>
+                OPTION 
+                  key: idx
+                  value: idx 
+                  attribute.name or attribute.question
+
+          if cur_val > -1
+            LABEL 
+              className: "attribute_value_selector" 
+
+              SPAN
+                className: 'toggle_switch'
+
+                INPUT 
+                  type: 'checkbox'
+                  checked: opinion_views_ui.aggregate_into_groups
+                  onChange: (e) -> 
+                    opinion_views_ui.aggregate_into_groups = !opinion_views_ui.aggregate_into_groups        
+                    save opinion_views_ui
+
+                SPAN 
+                  className: 'toggle_switch_circle'
+                  style: 
+                    backgroundColor: if opinion_views_ui.aggregate_into_groups then focus_color()
+            
+              SPAN 
+                style: 
+                  fontSize: 14
+                  paddingLeft: 12
+                "Aggregate by Group"
+
+
+
+
+
+
       if attributes.length > 0 
         DIV 
           className: 'opinion_view_row'
@@ -1180,67 +1275,8 @@ InteractiveOpinionViews = ReactiveComponent
 
               'x'
 
-      if attributes.length > 1 
-        cur_val = -1
-        for attr, idx in attributes
-          if opinion_views_ui.group_by == attr.key 
-            cur_val = idx
-        DIV 
-          className: 'opinion_view_row color_code'
-          style: 
-            borderTop: '1px dotted #DEDDDD' 
-
-          group_by_icon()
-
-          LABEL 
-            className: 'opinion_view_name'
-            translator 'opinion_views.view_type_group', 'Color code by'
-            ':'
-
-          SELECT 
-            style: 
-              maxWidth: '75%'
-              marginRight: 12
-              borderColor: '#bbb'
-              backgroundColor: '#f9f9f9'
-              borderRadius: 2
-
-            onChange: (ev) -> 
-              if ev.target.value != null
-                attribute = attributes[ev.target.value]
-                opinion_views_ui.group_by = attribute?.key
-              else 
-                opinion_views_ui.group_by = null
-
-              if opinion_views_ui.group_by && (!opinion_views_ui.activated_attributes[opinion_views_ui.group_by] ||  \
-                                  (o for o,val of opinion_views_ui.visible_attribute_values[opinion_views_ui.group_by] when val).length == 0)
-                            # if no attribute value is selected, which mean all are enabled, select them all
-                opinion_views_ui.activated_attributes[opinion_views_ui.group_by] = true 
-                for option in attribute.options 
-                  opinion_views_ui.visible_attribute_values[attribute.key][option] = true
-              save opinion_views_ui
-
-              if opinion_views_ui.group_by
-                set_group_by_attribute attribute 
-
-              else 
-                delete opinion_views.active_views.group_by
-                save opinion_views
 
 
-            value: cur_val
-
-            OPTION 
-              value: null
-              ""
-            for attribute,idx in attributes 
-              continue if !attribute.options
-              do (attribute) =>
-                OPTION 
-                  key: idx
-                  value: idx 
-                  attribute.name or attribute.question
-    
 
       DIV 
         className: 'opinion_view_row'
@@ -1780,7 +1816,6 @@ styles += """
     padding-left: 8px;
     font-size: 12px;
     font-weight: 400;
-    letter-spacing: -1px;
     text-transform: capitalize; 
   }
 

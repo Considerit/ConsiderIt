@@ -7,7 +7,7 @@ window.BUBBLE_WRAP = ReactiveComponent
     left_or_right = 'right' 
     ioffset = -10
 
-    w = @props.width or POINT_WIDTH()
+    w = @props.width or 400
     mouth_w = (@props.mouth_style or {}).width or POINT_MOUTH_WIDTH
 
     mouth_style = _.defaults (@props.mouth_style or {}),

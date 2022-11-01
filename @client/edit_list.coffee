@@ -56,17 +56,21 @@ window.EditList = ReactiveComponent
 
           wrapper_style: 
             position: 'absolute'
-            right: "calc(-1 * var(--LIST_PADDING) + 10px)"
+            right: if PHONE_SIZE() then -6 else 0
             top: 12
             minWidth: 'auto'
-            paddingLeft: 40
 
           render_anchor: ->
             SPAN 
               "data-tooltip": translator "engage.list-config-icon-tooltip", "Configure list settings" 
-              GearIcon
-                size: 20
+
+              ThreeDotsIcon              
+                size: 26
                 fill: '#888'
+
+              # GearIcon
+              #   size: 20
+              #   fill: '#888'
 
           render_option: (option, is_active) ->
             SPAN 
@@ -291,11 +295,11 @@ window.ModalNewList = ReactiveComponent
                 "<span>Heading.</span> An open-ended question like \"What are your ideas?\" or a category like \"Recommendations\"."
 
             H1 
-              className: 'LIST-header'
+              className: 'LIST-title'
 
               AutoGrowTextArea
                 id: "title-#{list_key}"
-                className: 'LIST-header LIST-fat-header-field'
+                className: 'LIST-title LIST-fat-header-field'
                 ref: 'input'
                 focus_on_mount: true
                 style: _.defaults {}, customization('list_label_style', list_key, subdomain) or {}, 

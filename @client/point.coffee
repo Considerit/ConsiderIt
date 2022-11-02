@@ -436,14 +436,21 @@ window.Point = ReactiveComponent
       @draggable.on 'drag:start', (evt) =>
         point_width = evt.source.getBoundingClientRect().width
 
-        if @props.rendered_as != 'decision_board_point'
-          point_root.closest(".ProposalItem").classList.add 'community-point-is-being-dragged'
+        # if @props.rendered_as != 'decision_board_point'
+        #   point_root.closest(".ProposalItem").classList.add 'community-point-is-being-dragged'
 
       @draggable.on 'mirror:created', (evt) =>        
         evt.mirror.style.width = "#{point_width}px"
 
       @draggable.on 'drag:move', (evt) =>
         last_mouse_over_target = evt.sensorEvent.target
+
+        if @props.rendered_as != 'decision_board_point' 
+          db = last_mouse_over_target?.closest('.DecisionBoard')
+          if db
+            db.closest(".ProposalItem").classList.add 'community-point-is-being-dragged'
+          else 
+            point_root.closest(".ProposalItem").classList.remove 'community-point-is-being-dragged'
 
       @draggable.on 'drag:stop', (evt) =>
 

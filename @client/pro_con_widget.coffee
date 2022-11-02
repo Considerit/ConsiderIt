@@ -501,8 +501,21 @@ styles += """
     border-width: 3px;
   }
 
+  .crafting .decision_board_body {
+    transform: translate(0, 10px);
+    background-color: white;
+  }
+
+  .results .decision_board_body {
+    border-style: solid;
+    background-color: #{focus_color()};
+    cursor: pointer;
+    min-height: 32px;
+  }
+
+
   /* Drag & drop styles */
-  .community-point-is-being-dragged .decision_board_body:hover {
+  .community-point-is-being-dragged .decision_board_body {
     border-style: solid;
   }
 
@@ -510,7 +523,7 @@ styles += """
     stroke-dasharray: 25, 10;
   }
 
-  .community-point-is-being-dragged .DecisionBoard:hover [data-widget="SliderBubblemouth"] path {
+  .community-point-is-being-dragged .DecisionBoard [data-widget="SliderBubblemouth"] path {
     stroke-dasharray: none;
   }
 
@@ -580,21 +593,13 @@ window.DecisionBoard = ReactiveComponent
 
 
       _.extend decision_board_style,
-        borderStyle: 'solid'
-        backgroundColor: focus_color()
-        # borderBottom: '1px solid rgba(0,0,0,.6)'
-        cursor: 'pointer'
         transform: "translate(#{opinion_region_x - give_opinion_button_width / 2}px, -10px)"
-        minHeight: 32
         width: give_opinion_button_width
 
     else 
       _.extend decision_board_style,
-        transform: "translate(0, 10px)"
         minHeight: if are_points_in_wings then 275 else 170
         width: DECISION_BOARD_WIDTH()
-        # borderBottom: "#{decision_board_style.borderWidth}px dashed #{focus_color()}"
-        backgroundColor: 'white'
         
     opinion_prompt = getOpinionPrompt {proposal}
 

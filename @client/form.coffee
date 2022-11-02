@@ -190,11 +190,14 @@ window.WysiwygEditor = ReactiveComponent
 
 
     close_if_nothing_in_menu_focused = =>
+      console.log document.activeElement, "##{id}", document.activeElement.closest("##{id}")
+
       setTimeout => 
         if !$$.closest(document.activeElement, "##{id}")
           wysiwyg_editor = fetch 'wysiwyg_editor'
           wysiwyg_editor.showing = false
           save wysiwyg_editor
+          console.log 'closing!!!!'
       , 0
 
 
@@ -211,9 +214,10 @@ window.WysiwygEditor = ReactiveComponent
         position: 'relative'
 
       onClick: (ev) -> 
+        console.log 'high'
         # Catch any clicks within the editor area to prevent the 
         # toolbar from being hidden via the root level 
-        # show_wysiwyg_toolbar state
+        # wysiwyg_editor state
         ev.stopPropagation()
 
       if @local.edit_code || !@supports_Quill
@@ -230,6 +234,7 @@ window.WysiwygEditor = ReactiveComponent
       else
 
         DIV null,
+
 
           Dock
             dock_on_zoomed_screens: true
@@ -302,7 +307,8 @@ window.WysiwygEditor = ReactiveComponent
                       marginBottom: 4
                     title: button.title
                     value: if button.value then button.value 
-                    onClick: if button.onClick then button.onClick
+                    onClick: button.onClick
+
                     onFocus: (e) => 
                       @local.focused_toolbar_item = idx; 
                       save @local
@@ -340,7 +346,10 @@ window.WysiwygEditor = ReactiveComponent
                 wysiwyg_editor.showing = @props.editor_key
                 save wysiwyg_editor
 
-              onBlur: close_if_nothing_in_menu_focused
+              # This was causing problems with erroneously closing menu just before it got clicked.
+              # I don't know why it is here and things seem to work without it, except that in 
+              # some wysiwyg editors, the menu won't disappear after first appearing.
+              # onBlur: close_if_nothing_in_menu_focused
 
               style: @props.style
 

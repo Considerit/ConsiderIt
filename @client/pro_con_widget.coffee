@@ -494,6 +494,27 @@ styles += """
     display: none;
   }
 
+
+  .decision_board_body {
+    border-radius: 16px;
+    border-style: dashed;
+    border-width: 3px;
+  }
+
+  /* Drag & drop styles */
+  .community-point-is-being-dragged .decision_board_body:hover {
+    border-style: solid;
+  }
+
+  .DecisionBoard [data-widget="SliderBubblemouth"] path {
+    stroke-dasharray: 25, 10;
+  }
+
+  .community-point-is-being-dragged .DecisionBoard:hover [data-widget="SliderBubblemouth"] path {
+    stroke-dasharray: none;
+  }
+
+
 """
 
 
@@ -507,7 +528,6 @@ window.DecisionBoard = ReactiveComponent
     current_user = fetch('/current_user')
     subdomain = fetch('/subdomain')
 
-    db = fetch('decision_board')
     proposal = fetch @props.proposal
     
     your_opinion = proposal.your_opinion
@@ -539,9 +559,6 @@ window.DecisionBoard = ReactiveComponent
     mode = getProposalMode(proposal)
 
     decision_board_style =
-      borderRadius: 16
-      borderStyle: 'dashed'
-      borderWidth: 3
       borderColor: focus_color()
       transition: if @last_proposal_mode != mode || @transitioning  
                     "transform #{CRAFTING_TRANSITION_SPEED}ms, " + \
@@ -549,9 +566,6 @@ window.DecisionBoard = ReactiveComponent
                     "min-height #{CRAFTING_TRANSITION_SPEED}ms"
                   else
                     'none'
-
-    if db.user_hovering_on_drop_target
-      decision_board_style.borderStyle = 'solid'
 
     if mode == 'results'
       give_opinion_button_width = 232
@@ -589,59 +603,6 @@ window.DecisionBoard = ReactiveComponent
       className:'DecisionBoard'
       style:
         width: DECISION_BOARD_WIDTH()
-
-      onDrop : (ev) =>
-        # point_key = ev.dataTransfer.getData('text/plain')
-        point_key = fetch('point-dragging').point
-
-        return if !point_key
-        point = fetch point_key
-
-        your_opinion = proposal.your_opinion
-
-        if !your_opinion.point_inclusions || point.key not in your_opinion.point_inclusions
-          your_opinion.key ?= "/new/opinion"
-          your_opinion.published = true
-          your_opinion.point_inclusions ?= []
-
-          your_opinion.point_inclusions.push point.key
-
-          save your_opinion
-
-          window.writeToLog
-            what: 'included point'
-            details: 
-              point: point.id
-
-        db = fetch('decision_board')
-        db.user_hovering_on_drop_target = false
-        save db
-
-        ev.preventDefault()
-        ev.stopPropagation()
-
-      onDragLeave : (ev) => 
-        db = fetch('decision_board')
-        if db.user_hovering_on_drop_target
-          db.user_hovering_on_drop_target = false
-          save db
-
-      onDragEnter : (ev) =>
-        ev.preventDefault()
-
-      onDragOver : (ev) => 
-        db = fetch('decision_board')
-
-        if !db.user_hovering_on_drop_target
-          # point_key = ev.dataTransfer.getData('text/plain') 
-          point_key = fetch('point-dragging').point
-          your_opinion = proposal.your_opinion
-          if point_key && point_key not in (your_opinion.point_inclusions or [])
-            db.user_hovering_on_drop_target = true
-            save db
-
-        ev.preventDefault() # makes it droppable, according to html5 DnD spec
-        ev.stopPropagation()
 
 
       H3 

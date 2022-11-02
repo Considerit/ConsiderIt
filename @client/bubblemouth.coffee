@@ -37,7 +37,7 @@ window.Bubblemouth = (props) ->
     fill: 'white', 
     stroke: focus_color(), 
     stroke_width: 10
-    dash_array: "none"   
+    # dash_array: "none"   
     box_shadow: null
 
   full_width = props.svg_w + 4 * props.skew_x * Math.max(.5, Math.abs(.5 - props.apex_xfrac))
@@ -115,7 +115,7 @@ window.Bubblemouth = (props) ->
       stroke: props.stroke
       strokeWidth: props.stroke_width * 2
       clipPath: "url(##{id})"
-      strokeDasharray: props.dash_array
+      strokeDasharray: if props.dash_array then props.dash_array
       d: bubblemouth_path
 
 

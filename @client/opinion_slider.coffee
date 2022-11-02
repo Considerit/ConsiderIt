@@ -426,7 +426,6 @@ window.SliderBubblemouth = ReactiveComponent
   render : -> 
     proposal = fetch @props.proposal
     slider = fetch(namespaced_key('slider', proposal))
-    db = fetch('decision_board')
 
     w = @props.width
     h = @props.height
@@ -449,15 +448,10 @@ window.SliderBubblemouth = ReactiveComponent
     if mode == 'crafting'
       transform = "translate(0, -4px) scale(1,.7)"
       fill = 'white'
-      if db.user_hovering_on_drop_target
-        dash = "none"
-      else
-        dash = "25, 10"
 
     else 
       transform = "translate(0, -22px) scale(.6,.6) "
       fill = focus_color()
-      dash = "none"
 
 
     DIV 
@@ -479,7 +473,6 @@ window.SliderBubblemouth = ReactiveComponent
         fill: fill
         stroke: focus_color()
         stroke_width: if mode == 'crafting' then stroke_width else 0
-        dash_array: dash
 
 
 

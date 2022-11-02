@@ -145,41 +145,6 @@ window.OpinionBlock = ReactiveComponent
     DIV 
       className: 'OpinionBlock'
 
-
-      # for allowing people to drop a point in their list outside to remove it
-      onDrop: if @is_expanded then (ev) =>
-        # point_key = ev.dataTransfer.getData('text/plain')
-        point_key = fetch('point-dragging').point
-
-        return if !point_key
-        point = fetch point_key
-
-
-        validate_first = point.user == fetch('/current_user').user && point.includers.length < 2
-
-
-        if !validate_first || confirm('Are you sure you want to remove your point? It will be gone forever.')
-
-          your_opinion = proposal.your_opinion
-
-          if your_opinion.point_inclusions && point.key in your_opinion.point_inclusions
-            idx = your_opinion.point_inclusions.indexOf point.key
-            your_opinion.point_inclusions.splice(idx, 1)
-            save your_opinion
-
-            window.writeToLog
-              what: 'removed point'
-              details: 
-                point: point.key
-
-        ev.preventDefault()
-
-      onDragEnter: if @is_expanded then (ev) =>
-        ev.preventDefault()
-
-      onDragOver: if @is_expanded then (ev) => 
-        ev.preventDefault() # makes it droppable, according to html5 DnD spec
-
       FLIPPED 
         flipId: "participation-status-#{proposal.key}"
         shouldFlipIgnore: @props.shouldFlipIgnore

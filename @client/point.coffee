@@ -1,6 +1,8 @@
 require "./comment"
 
 
+
+
 ##
 # Point
 # A single point in a list. 
@@ -62,16 +64,7 @@ window.Point = ReactiveComponent
               set_bg_color: true
               anonymous: point.user == includer && point.hide_name
 
-
-
-    point_content_style = 
-      borderWidth: 3
-      borderStyle: 'solid'
-      borderColor: 'transparent'
-      top: -3
-      position: 'relative'
-      zIndex: 1
-      outline: 'none'
+    point_content_style = {}
 
     if is_selected
       _.extend point_content_style,
@@ -83,36 +76,8 @@ window.Point = ReactiveComponent
         borderColor: '#999'
         backgroundColor: 'white'
 
-    if @props.rendered_as == 'decision_board_point'
-      _.extend point_content_style,
-        padding: 8
-        borderRadius: 8
-        top: point_content_style.top - 8
-        left: -11
-        #width: point_content_style.width + 16
-
-    else if @props.rendered_as == 'community_point'
-      _.extend point_content_style,
-        padding: 8
-        borderRadius: if TABLET_SIZE() then "16px 16px 0 0" else 16
-        top: point_content_style.top - 8
-        #left: point_content_style.left - 8
-        #width: point_content_style.width + 16
-
-
     expand_to_see_details = !!point.text
 
-    point_style = 
-      position: 'relative'
-      listStyle: 'none outside none'
-
-
-    if @props.rendered_as == 'decision_board_point'
-      _.extend point_style, 
-        marginLeft: 9
-        padding: '0 18px 0 18px'
-    else if @props.rendered_as == 'community_point'
-      point_style.marginBottom = '0.5em'
 
 
 
@@ -151,7 +116,7 @@ window.Point = ReactiveComponent
         if (is_selected && e.which == 27) || e.which == 13 || e.which == 32
           @selectPoint(e)
           e.preventDefault()
-      style: point_style
+
 
       if @props.rendered_as == 'decision_board_point'
         DIV 
@@ -171,49 +136,6 @@ window.Point = ReactiveComponent
         onFocus: (e) => @local.has_focus = true; save(@local)
         draggable: @props.enable_dragging
         "data-point": point.key
-
-        onDragEnd: if @props.enable_dragging then (ev) =>
-          # @refs.point_content.style.visibility = 'visible'
-          @refs.point_content.style.opacity = 1
-
-        onDragStart: if @props.enable_dragging then (ev) =>
-          point = fetch @props.point
-          dnd_points = fetch 'drag and drop points'
-          dnd_points.dragging = point.key 
-          ev.dataTransfer.setData('text/plain', point.key)
-
-          # because DnD setdata is broke ass
-          dragging = fetch 'point-dragging'
-          dragging.point = point.key
-
-          # ev.dataTransfer.effectAllowed = "move"
-          # ev.dataTransfer.dropEffect = "move"     
-
-
-          #######################
-          # There is a big bug with dragging and dropping elements whose parent has been moved with 
-          # transform translate. The ghosting is way off, safari (15 at the moment) can't seem to 
-          # properly locate the element to make a ghost bitmap of the screen. So we'll create our 
-          # own ghost point outside the translated parents. Note that this hack for some reason
-          # *doesn't work* in Chrome or Firefox (but the original bug isn't in them). 
-          # So we'll have to keep an eye on this for each release of Safari to make sure the 
-          # hack is still appropriate.
-          if window.safari || window.parent?.safari
-            ghost = @refs.point_content.cloneNode()
-            ghost.innerHTML = @refs.point_content.innerHTML
-
-            content = document.getElementById('content')
-            content.appendChild ghost
-            ev.dataTransfer.setDragImage ghost, 0, 0
-
-            setTimeout ->
-              content.removeChild ghost
-
-          setTimeout =>
-            @refs.point_content.style.opacity = .3
-
-
-
 
 
         if @props.rendered_as != 'decision_board_point' && !PHONE_SIZE()
@@ -489,8 +411,83 @@ window.Point = ReactiveComponent
   componentDidMount : ->    
     @ensureDiscussionIsInViewPort()
 
+    if @props.enable_dragging
+      @initializeDragging()
+
   componentDidUpdate : -> 
     @ensureDiscussionIsInViewPort()
+    if @props.enable_dragging
+      @initializeDragging()
+
+  initializeDragging : ->
+    if !@drag_initialized
+      @drag_initialized = true 
+      point_root = ReactDOM.findDOMNode(@)
+      point_width = null
+
+      last_mouse_over_target = null
+
+      @draggable = new Draggable.default point_root,
+        draggable: '.point'
+        delay: 0
+        mirror: 
+          appendTo: '#content'
+
+      @draggable.on 'drag:start', (evt) =>
+        point_width = evt.source.getBoundingClientRect().width
+
+        if @props.rendered_as != 'decision_board_point'
+          point_root.closest(".ProposalItem").classList.add 'community-point-is-being-dragged'
+
+      @draggable.on 'mirror:created', (evt) =>        
+        evt.mirror.style.width = "#{point_width}px"
+
+      @draggable.on 'drag:move', (evt) =>
+        last_mouse_over_target = evt.sensorEvent.target
+
+      @draggable.on 'drag:stop', (evt) =>
+
+        if @props.rendered_as != 'decision_board_point'
+          point_root.closest(".ProposalItem").classList.remove 'community-point-is-being-dragged'
+
+          if db = last_mouse_over_target?.closest('.DecisionBoard')
+            point = fetch @props.point
+            proposal = fetch point.proposal
+            your_opinion = proposal.your_opinion
+
+            if !your_opinion.point_inclusions || point.key not in your_opinion.point_inclusions
+              your_opinion.key ?= "/new/opinion"
+              your_opinion.published = true
+              your_opinion.point_inclusions ?= []
+              your_opinion.point_inclusions.push point.key
+              save your_opinion
+
+              window.writeToLog
+                what: 'included point'
+                details: 
+                  point: point.id
+
+        else # removing decision_board_point by dragging outside
+          if last_mouse_over_target?.closest('.points_by_community')
+            point = fetch @props.point
+            proposal = fetch point.proposal
+            your_opinion = proposal.your_opinion
+
+            validate_first = point.user == fetch('/current_user').user && point.includers.length < 2
+            if !validate_first || confirm('Are you sure you want to remove your point? It will be gone forever.')
+              your_opinion = proposal.your_opinion
+
+              if your_opinion.point_inclusions && point.key in your_opinion.point_inclusions
+                idx = your_opinion.point_inclusions.indexOf point.key
+                your_opinion.point_inclusions.splice(idx, 1)
+                save your_opinion
+
+                window.writeToLog
+                  what: 'removed point'
+                  details: 
+                    point: point.key
+
+
 
 
   # Hack that fixes a couple problems:
@@ -655,64 +652,122 @@ window.Point = ReactiveComponent
 
 styles += """
 
-.point_content[draggable="false"] {
-  cursor: pointer !important; }
+  .point {
+    position: relative;
+    list-style: none outside none;
+  }
 
-.commenting-disabled .point_content[draggable="false"] {
-  cursor: auto; }
+  .point.decision_board_point {
+    margin-left: 9px;
+    padding: 0 0 0 18px;
+  }
+
+  .point.community_point {
+    margin-bottom: 0.5em;
+  }
 
 
-.commenting-disabled .point_details_tease {
-  cursor: auto;
-}
 
-#{css.grab_cursor('.point_content[draggable="true"]')}
+  .point_content[draggable="false"] {
+    cursor: pointer !important; }
 
-.community_point .point_content {
-  border-radius: 16px;
-  padding: 0.5em 9px;
-  background-color: #{considerit_gray};
-  box-shadow: #b5b5b5 0 1px 1px 0px;
-  min-height: 34px; }
+  #{css.grab_cursor('.point_content[draggable="true"]')}
 
-.point_nutshell a { text-decoration: underline; }
-.point_details_tease a, .point_details a {
-  text-decoration: underline;
-  word-break: break-all; }
-.point_details a.select_point{
-  text-decoration: none;
-  font-weight: 400;
-}
 
-.point_details {
-  display: block; }
+  .point.draggable-mirror {
+    z-index: 99999999;
+  }
+  .point.draggable-mirror .includers, .point.draggable-mirror button {
+    display: none;
+  }  
+  .point.draggable-source--is-dragging {
+    transition: opacity 0ms !important;
+    opacity: 0.2 !important;
+  }
+  .point.draggable--original {
+    display: none;
+  }
+    
 
-.point_details_tease {
-  cursor: pointer; }
-  .point_details_tease a.select_point {
-    text-decoration: none; 
-    font-weight: 400;    
+
+  .commenting-disabled .point_content[draggable="false"] {
+    cursor: auto; }
+
+
+  .commenting-disabled .point_details_tease {
+    cursor: auto;
+  }
+
+
+  .point_content {
+    border-width: 3px;
+    border-style: solid; 
+    border-color: transparent;
+    top: -3px;
+    position: relative;
+    z-index: 1;
+    outline: none;
+  }
+
+  .decision_board_point .point_content {
+    padding: 8px 0px;
+    border-radius: 8px;
+    top: -11px;
+  }
+
+  .community_point .point_content {
+    padding: 8px;
+    border-radius: 16px;
+    top: -11px;
+    background-color: #{considerit_gray};
+    box-shadow: #b5b5b5 0 1px 1px 0px;
+    min-height: 34px; 
+  }
+
+  @media (max-width: #{TABLET_BREAKPOINT}px) {
+    .community_point .point_content {
+      border-radius: 16px 16px 0 0;
     }
-    .point_details_tease a.select_point:hover {
-      text-decoration: underline; }
+  }
 
-.point_details p {
-  margin-bottom: 1em; }
+  .point_nutshell a { text-decoration: underline; }
+  .point_details_tease a, .point_details a {
+    text-decoration: underline;
+    word-break: break-all; }
+  .point_details a.select_point{
+    text-decoration: none;
+    font-weight: 400;
+  }
 
-.point_details p:last-child {
-  margin-bottom: 0; }
+  .point_details {
+    display: block; }
 
-.point_includer_avatar {
-  width: 22px;
-  height: 22px; }
+  .point_details_tease {
+    cursor: pointer; }
+    .point_details_tease a.select_point {
+      text-decoration: none; 
+      font-weight: 400;    
+      }
+      .point_details_tease a.select_point:hover {
+        text-decoration: underline; }
 
-.community_point.con .point_includer_avatar {
-  box-shadow: -1px 2px 0 0 #eeeeee; }
+  .point_details p {
+    margin-bottom: 1em; }
 
-.community_point.pro .point_includer_avatar {
-  box-shadow: 1px 2px 0 0 #eeeeee; }
+  .point_details p:last-child {
+    margin-bottom: 0; }
 
-.decision_board_point.pro .point_includer_avatar {
-  left: -10px; }
+  .point_includer_avatar {
+    width: 22px;
+    height: 22px; }
+
+  .community_point.con .point_includer_avatar {
+    box-shadow: -1px 2px 0 0 #eeeeee; }
+
+  .community_point.pro .point_includer_avatar {
+    box-shadow: 1px 2px 0 0 #eeeeee; }
+
+  .decision_board_point.pro .point_includer_avatar {
+    left: -10px; }
 
 """

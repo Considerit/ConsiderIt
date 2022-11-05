@@ -50,7 +50,8 @@ window.Modal =
   accessibility_on_keydown: (e) ->
     # cancel on ESC if a cancel button has been defined
     if e.key == 'Escape' || e.keyCode == 27
-      @refs.cancel_dialog?.click()
+      if @refs.cancel_dialog
+        ReactDOM.findDOMNode(@refs.cancel_dialog)?.click()
 
     # trap focus
     is_tab_pressed = e.key == 'Tab' or e.keyCode == 9
@@ -125,7 +126,7 @@ window.Modal =
         height: '100vh'
         overflow: 'auto'
         zIndex: 99999
-        paddingBottom: if browser.is_mobile then "150px"
+        # paddingBottom: if browser.is_mobile then "150px"
 
       scroll_bar_width = window.innerWidth - document.body.offsetWidth
 

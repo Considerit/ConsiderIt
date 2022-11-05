@@ -12,7 +12,7 @@ styles += """
     right: 30px;
     font-size: 26px;    
   }
-  @media (max-width: #{PHONE_BREAKPOINT}px) {
+  @media #{PHONE_MEDIA} {
     #user_nav {
       right: 8px;
     }

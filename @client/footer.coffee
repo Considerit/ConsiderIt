@@ -57,7 +57,7 @@ styles += """
     padding: 12px 20px;
   }
 
-  @media (min-width: #{PHONE_BREAKPOINT}px) {
+  @media #{NOT_PHONE_MEDIA} {
     .footer_wrapper {
       padding: 65px 0 15px 0;
     }
@@ -77,7 +77,7 @@ styles += """
 
   }
 
-  @media (max-width: #{PHONE_BREAKPOINT}px) {
+  @media #{PHONE_MEDIA} {
     .footer_wrapper {
       padding: 36px 0 15px 0;
     }

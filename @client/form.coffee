@@ -190,14 +190,11 @@ window.WysiwygEditor = ReactiveComponent
 
 
     close_if_nothing_in_menu_focused = =>
-      console.log document.activeElement, "##{id}", document.activeElement.closest("##{id}")
-
       setTimeout => 
         if !$$.closest(document.activeElement, "##{id}")
           wysiwyg_editor = fetch 'wysiwyg_editor'
           wysiwyg_editor.showing = false
           save wysiwyg_editor
-          console.log 'closing!!!!'
       , 0
 
 
@@ -214,7 +211,6 @@ window.WysiwygEditor = ReactiveComponent
         position: 'relative'
 
       onClick: (ev) -> 
-        console.log 'high'
         # Catch any clicks within the editor area to prevent the 
         # toolbar from being hidden via the root level 
         # wysiwyg_editor state

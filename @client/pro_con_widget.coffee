@@ -51,7 +51,7 @@ responsive_style_registry.push (responsive_vars) ->
   content_width = responsive_vars.CONTENT_WIDTH
   doc_gutter = responsive_vars.DOC_GUTTER
   w = responsive_vars.WINDOW_WIDTH
-  portrait = responsive_vars.PORTRAIT_MOBILE
+  phone_size = responsive_vars.PHONE_SIZE
 
 
   ######
@@ -60,14 +60,9 @@ responsive_style_registry.push (responsive_vars) ->
   decision_board_width = Math.min 700, content_width - 2 * doc_gutter - 2 * whitespace + 4 # the four is for the border
   ######
 
-  point_font_size = 14
-
-  if portrait
-    point_font_size += 2
-
   {
     DECISION_BOARD_WIDTH: decision_board_width
-    POINT_FONT_SIZE: point_font_size  
+    POINT_FONT_SIZE: if phone_size then 14 else 15  
   }
 
 
@@ -75,7 +70,7 @@ styles += """
   .slow-thought {
   }
 
-  @media (min-width: #{TABLET_BREAKPOINT}px) {
+  @media #{LAPTOP_MEDIA} {
     .slow-thought {
       --POINT_COLUMN_MARGIN: 16px;
       --SLOW_WHITESPACE: max(100px, 10vw);
@@ -100,22 +95,21 @@ styles += """
 
   }
 
-  @media (max-width: #{TABLET_BREAKPOINT}px) {
+
+  @media #{TABLET_MEDIA} {
     .slow-thought {
       --POINT_COLUMN_MARGIN: 9px;
-      --BODY_WIDTH: var(--ITEM_OPINION_WIDTH);
-    }
-  }
-
-  @media (max-width: #{TABLET_BREAKPOINT}px) and (min-width: #{PHONE_BREAKPOINT}px) {
-    .slow-thought {
+      --BODY_WIDTH: var(--ITEM_OPINION_WIDTH);      
       --POINT_WIDTH: calc(var(--BODY_WIDTH) / 2 - 2 * var(--POINT_COLUMN_MARGIN) );
     }
   }
 
-  @media (max-width: #{PHONE_BREAKPOINT}px) {
+  @media #{PHONE_MEDIA} {
+
     .slow-thought {
-      --POINT_WIDTH: calc(var(--BODY_WIDTH) / 2 - 1.5 * var(--POINT_COLUMN_MARGIN) );
+      --POINT_COLUMN_MARGIN: 6px;      
+      --BODY_WIDTH: calc(100vw - 2 * var(--POINT_COLUMN_MARGIN));
+      --POINT_WIDTH: calc(var(--BODY_WIDTH) / 2 - 1 * var(--POINT_COLUMN_MARGIN) );
     }
   }
 
@@ -146,7 +140,7 @@ styles += """
     flex-direction: column;
   }
 
-  @media (min-width: #{TABLET_BREAKPOINT}px) {
+  @media #{LAPTOP_MEDIA} {
     width: var(--REASONS_AREA_WIDTH);
     left: var(--REASONS_AREA_LEFT);
     transition: width #{CRAFTING_TRANSITION_SPEED}ms, left #{CRAFTING_TRANSITION_SPEED}ms;    
@@ -155,21 +149,54 @@ styles += """
   .points_by_community {
     display: inline-block;
     vertical-align: top;
-    margin: 38px var(--POINT_COLUMN_MARGIN) 0 var(--POINT_COLUMN_MARGIN);
+    margin-top: 38px;
+    padding: 0 var(--POINT_COLUMN_MARGIN) 0 var(--POINT_COLUMN_MARGIN);
     position: relative;
   }
 
 
-  @media (max-width: #{PHONE_BREAKPOINT}px) {
+  @media #{PHONE_MEDIA} {
     .pros_by_community {
-      margin-right: calc(var(--POINT_COLUMN_MARGIN) / 2);
+      padding-right: 0;
     }
 
     .cons_by_community {
-      margin-left: calc(var(--POINT_COLUMN_MARGIN) / 2);
+      padding-left: 0;
     }
 
   }
+
+  .points_heading_label {
+    font-size: 27px;
+    text-align: center;
+    padding-bottom: 24px;
+    padding-top: 7px;
+
+  }
+
+  @media #{TABLET_MEDIA} {
+    .points_heading_label {
+      font-size: 24px;
+    }
+  }
+
+  @media #{PHONE_MEDIA} {
+    .points_heading_label {
+      font-size: 22px;
+    }
+  }
+
+
+  .points_by_community .points_heading_label {
+    font-weight: 400;
+    position: relative;
+  }
+
+  .DecisionBoard .points_heading_label {
+    color: #{focus_color()};
+    font-weight: 700;
+  }
+
 
   .points_by_community .points_heading_label, .empty-list-callout, .reasons_region .point, .give_a_point {
     opacity: 0;
@@ -432,23 +459,6 @@ window.Reasons = ReactiveComponent
           TRANSLATE
             id: "engage.show_all_thoughts"
             "Show All Reasons"
-
-
-
-      if false && edit_mode && browser.is_mobile && !embedded_demo()
-        # full screen edit point mode for mobile
-        valence = if edit_mode in ['community_pros', 'your_pro_points'] 
-                    'pros' 
-                  else 
-                    'cons'
-        pc = fetch edit_mode
-        EditPoint 
-          key: if pc.adding_new_point then "new_point_#{valence}" else pc.editing_points[0]
-          point: if pc.adding_new_point then "new_point_#{valence}" else pc.editing_points[0]
-          proposal: @props.proposal
-          fresh: pc.adding_new_point
-          valence: valence
-          your_points_key: edit_mode
 
 
 
@@ -885,6 +895,15 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
   (pnt.key for pnt in points)
 
 
+
+styles += """
+  .point_list {
+    width: var(--POINT_WIDTH);
+  }
+
+"""
+
+
 window.PointsList = ReactiveComponent
   displayName: 'PointsList'
 
@@ -906,24 +925,9 @@ window.PointsList = ReactiveComponent
 
     if @props.rendered_as == 'community_point'
       header_prefix = if mode == 'results' then 'top' else "other"
-      header_style = 
-        width: "var(--POINT_WIDTH)"
-        fontSize: "27px"
-        fontWeight: 400 
-        position: 'relative'
-        left: if @props.valence == 'cons' then -20 else 20
-          # Mike: I wanted the headers to be centered over the ENTIRE
-          # points including avatars, not just bubbles.  But the
-          # avatars are sticking out on their own, so I simulated
-          # a centered look with these -20px and +20px offsets
       wrapper = @drawCommunityPoints
     else
       header_prefix = 'your' 
-      header_style = 
-        fontWeight: 700
-        color: focus_color()
-        width: "var(--POINT_WIDTH)"
-        fontSize: "27px"
       wrapper = @drawYourPoints
 
 
@@ -948,9 +952,13 @@ window.PointsList = ReactiveComponent
     other_heading = get_heading(if @props.valence == 'pros' then 'cons' else 'pros')
     # Calculate the other header height so that if they break differently,
     # at least they'll have same height
-    header_height = Math.max heightWhenRendered(heading,       header_style), \
-                             heightWhenRendered(other_heading, header_style)
+    wrap = (headd) =>
+      "<div class='#{if @props.rendered_as == 'community_point' then 'points_by_community' else 'DecisionBoard'}'> <div class='points_heading_label'>#{headd}</div> </div>"
+    header_height = Math.max heightWhenRendered(wrap(heading)), \
+                             heightWhenRendered(wrap(other_heading))
 
+    if @props.rendered_as == 'community_point' 
+      header_height -= 38 # for padding-top on .community_point
     HEADING = if @props.rendered_as == 'community_point' then H3 else H4 
 
     wrapper [
@@ -960,10 +968,7 @@ window.PointsList = ReactiveComponent
         key: 'point_list_heading'
         id: @local.key.replace(/\//g,'-')
         className: 'points_heading_label'
-        style: _.extend header_style,
-          textAlign: 'center'
-          marginBottom: 18
-          marginTop: 7
+        style:
           height: header_height
         heading
 
@@ -976,7 +981,7 @@ window.PointsList = ReactiveComponent
             continue if !passes_running_timelapse_simulation(point.created_at)
 
             if @props.points_editable && \
-               point.key in your_points.editing_points # && !browser.is_mobile
+               point.key in your_points.editing_points
               EditPoint 
                 key: point.key
                 point: point.key
@@ -1002,7 +1007,7 @@ window.PointsList = ReactiveComponent
               fontStyle: 'italic'
               textAlign: 'center'
               color: '#777'
-              marginLeft: -20
+              display: if WINDOW_WIDTH() < 430 then 'none'
 
             if none_given
               "No #{get_point_label(@props.valence.substring(0, @props.valence.length - 1) + 's', proposal)} given"
@@ -1059,8 +1064,6 @@ window.PointsList = ReactiveComponent
       style: _.defaults (@props.style or {}),
         minHeight: (if points_for_proposal(proposal).length > 4 && mode == 'crafting' then window.innerHeight else 100)
         zIndex: if @columnStandsOut() then 6 else 1
-        width: "var(--POINT_WIDTH)"
-
         transition: "transform #{CRAFTING_TRANSITION_SPEED}ms, width #{CRAFTING_TRANSITION_SPEED}ms"
         transform: "translate(#{x_pos}, 0)"
       if mode == 'crafting' && !TABLET_SIZE()
@@ -1088,7 +1091,6 @@ window.PointsList = ReactiveComponent
       style: _.defaults (@props.style or {}),
         display: 'inline-block'
         verticalAlign: 'top'        
-        width: "var(--POINT_WIDTH)"
         marginTop: 28
         position: 'relative'
         zIndex: if @columnStandsOut() then 6 else 1        
@@ -1157,7 +1159,7 @@ window.PointsList = ReactiveComponent
 
               "Skip to #{noun} points by others to vote on important ones."
  
-      else # if !browser.is_mobile
+      else
         EditPoint
           key: "new_point_#{@props.valence}"
           proposal: @props.proposal
@@ -1192,7 +1194,6 @@ window.PointsList = ReactiveComponent
         text_style:
           #color: focus_color()
           textDecoration: 'underline'
-          fontSize: if browser.is_mobile then 16
 
 
 
@@ -1262,11 +1263,11 @@ window.PointsList = ReactiveComponent
     DIV 
       key: 'drop-target'
       'aria-hidden': true
-      style: 
-        marginLeft: if @props.valence == 'cons' then 24 else 0
-        marginRight: if @props.valence == 'pros' then 24 else 0
-        position: 'relative'
-        left: if @props.valence == 'cons' then -18 else 18
+      # style: 
+      #   marginLeft: if @props.valence == 'cons' then 24 else 0
+      #   marginRight: if @props.valence == 'pros' then 24 else 0
+      #   position: 'relative'
+      #   left: if @props.valence == 'cons' then -18 else 18
 
       @drawGhostedPoint
         text: drop_target_text
@@ -1425,7 +1426,7 @@ GroupSelectionRegion = ReactiveComponent
 
     if !region_selected
       histocache = last_histogram_position[@props.proposal]
-      return SPAN null if !histocache
+      return SPAN null if !histocache || !histocache.positions?[single_opinion_selected.user]?[2]
       avatar_height = 2 * histocache.positions[single_opinion_selected.user][2]
       # stance = (histocache.positions[single_opinion_selected.user][0] + avatar_height / 2) / slidergram_width
 

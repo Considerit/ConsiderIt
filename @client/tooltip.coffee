@@ -20,7 +20,7 @@ styles += """
 
 """
 
-clear_tooltip = ->
+window.clear_tooltip = ->
   tooltip = fetch('tooltip')
   tooltip.coords = tooltip.tip = tooltip.top = tooltip.positioned = null
   tooltip.offsetY = tooltip.offsetX = null 
@@ -37,6 +37,8 @@ toggle_tooltip = (e) ->
       show_tooltip(e)
 
 show_tooltip = (e) ->
+  console.trace()
+
   tooltip_el = $$.closest(e.target, '[data-tooltip]')
   if tooltip_el?
     tooltip = fetch 'tooltip'

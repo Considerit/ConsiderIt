@@ -666,6 +666,16 @@ user_has_set_a_view = ->
 
 
 
+styles += """
+  @media #{PHONE_MEDIA} {
+    .filter_opinions_to {
+      display: none;
+    }
+
+  }
+"""
+
+
 OpinionViews = ReactiveComponent
   displayName: 'OpinionViews'
 
@@ -728,7 +738,7 @@ OpinionViews = ReactiveComponent
                 className: 'custom_view_triangle'
                 style: 
                   left: "calc(50% - 12px)"
-                  bottom: if browser.is_mobile then -5 else -5                  
+                  bottom: -5                  
                   width: 0
                   height: 0 
                   borderLeft: '12px solid transparent'
@@ -739,7 +749,7 @@ OpinionViews = ReactiveComponent
               className: 'custom_view_triangle'
               style: 
                 left: "calc(50% - 15px)"
-                bottom: if browser.is_mobile || TABLET_SIZE() then -29 else -27
+                bottom: if TABLET_SIZE() then -29 else -27
               dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="rgb(182,182,182)"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
 
       }
@@ -1306,11 +1316,11 @@ InteractiveOpinionViews = ReactiveComponent
                 'data-key': weight.key
 
                 BUTTON 
-                  'data-tooltip': if !browser.is_mobile then weight.label
                   className: "weight opinion_view_button #{if activated_weights[weight.key] then 'active' else ''}"
-                  onClick: ->
+                  onClick: (e) ->
                     toggle_weight weight
-
+                    e.stopPropagation()
+                    
                   if weight.icon
                     weight.icon if activated_weights[weight.key] then 'white'
 
@@ -1927,7 +1937,7 @@ window.ToggleButtons = (items, view_state, style) ->
 
             item.label
 
-          if view_state.active == key && item.draw_when_active
+          if view_state.active == key && item.draw_when_active && !item.disabled
             item.draw_when_active()
 
 window.OpinionViews = OpinionViews

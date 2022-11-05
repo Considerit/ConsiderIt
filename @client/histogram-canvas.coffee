@@ -239,8 +239,7 @@ window.Histogram = ReactiveComponent
                             !opinion_views.active_views.single_opinion_selected && 
                             !@props.backgrounded &&
                             (opinion_views.active_views.region_selected || 
-                              (!@local.touched && 
-                                @local.mouse_opinion_value && 
+                              (@local.mouse_opinion_value && 
                                 !@local.hovering_over_avatar))
 
     histo_height = @props.height + REGION_SELECTION_VERTICAL_PADDING
@@ -304,34 +303,11 @@ window.Histogram = ReactiveComponent
 
 
     if @enable_range_selection || enable_individual_selection
-      if !browser.is_mobile
-        _.extend histogram_props,
-          onClick: @onClick
-          onMouseMove: @onMouseMove
-          onMouseLeave: @onMouseLeave
-          onMouseDown: @onMouseDown
-
-      else 
-        _.extend histogram_props,
-
-          onTouchStart: (ev) => 
-            curr_time = new Date().getTime()
-            # activation by double tap
-            if @local.last_tapped_at && curr_time - @local.last_tapped_at < 300
-              ev.preventDefault()
-              @local.touched = true
-              save @local
-              @onClick(ev)
-            else 
-              @local.last_tapped_at = curr_time
-              save @local
-
-          onTouchMove: (ev) => ev.preventDefault(); @onMouseMove(ev)
-          onTouchEnd: (ev) => 
-            curr_time = new Date().getTime()
-            # activation by double tap
-            @local.last_tapped_at = curr_time
-            save @local
+      _.extend histogram_props,
+        onClick: @onClick
+        onMouseMove: @onMouseMove
+        onMouseLeave: @onMouseLeave
+        onMouseDown: @onMouseDown
 
     if @props.flip 
       flip_id = "histogram-#{proposal.key}"
@@ -587,8 +563,7 @@ window.Histogram = ReactiveComponent
 
         is_deselection = \
           (is_histogram_controlling_region_selection(@props.histo_key)) || ( \
-          some_region_selected && 
-           (!@local.touched || inRange(@local.mouse_opinion_value, min, max)))
+          some_region_selected && inRange(@local.mouse_opinion_value, min, max))
 
         # page resizes because of changing pros/cons shown unless we fix the height of the reasons region 
         reasons_region_el = ReactDOM.findDOMNode(@).closest('.OpinionBlock').querySelector('.reasons_region')

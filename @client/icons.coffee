@@ -47,10 +47,11 @@ window.double_up_icon = (size) ->
 
 
 
-window.plusIcon = (outline_color) ->
+window.plusIcon = (outline_color, size) ->
+  size ?= 30
   SVG
-    width: 30 
-    height: 30
+    width: size 
+    height: size
     fill: outline_color or 'white'
     viewBox: "50 50 600 450" 
 

@@ -216,7 +216,7 @@ window.Point = ReactiveComponent
                 fontSize: 12
                 color: '#666'
 
-              if !screencasting() && !embedded_demo() && fetch('/subdomain').name != 'galacticfederation'
+              if !PHONE_SIZE() && !screencasting() && !embedded_demo() && fetch('/subdomain').name != 'galacticfederation'
                 [
                   prettyDate(point.created_at)
                   SPAN key: 'padding', style: paddingLeft: 8
@@ -398,7 +398,7 @@ window.Point = ReactiveComponent
                 display: 'inline-block'
                 marginRight: 10
 
-            translator("engage.include_button", "Important point") + "#{if included then '' else '?'}" 
+            translator("engage.include_button", "Important") + "#{if included then '' else '?'}" 
 
 
       if is_selected
@@ -731,7 +731,7 @@ styles += """
     min-height: 34px; 
   }
 
-  @media (max-width: #{TABLET_BREAKPOINT}px) {
+  @media #{NOT_LAPTOP_MEDIA} {
     .community_point .point_content {
       border-radius: 16px 16px 0 0;
     }

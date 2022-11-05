@@ -35,9 +35,7 @@ styles += """
     transition: opacity .4s ease;
 
     width: var(--ADD_REASONS_CALLOUT_BUTTON_WIDTH);
-    top: 26
-
-
+    top: 26px;
   }
 
   .ProposalItem:hover .add_reasons_callout, .one-col .ProposalItem .add_reasons_callout {
@@ -64,6 +62,7 @@ window.OpinionSlider = ReactiveComponent
   render : ->
     proposal = fetch @props.proposal
     slider = fetch @props.slider_key
+    current_user = fetch '/current_user'
 
     your_opinion = @props.your_opinion
 
@@ -91,6 +90,8 @@ window.OpinionSlider = ReactiveComponent
       else 
         translator "engage.slider_feedback.neutral", "Neutral"
 
+    could_possibly_opine = couldUserMaybeOpine proposal
+
     ####
     # Define slider layout      
 
@@ -100,8 +101,6 @@ window.OpinionSlider = ReactiveComponent
         width: @props.width
         filter: if @props.backgrounded then 'grayscale(100%)'
 
-      if (@props.focused || (TABLET_SIZE() && @props.is_expanded)) && show_handle
-        @drawFeedback() 
 
       Slider
         slider_key: @props.slider_key
@@ -163,7 +162,15 @@ window.OpinionSlider = ReactiveComponent
         shouldFlipIgnore: @props.shouldFlipIgnore
 
 
-      @saveYourOpinionNotice()
+      if could_possibly_opine && (@props.focused || (TABLET_SIZE() && @props.is_expanded)) && show_handle
+        @drawFeedback() 
+
+      # if could_possibly_opine && (TABLET_SIZE() || !customization('discussion_enabled', proposal)) && !current_user.logged_in && !slider.is_moving
+      #   @saveYourOpinionNotice()
+
+
+
+
       if @props.show_reasons_callout
         @showReasonsCallout()
 
@@ -218,68 +225,63 @@ window.OpinionSlider = ReactiveComponent
           top: 15
 
 
-  saveYourOpinionNotice : -> 
-    proposal = fetch @props.proposal
-    your_opinion = @props.your_opinion
-    slider = fetch @props.slider_key
-    current_user = fetch '/current_user'
+  # saveYourOpinionNotice : -> 
+  #   proposal = fetch @props.proposal
+  #   your_opinion = @props.your_opinion
+  #   slider = fetch @props.slider_key
 
-    return SPAN null if (!TABLET_SIZE() && customization('discussion_enabled', proposal))  || \
-                         current_user.logged_in || slider.is_moving
+  #   style = 
+  #     #backgroundColor: '#eee'
+  #     padding: 10
+  #     color: 'white'
+  #     textAlign: 'center'
+  #     fontSize: 16
+  #     position: 'relative'
+  #     fontWeight: 700
+  #     textDecoration: 'underline'
+  #     cursor: 'pointer'
+  #     color: focus_color()
+
+  #   notice = translator "engage.login_to_save_opinion", 'Log in to add your opinion'
     
+  #   s = sizeWhenRendered notice, style
 
-    style = 
-      #backgroundColor: '#eee'
-      padding: 10
-      color: 'white'
-      textAlign: 'center'
-      fontSize: 16
-      position: 'relative'
-      fontWeight: 700
-      textDecoration: 'underline'
-      cursor: 'pointer'
-      color: focus_color()
+  #   save_opinion = (proposal) => 
+  #     can_opine = @props.permitted()
 
-    notice = translator "engage.login_to_save_opinion", 'Log in to add your opinion'
-    
-    s = sizeWhenRendered notice, style
+  #     if can_opine > 0
+  #       your_opinion.published = true
+  #       your_opinion.key ?= "/new/opinion"
+  #       save your_opinion, ->
+  #         show_flash(translator('engage.flashes.opinion_saved', "Your opinion has been saved"))
 
-    save_opinion = (proposal) => 
-      can_opine = @props.permitted()
+  #     else
+  #       # trigger authentication
+  #       reset_key 'auth',
+  #         form: 'create account'
+  #         goal: 'To participate, please introduce yourself.'
+  #         after: =>
+  #           can_opine = @props.permitted()
+  #           if can_opine > 0
+  #             save_opinion(proposal)
 
-      if can_opine > 0
-        your_opinion.published = true
-        your_opinion.key ?= "/new/opinion"
-        save your_opinion, ->
-          show_flash(translator('engage.flashes.opinion_saved', "Your opinion has been saved"))
+  #   DIV 
+  #     style: 
+  #       width: @props.width
+  #       margin: 'auto'
+  #       position: 'relative'
 
-      else
-        # trigger authentication
-        reset_key 'auth',
-          form: 'create account'
-          goal: 'To participate, please introduce yourself.'
-          after: =>
-            can_opine = @props.permitted()
-            if can_opine > 0
-              save_opinion(proposal)
+  #     BUTTON
+  #       className: 'like_link'
+  #       style: _.extend style, 
+  #         left: (slider.value + 1) / 2 * @props.width - s.width / 2 - 10
 
-    DIV 
-      style: 
-        width: @props.width
-        margin: 'auto'
-        position: 'relative'
+  #       onClick: => save_opinion(proposal)
+  #       onKeyPress: (e) => 
+  #         if e.which == 32 || e.which == 13
+  #           save_opinion(proposal)
 
-      BUTTON
-        className: 'like_link'
-        style: _.extend style, 
-          left: (slider.value + 1) / 2 * @props.width - s.width / 2 - 10
-
-        onClick: => save_opinion(proposal)
-        onKeyPress: (e) => 
-          if e.which == 32 || e.which == 13
-            save_opinion(proposal)
-
-        notice 
+  #       notice 
 
   drawFeedback: -> 
     proposal = fetch @props.proposal

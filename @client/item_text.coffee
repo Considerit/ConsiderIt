@@ -1,7 +1,4 @@
 
-
-TITLE_FONT_SIZE_COLLAPSED = 20
-
 COLLAPSED_MAX_HEIGHT = 50
 EXPANDED_MAX_HEIGHT = 500
 
@@ -42,9 +39,15 @@ styles += """
     border-style: solid;
     border-color: #{focus_blue + "ad"}; /* with some transparency */
     transition: border-color 1s;
-    font-size: #{TITLE_FONT_SIZE_COLLAPSED}px;
+    font-size: 20px;
     font-weight: 700;
     color: #111;    
+  }
+
+  @media #{PHONE_MEDIA} {
+    .proposal-title-text-inline {
+      font-size: 17px;
+    }
   }
 
   .proposal-title-text-inline:hover {
@@ -535,7 +538,7 @@ window.ItemText = ReactiveComponent
 
                 "{cnt, plural, one {# pro or con} other {# pros & cons}}"
 
-          if opinion_prompt
+          if opinion_prompt && !TABLET_SIZE()
             BUTTON 
               key: 'give-opinion'
               className: 'small-give-your-opinion metadata-piece separated like_link monospaced'

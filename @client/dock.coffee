@@ -87,7 +87,7 @@ window.Dock = ReactiveComponent
     if dock.docked
       [x, y] = [dock.x, dock.y]
 
-      positioning_method = if browser.is_mobile then 'absolute' else 'fixed'
+      positioning_method = 'fixed' # if browser.is_mobile then 'absolute' else 'fixed'
 
       style = 
         top: 0
@@ -196,7 +196,7 @@ window.Dock = ReactiveComponent
         height        : element_height
         constraints   : @props.constraints or []
         docked_key    : @props.docked_key
-        offset_parent : if browser.is_mobile then $$.offset(dock_el.offsetParent or dock_el).top 
+        # offset_parent : if browser.is_mobile then $$.offset(dock_el.offsetParent or dock_el).top 
       }
 
   componentWillUnmount : -> 
@@ -627,20 +627,20 @@ dockingStation =
   #  - http://www.quirksmode.org/blog/archives/2010/12/the_fifth_posit.html
 
   adjustForDevice : (y, v) ->
-    if browser.is_mobile
-      # When absolutely positioning, the reference is with respect to the closest
-      # parent that has been positioned. Because dock.y is with respect to the 
-      # document, we need to adjust for the parent offset.   
-      y -= v.offset_parent
-      x = 0
-    else
-      # Fixed positioning is relative to the viewport, not the document
-      y -= dockingStation.viewport.top 
+    # if browser.is_mobile
+    #   # When absolutely positioning, the reference is with respect to the closest
+    #   # parent that has been positioned. Because dock.y is with respect to the 
+    #   # document, we need to adjust for the parent offset.   
+    #   y -= v.offset_parent
+    #   x = 0
+    # else
+    # Fixed positioning is relative to the viewport, not the document
+    y -= dockingStation.viewport.top 
 
-      # Adjust for horizontal scroll for fixed position elements because they don't 
-      # move with the rest of the content (they're fixed to the viewport). 
-      # ScrollLeft is used to offset the fixed element to simulate docking to the window.
-      x = -document.body.scrollLeft
+    # Adjust for horizontal scroll for fixed position elements because they don't 
+    # move with the rest of the content (they're fixed to the viewport). 
+    # ScrollLeft is used to offset the fixed element to simulate docking to the window.
+    x = -document.body.scrollLeft
 
     [x,y]
 

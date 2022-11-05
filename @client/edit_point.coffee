@@ -14,42 +14,18 @@ window.EditPoint = ReactiveComponent
         sign_name : if @props.fresh then true else !point.hide_name
         add_details : false
 
-    mobile = false && browser.is_mobile
+    textarea_style = 
+      width: '100%'
+      overflow: 'hidden'
+      fontSize: 14
+      padding: '4px 6px'
 
-    if mobile
-      textarea_style = 
-        width: '100%'
-        overflow: 'hidden'
-        fontSize: 18 # if PORTRAIT_MOBILE() then 50 else 30
-        padding: '4px 6px'
-
-      # full page mode if we're on mobile      
-      parent = document.getElementById "proposal-#{proposal.id}"
-      parent_offset = if parent then $$.offset(parent).top else 0
-      style = 
-        position: 'absolute'
-        top: 0
-        left: 50
-        height: '100%'
-        width: WINDOW_WIDTH() - 100
-        backgroundColor: 'rgba(255,255,255,.85)'
-        fontSize: 20
-        zIndex: 99999999
-        padding: "#{@scrollY - parent_offset}px 50px 100px 50px"
-
-    else 
-      textarea_style = 
-        width: if mobile then '75%' else '100%'
-        overflow: 'hidden'
-        fontSize: if mobile then 30 else 14
-        padding: '4px 6px'
-
-      style = 
-        position: 'relative'
-        fontSize: 14
-        zIndex: 1
-        marginTop: if TABLET_SIZE() then 40
-        marginBottom: 15
+    style = 
+      position: 'relative'
+      fontSize: 14
+      zIndex: 1
+      marginTop: if TABLET_SIZE() then 40
+      marginBottom: 15
 
 
     DIV
@@ -137,7 +113,6 @@ window.EditPoint = ReactiveComponent
             'data-action': 'submit-point'
             onClick: @savePoint
             style: 
-              # fontSize: if PORTRAIT_MOBILE() then 50 else if LANDSCAPE_MOBILE() then 36
               backgroundColor: focus_color() 
             translator 'engage.done_button', 'Done'             
 
@@ -149,7 +124,6 @@ window.EditPoint = ReactiveComponent
             color: '#888888'
             top: 2 #if mobile then 0 else 2
             marginLeft: 10
-            # fontSize: if PORTRAIT_MOBILE() then 50 else if LANDSCAPE_MOBILE() then 36 else 16
             # right: if mobile then -10 else 20
             position: 'relative'
             padding: if mobile then 10 else 0
@@ -184,17 +158,12 @@ window.EditPoint = ReactiveComponent
                      with peers."""
             translator 'engage.point_anonymous_toggle', 'Sign your name'
 
-  UNSAFE_componentWillMount : ->
-    # save scroll position and keep it there
-    if false && browser.is_mobile
-      @scrollY = window.scrollY
 
   componentDidMount : ->
     proposal = fetch @props.proposal
 
     if proposal.active 
 
-      # if !browser.is_mobile # iOS messes this up
       ReactDOM.findDOMNode(@refs.nutshell).querySelector('#nutshell').focus() 
       
       $$.ensureInView ReactDOM.findDOMNode(@refs.submit_point),
@@ -213,7 +182,6 @@ window.EditPoint = ReactiveComponent
   # guidelines/tips for good points
   drawTips : -> 
     proposal = fetch @props.proposal
-    mobile = false && browser.is_mobile
 
     singular =  if @props.valence == 'pros' 
                   get_point_label 'pro', proposal
@@ -225,24 +193,23 @@ window.EditPoint = ReactiveComponent
     DIV 
       id: 'tips_for_new_point'
       style:
-        position: if mobile then 'relative' else 'absolute'
-        left: if !mobile then (if @props.valence == 'pros' then "calc(-100% - 15px)" else "calc(100% + 15px)")
+        position: 'absolute'
+        left: if @props.valence == 'pros' then "calc(-100% - 4px)" else "calc(100% + 4px)"
+
         width: "100%"
         color: 'white'
         zIndex: 1
-        marginBottom: if mobile then 20
         backgroundColor: focus_color() 
 
       DIV 
         style: 
-          padding: if !mobile then '14px 18px'
+          padding: '14px 18px'
           position: 'relative'
-          marginLeft: 5
 
         SPAN 
           style: 
             fontWeight: 600
-            # fontSize: if PORTRAIT_MOBILE() then 70 else if LANDSCAPE_MOBILE() then 36
+
           translator 
             id: 'engage.write_point_header'
             pro_or_con: capitalize(singular)
@@ -265,7 +232,6 @@ window.EditPoint = ReactiveComponent
                 key: tip
                 style: 
                   paddingBottom: 3
-                  #fontSize: if PORTRAIT_MOBILE() then 24 else if LANDSCAPE_MOBILE() then 14
                 tip  
 
   done : ->

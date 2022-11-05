@@ -49,6 +49,14 @@ catch
   console.error 'no product page code'
 
 
+styles += """
+  #content {
+    min-width: 320px;
+  }
+
+
+"""
+
 
 ## ########################
 ## Initialize defaults for client data

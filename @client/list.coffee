@@ -6,7 +6,7 @@ require './item'
 PROPOSAL_AUTHOR_AVATAR_SIZE = 40
 PROPOSAL_AVATAR_GUTTER = 18
 PROPOSAL_AUTHOR_AVATAR_SIZE_SMALL = 20
-PROPOSAL_AVATAR_GUTTER_SMALL = 9
+PROPOSAL_AVATAR_GUTTER_SMALL = 12
 
 
 window.styles += """
@@ -19,7 +19,7 @@ window.styles += """
   }
 
 
-  @media (min-width: #{TABLET_BREAKPOINT}px) {
+  @media #{LAPTOP_MEDIA} {
     :root, :before, :after {
       --ITEM_TEXT_WIDTH:    calc( .6 * (var(--HOMEPAGE_WIDTH) - var(--LIST_PADDING_LEFT) - var(--AVATAR_SIZE_AND_GUTTER) - var(--PROPOSAL_AUTHOR_AVATAR_SIZE)) );
       --ITEM_OPINION_WIDTH: calc( .4 * (var(--HOMEPAGE_WIDTH) - var(--LIST_PADDING_RIGHT)) );      
@@ -32,7 +32,7 @@ window.styles += """
     }
   }
 
-  @media (max-width: #{TABLET_BREAKPOINT}px) {
+  @media #{TABLET_MEDIA} {
     :root, :before, :after {
       --ITEM_TEXT_WIDTH:    calc( var(--HOMEPAGE_WIDTH) - var(--AVATAR_SIZE_AND_GUTTER) );
       --ITEM_OPINION_WIDTH: calc( var(--HOMEPAGE_WIDTH) - var(--AVATAR_SIZE_AND_GUTTER) );  
@@ -46,14 +46,21 @@ window.styles += """
   }
 
 
-  @media (max-width: #{PHONE_BREAKPOINT}px) {
+  @media #{PHONE_MEDIA} {
     :root, :before, :after {
       --PROPOSAL_AUTHOR_AVATAR_SIZE: #{PROPOSAL_AUTHOR_AVATAR_SIZE_SMALL}px;
       --PROPOSAL_AUTHOR_AVATAR_GUTTER: #{PROPOSAL_AVATAR_GUTTER_SMALL}px;
+      --ITEM_TEXT_WIDTH:    calc( var(--HOMEPAGE_WIDTH) - var(--AVATAR_SIZE_AND_GUTTER) );
+      --ITEM_OPINION_WIDTH: calc( var(--HOMEPAGE_WIDTH) - var(--AVATAR_SIZE_AND_GUTTER) );  
+
+      --LIST_PADDING_TOP: 0px;
+      --LIST_PADDING_BOTTOM: 0px;
+      --LIST_PADDING_RIGHT: 2px;
+      --LIST_PADDING_LEFT: 2px;
     }
   }
 
-  @media (min-width: #{PHONE_BREAKPOINT}px) {
+  @media #{NOT_PHONE_MEDIA} {
     :root, :before, :after {
       --PROPOSAL_AUTHOR_AVATAR_SIZE: #{PROPOSAL_AUTHOR_AVATAR_SIZE}px;
       --PROPOSAL_AUTHOR_AVATAR_GUTTER: #{PROPOSAL_AVATAR_GUTTER}px;
@@ -496,7 +503,7 @@ styles += """
     display: flex;
   }
 
-  @media (max-width: #{TABLET_BREAKPOINT}px) {
+  @media #{NOT_LAPTOP_MEDIA} {
 
     .ListHeader-wrapper {
       padding-top: 12px;
@@ -520,14 +527,14 @@ styles += """
     width: 100%;
   }
 
-  @media (min-width: #{PHONE_BREAKPOINT}px) and (max-width: #{TABLET_BREAKPOINT}px) {
+  @media #{TABLET_MEDIA} {
     .text-wrapper {
       width: calc(var(--AVATAR_SIZE_AND_GUTTER) + var(--ITEM_TEXT_WIDTH) - 24px);
       margin-left: 24px;
     }
   }
 
-  @media (max-width: #{PHONE_BREAKPOINT}px) {
+  @media #{PHONE_MEDIA} {
     .text-wrapper {
       margin-left: 24px;
       width: calc(var(--AVATAR_SIZE_AND_GUTTER) + var(--ITEM_TEXT_WIDTH) - 24px);
@@ -623,7 +630,7 @@ styles += """
     width: 100%;
   }
 
-  @media (max-width: #{TABLET_BREAKPOINT}px) {
+  @media #{NOT_LAPTOP_MEDIA} {
     button.NewList {
       padding: 24px 12px;
       border-radius: 0px;
@@ -796,12 +803,12 @@ styles += """
     outline: none;
   }
 
-  @media (min-width: #{PHONE_BREAKPOINT}px) and (max-width: #{TABLET_BREAKPOINT}px) {
+  @media #{TABLET_MEDIA} {
     .LIST-title {
       font-size: 28px;
     }  
   }
-  @media (max-width: #{PHONE_BREAKPOINT}px) {
+  @media #{PHONE_MEDIA} {
     .LIST-title {
       font-size: 22px; 
       // margin-left: 28px; 
@@ -860,7 +867,7 @@ styles += """
     display: none;
   }
 
-  @media (min-width: #{TABLET_BREAKPOINT}px) {
+  @media #{LAPTOP_MEDIA} {
     .CollapseList {
       transition: transform .25s, top .25s;
       position: absolute;
@@ -880,14 +887,7 @@ styles += """
     }    
   }
 
-  # @media (min-width: #{PHONE_BREAKPOINT}px) and (max-width: #{TABLET_BREAKPOINT}px) {
-  #   .CollapseList {
-  #     display: none;
-  #   }
-
-  # }
-
-  @media (max-width: #{TABLET_BREAKPOINT}px) {
+  @media #{NOT_LAPTOP_MEDIA} {
     .CollapseList {
       border: none;
       background-color: transparent;
@@ -976,6 +976,7 @@ CollapseList = (list_key) ->
     onClick: (e) -> 
       toggle_list(e.target)
       document.activeElement.blur()
+      e.stopPropagation()
 
     'aria-hidden': true
 
@@ -998,6 +999,12 @@ styles += """
     margin-bottom: 18px;
     padding: 0px var(--AVATAR_SIZE_AND_GUTTER);
     /* font-style: italic; */
+  }
+
+  @media #{PHONE_MEDIA} {
+    .LIST-description {
+      padding: 0px 0px;
+    }
   }
 
   .LIST-description.single-line {
@@ -1064,12 +1071,13 @@ styles += """
     width: var(--ITEM_OPINION_WIDTH);  
   }
 
-  @media (max-width: #{TABLET_BREAKPOINT}px) {
+  @media #{NOT_LAPTOP_MEDIA} {
     .ListActions {
       flex-direction: column;
       align-items: center;
       width: calc(var(--AVATAR_SIZE_AND_GUTTER) + var(--ITEM_TEXT_WIDTH));
       left: 0;
+      margin: auto;
     }
 
     .opinion-view-container {  

@@ -27,8 +27,9 @@ window.AuthCallout = ReactiveComponent
     return SPAN null if current_user.logged_in || customization('contribution_phase') == 'frozen'
 
     create_account_button_style = 
-                    backgroundColor: selected_color
-                    marginRight: 8
+      backgroundColor: selected_color
+      marginRight: 8
+
     DIV  
       style: 
         width: '100%'
@@ -41,7 +42,7 @@ window.AuthCallout = ReactiveComponent
         
         DIV 
           style: 
-            fontSize: 20
+            fontSize: if PHONE_SIZE() then 16 else 20
             fontWeight: 600
 
           AUTH_CALLOUT_BUTTONS(create_account_button_style)
@@ -57,6 +58,11 @@ window.AuthCallout = ReactiveComponent
           
 window.AUTH_CALLOUT_BUTTONS = (button_style) ->
   button_style ?= {}
+  if PHONE_SIZE()
+    _.extend button_style,
+      display: 'block'
+      margin: 'auto'
+
   subdomain = fetch '/subdomain'
   if subdomain.SSO_domain
 
@@ -322,10 +328,15 @@ window.styles += """
     font-size: 24px;
   }
   .AUTH_cancel.embedded {
-    margin-top: 8px;
+    margin: 8px auto 0px auto;
     padding: 8px 0 8px 8px;
     font-size: 18px;
-    text-decoration: underline;
+  }
+
+  @media #{PHONE_MEDIA} {
+    .AUTH_cancel.floating {
+      display: none;
+    }
   }
 
   .AUTH_submit_button {
@@ -354,15 +365,18 @@ window.styles += """
     width: 100%;
     border: 1px solid #ccc;
     padding: 10px 14px;
-    font-size: #{if browser.is_mobile then 36 else 20}px;
+    font-size: 20px;
     display: inline-block;
     background-color: #f2f2f2;
   }
 
 
-  @media (max-width: 637px) {
+  @media #{PHONE_MEDIA} {
     .AUTH_body_wrapper {
-      padding: 2.5em 32px 3em 36px;
+      padding: 2em 16px;
+    }
+    #AUTH_task {
+      font-size: 28px;      
     }
   }
 
@@ -452,21 +466,24 @@ window.AuthForm =
               
               options.submit_button or @i18n().submit_button 
 
+            if !options.disallow_cancel
+              DIV 
+                style: 
+                  textAlign: 'center'
+
+                BUTTON
+                  ref: 'cancel_dialog'
+                  className: 'AUTH_cancel embedded'
+                  title: translator 'shared.cancel_button', 'cancel'
+
+                  onClick: cancel_modal
+
+                  translator 'shared.cancel_button', 'cancel'
+
+
             if options.under_submit
               options.under_submit   
 
-            # if !options.disallow_cancel
-            #   DIV 
-            #     style: 
-            #       textAlign: 'right'
-            #     BUTTON
-            #       ref: 'cancel_dialog'
-            #       className: 'AUTH_cancel embedded'
-            #       title: translator 'shared.cancel_button', 'cancel'
-
-            #       onClick: cancel_modal
-
-            #       translator 'shared.cancel_button', 'cancel'
 
 
   RenderInput: (opts) -> 

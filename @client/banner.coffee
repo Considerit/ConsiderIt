@@ -1083,7 +1083,7 @@ window.PhotoBanner = (opts) ->
 
         .PhotoBanner > .wrapper .translator {
           padding: 16px;
-          width: 380px;
+          max-width: 380px;
           margin: 0 auto 36px auto; 
           background-color: rgba(255,255,255,.8);
           position: relative; 
@@ -1118,7 +1118,7 @@ window.PhotoBanner = (opts) ->
           text-shadow: 0px 1px 2px rgba(0,0,0,.4);
         }
 
-        @media (min-width: #{PHONE_BREAKPOINT}px) and (max-width: #{TABLET_BREAKPOINT}px) {
+        @media #{TABLET_MEDIA} {
           .PhotoBanner > .wrapper .CustomizeTitle .banner_title {
             font-size: 36px;
           }        
@@ -1127,7 +1127,7 @@ window.PhotoBanner = (opts) ->
           }
 
         }  
-        @media (max-width: #{PHONE_BREAKPOINT}px) {
+        @media #{PHONE_MEDIA} {
           .PhotoBanner > .wrapper .CustomizeTitle .banner_title {
             font-size: 24px;
           }        

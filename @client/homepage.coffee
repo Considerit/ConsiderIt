@@ -21,7 +21,7 @@ styles += """
     overflow: hidden;
   }
 
-  @media (min-width: #{TABLET_BREAKPOINT}px) {
+  @media #{LAPTOP_MEDIA} {
     .main_background {
       background-color: #{main_background_color};
     }
@@ -37,14 +37,14 @@ styles += """
 
   }
 
-  @media (max-width: #{TABLET_BREAKPOINT}px) {
+  @media #{NOT_LAPTOP_MEDIA} {
     .main_background {
       background-color: white;
     }
   }
 
 
-  @media (min-width: #{PHONE_BREAKPOINT}px) and (max-width: #{TABLET_BREAKPOINT}px) {
+  @media #{TABLET_MEDIA} {
     :root {
       --homepagetab_left_padding: 0px; /* 20px; */
     }
@@ -54,7 +54,7 @@ styles += """
   }
 
 
-  @media (max-width: #{PHONE_BREAKPOINT}px) {
+  @media #{PHONE_MEDIA} {
     :root {
       --homepagetab_left_padding: 0px; /* 8px; */
     }    
@@ -69,6 +69,13 @@ styles += """
     /* width: var(--HOMEPAGE_WIDTH); */
     padding: 0px var(--LIST_PADDING_RIGHT) 0px var(--LIST_PADDING_LEFT);
   }
+
+  @media #{NOT_LAPTOP_MEDIA} {
+    .sized_for_homepage {
+      width: var(--ITEM_TEXT_WIDTH);
+    }
+  }
+
 
 
 """
@@ -142,8 +149,11 @@ window.Homepage = ReactiveComponent
                   DIV 
                     key: message
                     style: 
-                      marginBottom: 24 
                       fontStyle: 'italic'
+                      maxWidth: 700
+                      margin: "0 auto 24px auto"
+                      textAlign: 'center'
+
                     message
 
                 if preamble = get_page_preamble()
@@ -268,7 +278,7 @@ ProposalsLoading = ReactiveComponent
       style: 
         width: HOMEPAGE_WIDTH()
         margin: 'auto'
-        padding: '60px'
+        padding: '60px 0px'
         textAlign: 'center'
         fontStyle: 'italic'
         #color: logo_red

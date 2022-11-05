@@ -27,7 +27,7 @@ styles += """
     width: 0;
   }
 
-  @media (max-width: #{TABLET_BREAKPOINT}px) {
+  @media #{NOT_LAPTOP_MEDIA} {
     .is_expanded .fast-thought .proposal-score-spacing, 
     .is_expanded .fast-thought .proposal-left-spacing, 
     .is_expanded .fast-thought .proposal-left-spacing, 
@@ -101,7 +101,14 @@ styles += """
     margin-bottom: 8px;
   }
 
-  @media (max-width: #{TABLET_BREAKPOINT}px) {
+
+  @media #{TABLET_MEDIA} {
+    .opinion-heading {
+      font-size: 24px;
+    }
+  }
+
+  @media #{PHONE_MEDIA} {
     .opinion-heading {
       font-size: 22px;
     }
@@ -316,7 +323,7 @@ window.Slidergram = ReactiveComponent
           opinions: opinions
           width: width
           height: if !@is_expanded then HISTOGRAM_HEIGHT_COLLAPSED else HISTOGRAM_HEIGHT_EXPANDED
-          enable_individual_selection: !@props.disable_selection && !browser.is_mobile
+          enable_individual_selection: !@props.disable_selection && (!PHONE_SIZE() && (!TABLET_SIZE() || @props.is_expanded))
           enable_range_selection: !just_you && !browser.is_mobile && !TABLET_SIZE()
           # draw_base: true
           draw_base_labels: !slider_regions
@@ -346,7 +353,7 @@ window.Slidergram = ReactiveComponent
                 else 
                   customization('slider_handle', proposal) or slider_handle.flat
 
-        handle_height: if !@is_expanded then 22 else if TABLET_SIZE() then 55 else 36
+        handle_height: if !@is_expanded then 22 else if TABLET_SIZE() then 44 else 36
         handle_width: if !@is_expanded then 27
 
         offset: !@is_expanded
@@ -445,7 +452,9 @@ window.canUserOpine = (proposal) ->
 
   can_opine
 
-
+window.couldUserMaybeOpine = (proposal) ->
+  can_opine = canUserOpine(proposal)
+  can_opine > 0 || can_opine in [Permission.NOT_LOGGED_IN, Permission.UNVERIFIED_EMAIL]  
 
 
 

@@ -3,9 +3,8 @@ styles += """
     cursor: pointer;
     background-color: transparent;
     border: none;
-    padding: 10px 36px 10px 9px;
+    padding: 0; 
     border-radius: 8px;
-    margin-left: -9px;   
     color: white;
     text-decoration: none;
     display: flex;
@@ -14,10 +13,15 @@ styles += """
     margin-top: 30px;
   }
 
-  @media (max-width: #{TABLET_BREAKPOINT}px) {
+  @media #{NOT_LAPTOP_MEDIA} {
     button.add_new_proposal {
-      // padding: 10px 36px 10px 0px;
       margin-left: 0;
+    }
+  }
+
+  @media #{PHONE_MEDIA} {
+    button.add_new_proposal {
+      padding: 0;
     }
   }
 
@@ -57,7 +61,7 @@ window.NewProposal = ReactiveComponent
     if !adding 
       BUTTON  
         name: "new_#{list_name}"
-        className: 'add_new_proposal proposal-title-text'
+        className: 'ProposalItem add_new_proposal proposal-title-text'
 
         
         onClick: (e) => 
@@ -72,17 +76,16 @@ window.NewProposal = ReactiveComponent
               form: 'create account'
               goal: 'Introduce yourself to share a response'
         
-        # A name: "new_#{list_name}"
-        SPAN 
-          style: 
-            marginLeft: 6
+        DIV className: 'proposal-left-spacing'
+                  
+        plusIcon(focus_color(), AVATAR_SIZE())
 
-        plusIcon(focus_color())
+        DIV className: 'proposal-avatar-spacing'
 
         SPAN 
           className: 'proposal-title-text-inline'
           style: 
-            marginLeft: 23
+            # marginLeft: 23
             color: focus_color() 
 
           if permitted
@@ -104,7 +107,7 @@ window.NewProposal = ReactiveComponent
       DIV 
         style:
           position: 'relative'
-          padding: '6px 0px'
+          padding: '16px 0px'
 
         # A name: "new_#{list_name}"
 
@@ -183,7 +186,7 @@ window.NewProposal = ReactiveComponent
                 fontSize: 14  
 
               style: 
-                fontSize: if browser.is_mobile then 36 else 20
+                fontSize: 20
                 width: w
                 border: "1px solid #ccc"
                 outline: 'none'
@@ -222,7 +225,7 @@ window.NewProposal = ReactiveComponent
                 border: '1px solid #ccc'
 
               style: 
-                fontSize: if browser.is_mobile then 36 else 16
+                fontSize: 16
                 width: w - 8 * 2
                 marginBottom: 8
                 minHeight: 120
@@ -451,6 +454,5 @@ window.NewProposal = ReactiveComponent
               LI 
                 style: 
                   paddingBottom: 3
-                  fontSize: if PORTRAIT_MOBILE() then 24 else if LANDSCAPE_MOBILE() then 14
                 tip  
 

@@ -60,17 +60,12 @@ window.EditList = ReactiveComponent
             top: 12
             minWidth: 'auto'
 
+          anchor_tooltip: translator "engage.list-config-icon-tooltip", "Configure list settings" 
           render_anchor: ->
-            SPAN 
-              "data-tooltip": translator "engage.list-config-icon-tooltip", "Configure list settings" 
 
-              ThreeDotsIcon              
-                size: 26
-                fill: '#888'
-
-              # GearIcon
-              #   size: 20
-              #   fill: '#888'
+            ThreeDotsIcon              
+              size: 26
+              fill: '#888'
 
           render_option: (option, is_active) ->
             SPAN 
@@ -366,8 +361,6 @@ window.ModalNewList = ReactiveComponent
                         right: 0
                       container_style: 
                         borderRadius: 8
-                      style: 
-                        fontSize: if browser.is_mobile then 32
 
 
 
@@ -382,7 +375,7 @@ window.ModalNewList = ReactiveComponent
                 border: 'none'
                 outline: 'none'
                 color: '#444'
-                fontSize: if browser.is_mobile then 16 else 12
+                fontSize: 12
 
               DIV 
                 style: 

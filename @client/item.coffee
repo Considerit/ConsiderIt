@@ -54,7 +54,7 @@ styles += """
 
   } 
 
-  @media (min-width: #{TABLET_BREAKPOINT}px) {
+  @media #{LAPTOP_MEDIA} {
     .ProposalItem, .show-all-proposals {
       left: calc(-1 * var(--LIST_PADDING_LEFT));
       width: calc(100% + var(--LIST_PADDING_LEFT) + var(--LIST_PADDING_RIGHT) );
@@ -66,7 +66,7 @@ styles += """
 
   }
 
-  @media (max-width: #{TABLET_BREAKPOINT}px) {
+  @media #{NOT_LAPTOP_MEDIA} {
     .ProposalItem {
       margin-bottom: 64px;
     }
@@ -239,7 +239,7 @@ styles += """
     width: 100%;        
   }
 
-  @media (max-width: #{TABLET_BREAKPOINT}px) {
+  @media #{NOT_LAPTOP_MEDIA} {
     .proposal-block-wrapper {
       padding-bottom: 14px;
     }
@@ -310,7 +310,7 @@ styles += """
 
   }
 
-  @media (min-width: #{TABLET_BREAKPOINT}px) {
+  @media #{LAPTOP_MEDIA} {
     .opinion-block-wrapper, .opinion-block-wrapper::after {
       --EXPANDED_OPINION_BACKGROUND_GUTTER: 6px;
       --OPINION_BLOCK_WRAPPER_WIDTH: min( 1400px, 100vw - 2 * var(--EXPANDED_OPINION_BACKGROUND_GUTTER) );
@@ -333,7 +333,7 @@ styles += """
 
   }  
 
-  @media (max-width: #{TABLET_BREAKPOINT}px) {
+  @media #{NOT_LAPTOP_MEDIA} {
     .opinion-block-wrapper::after {
       width: 100%;
       left: 0;
@@ -537,13 +537,13 @@ styles += """
     flex-shrink: 0;        
   }
 
-  @media (min-width: #{PHONE_BREAKPOINT}px) and (max-width: #{TABLET_BREAKPOINT}px) {
+  @media #{TABLET_MEDIA} {
     .proposal-score-spacing {
       width: 20px;
     }
   }
 
-  @media (max-width: #{PHONE_BREAKPOINT}px) {
+  @media #{PHONE_MEDIA} {
     .proposal-score-spacing {
       width: 8px;
     }
@@ -669,8 +669,8 @@ ProposalBlock = ReactiveComponent
           SPAN 
             className: 'empty_pic'
             style: 
-              height: 36
-              width: 36
+              height: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
+              width: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
               display: 'inline-block'
               border: "2px dashed #ddd"
       else
@@ -744,7 +744,7 @@ styles += """
     opacity: 1;    
   }
 
-  @media (min-width: #{TABLET_BREAKPOINT}px) {
+  @media #{LAPTOP_MEDIA} {
     .edit_and_delete_block {
       top: 7px;
       left: 14px;
@@ -756,7 +756,7 @@ styles += """
 
   }  
 
-  @media (max-width: #{TABLET_BREAKPOINT}px) {
+  @media #{NOT_LAPTOP_MEDIA} {
     .edit_and_delete_block {
       left: calc(var(--PROPOSAL_AUTHOR_AVATAR_SIZE) / 2 - 18px / 2 + 4px);
       top: calc(var(--PROPOSAL_AUTHOR_AVATAR_SIZE) + 6px);

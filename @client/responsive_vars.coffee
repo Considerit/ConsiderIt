@@ -22,23 +22,31 @@ require './browser_hacks'
 
 
 
-window.PHONE_BREAKPOINT = 545 
-window.TABLET_BREAKPOINT = 990
+PHONE_BREAKPOINT = 545 
+TABLET_BREAKPOINT = 990
+SUPER_NARROW_HEIGHT_BREAK = PHONE_BREAKPOINT
 
+window.PHONE_MEDIA  =     "(max-width: #{PHONE_BREAKPOINT}px)  or  (max-height: #{SUPER_NARROW_HEIGHT_BREAK}px)"
+window.TABLET_MEDIA =     "(min-width: #{PHONE_BREAKPOINT}px)  and (max-width:  #{TABLET_BREAKPOINT}px) and (min-height: #{SUPER_NARROW_HEIGHT_BREAK}px)"
+window.LAPTOP_MEDIA =     "(min-width: #{TABLET_BREAKPOINT}px) and (min-height: #{SUPER_NARROW_HEIGHT_BREAK}px)"
+window.NOT_LAPTOP_MEDIA = "(max-width: #{TABLET_BREAKPOINT}px) or  (max-height: #{SUPER_NARROW_HEIGHT_BREAK}px)"
+window.NOT_PHONE_MEDIA =  "(min-width: #{PHONE_BREAKPOINT}px)  and (min-height: #{SUPER_NARROW_HEIGHT_BREAK}px)"
 
 setResponsive = -> 
   responsive = fetch('responsive_vars')
 
-  w = Math.max 350, document.documentElement.clientWidth
+  # 320 is portrait on iPhone SE
+  w = Math.max 320, document.documentElement.clientWidth
   h = window.innerHeight
 
-  one_col = w < TABLET_BREAKPOINT
-  phone_size = w < PHONE_BREAKPOINT
+  phone_size = w < PHONE_BREAKPOINT || h < SUPER_NARROW_HEIGHT_BREAK
+  tablet_size = w < TABLET_BREAKPOINT || phone_size # this corresponds to NOT_LAPTOP_MEDIA
+
 
   portrait = h > w
 
   # There will be at least 80px of whitespace on either side of the document
-  doc_gutter = if phone_size then 16 else if one_col then 40 else Math.max(80, .09 * w )
+  doc_gutter = if phone_size then 16 else if tablet_size then 40 else Math.max(80, .09 * w )
   content_width = w - 2 * doc_gutter
   homepage_width = Math.round Math.min content_width, 1200
 
@@ -47,8 +55,8 @@ setResponsive = ->
     WINDOW_WIDTH: w    
     DOC_GUTTER: doc_gutter
     DASHBOARD_WIDTH: Math.max(900, w)
-    AUTH_WIDTH: if browser.is_mobile then content_width else 820
-    TABLET_SIZE: one_col
+    AUTH_WIDTH: if phone_size then w - 8 else if tablet_size then content_width else 820
+    TABLET_SIZE: tablet_size
     PHONE_SIZE: phone_size    
     CONTENT_WIDTH: content_width
     PORTRAIT_MOBILE: portrait && browser.is_mobile
@@ -76,20 +84,20 @@ setResponsive = ->
 
 styles += """
 
-  @media (min-width: #{TABLET_BREAKPOINT}px) {
+  @media #{LAPTOP_MEDIA} {
     :after, :root {
       --DOC_GUTTER: max(80px, 9vw);
     }
   }
 
-  @media (min-width: #{PHONE_BREAKPOINT}px) and (max-width: #{TABLET_BREAKPOINT}px) {
+  @media #{TABLET_MEDIA} {
     :after, :root {
       --DOC_GUTTER: 40px;
     }
 
   }
 
-  @media (max-width: #{PHONE_BREAKPOINT}px) {
+  @media #{PHONE_MEDIA} {
     :after, :root {
       --DOC_GUTTER: 16px;
     }

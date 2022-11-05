@@ -107,7 +107,7 @@ window.EditComment = ReactiveComponent
           style:
             width: '100%'
             lineHeight: 1.4
-            fontSize: 16 #if PORTRAIT_MOBILE() then 50 else if LANDSCAPE_MOBILE() then 30 else 16
+            fontSize: 16 
             border: if permitted < 0 then 'dashed 1px'
 
       if @local.errors?.length > 0

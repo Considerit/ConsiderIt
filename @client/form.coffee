@@ -188,6 +188,12 @@ window.WysiwygEditor = ReactiveComponent
       # },
     ]
 
+    for button in toolbar_items
+      button.onClick = (e) -> 
+        e.stopPropagation()
+        e.preventDefault()
+        console.log "BUTTON onclick"
+
 
     close_if_nothing_in_menu_focused = =>
       setTimeout => 
@@ -202,7 +208,9 @@ window.WysiwygEditor = ReactiveComponent
       toolbar_items.push 
         className: 'fa fa-code'
         title: 'Directly edit HTML'
-        onClick: => @local.edit_code = true; save @local
+        onClick: => 
+          @local.edit_code = true 
+          save @local
 
     id = @props.editor_key.replace(/\//g, '__')
     DIV 
@@ -254,7 +262,7 @@ window.WysiwygEditor = ReactiveComponent
                 visibility: if wysiwyg_editor.showing != @props.editor_key then 'hidden'
 
               onFocus: (e) => 
-                if !@local.focused_toolbar_item && !@local.just_unfocused
+                if !@local.focused_toolbar_item
 
                   if @local.focused_toolbar_item in [undefined, null]
                     @local.focused_toolbar_item = 0 
@@ -264,7 +272,6 @@ window.WysiwygEditor = ReactiveComponent
                   ReactDOM.findDOMNode(@refs["toolbaritem-#{@local.focused_toolbar_item}"]).focus()
 
               onKeyDown: (e) => 
-
                 if e.which in [37, 38, 39, 40]
                   # focus prev...
                   i = @local.focused_toolbar_item
@@ -283,7 +290,7 @@ window.WysiwygEditor = ReactiveComponent
                   e.preventDefault()
 
               for button, idx in toolbar_items
-                do (idx) =>
+                do (button, idx) =>
                   BUTTON
                     key: button.title or idx
                     ref: "toolbaritem-#{idx}"
@@ -302,24 +309,8 @@ window.WysiwygEditor = ReactiveComponent
                       display: if toolbar_horizontal then 'inline-block' else 'block'
                       marginBottom: 4
                     title: button.title
-                    value: if button.value then button.value 
+                    value: button.value 
                     onClick: button.onClick
-
-                    onFocus: (e) => 
-                      @local.focused_toolbar_item = idx; 
-                      save @local
-                      e.stopPropagation()
-
-                    onBlur: (e) => 
-                      e.stopPropagation()
-                      @local.focused_toolbar_item = null 
-                      @local.just_unfocused = true
-                      setTimeout =>
-                        @local.just_unfocused = false 
-                      , 0
-                      save @local 
-
-                      close_if_nothing_in_menu_focused()
 
           DIV 
             style: _.defaults {}, @props.container_style, 

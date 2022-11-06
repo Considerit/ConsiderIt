@@ -122,11 +122,10 @@ window.EditPoint = ReactiveComponent
           className: 'like_link'
           style:
             color: '#888888'
-            top: 2 #if mobile then 0 else 2
+            top: 2
             marginLeft: 10
-            # right: if mobile then -10 else 20
             position: 'relative'
-            padding: if mobile then 10 else 0
+            padding: 0
           translator 'shared.cancel_button', 'cancel'
 
         DIV 
@@ -146,6 +145,7 @@ window.EditPoint = ReactiveComponent
             checked:   @local.sign_name
             style: 
               verticalAlign: 'middle'
+              marginRight: 8
             onChange: =>
               @local.sign_name = !@local.sign_name
               save(@local)

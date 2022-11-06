@@ -820,7 +820,7 @@ window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
   mode = if personal_view_available(proposal) && personal_view_preferred then 'crafting' else 'results' 
 
   $$.ensureInView el,
-    extra_height: if !expanded_state[proposal.key] then 400 else 0
+    extra_height: if !expanded_state[proposal.key] then 80 else 0
     force: mode == 'crafting'
     callback: =>
       loc = fetch 'location'

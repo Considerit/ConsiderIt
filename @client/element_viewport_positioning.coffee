@@ -42,7 +42,7 @@ window.$$ =
   offset: (el) ->
     rect = el.getBoundingClientRect()
 
-    top = rect.top + window.pageYOffset - document.documentElement.clientTop
+    top  = rect.top  + window.pageYOffset - document.documentElement.clientTop
     left = rect.left + window.pageXOffset - document.documentElement.clientLeft
 
     {top, left}
@@ -70,7 +70,7 @@ window.$$ =
 
     _.defaults options,
       fill_threshold: 0
-      offset_buffer: 50
+      offset_buffer: 36
       scroll: true
       position: 'top' 
       speed: null
@@ -93,25 +93,21 @@ window.$$ =
     no_adjustment_needed = !options.force && is_onscreen && top_inside && bottom_inside  
 
     if !no_adjustment_needed
-      switch options.position 
-        when 'top'
-          target = el_top - options.offset_buffer
-        when 'bottom'
-          target = el_bottom - doc_height + options.offset_buffer
-        else
-          throw 'bad position for ensureInView'
+      if options.position != 'top'
+        console.error "ensureInView doesn't support position targets except 'top'"
 
       if options.scroll
 
-        distance_to_travel = options.speed || Math.abs( doc_top - target )
+        distance_to_travel = options.speed || Math.abs( doc_top - (el_top - options.offset_buffer) )
 
         $$.smoothScrollToTarget 
-          target: el_top - options.offset_buffer
+          el: el
+          offset_buffer: options.offset_buffer
           duration: Math.min(distance_to_travel, 1500)
           callback: options.callback
 
       else 
-        window.scrollTo 0, target 
+        window.scrollTo 0, target
         options.callback()
     else
       options.callback()
@@ -125,28 +121,34 @@ window.$$ =
     , 10
 
 
-  smoothScrollToTarget: ({target, duration, callback}) ->
-    start_pos = window.pageYOffset
-    diff = target - start_pos
+  smoothScrollToTarget: ({duration, callback, el, offset_buffer}) ->
+    target = $$.offset(el).top - offset_buffer
 
-    start_time = null
+    diff = target - window.pageYOffset
+    frames = 60 * duration / 1000
+    dist_per_frame = diff / frames
 
     iter = (current_time) ->
-      if !start_time
-        start_time = current_time
 
-      time = current_time - start_time
+      top = el.getBoundingClientRect().top
+      if diff < 0 
+        done = top + dist_per_frame > offset_buffer
+      else 
+        done = top - dist_per_frame < offset_buffer
 
-      percent = Math.min time / duration, 1
-      window.scrollTo 0, start_pos + diff * percent
+      if done 
+        dist_per_frame = top - offset_buffer
 
-      if time < duration
-        requestId = window.requestAnimationFrame(iter)
-      else
-        window.cancelAnimationFrame requestId
+      scroll_to = window.pageYOffset + dist_per_frame
+
+      window.scrollTo 0, scroll_to
+
+      if !done
+        requestAnimationFrame(iter)
+      else 
         callback?()
 
-    requestId = window.requestAnimationFrame(iter)
+    requestAnimationFrame(iter)
 
 
   moveToTop: (el, options = {}) ->

@@ -26,11 +26,19 @@ PHONE_BREAKPOINT = 545
 TABLET_BREAKPOINT = 990
 SUPER_NARROW_HEIGHT_BREAK = PHONE_BREAKPOINT
 
-window.PHONE_MEDIA  =     "(max-width: #{PHONE_BREAKPOINT}px)  or  (max-height: #{SUPER_NARROW_HEIGHT_BREAK}px)"
-window.TABLET_MEDIA =     "(min-width: #{PHONE_BREAKPOINT}px)  and (max-width:  #{TABLET_BREAKPOINT}px) and (min-height: #{SUPER_NARROW_HEIGHT_BREAK}px)"
-window.LAPTOP_MEDIA =     "(min-width: #{TABLET_BREAKPOINT}px) and (min-height: #{SUPER_NARROW_HEIGHT_BREAK}px)"
-window.NOT_LAPTOP_MEDIA = "(max-width: #{TABLET_BREAKPOINT}px) or  (max-height: #{SUPER_NARROW_HEIGHT_BREAK}px)"
-window.NOT_PHONE_MEDIA =  "(min-width: #{PHONE_BREAKPOINT}px)  and (min-height: #{SUPER_NARROW_HEIGHT_BREAK}px)"
+window.PHONE_MEDIA  =     "(max-width: #{PHONE_BREAKPOINT}px),      (max-height: #{SUPER_NARROW_HEIGHT_BREAK}px)"
+window.TABLET_MEDIA =     "(min-width: #{PHONE_BREAKPOINT}px)   and (max-width:  #{TABLET_BREAKPOINT}px) and (min-height: #{SUPER_NARROW_HEIGHT_BREAK}px)"
+window.LAPTOP_MEDIA =     "(min-width: #{TABLET_BREAKPOINT}px)  and (min-height: #{SUPER_NARROW_HEIGHT_BREAK}px)"
+window.NOT_LAPTOP_MEDIA = "(max-width: #{TABLET_BREAKPOINT}px),     (max-height: #{SUPER_NARROW_HEIGHT_BREAK}px)"
+window.NOT_PHONE_MEDIA =  "(min-width: #{PHONE_BREAKPOINT}px)   and (min-height: #{SUPER_NARROW_HEIGHT_BREAK}px)"
+
+# window.PHONE_MEDIA  =     "(max-width: #{PHONE_BREAKPOINT}px)"
+# window.TABLET_MEDIA =     "(min-width: #{PHONE_BREAKPOINT}px) and (max-width:  #{TABLET_BREAKPOINT}px)"
+# window.LAPTOP_MEDIA =     "(min-width: #{TABLET_BREAKPOINT}px)"
+# window.NOT_LAPTOP_MEDIA = "(max-width: #{TABLET_BREAKPOINT}px)"
+# window.NOT_PHONE_MEDIA =  "(min-width: #{PHONE_BREAKPOINT}px)"
+
+
 
 setResponsive = -> 
   responsive = fetch('responsive_vars')

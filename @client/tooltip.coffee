@@ -37,23 +37,23 @@ toggle_tooltip = (e) ->
       show_tooltip(e)
 
 show_tooltip = (e) ->
-  console.trace()
 
   tooltip_el = $$.closest(e.target, '[data-tooltip]')
-  if tooltip_el?
-    tooltip = fetch 'tooltip'
-    name = tooltip_el.getAttribute('data-tooltip')
-    if tooltip.tip != name 
-      tooltip.tip = name
+  return if !tooltip_el? || tooltip_el.style.opacity == 0
 
-      setTimeout ->
-        if tooltip.tip == name 
-          tooltip.coords = calc_coords_for_tooltip_or_popover(tooltip_el)
-          save tooltip
-      , 100
+  tooltip = fetch 'tooltip'
+  name = tooltip_el.getAttribute('data-tooltip')
+  if tooltip.tip != name 
+    tooltip.tip = name
 
-      e.preventDefault()
-      e.stopPropagation()
+    setTimeout ->
+      if tooltip.tip == name 
+        tooltip.coords = calc_coords_for_tooltip_or_popover(tooltip_el)
+        save tooltip
+    , 100
+
+    e.preventDefault()
+    e.stopPropagation()
 
 tooltip = fetch 'tooltip'
 hide_tooltip = (e) ->

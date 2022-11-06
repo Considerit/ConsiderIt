@@ -145,6 +145,7 @@ window.Modal =
     # return the focus to the element that had focus when the modal was launched
     if @focused_element_before_opening && document.body.contains(@focused_element_before_opening)
       @focused_element_before_opening.focus()
+      clear_tooltip() # make sure we don't trigger any tooltip on the previously focused element
 
     document.removeEventListener 'keydown', @accessibility_on_keydown
 

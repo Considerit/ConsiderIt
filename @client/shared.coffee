@@ -769,6 +769,16 @@ window.play_videos_when_in_viewport = (parent_el, args) ->
 ## CSS reset
 
 window.styles += """
+
+/* 
+https://stackoverflow.com/questions/2710764/preserve-html-font-size-when-iphone-orientation-changes-from-portrait-to-landsca 
+*/
+html {
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;  
+}
+
+
 /* RESET
  * Eric Meyer's Reset CSS v2.0 (http://meyerweb.com/eric/tools/css/reset/)
  * http://cssreset.com

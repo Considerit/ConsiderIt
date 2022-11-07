@@ -73,7 +73,7 @@ styles += """
 
   :not(.expanding).is_expanded .opinion-views-container {
     opacity: 1;
-    transition: opacity #{4 * ANIMATION_SPEED_ITEM_EXPANSION}s ease #{STAGE3_DELAY}s;              
+    transition: opacity #{6 * ANIMATION_SPEED_ITEM_EXPANSION}s ease #{STAGE3_DELAY}s;              
   }
 
 
@@ -353,8 +353,8 @@ window.Slidergram = ReactiveComponent
                 else 
                   customization('slider_handle', proposal) or slider_handle.flat
 
-        handle_height: if !@is_expanded then 22 else if TABLET_SIZE() then 44 else 36
-        handle_width: if !@is_expanded then 27
+        handle_height: if !@is_expanded then 30 else if TABLET_SIZE() then 44 else 36
+        handle_width: if !@is_expanded then 33
 
         offset: !@is_expanded
 

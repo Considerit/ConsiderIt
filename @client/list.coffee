@@ -937,6 +937,7 @@ CollapseList = (list_key) ->
     $$.ensureInView el,
       # extra_height: if !expanded_state[proposal.key] then 400 else 0
       # force: mode == 'crafting'
+      offset_buffer: 120
       callback: ->
 
         if !list_state.collapsed

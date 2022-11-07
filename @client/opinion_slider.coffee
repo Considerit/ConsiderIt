@@ -5,10 +5,7 @@
 #   - labels for the poles of the slider
 #   - feedback description about the current opinion
 #   - creates a Slider instance
-#
-# TODO:
-#   - better documentation
-#   - refactor the code in light of extracting Slider
+
 
 require './slider'
 require './shared'

@@ -221,12 +221,8 @@ styles += """
     transition-delay: #{STAGE1_DELAY + 1.5 * ANIMATION_SPEED_ITEM_EXPANSION}s;
   }
 
-  :not(.expanding).is_expanded .reasons_region :nth-child(4).point {
-    transition-delay: #{STAGE1_DELAY + 2 * ANIMATION_SPEED_ITEM_EXPANSION}s;
-  }
-
   :not(.expanding).is_expanded .reasons_region .point {
-    transition-delay: #{STAGE1_DELAY + 2.5 * ANIMATION_SPEED_ITEM_EXPANSION}s;
+    transition-delay: #{STAGE1_DELAY + 2 * ANIMATION_SPEED_ITEM_EXPANSION}s;
   }
 
 

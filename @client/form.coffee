@@ -138,6 +138,14 @@ window.CharacterCountTextInput = ReactiveComponent
 
 # Quill = require './vendor/quill-1.0.js'
 
+styles += """
+
+.wysiwyg_text.focused {
+  outline: 2px solid #{focus_color()};
+}
+
+"""
+
 window.WysiwygEditor = ReactiveComponent
   displayName: 'WysiwygEditor'
 
@@ -192,7 +200,6 @@ window.WysiwygEditor = ReactiveComponent
       button.onClick = (e) -> 
         e.stopPropagation()
         e.preventDefault()
-        console.log "BUTTON onclick"
 
 
     close_if_nothing_in_menu_focused = =>
@@ -313,9 +320,8 @@ window.WysiwygEditor = ReactiveComponent
                     onClick: button.onClick
 
           DIV 
-            style: _.defaults {}, @props.container_style, 
-              outline: if fetch('wysiwyg_editor').showing == @props.editor_key then "2px solid #{focus_color()}"
-            className: 'wysiwyg_text' # for formatting like proposals 
+            style: _.defaults {}, @props.container_style
+            className: "wysiwyg_text #{if fetch('wysiwyg_editor').showing == @props.editor_key then 'focused' else ''}" # for formatting like proposals 
           
             DIV 
               className: 'skiptranslate'
@@ -333,10 +339,7 @@ window.WysiwygEditor = ReactiveComponent
                 wysiwyg_editor.showing = @props.editor_key
                 save wysiwyg_editor
 
-              # This was causing problems with erroneously closing menu just before it got clicked.
-              # I don't know why it is here and things seem to work without it, except that in 
-              # some wysiwyg editors, the menu won't disappear after first appearing.
-              # onBlur: close_if_nothing_in_menu_focused
+              onBlur: close_if_nothing_in_menu_focused
 
               style: @props.style
 
@@ -403,6 +406,8 @@ html .ql-container{
   min-height: 120px;
   outline: none;
 }
+
+
 .ql-editor.ql-blank::before{
   content: attr(data-placeholder);
   pointer-events: none;

@@ -313,8 +313,11 @@ window.ItemText = ReactiveComponent
 
 
   setCollapsedSizes: (expand_after_set) ->
+    console.log "SET COLLAPSED SIZES", @fonts_loaded, @local.in_viewport, expand_after_set, @local.collapsed_title_height, @sized_at_window_width, WINDOW_WIDTH()
     if !@waitForFonts(=> @setCollapsedSizes(expand_after_set)) || (!@local.in_viewport && !expand_after_set) || (@local.collapsed_title_height? && @sized_at_window_width == WINDOW_WIDTH())
+      console.log 'RETURNING WITHOUT SETTING'
       return
+
     proposal = fetch @props.proposal
 
     title_el = @refs.proposal_title_text

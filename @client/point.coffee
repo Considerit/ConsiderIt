@@ -421,6 +421,7 @@ window.Point = ReactiveComponent
 
   initializeDragging : ->
     if !@drag_initialized
+
       @drag_initialized = true 
       point_root = ReactDOM.findDOMNode(@)
       point_width = null
@@ -430,6 +431,7 @@ window.Point = ReactiveComponent
       @draggable = new Draggable.default point_root,
         draggable: '.point'
         delay: 0
+        distance: 1 # don't start drag unless moved a bit, otherwise click event gets swallowed up
         mirror: 
           appendTo: '#content'
 

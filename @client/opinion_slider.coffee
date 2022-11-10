@@ -32,7 +32,7 @@ styles += """
     transition: opacity .4s ease;
 
     width: var(--ADD_REASONS_CALLOUT_BUTTON_WIDTH);
-    top: 26px;
+    top: 32px;
   }
 
   .ProposalItem:hover .add_reasons_callout, .one-col .ProposalItem .add_reasons_callout {

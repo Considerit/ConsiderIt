@@ -28,7 +28,6 @@ styles += """
 
   [data-widget="EditPage"] [data-widget="NewList"] {
     margin-top: 12px;
-    padding: 32px 24px 26px 60px;
     margin-bottom: 12px;
   }
 
@@ -89,7 +88,7 @@ styles += """
     background-color: transparent;
     border: none;
   }
-  [data-widget="EditPage"] .draggable-list .name {
+  [data-widget="EditPage"] .draggable-list .LIST-title {
     /* font-size: 16px; 
     font-weight: 500; */
     padding-left: 24px;
@@ -277,7 +276,7 @@ window.EditPage = ReactiveComponent
                         width: 22
 
                   DIV
-                    className: 'name LIST-title'
+                    className: 'LIST-title'
 
                     if wildcard
                       SPAN 
@@ -331,7 +330,7 @@ window.EditPage = ReactiveComponent
 
         if @local.edit_list
 
-          ModalNewList
+          EditNewList
             list: @local.edit_list
             fresh: false
             combines_these_lists: @props.combines_these_lists
@@ -341,7 +340,8 @@ window.EditPage = ReactiveComponent
 
         else 
 
-          NewList()
+          NewList
+            wrapper_clss: 'draggable-list'
 
           # BUTTON
           #   className: "add_new_list"

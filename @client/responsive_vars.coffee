@@ -24,7 +24,7 @@ require './browser_hacks'
 
 PHONE_BREAKPOINT = 545 
 TABLET_BREAKPOINT = 990
-SUPER_NARROW_HEIGHT_BREAK = PHONE_BREAKPOINT
+SUPER_NARROW_HEIGHT_BREAK = 200
 
 window.PHONE_MEDIA  =     "(max-width: #{PHONE_BREAKPOINT}px),      (max-height: #{SUPER_NARROW_HEIGHT_BREAK}px)"
 window.TABLET_MEDIA =     "(min-width: #{PHONE_BREAKPOINT}px)   and (max-width:  #{TABLET_BREAKPOINT}px) and (min-height: #{SUPER_NARROW_HEIGHT_BREAK}px)"

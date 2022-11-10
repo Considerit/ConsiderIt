@@ -26,7 +26,7 @@ window.styles += """
     
       --LIST_PADDING_TOP: 48px;
       --LIST_PADDING_BOTTOM: 48px;
-      --LIST_PADDING_RIGHT: 90px;
+      --LIST_PADDING_RIGHT: 66px;
       --LIST_PADDING_LEFT: 66px;
 
     }
@@ -112,7 +112,7 @@ window.styles += """
   .List, .NewList, .draggable-wrapper {
     background-color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 16px;
     box-shadow: -1px 1px 2px rgb(0 0 0 / 15%);
     border-top: 1px solid #f3f3f3;
   }
@@ -175,7 +175,19 @@ window.List = ReactiveComponent
     list_state.collapsed ?= customization('list_is_archived', list_key)
 
     is_collapsed = list_state.collapsed
-      
+
+    edit_list = fetch "edit-#{list_key}"
+
+    if edit_list.editing
+      return  EditNewList
+                list: list
+                fresh: false
+                combines_these_lists: @props.combines_these_lists
+                done_callback: => 
+                  edit_list.editing = false 
+                  save edit_list
+
+
 
     ARTICLE
       key: list_key
@@ -620,63 +632,67 @@ window.ListHeader = ReactiveComponent
 
 
 styles += """
-  button.NewList {
+  .NewList, .EditingNewList {
+    border: 3px dashed #{focus_color()}aa;
+    transition: border 500ms;    
+    box-shadow: none;
+  }
+
+  .NewList {
     text-align: left;
     margin-top: 55px;
     display: block;
     position: relative;
-    border-radius: 8px;
     padding: var(--LIST_PADDING_TOP) 56px var(--LIST_PADDING_BOTTOM) 56px;
     width: 100%;
   }
 
+  .NewList:hover, .EditingNewList:hover {
+    border-color: #{focus_blue};
+  }
+
   @media #{NOT_LAPTOP_MEDIA} {
+    button.NewList, .EditingNewList {
+      border-radius: 0px;
+      border: none;
+    }
     button.NewList {
       padding: 24px 12px;
-      border-radius: 0px;
     }
+
   }
 
-  button.NewList .LIST-title {
-    position: relative;
-    // left: -42px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  button.NewList .LIST-title svg {
-    margin-right: 13px;
-    position: relative;
-    top: 3px;
-  }
-
-
-  button.NewList .subbutton_button {
-    color: #{focus_blue};
-    // font-weight: 700;
-    border-bottom-width: 2px;
-    border-bottom-color: transparent;
-    border-bottom-style: solid;
-    transition: border-bottom 1s;
-  }
-
-  button.NewList:hover .subbutton_button, button.NewList:hover .separator {
-    border-bottom-color: #{focus_blue};
-    #text-decoration: underline;
-  }
-
-  button.NewList .separator {
-    // padding: 0 12px;
-    font-weight: 400;
-    color: #{focus_blue + "ab"};
-  }
-  button.NewList .subheader {
-    color: #656565;
-    font-size: 16px;
-    position: relative;
+  .NewList .LIST-title {
     text-align: center;
   }
+
+
+  .NewList .LIST-title span {
+    position: relative;
+    color: #{focus_blue};
+    border-bottom-width: 2px;
+    border-bottom-color: #{focus_blue}aa;
+    border-bottom-style: solid;
+    transition: border-bottom 500ms;
+  }
+
+  .NewList:hover .LIST-title span {
+    border-bottom-color: #{focus_blue};
+  }
+
+  .NewList .LIST-description {
+    text-align: center;
+  }
+
+  .NewList.draggable-list .LIST-description {
+    display: none;
+  }
+
+  .NewList.draggable-list .LIST-title {
+    text-align: left;
+    padding-left: 45px;
+  }
+
 """
 
 
@@ -690,75 +706,34 @@ window.NewList = ReactiveComponent
 
     @local.hovering ?= false
 
-    if @local.editing
-      ModalNewList 
-        fresh: true
-        default_open_ended: @local.default_open_ended
-        done_callback: =>
-          @local.editing = false 
-          save @local
+    DIV null, 
+      if @local.editing
+        EditNewList 
+          fresh: true
+          default_open_ended: @local.default_open_ended
+          done_callback: =>
+            @local.editing = false 
+            save @local
 
+      else 
+        BUTTON
+          className: "NewList #{if @props.wrapper_clss then @props.wrapper_clss else ''} " 
 
-    else 
-      BUTTON
-        className: 'NewList'
+          onClick: (e) =>
+            @local.editing = true 
+            @local.default_open_ended = e.target.classList.contains('open')
+            save @local
 
-        onClick: (e) =>
-          @local.editing = true 
-          @local.default_open_ended = e.target.classList.contains('open')
-          save @local
+          H1
+            className: 'LIST-title'
 
-        H1
-          className: 'LIST-title'
-
-          
-          SPAN 
-            style: 
-              visibility: 'visible' # if TABLET_SIZE() then 'hidden'
-            plusIcon focus_blue
-
-          SPAN 
-            className: 'subbutton_button open'
-            'Add a request for feedback' 
-
-          if wide_layout
-            [
-              SPAN 
-                key: 'separator'
-                className: 'separator'
-                dangerouslySetInnerHTML: __html: "&nbsp;&nbsp;#{t('or', 'or')}&nbsp;&nbsp;"
-              SPAN 
-                key: 'text'
-                className: 'subbutton_button closed'
-                'an open-ended question'
-            ]
-
-        if wide_layout
+            SPAN null, 
+              "Create a New Focus"
+            
           DIV 
-            className: 'subheader'
-            style: 
-              textAlign: 'initial'
+            className: 'LIST-description'
 
-            SPAN 
-              style: 
-                position: 'relative'
-                left: 'calc(50% - 300px)'
-
-              'on a fixed set of proposals'
-
-            SPAN 
-              style: 
-                position: 'relative'
-                left: 'calc(50% + 0px)'
-              'for community ideation'
-
-        else 
-          DIV 
-            className: 'subheader'
-
-            SPAN null,
-              'on a fixed set of proposals or in response to an open-ended question'
-
+            "Focus your community on evaluating specific proposals. Or pose an open-ended question to focus your community on generating ideas."
 
 
 
@@ -775,7 +750,7 @@ window.list_i18n = ->
       translator 
         id: "engage.add_new_#{item_name}_to_list"
         key: "/translations/#{fetch('/subdomain').name}"
-      , "Add new #{item_name}"
+      , "Add a new #{item_name}"
   opinion_header: (list_key) ->
     item_name = customization('list_item_name', list_key)
     if item_name
@@ -972,7 +947,7 @@ CollapseList = (list_key) ->
     className: "CollapseList #{if is_collapsed then 'collapsed' else 'expanded'}"
     'aria-label': translator('accessibility-expand-or-collapse-list', 'Expand or collapse list.')
     'aria-pressed': !is_collapsed
-    'data-tooltip': translator('accessibility-expand-or-collapse-list', 'Expand or collapse list.')
+    # 'data-tooltip': translator('accessibility-expand-or-collapse-list', 'Expand or collapse list.')
 
     onClick: (e) -> 
       toggle_list(e.target)
@@ -1035,8 +1010,8 @@ EditableDescription = ReactiveComponent
     single_line = false
 
     if !is_func
-      height = heightWhenRendered "<div class='LIST'><div class='ListHeader-wrapper'><div class='text-wrapper'><div class='LIST-description wysiwyg_text'><div>#{description}</div></div></div></div></div>"
-      single_line = height < 90 # single line + margins should be ~ 54
+      height = heightWhenRendered "<div id='homepagetab'><div class='List'><div class='ListHeader-wrapper'><div class='text-wrapper'><div class='LIST-description wysiwyg_text'><div>#{description}</div></div></div></div></div></div>"
+      single_line = height - 375 < 12 # this is fragile and depends on padding + margins all the way up the above classes
 
     DIV
       style: _.defaults {}, (description_style or {})

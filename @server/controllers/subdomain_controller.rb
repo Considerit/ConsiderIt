@@ -101,7 +101,7 @@ class SubdomainController < ApplicationController
         customizations = {
           "list/initial": {
             "list_title": "What are your favorite ice cream flavors?",
-            "list_description": "Experiment with the proposed flavors however you want. When you’re done, you can delete the entire proposal list via the gear icon in the upper right.",
+            "list_description": "Experiment with the proposed flavors however you want. When you’re done, you can delete this entire Ice Cream silliness via the three-dots icon in the upper right.",
             "list_item_name": "flavor",
             "list_opinions_title": "",
             "slider_pole_labels": {

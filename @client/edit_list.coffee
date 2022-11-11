@@ -258,6 +258,7 @@ window.EditNewList = ReactiveComponent
 
     return SPAN null if !current_user.is_admin
 
+    WINDOW_WIDTH() # subscribe to window size changes for alignment
 
  
 
@@ -340,9 +341,7 @@ window.EditNewList = ReactiveComponent
     if !@props.fresh
       edit_list.list_title ?= title 
 
-    description = edit_list.description or customization('list_description', list_key, subdomain)
-    if Array.isArray(description)
-      description = description.join('\n')
+    description = @getDescription()
 
     description_style = customization 'list_description_style', list_key
 
@@ -387,13 +386,10 @@ window.EditNewList = ReactiveComponent
                   description()        
               else 
                 
-                html = fetch("#{list_key}-description").html or customization('list_description', list_key)
-                height = heightWhenRendered "<div id='homepagetab'><div class='List'><div class='ListHeader-wrapper'><div class='text-wrapper'><div class='LIST-description wysiwyg_text'><div>#{html}</div></div></div></div></div></div>"
-                single_line = height - 375 < 12 # this is fragile and depends on padding + margins all the way up the above classes
-
                 DIV 
                   id: 'edit_description'
-                  className: "LIST-description #{if single_line then 'single-line' else ''}"
+                  className: "LIST-description"
+                  ref: 'description'
 
                   style: _.extend {}, (description_style or {}),  
                     # marginTop: -12
@@ -588,7 +584,7 @@ window.EditNewList = ReactiveComponent
       DIV 
         ref: 'slider_config'
         style: 
-          padding: '18px 0px 0px 12px'
+          paddingTop: 18
           position: 'relative'
           marginTop: 8
           left: 0
@@ -642,6 +638,7 @@ window.EditNewList = ReactiveComponent
             position: 'relative'
             flexGrow: 0
             paddingLeft: 18
+            top: -13
 
           anchor_style: 
             color: 'inherit' #focus_color() #'inherit'
@@ -708,7 +705,7 @@ window.EditNewList = ReactiveComponent
                   cursor: 'pointer'
                 translator 'engage.list-config-spectrum-select', 'presets'
 
-              SPAN style: _.extend cssTriangle 'bottom', focus_color(), 15, 9,
+              SPAN style: _.extend cssTriangle 'bottom', focus_color(), 13, 8,
                 display: 'inline-block'
 
           render_option: (option, is_active) ->
@@ -854,9 +851,13 @@ window.EditNewList = ReactiveComponent
 
 
 
-  componentDidMount: -> @setFocusOnTitle()
+  componentDidMount: -> 
+    @setFocusOnTitle()
+    @setAlignmentOnDescription()
 
-  componentDidUpdate: -> @setFocusOnTitle()
+  componentDidUpdate: -> 
+    @setFocusOnTitle()
+    @setAlignmentOnDescription()
 
   setFocusOnTitle: ->
     if !@initialized && @refs.input?
@@ -864,4 +865,29 @@ window.EditNewList = ReactiveComponent
         moveCursorToEnd ReactDOM.findDOMNode(@refs.input)
       @initialized = true
 
+
+  getDescription: -> 
+
+    list_key = @get_list_key()
+
+    edit_list = fetch "edit-#{list_key}"
+
+    description = edit_list.description or customization('list_description', list_key)
+    if Array.isArray(description)
+      description = description.join('\n')
+
+    description
+
+  setAlignmentOnDescription: ->
+    list_key = @get_list_key()    
+    description = fetch("#{list_key}-description").html or @getDescription()
+    is_func = typeof description == 'function'
+
+    if !is_func
+      height = @refs.description.clientHeight
+      single_line = height < 60
+      if single_line
+        @refs.description.classList.add 'single-line'
+      else
+        @refs.description.classList.remove 'single-line'
 

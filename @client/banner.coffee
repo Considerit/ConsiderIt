@@ -203,15 +203,38 @@ CustomizeTitle = ReactiveComponent
             , 10
 
 
+
+styles += """
+  .single-line.banner_description, .single-line.banner_description .ql-editor {
+    text-align: center;
+  }
+
+"""
 CustomizeDescription = ReactiveComponent
   displayName: 'CustomizeDescription'
   mixins: [SubdomainSaveRateLimiter]
+
+  componentDidMount: ->
+    @setAlignment()
 
   componentDidUpdate: ->
     @local.description = fetch("forum-description").html
     @save_customization_with_rate_limit
       fields: ['description']
       config: fetch('/subdomain').customizations.banner
+    @setAlignment()
+
+  setAlignment: ->
+    edit_forum = fetch 'edit_forum'
+    is_admin = fetch('/current_user').is_admin
+
+    height = @refs.description.clientHeight
+    single_line = height < (if edit_forum.editing && is_admin then 65 else 50)
+    if single_line
+      @refs.description.classList.add 'single-line'
+    else
+      @refs.description.classList.remove 'single-line'
+
 
   render : ->
     edit_forum = fetch 'edit_forum'
@@ -226,10 +249,13 @@ CustomizeDescription = ReactiveComponent
     focus_on_mount = @local.focus_on_mount
     @local.focus_on_mount = false
 
+    WINDOW_WIDTH() # subscribe to window size changes for alignment
+    
     if is_admin && edit_forum.editing
       DIV 
         id: 'edit_banner_description'
-        className: 'CustomizeDescription'
+        className: "banner_description CustomizeDescription"
+        ref: "description"
 
         STYLE
           dangerouslySetInnerHTML: __html: """
@@ -251,10 +277,12 @@ CustomizeDescription = ReactiveComponent
           button_style: 
             backgroundColor: 'white'  
     else
-      DIV null,              
+      DIV null,
+           
         if has_description 
           DIV 
-            className: 'wysiwyg_text'
+            className: "banner_description wysiwyg_text"
+            ref: "description"
             style: 
               fontSize: @props.style.fontSize or 18
               padding: @props.style.padding or '6px 8px'

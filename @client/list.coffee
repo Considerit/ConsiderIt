@@ -916,6 +916,11 @@ CollapseList = (list_key) ->
       callback: ->
 
         if !list_state.collapsed
+
+          # google translate widget causes weird behavior when animating height of document
+          google_translate = document.querySelector('[data-widget="GoogleTranslate"]')
+          google_translate.style.display = "none"
+
           list_el.style.transition = "max-height 1000ms ease"
           padding_el = if TABLET_SIZE() then list_el.querySelector('.ListHeader-wrapper') else list_el
           sty = getComputedStyle padding_el
@@ -935,6 +940,9 @@ CollapseList = (list_key) ->
               list_el.style.transition = ''
               list_el.style.maxHeight = ''
               list_el.style.overflow = ''
+              setTimeout -> 
+                google_translate.style.display = ""     
+              , 1000
             , 100
 
           , 1000
@@ -991,9 +999,8 @@ styles += """
 
 EditableDescription = ReactiveComponent
   displayName: 'EditableDescription'
-  render: -> 
-    current_user = fetch '/current_user'
 
+  getDescription: -> 
     list = @props.list 
     list_key = list.key
 
@@ -1001,21 +1008,44 @@ EditableDescription = ReactiveComponent
     if Array.isArray(description)
       description = description.join('\n')
 
+    description
+
+  setAlignment: ->
+    description = @getDescription()
+    is_func = typeof description == 'function'
+
+    if !is_func
+      height = @refs.description.clientHeight
+      single_line = height < 24
+
+      if single_line
+        @refs.description.classList.add 'single-line'
+      else
+        @refs.description.classList.remove 'single-line'
+
+  componentDidMount: -> @setAlignment()
+  componentDidUpdate: -> @setAlignment()
+
+  render: -> 
+    current_user = fetch '/current_user'
+
+    list = @props.list 
+    list_key = list.key
+
+    description = @getDescription()
   
     return SPAN null if !description
 
     is_func = typeof description == 'function'
 
     description_style = customization 'list_description_style', list_key
-    single_line = false
 
-    if !is_func
-      height = heightWhenRendered "<div id='homepagetab'><div class='List'><div class='ListHeader-wrapper'><div class='text-wrapper'><div class='LIST-description wysiwyg_text'><div>#{description}</div></div></div></div></div></div>"
-      single_line = height - 375 < 12 # this is fragile and depends on padding + margins all the way up the above classes
-
+    WINDOW_WIDTH() # subscribe to window size changes for alignment
+    
     DIV
       style: _.defaults {}, (description_style or {})
-      className: "LIST-description #{if !is_func then 'wysiwyg_text' else ''} #{if single_line then 'single-line' else ''}"
+      className: "LIST-description #{if !is_func then 'wysiwyg_text' else ''}"
+      ref: 'description'
 
       if is_func
         description()        
@@ -1024,6 +1054,9 @@ EditableDescription = ReactiveComponent
           style:
             marginBottom: 10
           dangerouslySetInnerHTML: {__html: description}
+
+
+
 
 
 

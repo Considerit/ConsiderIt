@@ -225,6 +225,8 @@ CustomizeDescription = ReactiveComponent
     @setAlignment()
 
   setAlignment: ->
+    return if !@refs.description
+    
     edit_forum = fetch 'edit_forum'
     is_admin = fetch('/current_user').is_admin
 

@@ -913,6 +913,8 @@ CollapseList = (list_key) ->
       # extra_height: if !expanded_state[proposal.key] then 400 else 0
       # force: mode == 'crafting'
       offset_buffer: 120
+
+
       callback: ->
 
         if !list_state.collapsed
@@ -1015,6 +1017,7 @@ EditableDescription = ReactiveComponent
     is_func = typeof description == 'function'
 
     if !is_func
+      return if !@refs.description
       height = @refs.description.clientHeight
       single_line = height < 24
 

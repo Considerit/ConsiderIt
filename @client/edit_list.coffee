@@ -884,6 +884,7 @@ window.EditNewList = ReactiveComponent
     is_func = typeof description == 'function'
 
     if !is_func
+      return if !@refs.description
       height = @refs.description.clientHeight
       single_line = height < 60
       if single_line

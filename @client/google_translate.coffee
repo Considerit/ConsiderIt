@@ -22,7 +22,7 @@ window.GoogleTranslate = ReactiveComponent
             else 
               _.defaults {}, @props.style, 
                 textAlign: 'center'
-                marginBottom: 10
+                #marginBottom: 10
 
     DIV 
       style: 

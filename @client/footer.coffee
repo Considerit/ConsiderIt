@@ -229,7 +229,7 @@ window.DefaultFooter = ReactiveComponent
                 '© Consider.it LLC. All rights reserved. '
 
               TRANSLATE
-                key: 'footer policies'
+                key: '/translations'
                 id: 'footer.policies'
                 privacy_link: 
                   component: A 

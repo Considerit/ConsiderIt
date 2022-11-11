@@ -20,6 +20,7 @@ styles += """
 
 """
 
+TOOLTIP_DELAY = 500
 window.clear_tooltip = ->
   tooltip = fetch('tooltip')
   tooltip.coords = tooltip.tip = tooltip.top = tooltip.positioned = null
@@ -50,7 +51,7 @@ show_tooltip = (e) ->
       if tooltip.tip == name 
         tooltip.coords = calc_coords_for_tooltip_or_popover(tooltip_el)
         save tooltip
-    , 100
+    , TOOLTIP_DELAY
 
     e.preventDefault()
     e.stopPropagation()

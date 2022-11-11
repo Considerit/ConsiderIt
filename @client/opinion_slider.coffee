@@ -192,13 +192,15 @@ window.OpinionSlider = ReactiveComponent
                        proposal: proposal
                        prefer_drag_prompt: true 
 
+    slider = fetch(namespaced_key('slider', proposal))
+
 
     return SPAN null if !opinion_prompt
 
     BUTTON
       className: "add_reasons_callout #{if slide_prompt then 'slide_prompt' else ''}"
       style:
-        left: "calc( #{(your_opinion.stance + 1) / 2} * var(--ITEM_OPINION_WIDTH) - var(--ADD_REASONS_CALLOUT_BUTTON_WIDTH) / 2)"
+        left: "calc( #{(slider.value + 1) / 2} * var(--ITEM_OPINION_WIDTH) - var(--ADD_REASONS_CALLOUT_BUTTON_WIDTH) / 2)"
 
       onClick: => 
         toggle_expand
@@ -216,7 +218,7 @@ window.OpinionSlider = ReactiveComponent
       if !slide_prompt
         SliderBubblemouth 
           proposal: proposal
-          left: 'calc(50% - 10px)'
+          left: "calc(50% - #{(slider.value + 1) / 2 * 10}px - 10px)"
           width: 20
           height: 8
           top: 15

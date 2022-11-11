@@ -379,7 +379,7 @@ window.Reasons = ReactiveComponent
             style: 
               position: 'absolute'
               width: DECISION_BOARD_WIDTH()
-              zIndex: 0 #so that points being dragged are above opinion region
+              zIndex: 2 #so that open points don't get covered up
               display: 'inline-block'
               verticalAlign: 'top'
               left: '50%'

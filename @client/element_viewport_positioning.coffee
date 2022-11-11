@@ -93,18 +93,37 @@ window.$$ =
     no_adjustment_needed = !options.force && is_onscreen && top_inside && bottom_inside  
 
     if !no_adjustment_needed
-      if options.position != 'top'
-        console.error "ensureInView doesn't support position targets except 'top'"
+
+      switch options.position 
+
+        when 'top'
+          target = el_top - options.offset_buffer
+        when 'bottom'
+          target = el_bottom - doc_height + options.offset_buffer
+        else
+          throw 'bad position for ensureInView'
 
       if options.scroll
 
         distance_to_travel = options.speed || Math.abs( doc_top - (el_top - options.offset_buffer) )
 
-        $$.smoothScrollToTarget 
-          el: el
-          offset_buffer: options.offset_buffer
-          duration: Math.min(distance_to_travel, 1500)
-          callback: options.callback
+        if options.dom_possibly_shifting
+
+          if options.position != 'top'
+            console.error "smoothScrollToTargetWithChangingElement doesn't support position targets except 'top'"
+
+          $$.smoothScrollToTargetWithChangingElements
+            el: el
+            offset_buffer: options.offset_buffer
+            duration: Math.min(distance_to_travel, 1500)
+            callback: options.callback
+
+        else 
+          $$.smoothScrollToTarget 
+            target: el_top - options.offset_buffer
+            duration: Math.min(distance_to_travel, 1500)
+            callback: options.callback
+
 
       else 
         window.scrollTo 0, target
@@ -121,7 +140,7 @@ window.$$ =
     , 10
 
 
-  smoothScrollToTarget: ({duration, callback, el, offset_buffer}) ->
+  smoothScrollToTargetWithChangingElements: ({duration, callback, el, offset_buffer}) ->
     target = $$.offset(el).top - offset_buffer
 
     diff = target - window.pageYOffset
@@ -149,6 +168,29 @@ window.$$ =
         callback?()
 
     requestAnimationFrame(iter)
+
+  smoothScrollToTarget: ({target, duration, callback}) ->
+    start_pos = window.pageYOffset
+    diff = target - start_pos
+
+    start_time = null
+
+    iter = (current_time) ->
+      if !start_time
+        start_time = current_time
+
+      time = current_time - start_time
+
+      percent = Math.min time / duration, 1
+      window.scrollTo 0, start_pos + diff * percent
+
+      if time < duration
+        requestId = window.requestAnimationFrame(iter)
+      else
+        window.cancelAnimationFrame requestId
+        callback?()
+
+    requestId = window.requestAnimationFrame(iter)
 
 
   moveToTop: (el, options = {}) ->

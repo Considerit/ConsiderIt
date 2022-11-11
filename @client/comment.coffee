@@ -150,9 +150,14 @@ window.Discussion = ReactiveComponent
 
     else
       _.extend mouth_style, 
-        left: if PHONE_SIZE() then (if is_pro then 240 else 100) else if is_pro then 335 else 100
         top: -28
         transform: if !is_pro then 'scaleX(-1)'
+
+      if is_pro
+        mouth_style.right = 100
+      else 
+        mouth_style.left = 100
+
 
     close_point = (e) ->
       loc = fetch('location')

@@ -1317,6 +1317,7 @@ InteractiveOpinionViews = ReactiveComponent
 
                 BUTTON 
                   className: "weight opinion_view_button #{if activated_weights[weight.key] then 'active' else ''}"
+                  "data-tooltip": weight.label
                   onClick: (e) ->
                     toggle_weight weight
                     e.stopPropagation()

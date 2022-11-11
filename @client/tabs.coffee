@@ -107,7 +107,6 @@ window.HomepageTabTransition = ReactiveComponent
 
 window.get_tabs = -> 
   if fetch('/subdomain').customizations?.homepage_tabs?.length > 0 
-    console.log (t.name for t in fetch('/subdomain').customizations.homepage_tabs when t.name)
     tabs = fetch('/subdomain').customizations.homepage_tabs
     
     # hack to fix a bug I haven't found where a tab can have a null name

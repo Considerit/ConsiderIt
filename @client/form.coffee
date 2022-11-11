@@ -366,7 +366,6 @@ window.WysiwygEditor = ReactiveComponent
       my_data = fetch @props.editor_key
       my_data.html = getHTML()
 
-      console.log delta, old_contents, source
       if source == 'user' && my_data.html.indexOf(' style') > -1
         # strip out any style tags the user may have pasted into the html
 

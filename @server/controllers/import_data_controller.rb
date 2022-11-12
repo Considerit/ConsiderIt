@@ -37,7 +37,7 @@ class ImportDataController < ApplicationController
         directly_extractable: ['stance']
       },
       'points' => {
-        required_fields: ['id', 'user', 'proposal', 'nutshell', 'is_pro'],
+        required_fields: ['user', 'proposal', 'nutshell', 'is_pro'],
         directly_extractable: ['nutshell', 'text']
       },      
       'comments' => {
@@ -155,6 +155,10 @@ class ImportDataController < ApplicationController
           # The rest has to be handled on a table by table basis
           case table
           when 'users'
+            if !row['email'] || row['email'].length < 3
+              errors.push "Could not import User #{row} because email isn't present"
+              next
+            end
             user = User.find_by_email row['email'].downcase
 
             if row.has_key? 'avatar'
@@ -174,6 +178,18 @@ class ImportDataController < ApplicationController
               user.update_attributes attrs
               modified[table].push "Updated User '#{user.name}'"              
             end
+
+            customizations = current_subdomain.customization_json
+            tags_config = customizations.fetch('user_tags', [])
+            tags_config.each do |vals|
+              tag = vals["key"]
+              if row.has_key? tag
+                user.tags ||= {}
+                user.tags[tag] = row[tag]
+              end
+              user.save
+            end
+
             user.add_to_active_in
 
           when 'proposals'
@@ -208,15 +224,22 @@ class ImportDataController < ApplicationController
               else 
                 proposal = Proposal.find_by_name(title)
               end
+
+              if row.has_key? 'slug'
+                slug = row['slug']
+              end
             end
 
             attrs.update({
               'slug' => slug,
               'user_id' => user.id,
               'name' => title,
-              'published' => true,
-              'cluster' => list
+              'published' => true
             })
+
+            if list
+              attrs['cluster'] = list
+            end
 
             attrs['roles'] = {
               "editor": ["/user/#{user.id}"]
@@ -294,8 +317,10 @@ class ImportDataController < ApplicationController
 
             opinion.include point
             point.recache
-            points[row['id']] = point
-            
+
+            if row.has_key? 'id'
+              points[row['id']] = point
+            end         
 
           when 'comments'
             attrs.update({

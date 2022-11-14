@@ -154,6 +154,7 @@ rnd_order = {}
 sort_options = [
 
   { 
+    key: 'total_score'
     name: 'Total Score'
     description: "Each proposal is scored by the sum of all opinions, where each opinion expresses a score on a spectrum from -1 to 1. "    
     order: (proposals) -> 
@@ -173,6 +174,7 @@ sort_options = [
         cache[proposal.key]
       proposals.sort (a, b) -> val(b) - val(a)
   }, {
+    key: 'trending'
     name: 'Trending'
     description: "Same as 'Total Score', except newer proposals and opinions are weighed more heavily."
 
@@ -234,16 +236,19 @@ sort_options = [
         val(b) - val(a)
   },
   {
+    key: 'recency'
     order: (proposals) -> 
       proposals.sort (a,b) -> new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     name: 'Date: Most recent first'
     description: "The proposals submitted most recently are shown first."
   }, {
+    key: 'earliest'
     order: (proposals) -> 
       proposals.sort (a,b) -> new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     name: 'Date: Earliest first'
     description: "The proposals submitted first are shown first."
   }, { 
+    key: 'unifying'
     name: 'Most unifying first'
     description: "The proposals on which participants are most united for or against are shown first."
     order: (proposals) -> 
@@ -255,6 +260,7 @@ sort_options = [
       return []
 
   }, { 
+    key: 'polarizing'
     name: 'Most polarizing first'
     description: "The proposals on which participants are most split are shown highest."
     order: (proposals) -> 
@@ -296,6 +302,7 @@ sort_options = [
   }, 
 
   { 
+    key: 'average_score'
     name: 'Average Score'
     description: "each proposal is scored by the average opinion, where each opinion expresses a score on a spectrum from -1 to 1. "
     order: (proposals) -> 
@@ -343,12 +350,14 @@ sort_options = [
   # 
   # }, 
   { 
+    key: 'alphabetical'
     name: 'Alphabetical order'
     order: (proposals) -> 
       proposals.sort (a, b) -> a.name.localeCompare b.name
     description: "Sort alphabetically by the item's title"
   }, 
   {
+    key: 'random'
     name: 'Randomized'
     description: "Item order is randomized on each page load."
 
@@ -377,7 +386,7 @@ set_default_sort = ->
     loc = fetch('location')
     if loc.query_params?.sort_by
       for s in sort_options
-        if s.name == loc.query_params.sort_by.replace('_', ' ')
+        if loc.query_params.sort_by.replace('_', ' ') in [s.name, s.key] 
           _.extend sort, s or sort_options[1]
           found = true 
           break
@@ -386,7 +395,7 @@ set_default_sort = ->
       if def_sort = customization('default_proposal_sort_order')
         def = null 
         for s in sort_options
-          if s.name == def_sort
+          if s.key == def_sort || s.name == def_sort
             def = s
             break 
         _.extend sort, def or sort_options[1]

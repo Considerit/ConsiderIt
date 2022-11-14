@@ -124,7 +124,7 @@ window.DropMenu = ReactiveComponent
       @local.show_menu = false
       save @local
       @props.close_callback?()
-      e.stopPropagation()
+      e?.stopPropagation()
 
     # wrapper
     id = "drop-menu-#{@local.key.replace(/\//g, '__')}"
@@ -135,7 +135,8 @@ window.DropMenu = ReactiveComponent
       key: 'dropmenu-wrapper'
       style: wrapper_style
 
-      onMouseLeave: close_menu
+      onMouseLeave: (e) =>
+        close_menu(e)
 
       onBlur: (e) => 
         setTimeout => 
@@ -144,26 +145,27 @@ window.DropMenu = ReactiveComponent
 
           el = document.getElementById(id)
           if el && !$$.closest(document.activeElement, "##{id}")
-            @local.show_menu = false; save @local
+            close_menu(e)
 
         , 0
 
-      onKeyDown: (e) => 
+      onKeyDown: (e) =>
         @props.onKeyDown?(e)
         if e.which == 13 || e.which == 32 || e.which == 27 # ENTER or ESC
           close_menu(e)
           e.preventDefault()            
         else if e.which == 38 || e.which == 40 # UP / DOWN ARROW
-          @local.active_option = -1 if !@local.active_option?
+          active_option = @local.active_option
+          active_option = -1 if !active_option?
           if e.which == 38
-            @local.active_option--
-            if @local.active_option < 0 
-              @local.active_option = options.length - 1
+            active_option--
+            if active_option < 0 
+              active_option = options.length - 1
           else 
-            @local.active_option++
-            if @local.active_option > options.length - 1
-              @local.active_option = 0 
-          set_active @local.active_option
+            active_option++
+            if active_option > options.length - 1
+              active_option = 0 
+          set_active active_option
           e.preventDefault() # prevent window from scrolling too
 
 
@@ -177,19 +179,19 @@ window.DropMenu = ReactiveComponent
         style: if @local.show_menu then anchor_when_open_style else anchor_style
         className: "dropMenu-anchor #{if @props.anchor_class_name then @props.anchor_class_name else ''}"
 
-        onMouseEnter: if open_menu_on == 'focus' then (e) => 
-                @local.show_menu = true
-                set_active(-1)
-                save @local 
+        onMouseEnter: if open_menu_on == 'focus' && !browser.touch then (e) => 
+          @local.show_menu = true
+          set_active(-1)
+          save @local 
 
-        onClick: if open_menu_on != 'focus' then (e) => 
-                if fetch('tooltip').tip
-                  clear_tooltip()     
-                @local.show_menu = !@local.show_menu
-                set_active(-1) if @local.show_menu
-                save @local
-                e.stopPropagation()
-                e.preventDefault()
+        onClick: if open_menu_on != 'focus' || browser.touch then (e) => 
+          if fetch('tooltip').tip
+            clear_tooltip()     
+          @local.show_menu = !@local.show_menu
+          set_active(-1) if @local.show_menu
+          save @local
+          e.stopPropagation()
+          e.preventDefault()
 
         onKeyDown: (e) => 
           if e.which == 13 || e.which == 32  

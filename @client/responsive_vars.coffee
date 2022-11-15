@@ -24,7 +24,7 @@ require './browser_hacks'
 
 PHONE_BREAKPOINT = 545 
 TABLET_BREAKPOINT = 990
-SUPER_NARROW_HEIGHT_BREAK = 200
+SUPER_NARROW_HEIGHT_BREAK = 150
 
 window.PHONE_MEDIA  =     "(max-width: #{PHONE_BREAKPOINT}px),      (max-height: #{SUPER_NARROW_HEIGHT_BREAK}px)"
 window.TABLET_MEDIA =     "(min-width: #{PHONE_BREAKPOINT}px)   and (max-width:  #{TABLET_BREAKPOINT}px) and (min-height: #{SUPER_NARROW_HEIGHT_BREAK}px)"
@@ -62,7 +62,7 @@ setResponsive = ->
   new_vals = 
     WINDOW_WIDTH: w    
     DOC_GUTTER: doc_gutter
-    DASHBOARD_WIDTH: Math.max(900, w)
+    DASHBOARD_WIDTH: Math.max(100, w)
     AUTH_WIDTH: if phone_size then w - 8 else if tablet_size then content_width else 820
     TABLET_SIZE: tablet_size
     PHONE_SIZE: phone_size    

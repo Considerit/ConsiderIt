@@ -18,6 +18,12 @@ window.styles += """
     padding: 12px 0 0 33px;
     background-color: transparent;
   }
+
+  @media #{PHONE_MEDIA} {
+    #EDITPROFILE #SHOWHOSTQUESTIONS {
+      padding: 0 18px;
+    }    
+  }
 """
 
 

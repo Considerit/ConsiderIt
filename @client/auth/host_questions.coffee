@@ -127,7 +127,7 @@ window.errors_in_host_questions = (responses) ->
 
 styles += """
   #SHOWHOSTQUESTIONS {
-    padding: 12px 33px;
+    padding: 0px 36px;
     margin-top: 18px;
   }
 """
@@ -145,9 +145,6 @@ window.ShowHostQuestions = ReactiveComponent
 
     DIV
       id: 'SHOWHOSTQUESTIONS'
-
-      style: 
-        padding: "0px 36px" 
 
       UL 
         style: 
@@ -318,6 +315,11 @@ window.ShowHostQuestions = ReactiveComponent
                   is_checked = options_checked.indexOf(option) > -1
                   DIV 
                     key: key
+                    style: 
+                      display: 'flex'
+                      alignItems: 'flex-start'
+                      marginBottom: 8
+
 
                     INPUT
                       id: slugify("#{key}-inputBox")
@@ -326,8 +328,8 @@ window.ShowHostQuestions = ReactiveComponent
                       className: 'bigger'
                       style: 
                         fontSize: 24
-                        verticalAlign: 'baseline'
                         marginLeft: 0
+                        marginTop: 5
                       checked: is_checked
                       onChange: do(question, option) => (event) =>
 
@@ -352,7 +354,7 @@ window.ShowHostQuestions = ReactiveComponent
                       htmlFor: slugify("#{key}-inputBox")
                       style: 
                         display: 'inline'
-                        paddingLeft: 8
+                        paddingLeft: 12
                       dangerouslySetInnerHTML: __html: option
 
                     if question.open_text_option == option

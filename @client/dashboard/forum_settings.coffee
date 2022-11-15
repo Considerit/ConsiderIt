@@ -26,7 +26,14 @@ window.styles += """
 
   .FORUM_SETTINGS .radio_group {
     margin-top: 24px;
+    display: flex;
+    align-items: flex-start;
   }
+  .FORUM_SETTINGS .radio_group label {
+    margin-left: 12px;
+    margin-top: -2px;
+  }
+
   #DASHBOARD-main .FORUM_SETTINGS .field_explanation {
     margin-left: 36px;
   }

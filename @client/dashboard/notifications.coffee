@@ -91,9 +91,7 @@ window.Notifications = ReactiveComponent
 
 
         if prefs['send_emails']
-          DIV 
-            style: 
-              marginLeft: 71
+          DIV null,
             
             @drawEmailSettings()
 
@@ -252,7 +250,6 @@ window.Notifications = ReactiveComponent
           style: 
             position: 'relative'
             marginLeft: 32
-            width: 500
 
           for proposal in watched_proposals when proposal.name
             do (proposal) => 
@@ -292,6 +289,7 @@ window.Notifications = ReactiveComponent
                   SPAN 
                     style: 
                       marginLeft: 18
+                      fontSize: 15
                     proposal.name
 
 

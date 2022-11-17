@@ -149,6 +149,8 @@ styles += """
 
 
 
+window.collapsed_height_initialized = {}
+
 window.ItemText = ReactiveComponent
   displayName: 'ItemText'
 
@@ -346,6 +348,7 @@ window.ItemText = ReactiveComponent
                                   {width: "#{ITEM_TEXT_WIDTH() * LIST_ITEM_EXPANSION_SCALE()}px"}, el
       @super_long_description = height >= EXPANDED_MAX_HEIGHT
 
+    
 
     # wait to make the update so that we don't continuously trigger layout reflow
     if expand_after_set
@@ -356,6 +359,11 @@ window.ItemText = ReactiveComponent
         toggle_expand 
           proposal: proposal
           ensure_open: true
+
+        collapsed_height_initialized[proposal.key] = true
+    else 
+      collapsed_height_initialized[proposal.key] = true
+      
 
 
   componentDidMount: ->

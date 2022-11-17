@@ -113,8 +113,6 @@ styles += """
 
 
 
-
-
 window.ProposalItem = ReactiveComponent
   displayName: 'ProposalItem'
 
@@ -149,13 +147,37 @@ window.ProposalItem = ReactiveComponent
           @expansion_state_changed = false 
           @list_order_state_changed = false
 
+  componentDidUpdate : -> @adjustExpansionBasedOnBackForwardButtons()
+
+
+  adjustExpansionBasedOnBackForwardButtons: ->
+    # Toggle expand / collapse when the forward and back browser buttons are used
+    # Wow this method is terribly ugly! It has to play nicely with the functionality
+    # for opening to a proposal url, which is ultimately handled in item_text.setCollapsedSizes,
+    # where collapsed item height needs to be set (after web fonts loaded) before the 
+    # item is expanded. Furthermore, when the item is expanding, it first tries to ensure 
+    # it is in the viewport. So while that initial scrolling-into-view is happening (after which)
+    # the item is animated expanded, we can't call toggle_expand _again_. This is how we 
+    # are left with collapsed_height_initialized and ensuring_view state :-/
+    loc = fetch('location')
+    proposal = fetch @props.proposal
+
+    if (@is_expanded && loc.url == '/') || (!@is_expanded && loc.url == "/#{proposal.slug}")
+      intv = setInterval => 
+        if collapsed_height_initialized[proposal.key]
+          ensuring_view = @refs.proposal_item.classList.contains 'ensuring_in_view'
+          if !ensuring_view && ((@is_expanded && loc.url == '/') || (!@is_expanded && loc.url == "/#{proposal.slug}"))
+            toggle_expand {proposal}
+          clearInterval intv
+      , 10 
+
 
   render : ->
     proposal = fetch @props.proposal
+    loc = fetch('location') # subscribe to changes
 
 
     return if !proposal.name
-
 
     @is_expanded = @props.is_expanded
 
@@ -180,6 +202,7 @@ window.ProposalItem = ReactiveComponent
 
 
       LI
+        ref: 'proposal_item'
         "data-widget": 'ProposalItem'
         key: proposal.key
         className: "ProposalItem #{if @is_expanded then 'is_expanded' else 'is_collapsed'} #{local_state.mode} #{if @props.show_list_title then 'show_list_title' else ''} prep_for_flip"
@@ -810,7 +833,6 @@ window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
 
   return if ensure_open && expanded_state[proposal.key]
 
-
   current_user = fetch '/current_user'
   opinion_views = fetch 'opinion_views'
   just_you = opinion_views.active_views['just_you']
@@ -819,6 +841,9 @@ window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
 
   mode = if personal_view_available(proposal) && personal_view_preferred then 'crafting' else 'results' 
 
+  parent = el.closest('.ProposalItem')
+  parent.classList.add 'ensuring_in_view'
+
   $$.ensureInView el,
     dom_possibly_shifting: true
     extra_height: if !expanded_state[proposal.key] then 80 else 0
@@ -826,6 +851,7 @@ window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
     callback: =>
       loc = fetch 'location'
       expanded_state[proposal.key] = !expanded_state[proposal.key]
+      parent.classList.remove 'ensuring_in_view'
       if !expanded_state[proposal.key]
         delete expanded_state[proposal.key]
 

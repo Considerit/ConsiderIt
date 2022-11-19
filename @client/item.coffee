@@ -147,28 +147,25 @@ window.ProposalItem = ReactiveComponent
           @expansion_state_changed = false 
           @list_order_state_changed = false
 
-  componentDidUpdate : -> @adjustExpansionBasedOnBackForwardButtons()
+  componentDidMount : -> @adjustExpansionBasedOnLocAndBackForwardButtons()
+  componentDidUpdate : -> @adjustExpansionBasedOnLocAndBackForwardButtons()
 
 
-  adjustExpansionBasedOnBackForwardButtons: ->
-    # Toggle expand / collapse when the forward and back browser buttons are used
-    # Wow this method is terribly ugly! It has to play nicely with the functionality
-    # for opening to a proposal url, which is ultimately handled in item_text.setCollapsedSizes,
-    # where collapsed item height needs to be set (after web fonts loaded) before the 
-    # item is expanded. Furthermore, when the item is expanding, it first tries to ensure 
-    # it is in the viewport. So while that initial scrolling-into-view is happening (after which)
-    # the item is animated expanded, we can't call toggle_expand _again_. This is how we 
-    # are left with collapsed_height_initialized and ensuring_view state :-/
+  adjustExpansionBasedOnLocAndBackForwardButtons: ->
+    # Toggle expand / collapse when the forward and back browser buttons are used, 
+    # or for if an item is opened to directly
     loc = fetch('location')
     proposal = fetch @props.proposal
 
-    if (@is_expanded && loc.url == '/') || (!@is_expanded && loc.url == "/#{proposal.slug}")
-      intv = setInterval => 
+    if ((@is_expanded && !@props.accessed_by_url) || (!@is_expanded && @props.accessed_by_url)) && !@expansion_intv
+      @expansion_intv = setInterval => 
         if collapsed_height_initialized[proposal.key]
-          ensuring_view = @refs.proposal_item.classList.contains 'ensuring_in_view'
-          if !ensuring_view && ((@is_expanded && loc.url == '/') || (!@is_expanded && loc.url == "/#{proposal.slug}"))
-            toggle_expand {proposal}
-          clearInterval intv
+          # wait to make the update so that we don't continuously trigger layout reflow
+          requestAnimationFrame =>
+            if ((@is_expanded && !@props.accessed_by_url) || (!@is_expanded && @props.accessed_by_url))
+              toggle_expand {proposal}
+            clearInterval @expansion_intv
+            @expansion_intv = null
       , 10 
 
 
@@ -236,6 +233,7 @@ window.ProposalItem = ReactiveComponent
               expansion_state_changed: @expansion_state_updated
 
               hide_scores: @props.hide_scores
+              accessed_by_url: @props.accessed_by_url
 
 
 
@@ -438,6 +436,7 @@ ProposalItemWrapper = ReactiveComponent
 
               ProposalBlock
                 proposal: proposal.key
+                accessed_by_url: @props.accessed_by_url
                 is_expanded: @props.is_expanded
                 list_key: @props.list_key
                 show_list_title: @props.show_list_title
@@ -648,6 +647,7 @@ ProposalBlock = ReactiveComponent
         className: 'proposal-text'
 
         ItemText
+          accessed_by_url: @props.accessed_by_url
           proposal: proposal.key
           is_expanded: @is_expanded
           list_key: @props.list_key
@@ -842,7 +842,6 @@ window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
   mode = if personal_view_available(proposal) && personal_view_preferred then 'crafting' else 'results' 
 
   parent = el.closest('.ProposalItem')
-  parent.classList.add 'ensuring_in_view'
 
   $$.ensureInView el,
     dom_possibly_shifting: true
@@ -851,7 +850,6 @@ window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
     callback: =>
       loc = fetch 'location'
       expanded_state[proposal.key] = !expanded_state[proposal.key]
-      parent.classList.remove 'ensuring_in_view'
       if !expanded_state[proposal.key]
         delete expanded_state[proposal.key]
 

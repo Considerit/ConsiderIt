@@ -314,8 +314,8 @@ window.ItemText = ReactiveComponent
 
 
 
-  setCollapsedSizes: (expand_after_set) ->
-    if !@waitForFonts(=> @setCollapsedSizes(expand_after_set)) || (!@local.in_viewport && !expand_after_set) || (@local.collapsed_title_height? && @sized_at_window_width == WINDOW_WIDTH())
+  setCollapsedSizes: ->
+    if !@waitForFonts(=> @setCollapsedSizes()) || (@local.collapsed_title_height? && @sized_at_window_width == WINDOW_WIDTH())
       return
 
     proposal = fetch @props.proposal
@@ -349,27 +349,14 @@ window.ItemText = ReactiveComponent
       @super_long_description = height >= EXPANDED_MAX_HEIGHT
 
     
-
-    # wait to make the update so that we don't continuously trigger layout reflow
-    if expand_after_set
-      requestAnimationFrame => 
-        # If we've loaded this item by url, ensure that it is expanded
-        # Doing this here because we have to do it after we capture the
-        # collapsed size.
-        toggle_expand 
-          proposal: proposal
-          ensure_open: true
-
-        collapsed_height_initialized[proposal.key] = true
-    else 
-      collapsed_height_initialized[proposal.key] = true
+    collapsed_height_initialized[proposal.key] = true
       
 
 
   componentDidMount: ->
     requestAnimationFrame =>
       loc = fetch 'location'
-      @setCollapsedSizes(loc.url == "/#{fetch(@props.proposal).slug}")
+      @setCollapsedSizes()
 
   componentDidUpdate: ->
     requestAnimationFrame =>

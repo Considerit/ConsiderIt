@@ -768,7 +768,7 @@ window.list_i18n = ->
 styles += """
   .LIST-title {
     font-size: 35px;
-    font-weight: 500;
+    font-weight: 600;
     text-align: left;
   }
 

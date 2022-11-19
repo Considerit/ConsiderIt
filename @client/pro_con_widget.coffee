@@ -1203,6 +1203,7 @@ window.PointsList = ReactiveComponent
       point_label = get_point_label 'con', proposal 
 
 
+
     DIV 
       className: "point-in-decision-board #{if @props.drop_target then 'with-drop-target' else ''}"
       style: 
@@ -1210,6 +1211,7 @@ window.PointsList = ReactiveComponent
         marginTop: '1em'
         marginLeft: 0 #if @props.drop_target then 20 else 9
         fontSize: POINT_FONT_SIZE()
+
 
       if @props.drop_target
 
@@ -1232,6 +1234,8 @@ window.PointsList = ReactiveComponent
           marginLeft: 8
           backgroundColor: focus_color()
           position: 'relative'
+          opacity: if fetch(shared_local_key(proposal)).has_focus == 'edit point' then .1
+
 
         TRANSLATE 
           id: "engage.add_a_point"

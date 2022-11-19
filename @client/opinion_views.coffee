@@ -1126,6 +1126,10 @@ InteractiveOpinionViews = ReactiveComponent
           if cur_val > -1
             LABEL 
               className: "attribute_value_selector" 
+              "data-tooltip": """Instead of showing each individual person in a histogram, show a circle 
+                                 for each value of #{attributes[cur_val].name or attributes[cur_val].question}. 
+                                 The position on the histogram is the average score for all the people with 
+                                 that value, and the size of the circle is the number of people with that value."""
 
               SPAN
                 className: 'toggle_switch'

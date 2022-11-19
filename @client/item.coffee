@@ -846,7 +846,7 @@ window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
 
   $$.ensureInView el,
     dom_possibly_shifting: true
-    extra_height: if !expanded_state[proposal.key] then 80 else 0
+    extra_height: if !expanded_state[proposal.key] then 4000 else 0
     force: mode == 'crafting'
     callback: =>
       loc = fetch 'location'

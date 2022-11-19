@@ -48,7 +48,7 @@ CustomizeGoogleTranslate = ReactiveComponent
 
     DIV 
       style: 
-        paddingTop: if trns?.callout && !edit_forum.editing then 48    
+        paddingTop: if trns?.callout && !edit_forum.editing then 24    
 
 
       if is_admin && edit_forum.editing   
@@ -207,6 +207,10 @@ CustomizeTitle = ReactiveComponent
 styles += """
   .single-line.banner_description, .single-line.banner_description .ql-editor {
     text-align: center;
+  }
+
+  #forum-description .ql-editor.ql-blank::before {
+    text-align: left;
   }
 
 """
@@ -405,6 +409,20 @@ UploadableLogo = (opts) ->
           fill: if is_light then 'black' else 'white'
 
 
+
+styles += """
+  
+  @media #{NOT_LAPTOP_MEDIA} {
+    .CustomizeLogo {
+      position: relative;
+    }
+    .CustomizeLogo img {
+      margin: auto;
+      display: block;
+    }
+  }
+"""
+
 CustomizeLogo = ReactiveComponent
   displayName: 'CustomizeLogo'
   mixins: [SubdomainSaveRateLimiter]
@@ -434,20 +452,22 @@ CustomizeLogo = ReactiveComponent
     else 
       height = 150
 
-    left = @local.left or customization('banner')?.logo?.left or 50
-    top  = @local.top  or customization('banner')?.logo?.top  or 68
 
     is_light = is_light_background()
 
     style = _.defaults {}, @props.style, 
-      left: left 
-      top: top
-      position: 'absolute'
       cursor: if edit_forum.editing then 'move'
       height: height + 2
       width: if !has_logo then 150
       zIndex: if @local.moving || @local.resizing then '999'
       overflow: 'hidden'
+
+
+    if !TABLET_SIZE()
+      _.extend style, 
+        left: @local.left or customization('banner')?.logo?.left or 50
+        top: @local.top  or customization('banner')?.logo?.top  or 68  
+        position: 'absolute'
 
 
     onMouseDown = (ev) => 
@@ -529,6 +549,7 @@ CustomizeLogo = ReactiveComponent
         top: style.top - 1
 
     DIV
+      className: 'CustomizeLogo'
       style: _.defaults {}, style,
         opacity: if !has_logo then 1
 
@@ -1107,6 +1128,12 @@ window.PhotoBanner = (opts) ->
           background: #{background_color};
         }
 
+        @media #{NOT_LAPTOP_MEDIA} {
+          .PhotoBanner > .wrapper {
+            padding-top: 64px;
+          }
+        }
+
         .PhotoBanner > .wrapper.with-image.with-translation-callout {
           padding-top: 64px;
         }
@@ -1114,10 +1141,9 @@ window.PhotoBanner = (opts) ->
         .PhotoBanner > .wrapper .translator {
           padding: 16px;
           max-width: 380px;
-          margin: 0 auto 36px auto; 
+          margin: 0 auto; 
           background-color: rgba(255,255,255,.8);
           position: relative; 
-          top: 36px;
         }
 
         .PhotoBanner > .wrapper > .text_block {

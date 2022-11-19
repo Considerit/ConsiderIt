@@ -414,6 +414,11 @@ html .ql-container{
   position: absolute;
   color: rgba(0,0,0,.4);
   font-weight: 500;
+  width: 100%;
+  height: 100%;
+  transform: translateX(-50%);
+  padding: 0 8px 6px 8px;
+  box-sizing: border-box;
 }
 
 .dark .ql-editor.ql-blank::before{

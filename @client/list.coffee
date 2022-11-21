@@ -97,8 +97,8 @@ responsive_style_registry.unshift (responsive_vars) ->
     # keep in sync with css variables of same name defined above in list.coffee
     AVATAR_SIZE_AND_GUTTER: avatar_spacing
     AVATAR_SIZE: if phone_size then PROPOSAL_AUTHOR_AVATAR_SIZE_SMALL else PROPOSAL_AUTHOR_AVATAR_SIZE
-    ITEM_TEXT_WIDTH:    if tablet_size then homepage_width - avatar_spacing else if embedded_demo() then .6 * homepage_width else .6 * (homepage_width - left - avatar_spacing - PROPOSAL_AUTHOR_AVATAR_SIZE)
-    ITEM_OPINION_WIDTH: if tablet_size then homepage_width - avatar_spacing else if embedded_demo() then .4 * homepage_width else .4 * (homepage_width - right)
+    ITEM_TEXT_WIDTH:    if tablet_size then homepage_width - avatar_spacing else .6 * (homepage_width - left - avatar_spacing - PROPOSAL_AUTHOR_AVATAR_SIZE)
+    ITEM_OPINION_WIDTH: if tablet_size then homepage_width - avatar_spacing else .4 * (homepage_width - right)
     LIST_ITEM_EXPANSION_SCALE: if tablet_size then 1 else 1.25
   }
 
@@ -129,9 +129,9 @@ window.styles += """
     box-shadow: none;
   }
 
-  .embedded-demo .List {
-    padding: 0;
-  }
+  # .embedded-demo .List {
+  #   padding: 0;
+  # }
 
 
   .LIST_item_connector {

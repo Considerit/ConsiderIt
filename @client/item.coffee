@@ -157,13 +157,17 @@ window.ProposalItem = ReactiveComponent
     loc = fetch('location')
     proposal = fetch @props.proposal
 
-    if ((@is_expanded && !@props.accessed_by_url) || (!@is_expanded && @props.accessed_by_url)) && !@expansion_intv
+    already_toggling = @refs.proposal_item.classList.contains 'will-expand-toggle'
+
+    if ((@is_expanded && !@props.accessed_by_url) || (!@is_expanded && @props.accessed_by_url)) && !@expansion_intv && !already_toggling
       @expansion_intv = setInterval => 
         if collapsed_height_initialized[proposal.key]
           # wait to make the update so that we don't continuously trigger layout reflow
           requestAnimationFrame =>
-            if ((@is_expanded && !@props.accessed_by_url) || (!@is_expanded && @props.accessed_by_url))
+
+            if ((@is_expanded && !@props.accessed_by_url) || (!@is_expanded && @props.accessed_by_url)) && !already_toggling
               toggle_expand {proposal}
+
             clearInterval @expansion_intv
             @expansion_intv = null
       , 10 
@@ -843,6 +847,7 @@ window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
 
   parent = el.closest('.ProposalItem')
 
+  parent.classList.add 'will-expand-toggle'
   $$.ensureInView el,
     dom_possibly_shifting: true
     extra_height: if !expanded_state[proposal.key] then 4000 else 0
@@ -850,6 +855,8 @@ window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
     callback: =>
       loc = fetch 'location'
       expanded_state[proposal.key] = !expanded_state[proposal.key]
+      parent.classList.remove 'will-expand-toggle'
+
       if !expanded_state[proposal.key]
         delete expanded_state[proposal.key]
 

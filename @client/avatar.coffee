@@ -511,7 +511,7 @@ window.LoadAvatars = ReactiveComponent
             @loading_cnt -= 1
             if @loading_cnt == 0
               loading.loading = false
-              loading.loaded = md5 JSON.stringify Object.keys(loaded_images)
+              loading.loaded = md5 "#{JSON.stringify(Object.keys(loaded_images))}-#{JSON.stringify((u.name for u in avatars_to_load))}"
               save loading
           pic.onerror = do(user) => =>
             @loading_cnt -= 1

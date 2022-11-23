@@ -116,5 +116,10 @@ window.poll_until_avatar_arrives = ->
       time_between *= 1.5
       if time_between < 100000
         setTimeout update_user, time_between 
+    else 
+      loading = fetch('avatar_loading')
+      loading.dummy ?= 0
+      loading.dummy += 1
+      save loading
 
   update_user()

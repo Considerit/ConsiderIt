@@ -399,6 +399,7 @@ img.avatar:after {
 cached_avatars = {}
 missing_images = {}
 loaded_images = {}
+users2images = {}
 
 window.getCanvasAvatar = (user) ->
   cached_avatars[user.key or user] or cached_avatars.default
@@ -484,17 +485,17 @@ window.LoadAvatars = ReactiveComponent
     for user in all_users
       user = fetch user # subscribe to changes to avatar
 
-
       if user.avatar_file_name
 
-        if user.avatar_file_name not of loaded_images && \
+        if (users2images[user.key] != user.avatar_file_name ||
+           user.avatar_file_name not of loaded_images) && \
            user.avatar_file_name not of missing_images
 
           avatars_to_load.push user 
+          users2images[user.key] = user.avatar_file_name
 
       cached_avatars[user.key] ?= createFallbackIcon(user)
-        
-
+    
     if avatars_to_load.length > 0 
       if !loading.loading
         loading.loading = true 

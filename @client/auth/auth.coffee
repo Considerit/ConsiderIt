@@ -27,59 +27,25 @@ window.AuthCallout = ReactiveComponent
     return SPAN null if current_user.logged_in || customization('contribution_phase') == 'frozen'
 
     create_account_button_style = 
-                    backgroundColor: selected_color
-                    marginRight: 8
-                    # border: 'none'
-                    # fontWeight: 700
-                    # padding: "4px 18px"
-                    # color: 'white'   
-                    # borderRadius: 16   
+      backgroundColor: selected_color
+      marginRight: 8
+
     DIV  
       style: 
         width: '100%'
 
       DIV 
         style: 
-          width: HOMEPAGE_WIDTH()
-          margin: 'auto'
           padding: 12
+          textAlign: 'center'
           # backgroundColor: '#f1f1f1'
         
         DIV 
           style: 
-            fontSize: 20
+            fontSize: if PHONE_SIZE() then 16 else 20
             fontWeight: 600
-            textAlign: 'center'
 
-          if subdomain.SSO_domain
-
-            TRANSLATE
-              id: 'create_account.call_out'
-              BUTTON1: 
-                component: A 
-                args: 
-                  className: "btn create_account"
-                  href: '/login_via_saml'
-                  treat_as_external_link: true
-                  style: create_account_button_style
-                    
-
-              "<BUTTON1>Create an Account</BUTTON1> to share your thoughts"
-          else 
-            TRANSLATE
-              id: 'create_account.call_out'
-              BUTTON1: 
-                component: BUTTON 
-                args: 
-                  key: 'create_button'
-                  'data-action': 'create'
-                  onClick: (e) =>
-                    reset_key 'auth',
-                      form: 'create account'
-                  style: create_account_button_style
-                  className: "btn create_account"
-              "<BUTTON1>Create an Account</BUTTON1> to share your thoughts"
-
+          AUTH_CALLOUT_BUTTONS(create_account_button_style)
           if '*' not in subdomain.roles.participant
             DIV 
               style: 
@@ -89,6 +55,57 @@ window.AuthCallout = ReactiveComponent
         
         if @props.children 
           @props.children
+          
+window.AUTH_CALLOUT_BUTTONS = (button_style) ->
+  button_style ?= {}
+  if PHONE_SIZE()
+    _.extend button_style,
+      display: 'block'
+      margin: 'auto'
+
+  subdomain = fetch '/subdomain'
+  if subdomain.SSO_domain
+
+    TRANSLATE
+      id: 'create_account.call_out'
+      BUTTON1: 
+        component: A 
+        args: 
+          className: "btn create_account"
+          href: '/login_via_saml'
+          treat_as_external_link: true
+          style: button_style
+            
+
+      "<BUTTON1>Create an Account</BUTTON1> to share your thoughts"
+  else if embedded_demo()
+    DIV null, 
+      BUTTON 
+        key: 'create_button'
+        'data-action': 'create'
+        onClick: (e) =>
+          reset_key 'auth',
+            form: 'create account'
+        style: button_style
+        className: "btn create_account"
+        "Choose a persona"
+
+      "to participate here"
+
+  else
+    TRANSLATE
+      id: 'create_account.call_out'
+      BUTTON1: 
+        component: BUTTON 
+        args: 
+          key: 'create_button'
+          'data-action': 'create'
+          onClick: (e) =>
+            reset_key 'auth',
+              form: 'create account'
+          style: button_style
+          className: "btn create_account"
+      "<BUTTON1>Create an Account</BUTTON1> to share your thoughts"
 
 # AuthTransition doesn't actually render anything.  It just handles state
 # transitions for current_user, e.g. for CSRF and logging in and out.
@@ -112,11 +129,12 @@ window.AuthTransition = ReactiveComponent
 
     # Once the user logs in, we will stop showing the log-in screen 
     # and execute any callbacks
-    if (!@local.logged_in_last_render && current_user.logged_in && !auth.show_user_questions_after_account_creation) || \
+    # Note: The very first auth.form != 'user questions' is solely for handling the auto-login for galactic federation.
+    #       Without it, it would reset the auth, which would cause the callback to prematurely execute
+    if (auth.form != 'user questions' && !@local.logged_in_last_render && current_user.logged_in && !auth.show_user_questions_after_account_creation) || \
        (auth.form == 'verify email' && current_user.verified) || \
        (auth.form == 'user questions' && (current_user.completed_host_questions && !auth.show_user_questions_after_account_creation)) || \
        (auth.form == 'create account via invitation' && !current_user.needs_to_complete_profile)
-      auth.after?()
       reset_key auth
 
 
@@ -165,7 +183,14 @@ window.AuthTransition = ReactiveComponent
           trying_to: 'create account'
         save current_user
 
-        reset_key 'auth'
+
+        reset_key 'auth',
+          form: 'user questions'
+          goal: ""
+          after: auth.after
+          show_user_questions_after_account_creation: auth.show_user_questions_after_account_creation
+
+
       else if current_user.tags.federation_allegiance && current_user.name == 'temp'
         allegiance = current_user.tags.federation_allegiance
         id = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 15)
@@ -193,6 +218,7 @@ window.AuthTransition = ReactiveComponent
 
         _.extend current_user, {name, email, avatar_url}
         save current_user
+        poll_until_avatar_arrives()
 
 
     SPAN null
@@ -303,10 +329,15 @@ window.styles += """
     font-size: 24px;
   }
   .AUTH_cancel.embedded {
-    margin-top: 8px;
+    margin: 8px auto 0px auto;
     padding: 8px 0 8px 8px;
     font-size: 18px;
-    text-decoration: underline;
+  }
+
+  @media #{PHONE_MEDIA} {
+    .AUTH_cancel.floating {
+      display: none;
+    }
   }
 
   .AUTH_submit_button {
@@ -335,15 +366,18 @@ window.styles += """
     width: 100%;
     border: 1px solid #ccc;
     padding: 10px 14px;
-    font-size: #{if browser.is_mobile then 36 else 20}px;
+    font-size: 20px;
     display: inline-block;
     background-color: #f2f2f2;
   }
 
 
-  @media (max-width: 637px) {
+  @media #{PHONE_MEDIA} {
     .AUTH_body_wrapper {
-      padding: 2.5em 32px 3em 36px;
+      padding: 2em 16px;
+    }
+    #AUTH_task {
+      font-size: 28px;      
     }
   }
 
@@ -433,21 +467,24 @@ window.AuthForm =
               
               options.submit_button or @i18n().submit_button 
 
+            if !options.disallow_cancel
+              DIV 
+                style: 
+                  textAlign: 'center'
+
+                BUTTON
+                  ref: 'cancel_dialog'
+                  className: 'AUTH_cancel embedded'
+                  title: translator 'shared.cancel_button', 'cancel'
+
+                  onClick: cancel_modal
+
+                  translator 'shared.cancel_button', 'cancel'
+
+
             if options.under_submit
               options.under_submit   
 
-            # if !options.disallow_cancel
-            #   DIV 
-            #     style: 
-            #       textAlign: 'right'
-            #     BUTTON
-            #       ref: 'cancel_dialog'
-            #       className: 'AUTH_cancel embedded'
-            #       title: translator 'shared.cancel_button', 'cancel'
-
-            #       onClick: cancel_modal
-
-            #       translator 'shared.cancel_button', 'cancel'
 
 
   RenderInput: (opts) -> 

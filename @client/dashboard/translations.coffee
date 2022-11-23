@@ -163,8 +163,6 @@ window.T = window.t = window.translator = (args, native_text) ->
 
   translations_loaded ||= true
 
-
-
   subdomain = fetch '/subdomain'
 
   if typeof args == "string"

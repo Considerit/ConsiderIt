@@ -3,11 +3,11 @@ require './avatar'
 require './browser_hacks'
 require './bubblemouth'
 require './customizations'
-require './histogram'
+require './histogram-canvas'
 require './shared'
 require './tooltip'
 require 'dashboard/translations'
-require './proposal'
+require './item'
 
 
 window.focus_color = -> focus_blue
@@ -31,8 +31,8 @@ window.namespaced_key = (base_key, base_object) ->
   
   "#{namespace_key}_#{base_key}"
 
-proposal_link = (proposal, results) -> 
-  "#{location_origin()}/#{proposal.slug}#{if results then '?results=true' else ''}"
+proposal_link = (proposal) -> 
+  "#{location_origin()}/#{proposal.slug}"
 
 
 window.opinionsForProposal = (proposal) ->       

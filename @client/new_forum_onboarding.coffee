@@ -174,8 +174,8 @@ window.NewForumOnBoarding = ReactiveComponent
         UL null,
 
           onboard_item "Edit the Banner to introduce people to your forum.", task_one_complete
-          onboard_item "Experiment with the question below. Delete it when you’re done.", task_two_complete
-          onboard_item "Add a request for feedback or an open-ended question.", task_three_complete
+          onboard_item "Experiment with the Ice Cream question below. Delete it when you’re done.", task_two_complete
+          onboard_item "Create a New Focus.", task_three_complete
 
       DIV 
         style:

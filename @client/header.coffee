@@ -17,12 +17,12 @@ window.Header = ReactiveComponent
     # auth = fetch('auth')
     # return SPAN null if auth.form && auth.form not in ['edit profile']
 
-    return SPAN null if !subdomain.name || embedded_demo()
+    return SPAN null if !subdomain.name # || embedded_demo()
 
 
     
     loc = fetch('location')
-    is_homepage = EXPAND_IN_PLACE || loc.url == '/'
+    homepage = is_a_dialogue_page()
     
 
     header_bonus = customization('header_bonus') # currently used for things like inserting google font
@@ -56,7 +56,7 @@ window.Header = ReactiveComponent
 
         ProfileMenu()
 
-        if customization('google_translate_style') && !customization('google_translate_style').prominent && fetch('location').url == '/'
+        if customization('google_translate_style') && !customization('google_translate_style').prominent && is_a_dialogue_page()
           DIV 
             className: 'google-translate-candidate-container'
             style: 
@@ -65,10 +65,10 @@ window.Header = ReactiveComponent
               zIndex: 2
 
 
-        if is_homepage
+        if homepage
           EditBanner()
 
-        if is_homepage
+        if homepage
           (customization('HomepageHeader') or customization('SiteHeader') or PhotoBanner).apply(@)
         else
           ShortHeader

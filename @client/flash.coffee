@@ -26,7 +26,7 @@ styles += """
   }
 
   #flash .flash-message {
-    padding: 12px 24px;
+    padding: 8px 18px;
     border-right: 1px solid rgba(255,255,255,.5);
   }
 
@@ -37,17 +37,17 @@ styles += """
     background-color: transparent;
     color: white;
     border: none;
-    padding: 12px 24px;
+    padding: 8px 18px;
   }
 
 
   @keyframes flashfadein {
     from {bottom: 0; opacity: 0;}
-    to {bottom: 50px; opacity: 1;}
+    to {bottom: 12px; opacity: 1;}
   }
 
   @keyframes flashfadeout {
-    from {bottom: 50px; opacity: 1;}
+    from {bottom: 12px; opacity: 1;}
     to {bottom: 0; opacity: 0;}
   }
 
@@ -98,7 +98,7 @@ window.Flash = ReactiveComponent
         animation: if flash.message then "flashfadein 500ms, flashfadeout 500ms #{flash.time - 500}ms"
         visibility: if flash.message then 'visible' else 'hidden'
         opacity: if flash.message then 1 else 0 
-        bottom: if flash.message then 50 else 0
+        bottom: if flash.message then 12 else 0
 
       DIV
         id: 'flash'

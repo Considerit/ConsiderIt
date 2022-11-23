@@ -7,46 +7,25 @@ window.EditPoint = ReactiveComponent
 
   render : ->
     proposal = fetch @props.proposal
-    @local = @data @local_key,
-      sign_name : if @props.fresh then true else !@data().hide_name
-      add_details : false
+    point = fetch @props.point 
 
-    mobile = browser.is_mobile
+    if !@local.sign_name?
+      _.defaults @local, 
+        sign_name : if @props.fresh then true else !point.hide_name
+        add_details : false
 
-    if mobile
-      textarea_style = 
-        width: '100%'
-        overflow: 'hidden'
-        fontSize: if PORTRAIT_MOBILE() then 50 else 30
-        padding: '4px 6px'
+    textarea_style = 
+      width: '100%'
+      overflow: 'hidden'
+      fontSize: 14
+      padding: '4px 6px'
 
-      # full page mode if we're on mobile      
-      parent = document.getElementById "proposal-#{proposal.id}"
-      parent_offset = if parent then $$.offset(parent).top else 0
-      style = 
-        position: 'absolute'
-        top: 0
-        left: 50
-        height: '100%'
-        width: WINDOW_WIDTH() - 100
-        backgroundColor: 'rgba(255,255,255,.85)'
-        fontSize: 20
-        zIndex: 99999999
-        padding: "#{@scrollY - parent_offset}px 50px 100px 50px"
-
-    else 
-      textarea_style = 
-        width: if mobile then '75%' else '100%'
-        overflow: 'hidden'
-        fontSize: if mobile then 30 else 14
-        padding: '4px 6px'
-
-      style = 
-        position: 'relative'
-        fontSize: 14
-        zIndex: 1
-        marginTop: if TWO_COL() then 40
-        marginBottom: 15
+    style = 
+      position: 'relative'
+      fontSize: 14
+      zIndex: 1
+      marginTop: if TABLET_SIZE() then 40
+      marginBottom: 15
 
 
     DIV
@@ -70,7 +49,7 @@ window.EditPoint = ReactiveComponent
           'aria-label': translator('engage.point_summary_placeholder', 'A succinct summary of your point.')
           placeholder:  translator('engage.point_summary_placeholder', 'A succinct summary of your point.')
           required: 'required'
-          defaultValue: if @props.fresh then null else @data().nutshell
+          defaultValue: if @props.fresh then null else point.nutshell
           style: _.extend {}, textarea_style,
             minHeight: 75
           count_style: 
@@ -92,8 +71,8 @@ window.EditPoint = ReactiveComponent
           name:'fulltext'
           'aria-label': translator('engage.point_description_placeholder', 'Add background or evidence.')  
           placeholder: translator('engage.point_description_placeholder', 'Add background or evidence.')  
-          min_height: if PORTRAIT_MOBILE() then 150 else 80
-          defaultValue: if @props.fresh then null else @data().text
+          min_height: 80 # if PORTRAIT_MOBILE() then 150 else 80
+          defaultValue: if @props.fresh then null else point.text
           style: textarea_style
           onHeightChange: => 
             s = fetch('reasons_height_adjustment')
@@ -134,7 +113,6 @@ window.EditPoint = ReactiveComponent
             'data-action': 'submit-point'
             onClick: @savePoint
             style: 
-              fontSize: if PORTRAIT_MOBILE() then 50 else if LANDSCAPE_MOBILE() then 36
               backgroundColor: focus_color() 
             translator 'engage.done_button', 'Done'             
 
@@ -144,12 +122,10 @@ window.EditPoint = ReactiveComponent
           className: 'like_link'
           style:
             color: '#888888'
-            top: 2 #if mobile then 0 else 2
+            top: 2
             marginLeft: 10
-            fontSize: if PORTRAIT_MOBILE() then 50 else if LANDSCAPE_MOBILE() then 36 else 16
-            # right: if mobile then -10 else 20
             position: 'relative'
-            padding: if mobile then 10 else 0
+            padding: 0
           translator 'shared.cancel_button', 'cancel'
 
         DIV 
@@ -169,6 +145,7 @@ window.EditPoint = ReactiveComponent
             checked:   @local.sign_name
             style: 
               verticalAlign: 'middle'
+              marginRight: 8
             onChange: =>
               @local.sign_name = !@local.sign_name
               save(@local)
@@ -181,18 +158,13 @@ window.EditPoint = ReactiveComponent
                      with peers."""
             translator 'engage.point_anonymous_toggle', 'Sign your name'
 
-  UNSAFE_componentWillMount : ->
-    # save scroll position and keep it there
-    if browser.is_mobile
-      @scrollY = window.scrollY
 
   componentDidMount : ->
     proposal = fetch @props.proposal
 
     if proposal.active 
 
-      if !browser.is_mobile # iOS messes this up
-        ReactDOM.findDOMNode(@refs.nutshell).querySelector('#nutshell').focus() 
+      ReactDOM.findDOMNode(@refs.nutshell).querySelector('#nutshell').focus() 
       
       $$.ensureInView ReactDOM.findDOMNode(@refs.submit_point),
         scroll: false
@@ -207,13 +179,9 @@ window.EditPoint = ReactiveComponent
     s.edit_point_height = 0       
     save s    
 
+  # guidelines/tips for good points
   drawTips : -> 
     proposal = fetch @props.proposal
-    # guidelines/tips for good points
-    mobile = browser.is_mobile
-
-    guidelines_w = if mobile then 'auto' else 230
-    guidelines_h = 238
 
     singular =  if @props.valence == 'pros' 
                   get_point_label 'pro', proposal
@@ -222,64 +190,26 @@ window.EditPoint = ReactiveComponent
 
     plural =  get_point_label @props.valence, proposal 
 
-
     DIV 
       id: 'tips_for_new_point'
       style:
-        position: if mobile then 'relative' else 'absolute'
-        left: if !mobile then (if @props.valence == 'pros' then -guidelines_w - 25 else POINT_WIDTH() + 15)
-        width: guidelines_w
-        color: focus_color()
+        position: 'absolute'
+        left: if @props.valence == 'pros' then "calc(-100% - 4px)" else "calc(100% + 4px)"
+
+        width: "100%"
+        color: 'white'
         zIndex: 1
-        marginBottom: if mobile then 20
-        backgroundColor: if mobile then 'rgba(255,255,255,.85)'
+        backgroundColor: focus_color() 
 
-
-      if !mobile
-        SVG
-          width: guidelines_w + 28
-          height: guidelines_h
-          viewBox: "-4 0 #{guidelines_w+20 + 9} #{guidelines_h}"
-          style: 
-            position: 'absolute'
-            transform: if @props.valence == 'cons' then 'scaleX(-1)'
-            left: if @props.valence == 'cons' then -20
-
-          DEFS null,
-            svg.dropShadow 
-              id: "guidelines-shadow"
-              dx: '0'
-              dy: '2'
-              stdDeviation: "3"
-              opacity: .5
-
-          PATH
-            stroke: focus_color() #'#ccc'
-            strokeWidth: 1
-            fill: "#FFF"
-            filter: 'url(#guidelines-shadow)'
-
-            d: """
-                M#{guidelines_w},33
-                L#{guidelines_w},0
-                L1,0
-                L1,#{guidelines_h} 
-                L#{guidelines_w},#{guidelines_h} 
-                L#{guidelines_w},58
-                L#{guidelines_w + 20},48
-                L#{guidelines_w},33 
-                Z
-               """
       DIV 
         style: 
-          padding: if !mobile then '14px 18px'
+          padding: '14px 18px'
           position: 'relative'
-          marginLeft: 5
 
         SPAN 
           style: 
             fontWeight: 600
-            fontSize: if PORTRAIT_MOBILE() then 70 else if LANDSCAPE_MOBILE() then 36
+
           translator 
             id: 'engage.write_point_header'
             pro_or_con: capitalize(singular)
@@ -302,12 +232,10 @@ window.EditPoint = ReactiveComponent
                 key: tip
                 style: 
                   paddingBottom: 3
-                  fontSize: if PORTRAIT_MOBILE() then 24 else if LANDSCAPE_MOBILE() then 14
                 tip  
 
   done : ->
     your_points = fetch @props.your_points_key
-
     if @props.fresh
       your_points.adding_new_point = false
     else
@@ -328,7 +256,7 @@ window.EditPoint = ReactiveComponent
     if !@props.fresh
       # If we're updating an existing point, we just have to update
       # some of the fields from the form
-      point = @data()
+      point = fetch @props.point
       point.nutshell = nutshell
       point.text = text
       point.hide_name = hide_name

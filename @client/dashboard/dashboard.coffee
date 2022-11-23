@@ -27,6 +27,7 @@ window.styles += """
     background: linear-gradient(180deg, rgba(246,246,246,1) 88%, rgba(255,255,255,1) 100%);
     padding-bottom: 70px;
   }
+
   #DASHBOARD-menu a {
     text-decoration: none;
     color: black;
@@ -88,6 +89,14 @@ window.styles += """
     background-color: #{selected_color};
   }
 
+  @media #{NOT_LAPTOP_MEDIA} {
+    #DASHBOARD-main {
+      padding: 30px 24px;
+    }
+    #DASHBOARD-menu {
+      display: none;
+    }
+  }
 
 """
 
@@ -196,6 +205,8 @@ window.Dashboard = ReactiveComponent
     DIV 
       id: "DASHBOARD-flex-container"
       "data-name": loc.url
+      style: 
+        width: DASHBOARD_WIDTH()
 
       DIV
         id: "DASHBOARD-menu"

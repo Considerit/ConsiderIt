@@ -39,14 +39,14 @@ window.EditList = ReactiveComponent
     admin_actions = [
       {action: 'edit', label: translator('edit', 'edit')}
       {action: 'copy_link', label: translator('engage.list-configuration.copy_link', 'copy link')}
-      {action: 'list_order', label: translator('engage.list-configuration.reorder_topics', 'reorder lists')}
+      {action: 'list_order', label: translator('engage.list-configuration.reorder_topics', 'reorder')}
       {action: 'close', label: translator('engage.list-configuration.close', 'close to participation')}
       {action: 'delete', label: translator('delete', 'delete')}
     ]
 
     DIV null,
 
-      if !@local.editing
+      if !edit_list.editing
 
         DropMenu
           className: 'default_drop'
@@ -56,17 +56,16 @@ window.EditList = ReactiveComponent
 
           wrapper_style: 
             position: 'absolute'
-            right: -LIST_PADDING() + 10
+            right: if PHONE_SIZE() then -6 else 0
             top: 12
             minWidth: 'auto'
-            paddingLeft: 40
 
+          anchor_tooltip: translator "engage.list-config-icon-tooltip", "Configure list settings" 
           render_anchor: ->
-            SPAN 
-              "data-tooltip": translator "engage.list-config-icon-tooltip", "Configure list settings" 
-              GearIcon
-                size: 20
-                fill: '#888'
+
+            ThreeDotsIcon              
+              size: 26
+              fill: '#888'
 
           render_option: (option, is_active) ->
             SPAN 
@@ -77,8 +76,8 @@ window.EditList = ReactiveComponent
 
           selection_made_callback: (option) =>
             if option.action == 'edit' 
-              @local.editing = true 
-              save @local
+              edit_list.editing = true 
+              save edit_list
 
             else if option.action == 'list_order'
               ef = fetch 'edit_forum'
@@ -90,7 +89,9 @@ window.EditList = ReactiveComponent
               delete_list list
 
             else if option.action == 'close'
-              if confirm(translator('engage.list-config-close-confirm', 'Are you sure you want to close this list to participation? Any proposals in it will also be closed to further participation, though all existing dialogue will remain visible.'))
+              if confirm(translator('engage.list-config-close-confirm', """Are you sure you want to close this list to participation? 
+                                                                           Any proposals in it will also be closed to further participation, 
+                                                                           though all existing dialogue will remain visible."""))
                 
                 # close existing proposals to further participation
                 if list.proposals?.length > 0 
@@ -123,18 +124,29 @@ window.EditList = ReactiveComponent
               , (err) ->
                 show_flash_error("Problem copying link to clipboard")
       else 
-        ModalNewList
+        EditNewList
           list: list
           fresh: false
           combines_these_lists: @props.combines_these_lists
           done_callback: => 
-            @local.editing = false 
-            save @local
+            edit_list.editing = false 
+            save edit_list
 
 
 
 
 styles += """
+  .EditingNewList .ListHeader-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;    
+  }
+
+  .EditingNewList .LIST-title {
+    width: 100%;
+  }
+
   .LIST-fat-header-field {
     background-color: white;
     border: 1px solid #eaeaea;
@@ -145,16 +157,86 @@ styles += """
   }
 
   .LIST-field-edit-label {
-    font-size: 14px;
-    display: inline-block;
+    display: block;
     font-weight: 400;
-    margin-top: 18px;
+    margin-top: 36px;
+    margin-bottom: 4px;
+    color: #{focus_color()};
+    font-size: 18px;
   }
+
+  .LIST-option-block {    
+      display: flex;
+      align-items: center;
+      margin-top: 8px;
+  }
+
+  .LIST-option-block input[type="radio"] {
+    height: 18px; 
+    width: 18px;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+
+  .LIST-option-block .permissions_explanation {
+    color: #A0A0A0;
+    font-weight: 400;
+    margin-left: 24px;
+  }
+
+  @media #{PHONE_MEDIA} {
+    .LIST-option-block .permissions_explanation {
+      display: none;
+    }
+  }
+
+  .LIST-slider-input {
+    padding-top: 2px;
+    position: absolute;
+    border: none;
+    outline: none;
+    color: #444;
+    font-size: 12px;
+  }
+
+  #edit_description .ql-editor {
+    min-height: 48px;
+    padding: 12px 12px;
+    border: 1px solid #eaeaea;
+    background-color: white;
+    text-align: inherit;
+  }
+
+  #edit_description .ql-editor.ql-blank::before {
+    width: 100%;
+  }
+
+  #edit_description.single-line .ql-editor.ql-blank::before {
+    transform: translateX(-50%);
+  }
+
+  .LIST_additional_options label {
+    display: flex;
+    align-items: center;
+  }
+  
+
+  .LIST_additional_options input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+
+  #edit_description .wysiwyg_text.focused {
+    outline: none;
+  }
+
 """
 
 
-window.ModalNewList = ReactiveComponent
-  displayName: 'ModalNewList'
+window.EditNewList = ReactiveComponent
+  displayName: 'EditNewList'
   mixins: [Modal]
 
   get_list_key: -> 
@@ -176,6 +258,7 @@ window.ModalNewList = ReactiveComponent
 
     return SPAN null if !current_user.is_admin
 
+    WINDOW_WIDTH() # subscribe to window size changes for alignment
 
  
 
@@ -187,7 +270,8 @@ window.ModalNewList = ReactiveComponent
       customizations[list_key] ?= {}
       list_config = customizations[list_key]
 
-      fields = ['list_title', 'list_description', 'list_permit_new_items', 'list_item_name', 'list_category', 'slider_pole_labels', 'list_opinions_title', 'discussion_enabled', 'list_is_archived']
+      fields = ['list_title', 'list_description', 'list_permit_new_items', 'list_item_name', 'list_category', \
+                'slider_pole_labels', 'list_opinions_title', 'discussion_enabled', 'list_is_archived']
 
       for f in fields
         val = edit_list[f]
@@ -222,7 +306,6 @@ window.ModalNewList = ReactiveComponent
           customizations.lists ?= get_all_lists()
           if customizations.lists.indexOf('*') == -1 && customizations.lists.indexOf(new_key) == -1
             customizations.lists.push new_key
-          console.log 'NEW CUSTOMZIATION', customizations.lists, new_key
 
 
       save subdomain, => 
@@ -258,525 +341,523 @@ window.ModalNewList = ReactiveComponent
     if !@props.fresh
       edit_list.list_title ?= title 
 
-    description = edit_list.description or customization('list_description', list_key, subdomain)
-    if Array.isArray(description)
-      description = description.join('\n')
+    description = @getDescription()
 
     description_style = customization 'list_description_style', list_key
 
 
-    permit_new_items = customization('list_permit_new_items', list_key, subdomain)
-
-    option_block = 
-      display: 'flex'
-      alignItems: 'center'
-      marginTop: 8
 
     children = \ 
-        DIV null,
+        DIV 
+          className: 'List EditingNewList'
 
-          DIV null, 
+          DIV 
+            className: 'ListHeader-wrapper'
+
             DIV 
-              className: 'LIST-field-edit-label'
+              className: 'text-wrapper'
 
-              TRANSLATE
-                id: "engage.list-config-title"
-                span: 
-                  component: SPAN 
-                  args: 
-                    key: 'title'
-                    style: 
-                      fontWeight: 700
-
-                "<span>Heading.</span> An open-ended question like \"What are your ideas?\" or a category like \"Recommendations\"."
-
-            H1 
-              className: 'LIST-header'
-
-              AutoGrowTextArea
-                id: "title-#{list_key}"
-                className: 'LIST-header LIST-fat-header-field'
-                ref: 'input'
-                focus_on_mount: true
-                style: _.defaults {}, customization('list_label_style', list_key, subdomain) or {}, 
-                  fontFamily: header_font()
-                  width: HOMEPAGE_WIDTH() + -200
-
-                defaultValue: if !@props.fresh then title
-                onChange: (e) ->
-                  edit_list.list_title = e.target.value 
-                  save edit_list
+              H1 
+                className: 'LIST-title'
 
 
-          DIV null, 
 
-            DIV
-              style: _.defaults {}, (description_style or {})
+                AutoGrowTextArea
+                  id: "title-#{list_key}"
+                  className: 'LIST-title LIST-fat-header-field LIST-title-wrapper condensed'
+                  ref: 'input'
+                  focus_on_mount: true
+                  style: _.defaults {}, customization('list_label_style', list_key, subdomain) or {}, 
+                    width: '100%'
+                  placeholder: translator "engage.list-config-title", "An open-ended question like \"What are your ideas?\" or a category like \"Recommendations\"."
+
+
+                  defaultValue: if !@props.fresh then title
+                  onChange: (e) ->
+                    edit_list.list_title = e.target.value 
+                    save edit_list
+
+
 
               if typeof description == 'function'
-                description()        
-              else 
-
-                DIV null,
-
-                  DIV 
-                    className: 'LIST-field-edit-label'
-
-                    TRANSLATE
-                      id: "engage.list-config-description"
-                      span: 
-                        component: SPAN 
-                        args: 
-                          key: 'span'
-                          style: 
-                            fontWeight: 700
-
-                      "<span>Description [optional].</span> Give any additional information or direction here."
-
-                  DIV 
-                    id: 'edit_description'
-
-                    style:
-                      # marginTop: -12
-                      width:  HOMEPAGE_WIDTH() - 200
-
-                    STYLE
-                      dangerouslySetInnerHTML: __html: """
-                        #edit_description .ql-editor {
-                          min-height: 48px;
-                          padding: 12px 12px;
-                          border: 1px solid #eaeaea;
-                          border-radius: 8px;
-                          background-color: white;
-
-                        }
-                      """
-
-                    WysiwygEditor
-                      key: "#{list_key}-description"
-                      editor_key: "#{list_key}-description"
-                      horizontal: true
-                      html: customization('list_description', list_key)
-                      # placeholder: if !@props.fresh then translator("engage.list_description", "(optional) Description")
-                      toolbar_style: 
-                        right: 0
-                      container_style: 
-                        borderRadius: 8
-                      style: 
-                        fontSize: if browser.is_mobile then 32
-
-
-
-
-
-          DIV null, 
-
-            if !@props.combines_these_lists
-              slider_input_style = 
-                paddingTop: 2
-                position: 'absolute'
-                border: 'none'
-                outline: 'none'
-                color: '#444'
-                fontSize: if browser.is_mobile then 16 else 12
-
-              DIV 
-                style: 
-                  padding: '12px 0'
-
-                LABEL
-                  className: 'LIST-field-edit-label'
-
-
-                  TRANSLATE
-                    id: "engage.list-config-spectrum"
-                    span: 
-                      component: SPAN 
-                      args: 
-                        key: 'span'
-                        style: 
-                          fontWeight: 700
-
-                    "<span>Slider.</span> On what spectrum is each proposal evaluated?"
-
-
-                DIV 
-                  ref: 'slider_config'
-                  style: 
-                    padding: '18px 0px 0px 12px'
-                    position: 'relative'
-                    marginTop: 8
-                    left: 0
-                    display: 'flex'
-
-                  DIV 
-                    style: 
-                      position: 'relative'
-                      flexGrow: 2
-                      width: '100%'
-                      borderTop: '1px solid'
-                      borderColor: '#999'
-                      maxWidth: 500
-                    
-                    INPUT 
-                      type: 'text'
-                      style: _.extend {}, slider_input_style, 
-                        left: 0
-                        textAlign: 'left'
-
-                      ref: 'oppose_slider'
-                      defaultValue: customization('slider_pole_labels', list_key, subdomain).oppose 
-                      placeholder: translator 'engage.slider_config.negative-pole-placeholder', 'Negative pole'
-                      onChange: (e) ->
-                        edit_list.slider_pole_labels ?= {}
-                        edit_list.slider_pole_labels.oppose = e.target.value 
-                        save edit_list
-
-                    INPUT
-                      type: 'text'
-                      style: _.extend {}, slider_input_style, 
-                        textAlign: 'right'
-                        right: 0
-
-                      ref: 'support_slider'
-                      defaultValue: customization('slider_pole_labels', list_key, subdomain).support
-                      onChange: (e) ->
-                        edit_list.slider_pole_labels ?= {}
-                        edit_list.slider_pole_labels.support = e.target.value 
-                        save edit_list
-                      placeholder: translator 'engage.slider_config.positive-pole-placeholder', 'Positive pole'
-
-
-                  DropMenu
-                    options: [{support: '', oppose: ''}].concat (v for k,v of slider_labels)
-                    open_menu_on: 'activation'
-
-                    wrapper_style: 
-                      position: 'relative'
-                      flexGrow: 0
-                      paddingLeft: 18
-
-                    anchor_style: 
-                      color: 'inherit' #focus_color() #'inherit'
-                      height: '100%'
-                      padding: '0px 4px'
-                      position: 'relative'
-                      right: 0
-                      cursor: 'pointer'
-                      whiteSpace: 'nowrap'
-
-                    menu_style: 
-                      width: 420
-                      backgroundColor: '#fff'
-                      border: "1px solid #aaa"
-                      right: -99999
-                      left: 'auto'
-                      top: 24
-                      fontWeight: 400
-                      overflow: 'hidden'
-                      boxShadow: '0 1px 2px rgba(0,0,0,.3)'
-                      textAlign: 'left'
-
-                    menu_when_open_style: 
-                      right: 0
-
-                    option_style: 
-                      padding: '8px 18px 12px 18px'
-                      display: 'block'
-                      color: 'black'
-                      fontWeight: 400
-
-                    active_option_style: 
-                      color: 'black'
-                      backgroundColor: '#efefef'
-
-
-                    selection_made_callback: (option) => 
-                      @refs.oppose_slider.value = option.oppose
-                      @refs.support_slider.value = option.support
-
-
-                      edit_list.slider_pole_labels = 
-                        support: option.support 
-                        oppose: option.oppose 
-                      save edit_list
-
-
-                      setTimeout =>
-                        $$.ensureInView @refs.slider_config
-
-                        if option.oppose == ''
-                          moveCursorToEnd @refs.oppose_slider
-
-                      , 100
-
-
-                    render_anchor: ->
-                      SPAN null, 
-                        LABEL 
-                          style: 
-                            color: focus_color()
-                            fontSize: 14
-                            marginRight: 12
-                            cursor: 'pointer'
-                          translator 'engage.list-config-spectrum-select', 'preset spectrums'
-
-                        SPAN style: _.extend cssTriangle 'bottom', focus_color(), 15, 9,
-                          display: 'inline-block'
-
-                    render_option: (option, is_active) ->
-                      if option.oppose == ''
-                        return  DIV 
-                                  style: 
-                                    fontSize: 16
-                                    borderBottom: '1px dashed #ccc'
-                                    textAlign: 'center'
-                                    padding: '12px 0'
-
-                                  translator "engage.list-config-custom-spectrum", "Custom Spectrum"
-
-                      DIV 
-                        className: 'monospaced'
-                        style: 
-                          fontSize: 14
-                          textAlign: 'center'
-
-                        SPAN 
-                          style:
-                            display: 'inline-block' 
-                            width: 140
-                            textAlign: 'right'
-                            paddingRight: 10
-                          "#{option.oppose}"
-                        SPAN 
-                          dangerouslySetInnerHTML: __html: "&#10231;"
-                          style: 
-                            fontSize: 32
-                            color: '#888'
-
-                        SPAN 
-                          style:
-                            display: 'inline-block' 
-                            width: 140
-                            textAlign: 'left'
-                            paddingLeft: 10                        
-                          "#{option.support}" 
-
-
-                      # DIV 
-                      #   style: 
-                      #     margin: "12px 24px"
-                      #     position: 'relative'
-                      #     fontSize: 12
-
-                      #   SPAN 
-                      #     style: 
-                      #       display: 'inline-block'
-                      #       width: '100%'
-                      #       borderBottom: '1px solid'
-                      #       borderColor: '#666'
-
-                      #   BR null
-                      #   SPAN
-                      #     style: 
-                      #       position: 'relative'
-                      #       left: 0
-
-                      #     option.oppose 
-
-                      #   SPAN
-                      #     style: 
-                      #       position: 'absolute'
-                      #       right: 0
-                      #     option.support
-
-
-
-
-            if !@props.combines_these_lists
-              DIV 
-                style: {}
-
-                LABEL
-                  className: 'LIST-field-edit-label LIST-permissions'
-                  htmlFor: 'list_permit_new_items'
-
-
-                  TRANSLATE
-                    id: "engage.list-config-who-can-add"
-                    span: 
-                      component: SPAN 
-                      args: 
-                        key: 'span'
-                        style: 
-                          fontWeight: 700
-
-                    "<span>Who can add proposals to this list?</span>"
-
-                DIV 
-                  style: option_block
-
-                  INPUT 
-                    id: 'any-participant'
-                    type: 'radio'
-                    name: 'list_permit_new_items'
-                    defaultChecked: permit_new_items
-                    style: 
-                      marginTop: 0
-                    onChange: (e) =>
-                      edit_list.list_permit_new_items = true
-                      save edit_list
-
-                  LABEL
-                    style: 
-                      marginLeft: 4
-                    htmlFor: 'any-participant'
-
-                    translator "engage.list-config-who-can-add-anyone", "Any registered participant"
-
                 DIV
-                  style: option_block
+                  style: _.defaults {}, (description_style or {})
 
-                  INPUT 
-                    id: 'host-only'
-                    type: 'radio'
-                    name: 'list_permit_new_items'
-                    defaultChecked: !permit_new_items
-                    style: 
-                      marginTop: 0                    
-                    onChange: (e) =>
-                      edit_list.list_permit_new_items = false
-                      save edit_list
+                  description()        
+              else 
+                
+                DIV 
+                  id: 'edit_description'
+                  className: "LIST-description"
+                  ref: 'description'
 
-                  LABEL
-                    style: 
-                      marginLeft: 4
-                    htmlFor: 'host-only'
+                  style: _.extend {}, (description_style or {}),  
+                    # marginTop: -12
+                    width:  "100%" # HOMEPAGE_WIDTH() - 200
 
-                    translator "engage.list-config-who-can-add-only-hosts", "Only forum hosts or those granted special permission"
+                  WysiwygEditor
+                    key: "#{list_key}-description"
+                    editor_key: "#{list_key}-description"
+                    horizontal: true
+                    html: customization('list_description', list_key)
+                    # placeholder: if !@props.fresh then translator("engage.list_description", "(optional) Description")
+                    toolbar_style: 
+                      right: 0
+                    container_style: 
+                      borderRadius: 8
+                    placeholder: translator "engage.list-config-description", "Optional: Additional information"
+   
+
+            DIV 
+              style:
+                maxWidth: 465
+              @drawNameAnItem()
+              @drawPermissionToAdd()
+              @drawDefineSpectrum()
+              @drawAdditionalOptions()
 
 
-            if !@props.combines_these_lists
 
-              DIV 
+            BUTTON 
+              className: 'btn'
+              style: 
+                backgroundColor: focus_color()
+                fontSize: 24
+                maxWidth: 465
+                width: '100%'
+                marginTop: 36
+                borderRadius: 16
+              disabled: (edit_list.list_title or "").length == 0
+              onClick: submit
+
+              if @props.fresh 
+                translator 'engage.create_list_button', 'Publish New Focus'
+              else 
+                translator 'engage.update_list_button', 'Update Focus'
+
+            BUTTON
+              className: 'like_link'
+              style: 
+                color: '#777'
+                marginTop: 14
+                
+
+              onClick: cancel_edit
+
+              translator 'shared.cancel_button', 'cancel'
+
+
+    if @props.wrap_in_modal
+      wrap_in_modal HOMEPAGE_WIDTH() + 72, cancel_edit, children
+    else 
+      children
+
+  drawNameAnItem: -> 
+    list_key = @get_list_key()
+    edit_list = fetch "edit-#{list_key}"
+    subdomain = fetch '/subdomain'
+
+    DIV 
+      style:
+        marginBottom: 24
+
+      LABEL 
+        style: {}
+
+
+        DIV 
+          className: 'LIST-field-edit-label'
+
+          translator 'engage.edit_list_item_name', 'What do you call a response to this focus?'
+
+        INPUT 
+          ref: 'list_item_name'
+          type: 'text'
+          defaultValue: edit_list.list_item_name or translator('shared.proposal', 'proposal')
+          name: 'list_item_name'
+          style: 
+            padding: '4px 6px'
+            fontSize: 'inherit'
+            border: '1px solid #ccc'
+          onChange: (e) =>
+            edit_list.list_item_name = e.target.value
+            save edit_list
+
+
+  drawPermissionToAdd: -> 
+    return SPAN null if @props.combines_these_lists
+
+    list_key = @get_list_key()
+    subdomain = fetch '/subdomain'
+    edit_list = fetch "edit-#{list_key}"
+
+    permit_new_items = customization('list_permit_new_items', list_key, subdomain)
+
+    DIV 
+      style: {}
+
+      LABEL
+        className: 'LIST-field-edit-label LIST-permissions'
+        htmlFor: 'list_permit_new_items'
+
+
+        TRANSLATE
+          id: "engage.list-config-who-can-add"
+          ITEM_NAME: edit_list.list_item_name or translator('shared.proposal', 'proposal')
+
+          "Who is allowed to add a new {ITEM_NAME}?"
+
+      DIV 
+        className: 'LIST-option-block'
+
+        INPUT 
+          id: 'any-participant'
+          type: 'radio'
+          name: 'list_permit_new_items'
+          defaultChecked: permit_new_items
+          style: 
+            marginTop: 0
+          onChange: (e) =>
+            edit_list.list_permit_new_items = true
+            save edit_list
+
+        LABEL
+          style: 
+            marginLeft: 4
+          htmlFor: 'any-participant'
+
+          translator "engage.list-config-who-can-add-anyone", "Any registered participant"
+
+          SPAN
+            className: 'permissions_explanation'
+
+            "For community ideation"
+
+      DIV
+        className: 'LIST-option-block'
+
+        INPUT 
+          id: 'host-only'
+          type: 'radio'
+          name: 'list_permit_new_items'
+          defaultChecked: !permit_new_items
+          style: 
+            marginTop: 0                    
+          onChange: (e) =>
+            edit_list.list_permit_new_items = false
+            save edit_list
+
+        LABEL
+          style: 
+            marginLeft: 4
+          htmlFor: 'host-only'
+
+          translator "engage.list-config-who-can-add-only-hosts", "Only forum hosts"
+
+
+          SPAN
+            className: 'permissions_explanation'
+
+            "For feedback on pre-defined proposals"
+
+
+  drawDefineSpectrum: -> 
+    return SPAN null if @props.combines_these_lists
+    list_key = @get_list_key()
+    subdomain = fetch '/subdomain'
+    edit_list = fetch "edit-#{list_key}"
+
+
+    DIV null,
+
+      LABEL
+        className: 'LIST-field-edit-label'
+
+
+        TRANSLATE
+          id: "engage.list-config-spectrum"
+          ITEM_NAME: edit_list.list_item_name or translator('shared.proposal', 'proposal')
+
+          "On what spectrum is each {ITEM_NAME} evaluated?"
+
+
+      DIV 
+        ref: 'slider_config'
+        style: 
+          paddingTop: 18
+          position: 'relative'
+          marginTop: 8
+          left: 0
+          display: 'flex'
+
+        DIV 
+          style: 
+            position: 'relative'
+            flexGrow: 2
+            width: '100%'
+            borderTop: '1px solid'
+            borderColor: '#999'
+            maxWidth: 500
+          
+          INPUT 
+            type: 'text'
+            className: 'LIST-slider-input'
+            style: 
+              left: 0
+              textAlign: 'left'
+
+            ref: 'oppose_slider'
+            defaultValue: customization('slider_pole_labels', list_key, subdomain).oppose 
+            placeholder: translator 'engage.slider_config.negative-pole-placeholder', 'Negative pole'
+            onChange: (e) ->
+              edit_list.slider_pole_labels ?= {}
+              edit_list.slider_pole_labels.oppose = e.target.value 
+              save edit_list
+
+          INPUT
+            type: 'text'
+            className: 'LIST-slider-input'
+            style: 
+              textAlign: 'right'
+              right: 0
+
+            ref: 'support_slider'
+            defaultValue: customization('slider_pole_labels', list_key, subdomain).support
+            onChange: (e) ->
+              edit_list.slider_pole_labels ?= {}
+              edit_list.slider_pole_labels.support = e.target.value 
+              save edit_list
+            placeholder: translator 'engage.slider_config.positive-pole-placeholder', 'Positive pole'
+
+
+        DropMenu
+          options: [{support: '', oppose: ''}].concat (v for k,v of slider_labels)
+          open_menu_on: 'activation'
+
+          wrapper_style: 
+            position: 'relative'
+            flexGrow: 0
+            paddingLeft: 18
+            top: -13
+
+          anchor_style: 
+            color: 'inherit' #focus_color() #'inherit'
+            height: '100%'
+            padding: '0px 4px'
+            position: 'relative'
+            right: 0
+            cursor: 'pointer'
+            whiteSpace: 'nowrap'
+
+          menu_style: 
+            width: 420
+            backgroundColor: '#fff'
+            border: "1px solid #aaa"
+            right: -99999
+            left: 'auto'
+            top: 24
+            fontWeight: 400
+            overflow: 'hidden'
+            boxShadow: '0 1px 2px rgba(0,0,0,.3)'
+            textAlign: 'left'
+
+          menu_when_open_style: 
+            right: 0
+
+          option_style: 
+            padding: '8px 18px 12px 18px'
+            display: 'block'
+            color: 'black'
+            fontWeight: 400
+
+          active_option_style: 
+            color: 'black'
+            backgroundColor: '#efefef'
+
+
+          selection_made_callback: (option) => 
+            @refs.oppose_slider.value = option.oppose
+            @refs.support_slider.value = option.support
+
+
+            edit_list.slider_pole_labels = 
+              support: option.support 
+              oppose: option.oppose 
+            save edit_list
+
+
+            setTimeout =>
+              $$.ensureInView @refs.slider_config
+
+              if option.oppose == ''
+                moveCursorToEnd @refs.oppose_slider
+
+            , 100
+
+
+          render_anchor: ->
+            SPAN null, 
+              LABEL 
+                style: 
+                  color: focus_color()
+                  fontSize: 14
+                  marginRight: 12
+                  cursor: 'pointer'
+                translator 'engage.list-config-spectrum-select', 'presets'
+
+              SPAN style: _.extend cssTriangle 'bottom', focus_color(), 13, 8,
+                display: 'inline-block'
+
+          render_option: (option, is_active) ->
+            if option.oppose == ''
+              return  DIV 
+                        style: 
+                          fontSize: 16
+                          borderBottom: '1px dashed #ccc'
+                          textAlign: 'center'
+                          padding: '12px 0'
+
+                        translator "engage.list-config-custom-spectrum", "Custom Spectrum"
+
+            DIV 
+              className: 'monospaced'
+              style: 
+                fontSize: 14
+                textAlign: 'center'
+
+              SPAN 
                 style:
-                  marginTop: 24
-                  marginBottom: 12
+                  display: 'inline-block' 
+                  width: 140
+                  textAlign: 'right'
+                  paddingRight: 10
+                "#{option.oppose}"
+              SPAN 
+                dangerouslySetInnerHTML: __html: "&#10231;"
+                style: 
+                  fontSize: 32
+                  color: '#888'
+
+              SPAN 
+                style:
+                  display: 'inline-block' 
+                  width: 140
+                  textAlign: 'left'
+                  paddingLeft: 10                        
+                "#{option.support}" 
+
+
+            # DIV 
+            #   style: 
+            #     margin: "12px 24px"
+            #     position: 'relative'
+            #     fontSize: 12
+
+            #   SPAN 
+            #     style: 
+            #       display: 'inline-block'
+            #       width: '100%'
+            #       borderBottom: '1px solid'
+            #       borderColor: '#666'
+
+            #   BR null
+            #   SPAN
+            #     style: 
+            #       position: 'relative'
+            #       left: 0
+
+            #     option.oppose 
+
+            #   SPAN
+            #     style: 
+            #       position: 'absolute'
+            #       right: 0
+            #     option.support
 
 
 
-                if !@local.show_all_options 
-                  BUTTON 
-                    className: 'like_link'
-                    style: 
-                      textDecoration: 'underline'
-                      fontWeight: 700
-                      color: '#666'
-                      fontSize: 14
-                      marginBottom: 24
-                      display: if screencasting() then 'none'
-                    onClick: (e) => 
-                      @local.show_all_options = true 
-                      save @local
-                    'Show more options'
-                else 
-                  DIV null, 
+  drawAdditionalOptions: -> 
+    return SPAN null if @props.combines_these_lists
+    list_key = @get_list_key()
+    subdomain = fetch '/subdomain'
+    edit_list = fetch "edit-#{list_key}"
 
-                    DIV 
-                      style:
-                        marginBottom: 24
+    DIV 
+      className: 'LIST_additional_options'
+      style:
+        marginTop: 24
+        marginBottom: 12
 
-                      LABEL 
-                        style: {}
+      if !@local.show_all_options 
+        BUTTON 
+          className: 'like_link'
+          style: 
+            textDecoration: 'underline'
+            color: focus_color()
+            marginBottom: 24
+            marginTop: 8
+            display: if screencasting() then 'none'
+          onClick: (e) => 
+            @local.show_all_options = true 
+            save @local
+          'Show advanced options'
 
-
-                        DIV null,
-
-                          translator 'engage.edit_list_item_name', 'What do you call each proposal in this list?'
-
-                        INPUT 
-                          type: 'text'
-                          defaultValue: edit_list.list_item_name or translator('shared.proposal', 'proposal')
-                          name: 'list_item_name'
-                          style: 
-                            padding: '8px 12px'
-                            fontSize: 18
-                          onChange: (e) =>
-                            edit_list.list_item_name = e.target.value
-                            save edit_list
-
-                    DIV 
-                      style:
-                        marginBottom: 24
-                      LABEL 
-                        style: {}
-
-                        INPUT 
-                          type: 'checkbox'
-                          defaultChecked: !edit_list.discussion_enabled
-                          name: 'discussion_enabled'
-                          onChange: (e) =>
-                            edit_list.discussion_enabled = !edit_list.discussion_enabled
-                            save edit_list
-
-                        SPAN 
-                          style: 
-                            paddingLeft: 4
-                          translator 'engage.list-config-discussion-enabled', 'Disable pro/con commenting on each proposal in this list. Spectrums only.'
-
-                    DIV                   
-                      style:
-                        marginBottom: 36
-                      LABEL 
-                        style: {}
-
-                        INPUT 
-                          type: 'checkbox'
-                          defaultChecked: edit_list.list_is_archived
-                          name: 'list_is_archived'
-                          onChange: (e) =>
-                            edit_list.list_is_archived = !edit_list.list_is_archived
-                            save edit_list
-
-                        SPAN 
-                          style: 
-                            paddingLeft: 4
-                          translator 'engage.list-config-archived', 'This list should be closed by default. Useful for archiving.'
+      else 
+        DIV null, 
 
 
-          BUTTON 
-            className: 'btn'
-            style: 
-              backgroundColor: focus_color()
-            disabled: (edit_list.list_title or "").length == 0
-            onClick: submit
+          DIV 
+            style:
+              marginTop: 36
+              marginBottom: 24
+            LABEL 
+              style: {}
 
-            if @props.fresh 
-              translator 'engage.create_list_button', 'Create List'
-            else 
-              translator 'engage.update_list_button', 'Update List'
+              INPUT 
+                type: 'checkbox'
+                defaultChecked: !edit_list.discussion_enabled
+                name: 'discussion_enabled'
+                onChange: (e) =>
+                  edit_list.discussion_enabled = !edit_list.discussion_enabled
+                  save edit_list
 
-          BUTTON
-            className: 'like_link'
-            style: 
-              color: '#777'
-              fontSize: 18
-              marginLeft: 12
-              position: 'relative'
-              top: 2
-            onClick: cancel_edit
+              SPAN 
+                style: 
+                  paddingLeft: 4
+                translator 
+                  id: 'engage.list-config-discussion-enabled'
+                  ITEM_NAME: edit_list.list_item_name or translator('shared.proposal', 'proposal')
 
-            translator 'shared.cancel_button', 'cancel'
+                  'Disable pro/con commenting on each {ITEM_NAME}. Spectrums only.'
+
+          DIV                   
+            style:
+              marginBottom: 36
+            LABEL 
+              style: {}
+
+              INPUT 
+                type: 'checkbox'
+                defaultChecked: edit_list.list_is_archived
+                name: 'list_is_archived'
+                onChange: (e) =>
+                  edit_list.list_is_archived = !edit_list.list_is_archived
+                  save edit_list
+
+              SPAN 
+                style: 
+                  paddingLeft: 4
+                translator 'engage.list-config-archived', 'Closed by default. Useful for archiving.'
 
 
 
-    wrap_in_modal HOMEPAGE_WIDTH() + 72, cancel_edit, children
+  componentDidMount: -> 
+    @setFocusOnTitle()
+    @setAlignmentOnDescription()
 
-
-
-  componentDidMount: -> @setFocusOnTitle()
-
-  componentDidUpdate: -> @setFocusOnTitle()
+  componentDidUpdate: -> 
+    @setFocusOnTitle()
+    @setAlignmentOnDescription()
 
   setFocusOnTitle: ->
     if !@initialized && @refs.input?
@@ -784,4 +865,30 @@ window.ModalNewList = ReactiveComponent
         moveCursorToEnd ReactDOM.findDOMNode(@refs.input)
       @initialized = true
 
+
+  getDescription: -> 
+
+    list_key = @get_list_key()
+
+    edit_list = fetch "edit-#{list_key}"
+
+    description = edit_list.description or customization('list_description', list_key)
+    if Array.isArray(description)
+      description = description.join('\n')
+
+    description
+
+  setAlignmentOnDescription: ->
+    list_key = @get_list_key()    
+    description = fetch("#{list_key}-description").html or @getDescription()
+    is_func = typeof description == 'function'
+
+    if !is_func
+      return if !@refs.description
+      height = @refs.description.clientHeight
+      single_line = height < 60
+      if single_line
+        @refs.description.classList.add 'single-line'
+      else
+        @refs.description.classList.remove 'single-line'
 

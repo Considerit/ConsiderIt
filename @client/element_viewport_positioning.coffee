@@ -31,7 +31,9 @@ window.$$ =
       null
 
   height: (el) -> 
-    Math.round el.getBoundingClientRect().height
+    # console.log "HEIGHT", Math.round(el.getBoundingClientRect().height), el.clientHeight, el.offsetHeight
+    # Math.round el.getBoundingClientRect().height
+    Math.round el.clientHeight
 
   width: (el) -> 
     Math.round el.getBoundingClientRect().width
@@ -40,7 +42,7 @@ window.$$ =
   offset: (el) ->
     rect = el.getBoundingClientRect()
 
-    top = rect.top + window.pageYOffset - document.documentElement.clientTop
+    top  = rect.top  + window.pageYOffset - document.documentElement.clientTop
     left = rect.left + window.pageXOffset - document.documentElement.clientLeft
 
     {top, left}
@@ -62,16 +64,19 @@ window.$$ =
 
 
   ensureInView: (el, options = {}) ->
+    if !el
+      options.callback()
+      return
 
     _.defaults options,
       fill_threshold: 0
-      offset_buffer: 50
+      offset_buffer: 36
       scroll: true
       position: 'top' 
       speed: null
       callback: ->
 
-    el_height = $$.height(el)
+    el_height = $$.height(el) + (options.extra_height or 0)
 
     el_top = $$.offset(el).top
     el_bottom = el_top + el_height
@@ -85,10 +90,12 @@ window.$$ =
     #if less than 50% of the viewport is taken up by the el...
     bottom_inside = el_bottom < doc_bottom && (el_bottom - doc_top) > options.fill_threshold * el_height
     top_inside = el_top > doc_top && (doc_bottom - el_top) > options.fill_threshold * el_height    
-    no_adjustment_needed = is_onscreen && top_inside && bottom_inside  
+    no_adjustment_needed = !options.force && is_onscreen && top_inside && bottom_inside  
 
     if !no_adjustment_needed
+
       switch options.position 
+
         when 'top'
           target = el_top - options.offset_buffer
         when 'bottom'
@@ -98,15 +105,28 @@ window.$$ =
 
       if options.scroll
 
-        distance_to_travel = options.speed || Math.abs( doc_top - target )
+        distance_to_travel = options.speed || Math.abs( doc_top - (el_top - options.offset_buffer) )
 
-        $$.smoothScrollToTarget 
-          target: el_top - options.offset_buffer
-          duration: Math.min(distance_to_travel, 1500)
-          callback: options.callback
+        if options.dom_possibly_shifting
+
+          if options.position != 'top'
+            console.error "smoothScrollToTargetWithChangingElement doesn't support position targets except 'top'"
+
+          $$.smoothScrollToTargetWithChangingElements
+            el: el
+            offset_buffer: options.offset_buffer
+            duration: Math.min(distance_to_travel, 1500)
+            callback: options.callback
+
+        else 
+          $$.smoothScrollToTarget 
+            target: el_top - options.offset_buffer
+            duration: Math.min(distance_to_travel, 1500)
+            callback: options.callback
+
 
       else 
-        window.scrollTo 0, target 
+        window.scrollTo 0, target
         options.callback()
     else
       options.callback()
@@ -119,6 +139,35 @@ window.$$ =
         clearInterval viewport_ensurer
     , 10
 
+
+  smoothScrollToTargetWithChangingElements: ({duration, callback, el, offset_buffer}) ->
+    target = $$.offset(el).top - offset_buffer
+
+    diff = target - window.pageYOffset
+    frames = 60 * duration / 1000
+    dist_per_frame = diff / frames
+
+    iter = (current_time) ->
+
+      top = el.getBoundingClientRect().top
+      if diff < 0 
+        done = top + dist_per_frame > offset_buffer
+      else 
+        done = top - dist_per_frame < offset_buffer
+
+      if done 
+        dist_per_frame = top - offset_buffer
+
+      scroll_to = window.pageYOffset + dist_per_frame
+
+      window.scrollTo 0, scroll_to
+
+      if !done
+        requestAnimationFrame(iter)
+      else 
+        callback?()
+
+    requestAnimationFrame(iter)
 
   smoothScrollToTarget: ({target, duration, callback}) ->
     start_pos = window.pageYOffset
@@ -164,7 +213,6 @@ window.$$ =
           el.style.setProperty k, v
         else 
           el.style[k] = v
-
 
 
 

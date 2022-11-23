@@ -82,7 +82,7 @@ Development = ReactiveComponent
               width: '100%'  
 
             UL null,
-              for sub, idx in subdomains
+              for sub, idx in (subdomains or [])
                 LI
                   style: 
                     display: 'inline-block'

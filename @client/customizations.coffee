@@ -116,7 +116,7 @@ window.customization = (field, object_or_key, subdomain) ->
       # list-level config for proposals
       if key.match(/\/proposal\//)
         proposal = obj
-        list_key = "list/#{proposal.cluster}"
+        list_key = get_list_for_proposal(proposal)
         if subdomain_config[list_key]?
           chain_of_configs.push subdomain_config[list_key]
 
@@ -201,8 +201,6 @@ customizations.default =
   list_permit_new_items: true
   homepage_show_new_proposal_button: true
 
-  show_crafting_page_first: false
-
   show_proposal_meta_data: true 
 
   slider_handle: slider_handle.flat
@@ -226,9 +224,13 @@ customizations.default =
 
   user_tags: {}
 
-  font: "Montserrat, 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
-  header_font: "Montserrat, 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
-  mono_font: "'Fira Mono', Montserrat, 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
+
+  # IBM Plex Sans
+  # Trebuchet MS, palantino, and optima are intriguing web-safe fonts
+  font: "IBM Plex Sans, Helvetica Neue, sans-serif"
+  header_font: "IBM Plex Sans, IBM Plex Sans, Helvetica Neue, sans-serif"
+  condensed_font: "IBM Plex Sans Condensed, IBM Plex Sans, Helvetica Neue, sans-serif"
+  mono_font: "IBM Plex Mono, Menlo, Consolas, Monaco, Fira Mono, Liberation Mono, Lucida Console, monospace"
 
   new_proposal_fields: -> 
    name:  translator("engage.edit_proposal.summary_label", "Summary")
@@ -258,7 +260,6 @@ setTimeout ->
   if ImageHeader?
     # The old image banner + optional text description below
     window.LegacyImageHeader = ImageHeader
-
 
     for sub in text_and_masthead
       customizations_by_file[sub.toLowerCase()] = 

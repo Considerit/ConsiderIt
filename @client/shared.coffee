@@ -1,7 +1,37 @@
+
+# oldClientRect = Element.prototype.getBoundingClientRect
+# cnt = 0
+# tot = 0 
+# Element.prototype.getBoundingClientRect = ->
+#   # console.log "client rect", this
+#   cnt += 1
+#   perf = performance.now()
+
+#   rect = oldClientRect.apply(this, arguments)
+#   t = performance.now() - perf
+#   tot += t
+#   console.log cnt, t, tot
+#   # if t > 0 
+#   #   console.log this
+#   rect 
+
+
+
 window.styles = ""
+
+
+window.screencasting = ->
+  window.__screencasting ?= fetch('location').query_params?.screencasting == 'true'
+  window.__screencasting
+
+window.embedded_demo = ->
+  window.__embedded_demo ?= fetch('location').query_params?.embedded_demo == 'true' || location.search.indexOf('embedded_demo') > -1
+  window.__embedded_demo
+
 
 require './responsive_vars'
 require './color'
+
 
 
 #############
@@ -36,13 +66,7 @@ window.ajax_submit_files_in_form = (opts) ->
 
 
 
-window.screencasting = ->
-  window.__screencasting ?= fetch('location').query_params.screencasting == 'true'
-  window.__screencasting
 
-window.embedded_demo = ->
-  window.__embedded_demo ?= fetch('location').query_params.embedded_demo == 'true'
-  window.__embedded_demo
     
 window.pad = (num, len) -> 
   str = num
@@ -56,9 +80,7 @@ window.pad = (num, len) ->
 
 
 window.back_to_homepage_button = (style, text) -> 
-  loc = fetch('location')
-  homepage = loc.url == '/'
-
+  loc = fetch 'location'
   hash = loc.url.split('/')[1].replace('-', '_')
 
   NAV 
@@ -71,7 +93,7 @@ window.back_to_homepage_button = (style, text) ->
       href: "/##{hash}"
       style: _.defaults {}, style,
         fontSize: 43
-        visibility: if homepage || !customization('has_homepage') then 'hidden' else 'visible'
+        visibility: if is_a_dialogue_page() || !customization('has_homepage') then 'hidden' else 'visible'
         color: 'black'
         display: 'flex'
         alignItems: 'center'
@@ -105,7 +127,6 @@ if ReactFlipToolkit?
   window.EXITCONTAINER = React.createFactory(ReactFlipToolkit.ExitContainer)
 
 
-window.TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
 
 window.LIVE_UPDATE_INTERVAL = 3 * 60 * 1000
 
@@ -134,17 +155,18 @@ setInterval ->
 do ->
   idle_time_before_subdomain_fetch = 30 * 60 * 1000
 
+  last_activity = Date.now()
+
   reload_subdomain = ->
-    # console.log "Idle for #{idle_time_before_subdomain_fetch / 1000}s, fetching subdomain"
-    arest.serverFetch '/subdomain'
+    # console.log "Idle for #{(Date.now() - last_activity) / 1000}s, fetching subdomain?", Date.now() - last_activity >= idle_time_before_subdomain_fetch
+    if Date.now() - last_activity >= idle_time_before_subdomain_fetch
+      arest.serverFetch '/subdomain'
 
-  time = 0
+  timer = setInterval reload_subdomain, 60 * 1000
+
   resetTimer = ->
-    # console.log('resetting timer')
-    if time
-      clearTimeout(time)
-    time = setTimeout(reload_subdomain, idle_time_before_subdomain_fetch)
-
+    last_activity = Date.now()
+      
   window.addEventListener('load', resetTimer, true)
   for event in ['mousedown', 'mousemove', 'keydown', 'touchstart']
     document.addEventListener(event, resetTimer, true)
@@ -182,8 +204,8 @@ window.getCoords = (el) ->
   docEl = document.documentElement
 
   offset = 
-    top: rect.top + window.pageYOffset - docEl.clientTop
-    left: rect.left + window.pageXOffset - docEl.clientLeft
+    top: rect.top + window.pageYOffset #- docEl.clientTop
+    left: rect.left + window.pageXOffset #- docEl.clientLeft
 
   _.extend offset,
     width: rect.width
@@ -390,9 +412,23 @@ window.shared_local_key = (key_or_object) ->
 
 
 window.reset_key = (obj_or_key, updates) -> 
+
+  resetting_totally = !updates
+
   updates = updates or {}
   if !obj_or_key.key
     obj_or_key = fetch obj_or_key
+
+  updates.key = obj_or_key.key
+
+  if obj_or_key.key == 'auth' && obj_or_key.after? 
+    if !resetting_totally 
+      updates.after ?= obj_or_key.after # preserve after auth callback through updates to auth state
+    else 
+      obj_or_key.after?()
+
+
+  return if _.isEqual obj_or_key, updates
 
   for own k,v of obj_or_key
     if k != 'key'
@@ -457,6 +493,7 @@ window.widthWhenRendered = (str, style) ->
 
     el = document.createElement 'span'
     el.id = "width_test"
+    el.style.setProperty 'position', 'absolute'    
     el.style.setProperty 'visibility', 'hidden'
     el.innerHTML = "<span>#{str}</span>"
 
@@ -472,18 +509,23 @@ window.widthWhenRendered = (str, style) ->
 
 
 height_cache = {}
-window.heightWhenRendered = (str, style) -> 
+window.heightWhenRendered = (str, style, el) -> 
   # This DOM manipulation is relatively expensive, so cache results
   key = JSON.stringify _.extend({str: str}, style)
   if key not of height_cache
-    el = document.createElement 'div'
-    el.id = "height_test"
-    el.style.setProperty 'visibility', 'hidden'
-    el.innerHTML = "<span>#{str}</span>"
+    el ?= document.createElement 'div'
+    el.style.position = 'absolute'
+    el.style.visibility = 'hidden'
+    el.innerHTML = "<div>#{str}</div>"
+
+    for k,v of style
+      if k.indexOf('-') > -1
+        el.style.setProperty k, v
+      else 
+        el.style[k] = v
 
     parent = document.getElementById('content')
     parent.appendChild el
-    $$.setStyles "#height_test", style
     height = $$.height el
     parent.removeChild(el)
 
@@ -511,6 +553,9 @@ window.sizeWhenRendered = (str, style) ->
     style.display ||= 'inline-block'
 
     test = document.createElement("div")
+    test.style.position = 'absolute'
+    test.style.visibility = 'hidden'
+    
     test.innerHTML = "<div>#{str}</div>"
     for k,v of style
 
@@ -559,6 +604,8 @@ window.location_origin = ->
 ## Styles
 ############
 
+
+
 window.focus_color = -> focus_blue
 
 ## CSS functions
@@ -568,15 +615,6 @@ window.focus_color = -> focus_blue
 window.css = {}
 
 css.crossbrowserify = (styles) -> styles # legacy method now no-op-ing
-
-css.grayscale = (props) ->
-  if browser.is_mobile
-    console.log "CAUTION: grayscale filter on mobile can cause crashes"
-    
-  _.extend props,
-    WebkitFilter: 'grayscale(100%)'
-    filter: 'grayscale(100%)'  
-  props
 
 css.grab_cursor = (selector)->
   """
@@ -731,6 +769,16 @@ window.play_videos_when_in_viewport = (parent_el, args) ->
 ## CSS reset
 
 window.styles += """
+
+/* 
+https://stackoverflow.com/questions/2710764/preserve-html-font-size-when-iphone-orientation-changes-from-portrait-to-landsca 
+*/
+html {
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;  
+}
+
+
 /* RESET
  * Eric Meyer's Reset CSS v2.0 (http://meyerweb.com/eric/tools/css/reset/)
  * http://cssreset.com

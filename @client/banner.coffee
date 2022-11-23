@@ -48,7 +48,7 @@ CustomizeGoogleTranslate = ReactiveComponent
 
     DIV 
       style: 
-        paddingTop: if trns?.callout && !edit_forum.editing then 48    
+        paddingTop: if trns?.callout && !edit_forum.editing then 24    
 
 
       if is_admin && edit_forum.editing   
@@ -95,7 +95,7 @@ CustomizeGoogleTranslate = ReactiveComponent
               "Helps support multi-lingual forums."
 
 
-      if trns?.prominent && fetch('location').url == '/'
+      if trns?.prominent # && fetch('location').url == '/'
         DIV
           className: "translator"
           
@@ -203,15 +203,44 @@ CustomizeTitle = ReactiveComponent
             , 10
 
 
+
+styles += """
+  .single-line.banner_description, .single-line.banner_description .ql-editor {
+    text-align: center;
+  }
+
+  #forum-description .ql-editor.ql-blank::before {
+    text-align: left;
+  }
+
+"""
 CustomizeDescription = ReactiveComponent
   displayName: 'CustomizeDescription'
   mixins: [SubdomainSaveRateLimiter]
+
+  componentDidMount: ->
+    @setAlignment()
 
   componentDidUpdate: ->
     @local.description = fetch("forum-description").html
     @save_customization_with_rate_limit
       fields: ['description']
       config: fetch('/subdomain').customizations.banner
+    @setAlignment()
+
+  setAlignment: ->
+    return if !@refs.description
+    
+    edit_forum = fetch 'edit_forum'
+    is_admin = fetch('/current_user').is_admin
+
+    height = @refs.description.clientHeight
+    single_line = height < (if edit_forum.editing && is_admin then 65 else 50)
+    if single_line
+      @refs.description.classList.add 'single-line'
+    else
+      @refs.description.classList.remove 'single-line'
+
 
   render : ->
     edit_forum = fetch 'edit_forum'
@@ -226,10 +255,13 @@ CustomizeDescription = ReactiveComponent
     focus_on_mount = @local.focus_on_mount
     @local.focus_on_mount = false
 
+    WINDOW_WIDTH() # subscribe to window size changes for alignment
+    
     if is_admin && edit_forum.editing
       DIV 
         id: 'edit_banner_description'
-        className: 'CustomizeDescription'
+        className: "banner_description CustomizeDescription"
+        ref: "description"
 
         STYLE
           dangerouslySetInnerHTML: __html: """
@@ -251,10 +283,12 @@ CustomizeDescription = ReactiveComponent
           button_style: 
             backgroundColor: 'white'  
     else
-      DIV null,              
+      DIV null,
+           
         if has_description 
           DIV 
-            className: 'wysiwyg_text'
+            className: "banner_description wysiwyg_text"
+            ref: "description"
             style: 
               fontSize: @props.style.fontSize or 18
               padding: @props.style.padding or '6px 8px'
@@ -375,6 +409,20 @@ UploadableLogo = (opts) ->
           fill: if is_light then 'black' else 'white'
 
 
+
+styles += """
+  
+  @media #{NOT_LAPTOP_MEDIA} {
+    .CustomizeLogo {
+      position: relative;
+    }
+    .CustomizeLogo img {
+      margin: auto;
+      display: block;
+    }
+  }
+"""
+
 CustomizeLogo = ReactiveComponent
   displayName: 'CustomizeLogo'
   mixins: [SubdomainSaveRateLimiter]
@@ -404,20 +452,22 @@ CustomizeLogo = ReactiveComponent
     else 
       height = 150
 
-    left = @local.left or customization('banner')?.logo?.left or 50
-    top  = @local.top  or customization('banner')?.logo?.top  or 68
 
     is_light = is_light_background()
 
     style = _.defaults {}, @props.style, 
-      left: left 
-      top: top
-      position: 'absolute'
       cursor: if edit_forum.editing then 'move'
       height: height + 2
       width: if !has_logo then 150
       zIndex: if @local.moving || @local.resizing then '999'
       overflow: 'hidden'
+
+
+    if !TABLET_SIZE()
+      _.extend style, 
+        left: @local.left or customization('banner')?.logo?.left or 50
+        top: @local.top  or customization('banner')?.logo?.top  or 68  
+        position: 'absolute'
 
 
     onMouseDown = (ev) => 
@@ -499,6 +549,7 @@ CustomizeLogo = ReactiveComponent
         top: style.top - 1
 
     DIV
+      className: 'CustomizeLogo'
       style: _.defaults {}, style,
         opacity: if !has_logo then 1
 
@@ -991,7 +1042,7 @@ window.EditBanner = ReactiveComponent
 window.PhotoBanner = (opts) -> 
   opts ?= {}
   
-  homepage = EXPAND_IN_PLACE || fetch('location').url == '/'
+  homepage = is_a_dialogue_page()
   subdomain = fetch '/subdomain'
   edit_banner = fetch 'edit_banner'
   edit_forum = fetch 'edit_forum'
@@ -1077,17 +1128,22 @@ window.PhotoBanner = (opts) ->
           background: #{background_color};
         }
 
+        @media #{NOT_LAPTOP_MEDIA} {
+          .PhotoBanner > .wrapper {
+            padding-top: 64px;
+          }
+        }
+
         .PhotoBanner > .wrapper.with-image.with-translation-callout {
           padding-top: 64px;
         }
 
         .PhotoBanner > .wrapper .translator {
           padding: 16px;
-          width: 380px;
-          margin: 0 auto 36px auto; 
+          max-width: 380px;
+          margin: 0 auto; 
           background-color: rgba(255,255,255,.8);
           position: relative; 
-          top: 36px;
         }
 
         .PhotoBanner > .wrapper > .text_block {
@@ -1110,15 +1166,32 @@ window.PhotoBanner = (opts) ->
         // }
 
         .PhotoBanner > .wrapper .CustomizeTitle .banner_title {
-          font-size: 42px;
+          font-size: 50px;
           font-weight: 700;
           font-family: #{header_font()};
           text-align: center;
           margin-bottom: #{if has_description || edit_forum.editing then 28 else 0}px;
-
-          font-weight: 800;
           text-shadow: 0px 1px 2px rgba(0,0,0,.4);
         }
+
+        @media #{TABLET_MEDIA} {
+          .PhotoBanner > .wrapper .CustomizeTitle .banner_title {
+            font-size: 36px;
+          }        
+          .PhotoBanner > .wrapper > .text_block {
+            padding: 48px 32px 32px 32px;
+          }
+
+        }  
+        @media #{PHONE_MEDIA} {
+          .PhotoBanner > .wrapper .CustomizeTitle .banner_title {
+            font-size: 24px;
+          }        
+          .PhotoBanner > .wrapper > .text_block {
+            padding: 36px 24px 24px 24px;
+          }
+        }  
+
 
         .PhotoBanner #tabs {
           margin-top: 100px;
@@ -1196,7 +1269,7 @@ window.PhotoBanner = (opts) ->
 
 
 window.MediaBanner = -> 
-  homepage = fetch('location').url == '/'
+  homepage = is_a_dialogue_page()
   subdomain = fetch '/subdomain'
   edit_banner = fetch 'edit_banner'
 
@@ -1361,7 +1434,7 @@ window.ShortHeader = (opts) ->
 
   return SPAN null if !subdomain.name
 
-  homepage = loc.url == '/'
+  homepage = is_a_dialogue_page()
 
   opts ||= {}
   _.defaults opts, (customization('forum_header') or {}),
@@ -1452,7 +1525,7 @@ window.ShortHeader = (opts) ->
 
 window.HawaiiHeader = (opts) ->
 
-  homepage = fetch('location').url == '/'
+  homepage = is_a_dialogue_page()
   subdomain = fetch '/subdomain'
 
   return SPAN null if !subdomain.name 
@@ -1579,7 +1652,7 @@ window.HawaiiHeader = (opts) ->
 
 window.SeattleHeader = (opts) -> 
 
-  homepage = fetch('location').url == '/'
+  homepage = is_a_dialogue_page()
   subdomain = fetch '/subdomain'
 
   return SPAN null if !subdomain.name 

@@ -6,38 +6,76 @@ require './browser_location' # for loadPage
 require './proposal_sort_and_search'
 require './opinion_views'
 require './browser_location'
-require './collapsed_proposal'
 require './new_proposal'
 require './list'
 require './tabs'
 
 
 styles += """
-  .main_background {
-    background-color: #{main_background_color};
-    
-
-    /* texture */
-    /* background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23d6d6d6' fill-opacity='0.7' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E"); */
-
-    background-attachment: fixed;
-  }
-
-  .main_background.one-col, .main_background .one-col, .one-col.navigation_wrapper {
-    background-image: none;
-    background-color: white;
-  }
-
 
   #homepagetab {
-    margin: 0px auto;
-    position: relative;
-    padding: 24px 0px 140px 0;
+    position: relative;    
   }
 
-  .one-col #homepagetab {
-    padding: 24px 0px 140px 12px;
+  .Homepage {
+    overflow: hidden;
   }
+
+  @media #{LAPTOP_MEDIA} {
+    .main_background {
+      background-color: #{main_background_color};
+    }
+    #homepagetab {
+      width: calc(var(--HOMEPAGE_WIDTH) + var(--LIST_PADDING_RIGHT) + var(--LIST_PADDING_LEFT));
+      padding: 24px 0px 140px 0;
+      margin: 0px auto;
+    }
+
+    .embedded-demo #homepagetab {
+      padding-top: 0;
+    }
+
+  }
+
+  @media #{NOT_LAPTOP_MEDIA} {
+    .main_background {
+      background-color: white;
+    }
+  }
+
+
+  @media #{TABLET_MEDIA} {
+    :root {
+      --homepagetab_left_padding: 0px; /* 20px; */
+    }
+    #homepagetab {
+      padding: 24px 0px 140px var(--homepagetab_left_padding);
+    }
+  }
+
+
+  @media #{PHONE_MEDIA} {
+    :root {
+      --homepagetab_left_padding: 0px; /* 8px; */
+    }    
+    #homepagetab {
+      padding: 24px 0px 140px var(--homepagetab_left_padding);
+    }
+  }
+
+
+  .sized_for_homepage {
+    margin: auto;
+    /* width: var(--HOMEPAGE_WIDTH); */
+    padding: 0px var(--LIST_PADDING_RIGHT) 0px var(--LIST_PADDING_LEFT);
+  }
+
+  @media #{NOT_LAPTOP_MEDIA} {
+    .sized_for_homepage {
+      width: var(--ITEM_TEXT_WIDTH);
+    }
+  }
+
 
 
 """
@@ -77,16 +115,16 @@ window.Homepage = ReactiveComponent
 
     DIV 
       key: "homepage_#{subdomain.name}"      
-      className: "main_background #{if ONE_COL() then 'one-col' else ''}"
+      className: "Homepage main_background #{if TABLET_SIZE() then 'one-col' else ''} #{if embedded_demo() then 'embedded-demo' else ''}"
 
       DIV
         id: 'homepagetab'
         role: if get_tabs() then "tabpanel"
-        style: 
-          width: if !ONE_COL() then HOMEPAGE_WIDTH() + LIST_PADDING() * 2
 
         if !fetch('/proposals').proposals
-          ProposalsLoading()   
+          DIV 
+            className: 'sized_for_homepage'
+            ProposalsLoading()   
         else 
 
           if fetch('edit_forum').editing
@@ -97,8 +135,7 @@ window.Homepage = ReactiveComponent
           else 
             DIV null,
               DIV 
-                style: 
-                  padding: "0px #{LIST_PADDING() + LIST_PADDING() / 6}px 0px #{LIST_PADDING() - LIST_PADDING() / 6}px"
+                className: 'sized_for_homepage'                  
 
                 if customization('auth_callout')
                   DIV 
@@ -112,8 +149,11 @@ window.Homepage = ReactiveComponent
                   DIV 
                     key: message
                     style: 
-                      marginBottom: 24 
                       fontStyle: 'italic'
+                      maxWidth: 700
+                      margin: "0 auto 24px auto"
+                      textAlign: 'center'
+
                     message
 
                 if preamble = get_page_preamble()
@@ -122,12 +162,25 @@ window.Homepage = ReactiveComponent
                       marginBottom: 24
                     dangerouslySetInnerHTML: __html: preamble
 
+
+              if (proposal_editing = fetch('proposal_editing')).editing
+                EditProposal 
+                  proposal: proposal_editing.editing
+                  done_callback: (e) =>
+                    proposal_editing.editing = null
+                    if proposal_editing.callback
+                      proposal_editing.callback()
+                      delete proposal_editing.callback
+                    save proposal_editing
+
+
               get_current_tab_view()
 
-              if get_tabs()
+              if get_tabs() && !embedded_demo()
                 DIV 
                   style: 
-                    paddingTop: 48
+                    paddingTop: 68
+                    paddingRight: if TABLET_SIZE() then 36
 
                   DIV 
                     style: 
@@ -164,24 +217,6 @@ window.proposal_editor = (proposal) ->
   return editor != '-' and editor
 
 
-window.column_sizes = (args) ->
-  args ||= {}
-  width = args.width or HOMEPAGE_WIDTH()
-
-  if !ONE_COL()
-    width -= 58
-    gutter = 50
-    score_w = 48
-    first = Math.min 500, Math.floor(width * .6) - gutter - score_w
-    second = Math.max 303, width - first -  gutter - score_w
-  else 
-    gutter = 58
-    score_w = 0 
-    first = width - gutter # Math.floor(width * .6) - gutter - score_w
-    second = width - gutter # width - first -  gutter - score_w
-
-  {first, second, gutter, score_w}
-
 
 window.TagHomepage = ReactiveComponent
   displayName: 'TagHomepage'
@@ -189,16 +224,15 @@ window.TagHomepage = ReactiveComponent
   render: -> 
     current_user = fetch('/current_user')
 
-    aggregate_list_key = get_current_tab_name()
+    aggregate_list_key = "list/#{get_current_tab_name()}"
 
     DIV null,
 
       List
         key: aggregate_list_key
-        proposal_focused_on: @props.proposal_focused_on
         combines_these_lists: get_all_lists()
         list: 
-          key: "list/#{aggregate_list_key}"
+          key: aggregate_list_key
           name: aggregate_list_key
           proposals: fetch('/proposals').proposals
 
@@ -218,22 +252,13 @@ window.SimpleHomepage = ReactiveComponent
     
     lists = get_lists_for_page(current_tab).slice()
 
-    if @props.proposal_focused_on
-      list_focused_on = "list/#{@props.proposal_focused_on.cluster or 'Proposals'}"
-      for list,idx in lists 
-        if list.key == list_focused_on
-          lists.splice idx, 1 
-          lists.unshift list
-          break
-
     DIV null, 
       for list, index in lists or []
         List
-          proposal_focused_on: if @props.proposal_focused_on && list.key == list_focused_on then @props.proposal_focused_on
           key: list.key
           list: list 
 
-      if !@props.proposal_focused_on && current_user.is_admin && current_tab not in ['About', 'FAQ'] && get_tab(current_tab)?.type not in [PAGE_TYPES.ABOUT, PAGE_TYPES.ALL]
+      if current_user.is_admin && current_tab not in ['About', 'FAQ'] && get_tab(current_tab)?.type not in [PAGE_TYPES.ABOUT, PAGE_TYPES.ALL]
         NewList()
           
 
@@ -253,7 +278,7 @@ ProposalsLoading = ReactiveComponent
       style: 
         width: HOMEPAGE_WIDTH()
         margin: 'auto'
-        padding: '60px'
+        padding: '60px 0px'
         textAlign: 'center'
         fontStyle: 'italic'
         #color: logo_red

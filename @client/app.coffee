@@ -11,14 +11,14 @@ require './auth/auth'
 require './avatar'
 require './browser_hacks'
 require './browser_location'
-require './proposal_navigation'
 require './bubblemouth'
 require './edit_proposal'
 require './edit_list'
 require './edit_page'
 require './customizations'
 require './form'
-require './histogram'
+# require './histogram'
+require './histogram-canvas'
 require './proposal_sort_and_search'
 require './opinion_views'
 require './tabs'
@@ -30,14 +30,14 @@ require './opinion_slider'
 require './tooltip'
 require './popover'
 require './flash'
-# require './development'
+require './development'
 require './su'
 require './edit_point'
 require './edit_comment'
 require './point'
 require './legal'
 require './statement'
-require './proposal'
+require './item'
 require './viewport_visibility_sensor'
 require './icons'
 require './google_translate'
@@ -48,6 +48,14 @@ try
 catch
   console.error 'no product page code'
 
+
+styles += """
+  #content {
+    min-width: 320px;
+  }
+
+
+"""
 
 
 ## ########################
@@ -159,7 +167,7 @@ LocationTransition = ReactiveComponent
   render : -> 
     loc = fetch 'location'
 
-    if loc.url == '/' && loc.query_params.edit_forum
+    if is_a_dialogue_page() && loc.query_params.edit_forum
       edit_forum = fetch 'edit_forum'
       edit_forum.editing = true
       save edit_forum      
@@ -181,12 +189,13 @@ LocationTransition = ReactiveComponent
 
 
       edit_forum = fetch 'edit_forum'
-      if edit_forum.editing && loc.url != '/'
+      if edit_forum.editing && !is_a_dialogue_page()
         stop_editing_forum()
         
       #######
 
       @last_location = loc.url
+
     SPAN null
 
 
@@ -220,6 +229,8 @@ Page = ReactiveComponent
       STYLE 
         dangerouslySetInnerHTML: __html: customization('style')
 
+
+
       if access_granted
         Header
           key: 'page_header'
@@ -228,7 +239,7 @@ Page = ReactiveComponent
 
       MAIN 
         role: 'main'
-        className: if loc.url == '/' || EXPAND_IN_PLACE then 'main_background'
+        className: "#{if is_a_dialogue_page() then 'main_background' else ''} #{if embedded_demo() then 'embedded-demo' else ''}"
         style: 
           position: 'relative'
           # zIndex: 1
@@ -276,22 +287,8 @@ Page = ReactiveComponent
                       fontSize: 16
                     "Check if the url is correct. The author may also have deleted it. Good luck!"
 
-              else if EXPAND_IN_PLACE
+              else
                 Homepage key: 'homepage'
-
-              else 
-                result = null
-
-                if page.proposal 
-                  result = Proposal key: page.proposal, proposal: page.proposal
-                else if !page.proposal? && arest.cache['/proposals']?.proposals?
-                  # search to see if we already have this proposal loaded
-                  for proposal in arest.cache['/proposals'].proposals
-                    if '/' + proposal.slug == loc.url
-                      result = Proposal key: "/proposal/#{proposal.id}", proposal: "/proposal/#{proposal.id}"
-                      break 
-
-                result or LOADING_INDICATOR
                 
 
       Footer(key: 'page_footer') if access_granted
@@ -311,7 +308,7 @@ Root = ReactiveComponent
 
     setTimeout ->
       fetch '/users'
-      if loc.url == '/'
+      if is_a_dialogue_page()
 
         setTimeout ->
           fetch '/proposals'
@@ -333,6 +330,7 @@ Root = ReactiveComponent
 
     fonts = customization('font')
     header_fonts = customization('header_font') or fonts
+    condensed_fonts = customization('condensed_font') or header_fonts
 
     DIV 
       className: 'full_height'
@@ -346,9 +344,6 @@ Root = ReactiveComponent
         window.is_swipping = false
         true
 
-      style: 
-        width: DOCUMENT_WIDTH()
-
       
       onClick: @resetSelection
 
@@ -360,12 +355,13 @@ Root = ReactiveComponent
       HomepageTabTransition()
       BrowserLocation()
       GoogleTranslate()
+      LoadAvatars?()
 
 
 
       STYLE 
         dangerouslySetInnerHTML: __html: """
-          .content, .content input, .content button, .content textarea {
+          .content, input, button, textarea {
             font-family: #{fonts}; 
           }
           .content h1, .content h2, .content h3, .content h1 button, .content h2 button, .content h3 button, .content h4 button {
@@ -375,6 +371,10 @@ Root = ReactiveComponent
 
           .monospaced {
             font-family: #{mono_font()};
+          }
+
+          .condensed {
+            font-family: #{condensed_fonts};
           }
         """
 
@@ -393,13 +393,9 @@ Root = ReactiveComponent
           
           BrowserHacks()
 
-          if EXPAND_IN_PLACE
-            Page
-              page: "/page#{loc.url}"
-          else 
-            Page 
-              key: "/page#{loc.url}"
-              page: "/page#{loc.url}"
+          Page
+            page: "/page#{loc.url}"
+
 
       Tooltip()
       Popover()
@@ -409,8 +405,8 @@ Root = ReactiveComponent
         app = fetch('/application')   
 
         DIV null, 
-          # if app.dev
-          #   Development()
+          if app.dev
+            Development()
 
           if current_user.is_super_admin || app.su
             SU()
@@ -423,16 +419,12 @@ Root = ReactiveComponent
     loc = fetch('location')
     page = get_page()
 
+
     if !fetch('auth').form && page.proposal
 
       opinion_views = fetch 'opinion_views'
 
       if get_selected_point()
-        window.writeToLog
-          what: 'deselected a point'
-          details:
-            point: get_selected_point()
-
         delete loc.query_params.selected
         save loc
 
@@ -455,6 +447,7 @@ Root = ReactiveComponent
       if selected.isCollapsed
         wysiwyg_editor.showing = false
         save wysiwyg_editor
+
 
 
 

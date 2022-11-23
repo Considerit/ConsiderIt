@@ -6,7 +6,7 @@ window.DataDash = ReactiveComponent
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 
-    if current_user.is_super_admin
+    if current_user.is_super_admin 
       tables = ['Users', 'Proposals', 'Opinions', 'Points', 'Comments']
     else 
       tables = ['Proposals']
@@ -127,17 +127,19 @@ window.DataDash = ReactiveComponent
               key: table
               style: 
                 display: 'flex'
+                flexDirection: if PHONE_SIZE() then 'column' else 'row'
+                alignItems: 'center'
 
               if current_user.is_super_admin
                 DIV 
                   style: 
                     paddingTop: 20
-                    textAlign: 'right'
+                    textAlign: if !PHONE_SIZE() then 'right' else 'center'
                     width: 150
 
                   LABEL style: {whiteSpace: 'nowrap'}, htmlFor: "#{table}-file", "#{table} (.csv)"
 
-                  DIV null
+                  DIV null, 
                     A 
                       style: 
                         textDecoration: 'underline'
@@ -148,7 +150,7 @@ window.DataDash = ReactiveComponent
 
               DIV 
                 style: 
-                  padding: '20px 0 0 20px'
+                  padding: '20px 20px 0 20px'
 
                 INPUT 
                   id: "#{table}-file"
@@ -188,7 +190,7 @@ window.DataDash = ReactiveComponent
             id: 'submit_import'
             className: 'btn'
             style: 
-              marginTop: 18
+              marginTop: 36
               fontSize: 20
 
             onClick: (e) => 

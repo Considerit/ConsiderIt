@@ -1,16 +1,30 @@
 styles += """
   button.add_new_proposal {
     cursor: pointer;
-    background-color: #{focus_blue};
+    background-color: transparent;
     border: none;
-    padding: 10px 36px 10px 9px;
+    padding: 0; 
     border-radius: 8px;
-    margin-left: -9px;   
     color: white;
     text-decoration: none;
     display: flex;
     align-items: center;
+    font-weight: 700;
+    margin-top: 30px;
   }
+
+  @media #{NOT_LAPTOP_MEDIA} {
+    button.add_new_proposal {
+      margin-left: 0;
+    }
+  }
+
+  @media #{PHONE_MEDIA} {
+    button.add_new_proposal {
+      padding: 0;
+    }
+  }
+
 
 """
 
@@ -47,7 +61,7 @@ window.NewProposal = ReactiveComponent
     if !adding 
       BUTTON  
         name: "new_#{list_name}"
-        className: 'add_new_proposal'
+        className: 'ProposalItem add_new_proposal proposal-title-text'
 
         
         onClick: (e) => 
@@ -62,21 +76,22 @@ window.NewProposal = ReactiveComponent
               form: 'create account'
               goal: 'Introduce yourself to share a response'
         
-        # A name: "new_#{list_name}"
+        DIV className: 'proposal-left-spacing'
+                  
+        plusIcon(focus_color(), AVATAR_SIZE())
+
+        DIV className: 'proposal-avatar-spacing'
+
         SPAN 
+          className: 'proposal-title-text-inline'
           style: 
-            marginLeft: 6
+            # marginLeft: 23
+            color: focus_color() 
 
-        plus_icon()
-
-        SPAN 
-          style: 
-            marginRight: 23
-
-        if permitted
-          list_i18n().new_response_label(list_key)
-        else 
-          translator "engage.login_to_add_new_proposal", 'Create an account to share a response'
+          if permitted
+            list_i18n().new_response_label(list_key)
+          else 
+            translator "engage.login_to_add_new_proposal", 'Create an account to share a response'
 
     else 
       label_style = 
@@ -84,7 +99,7 @@ window.NewProposal = ReactiveComponent
         fontSize: 14
         display: 'block'
 
-      w = column_sizes().first
+      w = ITEM_TEXT_WIDTH()
       showing_proposer = customization('show_proposer_icon', list_key)
       proposal_fields = customization('new_proposal_fields', list_key)()
 
@@ -92,8 +107,7 @@ window.NewProposal = ReactiveComponent
       DIV 
         style:
           position: 'relative'
-          padding: '6px 8px'
-          marginLeft: if showing_proposer then -76 + 68 else 36 - 68
+          padding: '16px 0px'
 
         # A name: "new_#{list_name}"
 
@@ -101,83 +115,94 @@ window.NewProposal = ReactiveComponent
           @drawTips customization('new_proposal_tips', list_key)
 
 
-        # bullet or icon
-        if showing_proposer && adding 
-          editor = current_user.user
-          # Person's icon
-          Avatar
-            key: editor
-            user: editor
-            img_size: 'large'
-            style:
-              height: 50
-              width: 50
-              marginRight: 8
-              borderRadius: 0
-              backgroundColor: '#ddd'
 
-        else
-          SVG 
-            width: 8
-            viewBox: '0 0 200 200' 
+        DIV 
+          style: 
+            display: 'flex'
+            alignItems: 'flex-start'
+
+          # bullet or icon
+          if showing_proposer && adding 
+            editor = current_user.user
+            # Person's icon
+            Avatar
+              key: editor
+              user: editor
+              img_size: 'large'
+              style:
+                height: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
+                width: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
+                marginRight: "var(--PROPOSAL_AUTHOR_AVATAR_GUTTER)"
+                borderRadius: 0
+                backgroundColor: '#ddd'
+                flexGrow: 0
+                flexShrink: 0
+
+          else
+            SVG 
+              width: 8
+              viewBox: '0 0 200 200' 
+              style: 
+                marginRight: 7 + (if !adding then 6 else 0)
+                marginLeft: 6
+                position: 'relative'
+                top: 17
+                left: -5
+                flexGrow: 0
+                flexShrink: 0
+
+              CIRCLE cx: 100, cy: 100, r: 80, fill: '#000000'
+
+          DIV 
             style: 
-              marginRight: 7 + (if !adding then 6 else 0)
-              marginLeft: 6
               position: 'relative'
-              top: -50
-              left: -5
-            CIRCLE cx: 100, cy: 100, r: 80, fill: '#000000'
+              display: 'inline-block'
+
+            LABEL 
+              style: _.extend {}, label_style, 
+                position: 'absolute'
+                left: 8
+                top: -18
+              htmlFor: "#{list_name}-name"
+
+              proposal_fields.name
+
+
+
+            CharacterCountTextInput 
+              id: "#{list_name}-name"
+              maxLength: 240
+              name:'name'
+              pattern: '^.{3,}'
+              'aria-label': translator("engage.edit_proposal.summary.placeholder", 'Clear and concise summary')
+              placeholder: translator("engage.edit_proposal.summary.placeholder", 'Clear and concise summary')
+              required: 'required'
+              focus_on_mount: true
+
+              count_style: 
+                position: 'absolute'
+                right: 0
+                top: -18 
+                fontSize: 14  
+
+              style: 
+                fontSize: 20
+                width: w
+                border: "1px solid #ccc"
+                outline: 'none'
+                padding: '6px 8px'
+                fontWeight: 600
+                #textDecoration: 'underline'
+                #borderBottom: "1px solid #444"  
+                color: '#000'
+                minHeight: 75        
+                resize: 'vertical'    
 
         DIV 
           style: 
             position: 'relative'
-            display: 'inline-block'
-
-          LABEL 
-            style: _.extend {}, label_style, 
-              position: 'absolute'
-              left: 8
-              top: -18
-            htmlFor: "#{list_name}-name"
-
-            proposal_fields.name
-
-
-
-          CharacterCountTextInput 
-            id: "#{list_name}-name"
-            maxLength: 240
-            name:'name'
-            pattern: '^.{3,}'
-            'aria-label': translator("engage.edit_proposal.summary.placeholder", 'Clear and concise summary')
-            placeholder: translator("engage.edit_proposal.summary.placeholder", 'Clear and concise summary')
-            required: 'required'
-            focus_on_mount: true
-
-            count_style: 
-              position: 'absolute'
-              right: 0
-              top: -18 
-              fontSize: 14  
-
-            style: 
-              fontSize: if browser.is_mobile then 36 else 20
-              width: w
-              border: "1px solid #ccc"
-              outline: 'none'
-              padding: '6px 8px'
-              fontWeight: 600
-              #textDecoration: 'underline'
-              #borderBottom: "1px solid #444"  
-              color: '#000'
-              minHeight: 75        
-              resize: 'vertical'    
-
-        DIV 
-          style: 
-            position: 'relative'
-            marginLeft: if showing_proposer then 58 else 21
-
+            marginLeft: if showing_proposer then "var(--AVATAR_SIZE_AND_GUTTER)" else 21
+            width: w
 
           # details 
           DIV null,
@@ -200,7 +225,7 @@ window.NewProposal = ReactiveComponent
                 border: '1px solid #ccc'
 
               style: 
-                fontSize: if browser.is_mobile then 36 else 16
+                fontSize: 16
                 width: w - 8 * 2
                 marginBottom: 8
                 minHeight: 120
@@ -429,6 +454,5 @@ window.NewProposal = ReactiveComponent
               LI 
                 style: 
                   paddingBottom: 3
-                  fontSize: if PORTRAIT_MOBILE() then 24 else if LANDSCAPE_MOBILE() then 14
                 tip  
 

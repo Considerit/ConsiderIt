@@ -41,6 +41,13 @@ positionAvatarsWithJustLayout = (opts) ->
 
   placer = Placer opts  
   nodes = placer.pixelated_layout()
+  while !nodes && opts.r > 0 # continuously reduce the avatar radius until we can place all of them
+    console.error("At least one avatar couldn't be placed with base radius #{opts.r}. Trying again with base radius=#{opts.r - 1}")
+    opts.r -= 1
+    placer = Placer opts  
+    nodes = placer.pixelated_layout()
+
+  
 
   # sort so we can optimize by knowing that bodies are ordered by x_target
   nodes.sort (a,b) -> a.x_target - b.x_target
@@ -104,6 +111,9 @@ positionAvatarsWithJustLayout = (opts) ->
 # width and height)
 top_level.calculateAvatarRadius = (width, height, opinions, weights, {fill_ratio}) -> 
   fill_ratio ?= .25
+
+  if !width || !height 
+    return 0
 
   opinions.sort (a,b) -> a.stance - b.stance
 
@@ -354,6 +364,7 @@ Placer = (opts, bodies) ->
 
           if !placed && consider_only_prime_positions == false && move_within == width
             console.error("Could not place", xt, o)
+            return false
         break if placed 
 
       if save_snapshots
@@ -368,14 +379,16 @@ Placer = (opts, bodies) ->
           unstable_bodies: []
           bodies: JSON.parse JSON.stringify ({user: b.user, neighbors: b.neighbors, x: b.x, y: b.y, radius: b.radius, x_target: b.x_target} for b in laid_out)
           iteration: 0
-
+      true
 
     if save_snapshots
       current_cleanup = []
 
     if !layout_params.show_histogram_layout
       for o,idx in opinions 
-        place_body o,idx
+        success = place_body o,idx
+        if !success
+          return false
 
       if save_snapshots
         running_state.cleanup ?= []

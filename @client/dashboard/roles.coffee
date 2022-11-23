@@ -178,8 +178,16 @@ window.styles += """
   }
 
   .ROLES_section .radio_group {
-    margin-bottom: 30px;    
+    margin-bottom: 30px;   
+    display: flex;
+    align-items: flex-start; 
   }
+
+  .ROLES_section .radio_group label {
+    margin-left: 12px;
+    margin-top: -2px;
+  }
+
   .ROLES_section .radio_group label b {
     font-style: italic;
   }

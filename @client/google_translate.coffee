@@ -12,12 +12,9 @@ window.GoogleTranslate = ReactiveComponent
   displayName: 'GoogleTranslate'
 
   render: -> 
-    loc = fetch 'location'
-    homepage = loc.url == '/'
-
     return SPAN null if embedded_demo()
 
-    style = if customization('google_translate_style') && homepage 
+    style = if customization('google_translate_style') && is_a_dialogue_page() 
               s = JSON.parse JSON.stringify customization('google_translate_style')
               delete s.prominent if s.prominent
               delete s.callout if s.callout
@@ -25,7 +22,7 @@ window.GoogleTranslate = ReactiveComponent
             else 
               _.defaults {}, @props.style, 
                 textAlign: 'center'
-                marginBottom: 10
+                #marginBottom: 10
 
     DIV 
       style: 
@@ -33,6 +30,11 @@ window.GoogleTranslate = ReactiveComponent
         left: @local.left 
         top: @local.top
         zIndex: 9
+
+      STYLE 
+        dangerouslySetInnerHTML: __html: """
+
+        """        
            
       DIV 
         key: "google_translate_element_#{@local.key}"
@@ -43,33 +45,21 @@ window.GoogleTranslate = ReactiveComponent
   insertTranslationWidget: -> 
     subdomain = fetch '/subdomain'
 
-
     new google.translate.TranslateElement {
         pageLanguage: subdomain.lang
-        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        layout: google.translate.TranslateElement.InlineLayout[if WINDOW_WIDTH() < 1180 then 'VERTICAL' else 'SIMPLE']
         multilanguagePage: true
         # gaTrack: #{Rails.env.production?}
         # gaId: 'UA-55365750-2'
       }, "google_translate_element_#{@local.key}"
 
-  componentDidMount: -> 
+  setPosition: -> 
+    wrapper = document.querySelector '.google-translate-candidate-container'
+    translate_el = google?.translate?.TranslateElement
 
-    @int = setInterval => 
-      if google?.translate?.TranslateElement?
-        @insertTranslationWidget()
-        clearInterval @int 
-    , 20
+    return if !wrapper || !translate_el
 
-    # location of this element will shadow the position of the first instance
-    # of an element with a class of google-translate-candidate-container
-    @placer_int = setInterval =>
-      wrapper = document.querySelector '.google-translate-candidate-container'
-      translate_el = google?.translate?.TranslateElement
-
-      return if !wrapper || !translate_el
-
-      coords = getCoords(wrapper)
-
+    set_coords = (coords) =>
       left = coords.left + coords.width / 2 - @refs.translation_el.clientWidth / 2
       top = coords.top
 
@@ -80,7 +70,37 @@ window.GoogleTranslate = ReactiveComponent
       if @local.left != left || top != @local.top
         @local.left = left
         @local.top = top
-        save @local
+        save @local   
+
+    observer = new IntersectionObserver (entries) =>
+      for entry in entries
+        coords = entry.boundingClientRect
+        coords.left += window.pageXOffset
+        coords.top += window.pageYOffset
+        set_coords
+          left: coords.left + window.pageXOffset
+          top: coords.top + window.pageYOffset
+          width: coords.width
+      observer.disconnect()
+    observer.observe(wrapper)
+
+
+      
+       
+
+  componentDidMount: -> 
+
+    @int = setInterval => 
+      if google?.translate?.TranslateElement?
+        @insertTranslationWidget()
+        @setPosition()
+        clearInterval @int 
+    , 20
+
+    # location of this element will shadow the position of the first instance
+    # of an element with a class of google-translate-candidate-container
+    @placer_int = setInterval =>
+      requestAnimationFrame @setPosition
     , 500
 
   componentWillUnmount: ->

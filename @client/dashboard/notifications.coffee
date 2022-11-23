@@ -1,6 +1,3 @@
-require '../collapsed_proposal'
-
-
 window.styles += """
   #NOTIFICATIONS {
     font-size: 18px;
@@ -94,9 +91,7 @@ window.Notifications = ReactiveComponent
 
 
         if prefs['send_emails']
-          DIV 
-            style: 
-              marginLeft: 71
+          DIV null,
             
             @drawEmailSettings()
 
@@ -254,45 +249,50 @@ window.Notifications = ReactiveComponent
           key: 'follows-list'
           style: 
             position: 'relative'
-            marginLeft: 62
+            marginLeft: 32
 
-          for proposal in watched_proposals
+          for proposal in watched_proposals when proposal.name
             do (proposal) => 
 
-              if proposal.name
-                CollapsedProposal 
-                  key: "unfollow-#{proposal.key or proposal}"
-                  proposal: proposal
-                  show_category: true
-                  width: 500
-                  hide_scores: true
-                  hide_icons: true
-                  hide_metadata: true
-                  show_category: false
-                  icon: =>
-                    LABEL 
-                      key: 'unfollow-area'
-                      htmlFor: "unfollow-#{proposal.name}"
+              LI 
+                style: 
+                  display: 'flex'
+                  marginBottom: 32
+                  position: 'relative'
 
-                      SPAN 
-                        style: 
-                          display: 'none'
-                        translator "email_notifications.unfollow_proposal", "Unfollow this proposal"
+                LABEL 
+                  key: 'unfollow-area'
+                  htmlFor: "unfollow-#{proposal.name}"
 
-                      INPUT 
-                        key: "unfollow-#{proposal.key}"
-                        id: "unfollow-#{proposal.name}"
-                        className: 'bigger'
-                        style: 
-                          position: 'absolute'
-                          left: -30
-                          top: 4
-                        type: 'checkbox'
-                        defaultChecked: true
-                        onChange: => 
-                          if !current_user.subscriptions[proposal.key]
-                            current_user.subscriptions[proposal.key] = 'watched'
-                          else 
-                            delete current_user.subscriptions[proposal.key]
+                  SPAN 
+                    style: 
+                      display: 'none'
+                    translator "email_notifications.unfollow_proposal", "Unfollow this proposal"
 
-                          save current_user
+                  INPUT 
+                    key: "unfollow-#{proposal.key}"
+                    id: "unfollow-#{proposal.name}"
+                    className: 'bigger'
+                    style: 
+                      marginTop: 4
+                    type: 'checkbox'
+                    defaultChecked: true
+                    "data-tooltip": "Stop receiving updates about this proposal"
+                    onChange: => 
+                      if !current_user.subscriptions[proposal.key]
+                        current_user.subscriptions[proposal.key] = 'watched'
+                      else 
+                        delete current_user.subscriptions[proposal.key]
+
+                      save current_user
+
+                  SPAN 
+                    style: 
+                      marginLeft: 18
+                      fontSize: 15
+                    proposal.name
+
+
+
+
+

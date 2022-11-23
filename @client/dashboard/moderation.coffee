@@ -24,6 +24,49 @@ window.moderation_options = [
   ]
 
 
+styles += """
+.moderation.btn input {
+  display: none;
+}
+
+.moderation.btn {
+  padding: 8px 18px;
+}
+
+.moderate-item-wrapper {
+  cursor: auto;
+  padding: 8px 14px;
+  max-width: 700px;
+  margin-bottom: 20px;
+}
+
+.moderate-item-bubble-wrapper {
+  margin-left: 70px;
+  position: relative;
+}
+
+@media #{NOT_LAPTOP_MEDIA} {
+  .moderation-content-wrapper {
+
+  }
+  .moderation.btn {
+    padding: 4px 8px;
+  }
+
+  .moderation.btn label {
+    font-size: 18px;
+  }
+  .moderate-item-wrapper {
+    padding: 8px 0px;
+  }
+
+  .moderate-item-bubble-wrapper {
+    margin-left: 36px;
+  }
+
+}
+"""
+
 window.ModerationDash = ReactiveComponent
   displayName: 'ModerationDash'
 
@@ -116,6 +159,7 @@ window.ModerationDash = ReactiveComponent
         SELECT 
           style: 
             fontSize: 20
+            maxWidth: '80vw'
           defaultValue: subdomain.moderation_policy
           onChange: (ev) ->
             subdomain.moderation_policy = ev.target.value
@@ -242,6 +286,8 @@ window.ModerationDash = ReactiveComponent
 
 
           UL 
+            className: 'moderation-content-wrapper'        
+
             style: 
               marginLeft: 0 #-66
             for item in items[@local.show_category].items
@@ -287,7 +333,7 @@ ModerateItem = ReactiveComponent
       tease = "#{moderatable.nutshell.substring(0, 120)}..."
       header = moderatable.nutshell
       details = moderatable.text 
-      href = "/#{proposal.slug}?results=true&selected=#{point.key}"
+      href = "/#{proposal.slug}?selected=#{point.key}"
     else if class_name == 'Comment'
       point = fetch(moderatable.point)
       proposal = fetch(point.proposal)
@@ -295,7 +341,7 @@ ModerateItem = ReactiveComponent
       tease = "#{moderatable.body.substring(0, 120)}..."
       header = moderatable.body
       details = ''
-      href = "/#{proposal.slug}?results=true&selected=#{point.key}"      
+      href = "/#{proposal.slug}?selected=#{point.key}"      
     else if class_name == 'Proposal'
       proposal = moderatable
       tease = "#{proposal.name.substring(0, 120)}..."
@@ -318,18 +364,11 @@ ModerateItem = ReactiveComponent
         listStyle: 'none'
 
       DIV 
-        style: 
-          cursor: 'auto'
-          padding: '8px 14px'
-          maxWidth: 700
-          marginBottom: 20
-
+        className: 'moderate-item-wrapper'
 
 
         DIV 
-          style: 
-            marginLeft: 70
-            position: 'relative'
+          className: 'moderate-item-bubble-wrapper'
 
           DIV null, 
 
@@ -343,7 +382,8 @@ ModerateItem = ReactiveComponent
                   anon: point.hide_name
                   user: point.user
                   body: point.text
-                  width: '100%'
+                  width: 'min(700px,75vw)'
+                  avatar_style: if TABLET_SIZE() then {width: 32, height: 32, left: -44}
 
 
                 for comment in _.uniq( _.map(comments.comments, (c) -> c.key).concat(moderatable.key)) when comment != moderatable.key
@@ -351,14 +391,16 @@ ModerateItem = ReactiveComponent
                     key: comment
                     title: fetch(comment).body
                     user: fetch(comment).user
-                    width: '100%'
+                    width: 'min(700px,75vw)'
+                    avatar_style: if TABLET_SIZE() then {width: 32, height: 32, left: -44}
 
             BUBBLE_WRAP
               title: header
               body: moderatable.description
               anon: !!moderatable.hide_name
               user: moderatable.user
-              width: '100%'
+              width: 'min(700px,75vw)'
+              avatar_style: if TABLET_SIZE() then {width: 32, height: 32, left: -44}
 
             DIV null,
               "by #{author?.name or anonymous_label()}"
@@ -385,7 +427,6 @@ ModerateItem = ReactiveComponent
                   onClick: => 
                     @local.messaging = moderatable
                     save(@local)
-                    console.log moderatable
 
                   'Message author'
 
@@ -402,11 +443,12 @@ ModerateItem = ReactiveComponent
           DIV 
             style: 
               marginTop: 8
-              marginLeft: 63
+              marginLeft: if TABLET_SIZE() then 36 else 63
                     
             SELECT
               style: 
                 fontSize: 18
+                maxWidth: '60vw'
               value: proposal.cluster or ''
               ref: 'category'
               onChange: (e) =>
@@ -425,6 +467,7 @@ ModerateItem = ReactiveComponent
         DIV 
           style:       
             margin: '10px 0px 20px 63px'
+            marginLeft: if TABLET_SIZE() then 36
             position: 'relative'
 
           SPAN 
@@ -484,7 +527,7 @@ ModerateItem = ReactiveComponent
         # status area
         DIV 
           style: 
-            marginLeft: 63
+            marginLeft: if TABLET_SIZE() then 36 else 63
             fontStyle: 'italic'
 
 
@@ -644,7 +687,7 @@ BanHammer = ReactiveComponent
       DIV 
         style: 
           fontSize: 16
-          width: 600
+          maxWidth: 600
           marginTop: 36
           marginLeft: 24
         ban_explanation
@@ -665,12 +708,12 @@ DirectMessage = ReactiveComponent
     user = fetch(@props.to)
 
     text_style = 
-      width: 500
+      width: "min(550px, 70vw)"
       fontSize: 16
       display: 'block'
       padding: '4px 8px'
 
-    DIV style: {margin: '18px 0', padding: '15px 20px', backgroundColor: 'white', width: 550, backgroundColor: considerit_gray, boxShadow: "0 2px 4px rgba(0,0,0,.4)"}, 
+    DIV style: {margin: '18px 0', padding: '15px 20px', backgroundColor: 'white', width: "min(590px, calc(70vw + 40px))", backgroundColor: considerit_gray, boxShadow: "0 2px 4px rgba(0,0,0,.4)"}, 
       DIV style: {marginBottom: 8},
         LABEL null, 'To: ', user.name
 

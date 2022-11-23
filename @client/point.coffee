@@ -1,6 +1,8 @@
 require "./comment"
 
 
+
+
 ##
 # Point
 # A single point in a list. 
@@ -62,17 +64,7 @@ window.Point = ReactiveComponent
               set_bg_color: true
               anonymous: point.user == includer && point.hide_name
 
-
-
-    point_content_style = 
-      width: POINT_WIDTH() #+ 6
-      borderWidth: 3
-      borderStyle: 'solid'
-      borderColor: 'transparent'
-      top: -3
-      position: 'relative'
-      zIndex: 1
-      outline: 'none'
+    point_content_style = {}
 
     if is_selected
       _.extend point_content_style,
@@ -84,36 +76,8 @@ window.Point = ReactiveComponent
         borderColor: '#999'
         backgroundColor: 'white'
 
-    if @props.rendered_as == 'decision_board_point'
-      _.extend point_content_style,
-        padding: 8
-        borderRadius: 8
-        top: point_content_style.top - 8
-        left: -11
-        #width: point_content_style.width + 16
-
-    else if @props.rendered_as == 'community_point'
-      _.extend point_content_style,
-        padding: 8
-        borderRadius: if TWO_COL() then "16px 16px 0 0" else 16
-        top: point_content_style.top - 8
-        #left: point_content_style.left - 8
-        #width: point_content_style.width + 16
-
-
     expand_to_see_details = !!point.text
 
-    point_style = 
-      position: 'relative'
-      listStyle: 'none outside none'
-
-
-    if @props.rendered_as == 'decision_board_point'
-      _.extend point_style, 
-        marginLeft: 9
-        padding: '0 18px 0 18px'
-    else if @props.rendered_as == 'community_point'
-      point_style.marginBottom = '0.5em'
 
 
 
@@ -129,7 +93,7 @@ window.Point = ReactiveComponent
     ioffset = -50
     includers_style[left_or_right] = ioffset
 
-    draw_all_includers = @props.rendered_as == 'community_point' || TWO_COL()
+    draw_all_includers = @props.rendered_as == 'community_point' || TABLET_SIZE()
 
     if expand_to_see_details && !is_selected
       append = SPAN 
@@ -147,12 +111,12 @@ window.Point = ReactiveComponent
       'data-id': @props.point
       className: "point #{@props.rendered_as} #{if point.is_pro then 'pro' else 'con'} #{if customization('disable_comments') && !expand_to_see_details then 'commenting-disabled' else ''}"
       onClick: @selectPoint
-      onTouchEnd: @selectPoint
+      # onTouchEnd: @selectPoint
       onKeyDown: (e) =>
         if (is_selected && e.which == 27) || e.which == 13 || e.which == 32
           @selectPoint(e)
           e.preventDefault()
-      style: point_style
+
 
       if @props.rendered_as == 'decision_board_point'
         DIV 
@@ -173,52 +137,8 @@ window.Point = ReactiveComponent
         draggable: @props.enable_dragging
         "data-point": point.key
 
-        onDragEnd: (ev) =>
-          # @refs.point_content.style.visibility = 'visible'
-          @refs.point_content.style.opacity = 1
 
-        onDragStart: (ev) =>
-          if @props.enable_dragging
-            point = fetch @props.point
-            dnd_points = fetch 'drag and drop points'
-            dnd_points.dragging = point.key 
-            ev.dataTransfer.setData('text/plain', point.key)
-
-            # because DnD setdata is broke ass
-            dragging = fetch 'point-dragging'
-            dragging.point = point.key
-
-            ev.dataTransfer.effectAllowed = "move"
-            ev.dataTransfer.dropEffect = "move"     
-
-
-            #######################
-            # There is a big bug with dragging and dropping elements whose parent has been moved with 
-            # transform translate. The ghosting is way off, safari (15 at the moment) can't seem to 
-            # properly locate the element to make a ghost bitmap of the screen. So we'll create our 
-            # own ghost point outside the translated parents. Note that this hack for some reason
-            # *doesn't work* in Chrome or Firefox (but the original bug isn't in them). 
-            # So we'll have to keep an eye on this for each release of Safari to make sure the 
-            # hack is still appropriate.
-            if window.safari || window.parent?.safari
-              ghost = @refs.point_content.cloneNode()
-              ghost.innerHTML = @refs.point_content.innerHTML
-
-              content = document.getElementById('content')
-              content.appendChild ghost
-              ev.dataTransfer.setDragImage ghost, 0, 0
-
-              setTimeout ->
-                content.removeChild ghost
-
-            setTimeout =>
-              @refs.point_content.style.opacity = .3
-
-
-
-
-
-        if @props.rendered_as != 'decision_board_point'
+        if @props.rendered_as != 'decision_board_point' && !PHONE_SIZE()
 
           side = if point.is_pro then 'right' else 'left'
           mouth_style = 
@@ -289,7 +209,6 @@ window.Point = ReactiveComponent
               wordWrap: 'break-word'
               marginTop: '0.5em'
               fontSize: POINT_FONT_SIZE()
-              fontWeight: if browser.high_density_display && !browser.is_mobile then 300 else 400              
               
 
             DIV 
@@ -297,7 +216,7 @@ window.Point = ReactiveComponent
                 fontSize: 12
                 color: '#666'
 
-              if !screencasting() && !embedded_demo() && fetch('/subdomain').name != 'galacticfederation'
+              if !PHONE_SIZE() && !screencasting() && !embedded_demo() && fetch('/subdomain').name != 'galacticfederation'
                 [
                   prettyDate(point.created_at)
                   SPAN key: 'padding', style: paddingLeft: 8
@@ -316,12 +235,22 @@ window.Point = ReactiveComponent
                       comment_count: point.comment_count 
                       "{comment_count, plural, one {# comment} other {# comments}}"
 
+              if PHONE_SIZE()
+                SPAN 
+                  key: 3
+                  style: 
+                    float: 'right'
+
+                  "+#{point.includers.length}"
+
+                  
+
 
 
         if current_user.user == point.user
           DIV null,
             if permit('update point', point) > 0 && 
-                (@props.rendered_as == 'decision_board_point' || TWO_COL())
+                (@props.rendered_as == 'decision_board_point' || TABLET_SIZE())
               BUTTON
                 style:
                   fontSize: if browser.is_mobile then 24 else 14
@@ -339,7 +268,7 @@ window.Point = ReactiveComponent
                 translator 'engage.edit_button', 'edit'
 
             if permit('delete point', point) > 0 && 
-                (@props.rendered_as == 'decision_board_point' || TWO_COL())
+                (@props.rendered_as == 'decision_board_point' || TABLET_SIZE())
               BUTTON
                 'data-action': 'delete-point'
                 style:
@@ -355,7 +284,7 @@ window.Point = ReactiveComponent
                     destroy @props.point
                 translator 'engage.delete_button', 'delete'
 
-      if @props.rendered_as != 'decision_board_point' 
+      if @props.rendered_as != 'decision_board_point' && !PHONE_SIZE()
         DIV 
           'aria-hidden': true
           className:'includers'
@@ -367,14 +296,13 @@ window.Point = ReactiveComponent
 
 
 
-      if TWO_COL() || (!TWO_COL() && @props.enable_dragging)
+      if TABLET_SIZE() || (!TABLET_SIZE() && @props.enable_dragging)
         your_opinion = proposal.your_opinion
         if your_opinion.key 
           fetch your_opinion
-        if your_opinion?.published
-          can_opine = permit 'update opinion', proposal, your_opinion
-        else
-          can_opine = permit 'publish opinion', proposal
+
+
+        can_opine = canUserOpine proposal          
 
         included = @included()
         includePoint = (e) => 
@@ -385,8 +313,10 @@ window.Point = ReactiveComponent
                         (!browser.is_android_browser && e.type == 'click')
           if !included
             @include()
+          else 
+            @remove()
 
-        if !TWO_COL() && @props.enable_dragging
+        if !TABLET_SIZE() && @props.enable_dragging
           right = (included && point.is_pro) || (!included && !point.is_pro)
           if right 
             sty = 
@@ -441,7 +371,7 @@ window.Point = ReactiveComponent
               borderRadius: '0 0 16px 16px'
               cursor: 'pointer'
               backgroundColor: if included then focus_color() else 'white'
-              fontSize: 18  
+              fontSize: 16  
               zIndex: 0
               display: if can_opine < 0 then 'none'
               width: '100%'
@@ -468,7 +398,7 @@ window.Point = ReactiveComponent
                 display: 'inline-block'
                 marginRight: 10
 
-            translator("engage.include_button", "Important point") + "#{if included then '' else '?'}" 
+            translator("engage.include_button", "Important") + "#{if included then '' else '?'}" 
 
 
       if is_selected
@@ -481,8 +411,92 @@ window.Point = ReactiveComponent
   componentDidMount : ->    
     @ensureDiscussionIsInViewPort()
 
+    if @props.enable_dragging
+      @initializeDragging()
+
   componentDidUpdate : -> 
     @ensureDiscussionIsInViewPort()
+    if @props.enable_dragging
+      @initializeDragging()
+
+  initializeDragging : ->
+    if !@drag_initialized
+
+      @drag_initialized = true 
+      point_root = ReactDOM.findDOMNode(@)
+      point_width = null
+
+      last_mouse_over_target = null
+
+      @draggable = new Draggable.default point_root,
+        draggable: '.point'
+        delay: 0
+        distance: 1 # don't start drag unless moved a bit, otherwise click event gets swallowed up
+        mirror: 
+          appendTo: '#content'
+
+      @draggable.on 'drag:start', (evt) =>
+        point_width = evt.source.getBoundingClientRect().width
+
+        # if @props.rendered_as != 'decision_board_point'
+        #   point_root.closest(".ProposalItem").classList.add 'community-point-is-being-dragged'
+
+      @draggable.on 'mirror:created', (evt) =>        
+        evt.mirror.style.width = "#{point_width}px"
+
+      @draggable.on 'drag:move', (evt) =>
+        last_mouse_over_target = evt.sensorEvent.target
+
+        if @props.rendered_as != 'decision_board_point' 
+          db = last_mouse_over_target?.closest('.DecisionBoard')
+          if db
+            db.closest(".ProposalItem").classList.add 'community-point-is-being-dragged'
+          else 
+            point_root.closest(".ProposalItem").classList.remove 'community-point-is-being-dragged'
+
+      @draggable.on 'drag:stop', (evt) =>
+
+        if @props.rendered_as != 'decision_board_point'
+          point_root.closest(".ProposalItem").classList.remove 'community-point-is-being-dragged'
+
+          if db = last_mouse_over_target?.closest('.DecisionBoard')
+            point = fetch @props.point
+            proposal = fetch point.proposal
+            your_opinion = proposal.your_opinion
+
+            if !your_opinion.point_inclusions || point.key not in your_opinion.point_inclusions
+              your_opinion.key ?= "/new/opinion"
+              your_opinion.published = true
+              your_opinion.point_inclusions ?= []
+              your_opinion.point_inclusions.push point.key
+              save your_opinion
+
+              window.writeToLog
+                what: 'included point'
+                details: 
+                  point: point.id
+
+        else # removing decision_board_point by dragging outside
+          if last_mouse_over_target?.closest('.points_by_community')
+            point = fetch @props.point
+            proposal = fetch point.proposal
+            your_opinion = proposal.your_opinion
+
+            validate_first = point.user == fetch('/current_user').user && point.includers.length < 2
+            if !validate_first || confirm('Are you sure you want to remove your point? It will be gone forever.')
+              your_opinion = proposal.your_opinion
+
+              if your_opinion.point_inclusions && point.key in your_opinion.point_inclusions
+                idx = your_opinion.point_inclusions.indexOf point.key
+                your_opinion.point_inclusions.splice(idx, 1)
+                save your_opinion
+
+                window.writeToLog
+                  what: 'removed point'
+                  details: 
+                    point: point.key
+
+
 
 
   # Hack that fixes a couple problems:
@@ -492,7 +506,7 @@ window.Point = ReactiveComponent
   #     discussion & click a new point below it
   ensureDiscussionIsInViewPort : ->
     is_selected = get_selected_point() == @props.point
-    if @local.is_selected != is_selected
+    if !!@local.is_selected != !!is_selected
       if is_selected
         
         i = setInterval =>
@@ -542,6 +556,19 @@ window.Point = ReactiveComponent
       details: 
         point: @props.point
 
+  remove: -> 
+    point = fetch @props.point 
+    proposal = fetch point.proposal
+
+    your_opinion = proposal.your_opinion
+    your_opinion.key ?= "/new/opinion"
+
+    idx = your_opinion.point_inclusions.indexOf point.key
+
+    if idx > -1
+      your_opinion.point_inclusions.splice(idx, 1)
+      save(your_opinion)
+
 
   selectPoint: (e) ->
     e.stopPropagation()
@@ -549,14 +576,12 @@ window.Point = ReactiveComponent
 
     return if !point.text && customization('disable_comments')
 
-
     # android browser needs to respond to this via a touch event;
     # all other browsers via click event. iOS fails to select 
     # a point if both touch and click are handled...sigh...
-    return unless ( browser.is_mobile && e.type != 'click' ) || \
-                  (!browser.is_mobile && e.type == 'click') || \
-                  e.type == 'keydown'
-
+    # return unless ( browser.is_mobile && e.type != 'click' ) || \
+    #               (!browser.is_mobile && e.type == 'click') || \
+    #               e.type == 'keydown'
 
     loc = fetch('location')
     if get_selected_point() == @props.point # deselect
@@ -615,7 +640,16 @@ window.Point = ReactiveComponent
     includers = point.includers
 
     opinion_views = fetch 'opinion_views'
-    {weights, salience, groups} = compose_opinion_views null, proposal
+
+    # Don't filter point_includers unless we're in single opinion or region select mode. If we didn't 
+    # do that, when you hover over includers in a point, all the other points includers change, which 
+    # is confusing for people.
+    if !opinion_views.active_views.single_opinion_selected && !opinion_views.active_views.region_selected
+      ignore_views = {point_includers: true}
+    else 
+      ignore_views = null
+
+    {weights, salience, groups} = compose_opinion_views null, proposal, ignore_views
 
     includers = (i for i in includers when salience[i] == 1 && weights[i] > 0)
 
@@ -627,64 +661,122 @@ window.Point = ReactiveComponent
 
 styles += """
 
-.point_content[draggable="false"] {
-  cursor: pointer !important; }
+  .point {
+    position: relative;
+    list-style: none outside none;
+  }
 
-.commenting-disabled .point_content[draggable="false"] {
-  cursor: auto; }
+  .point.decision_board_point {
+    margin-left: 9px;
+    padding: 0 0 0 18px;
+  }
+
+  .point.community_point {
+    margin-bottom: 0.5em;
+  }
 
 
-.commenting-disabled .point_details_tease {
-  cursor: auto;
-}
 
-#{css.grab_cursor('.point_content[draggable="true"]')}
+  .point_content[draggable="false"] {
+    cursor: pointer !important; }
 
-.community_point .point_content {
-  border-radius: 16px;
-  padding: 0.5em 9px;
-  background-color: #{considerit_gray};
-  box-shadow: #b5b5b5 0 1px 1px 0px;
-  min-height: 34px; }
+  #{css.grab_cursor('.point_content[draggable="true"]')}
 
-.point_nutshell a { text-decoration: underline; }
-.point_details_tease a, .point_details a {
-  text-decoration: underline;
-  word-break: break-all; }
-.point_details a.select_point{
-  text-decoration: none;
-  font-weight: 400;
-}
 
-.point_details {
-  display: block; }
+  .point.draggable-mirror {
+    z-index: 99999999;
+  }
+  .point.draggable-mirror .includers, .point.draggable-mirror button {
+    display: none;
+  }  
+  .point.draggable-source--is-dragging {
+    transition: opacity 0ms !important;
+    opacity: 0.2 !important;
+  }
+  .point.draggable--original {
+    display: none;
+  }
+    
 
-.point_details_tease {
-  cursor: pointer; }
-  .point_details_tease a.select_point {
-    text-decoration: none; 
-    font-weight: 400;    
+
+  .commenting-disabled .point_content[draggable="false"] {
+    cursor: auto; }
+
+
+  .commenting-disabled .point_details_tease {
+    cursor: auto;
+  }
+
+
+  .point_content {
+    border-width: 3px;
+    border-style: solid; 
+    border-color: transparent;
+    top: -3px;
+    position: relative;
+    z-index: 1;
+    outline: none;
+  }
+
+  .decision_board_point .point_content {
+    padding: 8px 0px;
+    border-radius: 8px;
+    top: -11px;
+  }
+
+  .community_point .point_content {
+    padding: 8px;
+    border-radius: 16px;
+    top: -11px;
+    background-color: #{considerit_gray};
+    box-shadow: #b5b5b5 0 1px 1px 0px;
+    min-height: 34px; 
+  }
+
+  @media #{NOT_LAPTOP_MEDIA} {
+    .community_point .point_content {
+      border-radius: 16px 16px 0 0;
     }
-    .point_details_tease a.select_point:hover {
-      text-decoration: underline; }
+  }
 
-.point_details p {
-  margin-bottom: 1em; }
+  .point_nutshell a { text-decoration: underline; }
+  .point_details_tease a, .point_details a {
+    text-decoration: underline;
+    word-break: break-all; }
+  .point_details a.select_point{
+    text-decoration: none;
+    font-weight: 400;
+  }
 
-.point_details p:last-child {
-  margin-bottom: 0; }
+  .point_details {
+    display: block; }
 
-.point_includer_avatar {
-  width: 22px;
-  height: 22px; }
+  .point_details_tease {
+    cursor: pointer; }
+    .point_details_tease a.select_point {
+      text-decoration: none; 
+      font-weight: 400;    
+      }
+      .point_details_tease a.select_point:hover {
+        text-decoration: underline; }
 
-.community_point.con .point_includer_avatar {
-  box-shadow: -1px 2px 0 0 #eeeeee; }
+  .point_details p {
+    margin-bottom: 1em; }
 
-.community_point.pro .point_includer_avatar {
-  box-shadow: 1px 2px 0 0 #eeeeee; }
+  .point_details p:last-child {
+    margin-bottom: 0; }
 
-.decision_board_point.pro .point_includer_avatar {
-  left: -10px; }
+  .point_includer_avatar {
+    width: 22px;
+    height: 22px; }
+
+  .community_point.con .point_includer_avatar {
+    box-shadow: -1px 2px 0 0 #eeeeee; }
+
+  .community_point.pro .point_includer_avatar {
+    box-shadow: 1px 2px 0 0 #eeeeee; }
+
+  .decision_board_point.pro .point_includer_avatar {
+    left: -10px; }
 
 """

@@ -264,6 +264,8 @@ task :migrate_translations => :environment do
 
   # delete_translation "engage.navigation_helper_current_location"
 
+  delete_translation "engage.add_your_own"
+
   sync_keys_with_english
   execute_translation_migration
 

@@ -61,6 +61,7 @@ window.AvatarPopover = ReactiveComponent
       style: 
         padding: '8px 4px'
         position: 'relative'
+        maxWidth: "min(80vw, 800px)"
 
 
       DIV 
@@ -108,39 +109,46 @@ window.AvatarPopover = ReactiveComponent
                 if attribute.pass 
                   user_val = attribute.pass(user)
                   user_val ?= unreported
-                  user_val = ["#{user_val}"]
+                  if typeof user_val == "string" && user_val?.indexOf CHECKLIST_SEPARATOR > -1 
+                    user_val = user_val.split(CHECKLIST_SEPARATOR)          
+                  else 
+                    user_val = ["#{user_val}"]
                 else 
                   user_val = user.tags[attribute.key] 
                   user_val ?= unreported
 
-                  if typeof user_val == "string" && user_val?.indexOf ',' > -1 
-                    user_val = user_val.split(',')
+                  if typeof user_val == "string" && user_val?.indexOf CHECKLIST_SEPARATOR > -1 
+                    user_val = user_val.split(CHECKLIST_SEPARATOR)
                   else if is_grouped
                     user_val = [user_val]
 
                 continue if !is_grouped && !user_val
 
+                
+
                 LI 
                   key: attribute.name
                   style: 
-                    padding: '1px 0'
+                    padding: '3px 0'
 
-                  SPAN 
+                  DIV 
                     key: 'attribute name'
                     style: 
-                      letterSpacing: -1
-                      fontSize: 10
-                      display: 'inline-block'
-                      paddingRight: 8 
-                      textTransform: 'uppercase'   
-                      color: '#555'              
+                      # letterSpacing: -1
+                      fontSize: 14
+                      fontStyle: 'italic'
+                      # display: 'inline-block'
+                      # paddingRight: 8 
+                      # textTransform: 'uppercase'   
+                      # color: '#555'              
                     attribute.name 
 
                   for val in user_val
+
                     SPAN 
                       key: val or unreported
                       style: 
-                        fontSize: 12
+                        fontSize: 14
                         backgroundColor: if is_grouped then get_color_for_group(val or unreported)
                         color: if is_grouped then 'white'
                         display: 'inline-block'
@@ -252,8 +260,11 @@ window.AvatarPopover = ReactiveComponent
 #      Don't show a real picture and show "anonymous" in the popover. 
 
 
+props_to_strip = ['user', 'anonymous', 'set_bg_color', 'custom_bg_color', 'hide_popover', 'parents', 'img_size']
 window.avatar = (user, props) ->
   attrs = _.clone props
+
+
 
   if !user.key 
     if user == arest.cache['/current_user']?.user 
@@ -313,10 +324,11 @@ window.avatar = (user, props) ->
     width: style?.width
     height: style?.width
 
-
-  for prop_to_strip in ['user', 'anonymous', 'set_bg_color', 'custom_bg_color', 'hide_popover', 'parents', 'img_size']
+  for prop_to_strip in props_to_strip
     if prop_to_strip of attrs
       delete attrs[prop_to_strip]
+
+
 
   if src
     # attrs.alt = if props.hide_popover then '' else popover 
@@ -346,8 +358,8 @@ window.Avatar = ReactiveComponent
 
 styles += """
 .avatar {
-  position: relative;
-  vertical-align: top;
+  /* position: relative;
+  vertical-align: top; */
   border: none;
   display: inline-block;
   margin: 0;
@@ -378,3 +390,140 @@ img.avatar:after {
 }
 
 """
+
+
+
+
+
+
+cached_avatars = {}
+missing_images = {}
+loaded_images = {}
+users2images = {}
+
+window.getCanvasAvatar = (user) ->
+  cached_avatars[user.key or user] or cached_avatars.default
+
+
+colors_used = {}
+window.createHitRegionAvatar = (user) -> 
+  
+  while !color? || color of colors_used
+    r = Math.round(Math.random() * 255)
+    g = Math.round(Math.random() * 255)
+    b = Math.round(Math.random() * 255)
+    color = "rgb(#{r},#{g},#{b})"
+  colors_used[color] = true
+
+  user.hit_region_color = color
+  createUserIcon user.hit_region_color
+
+
+group_colored_icons = {}
+window.getGroupIcon = (key, color) ->
+  if key not of group_colored_icons
+    group_colored_icons[key] = createUserIcon color
+  group_colored_icons[key]
+
+
+
+# Note: this is actually kinda expensive on large forums, in memory and cpu
+createUserIcon = (fill) ->
+
+  # create a gray-ish avatar for folks who don't have an avatar (or if its broken)
+  # Note: this is actually kinda expensive on large forums, in memory and cpu
+  canv = document.createElement('canvas')
+  canv.width = canv.height = 50 * window.devicePixelRatio
+  rx = canv.width / 2
+  ctx = canv.getContext("2d")
+  ctx.arc(rx, rx, rx, 0, 2 * Math.PI)            
+  ctx.fillStyle = fill
+  ctx.fill()
+  canv
+
+
+createFallbackIcon = (user) ->
+  user.bg_color ?= hsv2rgb(Math.random() / 5 + .6, Math.random() / 8 + .025, Math.random() / 4 + .4)  # create a gray-ish avatar for folks who don't have an avatar (or if its broken)
+  createUserIcon user.bg_color
+
+
+window.LoadAvatars = ReactiveComponent
+  displayName: "LoadAvatars" 
+  render: ->
+    users = fetch '/users'
+    loading = fetch('avatar_loading')
+    SPAN null
+
+  create_avatar: (img) -> 
+    canv = document.createElement('canvas')
+    canv.width = img.width
+    canv.height = img.height
+    ctx = canv.getContext('2d')
+
+    ctx.arc(img.width / 2, img.height / 2, img.height / 2, 0, Math.PI * 2)
+    ctx.clip()
+
+    ctx.drawImage img, 0, 0
+    canv
+
+  load: -> 
+    users = fetch '/users'
+    current_user = fetch '/current_user'  # subscribe for changes to login status & avatar
+    return if !users.users 
+
+    loading = fetch('avatar_loading')
+    app = arest.cache['/application'] or fetch('/application')
+
+    if !cached_avatars.default
+      cached_avatars.default = createFallbackIcon({key: 'default'})
+
+    avatars_to_load = []
+    all_users = users.users.slice() or []
+    if current_user.user not in all_users
+      all_users.push current_user.user
+
+    for user in all_users
+      user = fetch user # subscribe to changes to avatar
+
+      if user.avatar_file_name
+
+        if (users2images[user.key] != user.avatar_file_name ||
+           user.avatar_file_name not of loaded_images) && \
+           user.avatar_file_name not of missing_images
+
+          avatars_to_load.push user 
+          users2images[user.key] = user.avatar_file_name
+
+      cached_avatars[user.key] ?= createFallbackIcon(user)
+    
+    if avatars_to_load.length > 0 
+      if !loading.loading
+        loading.loading = true 
+        save loading 
+
+        @loading_cnt = 0
+
+        for user in avatars_to_load
+          @loading_cnt += 1
+
+          pic = new Image()
+          pic.onload = do(user, pic) => => 
+            loaded_images[user.avatar_file_name] = cached_avatars[user.key] = @create_avatar pic
+            @loading_cnt -= 1
+            if @loading_cnt == 0
+              loading.loading = false
+              loading.loaded = md5 "#{JSON.stringify(Object.keys(loaded_images))}-#{JSON.stringify((u.name for u in avatars_to_load))}"
+              save loading
+          pic.onerror = do(user) => =>
+            @loading_cnt -= 1
+            missing_images[user.avatar_file_name] = 1
+
+          setTimeout do(user, pic) -> -> 
+            pic.src = avatarUrl user, 'large'
+
+      else 
+        setTimeout @load, 10   
+
+  componentDidMount: -> @load()
+  componentDidUpdate: -> @load()
+

@@ -6,6 +6,17 @@ styles += """
   button.create_account {
     background-color: #{selected_color};
   }
+  #user_nav {
+    position: absolute;
+    z-index: 999;
+    right: 30px;
+    font-size: 26px;    
+  }
+  @media #{PHONE_MEDIA} {
+    #user_nav {
+      right: 8px;
+    }
+  }
 """
 
 window.ProfileMenu = ReactiveComponent
@@ -34,7 +45,7 @@ window.ProfileMenu = ReactiveComponent
 
     menu_options = _.compact menu_options
 
-    light_background = loc.url != '/' || is_light_background() 
+    light_background = !is_a_dialogue_page() || is_light_background() 
 
 
     edit_forum = fetch 'edit_forum'
@@ -44,10 +55,6 @@ window.ProfileMenu = ReactiveComponent
     DIV
       id: 'user_nav'
       style: _.defaults {}, (customization('profile_menu_style') or {}), (@props.style or {}),
-        position: 'absolute'
-        zIndex: 999
-        right: 30
-        fontSize: 26
         top: if current_user.is_admin && (edit_forum.editing || loc.url.startsWith('/dashboard')) && permit('configure paid feature') < 0 then 57 else 17
 
 
@@ -81,7 +88,6 @@ window.ProfileMenu = ReactiveComponent
                     color: if menu_showing then '#777'
                     fontSize: 18
                     position: 'relative'
-                    top: -4
                     paddingRight: 12
                   current_user.name
                 I 
@@ -104,6 +110,8 @@ window.ProfileMenu = ReactiveComponent
               borderRadius: 8
               padding: '3px 4px'
               fontWeight: 600
+              display: 'flex'
+              alignItems: 'center'
             
             anchor_when_open_style: 
               backgroundColor: 'transparent'

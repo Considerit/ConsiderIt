@@ -34,7 +34,7 @@ window.HistogramTester = ReactiveComponent
 
     sizes = [
       {
-        width: PROPOSAL_HISTO_WIDTH()
+        width: ITEM_OPINION_WIDTH() * 2
         height: 170   
       }
       # {

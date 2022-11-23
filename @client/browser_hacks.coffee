@@ -27,6 +27,8 @@ window.browser =
                 navigator.userAgent.match(/BlackBerry/i) ||
                 navigator.userAgent.match(/Windows Phone/i)
 
+  touch : matchMedia('(hover: none)').matches
+
 
 save browser
 

@@ -107,14 +107,14 @@ window.Discussion = ReactiveComponent
       fetch your_opinion
     your_opinion.point_inclusions ?= []
     point_included = _.contains(your_opinion.point_inclusions, point.key)
-    in_wings = get_proposal_mode() == 'crafting' && !point_included
+    in_wings = getProposalMode(proposal) == 'crafting' && !point_included
 
     comments = fetch(@props.comments).comments
     
     comments.sort (a,b) -> a.created_at > b.created_at
 
     discussion_style =
-      width: DECISION_BOARD_WIDTH() #+ POINT_WIDTH() / 2
+      width: "var(--BODY_WIDTH)"
       border: "3px solid #{focus_color()}"
       position: 'absolute'
       zIndex: 100
@@ -127,10 +127,10 @@ window.Discussion = ReactiveComponent
     # Reconfigure discussion board position
     side = if is_pro then 'right' else 'left'
     if in_wings
-      discussion_style[side] = POINT_WIDTH() + 13
+      discussion_style[side] = "calc(var(--POINT_WIDTH) + 13px)"
       discussion_style['top'] = 20
     else
-      discussion_style[side] = if is_pro then -23 else -30
+      discussion_style[side] = if PHONE_SIZE() then 0 else if is_pro then -23 else -30
       discussion_style['marginTop'] = 18
 
     # Reconfigure bubble mouth position
@@ -150,9 +150,14 @@ window.Discussion = ReactiveComponent
 
     else
       _.extend mouth_style, 
-        left: if is_pro then 335 else 100
         top: -28
         transform: if !is_pro then 'scaleX(-1)'
+
+      if is_pro
+        mouth_style.right = 100
+      else 
+        mouth_style.left = 100
+
 
     close_point = (e) ->
       loc = fetch('location')

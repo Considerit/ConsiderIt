@@ -14,10 +14,13 @@ save
   visible_attribute_values: {}
 
 
-window.compose_opinion_views = (opinions, proposal, opinion_views) -> 
+window.compose_opinion_views = (opinions, proposal, opinion_views, ignore) -> 
   opinion_views ?= fetch('opinion_views')
   opinion_views.active_views ?= {}
+  ignore ?= {}
   active_views = opinion_views.active_views
+
+  proposal = fetch proposal
 
   if !opinions
     opinions = opinionsForProposal(proposal)
@@ -27,8 +30,10 @@ window.compose_opinion_views = (opinions, proposal, opinion_views) ->
   groups = {}
 
   has_groups = false
+  data_loaded = {}
   for view_name, view of active_views
     has_groups ||= view.get_group?
+    data_loaded[view_name] = !view.ready? || view.ready(opinions, proposal)
 
   for o in opinions
     weight = 1
@@ -38,8 +43,10 @@ window.compose_opinion_views = (opinions, proposal, opinion_views) ->
       u_groups = []
 
     u = o.user.key or o.user
-
+    
     for view_name, view of active_views
+      continue if !data_loaded[view_name] || ignore[view_name]
+
       if view.get_salience?
         s = view.get_salience(u, o, proposal)
         if s < min_salience
@@ -52,6 +59,8 @@ window.compose_opinion_views = (opinions, proposal, opinion_views) ->
           u_groups = u_groups.concat ggg
         else 
           u_groups.push ggg
+
+
     weights[u] = weight
     salience[u] = min_salience
     if has_groups      
@@ -100,7 +109,7 @@ window.get_participant_attributes = ->
           attributes.push 
             key: name
             name: tag.view_name or tag.name or tag.self_report?.question or name
-            pass: do(name, tag) -> (u, value) -> 
+            pass: if (tag.self_report?.input or tag.input) != 'checklist' then do(name, tag) -> (u, value) -> 
               result = tag.compute?(u) or fetch(u).tags[name]
               if value?
                 result == value
@@ -122,17 +131,20 @@ window.get_user_groups_from_views = (groups) ->
     for u, u_groups of groups
       for g in u_groups 
         group_set.add g
+
     Array.from group_set
+
   else 
     null 
 
 window.group_colors = {}
 window.get_color_for_groups = (group_array) ->
+  opinion_views = fetch 'opinion_views'  
+  return group_colors if !opinion_views.active_views.group_by
   if i18n().unreported not in group_array
     group_array = group_array.slice()
     group_array.push i18n().unreported
 
-  opinion_views = fetch 'opinion_views'
   colors = getColors(group_array.length, opinion_views.active_views.group_by.continuous_value)
 
   for color,idx in colors 
@@ -260,6 +272,8 @@ default_weights = ->
       key: 'weighed_by_deliberative'
       name: translator 'opinion_views.weights_tradeoffs', 'Tradeoffs recognized'
       label: translator 'opinion_views.weights_tradeoffs_label', 'Add weight to opinions that acknowledge both pro and con tradeoffs.'
+      ready: (opinions, proposal) -> 
+        !!fetch("/points").points
       weight: (u, opinion, proposal) ->
         point_inclusions = opinion.point_inclusions or []
         pros = 0 
@@ -292,6 +306,9 @@ default_weights = ->
       key: 'weighed_by_influence'
       name: translator 'opinion_views.weights_influence', 'Influence'
       label: translator 'opinion_views.weights_influence_label', 'Add weight to the opinions of people who have contributed proposals and pro/con reasons that other people have found valuable.'
+      ready: ->
+        !!fetch('/proposals').proposals && !!fetch('/points').points
+
       weight: (u, opinion, proposal) ->
         if !influencer_scores_initialized
           build_influencer_network()
@@ -378,6 +395,7 @@ _activate_opinion_view = (view, view_type, replace_existing) ->
       name: view.name
       view_type: view_type
       continuous_value: view.continuous_value
+      ready: view.ready
       get_salience: (u, opinion, proposal) ->
         if view.salience?
           view.salience u, opinion, proposal
@@ -591,9 +609,12 @@ to_date_str = (ms) ->
 
 
 
-clear_all = ->
+clear_all = (local_state) ->
   opinion_views = fetch 'opinion_views'
   opinion_views_ui = fetch 'opinion_views_ui'
+
+  opinion_views_ui.last_interacted_with = local_state.key or local_state
+  save opinion_views_ui
 
   to_remove = []
   for k,v of opinion_views.active_views
@@ -613,8 +634,8 @@ clear_all = ->
   date_state.start = date_state.end = date_state.active = null 
   save date_state
 
-reset_to_all = ->
-  clear_all()
+reset_to_all = (local_state) ->
+  clear_all(local_state)
   is_admin = fetch('/current_user').is_admin  
   show_others = !customization('hide_opinions') || is_admin
   opinion_views_ui = fetch 'opinion_views_ui'  
@@ -643,19 +664,33 @@ user_has_set_a_view = ->
   view_is_set
 
 
+
+
+styles += """
+  @media #{PHONE_MEDIA} {
+    .filter_opinions_to {
+      display: none;
+    }
+
+  }
+"""
+
+
 OpinionViews = ReactiveComponent
   displayName: 'OpinionViews'
 
   render : -> 
-    @local.minimized ?= true 
 
 
     return SPAN null if !fetch('/subdomain').name
+    local_state = fetch @props.ui_key or @local.key
 
+    local_state.minimized ?= true 
 
     has_other_filters = get_participant_attributes().length > 0
     opinion_views = fetch 'opinion_views'
     opinion_views_ui = fetch 'opinion_views_ui'
+
 
 
     is_admin = fetch('/current_user').is_admin
@@ -667,7 +702,7 @@ OpinionViews = ReactiveComponent
       {
         key: 'all'
         label: translator 'opinion_views.view_buttons_all', 'All opinions'
-        callback: clear_all
+        callback: -> clear_all(local_state)
         disabled: !show_others || @props.disable_switching
       }
       {
@@ -675,7 +710,7 @@ OpinionViews = ReactiveComponent
         label: translator 'opinion_views.view_buttons_you', 'Just you'
         disabled: @props.disable_switching
         callback: ->
-          clear_all()
+          clear_all(local_state)
           toggle_opinion_filter just_you_filter
       }
       {
@@ -685,19 +720,43 @@ OpinionViews = ReactiveComponent
         callback: (item, previous_state) => 
           if previous_state == 'custom'
             if user_has_set_a_view()
-              @local.minimized = !@local.minimized
-              save @local
+              opinion_views_ui.last_interacted_with = local_state.key or local_state
+              save opinion_views_ui
+
+              local_state.minimized = !local_state.minimized
+              save local_state
             else 
-              reset_to_all()
+              reset_to_all(local_state)
 
           else 
-            @local.minimized = false
-            clear_all()
+            local_state.minimized = false
+            clear_all(local_state)
+        draw_when_active: =>
+          if local_state.minimized || opinion_views_ui.last_interacted_with != local_state.key
+            if user_has_set_a_view()
+              DIV 
+                className: 'custom_view_triangle'
+                style: 
+                  left: "calc(50% - 12px)"
+                  bottom: -5                  
+                  width: 0
+                  height: 0 
+                  borderLeft: '12px solid transparent'
+                  borderRight: '12px solid transparent'                    
+                  borderTop: "7px solid #{focus_blue}"
+          else 
+            DIV 
+              className: 'custom_view_triangle'
+              style: 
+                left: "calc(50% - 15px)"
+                bottom: if TABLET_SIZE() then -29 else -27
+              dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="rgb(182,182,182)"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
+
       }
     ]
 
     reset_to_default_view = (force_all) ->
-      clear_all()
+      clear_all(local_state)
 
       dfault = customization('opinion_views_default')
 
@@ -759,99 +818,32 @@ OpinionViews = ReactiveComponent
 
         SPAN 
           style: 
-            display: 'flex'
+            # display: 'flex'
             position: 'relative'
 
-          ToggleButtons view_buttons, opinion_views_ui, 
-            minWidth: 290
-
-          if opinion_views_ui.active == 'custom' 
-            triangle_left = (@local.view_state_left or 60) + 35
-
-            if @local.minimized
-              if user_has_set_a_view()
-                DIV 
-                  className: 'custom_view_triangle'
-                  style: 
-                    left: triangle_left
-                    bottom: if browser.is_mobile then -5 else -5                  
-                    width: 0
-                    height: 0 
-                    borderLeft: '12px solid transparent'
-                    borderRight: '12px solid transparent'                    
-                    borderTop: '7px solid #2478CC'
-            else 
-              DIV 
-                className: 'custom_view_triangle'
-                style: 
-                  left: triangle_left
-                  bottom: if browser.is_mobile then -27 else -25
-                dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13"><g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="#979797"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
-
+          ToggleButtons view_buttons, opinion_views_ui
 
           SPAN 
             style: 
               position: 'absolute'
               left: '100%'
+              top: 0
             @MinimizeExpandButton()
 
-      if opinion_views_ui.active == 'custom'
-        needs_expansion = @props.additional_width && @props.style?.width
 
-        width = 0
-        if needs_expansion 
-          if has_other_filters 
-            width = if ONE_COL() then Math.min(720, @props.style.width) else @props.style.width + @props.additional_width 
-          else 
-            width = Math.min(720, @props.style.width + @props.additional_width)
-
-        DIV
-          style: 
-            width: if width then width
-            position: 'relative'
-            right: if needs_expansion then width - @props.style.width 
-
-
-          if @local.minimized 
-
-            DIV 
-              style:
-                marginTop: 12
-
-              NonInteractiveOpinionViews
-                more_views_positioning: @props.more_views_positioning
-
-          else 
-            DIV 
-              style:
-                marginTop: 18
-
-              DIV 
-                style: 
-                  border: '1px solid #B6B6B6'
-                  borderRadius: 8
-                  width: 'fit-content'
-                  maxWidth: if width then width
-
-                  margin: if @props.more_views_positioning == 'centered' then 'auto'
-                  float: if @props.more_views_positioning == 'right' then 'right'
-
-                
-                DIV 
-                  style: 
-                    padding: '0px 24px'
-
-                  InteractiveOpinionViews()
-
-          DIV style: clear: 'both'
 
 
   MinimizeExpandButton: ->
-    return SPAN(null) if !user_has_set_a_view() || fetch('opinion_views_ui').active != 'custom'
+    opinion_views_ui = fetch('opinion_views_ui')
+    return SPAN(null) if !user_has_set_a_view() || opinion_views_ui.active != 'custom'
+    local_state = fetch @props.ui_key or @local.key
 
     toggle_expanded = (e) =>
-      @local.minimized = !@local.minimized
-      save @local
+      opinion_views_ui.last_interacted_with = local_state.key or local_state
+      save opinion_views_ui
+
+      local_state.minimized = !local_state.minimized
+      save local_state
 
     DIV null,
       BUTTON 
@@ -863,20 +855,11 @@ OpinionViews = ReactiveComponent
           whiteSpace: 'nowrap'
           marginLeft: 4
 
-        if @local.minimized
+        if local_state.minimized
           translator 'opinion_views.minimize_configure', 'configure view'
         else 
           translator 'opinion_views.minimize_minimize', 'minimize'
 
-  shadow_view_state_offset: ->
-    left = document.querySelector('[data-view-state="custom"]')?.offsetLeft    
-    
-    if left != @local.view_state_left
-      @local.view_state_left = left 
-      save @local
-
-  componentDidUpdate: -> @shadow_view_state_offset()
-  componentDidMount: -> @shadow_view_state_offset()
 
 
 
@@ -927,7 +910,10 @@ construct_view_for_attribute = (attribute) ->
     return false if !user.tags
 
     val_for_user = user.tags[attr_key]
-    is_array = Array.isArray(val_for_user)
+
+    if attribute.input_type == 'checklist' && val_for_user
+      val_for_user = val_for_user.split(CHECKLIST_SEPARATOR)
+      is_array = true
 
     passing_vals = (val for val,enabled of opinion_views_ui.visible_attribute_values[attr_key] when enabled)
 
@@ -949,6 +935,8 @@ construct_view_for_attribute = (attribute) ->
           passes ||= undefined == val  
 
       else 
+
+
         passes ||= val_for_user == passing_val || (is_array && passing_val in val_for_user)
 
 
@@ -976,12 +964,78 @@ set_group_by_attribute = (attribute) ->
     group: (u, opinion, proposal) -> 
       group_val = (if attribute.pass then attribute.pass(u) else fetch(u).tags[opinion_views_ui.group_by]) or i18n().unreported
       if attribute.input_type == 'checklist'
-        group_val.split(',')
+        group_val.split(CHECKLIST_SEPARATOR)
       else 
         group_val
     options: attribute.options
 
   toggle_group view, true
+
+
+styles += """
+.opinion_view_interaction_wrapper {
+  max-height: 0;
+  overflow-y: hidden;
+  transition: max-height 0.5s;
+}
+.opinion_view_interaction_wrapper.showing_custom {
+  max-height: 1200px;
+}
+
+"""
+
+window.OpinionViewInteractionWrapper = ReactiveComponent
+  displayName: 'OpinionViewInteractionWrapper'
+
+  render: ->
+    opinion_views_ui = fetch 'opinion_views_ui'
+    local_state = fetch @props.ui_key or @local
+
+
+    DIV 
+      className: "opinion_view_interaction_wrapper #{if opinion_views_ui.active == 'custom' && (opinion_views_ui.last_interacted_with == local_state.key || local_state.minimized) then 'showing_custom' else ''}"
+
+      if opinion_views_ui.active == 'custom'
+        width = @props.width
+
+        DIV
+          style: 
+            position: 'relative'
+
+          if local_state.minimized || opinion_views_ui.last_interacted_with != local_state.key
+
+            DIV 
+              style:
+                marginTop: 0
+                # width: if width then width
+
+              NonInteractiveOpinionViews
+                ui_key: @props.ui_key
+                more_views_positioning: @props.more_views_positioning
+
+          else 
+            DIV 
+              style:
+                display: 'flex'
+                justifyContent: if @props.more_views_positioning == 'left' then 'flex-start' else if @props.more_views_positioning == 'centered' then 'center' else 'flex-end'
+
+              DIV 
+                style: 
+                  border: '1px solid #B6B6B6'
+                  borderRadius: 8
+                  width: 'fit-content'
+                  maxWidth: if width then width
+
+                
+                DIV 
+                  style: 
+                    padding: '0px 24px'
+
+                  InteractiveOpinionViews
+                    ui_key: @props.ui_key
+
+
+
 
 
 InteractiveOpinionViews = ReactiveComponent
@@ -1008,6 +1062,101 @@ InteractiveOpinionViews = ReactiveComponent
     activated_weights = get_activated_weights()
 
     DIV null, 
+      if attributes.length > 1 
+        cur_val = -1
+        for attr, idx in attributes
+          if opinion_views_ui.group_by == attr.key 
+            cur_val = idx
+        DIV 
+          className: 'opinion_view_row color_code'
+          style: 
+            borderTop: '1px dotted #DEDDDD' 
+
+          group_by_icon()
+
+          LABEL 
+            className: 'opinion_view_name'
+            translator 'opinion_views.view_type_group', 'Color code by'
+            ':'
+
+          SELECT 
+            style: 
+              maxWidth: '75%'
+              marginRight: 12
+              borderColor: '#bbb'
+              backgroundColor: '#f9f9f9'
+              borderRadius: 2
+
+            onChange: (ev) -> 
+              if ev.target.value != null
+                attribute = attributes[ev.target.value]
+                opinion_views_ui.group_by = attribute?.key
+              else 
+                opinion_views_ui.group_by = null
+
+              if opinion_views_ui.group_by && (!opinion_views_ui.activated_attributes[opinion_views_ui.group_by] ||  \
+                                  (o for o,val of opinion_views_ui.visible_attribute_values[opinion_views_ui.group_by] when val).length == 0)
+                            # if no attribute value is selected, which mean all are enabled, select them all
+                opinion_views_ui.activated_attributes[opinion_views_ui.group_by] = true 
+                for option in attribute.options 
+                  opinion_views_ui.visible_attribute_values[attribute.key][option] = true
+              save opinion_views_ui
+
+              if opinion_views_ui.group_by
+                set_group_by_attribute attribute 
+
+              else 
+                delete opinion_views.active_views.group_by
+                save opinion_views
+
+
+            value: cur_val
+
+            OPTION 
+              value: null
+              ""
+            for attribute,idx in attributes 
+              continue if !attribute.options
+              do (attribute) =>
+                OPTION 
+                  key: idx
+                  value: idx 
+                  attribute.name or attribute.question
+
+          if cur_val > -1
+            LABEL 
+              className: "attribute_value_selector" 
+              "data-tooltip": """Instead of showing each individual person in a histogram, show a circle 
+                                 for each value of #{attributes[cur_val].name or attributes[cur_val].question}. 
+                                 The position on the histogram is the average score for all the people with 
+                                 that value, and the size of the circle is the number of people with that value."""
+
+              SPAN
+                className: 'toggle_switch'
+
+                INPUT 
+                  type: 'checkbox'
+                  checked: opinion_views_ui.aggregate_into_groups
+                  onChange: (e) -> 
+                    opinion_views_ui.aggregate_into_groups = !opinion_views_ui.aggregate_into_groups        
+                    save opinion_views_ui
+
+                SPAN 
+                  className: 'toggle_switch_circle'
+                  style: 
+                    backgroundColor: if opinion_views_ui.aggregate_into_groups then focus_color()
+            
+              SPAN 
+                style: 
+                  fontSize: 14
+                  paddingLeft: 12
+                "Aggregate by Group"
+
+
+
+
+
+
       if attributes.length > 0 
         DIV 
           className: 'opinion_view_row'
@@ -1140,67 +1289,8 @@ InteractiveOpinionViews = ReactiveComponent
 
               'x'
 
-      if attributes.length > 1 
-        cur_val = -1
-        for attr, idx in attributes
-          if opinion_views_ui.group_by == attr.key 
-            cur_val = idx
-        DIV 
-          className: 'opinion_view_row color_code'
-          style: 
-            borderTop: '1px dotted #DEDDDD' 
-
-          group_by_icon()
-
-          LABEL 
-            className: 'opinion_view_name'
-            translator 'opinion_views.view_type_group', 'Color code by'
-            ':'
-
-          SELECT 
-            style: 
-              maxWidth: '75%'
-              marginRight: 12
-              borderColor: '#bbb'
-              backgroundColor: '#f9f9f9'
-              borderRadius: 2
-
-            onChange: (ev) -> 
-              if ev.target.value != null
-                attribute = attributes[ev.target.value]
-                opinion_views_ui.group_by = attribute?.key
-              else 
-                opinion_views_ui.group_by = null
-
-              if opinion_views_ui.group_by && (!opinion_views_ui.activated_attributes[opinion_views_ui.group_by] ||  \
-                                  (o for o,val of opinion_views_ui.visible_attribute_values[opinion_views_ui.group_by] when val).length == 0)
-                            # if no attribute value is selected, which mean all are enabled, select them all
-                opinion_views_ui.activated_attributes[opinion_views_ui.group_by] = true 
-                for option in attribute.options 
-                  opinion_views_ui.visible_attribute_values[attribute.key][option] = true
-              save opinion_views_ui
-
-              if opinion_views_ui.group_by
-                set_group_by_attribute attribute 
-
-              else 
-                delete opinion_views.active_views.group_by
-                save opinion_views
 
 
-            value: cur_val
-
-            OPTION 
-              value: null
-              ""
-            for attribute,idx in attributes 
-              continue if !attribute.options
-              do (attribute) =>
-                OPTION 
-                  key: idx
-                  value: idx 
-                  attribute.name or attribute.question
-    
 
       DIV 
         className: 'opinion_view_row'
@@ -1230,11 +1320,12 @@ InteractiveOpinionViews = ReactiveComponent
                 'data-key': weight.key
 
                 BUTTON 
-                  'data-tooltip': if !browser.is_mobile then weight.label
                   className: "weight opinion_view_button #{if activated_weights[weight.key] then 'active' else ''}"
-                  onClick: ->
+                  "data-tooltip": weight.label
+                  onClick: (e) ->
                     toggle_weight weight
-
+                    e.stopPropagation()
+                    
                   if weight.icon
                     weight.icon if activated_weights[weight.key] then 'white'
 
@@ -1389,12 +1480,12 @@ NonInteractiveOpinionViews = ReactiveComponent
       className: 'minimized_view_list'
       style: 
         width: if @props.more_views_positioning == 'centered' then 'fit-content'
-        textAlign: 'right' # if @props.more_views_positioning == 'centered' then 'center' else 'right'
+        textAlign: if @props.more_views_positioning == 'left' then 'left' else 'right'
 
       for mini in minimized_views
-        do (mini) ->
+        do (mini) =>
           LI  
-            key: mini.label
+            key: mini.name
             className: 'minimized_view_wrapper'
 
             SPAN 
@@ -1421,10 +1512,12 @@ NonInteractiveOpinionViews = ReactiveComponent
 
               BUTTON 
                 className: "minimized_view_close" 
-                onClick: ->
+                onClick: =>
+                  local_state = fetch @props.ui_key or @local
+
                   mini.toggle()
                   if !user_has_set_a_view()
-                    reset_to_all()
+                    reset_to_all(local_state)
 
                 'x'
 
@@ -1680,9 +1773,10 @@ styles += """
   }
 
   .minimized_view_close {
-    position: absolute;
-    right: -22px;
-    top: 1px;
+    margin-top: 1px;
+    margin-left: 22px;
+    color: #{focus_color()};
+
   }
   .minimized_view_list {
     list-style: none;
@@ -1698,9 +1792,9 @@ styles += """
   }
 
   .minimized_view {
-    color: #1059a2;
+    color: #{focus_blue};
     /* border: 1px solid #2478cc; */
-    background-color: #e4edf7;
+    background-color: #e9edfb;
     width: fit-content;
     position: relative;
     display: inline-block;
@@ -1737,7 +1831,6 @@ styles += """
     padding-left: 8px;
     font-size: 12px;
     font-weight: 400;
-    letter-spacing: -1px;
     text-transform: capitalize; 
   }
 
@@ -1762,6 +1855,7 @@ styles += """
 
 styles += """
   .toggle_buttons {
+    position: relative;
     list-style: none;
     margin: auto;
     text-align: center;
@@ -1769,6 +1863,7 @@ styles += """
   }
   .toggle_buttons li {
     display: inline-block;
+    position: relative;
   }
   [data-widget="DropMenu"].bluedrop button.dropMenu-anchor {
     border-radius: 8px;
@@ -1836,6 +1931,7 @@ window.ToggleButtons = (items, view_state, style) ->
       do (item) =>
         key = item.key or item.label
         LI 
+          ref: key
           key: key
           className: if view_state.active == key then 'active'
           'data-view-state': key
@@ -1845,6 +1941,9 @@ window.ToggleButtons = (items, view_state, style) ->
             onClick: (e) -> toggled(e, item) 
 
             item.label
+
+          if view_state.active == key && item.draw_when_active && !item.disabled
+            item.draw_when_active()
 
 window.OpinionViews = OpinionViews
 

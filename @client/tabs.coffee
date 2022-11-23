@@ -33,6 +33,8 @@ window.SubdomainSaveRateLimiter =
       , 500
 
 
+
+
 # handles tab query parameter based on tabs state
 window.HomepageTabTransition = ReactiveComponent
   displayName: "HomepageTabTransition"
@@ -43,21 +45,55 @@ window.HomepageTabTransition = ReactiveComponent
       tab_state = fetch 'homepage_tabs'
       default_tab = customization('homepage_default_tab') or get_tabs()[0]?.name or 'Show all'
 
-      if !tab_state.active_tab? || (loc.query_params.tab && loc.query_params.tab != tab_state.active_tab)
+      tab_state_changing = (loc.query_params.tab && loc.query_params.tab != tab_state.active_tab)
+      if !tab_state.active_tab? || tab_state_changing
 
         if loc.query_params.tab && get_tab(decodeURIComponent(loc.query_params.tab))
           tab_state.active_tab = decodeURIComponent(loc.query_params.tab)
+        else if is_a_dialogue_page() && loc.url != '/' # if we have a focus on a particular item
+          slug = loc.url.substring(1)
+
+          look_for_tab_for_proposal = ->
+            proposal = null
+            find_tab = null
+            for k,v of arest.cache
+              if v.slug? && v.slug == slug
+                proposal = v
+                break
+
+            if proposal
+              list = get_list_for_proposal proposal
+              tab = get_page_for_list list
+
+              tab_state.active_tab = tab
+              save tab_state
+
+              if find_tab != null
+                clearInterval find_tab
+
+            proposal
+
+          result = look_for_tab_for_proposal()
+          if !result 
+            find_tab = setInterval look_for_tab_for_proposal, 100
+
         else 
           tab_state.active_tab = default_tab
+
+        if tab_state_changing
+          # clear out all records of expanded proposals
+          for k,v of arest.cache 
+            if k.startsWith 'proposal_expansions-'
+              for kk, vv of v
+                v[kk] = false
 
 
 
         save tab_state
 
-      if loc.url != '/' && loc.query_params.tab
-        delete loc.query_params.tab
-        save loc
-      else if loc.url == '/' && loc.query_params.tab != tab_state.active_tab
+
+
+      if loc.query_params.tab != tab_state.active_tab
         loc.query_params.tab = tab_state.active_tab
         save loc
 
@@ -70,8 +106,17 @@ window.HomepageTabTransition = ReactiveComponent
 
 
 window.get_tabs = -> 
-  if customization('homepage_tabs')?.length > 0
-    fetch('/subdomain').customizations.homepage_tabs
+  if fetch('/subdomain').customizations?.homepage_tabs?.length > 0 
+    tabs = fetch('/subdomain').customizations.homepage_tabs
+    
+    # hack to fix a bug I haven't found where a tab can have a null name
+    idx = tabs.length - 1
+    while idx >= 0 
+      if tabs[idx].name == null
+        tabs.splice idx, 1
+      idx -= 1
+
+    tabs
   else 
     null
 
@@ -171,7 +216,13 @@ window.delete_tab = (tab_name, skip_confirmation) ->
 
     save subdomain
 
+window.get_page_for_list = (list_key) -> 
+  for page in get_tabs() or []    
+    for list in get_lists_for_page(page.name)
+      if list.key == list_key
+        return page.name
 
+  return null
 
 
 styles += """
@@ -186,12 +237,13 @@ styles += """
     margin: auto;
     text-align: center;
     list-style: none;
-    width: 900px;
+    max-width: 900px;
   }
 
   #tabs.editing > ul {
     padding-top: 26px;
   }
+
 
 """
 
@@ -452,6 +504,9 @@ window.Tab = ReactiveComponent
 
         loc.query_params.tab = tab_name
         save loc  
+        if loc.url != '/'
+          loadPage '/', loc.query_params
+
         document.activeElement.blur()
 
 

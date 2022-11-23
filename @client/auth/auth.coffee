@@ -218,6 +218,7 @@ window.AuthTransition = ReactiveComponent
 
         _.extend current_user, {name, email, avatar_url}
         save current_user
+        poll_until_avatar_arrives()
 
 
     SPAN null

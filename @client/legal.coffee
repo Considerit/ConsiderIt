@@ -57,5 +57,9 @@ window.TermsOfService = ->
     name: "terms_of_service"
 
 
+window.StandardHostingTerms = -> 
+  GoogleDocEmbed 
+    name: "standard_hosting_terms"
+    link: "https://docs.google.com/document/d/e/2PACX-1vQ0llQfuuzOWmlSC-cbFXJeBXpC_tUyWJ7LaBjs7JHdhzYxrt1GjT3Z-dqwm3h6RGXZZeokIdbOJji_/pub?embedded=true"
 
 

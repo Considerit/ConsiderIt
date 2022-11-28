@@ -396,7 +396,7 @@ window.ItemText = ReactiveComponent
       DIV 
         className: "proposal-description wysiwyg_text proposal_item_animation #{if @local.description_fully_expanded then 'fully_expanded' else ''} #{if customization('hide_collapsed_proposal_description') then 'hidden-by-customization' else ''}"
         ref: 'proposal_description'
-        onClick: if @exceeds_collapsed_description_height then @toggle_expand
+        onClick: if @exceeds_collapsed_description_height && !@is_expanded then @toggle_expand
 
         DIV 
           style:

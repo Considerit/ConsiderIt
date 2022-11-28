@@ -394,6 +394,7 @@ Root = ReactiveComponent
           BrowserHacks()
 
           Page
+            key: "/page#{loc.url}"
             page: "/page#{loc.url}"
 
 

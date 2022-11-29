@@ -232,6 +232,7 @@ window.recourse = (permission, goal) ->
 # in its render function. With something like:
 #     return SPAN(null) if !@accessGranted()
 #
+# Currently this mixin only works for Page components b/c of the state management
 AccessControlled = 
   accessGranted: -> 
     current_user = fetch '/current_user'
@@ -241,16 +242,19 @@ AccessControlled =
     page = get_page()
     local_but_not_component_unique = fetch "local-#{page.key}"
     access_attrs = ['verified', 'logged_in', 'email']
-    if local_but_not_component_unique._last_current_user && @data().permission_denied
+
+    permission_denied = page.permission_denied
+
+    if local_but_not_component_unique._last_current_user && permission_denied
       if @_relevant_current_user_values_have_changed(access_attrs)
-        delete @data().permission_denied
+        delete page.permission_denied
         arest.serverFetch page.key
     ####
 
 
-    if @data().permission_denied && @data().permission_denied < 0
+    if permission_denied && permission_denied < 0
       # Let's recover, depending on the recourse the server dictates
-      recourse @data().permission_denied
+      recourse permission_denied
 
     #######
     # Hack! The server will return permission_denied on the page, e.g.: 
@@ -277,7 +281,7 @@ AccessControlled =
     # on an access-controlled resource. If the client ever gains the proper 
     # authorization, the server can just push down the data.
 
-    return !@data().permission_denied || @data().permission_denied > 0
+    return !permission_denied || permission_denied > 0
   
   _relevant_current_user_values_have_changed: (access_attrs) ->
     current_user = fetch '/current_user' 

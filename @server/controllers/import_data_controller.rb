@@ -135,6 +135,14 @@ class ImportDataController < ApplicationController
             end
           end
 
+          if config[:required_fields].include? 'stance'
+            if row['stance'] == nil || row['stance'].to_f < -1 || row['stance'].to_f > 1
+              errors.append "#{table} file: invalid stance for user #{row['user']} and proposal #{row['proposal']}"
+              error = true
+            end
+
+          end
+
           if config[:required_fields].include? 'point'
             # Comments will refer to a point by a made up id field. Points are indexed by their 
             # ID in the points hash. These IDs do not correspond to the database. Comments
@@ -286,7 +294,8 @@ class ImportDataController < ApplicationController
             end
 
           when 'points'
-
+            next if !row['nutshell'] || row['nutshell'].length == 0 
+            
             opinion = Opinion.where(:user_id => user.id, :proposal_id => proposal.id).first
             if !opinion
               errors.push "A Point written by #{user.email} does not have an associated Opinion. Please add an Opinion for this user to the Opinions file!"

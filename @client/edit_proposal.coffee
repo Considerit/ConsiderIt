@@ -258,26 +258,26 @@ window.EditProposal = ReactiveComponent
                 onChange: (ev) =>
                   @submit_pic = true
 
-            DIV 
-              className: 'input_group block'
+            # DIV 
+            #   className: 'input_group block'
 
-              DIV null, 
-                LABEL 
-                  htmlFor: 'banner'
-                  'Banner'
+            #   DIV null, 
+            #     LABEL 
+            #       htmlFor: 'banner'
+            #       'Banner'
 
-                DIV 
-                  style: explanation_style
-                  "A background image shown at the top of this proposal's page."
+            #     DIV 
+            #       style: explanation_style
+            #       "A background image shown at the top of this proposal's page."
 
 
-              INPUT 
-                id: 'banner'
-                type: 'file'
-                name: 'banner'
-                accept: "image/jpg, image/jpeg, image/pjpeg, image/png, image/x-png, image/gif, image/webp"
-                onChange: (ev) =>
-                  @submit_pic = true
+            #   INPUT 
+            #     id: 'banner'
+            #     type: 'file'
+            #     name: 'banner'
+            #     accept: "image/jpg, image/jpeg, image/pjpeg, image/png, image/x-png, image/gif, image/webp"
+            #     onChange: (ev) =>
+            #       @submit_pic = true
 
         if @local.errors?.length > 0
           

@@ -256,7 +256,18 @@ sort_options = [
         if sort.name == 'Most polarizing first'
           sorted = sort.order(proposals)
           sorted.reverse()
-          return sorted
+
+          # move proposals with less than 2 opinions to the end
+          more_than_one = []
+          less_than_one = []
+          for proposal in sorted 
+            opinions = fetch(proposal).opinions or []  
+            if opinions.length > 1
+              more_than_one.push proposal
+            else 
+              less_than_one.push proposal
+
+          return more_than_one.concat less_than_one
       return []
 
   }, { 

@@ -40,14 +40,15 @@
   container = document.getElementById('content')
 
   root = ReactDOM.createRoot(container)
+  setTimeout ->
 
-  switch app
+    switch app
 
-    when 'franklin'      
-      root.render Franklin()
+      when 'franklin'      
+        root.render Franklin()
 
-    when 'proposal_embed'
-      root.render ProposalEmbed({proposal: app_meta.getAttribute('proposal')})
+      when 'proposal_embed'
+        root.render ProposalEmbed({proposal: app_meta.getAttribute('proposal')})
 
 
 )()

@@ -60,13 +60,19 @@ class ImportDataController < ApplicationController
         config = configuration[table]
         checked_required_fields = false
 
-        begin
-          CSV.read(file.tempfile)
-          encoding = 'utf-8'
-        rescue
-          encoding = 'windows-1251:utf-8'
+        encoding = nil  
+        worked = false        
+        ['utf-8', 'windows-1251:utf-8', 'windows-1256:utf-8'].each do |enc|
+          encoding = enc
+          begin 
+            CSV.read(file.tempfile, :encoding => encoding)
+            worked = true
+          rescue
+          end
+          break if worked
         end
 
+        pp "******", encoding, worked
 
         CSV.foreach(file.tempfile, :headers => true, 
           :encoding => encoding, 
@@ -107,7 +113,7 @@ class ImportDataController < ApplicationController
           end
           if empty_required_fields.length > 0
             error = true
-            errors.append "#{table} file has some empty entries for the #{rq} field"
+            errors.append "#{table} file has some empty entries for #{empty_required_fields.join(', ')} field(s)"
           end
 
           # Find each required relational object
@@ -117,7 +123,7 @@ class ImportDataController < ApplicationController
               user = User.find_by_email(row['user'].downcase)
             end
 
-            if !user
+            if !user && table == 'proposals'
               user = current_user  # default to person who is importing the data
             end
 
@@ -294,7 +300,20 @@ class ImportDataController < ApplicationController
             end
 
           when 'points'
-            next if !row['nutshell'] || row['nutshell'].length == 0 
+
+            if !row['nutshell'] || row['nutshell'].length == 0 
+              errors.push "A Point written by #{user.email} for Proposal #{proposal.slug} does not have a nutshell. Please add text for a nutshell for this user to the Points file!"
+              next              
+            end
+
+            if row['nutshell'].length > 180
+              if row['text'] && row['text'].length > 0 
+                errors.push "A Point written by #{user.email} for Proposal #{proposal.slug} has a nutshell that is greater than 180 characters. Please edit the Points file!"
+              else 
+                attrs['text'] = attrs['nutshell'][177..-1]
+                attrs['nutshell'] = attrs['nutshell'][0..176] + '...'
+              end 
+            end
             
             opinion = Opinion.where(:user_id => user.id, :proposal_id => proposal.id).first
             if !opinion

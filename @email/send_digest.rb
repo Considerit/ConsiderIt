@@ -3,7 +3,6 @@ require Rails.root.join('@server', 'extras', 'translations')
 NOTIFICATION_LAG = 15.minutes
 
 def send_digest(subdomain, user, subscription_settings, deliver = true, since = nil, force = false)
-
   send_emails = subscription_settings['send_emails']
 
   subdomain.digest_triggered_for ||= {}
@@ -39,14 +38,14 @@ def send_digest(subdomain, user, subscription_settings, deliver = true, since = 
     has_activity_to_report ||= v.count > 0
   end 
 
-  return if !has_activity_to_report
+  return if !has_activity_to_report && !force
 
   mail = DigestMailer.digest(subdomain, user, new_activity, last_digest_sent_at, send_emails)
 
   subdomain.digest_triggered_for["#{user.id}"] = false
   subdomain.save
-  
-  pp "delivering to #{user.name}"
+
+  pp "delivering to #{user.name}"  
   mail.deliver_now if deliver
 
   send_key = "/subdomain/#{subdomain.id}"

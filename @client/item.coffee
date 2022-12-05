@@ -159,13 +159,13 @@ window.ProposalItem = ReactiveComponent
 
     already_toggling = @refs.proposal_item.classList.contains 'will-expand-toggle'
 
-    if ((@is_expanded && !@props.accessed_by_url) || (!@is_expanded && @props.accessed_by_url)) && !@expansion_intv && !already_toggling
+    if ((!@is_expanded && @props.accessed_by_url) || (@is_expanded && !@props.accessed_by_url)) && !@expansion_intv && !already_toggling && loc.triggered_by != 'toggle_expand'
       @expansion_intv = setInterval => 
         if collapsed_height_initialized[proposal.key]
           # wait to make the update so that we don't continuously trigger layout reflow
           requestAnimationFrame =>
 
-            if ((@is_expanded && !@props.accessed_by_url) || (!@is_expanded && @props.accessed_by_url)) && !already_toggling
+            if ((@is_expanded && !@props.accessed_by_url) || (!@is_expanded && @props.accessed_by_url)) && !already_toggling              
               toggle_expand {proposal}
 
             clearInterval @expansion_intv
@@ -861,9 +861,9 @@ window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
         delete expanded_state[proposal.key]
 
         update_proposal_mode proposal, null
-        loadPage "/", if loc.query_params?.tab then {tab: loc.query_params.tab} else {}
+        loadPage "/", (if loc.query_params?.tab then {tab: loc.query_params.tab} else {}), 'toggle_expand'
       else 
-        loadPage proposal_url(proposal), if loc.query_params?.selected then {selected: loc.query_params.selected} else {}
+        loadPage proposal_url(proposal), (if loc.query_params?.selected then {selected: loc.query_params.selected} else {}), 'toggle_expand'
 
         update_proposal_mode proposal, mode
 

@@ -54,9 +54,11 @@ parseURL = (url) ->
 # loadPage
 #
 # Convenience method for updating the browser window location. 
-# Optionally pass query_params as a separate object. 
+# Optionally pass query_params as a separate object.
+# Optionally pass an identifier 'triggered_by' for noting something specific 
+#            about what triggered this page load 
 
-window.loadPage = (url, query_params) ->
+window.loadPage = (url, query_params, triggered_by) ->
   loc = fetch('location')
   loc.query_params = query_params or {}
 
@@ -83,6 +85,7 @@ window.loadPage = (url, query_params) ->
 
   loc.url = decodeURIComponent(url_parts.pathname)
   loc.hash = hash
+  loc.triggered_by = triggered_by
 
   save loc
 

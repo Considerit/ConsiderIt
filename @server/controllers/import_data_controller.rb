@@ -37,7 +37,7 @@ class ImportDataController < ApplicationController
         directly_extractable: ['stance']
       },
       'points' => {
-        required_fields: ['user', 'proposal', 'nutshell', 'is_pro'],
+        required_fields: ['user', 'proposal', 'is_pro'],
         directly_extractable: ['nutshell', 'text']
       },      
       'comments' => {
@@ -302,7 +302,9 @@ class ImportDataController < ApplicationController
           when 'points'
 
             if !row['nutshell'] || row['nutshell'].length == 0 
-              errors.push "A Point written by #{user.email} for Proposal #{proposal.slug} does not have a nutshell. Please add text for a nutshell for this user to the Points file!"
+              # disabling error for this case just for the bronx use case 
+              pp "A Point written by #{user.email} for Proposal #{proposal.slug} does not have a nutshell. Please add text for a nutshell for this user to the Points file!"
+              # errors.push "A Point written by #{user.email} for Proposal #{proposal.slug} does not have a nutshell. Please add text for a nutshell for this user to the Points file!"
               next              
             end
 
@@ -310,8 +312,23 @@ class ImportDataController < ApplicationController
               if row['text'] && row['text'].length > 0 
                 errors.push "A Point written by #{user.email} for Proposal #{proposal.slug} has a nutshell that is greater than 180 characters. Please edit the Points file!"
               else 
-                attrs['text'] = attrs['nutshell'][177..-1]
-                attrs['nutshell'] = attrs['nutshell'][0..176] + '...'
+
+                if attrs['nutshell'][0..176].index(' ')
+                  last_space = attrs['nutshell'][0..176].length - 1 - attrs['nutshell'][0..176].reverse.index(' ')
+                else 
+                  last_space = 0
+                end
+
+                if attrs['nutshell'][0..176].index('.')
+                  last_period = attrs['nutshell'][0..176].length - 1 - attrs['nutshell'][0..176].reverse.index('.')
+                else 
+                  last_period = 0
+                end 
+
+                last_space_or_period = [last_space || 0, last_period || 0].max
+
+                attrs['text'] = attrs['nutshell'][(last_space_or_period + 1)..-1]
+                attrs['nutshell'] = attrs['nutshell'][0..last_space_or_period] + '...'
               end 
             end
             
@@ -338,12 +355,12 @@ class ImportDataController < ApplicationController
               point = Point.new attrs
               point.save
               modified[table].push "Created Point '#{point.nutshell}'"
+              opinion.include point
             else
               point.update_attributes attrs
               modified[table].push "Updated Point '#{point.nutshell}'"
             end
 
-            opinion.include point
             point.recache
 
             if row.has_key? 'id'

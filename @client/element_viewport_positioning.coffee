@@ -155,6 +155,9 @@ window.$$ =
       else 
         done = top - dist_per_frame < offset_buffer
 
+      done ||= document.documentElement.scrollHeight - document.documentElement.scrollTop - document.documentElement.clientHeight <= 0
+
+
       if done 
         dist_per_frame = top - offset_buffer
 

@@ -6,7 +6,7 @@ update_scheduled = false
 window.is_el_visible = (el, scrollY, viewport_height, slop) ->
   slop ?= 1
   slop -= 1
-  el_top = -scrollY
+  el_top = -scrollY # el_top will be the distance between the top of the viewport and the target element's top
   vh = viewport_height
 
   parent = el 
@@ -16,12 +16,9 @@ window.is_el_visible = (el, scrollY, viewport_height, slop) ->
       break
     parent = parent.offsetParent
 
-  el_bottom = el_top + vh 
+  el_bottom = el_top + el.offsetHeight 
 
-  topVisible =    el_top    > -slop * vh  &&  el_top    < vh + slop * vh
-  bottomVisible = el_bottom > -slop * vh  &&  el_bottom < vh + slop * vh
-
-  visible = topVisible || bottomVisible
+  visible = el_top <= vh + slop * vh && el_bottom >= -slop * vh
 
   visible
 
@@ -63,7 +60,6 @@ sense_viewport_visibility_changes = ->
             start_here = idx
             found_visible = true
            
-
       # look for visible elements around this element
       for step in [1,-1]
         inc = start_here

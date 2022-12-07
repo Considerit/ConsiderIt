@@ -334,6 +334,7 @@ window.Reasons = ReactiveComponent
         minHeight: if mode == 'crafting' then 440 else 220
 
       "data-receive-viewport-visibility-updates": 1
+      "data-visibility-name": "reasons"
       "data-component": @local.key
 
       #reasons

@@ -119,4 +119,74 @@ window.Bubblemouth = (props) ->
       d: bubblemouth_path
 
 
+
+window.PointBubblemouth = (props) -> 
+
+  # width/height of bubblemouth in svg coordinate space
+  _.defaults props,
+    svg_w: 85
+    svg_h: 100
+    skew_x: 15
+    skew_y: 80
+    apex_xfrac: .5
+    fill: 'white', 
+    stroke: focus_color(), 
+    stroke_width: 10
+    # dash_array: "none"   
+    box_shadow: null
+
+  full_width = props.svg_w + 4 * props.skew_x * Math.max(.5, Math.abs(.5 - props.apex_xfrac))
+
+  _.defaults props, 
+    width: full_width
+    height: props.svg_h
+
+  apex = props.apex_xfrac
+  svg_w = props.svg_w
+  svg_h = props.svg_h
+  skew_x = props.skew_x
+  skew_y = props.skew_y
+
+  cx = skew_x + svg_w / 2
+
+  [x1, y1]   = [  skew_x - apex * skew_x,              svg_h ] 
+  [x2, y2]   = [  skew_x + apex * svg_w,                   0 ]
+  [x3, y3]   = [      x1 + svg_w + skew_x,             svg_h ]
+
+  [qx1, qy1] = [ -skew_x + apex * ( cx + 2 * skew_x), skew_y ] 
+  [qx2, qy2] = [  qx1 + cx,                           skew_y ]                           
+
+  bubblemouth_path = """
+    M  #{x1}  #{y1}
+    Q #{qx1} #{qy1}
+       #{x2}  #{y2}
+    Q #{qx2} #{qy2}
+       #{x3}  #{y3}
+    
+  """
+
+  x_pad = 0 
+  if props.box_shadow
+    x_pad = (props.box_shadow.dx or 0) + (props.box_shadow.stdDeviation or 0)
+    if x_pad > 0
+      x_pad *= -1
+  SVG 
+    version: "1.1" 
+    xmlns: "http://www.w3.org/2000/svg"
+    width: props.width
+    height: props.height
+    viewBox: "#{x_pad} 0 #{full_width} #{svg_h}"
+    preserveAspectRatio: "none"
+    style: if props.style then props.style
+        
+    PATH
+      key: 'stroke'
+      fill: props.fill
+      stroke: props.stroke
+      strokeWidth: props.stroke_width * 2
+      strokeDasharray: if props.dash_array then props.dash_array
+      d: bubblemouth_path
+      style: props.style or {}
+        
+
  

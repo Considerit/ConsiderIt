@@ -333,6 +333,9 @@ window.Reasons = ReactiveComponent
         top: -8
         minHeight: if mode == 'crafting' then 440 else 220
 
+      "data-receive-viewport-visibility-updates": 1
+      "data-component": @local.key
+
       #reasons
       SECTION 
         className: "reasons_region"
@@ -410,6 +413,7 @@ window.Reasons = ReactiveComponent
               mode == 'crafting' || TABLET_SIZE() || (just_you && mode == 'results')
             style: 
               visibility: if !TABLET_SIZE() && mode == 'crafting' && !has_community_points then 'hidden'
+            in_viewport: @local.in_viewport
 
 
           #community pros
@@ -429,6 +433,7 @@ window.Reasons = ReactiveComponent
               mode == 'crafting' || TABLET_SIZE() || (just_you && mode == 'results')
             style: 
               visibility: if !TABLET_SIZE() && mode == 'crafting' && !has_community_points then 'hidden'
+            in_viewport: @local.in_viewport
 
       if !show_all_points
         BUTTON 
@@ -985,6 +990,7 @@ window.PointsList = ReactiveComponent
                 fresh: false
                 valence: @props.valence
                 your_points_key: @props.reasons_key
+                in_viewport: @props.in_viewport
             else
               Point
                 key: point.key
@@ -992,6 +998,7 @@ window.PointsList = ReactiveComponent
                 rendered_as: @props.rendered_as
                 your_points_key: @props.reasons_key
                 enable_dragging: @props.points_draggable
+                in_viewport: @props.in_viewport
 
         else if points.length == 0 && @props.rendered_as == 'community_point' && mode == "results"
           opinion_views = fetch 'opinion_views'

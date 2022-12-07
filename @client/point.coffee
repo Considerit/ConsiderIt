@@ -57,13 +57,18 @@ window.Point = ReactiveComponent
             style[left_right] = side_offset
 
             # Finally draw the guys
-            Avatar
+            # Avatar
+            #   key: includer
+            #   className: "point_includer_avatar"
+            #   style: style
+            #   set_bg_color: true
+            #   anonymous: point.user == includer && point.hide_name
+            avatar includer, 
               key: includer
               className: "point_includer_avatar"
               style: style
               set_bg_color: true
               anonymous: point.user == includer && point.hide_name
-
     point_content_style = {}
 
     if is_selected
@@ -109,14 +114,13 @@ window.Point = ReactiveComponent
     LI
       key: "point-#{point.id}"
       'data-id': @props.point
-      className: "point #{@props.rendered_as} #{if point.is_pro then 'pro' else 'con'} #{if customization('disable_comments') && !expand_to_see_details then 'commenting-disabled' else ''}"
+      className: "point #{@props.rendered_as} #{if point.is_pro then 'pro' else 'con'} #{if customization('disable_comments') && !expand_to_see_details then 'commenting-disabled' else ''} #{if is_selected then 'is-selected' else ''}"
       onClick: @selectPoint
       # onTouchEnd: @selectPoint
       onKeyDown: (e) =>
         if (is_selected && e.which == 27) || e.which == 13 || e.which == 32
           @selectPoint(e)
           e.preventDefault()
-
 
       if @props.rendered_as == 'decision_board_point'
         DIV 
@@ -158,18 +162,13 @@ window.Point = ReactiveComponent
             key: 'community_point_mouth'
             style: mouth_style
 
-            Bubblemouth 
+            PointBubblemouth 
               apex_xfrac: 0
               width: POINT_MOUTH_WIDTH
               height: POINT_MOUTH_WIDTH
               fill: considerit_gray
               stroke: if is_selected then focus_color() else if @local.has_focus then '#888' else 'transparent'
               stroke_width: if is_selected || @local.has_focus then 20 else 0
-              box_shadow:   
-                dx: 3
-                dy: 0
-                stdDeviation: 2
-                opacity: .5
 
         DIV 
           style: 
@@ -284,7 +283,7 @@ window.Point = ReactiveComponent
                     destroy @props.point
                 translator 'engage.delete_button', 'delete'
 
-      if @props.rendered_as != 'decision_board_point' && !PHONE_SIZE()
+      if @props.rendered_as != 'decision_board_point' && !PHONE_SIZE() && @props.in_viewport
         DIV 
           'aria-hidden': true
           className:'includers'
@@ -675,6 +674,17 @@ styles += """
     margin-bottom: 0.5em;
   }
 
+  .point.is-selected {
+    z-index: 100;
+  }
+
+  @media #{NOT_PHONE_MEDIA} {
+    .point.community_point {
+      filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 1px 1px);
+    }
+
+  }
+
 
 
   .point_content[draggable="false"] {
@@ -729,7 +739,7 @@ styles += """
     border-radius: 16px;
     top: -11px;
     background-color: #{considerit_gray};
-    box-shadow: #b5b5b5 0 1px 1px 0px;
+    /* box-shadow: #b5b5b5 0 1px 1px 0px; */
     min-height: 34px; 
   }
 

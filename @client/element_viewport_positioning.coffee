@@ -74,6 +74,7 @@ window.$$ =
       scroll: true
       position: 'top' 
       speed: null
+      speed_mult: 1
       callback: ->
 
     el_height = $$.height(el) + (options.extra_height or 0)
@@ -106,6 +107,7 @@ window.$$ =
       if options.scroll
 
         distance_to_travel = options.speed || Math.abs( doc_top - (el_top - options.offset_buffer) )
+        console.log distance_to_travel, Math.min(distance_to_travel, 1500)
 
         if options.dom_possibly_shifting
 
@@ -115,13 +117,13 @@ window.$$ =
           $$.smoothScrollToTargetWithChangingElements
             el: el
             offset_buffer: options.offset_buffer
-            duration: Math.min(distance_to_travel, 1500)
+            duration: options.speed_mult * Math.min(distance_to_travel, 1500)
             callback: options.callback
 
         else 
           $$.smoothScrollToTarget 
             target: el_top - options.offset_buffer
-            duration: Math.min(distance_to_travel, 1500)
+            duration: options.speed_mult * Math.min(distance_to_travel, 1500)
             callback: options.callback
 
 

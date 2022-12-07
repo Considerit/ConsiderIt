@@ -852,6 +852,7 @@ window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
     dom_possibly_shifting: true
     extra_height: if !expanded_state[proposal.key] then 4000 else 0
     force: mode == 'crafting'
+    speed_mult: 2
     callback: =>
       loc = fetch 'location'
       expanded_state[proposal.key] = !expanded_state[proposal.key]

@@ -266,7 +266,7 @@ window.WysiwygEditor = ReactiveComponent
                 left: if !toolbar_horizontal then -32
                 top: if toolbar_horizontal then -25 else 0
                 display: 'block'
-                visibility: if wysiwyg_editor.showing != @props.editor_key then 'hidden'
+                # visibility: if wysiwyg_editor.showing != @props.editor_key then 'hidden'
 
               onFocus: (e) => 
                 if !@local.focused_toolbar_item

@@ -147,6 +147,10 @@ styles += """
     width: 100%;
   }
 
+  .EditingNewList .LIST-description {
+    margin-top: 24px;
+  }
+
   .LIST-fat-header-field {
     background-color: white;
     border: 1px solid #eaeaea;

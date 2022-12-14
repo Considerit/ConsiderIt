@@ -111,15 +111,15 @@
 
       %script{:src => "#{@vendor}/vendor/md5.js", :type => 'text/javascript'}
 
-      - if Rails.env.production? && (@google_ads_id || (@google_analytics_code && @google_analytics_code != ''))
+      - if Rails.env.production? && (@google_analytics_code && @google_analytics_code != '')
 
-        %script{:async => true, :src => "https://www.googletagmanager.com/gtag/js?id=#{@google_ads_id || @google_analytics_code}"}
+        %script{:async => true, :src => "https://www.googletagmanager.com/gtag/js?id=#{@google_analytics_code}"}
 
         :javascript
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-          gtag('config', '#{@google_ads_id || @google_analytics_code}');
+          gtag('config', '#{@google_analytics_code}');
 
         
     %body

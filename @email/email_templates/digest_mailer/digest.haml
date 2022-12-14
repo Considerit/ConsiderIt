@@ -52,7 +52,7 @@
       :ruby 
         view_more = translator({
           id: "email.digest.view_more_proposals.text",
-          link: full_link('', {:sort_by => 'newest'}), 
+          link: full_link('', {:sort_by => 'newest', :utm_source => 'digest'}), 
           more_than_5_proposals_count: num - 3}, 
           "View the other {more_than_5_proposals_count} new proposals at {link}"
         )
@@ -68,7 +68,7 @@
         )
       
 
-      %a{:href => full_link('', {:sort_by => 'newest'}), :style=>"text-align:center; color:black;padding-top:20px;display:block;"}
+      %a{:href => full_link('', {:sort_by => 'newest', :utm_source => 'digest'}), :style=>"text-align:center; color:black;padding-top:20px;display:block;"}
         #{view_more}
 
         

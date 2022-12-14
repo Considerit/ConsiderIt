@@ -108,7 +108,7 @@ module MailerHelper
       end
 
       view_text = translator(
-        {id: "email.digest.proposal_link.text", link: full_link(proposal.slug)}, 
+        {id: "email.digest.proposal_link.text", link: full_link(proposal.slug, {:utm_source => 'digest'})}, 
         "view full proposal at {link}")
       text += "\r\n#{view_text}\r\n\r\n"
 
@@ -120,7 +120,7 @@ module MailerHelper
     else 
       html = ''
 
-      html += "<a style='font-weight:600;color: #439fe0;text-decoration:underline; font-size:20px;' href='#{full_link(proposal.slug)}'>#{proposal.name.strip}</a>"
+      html += "<a style='font-weight:600;color: #439fe0;text-decoration:underline; font-size:20px;' href='#{full_link(proposal.slug, {:utm_source => 'digest'})}'>#{proposal.name.strip}</a>"
       if has_relationship
         html += relationship(proposal_info[:relationship])
       end
@@ -228,13 +228,13 @@ module MailerHelper
         text += "\r\n"
       end
       translated_link = translator(
-        {id: "email.digest.point_link.text", link: full_link(point.proposal.slug, {results: true, selected: "%2Fpoint%2F#{point.id}"})}, 
+        {id: "email.digest.point_link.text", link: full_link(point.proposal.slug, {results: true, selected: "%2Fpoint%2F#{point.id}", utm_source: 'digest'})}, 
         "View at {link}")
       text += "\r\n#{translated_link}"
       text
     else 
       html = """&ldquo;<a style='font-weight:600;color: #434343;text-decoration:underline; font-weight: 500; font-size:16px;' 
-                 href='#{full_link(point.proposal.slug, {results: true, selected: "%2Fpoint%2F#{point.id}"})}'>#{point.title(90)}</a>&rdquo;"""
+                 href='#{full_link(point.proposal.slug, {results: true, selected: "%2Fpoint%2F#{point.id}", utm_source: 'digest'})}'>#{point.title(90)}</a>&rdquo;"""
       if relationship
         html += relationship(relationship)
       end

@@ -10,11 +10,56 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_17_214145) do
+ActiveRecord::Schema.define(version: 2022_12_14_204513) do
+
+  create_table "ahoy_events", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "subdomain_id"
+    t.bigint "visit_id"
+    t.bigint "user_id"
+    t.string "name"
+    t.json "properties"
+    t.datetime "time"
+    t.index ["subdomain_id", "name", "time"], name: "index_ahoy_events_on_subdomain_id_and_name_and_time"
+    t.index ["subdomain_id"], name: "index_ahoy_events_on_subdomain_id"
+    t.index ["user_id"], name: "index_ahoy_events_on_user_id"
+    t.index ["visit_id"], name: "index_ahoy_events_on_visit_id"
+  end
+
+  create_table "ahoy_visits", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "subdomain_id"
+    t.string "visit_token"
+    t.string "visitor_token"
+    t.bigint "user_id"
+    t.string "ip"
+    t.text "user_agent"
+    t.text "referrer"
+    t.string "referring_domain"
+    t.text "landing_page"
+    t.string "browser"
+    t.string "os"
+    t.string "device_type"
+    t.string "country"
+    t.string "region"
+    t.string "city"
+    t.float "latitude"
+    t.float "longitude"
+    t.string "utm_source"
+    t.string "utm_medium"
+    t.string "utm_term"
+    t.string "utm_content"
+    t.string "utm_campaign"
+    t.string "app_version"
+    t.string "os_version"
+    t.string "platform"
+    t.datetime "started_at"
+    t.index ["subdomain_id"], name: "index_ahoy_visits_on_subdomain_id"
+    t.index ["user_id"], name: "index_ahoy_visits_on_user_id"
+    t.index ["visit_token"], name: "index_ahoy_visits_on_visit_token", unique: true
+  end
 
   create_table "comments", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "commentable_id", default: 0
-    t.string "commentable_type", collation: "utf8_general_ci"
+    t.string "commentable_type", collation: "utf8mb3_general_ci"
     t.text "body", collation: "utf8mb4_0900_ai_ci"
     t.integer "user_id", default: 0, null: false
     t.datetime "created_at"
@@ -38,13 +83,13 @@ ActiveRecord::Schema.define(version: 2022_05_17_214145) do
   create_table "delayed_jobs", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "priority", default: 0
     t.integer "attempts", default: 0
-    t.text "handler", collation: "utf8_general_ci"
-    t.text "last_error", collation: "utf8_general_ci"
+    t.text "handler", collation: "utf8mb3_general_ci"
+    t.text "last_error", collation: "utf8mb3_general_ci"
     t.datetime "run_at"
     t.datetime "locked_at"
     t.datetime "failed_at"
-    t.string "locked_by", collation: "utf8_general_ci"
-    t.string "queue", collation: "utf8_general_ci"
+    t.string "locked_by", collation: "utf8mb3_general_ci"
+    t.string "queue", collation: "utf8mb3_general_ci"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
@@ -75,7 +120,7 @@ ActiveRecord::Schema.define(version: 2022_05_17_214145) do
   create_table "moderations", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "user_id"
     t.integer "moderatable_id"
-    t.string "moderatable_type", collation: "utf8_general_ci"
+    t.string "moderatable_type", collation: "utf8mb3_general_ci"
     t.integer "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -143,7 +188,7 @@ ActiveRecord::Schema.define(version: 2022_05_17_214145) do
     t.string "seo_title", collation: "utf8mb4_0900_ai_ci"
     t.string "seo_description", collation: "utf8mb4_0900_ai_ci"
     t.string "seo_keywords", collation: "utf8mb4_0900_ai_ci"
-    t.string "cluster", collation: "utf8_unicode_ci"
+    t.string "cluster", collation: "utf8mb3_unicode_ci"
     t.json "roles"
     t.json "histocache"
     t.json "json"
@@ -162,8 +207,8 @@ ActiveRecord::Schema.define(version: 2022_05_17_214145) do
   end
 
   create_table "sessions", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.string "session_id", null: false, collation: "utf8_unicode_ci"
-    t.text "data", collation: "utf8_unicode_ci"
+    t.string "session_id", null: false, collation: "utf8mb3_unicode_ci"
+    t.text "data", collation: "utf8mb3_unicode_ci"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.index ["session_id"], name: "index_sessions_on_session_id", unique: true
@@ -174,24 +219,24 @@ ActiveRecord::Schema.define(version: 2022_05_17_214145) do
     t.string "name", collation: "utf8mb4_0900_ai_ci"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "google_analytics_code", collation: "utf8_general_ci"
-    t.string "external_project_url", collation: "utf8_general_ci"
-    t.string "about_page_url", collation: "utf8_general_ci"
+    t.string "google_analytics_code", collation: "utf8mb3_general_ci"
+    t.string "external_project_url", collation: "utf8mb3_general_ci"
+    t.string "about_page_url", collation: "utf8mb3_general_ci"
     t.json "roles"
-    t.string "masthead_file_name", collation: "utf8_general_ci"
-    t.string "masthead_content_type", collation: "utf8_general_ci"
+    t.string "masthead_file_name", collation: "utf8mb3_general_ci"
+    t.string "masthead_content_type", collation: "utf8mb3_general_ci"
     t.integer "masthead_file_size"
     t.datetime "masthead_updated_at"
-    t.string "masthead_remote_url", collation: "utf8_general_ci"
-    t.string "logo_file_name", collation: "utf8_general_ci"
-    t.string "logo_content_type", collation: "utf8_general_ci"
+    t.string "masthead_remote_url", collation: "utf8mb3_general_ci"
+    t.string "logo_file_name", collation: "utf8mb3_general_ci"
+    t.string "logo_content_type", collation: "utf8mb3_general_ci"
     t.integer "logo_file_size"
     t.datetime "logo_updated_at"
-    t.string "logo_remote_url", collation: "utf8_general_ci"
+    t.string "logo_remote_url", collation: "utf8mb3_general_ci"
     t.integer "plan", default: 0
     t.json "customizations"
     t.string "lang", collation: "utf8mb4_0900_ai_ci"
-    t.string "SSO_domain", collation: "utf8_general_ci"
+    t.string "SSO_domain", collation: "utf8mb3_general_ci"
     t.integer "moderation_policy", default: 0
     t.json "digest_triggered_for"
     t.integer "created_by"
@@ -200,25 +245,25 @@ ActiveRecord::Schema.define(version: 2022_05_17_214145) do
   end
 
   create_table "users", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.string "unique_token", collation: "utf8_unicode_ci"
+    t.string "unique_token", collation: "utf8mb3_unicode_ci"
     t.string "email", collation: "utf8mb4_0900_ai_ci"
-    t.string "encrypted_password", limit: 128, default: "", collation: "utf8_unicode_ci"
-    t.string "reset_password_token", collation: "utf8_unicode_ci"
+    t.string "encrypted_password", limit: 128, default: "", collation: "utf8mb3_unicode_ci"
+    t.string "reset_password_token", collation: "utf8mb3_unicode_ci"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string "avatar_file_name", limit: 2056
-    t.string "avatar_content_type", collation: "utf8_unicode_ci"
+    t.string "avatar_content_type", collation: "utf8mb3_unicode_ci"
     t.integer "avatar_file_size"
     t.datetime "avatar_updated_at"
-    t.string "avatar_remote_url", collation: "utf8_unicode_ci"
+    t.text "avatar_remote_url"
     t.string "name", collation: "utf8mb4_0900_ai_ci"
     t.text "bio", collation: "utf8mb4_0900_ai_ci"
     t.string "url", collation: "utf8mb4_0900_ai_ci"
-    t.string "facebook_uid", collation: "utf8_unicode_ci"
-    t.string "google_uid", collation: "utf8_unicode_ci"
-    t.string "openid_uid", collation: "utf8_unicode_ci"
-    t.string "twitter_uid", collation: "utf8_unicode_ci"
-    t.string "twitter_handle", collation: "utf8_unicode_ci"
+    t.string "facebook_uid", collation: "utf8mb3_unicode_ci"
+    t.string "google_uid", collation: "utf8mb3_unicode_ci"
+    t.string "openid_uid", collation: "utf8mb3_unicode_ci"
+    t.string "twitter_uid", collation: "utf8mb3_unicode_ci"
+    t.string "twitter_handle", collation: "utf8mb3_unicode_ci"
     t.boolean "registered", default: false
     t.text "b64_thumbnail", limit: 4294967295
     t.json "tags"

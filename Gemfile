@@ -51,7 +51,8 @@ gem 'bootsnap', require: false
 # for importing from google sheets
 gem 'google-api-client'
 
-
+# for visitation metrics (and other analytics data)
+gem "ahoy_matey"
 
 
 require 'yaml'

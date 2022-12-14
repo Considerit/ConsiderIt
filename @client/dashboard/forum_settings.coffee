@@ -159,17 +159,17 @@ window.ForumSettingsDash = ReactiveComponent
 
       #######################
       # Google Analytics code
-      DIV className: 'input_group',
+      # DIV className: 'input_group',
         
-        LABEL htmlFor: 'google_analytics_code', "Google Analytics tracking code"
-        INPUT 
-          id: 'google_analytics_code'
-          type: 'text'
-          name: 'google_analytics_code'
-          defaultValue: subdomain.google_analytics_code
-          onChange: (ev) -> 
-            subdomain.google_analytics_code = ev.target.value
-            save subdomain
+      #   LABEL htmlFor: 'google_analytics_code', "Google Analytics 4 tracking code"
+      #   INPUT 
+      #     id: 'google_analytics_code'
+      #     type: 'text'
+      #     name: 'google_analytics_code'
+      #     defaultValue: subdomain.google_analytics_code
+      #     onChange: (ev) -> 
+      #       subdomain.google_analytics_code = ev.target.value
+      #       save subdomain
 
 
 

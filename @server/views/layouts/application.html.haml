@@ -111,6 +111,15 @@
 
       %script{:src => "#{@vendor}/vendor/md5.js", :type => 'text/javascript'}
 
+      - if Rails.env.production? && (@google_ads_id || (@google_analytics_code && @google_analytics_code != ''))
+
+        %script{:async => true, :src => "https://www.googletagmanager.com/gtag/js?id=#{@google_ads_id || @google_analytics_code}"}
+
+        :javascript
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '#{@google_ads_id || @google_analytics_code}');
 
         
     %body
@@ -162,50 +171,10 @@
           %script{:async => "true", :src => "#{@vendor}/vendor/d3.v3.min.js", :type => 'text/javascript'}
 
 
-
-      - if @app == 'product_page' && @google_ads_id
-        %script{:async => true, :src => "https://www.googletagmanager.com/gtag/js?id=#{@google_ads_id}"}
-
-        :javascript
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', '#{@google_ads_id}');
-
-
       %script{:async => true, :defer => true, :type => 'text/javascript', :src => "https://translate.google.com/translate_a/element.js"}
 
       - if current_user.is_admin? || current_user.super_admin || current_subdomain.name == 'homepage'
         %script{:src => "https://js.stripe.com/v3/"}
 
-      - if Rails.env.production?
-        :javascript
-          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-          })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-        - if @google_analytics_code != ''
-          :javascript
-            ga('create', '#{@google_analytics_code}', 'consider.it', {'name': 'considerit'});
-            ga('considerit.send', 'pageview');
 
 
-        - if current_subdomain.google_analytics_code && current_subdomain.google_analytics_code != ''
-          :javascript
-            ga('create', '#{current_subdomain.google_analytics_code}', 'auto', {'name': 'customer'});
-            ga('customer.send', 'pageview');
-
-          - if current_subdomain.google_analytics_code.start_with?('G-')
-            %script{:async => true, :src => "https://www.googletagmanager.com/gtag/js?id=#{current_subdomain.google_analytics_code}", :type => 'text/javascript'}
-
-            :javascript
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', '#{current_subdomain.google_analytics_code}');
-
-          - else          
-            :javascript
-              ga('create', '#{current_subdomain.google_analytics_code}', 'auto', {'name': 'customer'});
-              ga('customer.send', 'pageview');

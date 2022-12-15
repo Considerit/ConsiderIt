@@ -201,6 +201,10 @@ protected
     return if old_user.id == new_user.id
     if old_user.registered then raise "Replacing a real user! Danger!" end
 
+
+    old_user.visits.update_all(:user_id => new_user.id)
+    old_user.events.update_all(:user_id => new_user.id)
+
     # puts("Deleting old user #{old_user.id}")
     old_user.destroy()
 

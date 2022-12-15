@@ -44,7 +44,8 @@
 
     switch app
 
-      when 'franklin'      
+      when 'franklin' 
+        ahoy?.configure({cookies: false})     
         root.render Franklin()
 
       when 'proposal_embed'

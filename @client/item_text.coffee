@@ -315,6 +315,8 @@ window.ItemText = ReactiveComponent
 
 
   setCollapsedSizes: ->
+
+
     if !@waitForFonts(=> @setCollapsedSizes()) || (@local.collapsed_title_height? && @sized_at_window_width == WINDOW_WIDTH())
       return
 
@@ -326,7 +328,13 @@ window.ItemText = ReactiveComponent
       @local.collapsed_title_height = title_el.getBoundingClientRect().height
 
     else 
-      @local.collapsed_title_height = title_el.clientHeight      
+      first_height_calc = title_el.clientHeight # There is a bug in at least Chrome, where for some reason after some updates, 
+                                                # the first call to clientHeight incorrectly gives 0, but the next call gives 
+                                                # correct value. 
+      second_height_calc = title_el.clientHeight
+      console.assert first_height_calc == second_height_calc, "First call to title_el.clientHeight was mysteriously wrong. First call: #{first_height_calc}, Second call: #{second_height_calc}"
+
+      @local.collapsed_title_height = second_height_calc
 
     @sized_at_window_width = WINDOW_WIDTH()
     save @local

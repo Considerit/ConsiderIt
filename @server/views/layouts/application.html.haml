@@ -176,5 +176,6 @@
       - if current_user.is_admin? || current_user.super_admin || current_subdomain.name == 'homepage'
         %script{:src => "https://js.stripe.com/v3/"}
 
+      %script{:type => 'text/javascript', :src => "#{@vendor}/vendor/ahoy-0.4.0-min.js"}
 
 

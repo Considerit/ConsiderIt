@@ -1,20 +1,39 @@
-######################
-## Most of this is for GDPR compliance
-## 
+
 class Ahoy::Store < Ahoy::DatabaseStore
-  def authenticate(data)
-    # disables automatic linking of visits and users
+
+  # Save subdomain with visit
+  def track_visit(data)
+    data[:subdomain_id] = current_subdomain.id
+    @visit = visit_model.create!(slice_data(visit_model, data))
+  rescue => e
+    raise e unless unique_exception?(e)
+
+    # so next call to visit will try to fetch from DB
+    if defined?(@visit)
+      remove_instance_variable(:@visit)
+    end
   end
+
 end
 
+# Ignore requests by Prerender
+Ahoy.exclude_method = lambda do |controller, request|
+  request.user_agent.index('Prerender') != nil
+end
+
+# For GDPR compliance
 Ahoy.mask_ips = true
 Ahoy.cookies = false
-#####
 
-# set to true for JavaScript tracking
-Ahoy.api = false
+# client side only
+Ahoy.server_side_visits = :when_needed
+Ahoy.api = true
 
 # set to true for geocoding (and add the geocoder gem to your Gemfile)
 # we recommend configuring local geocoding as well
 # see https://github.com/ankane/ahoy#geocoding
 Ahoy.geocode = false
+
+
+
+

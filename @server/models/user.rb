@@ -13,6 +13,10 @@ class User < ApplicationRecord
   has_many :comments, :dependent => :destroy
   has_many :proposals
 
+  has_many :visits, class_name: 'Ahoy::Visit', :dependent => :destroy  
+  has_many :events, class_name: 'Ahoy::Event', :dependent => :destroy  
+
+
   attr_accessor :avatar_url, :downloaded
 
   before_validation :download_remote_image, :if => :avatar_url_provided?

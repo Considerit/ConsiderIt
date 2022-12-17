@@ -256,90 +256,89 @@ window.EditPage = ReactiveComponent
                 className: "draggable-wrapper #{if wildcard then 'wildcard'}"
 
 
-                DIV 
-                  className: "draggable-list"
-                  draggable: drag_capabilities.length > 0 
-                  
+                if lst == @local.edit_list
+                  EditNewList
+                    list: @local.edit_list
+                    fresh: false
+                    combines_these_lists: @props.combines_these_lists
+                    done_callback: => 
+                      @local.edit_list = false 
+                      save @local
+                else 
 
-                  if drag_capabilities.length > 0 
-                    BUTTON 
-                      "data-tooltip": drag_capabilities
-                      style: 
-                        cursor: 'move'
-                        position: 'relative'
-                        left: 7
+                  DIV 
+                    className: "draggable-list"
+                    draggable: drag_capabilities.length > 0 
+                    
 
-                      drag_icon 15, '#888'
-                  else 
-                    DIV 
-                      style: 
-                        width: 22
-
-                  DIV
-                    className: 'LIST-title'
-
-                    if wildcard
-                      SPAN 
-                        style: 
-                          fontStyle: 'italic'
-                        "All of the rest (#{lists_to_add.length} total)"
-                    else 
-                      get_list_title lst, true, subdomain
-
-
-                  if wildcard 
-                    if lists_to_add.length > 0 
-                      disaggregate_wildcard = => 
-                        for ag_lst in lists_to_add
-                          @ordered_lists.splice idx, 0, ag_lst
-                        save edit_forum
-                                  
+                    if drag_capabilities.length > 0 
                       BUTTON 
-                        className: 'disaggregate like_link'
-                        onClick: disaggregate_wildcard
+                        "data-tooltip": drag_capabilities
+                        style: 
+                          cursor: 'move'
+                          position: 'relative'
+                          left: 7
 
-                        'disaggregate'
+                        drag_icon 15, '#888'
+                    else 
+                      DIV 
+                        style: 
+                          width: 22
 
-                  if !wildcard 
-                    BUTTON 
-                      style: 
-                        cursor: 'pointer'
-                      "data-tooltip": "Edit"
-                      onClick: (e) =>
-                        e.preventDefault()
-                        e.stopPropagation()
-                        @local.edit_list = lst
-                        save @local
+                    DIV
+                      className: 'LIST-title'
 
-                      edit_icon 18, 18, '#888'
-
-
-                  if !wildcard 
-                    BUTTON 
-                      style:
-                        position: 'absolute'
-                        right: -36
-                        cursor: 'pointer'
-                      "data-tooltip": "Delete"
-                      onClick: (e) =>
-                        @ordered_lists.splice( @ordered_lists.indexOf(lst), 1  )
-                        delete_list(lst)
-
-                      trash_icon 23, 23, '#888'
+                      if wildcard
+                        SPAN 
+                          style: 
+                            fontStyle: 'italic'
+                          "All of the rest (#{lists_to_add.length} total)"
+                      else 
+                        get_list_title lst, true, subdomain
 
 
-        if @local.edit_list
+                    if wildcard 
+                      if lists_to_add.length > 0 
+                        disaggregate_wildcard = => 
+                          for ag_lst in lists_to_add
+                            @ordered_lists.splice idx, 0, ag_lst
+                          save edit_forum
+                                    
+                        BUTTON 
+                          className: 'disaggregate like_link'
+                          onClick: disaggregate_wildcard
 
-          EditNewList
-            list: @local.edit_list
-            fresh: false
-            combines_these_lists: @props.combines_these_lists
-            done_callback: => 
-              @local.edit_list = false 
-              save @local
+                          'disaggregate'
 
-        else 
+                    if !wildcard 
+                      BUTTON 
+                        style: 
+                          cursor: 'pointer'
+                        "data-tooltip": "Edit"
+                        onClick: (e) =>
+                          e.preventDefault()
+                          e.stopPropagation()
+                          @local.edit_list = lst
+                          save @local
 
+                        edit_icon 18, 18, '#888'
+
+
+                    if !wildcard 
+                      BUTTON 
+                        style:
+                          position: 'absolute'
+                          right: -36
+                          cursor: 'pointer'
+                        "data-tooltip": "Delete"
+                        onClick: (e) =>
+                          @ordered_lists.splice( @ordered_lists.indexOf(lst), 1  )
+                          delete_list(lst)
+
+                        trash_icon 23, 23, '#888'
+
+
+        if !@local.edit_list
           NewList
             wrapper_clss: 'draggable-list'
 

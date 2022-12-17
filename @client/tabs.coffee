@@ -491,7 +491,8 @@ window.Tab = ReactiveComponent
 
         if tab.add_new
           tab_name = new_tab_name = prompt("What is the name of the tab?")
-          create_new_tab new_tab_name
+          if tab_name
+            create_new_tab new_tab_name
         else 
           tab_name = tab.name
           if @props.go_to_hash

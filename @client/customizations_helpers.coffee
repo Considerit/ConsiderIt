@@ -149,16 +149,16 @@ window.slider_labels =
 
   important_unimportant:
     translate: true    
-    support: 'Important'
-    oppose: 'Unimportant'    
+    support: 'More Important'
+    oppose: 'Less Important'    
 
   relevance:
     support: 'Big impact!'
     oppose: 'No impact on me'    
 
   interested:
-    support: 'Interested'
-    oppose: 'Uninterested'    
+    support: 'More Interesting'
+    oppose: 'Less Interesting'    
 
 
 

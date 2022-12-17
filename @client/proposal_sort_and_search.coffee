@@ -723,7 +723,7 @@ ManualProposalResort = ReactiveComponent
           top: -16
           left: 9
           width: 175
-        translator "engage.sort_order.out-of-order", "List is out of order"
+        translator "engage.sort_order.out-of-order", "Proposals are out of order"
 
 
 

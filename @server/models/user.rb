@@ -13,8 +13,8 @@ class User < ApplicationRecord
   has_many :comments, :dependent => :destroy
   has_many :proposals
 
-  has_many :visits, class_name: 'Ahoy::Visit', :dependent => :destroy  
-  has_many :events, class_name: 'Ahoy::Event', :dependent => :destroy  
+  has_many :visits, class_name: 'Ahoy::Visit'
+  has_many :events, class_name: 'Ahoy::Event'
 
 
   attr_accessor :avatar_url, :downloaded

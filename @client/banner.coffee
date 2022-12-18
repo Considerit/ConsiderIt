@@ -1363,11 +1363,13 @@ window.MediaBanner = ->
           color: white;
         }
 
-        .MediaBanner #tabs > ul > li.selected > h4, .MediaBanner #tabs > ul > li.hovered > h4 {
+        .MediaBanner #tabs > ul > li.selected > h4, 
+        .MediaBanner #tabs > ul > li:hover > h4 {
           color: black;
           text-decoration: underline;
         }
-        .dark .MediaBanner #tabs > ul > li.selected > h4, .dark .MediaBanner #tabs > ul > li.hovered > h4 {
+        .dark .MediaBanner #tabs > ul > li.selected > h4, 
+        .dark .MediaBanner #tabs > ul > li:hover > h4 {
           color: white;
         }
       """
@@ -1641,8 +1643,6 @@ window.HawaiiHeader = (opts) ->
               color: 'black'
             active_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
               backgroundColor: opts.tab_background_color
-            hovering_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
-              backgroundColor: opts.tab_background_color
             wrapper_style: _.defaults {}, opts.tabs_wrapper_style or {},
               marginTop: 80
               top: 0
@@ -1864,15 +1864,11 @@ window.SeattleHeader = (opts) ->
                 fontSize: 18,
                 fontWeight: 700,
                 opacity: 0.3
-              hover_style:
-                opacity: 1
               
               tab_wrapper_style: _.defaults {}, opts.tab_wrapper_style or {},
                 backgroundColor: opts.tab_background_color # '#005596'
               active_style: active_style
               active_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
-                backgroundColor: opts.tab_background_color
-              hovering_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
                 backgroundColor: opts.tab_background_color
               wrapper_style: _.defaults {}, opts.tabs_wrapper_style or {}
               list_style: opts.tabs_list_style or {}

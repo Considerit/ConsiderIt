@@ -427,7 +427,7 @@ window.Point = ReactiveComponent
 
       last_mouse_over_target = null
 
-      @draggable = new Draggable.default point_root,
+      @draggable = new Draggable.Draggable point_root,
         draggable: '.point'
         delay: 0
         distance: 1 # don't start drag unless moved a bit, otherwise click event gets swallowed up

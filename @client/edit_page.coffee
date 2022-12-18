@@ -22,7 +22,11 @@ styles += """
 
 
   [data-widget="EditPage"] .draggable-list {
-    padding: 24px 24px 24px 12px;
+    padding: 12px 24px 24px 12px;
+    margin: 12px 0; 
+    display: flex;
+    align-items: center;
+    position: relative;
   }
 
 
@@ -31,17 +35,6 @@ styles += """
     margin-bottom: 12px;
   }
 
-  [data-widget="EditPage"] .draggable-list {
-    /* background-color: #f1f1f1;
-    border: 1px solid #ddd;
-    border-radius: 16px;*/
-    margin: 12px 0; 
-
-    
-    display: flex;
-    align-items: center; /* start; */
-    position: relative;
-  }
 
   [data-widget="EditPage"] .draggable-list[draggable="true"] {
     cursor: move;
@@ -118,6 +111,16 @@ styles += """
     font-size: 14px;
     margin-top: 3px;
   }
+
+  .not-editing.draggable-source--is-dragging {
+    opacity: .5;
+  }
+
+  .not-editing.draggable-mirror {
+    z-index: 99999;
+    background-color: rgba(255,255,255,.7) !important;
+  }
+
 
 
 """
@@ -236,6 +239,7 @@ window.EditPage = ReactiveComponent
         #     drag_capabilities
 
         UL 
+          ref: 'draggable-list-wrapper'
           style: 
             marginTop: 24
             listStyle: 'none'
@@ -253,7 +257,7 @@ window.EditPage = ReactiveComponent
                 key: lst
                 "data-idx": idx
                 "data-list-key": lst
-                className: "draggable-wrapper #{if wildcard then 'wildcard'}"
+                className: "draggable-wrapper #{if wildcard then 'wildcard' else ''} #{if lst == @local.edit_list then 'editing' else 'not-editing'}"
 
 
                 if lst == @local.edit_list
@@ -267,9 +271,7 @@ window.EditPage = ReactiveComponent
                 else 
 
                   DIV 
-                    className: "draggable-list"
-                    draggable: drag_capabilities.length > 0 
-                    
+                    className: "draggable-list"                    
 
                     if drag_capabilities.length > 0 
                       BUTTON 
@@ -707,8 +709,18 @@ window.EditPage = ReactiveComponent
   componentDidMount: -> 
     @makeListsDraggable()    
 
+
   makeListsDraggable: ->
-    return if @props.page_name != get_current_tab_name()
+    active_page = @props.page_name == get_current_tab_name()
+
+    if active_page && @lists_sortable
+      @lists_sortable = false
+      @sortable.destroy()
+
+    return if !active_page || @lists_sortable
+
+    @lists_sortable = true
+    last_mouse_over_target = null
 
     reorder_list_position = (from, to) => 
       edit_forum = fetch('edit_forum')
@@ -720,102 +732,55 @@ window.EditPage = ReactiveComponent
       save edit_forum
       save fetch('/subdomain') # required to get the new order saved via @ordered_lists
 
-    drag_data = fetch 'list/tab_drag'
+    reassign_list_to_page = (source, target, dragging) =>
+      subdomain = fetch '/subdomain'
 
 
-    @onDragStart ?= (e) =>
+      dragging = parseInt(dragging)
+      source_lists = get_tab(source).lists
+      target_lists = get_tab(target).lists
 
-      _.extend drag_data,
-        type: 'list'
-        source_page: @props.page_name
-        id: e.currentTarget.parentElement.getAttribute('data-idx')
-      save drag_data
+      list_key = source_lists[dragging]
 
+      if source_lists && target_lists
+        source_lists.splice dragging, 1
+        if target_lists.indexOf(list_key) == -1
+          target_lists.push list_key 
+        save subdomain
+      else 
+        console.error "Could not move list #{list_key} from #{source} to #{target}"
+    
+    @sortable = new Draggable.Sortable @refs['draggable-list-wrapper'],
+      draggable: '.not-editing'
+      distance: 1 # don't start drag unless moved a bit, otherwise click event gets swallowed up
+
+    @sortable.on 'sortable:start', =>
       document.body.classList.add('dragging-list')
-      el = e.currentTarget
-      setTimeout ->
-        if !el.classList.contains('dragging')
-          el.classList.add('dragging')
 
-    @onDragEnd ?= (e) =>
 
-      delete drag_data.type
-      delete drag_data.source_page
-      delete drag_data.id
-      save drag_data
+    @sortable.on 'drag:move', (evt) =>
+      current_target = evt.sensorEvent.target?.closest('[data-accepts-lists="true"]')
+      if last_mouse_over_target != current_target
+        if last_mouse_over_target
+          last_mouse_over_target.classList.remove 'draggedOver-by_list'
+        if current_target
+          current_target.classList.add 'draggedOver-by_list' 
+      last_mouse_over_target = current_target
 
+    @sortable.on 'sortable:stop', ({data}) => 
       document.body.classList.remove('dragging-list')
-      if e.currentTarget.classList.contains('dragging')
-        e.currentTarget.classList.remove('dragging')
+      from = data.oldIndex
+
+      if last_mouse_over_target
+        reassign_list_to_page @props.page_name, last_mouse_over_target.getAttribute('data-page-name'), from
+      else 
+        to = data.newIndex
+        reorder_list_position from, to
 
 
-    @onDragOver ?= (e) =>
+  componentWillUnmount: ->
+    if @lists_sortable
+      @sortable.destroy()
 
-      if drag_data.type == 'list'
-
-        e.preventDefault()
-
-        idx = parseInt e.currentTarget.getAttribute('data-idx')
-        
-        @draggedOver = idx
-        if !e.currentTarget.classList.contains('draggedOver')
-          e.currentTarget.classList.add('draggedOver')
-          if drag_data.id < idx
-            e.currentTarget.classList.remove('from_below')
-            e.currentTarget.classList.add('from_above')
-          else 
-            e.currentTarget.classList.remove('from_above')            
-            e.currentTarget.classList.add('from_below')
-
-    @onDragLeave ?= (e) =>
-      if drag_data.type == 'list'       
-        e.preventDefault()
-        if e.currentTarget.classList.contains('draggedOver')
-          e.currentTarget.classList.remove('draggedOver')
-
-    @onDrop ?= (e) =>
-      if drag_data.type == 'list'
-
-        reorder_list_position drag_data.id, @draggedOver
-        if e.currentTarget.classList.contains('draggedOver')
-          e.currentTarget.classList.remove('draggedOver')
-        if e.currentTarget.classList.contains('from_above')
-          e.currentTarget.classList.remove('from_above')
-        if e.currentTarget.classList.contains('from_below')
-          e.currentTarget.classList.remove('from_below')
-
-      document.body.classList.remove('dragging-list')
-
-
-    for list in ReactDOM.findDOMNode(@).querySelectorAll('[draggable]')
-      list.removeEventListener('dragstart', @onDragStart) 
-      list.removeEventListener('dragend', @onDragEnd) 
-      list.addEventListener('dragstart', @onDragStart) 
-      list.addEventListener('dragend', @onDragEnd)       
-
-    for list in ReactDOM.findDOMNode(@).querySelectorAll('[data-idx]')
-      list.removeEventListener('dragover', @onDragOver)
-      list.removeEventListener('dragleave', @onDragLeave)      
-      list.removeEventListener('drop', @onDrop) 
-
-      list.addEventListener('dragover', @onDragOver)
-      list.addEventListener('dragleave', @onDragLeave)      
-      list.addEventListener('drop', @onDrop) 
-
-
-
-
-  componentWillUnmount: -> 
-    if @initialized
-      for list in ReactDOM.findDOMNode(@).querySelectorAll('[draggable]')
-        list.removeEventListener('dragstart', @onDragStart) 
-        list.removeEventListener('dragend', @onDragEnd) 
-        list.addEventListener('dragstart', @onDragStart) 
-        list.addEventListener('dragend', @onDragEnd)       
-
-      for list in ReactDOM.findDOMNode(@).querySelectorAll('[data-idx]')
-        list.removeEventListener('dragover', @onDragOver)
-        list.removeEventListener('dragleave', @onDragLeave)      
-        list.removeEventListener('drop', @onDrop) 
 
 

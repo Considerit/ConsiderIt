@@ -345,6 +345,7 @@ window.HomepageTabs = ReactiveComponent
         name: 'active_tab'
 
       UL 
+        ref: 'tablist'
         role: 'tablist'
         style: _.defaults {}, @props.list_style,
           width: @props.width
@@ -361,11 +362,45 @@ window.HomepageTabs = ReactiveComponent
             tab_wrapper_style: @props.tab_wrapper_style
             active_style: @props.active_style
             active_tab_wrapper_style: @props.active_tab_wrapper_style
-            hovering_tab_wrapper_style: @props.hovering_tab_wrapper_style
             featured: @props.featured == tab.name            
             featured_insertion: @props.featured_insertion
             go_to_hash: @props.go_to_hash
 
+
+  isDraggable: ->
+    edit_forum = fetch 'edit_forum'
+    edit_forum.editing
+
+  componentDidMount : ->    
+    @initializeDragging()
+
+  componentDidUpdate : -> 
+    @initializeDragging()
+
+  initializeDragging: ->
+    if !@isDraggable() && @drag_initialized
+      @drag_initialized = false
+      @draggable.destroy()
+
+    else if @isDraggable() && !@drag_initialized
+      @drag_initialized = true
+
+      tab_root = @refs.tablist
+
+      @draggable = new Draggable.Sortable tab_root,
+        draggable: '.tab.tab-added.not-demo'
+        distance: 1 # don't start drag unless moved a bit, otherwise click event gets swallowed up
+
+      @draggable.on 'sortable:stop', ({data}) => 
+        from = data.oldIndex
+        to = data.newIndex
+
+        subdomain = fetch '/subdomain'
+
+        tabs = subdomain.customizations.homepage_tabs
+        tabs.splice(to, 0, tabs.splice(from, 1)[0])
+
+        save subdomain
 
 
 styles += """
@@ -383,7 +418,8 @@ styles += """
     outline: 4px solid white;
   }
 
-  .dragging-list #tabs > ul > li.draggedOver-by_list[data-accepts-lists="true"] {
+  .dragging-list #tabs > ul > li.draggedOver-by_list[data-accepts-lists="true"],
+  .dragging-list .dark #tabs > ul > li.draggedOver-by_list[data-accepts-lists="true"] {
     outline: 4px solid red;
   }
 
@@ -405,7 +441,7 @@ styles += """
     opacity: 1;
     color: black;
   }
-  #tabs > ul > li.hovering > h4 {
+  #tabs > ul > li:hover > h4 {
     opacity: 1;
   }
 
@@ -431,12 +467,17 @@ styles += """
     color: white;
   }
 
+  .tab.draggable-source--is-dragging {
+    opacity: .7;
+  }
+
 """
 
 
 window.Tab = ReactiveComponent
   displayName: 'Tab'
   mixins: [SubdomainSaveRateLimiter]
+
 
 
   render: -> 
@@ -447,7 +488,6 @@ window.Tab = ReactiveComponent
     tab_name = tab.name
 
     current = @props.current
-    hovering = @local.hovering == tab_name
     featured = @props.featured
 
     tab_style = _.extend {display: 'inline-block'}, @props.tab_style
@@ -457,33 +497,22 @@ window.Tab = ReactiveComponent
     if current
       _.extend tab_style, @props.active_style
       _.extend tab_wrapper_style, @props.active_tab_wrapper_style
-    
-    if hovering
-      _.extend tab_style, @props.hover_style or @props.active_style
-      _.extend tab_wrapper_style, @props.hovering_tab_wrapper_style
 
+    
     accepts_lists = @props.tab.type not in [PAGE_TYPES.ABOUT, PAGE_TYPES.ALL] && !tab.demo && !tab.add_new
 
     LI 
-      className: "#{if current then 'selected' else if hovering then 'hovered' else ''} #{if tab.demo then 'demo' else ''} #{if tab.add_new then 'add_new' else ''}"
+      className: "tab #{if current then 'selected' else ''} #{if tab.demo then 'demo' else 'not-demo'} #{if tab.add_new then 'add_new' else 'tab-added'}"
+      ref: 'tab'
       tabIndex: 0
       role: 'tab'
       style: tab_wrapper_style
       'data-tab': tab.name
       'aria-controls': 'homepagetab'
       'aria-selected': current
-      draggable: edit_forum.editing && !tab.add_new && !tab.demo 
       'data-accepts-lists': accepts_lists
+      'data-page-name': tab_name
 
-      onMouseEnter: => 
-        return if tab.add_new || tab.demo
-        homepage_tabs = fetch 'homepage_tabs'
-        if homepage_tabs.active_tab != tab_name 
-          @local.hovering = tab_name 
-          save @local 
-      onMouseLeave: => 
-        @local.hovering = null 
-        save @local
       onClick: =>
         return if tab.demo && !tab.add_new
 
@@ -547,11 +576,6 @@ window.Tab = ReactiveComponent
               fontDecoration: 'inherit'
               fontStyle: 'inherit'
             
-            # prevent dragging when editing the tab name
-            draggable: true
-            onDragStart: (e) =>
-              e.preventDefault()
-              e.stopPropagation()
 
             onKeyDown: (e) => 
               e.stopPropagation()
@@ -596,142 +620,5 @@ window.Tab = ReactiveComponent
 
       if featured 
         @props.featured_insertion?()
-
-
-  makeTabDraggable: ->
-
-    return if @tab_draggable || !fetch('edit_forum').editing || @props.tab.add_new
-    @tab_draggable = true 
-
-    tab = ReactDOM.findDOMNode(@)
-
-    drag_data = fetch 'list/tab_drag'
-
-
-    reassign_list_to_page = (source, target, dragging) =>
-      subdomain = fetch '/subdomain'
-
-      dragging = parseInt(dragging)
-      source_lists = get_tab(source).lists
-      target_lists = get_tab(target).lists
-
-      list_key = source_lists[dragging]
-
-      if source_lists && target_lists
-        source_lists.splice dragging, 1
-        if target_lists.indexOf(list_key) == -1
-          target_lists.push list_key 
-        save subdomain
-      else 
-        console.error "Could not move list #{list_key} from #{source} to #{target}"
-
-    reorder_tab = (from, to) =>
-      subdomain = fetch '/subdomain'
-
-      tabs = subdomain.customizations.homepage_tabs
-      tabs.splice(to, 0, tabs.splice(from, 1)[0])
-
-      save subdomain
-
-
-
-    accepts_lists = @props.tab.type not in [PAGE_TYPES.ABOUT, PAGE_TYPES.ALL] && !tab.demo && !tab.add_new
-
-    @onDragStartTab ?= (e) =>
-
-      _.extend drag_data,
-        type: 'tab'
-        id: @props.idx
-      save drag_data
-
-      document.body.classList.add('dragging-tab')
-      el = e.currentTarget
-      setTimeout ->
-        if !el.classList.contains('dragging')
-          el.classList.add('dragging')
-
-    @onDragEndTab ?= (e) =>
-
-      delete drag_data.type
-      delete drag_data.id
-      save drag_data
-
-      document.body.classList.remove('dragging-tab')
-      if e.currentTarget.classList.contains('dragging')
-        e.currentTarget.classList.remove('dragging')
-
-
-    @onDragOverTab ?= (e) =>
-      if drag_data.type == 'list' && accepts_lists
-        e.preventDefault()
-        if !e.currentTarget.classList.contains('draggedOver-by_list') 
-          e.currentTarget.classList.add('draggedOver-by_list')
-      else if drag_data.type == 'tab'
-        e.preventDefault()
-        if !e.currentTarget.classList.contains('draggedOver-by_tab')
-          e.currentTarget.classList.add('draggedOver-by_tab')
-
-    @onDragLeaveTab ?= (e) =>
-      if drag_data.type == 'list' && accepts_lists
-        e.preventDefault()
-        if e.currentTarget.classList.contains('draggedOver-by_list')
-          e.currentTarget.classList.remove('draggedOver-by_list')
-      else if drag_data.type == 'tab'
-        e.preventDefault()
-        if !e.currentTarget.classList.contains('draggedOver-by_tab')
-          e.currentTarget.classList.remove('draggedOver-by_tab')
-
-
-    @onDropTab ?= (e) =>
-      if drag_data.type == 'list' && accepts_lists
-        reassign_list_to_page drag_data.source_page, @props.tab.name, drag_data.id
-
-        delete drag_data.type
-        delete drag_data.source_page
-        delete drag_data.id
-        save drag_data
-
-        if e.currentTarget.classList.contains('draggedOver-by_list')
-          e.currentTarget.classList.remove('draggedOver-by_list')
-        document.body.classList.remove('dragging-list')
-      else if drag_data.type == 'tab'
-
-        reorder_tab drag_data.id, @props.idx
-
-        delete drag_data.type
-        delete drag_data.id
-        save drag_data
-
-        if !e.currentTarget.classList.contains('draggedOver-by_tab')
-          e.currentTarget.classList.remove('draggedOver-by_tab')
-        document.body.classList.remove('dragging-tab')
-
-
-    tab.addEventListener('dragstart', @onDragStartTab) 
-    tab.addEventListener('dragend', @onDragEndTab) 
-    tab.addEventListener('dragover', @onDragOverTab)
-    tab.addEventListener('dragleave', @onDragLeaveTab)      
-    tab.addEventListener('drop', @onDropTab) 
-
-  removeTabDraggability: -> 
-    return if !@tab_draggable || fetch('edit_forum').editing || @props.tab.add_new
-    @tab_draggable = false
-    tab = ReactDOM.findDOMNode(@)
-
-
-    tab.removeEventListener('dragstart', @onDragStartTab) 
-    tab.removeEventListener('dragend', @onDragEndTab) 
-
-
-    tab.removeEventListener('dragover', @onDragOverTab)
-    tab.removeEventListener('dragleave', @onDragLeaveTab)      
-    tab.removeEventListener('drop', @onDropTab) 
-
-  componentDidMount: -> 
-    @makeTabDraggable()
-  componentDidUpdate: -> 
-    @makeTabDraggable()
-  componentWillUnmount: -> 
-    @removeTabDraggability()
 
 

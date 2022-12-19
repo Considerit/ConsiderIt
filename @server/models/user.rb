@@ -99,6 +99,7 @@ class User < ApplicationRecord
         has_filled_required_fields = has_filled_required_fields && !!my_tags.fetch(tag, false)
       end
     end 
+
     has_filled_required_fields
   end
 
@@ -480,7 +481,8 @@ class User < ApplicationRecord
             id: subdomain.id,
             name: subdomain.name,
             title: config["banner"]['title'],
-            logo: config['banner']['logo']['url'] || config['banner']['background_image_url']
+            logo: config['banner']['logo']['url'] || config['banner']['background_image_url'],
+            plan: subdomain.plan
           })
         rescue
         end

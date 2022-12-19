@@ -84,16 +84,12 @@ class SubdomainController < ApplicationController
       if !params[:skip_seeding]
 
 
-        if params[:copy_from]
+        if params[:copy_from] && params[:copy_from].length > 0 
           template_sub = Subdomain.find(params[:copy_from].to_i)
 
           # validate that current user is a host of template_sub
           if permit 'update subdomain', template_sub
-            new_subdomain.customizations = template_sub.customizations
-            new_subdomain.roles = template_sub.roles
-            new_subdomain.masthead = template_sub.masthead
-            new_subdomain.logo = template_sub.logo
-            new_subdomain.save
+            new_subdomain.import_configuration template_sub
           end
 
         else 
@@ -229,6 +225,17 @@ class SubdomainController < ApplicationController
         attrs[field] = sanitize_json(attrs[field], subdomain[field])
       end      
     end
+
+
+    if params[:copy_from]
+      template_sub = Subdomain.find(params[:copy_from].to_i)
+
+      # validate that current user is a host of template_sub
+      if permit 'update subdomain', template_sub
+        subdomain.import_configuration template_sub
+      end
+    end
+
 
     current_user.add_to_active_in
     current_subdomain.update_attributes! attrs

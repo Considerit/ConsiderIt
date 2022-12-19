@@ -56,6 +56,33 @@ class Subdomain < ApplicationRecord
   end
 
 
+  def import_configuration(copy_from_subdomain)
+    customizations = copy_from_subdomain.customizations.clone
+    if customizations.has_key?('user_tags')
+      if self.plan == 0 || self.plan == nil
+        customizations.delete 'user_tags'
+        if customizations.has_key?('host_questions_framing')
+          customizations.delete('host_questions_framing')
+        end
+      else 
+        # don't reuse tags between forums because it can create incoherent data
+        # when one forum changes the options and/or labels
+        customizations['user_tags'] = customizations['user_tags'].clone
+        customizations['user_tags'].each do |tag|
+          if tag['key'].start_with?("#{copy_from_subdomain.name}-")
+            tag['key'] = tag['key'].sub "#{copy_from_subdomain.name}-", "#{self.name}-"
+          end
+        end
+      end
+    end
+
+    self.customizations = customizations
+    self.roles = copy_from_subdomain.roles
+    self.masthead = copy_from_subdomain.masthead
+    self.logo = copy_from_subdomain.logo
+    self.save
+  end
+
   def rename(new_name)
     existing = Subdomain.where(:name => new_name).first
     if existing

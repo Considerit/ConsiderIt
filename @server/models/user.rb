@@ -465,6 +465,62 @@ class User < ApplicationRecord
 
 
 
+  def your_forums
+
+
+    hosted_by = []
+    hosted = {}
+
+    Subdomain.where("JSON_CONTAINS(roles, '\"/user/#{self.id}\"', '$.admin')").each do |subdomain|
+      if !hosted.has_key?(subdomain.id)
+        begin
+          config = subdomain.customization_json
+          hosted[subdomain.id] = 1
+          hosted_by.push({
+            id: subdomain.id,
+            name: subdomain.name,
+            title: config["banner"]['title'],
+            logo: config['banner']['logo']['url'] || config['banner']['background_image_url']
+          })
+        rescue
+        end
+      end
+    end
+
+    participated_in = []
+    self.active_in.each do |subdomain_id|
+      if !hosted.has_key?(subdomain_id.to_i)
+        begin 
+          subdomain = Subdomain.find(subdomain_id)
+
+          if subdomain.opinions.where(:user_id => self.id).published.count > 0
+            config = subdomain.customization_json
+
+            participated_in.push({
+              id: subdomain_id,
+              name: subdomain.name,
+              title: config["banner"]['title'],
+              logo: config['banner']['logo']['url'] || config['banner']['background_image_url']
+            })
+          end
+        rescue
+        end
+      end
+    end
+
+
+    results = {
+      key: '/your_forums',
+      hosted: hosted_by,
+      participated_in: participated_in
+    }
+
+
+    results
+  end
+
+
+
   def self.purge
     users = User.all.map {|u| u.id}
     missing_users = []
@@ -478,5 +534,8 @@ class User < ApplicationRecord
       cls.where("user_id in (?)", missing_users.uniq).delete_all
     end
   end
+
+
+
 
 end

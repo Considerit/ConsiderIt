@@ -310,6 +310,12 @@ protected
       elsif key.match "/translations"
         translations = get_translations(key)
         response.append translations
+
+
+      elsif key.match '/your_forums'
+        response.append current_user.your_forums
+
+
       end
 
 

@@ -98,7 +98,7 @@ window.HostHeader = ReactiveComponent
     if edit_forum.editing 
 
       DIV 
-        className: 'forum_editor'
+        className: 'forum_editor fixed'
         style: 
           #display: 'flex'
           #justifyContent: 'center'
@@ -112,7 +112,10 @@ window.HostHeader = ReactiveComponent
         EditForum()
 
     else if loc.url.startsWith('/dashboard') && window.UpgradeForumBanner? && free_forum
-      UpgradeForumBanner()
+      DIV 
+        className: 'forum_editor not-fixed'
+
+        UpgradeForumBanner()
 
     else 
       DIV null

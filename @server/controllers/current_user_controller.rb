@@ -572,5 +572,12 @@ class CurrentUserController < ApplicationController
     raise request.env['omniauth.error.type']
   end
 
+
+  # get all forums this participant has participated in and/or hosted
+  def all_forums
+    dirty_key '/your_forums'
+    render :json => []    
+  end
+
 end
 

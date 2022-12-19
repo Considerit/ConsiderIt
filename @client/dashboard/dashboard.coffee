@@ -12,6 +12,7 @@ require './moderation'
 require './forum_settings'
 require './customize'
 require './intake_questions'
+require './all_forums'
 
 
 window.styles += """
@@ -122,8 +123,9 @@ get_dash_widget = (url) ->
     when '/dashboard/tags'
       UserTags
     when '/dashboard/translations'
-      'Language Translation'
       TranslationsDash
+    when '/dashboard/all_forums'
+      AllYourForums
     else 
       null
 get_dash_title = (url) ->
@@ -148,6 +150,8 @@ get_dash_title = (url) ->
       title = 'User Tags'
     when '/dashboard/translations'
       title = 'Language Translation'
+    when '/dashboard/all_forums'
+      title = 'All Your Consider.it Forums'
     else 
       null
   title
@@ -240,6 +244,9 @@ window.Dashboard = ReactiveComponent
 
         draw_menu_separator 'other'
         draw_menu_option {href: '/dashboard/translations', label: 'Language Translation', icon: 'translate'}   
+
+        if current_user.logged_in
+          draw_menu_option {href: '/dashboard/all_forums', label: 'All Your Forums'}   
 
 
       DIV 

@@ -27,15 +27,18 @@ window.DataDash = ReactiveComponent
             marginBottom: 24
           BUTTON 
             onClick: => 
-              if confirm("Are you sure you want to delete everything on this forum?")
+              if confirm("Are you sure you want to delete all proposals, opinions, and comments on this forum?")
                 
-                $.ajax
-                  url: "/nuke_everything",
-                  type: "PUT"
-                  data: 
-                    authenticity_token: current_user.csrf
-                  success: =>
-                    location.reload()
+                frm = new FormData()
+                frm.append "authenticity_token", current_user.csrf
+
+                cb = =>
+                  location.reload()
+
+                xhr = new XMLHttpRequest
+                xhr.addEventListener 'readystatechange', cb, false
+                xhr.open 'PUT', '/nuke_everything', true
+                xhr.send frm
 
             "Delete all data on this forum"
       

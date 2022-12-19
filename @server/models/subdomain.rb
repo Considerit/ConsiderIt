@@ -80,6 +80,9 @@ class Subdomain < ApplicationRecord
     self.roles = copy_from_subdomain.roles
     self.masthead = copy_from_subdomain.masthead
     self.logo = copy_from_subdomain.logo
+    self.lang = copy_from_subdomain.lang
+    self.SSO_domain = copy_from_subdomain.SSO_domain
+    self.moderation_policy = copy_from_subdomain.moderation_policy
     self.save
   end
 

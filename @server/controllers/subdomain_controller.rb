@@ -83,86 +83,78 @@ class SubdomainController < ApplicationController
 
       if !params[:skip_seeding]
 
-        # create a sample list
-        # customizations = {
-        #   "list/initial": {
-        #     "list_title": "How do you want Consider.it to help you?",
-        #     "list_description": "Experiment with the proposals in this list however you want. When you’re done, you can delete the entire proposal list via the gear icon in the upper right.",
-        #     "list_category": "",
-        #     "list_opinions_title": "",
-        #     "slider_pole_labels": {
-        #       "support": 'Important to me',
-        #       "oppose": 'Unimportant'
-        #     },
-        #     "show_proposer_icon": false
-        #   }
-        # }
 
-        customizations = {
-          "list/initial": {
-            "list_title": "What are your favorite ice cream flavors?",
-            "list_description": "Experiment with the proposed flavors however you want. When you’re done, you can delete this entire Ice Cream silliness via the three-dots icon in the upper right.",
-            "list_item_name": "flavor",
-            "list_opinions_title": "",
-            "slider_pole_labels": {
-              "support": 'Yummy',
-              "oppose": 'Yucky'
+        if params[:copy_from]
+          template_sub = Subdomain.find(params[:copy_from].to_i)
+
+          # validate that current user is a host of template_sub
+          if permit 'update subdomain', template_sub
+            new_subdomain.customizations = template_sub.customizations
+            new_subdomain.roles = template_sub.roles
+            new_subdomain.masthead = template_sub.masthead
+            new_subdomain.logo = template_sub.logo
+            new_subdomain.save
+          end
+
+        else 
+          customizations = {
+            "list/initial": {
+              "list_title": "What are your favorite ice cream flavors?",
+              "list_description": "Experiment with the proposed flavors however you want. When you’re done, you can delete this entire Ice Cream silliness via the three-dots icon in the upper right.",
+              "list_item_name": "flavor",
+              "list_opinions_title": "",
+              "slider_pole_labels": {
+                "support": 'Yummy',
+                "oppose": 'Yucky'
+              }
             }
           }
-        }
 
-        new_subdomain.customizations = customizations
-        new_subdomain.save
+          new_subdomain.customizations = customizations
+          new_subdomain.save
 
-         # Seed new proposals in sample list       
-        # proposals = ['Collect feedback from many stakeholders', 
-        #              'Help me make decisions with peers', 
-        #              'Talk with peers about things we care about', 
-        #              'Help people get on the same page', 
-        #              'Something else']
-
-        proposals = [
-          {name: 'Vanilla', img: "https://f.consider.it/icecreams/vanilla.jpeg" },
-          {name: 'Chocolate', img: "https://f.consider.it/icecreams/chocolate.jpeg" },
-          {name: 'Cookies in Cream', img: "https://f.consider.it/icecreams/cookies-n-cream.jpeg" },
-          {name: 'Mint chocolate chip', img: "https://f.consider.it/icecreams/mint-chocolate-chip.jpeg" },
-          {name: 'Salted caramel', img: "https://f.consider.it/icecreams/salted-caramel.jpeg" },
-          {name: 'Eggnog', img: "https://f.consider.it/icecreams/eggnog.jpeg" }
-        ]
+          proposals = [
+            {name: 'Vanilla', img: "https://f.consider.it/icecreams/vanilla.jpeg" },
+            {name: 'Chocolate', img: "https://f.consider.it/icecreams/chocolate.jpeg" },
+            {name: 'Cookies in Cream', img: "https://f.consider.it/icecreams/cookies-n-cream.jpeg" },
+            {name: 'Mint chocolate chip', img: "https://f.consider.it/icecreams/mint-chocolate-chip.jpeg" },
+            {name: 'Salted caramel', img: "https://f.consider.it/icecreams/salted-caramel.jpeg" },
+            {name: 'Eggnog', img: "https://f.consider.it/icecreams/eggnog.jpeg" }
+          ]
 
 
-        proposals.each do |p|
-          proposal_name = p[:name]
-          img = p[:img]
+          proposals.each do |p|
+            proposal_name = p[:name]
+            img = p[:img]
 
-          proposal = Proposal.new({
-            subdomain_id: new_subdomain.id, 
-            slug: proposal_name.gsub(' ', '-').downcase,
-            name: proposal_name,
-            description: '',
-            user: current_user,
-            cluster: 'initial',
-            active: true,
-            published: true, 
-            moderation_status: 1,
-            roles: {
-              "editor": ["/user/#{current_user.id}"]
-            }
-          })
-          if img 
-            proposal.pic = open(img)
-          end
-          proposal.save
+            proposal = Proposal.new({
+              subdomain_id: new_subdomain.id, 
+              slug: proposal_name.gsub(' ', '-').downcase,
+              name: proposal_name,
+              description: '',
+              user: current_user,
+              cluster: 'initial',
+              active: true,
+              published: true, 
+              moderation_status: 1,
+              roles: {
+                "editor": ["/user/#{current_user.id}"]
+              }
+            })
+            if img 
+              proposal.pic = open(img)
+            end
+            proposal.save
 
-          opinion = Opinion.create!({
-            published: true,         
-            user: current_user,
-            subdomain_id: new_subdomain.id, 
-            proposal: proposal,
-            stance: 0.0
-          })
-        end 
-
+            opinion = Opinion.create!({
+              published: true,         
+              user: current_user,
+              subdomain_id: new_subdomain.id, 
+              proposal: proposal,
+              stance: 0.0
+            })
+          end 
+        end
 
       end
       

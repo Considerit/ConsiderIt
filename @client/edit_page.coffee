@@ -715,7 +715,7 @@ window.EditPage = ReactiveComponent
 
     if active_page && @lists_sortable
       @lists_sortable = false
-      @sortable.destroy()
+      @sortable?.destroy()
 
     return if !active_page || @lists_sortable
 
@@ -780,6 +780,7 @@ window.EditPage = ReactiveComponent
 
   componentWillUnmount: ->
     if @lists_sortable
+      @lists_sortable = false
       @sortable.destroy()
 
 

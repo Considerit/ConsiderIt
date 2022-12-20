@@ -138,35 +138,34 @@ window.AllYourForums = ReactiveComponent
                   import_icon 18, '#444'
 
 
-                if forum.name != fetch('/subdomain').name
-                  BUTTON 
-                    style:
-                      backgroundColor: 'transparent'
-                      border: 'none'
-                      cursor: 'pointer'
-                      padding: '4px'
-                    'data-tooltip': 'Delete forum'
+                BUTTON 
+                  style:
+                    backgroundColor: 'transparent'
+                    border: 'none'
+                    cursor: 'pointer'
+                    padding: '4px'
+                  'data-tooltip': 'Delete forum'
 
-                    onKeyPress: (e) =>
-                      if e.which == 32 || e.which == 13
-                        e.currentTarget.click()
+                  onKeyPress: (e) =>
+                    if e.which == 32 || e.which == 13
+                      e.currentTarget.click()
 
-                    onClick: => 
-                      if confirm("Are you sure you want to delete this entire forum? You cannot undo it.")
+                  onClick: => 
+                    if confirm("Are you sure you want to delete this entire forum? You cannot undo it.")
 
-                        frm = new FormData()
-                        frm.append "authenticity_token", fetch('/current_user').csrf
-                        frm.append "subdomain_to_destroy", forum.id
+                      frm = new FormData()
+                      frm.append "authenticity_token", fetch('/current_user').csrf
+                      frm.append "subdomain_to_destroy", forum.id
 
-                        cb = =>
-                          arest.serverFetch '/your_forums'
+                      cb = =>
+                        arest.serverFetch '/your_forums'
 
-                        xhr = new XMLHttpRequest
-                        xhr.addEventListener 'readystatechange', cb, false
-                        xhr.open 'PUT', '/destroy_forum', true
-                        xhr.send frm
+                      xhr = new XMLHttpRequest
+                      xhr.addEventListener 'readystatechange', cb, false
+                      xhr.open 'PUT', '/destroy_forum', true
+                      xhr.send frm
 
-                    trash_icon 18, 18, '#888'
+                  trash_icon 18, 18, '#888'
 
 
 

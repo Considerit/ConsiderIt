@@ -34,8 +34,12 @@ window.styles += """
     margin-top: -2px;
   }
 
+  .FORUM_SETTINGS .radio_group input[type="radio"] {
+    margin-top: 0;
+  }
+
   #DASHBOARD-main .FORUM_SETTINGS .field_explanation {
-    margin-left: 36px;
+    margin-left: 48px;
   }
  
   .FORUM_SETTINGS .input_group.checkbox {

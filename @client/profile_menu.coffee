@@ -349,5 +349,9 @@ window.ProfileMenu = ReactiveComponent
               width: 570    
 
 
-styles += """.profile_menu_wrap:hover .profile_anchor{ color: inherit; }
+styles += """
+  .profile_menu_wrap:hover .profile_anchor,
+  .profile_menu_wrap:focus-within .profile_anchor { 
+    color: inherit; 
+  }
 """

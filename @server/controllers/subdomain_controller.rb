@@ -267,15 +267,41 @@ class SubdomainController < ApplicationController
   end
 
   def nuke_everything
-    current_subdomain.proposals.destroy_all
-    current_subdomain.opinions.destroy_all
-    current_subdomain.points.destroy_all
-    current_subdomain.comments.destroy_all
+    if permit 'update subdomain', current_subdomain
+      current_subdomain.proposals.destroy_all
+      current_subdomain.opinions.destroy_all
+      current_subdomain.points.destroy_all
+      current_subdomain.comments.destroy_all
 
-    dirty_key '/subdomain'
-    dirty_key '/proposals'
+      dirty_key '/subdomain'
+      dirty_key '/proposals'
+    end
 
     render :json => []
+  end
+
+  def destroy
+    subdomain_id = params['subdomain_to_destroy']    
+    sub_to_destroy = Subdomain.find(subdomain_id.to_i)
+    if sub_to_destroy && permit('update subdomain', sub_to_destroy)
+      sub_to_destroy.destroy()
+    end
+
+    dirty_key '/your_forums'
+    render :json => []
+  end
+
+  def copy_from 
+
+    template_sub = Subdomain.find(params[:subdomain_to_import_configuration].to_i)
+
+    # validate that current user is a host of template_sub
+    if permit('update subdomain', template_sub) && permit('update subdomain', current_subdomain)
+      current_subdomain.import_configuration template_sub
+    end
+
+    render :json => []
+
   end
 
   def rename_forum

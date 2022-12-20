@@ -39,8 +39,8 @@ window.styles += """
   } #DASHBOARD-menu a.active {
      background-color: #{selected_color};
      color: white;
-  } #DASHBOARD-menu a:hover {
-  }
+  } 
+  
 
   #DASHBOARD-menu a .label {
     vertical-align: middle;

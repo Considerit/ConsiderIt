@@ -50,7 +50,8 @@ styles += """
     }
   }
 
-  .proposal-title-text-inline:hover {
+  .proposal-title-text-inline:hover,
+  .proposal-title-text-inline:focus-within {
     border-color: #000;
   }
 
@@ -668,7 +669,8 @@ styles += """
     cursor: pointer;
     text-decoration: none;
   } 
-  .proposal-metadata .metadata-piece:hover {
+  .proposal-metadata .metadata-piece:hover,
+  .proposal-metadata .metadata-piece:focus-within {
     border-color: #444;
   }
 

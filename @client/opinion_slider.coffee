@@ -35,11 +35,14 @@ styles += """
     top: 32px;
   }
 
-  .ProposalItem:hover .add_reasons_callout, .one-col .ProposalItem .add_reasons_callout {
+  .ProposalItem:hover .add_reasons_callout, 
+  .ProposalItem:focus-within .add_reasons_callout,
+  .one-col .ProposalItem .add_reasons_callout {
     opacity: 1;
   }
 
-  .collapsing.ProposalItem:hover .add_reasons_callout {
+  .collapsing.ProposalItem:hover .add_reasons_callout,
+  .collapsing.ProposalItem:focus-within .add_reasons_callout {
     opacity: 0;
     display: none;
   }  

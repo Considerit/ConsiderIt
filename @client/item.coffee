@@ -767,7 +767,9 @@ styles += """
     padding-top: 12px;
   }
 
-  .is_expanded .edit_and_delete_block, .ProposalItem:hover .edit_and_delete_block {
+  .is_expanded .edit_and_delete_block, 
+  .ProposalItem:hover .edit_and_delete_block,
+  .ProposalItem:focus-within .edit_and_delete_block {
     opacity: 1;    
   }
 
@@ -776,7 +778,9 @@ styles += """
       top: 7px;
       left: 14px;
     }
-    .is_expanded .edit_and_delete_block, .ProposalItem:hover .edit_and_delete_block {
+    .is_expanded .edit_and_delete_block, 
+    .ProposalItem:hover .edit_and_delete_block,
+    .ProposalItem:focus-within .edit_and_delete_block {
       right: 12px;
       left: auto;
     }
@@ -796,7 +800,8 @@ styles += """
     transition: opacity .6s ease;
   }
 
-  .edit_and_delete_block button:hover {
+  .edit_and_delete_block button:hover,
+  .edit_and_delete_block button:focus-within {
     opacity: 1;
   }
 

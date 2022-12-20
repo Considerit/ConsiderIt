@@ -441,7 +441,8 @@ styles += """
     opacity: 1;
     color: black;
   }
-  #tabs > ul > li:hover > h4 {
+  #tabs > ul > li:hover > h4,
+  #tabs > ul > li:focus-within > h4 {
     opacity: 1;
   }
 

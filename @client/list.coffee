@@ -647,7 +647,8 @@ styles += """
     width: 100%;
   }
 
-  .NewList:hover, .EditingNewList:hover {
+  .NewList:hover, .EditingNewList:hover,
+  .NewList:focus-within, .EditingNewList:focus-within {
     border-color: #{focus_blue};
   }
 
@@ -676,7 +677,8 @@ styles += """
     transition: border-bottom 500ms;
   }
 
-  .NewList:hover .LIST-title span {
+  .NewList:hover .LIST-title span,
+  .NewList:focus-within .LIST-title span {
     border-bottom-color: #{focus_blue};
   }
 

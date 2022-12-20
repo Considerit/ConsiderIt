@@ -117,7 +117,8 @@ ConsiderIt::Application.routes.draw do
   match 'nuke_everything' => 'subdomain#nuke_everything', :via => [:put]
   match 'update_images_hack' => 'subdomain#update_images_hack', :via => [:put]
   match 'update_proposal_pic_hack' => 'proposal#update_images_hack', :via => [:put]
-
+  match 'destroy_forum' => 'subdomain#destroy', :via => [:put]
+  match 'import_configuration_from_subdomain' => 'subdomain#copy_from', :via => [:put]
 
   post '/log' => 'log#create'
 

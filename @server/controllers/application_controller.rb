@@ -292,6 +292,9 @@ protected
       elsif key == '/page/dashboard/moderate'
         response.append Moderation.all_for_subdomain
 
+      elsif key.match '/visits'
+        response.append({key: '/visits', visits: current_subdomain.visits})
+
       elsif key.match "/page/dashboard"
         noop = 1
 
@@ -314,6 +317,7 @@ protected
 
       elsif key.match '/your_forums'
         response.append current_user.your_forums
+
 
 
       end

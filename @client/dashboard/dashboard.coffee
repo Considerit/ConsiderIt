@@ -13,6 +13,7 @@ require './forum_settings'
 require './customize'
 require './intake_questions'
 require './all_forums'
+require './analytics'
 
 
 window.styles += """
@@ -27,6 +28,7 @@ window.styles += """
     background: rgb(246,246,246);
     background: linear-gradient(180deg, rgba(246,246,246,1) 88%, rgba(255,255,255,1) 100%);
     padding-bottom: 70px;
+    border: 1px solid #ddd;
   }
 
   #DASHBOARD-menu a {
@@ -126,6 +128,8 @@ get_dash_widget = (url) ->
       TranslationsDash
     when '/dashboard/all_forums'
       AllYourForums
+    when '/dashboard/analytics'
+      DataAnalytics
     else 
       null
 get_dash_title = (url) ->
@@ -152,6 +156,8 @@ get_dash_title = (url) ->
       title = 'Language Translation'
     when '/dashboard/all_forums'
       title = 'All Your Consider.it Forums'
+    when '/dashboard/analytics'
+      title = 'Analytics'
     else 
       null
   title
@@ -236,6 +242,7 @@ window.Dashboard = ReactiveComponent
           [
             draw_menu_separator "administration"
             draw_menu_option {href: '/dashboard/moderate', label: 'Moderate', icon: 'moderation'} 
+            draw_menu_option {href: '/dashboard/analytics', label: 'Analytics'} 
             draw_menu_option {href: '/dashboard/data_import_export', label: 'Import / Export Data', icon: 'upload', paid: true}
           ]
         

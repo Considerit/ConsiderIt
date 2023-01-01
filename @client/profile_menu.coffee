@@ -38,6 +38,7 @@ window.ProfileMenu = ReactiveComponent
       if is_super then {href: '/dashboard/customizations', label: 'Customizations'} else null,      
       if is_admin then {href: '/dashboard/roles', label: 'Permissions & Roles'} else null,
       if is_super then {href: '/dashboard/tags', label: 'User Tags'} else null,      
+      if is_admin then {href: '/dashboard/analytics', label: 'Analytics'} else null,
       if is_moderator then {href: '/dashboard/moderate', label: 'Moderate'} else null,
       {label: 'Log out', 'data-action': 'logout'}
 

@@ -78,6 +78,8 @@ ConsiderIt::Application.routes.draw do
   get '/page/*id' => 'page#show'
   resources :user, :only => [:show]
   get '/users' => 'user#index'
+  get '/visits' => 'visit#index'
+
   match '/user/:id' => 'user#update', :via => [:put]
 
   resources :proposal
@@ -98,8 +100,6 @@ ConsiderIt::Application.routes.draw do
 
   match '/subdomain' => 'subdomain#update', :via => [:put]
   get '/subdomains' => 'subdomain#index'
-
-
 
   get '/points' => 'point#index'
 

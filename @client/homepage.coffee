@@ -212,6 +212,7 @@ window.Homepage = ReactiveComponent
 
 window.proposal_editor = (proposal) ->
   editors = (e for e in proposal.roles.editor when e != '*')
+  editors.push proposal.user if proposal.user
   editor = editors.length > 0 and editors[0]
 
   return editor != '-' and editor

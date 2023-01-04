@@ -1,6 +1,29 @@
 window.DataDash = ReactiveComponent
   displayName: 'DataDash'
 
+
+  successful_import_cb: (data) ->
+                  
+    data = JSON.parse data
+    if data[0].errors
+      @local.successes = null
+      @local.errors = data[0].errors
+      save @local
+    else
+      $$.setStyles 'html, #submit_import', {cursor: ''}
+
+      # clear out statebus 
+      arest.clear_matching_objects((key) -> key.match( /\/page\// ))
+      @local.errors = null
+      @local.successes = data[0]
+      save @local
+
+  failed_import_cb: (result) ->
+    $$.setStyles 'html, #submit_import', {cursor: ''}
+    @local.successes = null                      
+    @local.errors = ['Unknown error parsing the files. Email help@consider.it.']
+    save @local
+
   render : ->
 
     subdomain = fetch '/subdomain'
@@ -18,6 +41,9 @@ window.DataDash = ReactiveComponent
     if user_tags
 
       query = "?#{(v.key for v in user_tags).join('=1&')}" 
+
+
+                
 
     DIV null, 
 
@@ -164,6 +190,8 @@ window.DataDash = ReactiveComponent
 
           if current_user.is_super_admin
             [
+
+
               DIV 
                 key: 'generate_inclusions'
                 style: 
@@ -207,28 +235,16 @@ window.DataDash = ReactiveComponent
                 additional_data: 
                   authenticity_token: current_user.csrf
                   trying_to: 'update_avatar_hack'   
-                success: (data) => 
-                  
-                  data = JSON.parse data
-                  if data[0].errors
-                    @local.successes = null
-                    @local.errors = data[0].errors
-                    save @local
-                  else
-                    $$.setStyles 'html, #submit_import', {cursor: ''}
-
-                    # clear out statebus 
-                    arest.clear_matching_objects((key) -> key.match( /\/page\// ))
-                    @local.errors = null
-                    @local.successes = data[0]
-                    save @local
-                error: (result) => 
-                  $$.setStyles 'html, #submit_import', {cursor: ''}
-                  @local.successes = null                      
-                  @local.errors = ['Unknown error parsing the files. Email tkriplean@gmail.com.']
-                  save @local
+                success: @successful_import_cb
+                error: @failed_import_cb
 
             'Import Data'
+
+
+        if current_user.is_super_admin
+          [ @drawArgdownImport(), @drawArgdownExport() ]
+
+
 
 
         if @local.errors && @local.errors.length > 0
@@ -240,9 +256,100 @@ window.DataDash = ReactiveComponent
         if @local.successes
           DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: '#E2FFE2'}, 
             H1 style: {fontSize: 18}, 'Success! Here\'s what happened:'
-            for table in tables
-              if @local.successes[table.toLowerCase()]
-                DIV null,
-                  H1 style: {fontSize: 15, fontWeight: 300}, table
-                  for success in @local.successes[table.toLowerCase()]
-                    DIV style: {marginTop: 10}, success
+            
+            for table, successes of @local.successes
+              for success in successes
+                DIV style: {display: 'block', marginTop: 10}, success
+
+  drawArgdownImport: -> 
+    current_user = fetch '/current_user'
+    FORM 
+      id: 'import_argdown'
+      action: '/dashboard/data_import_argdown'
+      style: 
+        marginTop: 72
+        borderTop: '1px dotted #ddd'
+
+      H2
+        style: 
+          fontSize: 20
+          margin: "16px 0"
+        'Argdown-like Import'
+        SUP
+          style: 
+            color: '#999'
+            fontSize: 12
+            fontWeight: 400
+            paddingLeft: 4
+          'Experimental'
+
+
+      INPUT 
+        id: "argdown-file"
+        name: "argdown-file"
+        type:'file'
+        # style: {backgroundColor: selected_color, color: 'white', fontWeight: 700, borderRadius: 8, padding: 6}
+
+      BUTTON
+        id: 'submit_import_argdown'
+        className: 'btn'
+        style: 
+          display: 'block'
+          marginTop: 24
+          fontSize: 16
+
+        onClick: (e) => 
+          e.preventDefault()
+
+          $$.setStyles 'html, #import_argdown', {cursor: 'wait'}
+
+          ajax_submit_files_in_form
+            form: '#import_argdown'
+            type: 'POST'
+            additional_data: 
+              authenticity_token: current_user.csrf
+              trying_to: 'update_avatar_hack'   
+            success: @successful_import_cb
+            error: @failed_import_cb
+
+        'Import'
+
+
+
+  drawArgdownExport: -> 
+    current_user = fetch '/current_user'
+
+    FORM 
+      action: "/dashboard/export_argdown"
+      method: 'post'
+
+      INPUT 
+        type: 'hidden'
+        name: 'authenticity_token'
+        value: current_user.csrf
+
+      H2
+        style: 
+          fontSize: 20
+          margin: "16px 0"
+        'Argdown-like Export'
+
+        SUP
+          style: 
+            color: '#999'
+            fontSize: 12
+            fontWeight: 400
+            paddingLeft: 4
+          'Experimental'
+
+      INPUT
+        type: 'submit'
+        className: 'btn' 
+        style: 
+          fontSize: 16
+
+        onClick: => 
+          show_flash(translator('admin.flashes.export_started', "Your export has started. It can take a little while."))
+
+        value: 'Export Argdown'
+

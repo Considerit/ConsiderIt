@@ -339,7 +339,7 @@ class SubdomainController < ApplicationController
       end
     end
 
-    current_subdomain.update_attributes attrs
+    current_subdomain.update_attributes! attrs
     dirty_key '/subdomain'
     render :json => []
   end

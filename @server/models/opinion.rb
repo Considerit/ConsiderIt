@@ -29,9 +29,9 @@ class Opinion < ApplicationRecord
     result
   end
 
-  def self.get_or_make(proposal)
+  def self.get_or_make(proposal, user)
     # Each (user,proposal) should have only one opinion.
-    user = current_user
+    user ||= current_user
     
     # First try to find a published opinion for this user
     your_opinion = user.opinions.where(:proposal_id => proposal.id).order('id DESC')

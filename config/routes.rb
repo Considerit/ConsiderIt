@@ -143,6 +143,9 @@ ConsiderIt::Application.routes.draw do
 
   post "/dashboard/data_import_export" => 'import_data#create'
 
+  post "/dashboard/data_import_argdown" => 'import_data#import_argdown'
+  post "/dashboard/export_argdown" => 'import_data#export_argdown'
+
   get '/your_forums' => 'current_user#all_forums'
 
 

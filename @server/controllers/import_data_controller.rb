@@ -866,7 +866,7 @@ class ImportDataController < ApplicationController
       list = @subdomain.customizations[list_key]      
 
       desc = list["list_description"]
-      if desc && desc.strip.length > 0
+      if !params[:exclude_descriptions] && desc && desc.strip.length > 0
         desc = ": #{desc}"
       else 
         desc = ""
@@ -878,17 +878,19 @@ class ImportDataController < ApplicationController
           meta.delete(k)
         end
       end 
-      meta_str = meta.length > 0 ? ' ' + JSON.dump(meta) : ""
+      meta_str = meta.length > 0 || params[:exclude_metadata] ? ' ' + JSON.dump(meta) : ""
 
       @argdown += "\n[#{list["list_title"].strip}]#{desc}#{meta_str}\n"
 
-      (@proposals_by_list[list_key] || []).each do |p|
-        ex_proposal(p)
+      if !params[:exclude_proposals]
+        (@proposals_by_list[list_key] || []).each_with_index do |p, idx|
+          ex_proposal(p, idx)
+        end
       end
     end
 
-    def ex_proposal(proposal)
-      if proposal.description && proposal.description.strip.length > 0
+    def ex_proposal(proposal, idx)
+      if !params[:exclude_descriptions] && proposal.description && proposal.description.strip.length > 0
         desc = ": #{proposal.description.strip.gsub(/\R+/, '<br>')}"
       else 
         desc = ""
@@ -903,18 +905,25 @@ class ImportDataController < ApplicationController
       if author_opinion
         meta["author_opinion"] = "#{author_opinion.stance}"
       end
-      meta_str = JSON.dump(meta)
+      meta_str =  params[:exclude_metadata] ? '' : JSON.dump(meta)
 
+      if params[:use_indexes]
+        char = "#{idx}."
+      else
+        char = '*'
+      end
 
-      @argdown += "\n* [#{proposal.name.strip.gsub(/\R+/, '<br>')}]#{desc} #{meta_str}\n"
+      @argdown += "\n#{char} [#{proposal.name.strip.gsub(/\R+/, '<br>')}]#{desc} #{meta_str}\n"
 
-      (@points_by_proposal[proposal.id] || []).each do |p|
-        ex_point(p)
+      if !params[:exclude_points]
+        (@points_by_proposal[proposal.id] || []).each_with_index do |p, idx|
+          ex_point(p, idx)
+        end
       end
     end
 
-    def ex_point(point)
-      if point.text && point.text.strip.length > 0
+    def ex_point(point, idx)
+      if !params[:exclude_descriptions] && point.text && point.text.strip.length > 0
         desc = ": #{point.text.strip.gsub(/\R+/, '<br>')}"
       else 
         desc = ""
@@ -925,15 +934,22 @@ class ImportDataController < ApplicationController
         valence = '-'
       end
 
+      if params[:use_indexes]
+        valence = "#{idx}. "
+      end
+
       meta = {
         "id": point.id,
         "user": "/user/#{point.user_id}"
       }
-      meta_str = JSON.dump(meta)
+      meta_str = params[:exclude_metadata] ? '' : JSON.dump(meta)
 
       @argdown += "\n  #{valence} [#{point.nutshell.strip.gsub(/\R+/, '<br>')}]#{desc} #{meta_str}\n"
-      (@comments_by_point[point.id] || []).each do |p|
-        ex_comment(p)
+      
+      if !params[:exclude_comments]
+        (@comments_by_point[point.id] || []).each do |p|
+          ex_comment(p)
+        end
       end
     end
 
@@ -942,9 +958,7 @@ class ImportDataController < ApplicationController
         "id": comment.id,
         "user": "/user/#{comment.user_id}"
       }
-      meta_str = JSON.dump(meta)
-
-      pp comment.body.strip, comment.body.strip.gsub(/\R+/, '<br>')
+      meta_str = params[:exclude_metadata] ? '' : JSON.dump(meta)
 
       @argdown += "\n    * #{comment.body.strip.gsub(/\R+/, '<br>')} #{meta_str}\n"
     end

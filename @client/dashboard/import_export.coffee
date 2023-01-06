@@ -18,6 +18,7 @@ window.DataDash = ReactiveComponent
       @local.successes = data[0]
       save @local
 
+
   failed_import_cb: (result) ->
     $$.setStyles 'html, #submit_import', {cursor: ''}
     @local.successes = null                      
@@ -320,8 +321,24 @@ window.DataDash = ReactiveComponent
     current_user = fetch '/current_user'
 
     FORM 
+      className: "argdown-export"
       action: "/dashboard/export_argdown"
       method: 'post'
+
+      STYLE 
+        dangerouslySetInnerHTML: __html: """
+          .argdown-export label {
+            display: flex;
+          }
+          .argdown-export input[type='checkbox'] {
+            margin-right: 12px;
+          }
+          .argdown-export .options {
+            margin-bottom: 24px;
+          }
+
+
+        """
 
       INPUT 
         type: 'hidden'
@@ -341,6 +358,63 @@ window.DataDash = ReactiveComponent
             fontWeight: 400
             paddingLeft: 4
           'Experimental'
+
+      DIV 
+        className: 'options'
+        LABEL null,
+
+          INPUT 
+            type: 'checkbox'
+            defaultChecked: false
+            name: 'exclude_metadata'
+
+          "Exclude metadata"
+
+        LABEL null,
+
+          INPUT 
+            type: 'checkbox'
+            defaultChecked: false
+            name: 'exclude_comments'
+
+          "Exclude comments"
+
+        LABEL null,
+
+          INPUT 
+            type: 'checkbox'
+            defaultChecked: false
+            name: 'exclude_points'
+
+          "Exclude points"
+
+        LABEL null,
+
+          INPUT 
+            type: 'checkbox'
+            defaultChecked: false
+            name: 'exclude_proposals'
+
+          "Exclude proposals"
+
+        LABEL null,
+
+          INPUT 
+            type: 'checkbox'
+            defaultChecked: false
+            name: 'exclude_descriptions'
+
+          "Exclude descriptions"
+
+        LABEL null,
+
+          INPUT 
+            type: 'checkbox'
+            defaultChecked: false
+            name: 'use_indexes'
+
+          "Use indexes"
+
 
       INPUT
         type: 'submit'

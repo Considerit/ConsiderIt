@@ -189,6 +189,7 @@ GEM
       marcel (~> 1.0.1)
       mime-types
       terrapin (~> 0.6.0)
+    lemmatizer (0.2.2)
     loofah (2.19.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -364,6 +365,7 @@ GEM
     thread_safe (0.3.6)
     tilt (2.0.11)
     timeout (0.3.1)
+    tomoto (0.3.0-x86_64-darwin)
     trailblazer-option (0.1.2)
     twitter_cldr (6.11.4)
       camertron-eprun
@@ -404,6 +406,7 @@ DEPENDENCIES
   google-api-client
   haml
   kt-paperclip
+  lemmatizer
   mailcatcher
   mailgun-ruby
   message_format
@@ -422,6 +425,7 @@ DEPENDENCIES
   sitemap_generator
   stripe
   thin
+  tomoto
   whenever
 
 BUNDLED WITH

@@ -18,7 +18,7 @@ end
 
 # Ignore requests by Prerender
 Ahoy.exclude_method = lambda do |controller, request|
-  request.user_agent.index('Prerender') != nil
+  request.user_agent.index('Prerender') != nil || request.user_agent.index('HeadlessChrome') != nil
 end
 
 # For GDPR compliance

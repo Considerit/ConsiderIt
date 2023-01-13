@@ -390,8 +390,6 @@ window.styles += """
   # }
 
   input:checked + .toggle_switch_circle:before {
-    -webkit-transform: translateX(26px);
-    -ms-transform: translateX(26px);
     transform: translateX(26px);
   }
 """

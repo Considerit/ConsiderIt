@@ -277,6 +277,9 @@ protected
       elsif key == '/proposals'
         response.append Proposal.summaries current_subdomain, params.has_key?(:all_points)
 
+      elsif key == '/opinions'
+        response.append Opinion.get_all.as_json
+
       elsif key == '/users'
         response.append User.all_for_subdomain
 

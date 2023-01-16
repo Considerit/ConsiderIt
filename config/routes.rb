@@ -85,6 +85,7 @@ ConsiderIt::Application.routes.draw do
   resources :proposal
   get '/proposals' => 'proposal#index'
   get '/all_comments' => 'comment#all_for_subdomain'
+  get '/opinions' => 'opinion#index'
 
   resources :point, :only => [:create, :update, :destroy, :show]
   resources :opinion, :only => [:create, :update, :show]

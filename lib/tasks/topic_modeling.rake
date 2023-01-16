@@ -1,16 +1,30 @@
 task :LDA => :environment do
   data = []
 
-  Subdomain.find_by_name('ainaalohafutures').proposals.each_with_index do |p, idx|
-    wrd = "#{idx}: #{p.cluster} /// #{p.name}"
-    if p.description
-      wrd += " #{ActionView::Base.full_sanitizer.sanitize(p.description)}"
+
+  # for doing proposal-based topic modeling 
+  # Subdomain.find_by_name('ainaalohafutures').proposals.each_with_index do |p, idx|
+  #   wrd = "#{idx}: #{p.cluster} /// #{p.name}"
+  #   if p.description
+  #     wrd += " #{ActionView::Base.full_sanitizer.sanitize(p.description)}"
+  #   end
+  #   data.push wrd
+  # end
+
+  # for doing pro/con based topic modeling
+  proposal = Subdomain.find_by_name('denverclimateaction').proposals.find_by_slug('it-is-urgent-that-denver-take-action-on-climate-change-major-goal')
+  
+  proposal.points.each_with_index do |p, idx|
+    wrd = "#{idx}: #{p.nutshell}"
+    if p.text
+      wrd += " #{ActionView::Base.full_sanitizer.sanitize(p.text)}"
     end
     data.push wrd
-
   end
 
-  mdl = Tomoto::LDA.new(tw: :one, min_cf: 3, rm_top: 5, seed: 42, k: 20)
+
+
+  mdl = Tomoto::LDA.new(tw: :one, min_cf: 3, rm_top: 5, seed: 42, k: 10)
   lem = Lemmatizer.new
 
   docs = []

@@ -103,6 +103,9 @@ window.A = React.createFactory createReactClass
   render : -> 
 
     props = _.extend {}, @props
+    if props.treat_as_external_link?
+      delete props.treat_as_external_link
+      
     if props.href
       @_onclick = props.onClick or (-> null)
 

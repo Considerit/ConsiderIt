@@ -229,6 +229,20 @@ window.asset = (name) ->
 
   a
 
+window.lazyLoadJavascript = (src, args) ->
+  id = slugify src
+  already_loaded = document.body.querySelector("script##{id}")
+  if !already_loaded
+    script = document.createElement('script')
+    script.type = 'text/javascript'
+    script.id = id
+    script.src = src
+    script.onload = args.onload if args.onload
+    script.onerror = args.onerror if args.onerror
+    document.body.appendChild script
+  !!already_loaded
+
+
 #####
 # data 
 window.opinionsForProposal = (proposal) ->       
@@ -531,7 +545,6 @@ window.heightWhenRendered = (str, style, el) ->
 
     height_cache[key] = height
   height_cache[key]
-
 
 
 

@@ -36,8 +36,9 @@ window.styles += """
     color: black;
     padding: 8px 24px;
     display: block;
-    font-weight: 600;
+    font-weight: 400;
     white-space: nowrap;
+    font-size: 14px;  
   } #DASHBOARD-menu a.active {
      background-color: #{selected_color};
      color: white;
@@ -55,10 +56,11 @@ window.styles += """
   }
   #DASHBOARD-menu div {
     text-transform: uppercase;
-    padding: 56px 24px 8px 24px;
+    padding: 25px 24px 8px 24px;
     font-weight: 600;
     opacity: .5;
-    font-size: 14px;
+    font-size: 0px;
+    visibility: hidden;    
   }  
   #DASHBOARD-main {
     flex: 1;
@@ -189,8 +191,8 @@ window.Dashboard = ReactiveComponent
         key: opts.href
         className: if active then 'active'
         href: opts.href
-        style: 
-          paddingLeft: 44
+        # style: 
+        #   paddingLeft: 44
         if opts.icon && false
           SPAN
             className: 'icon'

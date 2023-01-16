@@ -4,7 +4,7 @@ class CommentController < ApplicationController
   def all_for_subdomain
 
     current_subdomain.points.each do |point|
-      if permit('read point', point) > 0 && point.comment_count > 0
+      if permit('read point', point) > 0 # && point.comment_count > 0
         dirty_key "/comments/#{point.id}"
       end
     end 

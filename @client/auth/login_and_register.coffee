@@ -176,6 +176,8 @@ window.CreateAccount = ReactiveComponent
         action: form_name
         has_host_questions: false
         has_avatar_upload: true
+        onSuccess: -> 
+          plausibleRegistrationEvent?()
 
     email_fields =           
       DIV null, 

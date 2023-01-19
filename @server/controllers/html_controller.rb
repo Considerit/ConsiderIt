@@ -55,15 +55,16 @@ class HtmlController < ApplicationController
 
     manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})
 
-    
     if current_subdomain.name == 'homepage'
       @app = "product_page"
       @google_analytics_code = APP_CONFIG[:google_analytics_product]
       @js_dependencies = "/#{manifest['product_page_dependencies']}"
+      @plausible_domain = APP_CONFIG[:plausible_domain_product]
     else 
       @app = "franklin"
       @google_analytics_code = APP_CONFIG[:google_analytics]
       @js_dependencies = nil
+      @plausible_domain = APP_CONFIG[:plausible_domain]
     end 
 
     @js = "/#{manifest[@app]}"

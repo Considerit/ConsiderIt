@@ -102,6 +102,7 @@
         %script{:src => "#{@vendor}/vendor/rematrix-0.20.0.min.js", :type => 'text/javascript'}        
 
         %script{:src => "#{@vendor}/vendor/flip-toolkit-7.0.17.min.js", :type => 'text/javascript'}
+        
         %script{:src => "#{@vendor}/vendor/react-flip-toolkit-7.0.17.min.js", :type => 'text/javascript'}
 
 
@@ -111,15 +112,97 @@
 
       %script{:src => "#{@vendor}/vendor/md5.js", :type => 'text/javascript'}
 
+      - if (Rails.env.production? || @testing_local) && (@plausible_domain && @plausible_domain != '')
+        %script{:src => "https://plausible.io/js/script#{Rails.env.development? ? '.local' : ''}.manual.js", :defer => true, :"data-domain" => @plausible_domain, :type => 'text/javascript'}
+
+        :javascript
+          // Recommended from https://plausible.io/docs/script-extensions
+          window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }
+
+          // for preventing submitting duplicate views
+          window.pl_pageviews = {}
+
+
+          function getPlausibleHREF () {
+            if ("#{current_subdomain.name}" != 'homepage'){
+              return location.origin + "/#{current_subdomain.name}" + location.pathname + location.search
+            }
+            else 
+              return location.href
+          }
+
+          // This is modified from https://github.com/plausible/analytics/blob/135471c32e1f4d306c629b24066f2fb5f14735cb/tracker/src/plausible.js
+          // We use the manual script because we want to modify the hostname / href so they all land on the same plausible site. 
+          // Otherwise we want all the normal plausible behavior
+
+          var lastPage;
+
+          function page() {
+            if (lastPage === location.pathname) return;
+            lastPage = location.pathname
+
+            // change the modified href
+            var href = getPlausibleHREF()
+
+            if (pl_pageviews[href]) return; // don't log multiple views of the same page
+            pl_pageviews[href] = true;
+
+            plausible('pageview', {u: href})
+          }
+
+          var his = window.history
+          if (his.pushState) {
+            var originalPushState = his['pushState']
+            his.pushState = function() {
+              originalPushState.apply(this, arguments)
+              page();
+            }
+            window.addEventListener('popstate', page)
+          }
+
+          function handleVisibilityChange() {
+            if (!lastPage && document.visibilityState === 'visible') {
+              page()
+            }
+          }
+
+          if (document.visibilityState === 'prerender') {
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+          } else {
+            page()
+          }
+
+
+          // some custom events
+          var last_registration_status = false;
+          function plausibleEvent (name) {
+              plausible(name, {u: getPlausibleHREF()})
+          }
+          window.plausibleEvent = plausibleEvent;
+
+
       - if Rails.env.production? && (@google_analytics_code && @google_analytics_code != '')
 
         %script{:async => true, :src => "https://www.googletagmanager.com/gtag/js?id=#{@google_analytics_code}"}
 
         :javascript
+          // try to create the least privacy violating google analytics config 
+          // while preserving some minimal functionality
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
           gtag('config', '#{@google_analytics_code}');
+          gtag('consent', 'default', {
+            'ad_storage': 'denied',
+            'ads_data_redaction': 'true',
+            'analytics_storage': 'denied'
+          });
+          gtag('set', {
+            'restricted_data_processing': true,
+            'allow_ad_personalization_signals': false,
+            'allow_google_signals': false
+          });
+
 
         
     %body

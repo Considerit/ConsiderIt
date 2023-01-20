@@ -113,7 +113,7 @@
       %script{:src => "#{@vendor}/vendor/md5.js", :type => 'text/javascript'}
 
       - if (Rails.env.production? || @testing_local) && (@plausible_domain && @plausible_domain != '')
-        %script{:src => "https://plausible.io/js/script#{Rails.env.development? ? '.local' : ''}.manual.js", :defer => true, :"data-domain" => @plausible_domain, :type => 'text/javascript'}
+        %script{:src => "#{Rails.env.development? ? 'https://plausible.io/js/script.local.manual.js' : '/js/plausible.js'}", :defer => true, :"data-domain" => @plausible_domain, :type => 'text/javascript'}
 
         :javascript
           // Recommended from https://plausible.io/docs/script-extensions

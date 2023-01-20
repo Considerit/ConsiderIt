@@ -36,7 +36,6 @@ class Subdomain < ApplicationRecord
     if current_user.is_admin?
       json['roles'] = self.user_roles
       json['invitations'] = nil
-      json['google_analytics_code'] = self.google_analytics_code
     else
       json['roles'] = self.user_roles(filter = true)
     end

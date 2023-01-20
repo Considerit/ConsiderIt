@@ -181,29 +181,6 @@
           window.plausibleEvent = plausibleEvent;
 
 
-      - if Rails.env.production? && (@google_analytics_code && @google_analytics_code != '')
-
-        %script{:async => true, :src => "https://www.googletagmanager.com/gtag/js?id=#{@google_analytics_code}"}
-
-        :javascript
-          // try to create the least privacy violating google analytics config 
-          // while preserving some minimal functionality
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', '#{@google_analytics_code}');
-          gtag('consent', 'default', {
-            'ad_storage': 'denied',
-            'ads_data_redaction': 'true',
-            'analytics_storage': 'denied'
-          });
-          gtag('set', {
-            'restricted_data_processing': true,
-            'allow_ad_personalization_signals': false,
-            'allow_google_signals': false
-          });
-
-
         
     %body
       .hidden 

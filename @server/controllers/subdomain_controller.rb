@@ -1,4 +1,8 @@
 
+# for Plausible API calls
+require 'uri'
+require 'net/http'
+
 class SubdomainController < ApplicationController
   skip_before_action :verify_authenticity_token, :only => :update_images_hack
   include Invitations
@@ -75,6 +79,7 @@ class SubdomainController < ApplicationController
 
       if (params[:upgrade] && current_user.paid_forums > Subdomain.where(:created_by => current_user).where("plan > 0").count) || (Rails.env == 'development' && params[:skip_seeding])
         new_subdomain.plan = 1
+        create_plausible_domain new_subdomain
       end 
 
       new_subdomain.save
@@ -236,6 +241,8 @@ class SubdomainController < ApplicationController
       end
     end
 
+    change_in_plausible_status = attrs['customizations'] && attrs['customizations']['enable_plausible_analytics'] != current_subdomain.customizations['enable_plausible_analytics']
+
 
     current_user.add_to_active_in
     current_subdomain.update_attributes! attrs
@@ -243,6 +250,12 @@ class SubdomainController < ApplicationController
     response = current_subdomain.as_json
     if errors.length > 0
       response[:errors] = errors
+    elsif change_in_plausible_status
+      if current_subdomain.customizations['enable_plausible_analytics']
+        create_plausible_domain
+      else 
+        destroy_plausible_domain
+      end
     end
     render :json => [response]
 
@@ -278,6 +291,70 @@ class SubdomainController < ApplicationController
     end
 
     render :json => []
+  end
+
+  def create_plausible_domain(subdomain=nil)
+    pp "CREATING!"
+    begin
+      subdomain ||= current_subdomain
+
+      site = "#{subdomain.name}.#{APP_CONFIG[:plausible_domain]}"
+      # curl -X POST https://plausible.io/api/v1/sites \
+      #   -H "Authorization: Bearer ${TOKEN}" \
+      #   -F 'domain="test-domain.com"' \
+      #   -F 'timezone="America/Los_Angeles"'
+
+      uri = URI('https://plausible.io/api/v1/sites')
+      req = Net::HTTP::Post.new(uri)
+      req.set_form_data('domain' => site, 'timezone' => 'America/Los_Angeles')
+      req['Authorization'] = "Bearer #{APP_CONFIG[:plausible_api_key]}"
+
+      res = Net::HTTP.start(uri.hostname, uri.port, :use_ssl => true) do |http|
+        http.request(req)
+      end
+
+      # curl -X PUT https://plausible.io/api/v1/sites/goals \
+      #   -H "Authorization: Bearer ${TOKEN}" \
+      #   -F 'site_id="test-domain.com"' \
+      #   -F 'goal_type="event"' \
+      #   -F 'event_name="Signup"'
+
+      uri = URI('https://plausible.io/api/v1/sites/goals')
+      req = Net::HTTP::Put.new(uri)
+      req.set_form_data('site_id' => site, 'goal_type' => "event", 'event_name' => 'Signup')
+      req['Authorization'] = "Bearer #{APP_CONFIG[:plausible_api_key]}"
+
+      res = Net::HTTP.start(uri.hostname, uri.port, :use_ssl => true) do |http|
+        http.request(req)
+      end
+
+    rescue => e
+      ExceptionNotifier.notify_exception(e) 
+      pp "Could not create plausible domain #{site}", e
+    end
+
+
+  end
+
+  def destroy_plausible_domain(subdomain=nil)
+    begin
+
+      subdomain ||= current_subdomain
+
+      site = "#{subdomain.name}.#{APP_CONFIG[:plausible_domain]}"
+
+      # curl -X DELETE https://plausible.io/api/v1/sites/test-domain.com \
+      #   -H "Authorization: Bearer ${TOKEN}"
+      uri = URI("https://plausible.io/api/v1/sites/#{site}")
+      req = Net::HTTP::Delete.new(uri)
+      req['Authorization'] = "Bearer #{APP_CONFIG[:plausible_api_key]}"
+      res = Net::HTTP.start(uri.hostname, uri.port, :use_ssl => true) do |http|
+        http.request(req)
+      end
+    rescue => e
+      ExceptionNotifier.notify_exception(e) 
+      pp "Could not destroy plausible domain"
+    end
   end
 
   def destroy

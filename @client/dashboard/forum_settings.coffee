@@ -323,6 +323,41 @@ window.ForumSettingsDash = ReactiveComponent
               'Newly registered participants must agree to be civil and to use only one account.'
               
             
+      ########################
+      # Plausible analytics
+      if current_user.is_super_admin
+        DIV className: 'input_group checkbox',
+
+          LABEL 
+            className: 'toggle_switch'
+
+            INPUT 
+              id: 'enable_plausible'
+              type: 'checkbox'
+              name: 'enable_plausible'
+              defaultChecked: customization('enable_plausible_analytics')
+              onChange: (ev) -> 
+                subdomain.customizations ||= {}
+                subdomain.customizations.enable_plausible_analytics = ev.target.checked
+                save subdomain, ->
+
+
+            SPAN 
+              className: 'toggle_switch_circle'
+          
+
+          LABEL 
+            className: 'indented'
+
+            htmlFor: 'enable_plausible'
+            B null, 
+              'Collect Advanced Visitation Data.'
+            DIV 
+              className: 'explanation'
+              'Plausible Analytics for this forum.'
+
+
+
 
       ########################
       # Participation with registration

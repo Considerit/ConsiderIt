@@ -1,5 +1,6 @@
 
 require 'exception_notification'
+require Rails.root.join("@email", "send_digest")
 
 task :send_email_notifications => :environment do
 

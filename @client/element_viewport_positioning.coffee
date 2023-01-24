@@ -107,7 +107,6 @@ window.$$ =
       if options.scroll
 
         distance_to_travel = options.speed || Math.abs( doc_top - (el_top - options.offset_buffer) )
-        console.log distance_to_travel, Math.min(distance_to_travel, 1500)
 
         if options.dom_possibly_shifting
 

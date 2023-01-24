@@ -192,21 +192,6 @@
 
 
 
-      :javascript
-        //http://stackoverflow.com/questions/7742781/why-javascript-only-works-after-opening-developer-tools-in-ie-once
-        if(!window.console) {
-          window.console={
-            log : function(){},
-            assert : function(){},
-            info : function(){},
-            warn : function(){},
-            error : function(){},
-            time : function(){},
-            timeEnd : function(){}
-          }
-        }
-
-
       - if @js_dependencies
         %script{:src => @js_dependencies, :type => 'text/javascript'}
 
@@ -230,9 +215,6 @@
 
         - if current_subdomain.name == 'homepage'
           %script{:async => "true", :src => "#{@vendor}/vendor/d3.v3.min.js", :type => 'text/javascript'}
-
-
-      %script{:async => true, :defer => true, :type => 'text/javascript', :src => "https://translate.google.com/translate_a/element.js"}
 
       %script{:type => 'text/javascript', :src => "#{@vendor}/vendor/ahoy-0.4.0-min.js"}
 

@@ -923,7 +923,7 @@ CollapseList = (list_key) ->
 
           # google translate widget causes weird behavior when animating height of document
           google_translate = document.querySelector('[data-widget="GoogleTranslate"]')
-          google_translate.style.display = "none"
+          google_translate?.style.display = "none"
 
           list_el.style.transition = "max-height 1000ms ease"
           padding_el = if TABLET_SIZE() then list_el.querySelector('.ListHeader-wrapper') else list_el
@@ -945,7 +945,7 @@ CollapseList = (list_key) ->
               list_el.style.maxHeight = ''
               list_el.style.overflow = ''
               setTimeout -> 
-                google_translate.style.display = ""     
+                google_translate?.style.display = ""     
               , 1000
             , 100
 

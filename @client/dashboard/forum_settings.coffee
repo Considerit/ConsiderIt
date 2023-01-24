@@ -322,6 +322,46 @@ window.ForumSettingsDash = ReactiveComponent
               className: 'explanation'
               'Newly registered participants must agree to be civil and to use only one account.'
               
+
+      DIV className: 'input_group checkbox',
+
+        LABEL 
+          className: 'toggle_switch'
+
+          INPUT 
+            id: 'enable_google_translate'
+            type: 'checkbox'
+            name: 'enable_google_translate'
+            defaultChecked: !customization('disable_google_translate')
+            onChange: (ev) -> 
+              subdomain.customizations ||= {}
+              subdomain.customizations.disable_google_translate = !ev.target.checked
+              save subdomain
+
+
+          SPAN 
+            className: 'toggle_switch_circle'
+        
+
+        LABEL 
+          className: 'indented'
+
+          htmlFor: 'enable_google_translate'
+          B null, 
+            'Enable Google Translate.'
+          SUP 
+            style: 
+              fontSize: 10
+            "Not recommended for EU forums or private forums"
+          DIV 
+            className: 'explanation'
+            """
+              The Google Translate widget allows participants to select a different language. The entire 
+              forum, including other participants\' comments, will then be translated to that target language.
+              If you are running a private forum or a forum in the EU, you should disable this functionality because
+              all text to be translated is sent to Google's servers and retained there to train the language model.
+            """
+
             
       ########################
       # Plausible analytics
@@ -339,7 +379,7 @@ window.ForumSettingsDash = ReactiveComponent
               onChange: (ev) -> 
                 subdomain.customizations ||= {}
                 subdomain.customizations.enable_plausible_analytics = ev.target.checked
-                save subdomain, ->
+                save subdomain
 
 
             SPAN 

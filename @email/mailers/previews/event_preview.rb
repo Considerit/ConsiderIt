@@ -1,6 +1,6 @@
 # previewable at /rails/mailers
 
-class EventPreview < ActionMailer::Preview
+class Previews::EventPreview < ActionMailer::Preview
 
   def send_message
     subdomain = Subdomain.first

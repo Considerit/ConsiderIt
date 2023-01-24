@@ -2,7 +2,7 @@
 
 require Rails.root.join("@email", "send_digest")
 
-class DigestPreview < ActionMailer::Preview
+class Previews::DigestPreview < ActionMailer::Preview
 
   def digest 
     subdomain = Subdomain.find(4053)

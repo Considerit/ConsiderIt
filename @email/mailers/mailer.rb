@@ -1,4 +1,3 @@
-require Rails.root.join('@server', 'extras', 'translations')
 
 class Mailer < ActionMailer::Base
   layout 'email'

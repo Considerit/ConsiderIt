@@ -2,15 +2,15 @@
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
 #
-# Note that this schema.rb definition is the authoritative source for your
-# database schema. If you need to create the application database on another
-# system, you should be using db:schema:load, not running all the migrations
-# from scratch. The latter is a flawed and unsustainable approach (the more migrations
-# you'll amass, the slower it'll run and the greater likelihood for issues).
+# This file is the source Rails uses to define your schema when running `rails
+# db:schema:load`. When creating a new database, `rails db:schema:load` tends to
+# be faster and is potentially less error prone than running all of your
+# migrations from scratch. Old migrations may fail to apply correctly if those
+# migrations use external dependencies or application code.
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_12_14_204513) do
+ActiveRecord::Schema.define(version: 2023_01_24_190707) do
 
   create_table "ahoy_events", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "subdomain_id"
@@ -175,7 +175,7 @@ ActiveRecord::Schema.define(version: 2022_12_14_204513) do
 
   create_table "proposals", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.text "name", collation: "utf8mb4_0900_ai_ci"
-    t.text "description", limit: 16777215
+    t.text "description", size: :medium
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer "subdomain_id"
@@ -265,7 +265,7 @@ ActiveRecord::Schema.define(version: 2022_12_14_204513) do
     t.string "twitter_uid", collation: "utf8mb3_unicode_ci"
     t.string "twitter_handle", collation: "utf8mb3_unicode_ci"
     t.boolean "registered", default: false
-    t.text "b64_thumbnail", limit: 4294967295
+    t.text "b64_thumbnail", size: :long
     t.json "tags"
     t.json "active_in"
     t.boolean "super_admin", default: false

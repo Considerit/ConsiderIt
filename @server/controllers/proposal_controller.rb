@@ -24,7 +24,7 @@ class ProposalController < ApplicationController
     errors = []
 
     if !attrs['name'] || attrs['name'].length == 0
-      errors.append translator('errors.summary_required', 'A summary is required')
+      errors.append Translations.translate('errors.summary_required', 'A summary is required')
     end
 
     return errors
@@ -92,11 +92,11 @@ class ProposalController < ApplicationController
     proposal = Proposal.find params[:id]
     errors = []
 
-    if permit('update proposal', proposal) > 0
+    if Permissions.permit('update proposal', proposal) > 0
       fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage']
 
       if params.has_key?('cluster') && params['cluster'] != proposal.cluster 
-        if permit('set category', params['cluster']) <= 0 
+        if Permissions.permit('set category', params['cluster']) <= 0 
           params.delete('cluster')
         end 
       end

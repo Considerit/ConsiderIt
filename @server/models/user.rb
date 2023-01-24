@@ -66,7 +66,7 @@ class User < ApplicationRecord
       tags: tags || {},
       is_super_admin: self.super_admin,
       is_admin: is_admin?,
-      is_moderator: permit('moderate content', nil) > 0,
+      is_moderator: Permissions.permit('moderate content', nil) > 0,
       trying_to: nil,
       subscriptions: subscription_settings(current_subdomain),
       verified: verified,
@@ -125,7 +125,7 @@ class User < ApplicationRecord
       end
 
       if current_user.key != u['key'] && anonymize_everything
-        u['name'] = translator('anonymous', 'Anonymous')
+        u['name'] = Translations.translate('anonymous', 'Anonymous')
         u['avatar_file_name'] = nil
       end 
     end 

@@ -105,7 +105,7 @@ class OembedController < ApplicationController
     # if someone has accessed a non-existent subdomain or the mime type isn't HTML (must be accessing a nonexistent file)
     @proposal = Proposal.find_by_slug params[:slug]
 
-    if !@proposal || permit("read proposal", @proposal) < 0 || !current_subdomain || request.format.to_s != 'text/html' || request.fullpath.include?('data:image')
+    if !@proposal || Permissions.permit("read proposal", @proposal) < 0 || !current_subdomain || request.format.to_s != 'text/html' || request.fullpath.include?('data:image')
       @not_found = true
     end
 

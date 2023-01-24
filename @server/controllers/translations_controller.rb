@@ -1,9 +1,7 @@
 
-require Rails.root.join('@server', 'extras', 'translations')
-
 class TranslationsController < ApplicationController
 
-  include PSEUDOLOCALIZATION
+  include Translations::PSEUDOLOCALIZATION
 
 
   def show 
@@ -31,8 +29,8 @@ class TranslationsController < ApplicationController
     exclude = {'authenticity_token' => 1, 'subdomain' => 1, 'action' => 1, 'controller' => 1}
     updated = params.select{|k,v| !exclude.has_key?(k)}.to_h
 
-    if permit('update all translations') > 0
-      update_translations(key, updated)
+    if Permissions.permit('update all translations') > 0
+      Translations.UpdateTranslations(key, updated)
     else 
       translations_made = false
 
@@ -40,7 +38,7 @@ class TranslationsController < ApplicationController
       #    - create a translatable message if that message is not yet populating the datastore
       #    - propose new translations to existing translatable messages (only one per user per message)
 
-      old = get_translations(key)
+      old = Translations.GetTranslations(key)
 
       updated.each do |id, message|
         if id == 'key'
@@ -121,7 +119,7 @@ class TranslationsController < ApplicationController
         end
       end
 
-      update_translations(key, old)
+      Translations.UpdateTranslations(key, old)
 
       if translations_made
         EventMailer.translations_proposed(current_subdomain).deliver_later
@@ -130,7 +128,7 @@ class TranslationsController < ApplicationController
     end
 
     if key.end_with?('/en')
-      PSEUDOLOCALIZATION::synchronize(key)
+      Translations::PSEUDOLOCALIZATION::synchronize(key)
     end
 
     dirty_key key

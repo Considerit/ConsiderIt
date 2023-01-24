@@ -14,7 +14,7 @@ class IsSAMLRoute
   end 
 end
 
-ConsiderIt::Application.routes.draw do
+Rails.application.routes.draw do
 
   if Rails.env.development?  
     get '/rails/mailers' => "rails/mailers#index"
@@ -31,17 +31,20 @@ ConsiderIt::Application.routes.draw do
   # oauth submits an HTML GET request back to the server 
   # with the user data, which is handled by 
   # CurrentUserController#update_via_third_party.
-  match "/auth/:provider",
-    constraints: { provider: /google_oauth2|facebook|twitter/},
-    to: "current_user#passthru",
-    as: :user_omniauth_authorize,
-    via: [:get, :post]
 
-  match "/auth/:action/callback",
-    constraints: { action: /google_oauth2|facebook|twitter/ },
-    to: "current_user#update_via_third_party",
-    as: :user_omniauth_callback,
-    via: [:get, :post]
+  providers = ['google_oauth2', 'facebook', 'twitter']
+  providers.each do |provider|
+    match "/auth/#{provider}",
+      to: "current_user#passthru",
+      # as: :user_omniauth_authorize,
+      via: [:get, :post]
+
+
+    match "/auth/#{provider}/callback",
+      to: "current_user#update_via_third_party",
+      # as: :user_omniauth_callback,
+      via: [:get, :post]
+  end
   ###################
 
   get '/oembed(.:format)' => 'oembed#show'

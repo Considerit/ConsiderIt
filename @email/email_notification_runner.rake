@@ -1,8 +1,6 @@
 
 require 'exception_notification'
 
-require Rails.root.join("@email", "send_digest")
-
 task :send_email_notifications => :environment do
 
   # make sure that an email notification task isn't already running   

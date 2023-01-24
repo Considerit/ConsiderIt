@@ -4,7 +4,7 @@ class DigestMailer < Mailer
   layout 'digest'
 
   def digest(subdomain, user, new_stuff, last_sent_at, send_limit)
-    set_translation_context(user, subdomain)
+    Translations.SetTranslationContext(user, subdomain)
 
     @send_limit = send_limit
     @last_sent_at = last_sent_at
@@ -17,14 +17,14 @@ class DigestMailer < Mailer
     @subdomain = subdomain
     @user = user
 
-    subject = translator( {id: "email.digest.subject_line", forum_name: subdomain.title},    
+    subject = Translations.translate( {id: "email.digest.subject_line", forum_name: subdomain.title},    
                   "New activity at {forum_name}")
 
     subject = subject_line subject, @subdomain
 
     send_mail from: from_field(@subdomain), to: to_field(user), subject: subject
     
-    clear_translation_context()
+    Translations.ClearTranslationContext()
 
   end
 

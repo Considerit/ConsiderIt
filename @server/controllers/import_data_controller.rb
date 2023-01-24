@@ -1,9 +1,6 @@
 require 'csv'
 require 'zip'
 
-require 'data_exports'
-include Exports
-
 EXPORT_PATH = "lib/tasks/client_data/export/"
 
 # Imports data from CSVs
@@ -494,10 +491,10 @@ class ImportDataController < ApplicationController
     tag_whitelist = request.query_parameters.keys()
 
     exports = [
-      {fname: "#{subdomain.name}-opinions.csv",  rows: Exports.opinions(subdomain)},
-      {fname: "#{subdomain.name}-points.csv",    rows: Exports.points(subdomain)},
-      {fname: "#{subdomain.name}-users.csv",     rows: Exports.users(subdomain, tag_whitelist)},
-      {fname: "#{subdomain.name}-proposals.csv", rows: Exports.proposals(subdomain)},
+      {fname: "#{subdomain.name}-opinions.csv",  rows: DataExports.opinions(subdomain)},
+      {fname: "#{subdomain.name}-points.csv",    rows: DataExports.points(subdomain)},
+      {fname: "#{subdomain.name}-users.csv",     rows: DataExports.users(subdomain, tag_whitelist)},
+      {fname: "#{subdomain.name}-proposals.csv", rows: DataExports.proposals(subdomain)},
     ]
 
     zip_path = "#{EXPORT_PATH}#{subdomain.name}.zip"

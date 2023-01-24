@@ -1,8 +1,5 @@
-require Rails.root.join('@server', 'extras', 'translations')
-
-
 task :fix_translations_escaping => :environment do 
-  base_translations = get_translations '/translations'
+  base_translations = Translations.GetTranslations '/translations'
   base_translations["available_languages"].each do |langcode, lang| 
     pp "",""
     pp "Migrating #{lang} (#{langcode})"
@@ -10,7 +7,7 @@ task :fix_translations_escaping => :environment do
 
 
     lang_key = "/translations/#{langcode}"
-    trans = get_translations lang_key
+    trans = Translations.GetTranslations lang_key
 
 
     to_fix = {}
@@ -26,7 +23,7 @@ task :fix_translations_escaping => :environment do
       trans[key]['txt'] = val
     end
 
-    update_translations lang_key, trans
+    Translations.UpdateTranslations lang_key, trans
 
   end
 
@@ -47,9 +44,9 @@ task :migrate_translations => :environment do
 
 
   def sync_keys_with_english
-    base_translations = get_translations '/translations'
+    base_translations = Translations.GetTranslations '/translations'
 
-    en_dict = get_translations "/translations/en"
+    en_dict = Translations.GetTranslations "/translations/en"
 
     base_translations["available_languages"].each do |langcode, lang| 
       next if langcode == 'en'
@@ -58,7 +55,7 @@ task :migrate_translations => :environment do
       pp ""
 
       lang_key = "/translations/#{langcode}"
-      trans = get_translations lang_key
+      trans = Translations.GetTranslations lang_key
 
       deleted = false 
       trans.each do |key, ___|
@@ -70,7 +67,7 @@ task :migrate_translations => :environment do
       end
 
       if deleted 
-        update_translations lang_key, trans
+        Translations.UpdateTranslations lang_key, trans
       end
 
     end 
@@ -78,7 +75,7 @@ task :migrate_translations => :environment do
   end
 
   def execute_translation_migration(overwrite = false)
-    base_translations = get_translations '/translations'
+    base_translations = Translations.GetTranslations '/translations'
     base_translations["available_languages"].each do |langcode, lang| 
       pp "",""
       pp "Migrating #{lang} (#{langcode})"
@@ -86,7 +83,7 @@ task :migrate_translations => :environment do
 
 
       lang_key = "/translations/#{langcode}"
-      trans = get_translations lang_key
+      trans = Translations.GetTranslations lang_key
 
       $to_rename.each do |source, dest|
         if trans.has_key?(source)
@@ -109,7 +106,7 @@ task :migrate_translations => :environment do
         end
       end 
 
-      update_translations lang_key, trans
+      Translations.UpdateTranslations lang_key, trans
 
     end
 

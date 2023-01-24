@@ -78,7 +78,7 @@
       %script{:type => 'text/javascript'}
         window.asset_host = '#{Rails.application.config.action_controller.asset_host}'
 
-
+        
       %script{:src => "https://polyfill.io/v3/polyfill.min.js?features=Intl%2CIntl.PluralRules%2CIntl.Locale%2CIntl.PluralRules.~locale.en%2CIntl.~locale.en", :type => 'text/javascript'}
 
       // %script{:src => "#{@vendor}/vendor/formatjs-intl-pluralrules.polyfill.min.js", :type => 'text/javascript'}
@@ -186,7 +186,7 @@
     %body
       .hidden 
         %a{ :href => 'accessibility_support', :style => 'position:absolute;left:-10000px;' }   
-          #{translator("accessibility.link_to_support_page", "Accessibility support for considerit")}
+          #{Translations.translate("accessibility.link_to_support_page", "Accessibility support for considerit")}
           
       #content.content{ subdomain: current_subdomain.name }
 

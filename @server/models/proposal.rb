@@ -81,7 +81,7 @@ class Proposal < ApplicationRecord
     subdomain ||= current_subdomain
     
     # Impose access control restrictions for current user
-    read_proposals = permit('read proposal')
+    read_proposals = Permissions.permit('read proposal')
     if read_proposals <= 0
       proposals = []
     else
@@ -242,7 +242,7 @@ class Proposal < ApplicationRecord
         roles = Oj.load(p["roles"])
 
         # this logic taken from 'update proposal' permission, so those need to be kept in sync
-        can_update = registered && (is_admin || Permitted::matchEmail(Proposal.user_roles(roles)['editor'], current_user))
+        can_update = registered && (is_admin || Permissions::matchEmail(Proposal.user_roles(roles)['editor'], current_user))
         p['roles'] = Proposal.user_roles roles, !can_update
         if can_update
           p['invitations'] = nil
@@ -405,7 +405,7 @@ class Proposal < ApplicationRecord
     make_key(json, 'proposal')
     stubify_field(json, 'user')
 
-    if permit('update proposal', self) > 0
+    if Permissions.permit('update proposal', self) > 0
       json['roles'] = self.user_roles
       json['invitations'] = nil
     else

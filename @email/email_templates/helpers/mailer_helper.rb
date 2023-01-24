@@ -1,7 +1,7 @@
 module MailerHelper
 
   def section(name)
-    section_name = translator({
+    section_name = Translations.translate({
         id: "email.digest.section_heading.#{name.capitalize.gsub(' ','_')}"
       }, name.capitalize)
 
@@ -53,7 +53,7 @@ module MailerHelper
   end 
 
   def relationship(rel)
-    rel_text = translator("email.digest.relationship.#{rel}", rel)
+    rel_text = Translations.translate("email.digest.relationship.#{rel}", rel)
     if @part == 'text'
       "*#{rel_text}*"
     else 
@@ -70,7 +70,7 @@ module MailerHelper
 
 
   def time_ago(timestamp)
-    timestamp_translation = translator({id: "email.digest.proposal_timestamp", T: timestamp.to_datetime}, "at {T, time, short} on {T, date, full}")
+    timestamp_translation = Translations.translate({id: "email.digest.proposal_timestamp", T: timestamp.to_datetime}, "at {T, time, short} on {T, date, full}")
     if @translation_lang == 'en'
       "#{time_ago_in_words(timestamp)} ago"
     else
@@ -85,14 +85,14 @@ module MailerHelper
     has_relationship = proposal_info.key?(:relationship) && proposal_info[:relationship]
 
 
-    author_text = translator({id: 'email.digest.proposal_author', author: @anonymize_everything ? 'Anonymous' : proposal.user.name}, "by {author}")
-    points_count = translator({id: 'email.digest.points_count', cnt: points.count}, "{ cnt, plural,
+    author_text = Translations.translate({id: 'email.digest.proposal_author', author: @anonymize_everything ? 'Anonymous' : proposal.user.name}, "by {author}")
+    points_count = Translations.translate({id: 'email.digest.points_count', cnt: points.count}, "{ cnt, plural,
                     =0 {no points}
                     one {# point}
                     other {# points}
                   }")
 
-    opinions_count = translator({id: 'email.digest.points_count', cnt: opinions.count}, "{ cnt, plural,
+    opinions_count = Translations.translate({id: 'email.digest.points_count', cnt: opinions.count}, "{ cnt, plural,
                     =0 {no opinions}
                     one {# opinion}
                     other {# opinions}
@@ -107,7 +107,7 @@ module MailerHelper
         text += relationship(proposal_info[:relationship])
       end
 
-      view_text = translator(
+      view_text = Translations.translate(
         {id: "email.digest.proposal_link.text", link: full_link(proposal.slug, {:utm_source => 'digest'})}, 
         "view full proposal at {link}")
       text += "\r\n#{view_text}\r\n\r\n"
@@ -153,7 +153,7 @@ module MailerHelper
     end 
 
     if @part == 'text'
-      text = translator("email.digest.proposal_activity.text", "New activity") + ":\r\n"
+      text = Translations.translate("email.digest.proposal_activity.text", "New activity") + ":\r\n"
     else 
       html = "<table><tr><td style='padding-left:30px'><table>"
     end 
@@ -176,7 +176,7 @@ module MailerHelper
         label = ev[:type]
       end
 
-      event_heading = translator({
+      event_heading = Translations.translate({
         id: "email.digest.event_heading.#{ev[:type]}", 
         point_type: point_type,
         people_list: people_list(ev[:users]), 
@@ -227,7 +227,7 @@ module MailerHelper
         text += relationship(relationship)
         text += "\r\n"
       end
-      translated_link = translator(
+      translated_link = Translations.translate(
         {id: "email.digest.point_link.text", link: full_link(point.proposal.slug, {results: true, selected: "%2Fpoint%2F#{point.id}", utm_source: 'digest'})}, 
         "View at {link}")
       text += "\r\n#{translated_link}"
@@ -244,14 +244,14 @@ module MailerHelper
 
   def people_list(users)
     if @anonymize_everything
-      translator({id: "email.digest.anonymized_people_list", cnt: users.length}, 
+      Translations.translate({id: "email.digest.anonymized_people_list", cnt: users.length}, 
                 "{ cnt, plural,
                   one {One participant}
                   other {# participants}
                  }")        
 
     elsif users.length > 1
-      translator({id: "email.digest.people_list", name: users[0].name, cnt: users.length - 1}, 
+      Translations.translate({id: "email.digest.people_list", name: users[0].name, cnt: users.length - 1}, 
                 "{name} and { cnt, plural,
                   one {one other}
                   other {# others}

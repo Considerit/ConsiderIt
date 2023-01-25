@@ -1,7 +1,7 @@
 
 class Mailer < ActionMailer::Base
   layout 'email'
-  add_template_helper MailerHelper
+  helper MailerHelper
 
 private
 

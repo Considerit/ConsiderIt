@@ -55,7 +55,7 @@ class HtmlController < ApplicationController
 
     manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})
 
-    @testing_local = true
+    @testing_local = false
     if current_subdomain.name == 'homepage'
       @app = "product_page"
       @js_dependencies = "/#{manifest['product_page_dependencies']}"
@@ -105,8 +105,8 @@ class HtmlController < ApplicationController
                 font-style: #{sty};
                 font-weight: #{weight};
                 src: local(''),
-                     url('#{@vendor}/vendor/fonts/#{font[:prefix]}-#{font[:charsets]}-#{weight!=400 ? weight : ''}#{sty=='italic' ? 'italic' : weight==400 ? 'regular' : ''}.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-                     url('#{@vendor}/vendor/fonts/#{font[:prefix]}-#{font[:charsets]}-#{weight!=400 ? weight : ''}#{sty=='italic' ? 'italic' : weight==400 ? 'regular' : ''}.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+                     url('#{@vendor}/vendor/fonts/#{font[:prefix]}-#{font[:charsets]}-#{weight!=400 ? weight : ''}#{sty==:italic ? 'italic' : (weight==400 ? 'regular' : '')}.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+                     url('#{@vendor}/vendor/fonts/#{font[:prefix]}-#{font[:charsets]}-#{weight!=400 ? weight : ''}#{sty==:italic ? 'italic' : (weight==400 ? 'regular' : '')}.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
               }                
             """
         end

@@ -50,8 +50,8 @@ def prepare_production_database(sql_url)
 
   # Download and extract target production database backup
   if sql_url
-    open('tmp/production_db.tar', 'wb') do |file|
-      file << open(URI.parse(sql_url)).read
+    File.open('tmp/production_db.tar', 'wb') do |file|
+      file << URI.open(URI.parse(sql_url)).read
     end
   else 
     # download latest stored at AWS
@@ -61,11 +61,11 @@ def prepare_production_database(sql_url)
   puts "Preparing local database based on production database #{sql_url or latest}..."
 
   # Backup's tarball is a directory xenogear/databases/MySQL.sql.gz
-  tar_extract = Gem::Package::TarReader.new(open('tmp/production_db.tar'))
+  tar_extract = Gem::Package::TarReader.new(File.open('tmp/production_db.tar'))
   tar_extract.rewind # The extract has to be rewinded after every iteration
   tar_extract.each do |entry|
     if entry.full_name.end_with?('.sql.gz')
-      open('tmp/production_db.sql', 'wb') do |uncompressed_sql|
+      File.open('tmp/production_db.sql', 'wb') do |uncompressed_sql|
         compressed_sql = Zlib::GzipReader.new(entry).read
         chunk_size = compressed_sql.length / 4
         idx = 0 
@@ -176,7 +176,7 @@ def download_files_from_production
             .gsub(":filename", user.avatar_file_name)
 
     begin
-      f = open(path, 'r') 
+      f = File.open(path, 'r') 
     rescue
       puts "Couldn't open file #{path}"
       next

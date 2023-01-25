@@ -48,6 +48,7 @@ token.yml
 
 Vagrantfile
 public/images
+public/legal
 export.rake
 
 @client/product_page

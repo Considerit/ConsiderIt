@@ -16,16 +16,16 @@
 # Permission cases ENUM
 # This needs to be synchronized with client (see @client/permissions.coffee).
 # Failure cases should be less than 0.
-module Permission
-  PERMITTED = 1
-  DISABLED = -1 # no one can take this action
-  UNVERIFIED_EMAIL = -2 # can take action once email is verified 
-  NOT_LOGGED_IN = -3 # not sure if action can be taken
-  INSUFFICIENT_PRIVILEGES = -4 # we know this user can't do this
+module Permissions
 
-end
+  module Status
+    PERMITTED = 1
+    DISABLED = -1 # no one can take this action
+    UNVERIFIED_EMAIL = -2 # can take action once email is verified 
+    NOT_LOGGED_IN = -3 # not sure if action can be taken
+    INSUFFICIENT_PRIVILEGES = -4 # we know this user can't do this
+  end 
 
-module Permitted
   def self.matchEmail(permission_list, user=nil)
     user ||= current_user
     return true if permission_list.index('*')
@@ -50,191 +50,188 @@ module Permitted
     return false
   end
 
-
-end
-
-class PermissionDenied < StandardError
-  attr_reader :reason, :key
-  def initialize(reason, key = nil)
-    @reason = reason
-    @key = key
-  end
-end
-
-
-
-# TODO: 
-#   extend interface to allow for passing user and subdomain so that
-#   permit interface can be used for offline processing, such as 
-#   the notifications subsystem.
-def permit(action, object = nil, user = nil)
-
-  user ||= current_user
-  if object && object.class.name == 'Subdomain'
-    subdomain = object
-  else 
-    subdomain = current_subdomain
+  class Denied < StandardError
+    attr_reader :reason, :key
+    def initialize(reason, key = nil)
+      @reason = reason
+      @key = key
+    end
   end
 
-  return Permission::PERMITTED if user.super_admin
 
-  case action
-  when 'create subdomain'
-    return Permission::NOT_LOGGED_IN if !user.registered
+  # TODO: 
+  #   extend interface to allow for passing user and subdomain so that
+  #   permit interface can be used for offline processing, such as 
+  #   the notifications subsystem.
+  def Permissions.permit(action, object = nil, user = nil)
 
-  when 'update subdomain'
-    return Permission::NOT_LOGGED_IN if !user.registered
-    return Permission::INSUFFICIENT_PRIVILEGES if !user.is_admin?(subdomain)
+    user ||= current_user
+    if object && object.class.name == 'Subdomain'
+      subdomain = object
+    else 
+      subdomain = current_subdomain
+    end
 
-  when 'delete subdomain'
-    return Permission::NOT_LOGGED_IN if !user.registered
-    return Permission::INSUFFICIENT_PRIVILEGES if !user.is_admin?(subdomain)
-    return Permission::UNVERIFIED_EMAIL if !user.verified  
+    return Permissions::Status::PERMITTED if user.super_admin
 
-  when 'create proposal'
-    return Permission::NOT_LOGGED_IN if !user.registered
+    case action
+    when 'create subdomain'
+      return Permissions::Status::NOT_LOGGED_IN if !user.registered
 
-    allowed_for_this_list = false
-    if object 
+    when 'update subdomain'
+      return Permissions::Status::NOT_LOGGED_IN if !user.registered
+      return Permissions::Status::INSUFFICIENT_PRIVILEGES if !user.is_admin?(subdomain)
+
+    when 'delete subdomain'
+      return Permissions::Status::NOT_LOGGED_IN if !user.registered
+      return Permissions::Status::INSUFFICIENT_PRIVILEGES if !user.is_admin?(subdomain)
+      return Permissions::Status::UNVERIFIED_EMAIL if !user.verified  
+
+    when 'create proposal'
+      return Permissions::Status::NOT_LOGGED_IN if !user.registered
+
+      allowed_for_this_list = false
+      if object 
+        list_key = "list/#{object}"
+        customizations = subdomain.customization_json()
+        if customizations.has_key?(list_key) && customizations[list_key].has_key?("list_permit_new_items")
+          allowed_for_this_list = customizations[list_key]["list_permit_new_items"]
+        end
+      end
+
+      if !user.is_admin?(subdomain) && !Permissions::matchEmail(subdomain.user_roles['proposer'], user) && !allowed_for_this_list
+        return Permissions::Status::INSUFFICIENT_PRIVILEGES 
+      end
+
+    when 'read proposal', 'access forum', 'read opinion' # if you try to use object (a proposal object), you need to change Proposal.summaries, which doesn't pass in a proposal object
+      if !user.is_admin?(subdomain) && !Permissions::matchSomeRole(subdomain.user_roles, ['visitor'], user) 
+        if !user.registered
+          return Permissions::Status::NOT_LOGGED_IN 
+        else
+          return Permissions::Status::INSUFFICIENT_PRIVILEGES 
+        end
+      elsif !subdomain.user_roles['visitor'].index('*')
+        if !user.verified
+          return Permissions::Status::UNVERIFIED_EMAIL
+        end
+      end
+
+    when 'update proposal', 'delete proposal'
+      proposal = object
+
+      can_read = permit('read proposal', object)
+      return can_read if can_read < 0
+
+      return Permissions::Status::NOT_LOGGED_IN if !user.registered
+
+      if !user.is_admin?(subdomain) && !Permissions::matchEmail(proposal.user_roles['editor'], user)
+        return Permissions::Status::INSUFFICIENT_PRIVILEGES
+      end
+
+    when 'set category'
       list_key = "list/#{object}"
       customizations = subdomain.customization_json()
-      if customizations.has_key?(list_key) && customizations[list_key].has_key?("list_permit_new_items")
-        allowed_for_this_list = customizations[list_key]["list_permit_new_items"]
-      end
-    end
-
-    if !user.is_admin?(subdomain) && !Permitted::matchEmail(subdomain.user_roles['proposer'], user) && !allowed_for_this_list
-      return Permission::INSUFFICIENT_PRIVILEGES 
-    end
-
-  when 'read proposal', 'access forum', 'read opinion' # if you try to use object (a proposal object), you need to change Proposal.summaries, which doesn't pass in a proposal object
-    if !user.is_admin?(subdomain) && !Permitted::matchSomeRole(subdomain.user_roles, ['visitor'], user) 
-      if !user.registered
-        return Permission::NOT_LOGGED_IN 
+      if !user.is_admin?(subdomain) && customizations.has_key?(list_key) && customizations[list_key].has_key?("list_permit_new_items")
+        allowed = customizations[list_key]["list_permit_new_items"]
       else
-        return Permission::INSUFFICIENT_PRIVILEGES 
+        allowed = permit('create proposal')
       end
-    elsif !subdomain.user_roles['visitor'].index('*')
-      if !user.verified
-        return Permission::UNVERIFIED_EMAIL
+
+      if !allowed 
+        return Permissions::Status::INSUFFICIENT_PRIVILEGES
       end
-    end
 
-  when 'update proposal', 'delete proposal'
-    proposal = object
+    when 'publish opinion'
+      proposal = object
+      return Permissions::Status::DISABLED if !proposal.active
+      return Permissions::Status::NOT_LOGGED_IN if !user.registered
+      if !user.is_admin?(subdomain) && !Permissions::matchSomeRole(proposal.user_roles, ['editor', 'participant'], user)
+        return Permissions::Status::INSUFFICIENT_PRIVILEGES
+      end
 
-    can_read = permit('read proposal', object)
-    return can_read if can_read < 0
-
-    return Permission::NOT_LOGGED_IN if !user.registered
-
-    if !user.is_admin?(subdomain) && !Permitted::matchEmail(proposal.user_roles['editor'], user)
-      return Permission::INSUFFICIENT_PRIVILEGES
-    end
-
-  when 'set category'
-    list_key = "list/#{object}"
-    customizations = subdomain.customization_json()
-    if !user.is_admin?(subdomain) && customizations.has_key?(list_key) && customizations[list_key].has_key?("list_permit_new_items")
-      allowed = customizations[list_key]["list_permit_new_items"]
-    else
-      allowed = permit('create proposal')
-    end
-
-    if !allowed 
-      return Permission::INSUFFICIENT_PRIVILEGES
-    end
-
-  when 'publish opinion'
-    proposal = object
-    return Permission::DISABLED if !proposal.active
-    return Permission::NOT_LOGGED_IN if !user.registered
-    if !user.is_admin?(subdomain) && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'participant'], user)
-      return Permission::INSUFFICIENT_PRIVILEGES
-    end
-
-  when 'update opinion', 'delete opinion'
-    opinion = object
-    
-    can_read = permit 'read opinion', opinion
-    return can_read if can_read < 0
-    return Permission::INSUFFICIENT_PRIVILEGES if user.id != opinion.user_id
-
-  when 'read point'
-    point = object
-
-    if user.id != point.user_id && !user.is_admin?(subdomain)
-      return Permission::DISABLED if point.published && !(point.moderation_status.nil? || point.moderation_status != 0)
-    end
-
-  when 'create point'
-    proposal = object
-    return Permission::DISABLED if !proposal.active
-
-    return Permission::NOT_LOGGED_IN if !user.registered
+    when 'update opinion', 'delete opinion'
+      opinion = object
       
+      can_read = Permissions.permit 'read opinion', opinion
+      return can_read if can_read < 0
+      return Permissions::Status::INSUFFICIENT_PRIVILEGES if user.id != opinion.user_id
 
-    if !user.is_admin?(subdomain) && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'participant'], user)
-      return Permission::INSUFFICIENT_PRIVILEGES 
+    when 'read point'
+      point = object
+
+      if user.id != point.user_id && !user.is_admin?(subdomain)
+        return Permissions::Status::DISABLED if point.published && !(point.moderation_status.nil? || point.moderation_status != 0)
+      end
+
+    when 'create point'
+      proposal = object
+      return Permissions::Status::DISABLED if !proposal.active
+
+      return Permissions::Status::NOT_LOGGED_IN if !user.registered
+        
+
+      if !user.is_admin?(subdomain) && !Permissions::matchSomeRole(proposal.user_roles, ['editor', 'participant'], user)
+        return Permissions::Status::INSUFFICIENT_PRIVILEGES 
+      end
+
+    when 'update point'
+      point = object
+      if !user.is_admin?(subdomain) && user.id != point.user_id
+        return Permissions::Status::INSUFFICIENT_PRIVILEGES 
+      end
+
+    when 'delete point'
+      point = object
+      if !user.is_admin?(subdomain)
+        return Permissions::Status::INSUFFICIENT_PRIVILEGES if user.id != point.user_id
+        return Permissions::Status::DISABLED if point.inclusions.count > 1
+      end
+
+    when 'read comment'
+      comment = object
+      return permit('read point', comment.point)
+
+    when 'create comment'
+      comment = object
+      point = comment.point
+      proposal = point.proposal
+
+      return Permission.DISABLED if !proposal.active
+      return Permissions::Status::NOT_LOGGED_IN if !user.registered
+    
+      if !user.is_admin?(subdomain) && !Permissions::matchSomeRole(proposal.user_roles, ['editor', 'participant'], user)
+        return Permissions::Status::INSUFFICIENT_PRIVILEGES
+      end
+
+    when 'update comment', 'delete comment'
+      comment = object
+      can_read = Permissions.permit 'read comment', comment
+      return can_read if can_read < 0
+
+      if !user.is_admin?(subdomain) && user.id != comment.user_id
+        return Permissions::Status::INSUFFICIENT_PRIVILEGES 
+      end
+
+    when 'update user'
+      if !user.is_admin?(subdomain)
+        return Permissions::Status::INSUFFICIENT_PRIVILEGES 
+      end
+
+    when 'moderate content'
+      return Permissions::Status::NOT_LOGGED_IN if !user.registered
+      return Permissions::Status::INSUFFICIENT_PRIVILEGES if !user.has_any_role?([:admin, :superadmin])
+      return Permissions::Status::UNVERIFIED_EMAIL if !user.verified  
+
+    when 'update all translations'
+      return Permissions::Status::INSUFFICIENT_PRIVILEGES if !user.super_admin
+    else
+      raise "Undefined Permission: #{action}"
     end
 
-  when 'update point'
-    point = object
-    if !user.is_admin?(subdomain) && user.id != point.user_id
-      return Permission::INSUFFICIENT_PRIVILEGES 
-    end
 
-  when 'delete point'
-    point = object
-    if !user.is_admin?(subdomain)
-      return Permission::INSUFFICIENT_PRIVILEGES if user.id != point.user_id
-      return Permission::DISABLED if point.inclusions.count > 1
-    end
 
-  when 'read comment'
-    comment = object
-    return permit('read point', comment.point)
+    # puts "#{user.name} is permitted to #{action}"
 
-  when 'create comment'
-    comment = object
-    point = comment.point
-    proposal = point.proposal
-
-    return Permission.DISABLED if !proposal.active
-    return Permission::NOT_LOGGED_IN if !user.registered
-  
-    if !user.is_admin?(subdomain) && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'participant'], user)
-      return Permission::INSUFFICIENT_PRIVILEGES
-    end
-
-  when 'update comment', 'delete comment'
-    comment = object
-    can_read = permit 'read comment', comment
-    return can_read if can_read < 0
-
-    if !user.is_admin?(subdomain) && user.id != comment.user_id
-      return Permission::INSUFFICIENT_PRIVILEGES 
-    end
-
-  when 'update user'
-    if !user.is_admin?(subdomain)
-      return Permission::INSUFFICIENT_PRIVILEGES 
-    end
-
-  when 'moderate content'
-    return Permission::NOT_LOGGED_IN if !user.registered
-    return Permission::INSUFFICIENT_PRIVILEGES if !user.has_any_role?([:admin, :superadmin])
-    return Permission::UNVERIFIED_EMAIL if !user.verified  
-
-  when 'update all translations'
-    return Permission::INSUFFICIENT_PRIVILEGES if !user.super_admin
-  else
-    raise "Undefined Permission: #{action}"
+    return Permissions::Status::PERMITTED
   end
-
-
-
-  # puts "#{user.name} is permitted to #{action}"
-
-  return Permission::PERMITTED
 end

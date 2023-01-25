@@ -7,7 +7,7 @@ class EventMailer < Mailer
     message['recipient'] = User.find key_id(message['recipient'])
     message['sender'] = current_user
 
-    set_translation_context(message['recipient'], subdomain)
+    Translations.SetTranslationContext(message['recipient'], subdomain)
 
     @message = message
     @subdomain = subdomain
@@ -19,7 +19,7 @@ class EventMailer < Mailer
     reply_to = format_email current_user.email, message['sender_mask']
 
     mail(:from => from, :to => to, :subject => subject_line(@message['subject'], subdomain), :bcc => from, :reply_to => reply_to)
-    clear_translation_context()
+    Translations.ClearTranslationContext()
   end
 
   # HARDCODING ALERT BELOW!!!

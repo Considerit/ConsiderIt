@@ -1,9 +1,6 @@
 require 'csv'
 require 'zip'
 
-require 'data_exports'
-include Exports
-
 EXPORT_PATH = "lib/tasks/client_data/export/"
 
 # Imports data from CSVs
@@ -189,7 +186,7 @@ class ImportDataController < ApplicationController
               user.save
               modified[table].push "Created User '#{user.name}'"
             else 
-              user.update_attributes attrs
+              user.update attrs
               modified[table].push "Updated User '#{user.name}'"              
             end
 
@@ -265,7 +262,7 @@ class ImportDataController < ApplicationController
               proposal.save
               modified[table].push "Created Proposal '#{proposal.slug}'"
             else
-              proposal.update_attributes attrs
+              proposal.update attrs
               modified[table].push "Updated Proposal '#{proposal.slug}'"              
             end
 
@@ -294,7 +291,7 @@ class ImportDataController < ApplicationController
               opinion.publish
               modified[table].push "Created Opinion by #{user.name} on '#{proposal.name}'"
             else
-              opinion.update_attributes attrs
+              opinion.update attrs
               opinion.recache
               modified[table].push "Updated Opinion by #{user.name} on '#{proposal.name}'"
             end
@@ -357,7 +354,7 @@ class ImportDataController < ApplicationController
               modified[table].push "Created Point '#{point.nutshell}'"
               opinion.include point
             else
-              point.update_attributes attrs
+              point.update attrs
               modified[table].push "Updated Point '#{point.nutshell}'"
             end
 
@@ -382,7 +379,7 @@ class ImportDataController < ApplicationController
               comment.save
               modified[table].push "Created Comment '#{comment.body}'"
             else 
-              comment.update_attributes attrs
+              comment.update attrs
               modified[table].push "Updated Comment '#{comment.body}'"
             end
             point.recache
@@ -494,10 +491,10 @@ class ImportDataController < ApplicationController
     tag_whitelist = request.query_parameters.keys()
 
     exports = [
-      {fname: "#{subdomain.name}-opinions.csv",  rows: Exports.opinions(subdomain)},
-      {fname: "#{subdomain.name}-points.csv",    rows: Exports.points(subdomain)},
-      {fname: "#{subdomain.name}-users.csv",     rows: Exports.users(subdomain, tag_whitelist)},
-      {fname: "#{subdomain.name}-proposals.csv", rows: Exports.proposals(subdomain)},
+      {fname: "#{subdomain.name}-opinions.csv",  rows: DataExports.opinions(subdomain)},
+      {fname: "#{subdomain.name}-points.csv",    rows: DataExports.points(subdomain)},
+      {fname: "#{subdomain.name}-users.csv",     rows: DataExports.users(subdomain, tag_whitelist)},
+      {fname: "#{subdomain.name}-proposals.csv", rows: DataExports.proposals(subdomain)},
     ]
 
     zip_path = "#{EXPORT_PATH}#{subdomain.name}.zip"
@@ -702,7 +699,7 @@ class ImportDataController < ApplicationController
           modified['proposals'].push "Created Proposal #{current_proposal.name}"
 
         else
-          current_proposal.update_attributes params
+          current_proposal.update params
           modified['proposals'].push "Modified Proposal #{current_proposal.name}"
         end
         current_proposal.save
@@ -752,7 +749,7 @@ class ImportDataController < ApplicationController
           current_point = Point.new(attrs)
           modified['points'].push "Created point #{current_point.nutshell}"
         else 
-          current_point.update_attributes attrs
+          current_point.update attrs
           modified['points'].push "Modified point #{current_point.nutshell}"
         end
         current_point.save
@@ -788,7 +785,7 @@ class ImportDataController < ApplicationController
           comment = Comment.new(params)
           modified['comments'].push "Created comment #{comment.body}"
         else 
-          comment.update_attributes params 
+          comment.update params 
         end
         comment.save
 

@@ -1,5 +1,8 @@
-# Load the rails application
-require File.expand_path('../application', __FILE__)
+# Load the Rails application.
+require_relative 'application'
+
+
+
 
 # Define global helper functions
 
@@ -152,9 +155,8 @@ def slugify(str)
 end
 
 
-
 # Initialize the rails application
-ConsiderIt::Application.initialize! do |config|
+Rails.application.initialize! do |config|
   config.serve_static_files = true    
 end
 

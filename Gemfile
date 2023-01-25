@@ -2,7 +2,7 @@ source 'http://rubygems.org'
 
 #############
 # CORE
-gem 'rails', '~>5.2'
+gem 'rails', '~> 6.1'
 gem 'activerecord-session_store'  # Because CookieStore has race conditions w/ concurrent ajax requests
 
 #############
@@ -65,6 +65,9 @@ if local_config["default"]["product_page_installed"]
 
   # for contact
   gem 'mailgun-ruby'
+
+  # for markdown parsing
+  gem 'commonmarker'
 end 
 
 # Bundle gems for the local environment. Make sure to
@@ -72,8 +75,9 @@ end
 # and rake tasks are available in development mode:
 group :development, :test do
   gem 'thin'
-  gem 'ruby-prof', '~> 1.0.0'
+  gem 'ruby-prof' #, '~> 1.0.0'
   gem 'mailcatcher'
+  gem 'listen'
   # gem 'rack-mini-profiler'
 end
 

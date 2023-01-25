@@ -17,7 +17,7 @@ class ModerationController < ApplicationController
       'updated_since_last_evaluation' => false
     }
 
-    moderation.update_attributes! updates
+    moderation.update! updates
     
     moderatable = moderation.root_object
     if moderatable.moderation_status != moderation.status

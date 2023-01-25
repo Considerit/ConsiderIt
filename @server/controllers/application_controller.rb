@@ -1,11 +1,6 @@
 
 require 'digest/md5'
 require 'exception_notifier'
-require Rails.root.join('@server', 'extras', 'permissions')
-require Rails.root.join('@server', 'extras', 'translations')
-require Rails.root.join('@server', 'extras', 'invitations')
-require Rails.root.join('@server', 'extras', 'data_exports')
-require Rails.root.join('@server', 'extras', 'notifier')
 
 
 class ApplicationController < ActionController::Base
@@ -18,7 +13,7 @@ class ApplicationController < ActionController::Base
   before_action :init_thread_globals
   after_action :allow_iframe_requests
 
-  rescue_from PermissionDenied do |exception|
+  rescue_from Permissions::Denied do |exception|
     result = { :permission_denied => exception.reason } 
     result[:key] = exception.key if exception.key
     render :json => result
@@ -57,9 +52,9 @@ class ApplicationController < ActionController::Base
   end
 
   def authorize!(action, object = nil, key = nil)
-    permitted = permit(action, object)
+    permitted = Permissions.permit(action, object)
     if permitted < 0
-      raise PermissionDenied.new permitted, key
+      raise Permissions::Denied.new permitted, key
     end
   end
 
@@ -308,7 +303,7 @@ protected
         end
 
       elsif key.match "/translations"
-        translations = get_translations(key)
+        translations = Translations.GetTranslations(key)
         response.append translations
 
 

@@ -66,7 +66,7 @@ class User < ApplicationRecord
       tags: tags || {},
       is_super_admin: self.super_admin,
       is_admin: is_admin?,
-      is_moderator: permit('moderate content', nil) > 0,
+      is_moderator: Permissions.permit('moderate content', nil) > 0,
       trying_to: nil,
       subscriptions: subscription_settings(current_subdomain),
       verified: verified,
@@ -125,7 +125,7 @@ class User < ApplicationRecord
       end
 
       if current_user.key != u['key'] && anonymize_everything
-        u['name'] = translator('anonymous', 'Anonymous')
+        u['name'] = Translations.translate('anonymous', 'Anonymous')
         u['avatar_file_name'] = nil
       end 
     end 
@@ -353,7 +353,7 @@ class User < ApplicationRecord
     if self.downloaded.nil?
       self.downloaded = true
       self.avatar_url = self.avatar_remote_url if avatar_url.nil?
-      io = open(URI.parse(self.avatar_url))
+      io = URI.open(URI.parse(self.avatar_url))
       def io.original_filename; base_uri.path.split('/').last; end
 
       self.avatar = io if !(io.original_filename.blank?)

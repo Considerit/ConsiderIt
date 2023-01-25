@@ -20,14 +20,14 @@ class SubdomainController < ApplicationController
   end
 
   def create
-    permitted = permit('create subdomain')
+    permitted = Permissions.permit('create subdomain')
     if permitted < 0
       if params[:sso_domain]
         # redirect to IdP for authentication
         initiate_saml_auth(params[:sso_domain])
         return
       else 
-        raise PermissionDenied.new permitted
+        raise Permissions::Denied.new permitted
       end
     end
 
@@ -93,7 +93,7 @@ class SubdomainController < ApplicationController
           template_sub = Subdomain.find(params[:copy_from].to_i)
 
           # validate that current user is a host of template_sub
-          if permit 'update subdomain', template_sub
+          if Permissions.permit 'update subdomain', template_sub
             new_subdomain.import_configuration template_sub
           end
 
@@ -143,7 +143,7 @@ class SubdomainController < ApplicationController
               }
             })
             if img 
-              proposal.pic = open(img)
+              proposal.pic = URI.open(img)
             end
             proposal.save
 
@@ -205,7 +205,7 @@ class SubdomainController < ApplicationController
     authorize! 'update subdomain', subdomain
 
     if subdomain.id != current_subdomain.id
-      raise PermissionDenied.new Permission::DISABLED
+      raise Permissions::Denied.new Permissions::Status::DISABLED
     end
 
     update_roles    
@@ -236,7 +236,7 @@ class SubdomainController < ApplicationController
       template_sub = Subdomain.find(params[:copy_from].to_i)
 
       # validate that current user is a host of template_sub
-      if permit 'update subdomain', template_sub
+      if Permissions.permit 'update subdomain', template_sub
         subdomain.import_configuration template_sub
       end
     end
@@ -245,7 +245,7 @@ class SubdomainController < ApplicationController
 
 
     current_user.add_to_active_in
-    current_subdomain.update_attributes! attrs
+    current_subdomain.update! attrs
 
     response = current_subdomain.as_json
     if errors.length > 0
@@ -280,7 +280,7 @@ class SubdomainController < ApplicationController
   end
 
   def nuke_everything
-    if permit 'update subdomain', current_subdomain
+    if Permissions.permit 'update subdomain', current_subdomain
       current_subdomain.proposals.destroy_all
       current_subdomain.opinions.destroy_all
       current_subdomain.points.destroy_all
@@ -360,7 +360,7 @@ class SubdomainController < ApplicationController
   def destroy
     subdomain_id = params['subdomain_to_destroy']    
     sub_to_destroy = Subdomain.find(subdomain_id.to_i)
-    if sub_to_destroy && permit('update subdomain', sub_to_destroy)
+    if sub_to_destroy && Permissions.permit('update subdomain', sub_to_destroy)
       sub_to_destroy.destroy()
     end
 
@@ -373,7 +373,7 @@ class SubdomainController < ApplicationController
     template_sub = Subdomain.find(params[:subdomain_to_import_configuration].to_i)
 
     # validate that current user is a host of template_sub
-    if permit('update subdomain', template_sub) && permit('update subdomain', current_subdomain)
+    if Permissions.permit('update subdomain', template_sub) && Permissions.permit('update subdomain', current_subdomain)
       current_subdomain.import_configuration template_sub
     end
 
@@ -416,7 +416,7 @@ class SubdomainController < ApplicationController
       end
     end
 
-    current_subdomain.update_attributes! attrs
+    current_subdomain.update! attrs
     dirty_key '/subdomain'
     render :json => []
   end

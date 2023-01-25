@@ -2,8 +2,8 @@
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
 #
-# This file is the source Rails uses to define your schema when running `rails
-# db:schema:load`. When creating a new database, `rails db:schema:load` tends to
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
 # be faster and is potentially less error prone than running all of your
 # migrations from scratch. Old migrations may fail to apply correctly if those
 # migrations use external dependencies or application code.
@@ -12,7 +12,7 @@
 
 ActiveRecord::Schema.define(version: 2023_01_24_190707) do
 
-  create_table "ahoy_events", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "ahoy_events", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "subdomain_id"
     t.bigint "visit_id"
     t.bigint "user_id"
@@ -25,7 +25,7 @@ ActiveRecord::Schema.define(version: 2023_01_24_190707) do
     t.index ["visit_id"], name: "index_ahoy_events_on_visit_id"
   end
 
-  create_table "ahoy_visits", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "ahoy_visits", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "subdomain_id"
     t.string "visit_token"
     t.string "visitor_token"
@@ -57,7 +57,7 @@ ActiveRecord::Schema.define(version: 2023_01_24_190707) do
     t.index ["visit_token"], name: "index_ahoy_visits_on_visit_token", unique: true
   end
 
-  create_table "comments", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "comments", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "commentable_id", default: 0
     t.string "commentable_type", collation: "utf8mb3_general_ci"
     t.text "body", collation: "utf8mb4_0900_ai_ci"
@@ -74,13 +74,13 @@ ActiveRecord::Schema.define(version: 2023_01_24_190707) do
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
-  create_table "datastore", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "datastore", id: false, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "k", null: false
     t.json "v"
     t.index ["k"], name: "index_datastore_on_k", unique: true
   end
 
-  create_table "delayed_jobs", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "delayed_jobs", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "priority", default: 0
     t.integer "attempts", default: 0
     t.text "handler", collation: "utf8mb3_general_ci"
@@ -95,7 +95,7 @@ ActiveRecord::Schema.define(version: 2023_01_24_190707) do
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
-  create_table "inclusions", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "inclusions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "proposal_id"
     t.integer "point_id"
     t.integer "user_id"
@@ -107,7 +107,7 @@ ActiveRecord::Schema.define(version: 2023_01_24_190707) do
     t.index ["user_id"], name: "index_inclusions_on_user_id"
   end
 
-  create_table "logs", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "logs", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "subdomain_id"
     t.integer "who"
     t.string "what", collation: "utf8mb4_0900_ai_ci"
@@ -117,7 +117,7 @@ ActiveRecord::Schema.define(version: 2023_01_24_190707) do
     t.index ["who"], name: "who_index"
   end
 
-  create_table "moderations", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "moderations", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "user_id"
     t.integer "moderatable_id"
     t.string "moderatable_type", collation: "utf8mb3_general_ci"
@@ -129,7 +129,7 @@ ActiveRecord::Schema.define(version: 2023_01_24_190707) do
     t.boolean "notification_sent", default: false
   end
 
-  create_table "opinions", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "opinions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "proposal_id"
     t.integer "user_id"
     t.text "explanation", collation: "utf8mb4_0900_ai_ci"
@@ -147,7 +147,7 @@ ActiveRecord::Schema.define(version: 2023_01_24_190707) do
     t.index ["user_id"], name: "index_opinions_on_user_id"
   end
 
-  create_table "points", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "points", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "proposal_id"
     t.integer "user_id"
     t.text "nutshell", collation: "utf8mb4_0900_ai_ci"
@@ -173,7 +173,7 @@ ActiveRecord::Schema.define(version: 2023_01_24_190707) do
     t.index ["subdomain_id"], name: "index_points_on_subdomain_id"
   end
 
-  create_table "proposals", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "proposals", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.text "name", collation: "utf8mb4_0900_ai_ci"
     t.text "description", size: :medium
     t.datetime "created_at"
@@ -206,7 +206,7 @@ ActiveRecord::Schema.define(version: 2023_01_24_190707) do
     t.index ["subdomain_id"], name: "index_proposals_on_subdomain_id"
   end
 
-  create_table "sessions", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "sessions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "session_id", null: false, collation: "utf8mb3_unicode_ci"
     t.text "data", collation: "utf8mb3_unicode_ci"
     t.datetime "created_at"
@@ -215,7 +215,7 @@ ActiveRecord::Schema.define(version: 2023_01_24_190707) do
     t.index ["updated_at"], name: "index_sessions_on_updated_at"
   end
 
-  create_table "subdomains", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "subdomains", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", collation: "utf8mb4_0900_ai_ci"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -244,7 +244,7 @@ ActiveRecord::Schema.define(version: 2023_01_24_190707) do
     t.index ["name"], name: "by_identifier", length: 10
   end
 
-  create_table "users", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "users", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "unique_token", collation: "utf8mb3_unicode_ci"
     t.string "email", collation: "utf8mb4_0900_ai_ci"
     t.string "encrypted_password", limit: 128, default: "", collation: "utf8mb3_unicode_ci"

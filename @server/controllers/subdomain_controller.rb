@@ -245,7 +245,7 @@ class SubdomainController < ApplicationController
 
 
     current_user.add_to_active_in
-    current_subdomain.update_attributes! attrs
+    current_subdomain.update! attrs
 
     response = current_subdomain.as_json
     if errors.length > 0
@@ -416,7 +416,7 @@ class SubdomainController < ApplicationController
       end
     end
 
-    current_subdomain.update_attributes! attrs
+    current_subdomain.update! attrs
     dirty_key '/subdomain'
     render :json => []
   end

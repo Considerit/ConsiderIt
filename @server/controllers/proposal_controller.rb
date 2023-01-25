@@ -124,7 +124,7 @@ class ProposalController < ApplicationController
 
         update_roles(proposal)
 
-        proposal.update_attributes! updated_fields
+        proposal.update! updated_fields
 
         if text_updated
           proposal.redo_moderation
@@ -173,7 +173,7 @@ class ProposalController < ApplicationController
     if params['banner']
       attrs['banner'] = params['banner']
     end
-    proposal.update_attributes attrs
+    proposal.update attrs
     dirty_key proposal.key
     render :json => []
   end

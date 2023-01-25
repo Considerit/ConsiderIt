@@ -79,7 +79,7 @@ class CommentController < ApplicationController
     fields = ['body']
     comment_vals = params.select{|k,v| fields.include? k}.to_h
 
-    comment.update_attributes! comment_vals
+    comment.update! comment_vals
 
     comment.redo_moderation
 

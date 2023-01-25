@@ -264,7 +264,7 @@ class CurrentUserController < ApplicationController
         log('verification token sent')
 
       when 'update_avatar_hack'
-        if !current_user.update_attributes({ avatar: params['avatar'] })
+        if !current_user.update({ avatar: params['avatar'] })
           errors.push current_user.errors.messages[:avatar][0]
         end
     end
@@ -353,7 +353,7 @@ class CurrentUserController < ApplicationController
       new_params[:subscriptions] = current_user.update_subscriptions(new_params[:subscriptions].to_h)
     end
 
-    if !current_user.update_attributes(new_params)
+    if !current_user.update(new_params)
       for err in current_user.errors.messages 
         if !errors.index(err[1])
           errors.push err[1]
@@ -379,7 +379,7 @@ class CurrentUserController < ApplicationController
       # puts("Updating email from #{current_user.email} to #{params[:email]}")
       # Okay, here comes a new email address!
 
-      current_user.update_attributes({:email => email, :verified => false})
+      current_user.update({:email => email, :verified => false})
 
       if !current_user.save
         raise "Error saving this user's email"
@@ -483,7 +483,7 @@ class CurrentUserController < ApplicationController
         
       end
 
-      current_user.update_attributes! attrs
+      current_user.update! attrs
       user = current_user
 
     elsif !user.avatar_file_name

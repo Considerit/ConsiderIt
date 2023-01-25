@@ -115,7 +115,7 @@ class PointController < ApplicationController
 
       if errors.length == 0
 
-        point.update_attributes! updates
+        point.update! updates
 
         if point.published
           write_to_log({

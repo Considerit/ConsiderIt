@@ -143,7 +143,7 @@ class SubdomainController < ApplicationController
               }
             })
             if img 
-              proposal.pic = open(img)
+              proposal.pic = URI.open(img)
             end
             proposal.save
 

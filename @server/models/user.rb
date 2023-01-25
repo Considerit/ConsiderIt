@@ -353,7 +353,7 @@ class User < ApplicationRecord
     if self.downloaded.nil?
       self.downloaded = true
       self.avatar_url = self.avatar_remote_url if avatar_url.nil?
-      io = open(URI.parse(self.avatar_url))
+      io = URI.open(URI.parse(self.avatar_url))
       def io.original_filename; base_uri.path.split('/').last; end
 
       self.avatar = io if !(io.original_filename.blank?)

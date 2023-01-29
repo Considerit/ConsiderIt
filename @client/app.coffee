@@ -35,7 +35,7 @@ require './su'
 require './edit_point'
 require './edit_comment'
 require './point'
-require './legal'
+require './document'
 require './statement'
 require './item'
 require './viewport_visibility_sensor'
@@ -218,7 +218,6 @@ Page = ReactiveComponent
 
     access_granted = @accessGranted()
 
-
     DIV
       className: 'full_height'
       style: 
@@ -254,18 +253,14 @@ Page = ReactiveComponent
 
         else if loc.url.startsWith('/dashboard')
           Dashboard()
-
-
+        else if loc.url.startsWith('/docs/')
+          Documentation()
         else
           switch loc.url
             when '/'
               Homepage key: 'homepage'
             when '/about'
               About()
-            when '/privacy_policy'
-              PrivacyPolicy()
-            when '/terms_of_service'
-              TermsOfService()
             when '/accessibility_support'
               AccessibilitySupport()
             when '/histogram_test'
@@ -304,7 +299,6 @@ Root = ReactiveComponent
     subdomain = fetch '/subdomain'
     current_user = fetch('/current_user')    
     page = fetch("/page#{loc.url}")
-
 
     setTimeout ->
       fetch '/users'

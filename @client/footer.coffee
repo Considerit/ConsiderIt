@@ -235,7 +235,7 @@ window.DefaultFooter = ReactiveComponent
                   component: A 
                   args: 
                     key: 'privacy_link'
-                    href: '/privacy_policy'
+                    href: '/docs/privacy_policy'
                     style: 
                       textDecoration: 'underline'
 
@@ -244,7 +244,7 @@ window.DefaultFooter = ReactiveComponent
                   component: A 
                   args: 
                     key: 'terms_link'
-                    href: '/terms_of_service'
+                    href: '/docs/terms_of_service'
                     style: 
                       textDecoration: 'underline'
 

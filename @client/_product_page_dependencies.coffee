@@ -3,7 +3,7 @@ require './logo' # no dependencies
 
 require "./svg" # no dependencies
 
-require './legal' # no dependencies
+require './document' # no dependencies
 
 require './element_viewport_positioning'  # no dependencies
 

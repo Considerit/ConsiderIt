@@ -364,18 +364,7 @@ class SubdomainController < ApplicationController
       if sub_to_destroy.customizations.has_key?('user_tags')
         users = User.where( "registered=1 AND active_in like '%\"#{sub_to_destroy.id}\"%'")
         users.each do |u|
-          changed = false
-          sub_to_destroy.customizations['user_tags'].each do |tag|
-            if u.tags[tag["key"]]
-              pp "deleting #{tag["key"]} from #{u.name}"
-              u.tags.delete tag["key"]
-              changed = true
-            end
-          end
-
-          if changed 
-            u.save
-          end
+          delete_tags_for_forum(sub_to_destroy)
         end
 
       end

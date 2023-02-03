@@ -465,6 +465,22 @@ class User < ApplicationRecord
   ##################
 
 
+  def delete_tags_for_forum(subdomain)
+    changed = false
+    if subdomain.customizations.has_key?('user_tags')
+      subdomain.customizations['user_tags'].each do |tag|
+        if self.tags[tag["key"]]
+          pp "deleting #{tag["key"]} from #{self.name}"
+          self.tags.delete tag["key"]
+          changed = true
+        end
+      end
+
+      if changed 
+        self.save
+      end
+    end
+  end
 
   def your_forums
 

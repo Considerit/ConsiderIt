@@ -417,6 +417,17 @@ class CurrentUserController < ApplicationController
     end
   end 
 
+  def delete_data_for_forum
+    current_subdomain.proposals.where(:user_id => current_user.id).destroy_all
+    current_subdomain.opinions.where(:user_id => current_user.id).destroy_all
+    current_subdomain.points.where(:user_id => current_user.id).destroy_all
+    current_subdomain.comments.where(:user_id => current_user.id).destroy_all
+    current_subdomain.moderations.where(:user_id => current_user.id).destroy_all
+    current_subdomain.inclusions.where(:user_id => current_user.id).destroy_all
+
+    current_user.delete_tags_for_forum(current_subdomain)
+  end
+
 
   def update_via_third_party
     access_token = request.env["omniauth.auth"]

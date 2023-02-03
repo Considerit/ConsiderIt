@@ -145,6 +145,7 @@ Rails.application.routes.draw do
   match 'current_user' => 'current_user#update', :via => [:put]
 
   match 'current_user' => 'current_user#destroy', :via => [:delete]
+  match 'delete_data_for_forum' => 'current_user#delete_data_for_forum', :via => [:delete]
 
   # This is for the special /opinion/current_user/234:
   match 'opinion/:id/:proposal_id' => 'opinion#show', :via => [:get, :put]

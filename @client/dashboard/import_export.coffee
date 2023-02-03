@@ -1,3 +1,17 @@
+
+styles += """
+  .dangerzone button {
+    background-color: #c31d1d;
+    padding: 8px 24px;
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;    
+  }
+
+"""
+
+
 window.DataDash = ReactiveComponent
   displayName: 'DataDash'
 
@@ -46,29 +60,7 @@ window.DataDash = ReactiveComponent
 
                 
 
-    DIV null, 
-
-      if current_user.is_super_admin
-        DIV 
-          style: 
-            marginBottom: 24
-          BUTTON 
-            onClick: => 
-              if confirm("Are you sure you want to delete all proposals, opinions, and comments on this forum?")
-                
-                frm = new FormData()
-                frm.append "authenticity_token", current_user.csrf
-
-                cb = =>
-                  location.reload()
-
-                xhr = new XMLHttpRequest
-                xhr.addEventListener 'readystatechange', cb, false
-                xhr.open 'PUT', '/nuke_everything', true
-                xhr.send frm
-
-            "Delete all data on this forum"
-      
+    DIV null,       
 
       if !paid
         UpgradeForumButton
@@ -246,8 +238,6 @@ window.DataDash = ReactiveComponent
           [ @drawArgdownImport(), @drawArgdownExport() ]
 
 
-
-
         if @local.errors && @local.errors.length > 0
           DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: '#FFE2E2'}, 
             H1 style: {fontSize: 18}, 'Ooops! There are errors in the uploaded files:'
@@ -261,6 +251,70 @@ window.DataDash = ReactiveComponent
             for table, successes of @local.successes
               for success in successes
                 DIV style: {display: 'block', marginTop: 10}, success
+
+        
+      DIV 
+        className: 'dangerzone'
+        style: 
+          marginTop: 24
+          pointerEvents: if !paid then 'none'
+          opacity: if !paid then .4
+
+
+        H4
+          style: 
+            fontSize: 20
+            marginBottom: 12
+
+          "Danger Zone"
+
+
+        if current_user.is_admin
+          DIV 
+            style: 
+              marginBottom: 24
+            BUTTON 
+              onClick: => 
+                if confirm("Are you sure you want to delete all proposals, opinions, and comments on this forum?")
+                  
+                  frm = new FormData()
+                  frm.append "authenticity_token", current_user.csrf
+
+                  cb = =>
+                    location.reload()
+
+                  xhr = new XMLHttpRequest
+                  xhr.addEventListener 'readystatechange', cb, false
+                  xhr.open 'PUT', '/nuke_everything', true
+                  xhr.send frm
+
+              "Delete all data on this forum"
+
+        if current_user.is_admin
+          DIV 
+            style: 
+              marginBottom: 24
+            BUTTON 
+              onClick: => 
+                if confirm("Are you sure you want to entirely delete this forum? In addition to removing all content, the forum and all its configuration will be removed.")
+                  
+                  frm = new FormData()
+                  frm.append "authenticity_token", current_user.csrf
+                  frm.append "subdomain_to_destroy", subdomain.id
+
+                  cb = =>
+                    # location.reload()
+                    console.log 'done'
+
+                  xhr = new XMLHttpRequest
+                  xhr.addEventListener 'readystatechange', cb, false
+                  xhr.open 'DELETE', '/destroy_forum', true
+                  console.log 'DELETE'
+                  xhr.send frm
+
+              "Delete this forum entirely"
+
+
 
   drawArgdownImport: -> 
     current_user = fetch '/current_user'

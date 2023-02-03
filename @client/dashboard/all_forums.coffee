@@ -162,7 +162,7 @@ window.AllYourForums = ReactiveComponent
 
                       xhr = new XMLHttpRequest
                       xhr.addEventListener 'readystatechange', cb, false
-                      xhr.open 'PUT', '/destroy_forum', true
+                      xhr.open 'DELETE', '/destroy_forum', true
                       xhr.send frm
 
                   trash_icon 18, 18, '#888'

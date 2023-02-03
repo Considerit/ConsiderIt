@@ -294,7 +294,6 @@ class SubdomainController < ApplicationController
   end
 
   def create_plausible_domain(subdomain=nil)
-    pp "CREATING!"
     begin
       subdomain ||= current_subdomain
 
@@ -361,8 +360,30 @@ class SubdomainController < ApplicationController
     subdomain_id = params['subdomain_to_destroy']    
     sub_to_destroy = Subdomain.find(subdomain_id.to_i)
     if sub_to_destroy && Permissions.permit('update subdomain', sub_to_destroy)
+
+      if sub_to_destroy.customizations.has_key?('user_tags')
+        users = User.where( "registered=1 AND active_in like '%\"#{sub_to_destroy.id}\"%'")
+        users.each do |u|
+          changed = false
+          sub_to_destroy.customizations['user_tags'].each do |tag|
+            if u.tags[tag["key"]]
+              pp "deleting #{tag["key"]} from #{u.name}"
+              u.tags.delete tag["key"]
+              changed = true
+            end
+          end
+
+          if changed 
+            u.save
+          end
+        end
+
+      end
+
       sub_to_destroy.destroy()
+
     end
+
 
     dirty_key '/your_forums'
     render :json => []

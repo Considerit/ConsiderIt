@@ -1,6 +1,6 @@
 require './auth'
 
-# TODO: this form should also show the community pledge
+
 window.HostQuestions = ReactiveComponent
   displayName: 'CreateAccount'
   mixins: [AuthForm, Modal]
@@ -127,8 +127,27 @@ window.errors_in_host_questions = (responses) ->
 
 styles += """
   #SHOWHOSTQUESTIONS {
-    padding: 0px 36px;
+    /* padding: 0px 36px; */
     margin-top: 18px;
+  }
+
+  #SHOWHOSTQUESTIONS .question {
+    margin-bottom: 36px;
+  }
+
+  #SHOWHOSTQUESTIONS .question-prompt {
+    display: block;
+    font-weight: 600;
+    font-size: 18px;   
+  }
+
+  .question_metadata {
+    font-size: 14px;
+    color: #333;
+  }
+  .question_metadata .optionality {
+    font-style: italic;
+    text-transform: capitalize;
   }
 """
 
@@ -155,14 +174,12 @@ window.ShowHostQuestions = ReactiveComponent
           field_id = render?.props?.id or render?[0]?.props?.id
           LI 
             key: label
-            style: 
-              marginBottom: 24
+            className: 'question'
 
             LABEL
+              className: 'question-prompt'
               htmlFor: field_id
-              style:
-                display: 'block'
-                fontWeight: 600
+                
                 
 
               SPAN
@@ -171,24 +188,30 @@ window.ShowHostQuestions = ReactiveComponent
                 dangerouslySetInnerHTML: __html: label 
 
 
-              if question.input != 'boolean'
-                if !question.required
-                  SPAN 
-                    style: 
-                      fontSize: 12
-                      fontWeight: 400
-                      fontStyle: 'italic'
-                      color: selected_color
-
-                    translator('auth.optional_field', 'optional') 
-                else 
-                  SPAN 
-                    title: translator('auth.required_field', 'required') 
-                    "*"
-
-
-
             render
+
+            if question.tag.indexOf('pledge_taken') == -1
+
+              DIV 
+                className: 'question_metadata'
+
+                SPAN 
+                  className: 'optionality'
+                  if !question.required
+                    SPAN 
+                      style: 
+                        color: selected_color
+
+                      translator('auth.optional_field', 'Optional') 
+                  else 
+                    SPAN null, 
+                      translator('auth.required_field', 'Required')
+
+                ". "
+                if question.visibility == 'host-only'
+                  translator('auth.host-only-response', 'Your response will only be shared with the Forum Host.')
+                else 
+                  translator('auth.host-only-response', 'Your response will be visible to any participant.')
 
 
 
@@ -211,7 +234,7 @@ window.ShowHostQuestions = ReactiveComponent
     for vals in (customization('user_tags') or [])
       tag = vals.key
       if vals.self_report
-        questions.push _.extend {}, vals.self_report, {tag}
+        questions.push _.extend {}, vals.self_report, {tag}, {visibility: vals.visibility}
 
     if local.tags != current_user.tags
       local.tags = current_user.tags
@@ -255,7 +278,7 @@ window.ShowHostQuestions = ReactiveComponent
               DIV 
                 key: label
                 style: 
-                  marginBottom: 10
+                  marginBottom: 6
 
                 INPUT
                   id: slugify("#{question.tag}inputBox")
@@ -284,16 +307,7 @@ window.ShowHostQuestions = ReactiveComponent
                   SPAN 
                     dangerouslySetInnerHTML: __html: question.question
 
-                  if !question.required
-                    SPAN 
-                      style: 
-                        fontSize: 12
-                        fontWeight: 400
-                        fontStyle: 'italic'
-                        color: selected_color
-
-                      translator('auth.optional_field', 'optional') 
-                  else 
+                  if question.tag.indexOf('pledge_taken') > -1
                     SPAN 
                       title: translator('auth.required_field', 'required') 
                       "*"
@@ -387,6 +401,7 @@ window.ShowHostQuestions = ReactiveComponent
                   marginTop: 4
                   maxWidth: '100%'
                   marginRight: 12
+                  marginBottom: 4
                 defaultValue: (local.tags[question.tag] or '').split(OTHER_SEPARATOR)[0]
                 onChange: do(question) => (event) =>
                   # local.tags = local.tags or {}

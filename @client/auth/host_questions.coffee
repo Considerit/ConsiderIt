@@ -22,6 +22,14 @@ window.HostQuestions = ReactiveComponent
             auth.show_user_questions_after_account_creation = false
             save auth
 
+      under_submit: if customization('user_tags').length > 1 || !customization('user_tags')[0].key.match('pledge_taken')
+        DIV 
+          style:
+            fontSize: 13
+            color: auth_text_gray
+            padding: '16px 0'
+            textAlign: 'center'
+          "By proceeding, you consent to the collection of the above data on behalf of the Forum Host. You can edit your responses later in your User Profile." 
 
       render_below_title: -> 
         host_framing = customization 'host_questions_framing'
@@ -211,7 +219,7 @@ window.ShowHostQuestions = ReactiveComponent
                 if question.visibility == 'host-only'
                   translator('auth.host-only-response', 'Your response will only be shared with the Forum Host.')
                 else 
-                  translator('auth.host-only-response', 'Your response will be visible to any participant.')
+                  translator('auth.public-visibility-response', 'Your response will be visible to any participant.')
 
 
 

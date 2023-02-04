@@ -111,6 +111,10 @@ class SubdomainController < ApplicationController
             }
           }
 
+          if APP_CONFIG[:region] == 'EU'
+            customizations["disable_google_translate"] = true
+          end
+
           new_subdomain.customizations = customizations
           new_subdomain.save
 
@@ -372,7 +376,6 @@ class SubdomainController < ApplicationController
       sub_to_destroy.destroy()
 
     end
-
 
     dirty_key '/your_forums'
     render :json => []

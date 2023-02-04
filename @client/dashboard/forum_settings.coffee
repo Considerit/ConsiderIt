@@ -110,7 +110,8 @@ window.ForumSettingsDash = ReactiveComponent
           value: lang
           onChange: (ev) =>
             subdomain.lang = ev.target.value
-            save subdomain
+            save subdomain, -> 
+              location.reload()
 
           style: 
             fontSize: 18

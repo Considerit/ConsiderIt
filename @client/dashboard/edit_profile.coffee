@@ -32,7 +32,7 @@ window.EditProfile = ReactiveComponent
   mixins: [AuthForm]
 
   render: -> 
-
+    current_user = fetch '/current_user'
     i18n = @i18n()
 
     is_SSO = fetch('/subdomain').SSO_domain  
@@ -60,8 +60,16 @@ window.EditProfile = ReactiveComponent
           @RenderInput 
             type: 'password'
             name: 'password'
-            label: i18n.password_label
-            on_submit: on_submit      
+            label: i18n.new_password_label
+            on_submit: on_submit  
+
+          if @local.updates.password != current_user.password || @local.updates.email != current_user.email
+            @RenderInput   
+              type: 'password'
+              name: 'old_password'
+              label: i18n.old_password_label
+              on_submit: on_submit  
+              
         ]
 
       @RenderInput

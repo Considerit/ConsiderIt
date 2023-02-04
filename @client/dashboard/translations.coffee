@@ -412,7 +412,6 @@ TranslationsForLang = ReactiveComponent
     #       point to the same {txt, proposals} objects. 
     updated_translations = get_temporary_translations(lang, @props.translation_key_prefix)
 
-
     # sections = {"all": to_translate}
     sections = {}
     for name in to_translate
@@ -705,8 +704,13 @@ promote_temporary_translations = (lang, key) ->
   key ||= '/translations'
   translations = fetch "#{key}/#{lang}"
   updated_translations = fetch "local#{translations.key}"
+
   Object.assign translations, updated_translations
   translations.key = "#{key}/#{lang}"
+
+  if translations.translation
+    delete translations.translation
+
   save translations, -> 
     trans_UI = fetch('translations_interface')
     trans_UI.saved_successfully = true 

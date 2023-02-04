@@ -26,7 +26,7 @@ class TranslationsController < ApplicationController
       return
     end 
     
-    exclude = {'authenticity_token' => 1, 'subdomain' => 1, 'action' => 1, 'controller' => 1}
+    exclude = {'authenticity_token' => 1, 'subdomain' => 1, 'action' => 1, 'controller' => 1, 'translation' => 1}
     updated = params.select{|k,v| !exclude.has_key?(k)}.to_h
 
     if Permissions.permit('update all translations') > 0

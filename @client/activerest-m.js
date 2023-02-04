@@ -63,6 +63,7 @@
     var affected_keys = new Set()
     var re_render_timer = null
     function update_cache(object, from_fetch) {
+        do_not_recurse = !!object.key && object.key.startsWith('/translations/')
         function recurse(object) {
             // Recurses into object and folds it into the cache.
 
@@ -100,9 +101,10 @@
             if (Array.isArray(object))
                 for (var i=0; i < object.length; i++)
                     object[i] = recurse(object[i])
-            else if (typeof(object) === 'object' && object !== null)
-                for (var k in object)
+            else if (typeof(object) === 'object' && object !== null && !do_not_recurse)
+                for (var k in object){
                     object[k] = recurse(object[k])
+                }
 
             // Return the new cached representation of this object
             return cache[key] || object
@@ -210,6 +212,7 @@
         request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         request.setRequestHeader('X-CSRF-Token', csrf())
         request.setRequestHeader('X-Requested-With','XMLHttpRequest')
+
         request.send(JSON.stringify(object))
 
         // Remember it

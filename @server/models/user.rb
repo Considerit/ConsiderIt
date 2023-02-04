@@ -63,7 +63,7 @@ class User < ApplicationRecord
       name: name,
       lang: lang,
       reset_password_token: nil,
-      tags: tags || {},
+      tags: tags_for_subdomain(true) || {},
       is_super_admin: self.super_admin,
       is_admin: is_admin?,
       is_moderator: Permissions.permit('moderate content', nil) > 0,
@@ -151,20 +151,26 @@ class User < ApplicationRecord
       data['email'] = email
     end
 
+    data['tags'] = tags_for_subdomain(current_user.is_admin?)
+    data
+  end
+
+
+  def tags_for_subdomain(ignore_visibility)
+    customizations = current_subdomain.customization_json
+
     tags_config = customizations.fetch('user_tags', [])
 
     my_tags = self.tags || {}
-    data['tags'] = {}
+    tag_subset = {}
     tags_config.each do |vals|
 
       tag = vals["key"]
-      if my_tags.has_key?(tag) && (current_user.is_admin? || vals.fetch('visibility', 'host-only') == 'open')
-        data['tags'][tag] = my_tags[tag]
+      if my_tags.has_key?(tag) && (ignore_visibility || vals.fetch('visibility', 'host-only') == 'open')
+        tag_subset[tag] = my_tags[tag]
       end
     end
-
-
-    data
+    tag_subset
   end
 
   def is_admin?(subdomain = nil)

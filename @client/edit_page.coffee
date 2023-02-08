@@ -452,12 +452,24 @@ window.EditPage = ReactiveComponent
                 cursor: 'pointer'
 
               onChange: do (option) => (ev) => 
+                @ordered_lists ?= get_tab(@props.page_name)?.lists
 
                 if option.id == PAGE_TYPES.DEFAULT 
+
                   @local.type = PAGE_TYPES.DEFAULT
                   idx = @ordered_lists.indexOf('*')
                   if idx > -1
-                    @ordered_lists.splice idx, 1
+                    if @ordered_lists.length > 1
+                      @ordered_lists.splice idx, 1
+                    else 
+                      # If there is only a '*' in the show all configuration, add
+                      # all lists that would have been showing up here and are not 
+                      # present elsewhere, so the user can filter it down to the 
+                      # ones it wants to show here.
+                      @ordered_lists.splice 0, @ordered_lists.length
+                      for l in get_all_lists_not_configured_for_a_page()
+                        @ordered_lists.push l
+
 
                 else 
 

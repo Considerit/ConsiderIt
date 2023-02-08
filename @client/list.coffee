@@ -1205,6 +1205,35 @@ window.get_all_lists = ->
   all_lists = _.uniq all_lists
   all_lists
 
+window.get_all_lists_not_configured_for_a_page = ->
+  subdomain = fetch('/subdomain')
+  if get_tabs()
+    all_configured_lists = {}
+    unconfigured_lists = {}
+    for tab in get_tabs()
+      for l in tab.lists 
+        if l != '*' && l != '*-'
+          all_configured_lists[l] = 1
+
+    # lists might also just be defined as a customization, without any proposals in them yet
+    subdomain_name = subdomain.name?.toLowerCase()
+    config = customizations[subdomain_name]
+    for k,v of config 
+      if k.match( /list\// ) && k not of all_configured_lists
+        unconfigured_lists[k] = 1
+
+    proposals = fetch '/proposals'
+    for p in proposals.proposals
+      l = "list/#{(p.cluster or 'Proposals').trim()}"
+      if l not of all_configured_lists
+        unconfigured_lists[l] = 1
+
+    Object.keys(unconfigured_lists)
+
+  else 
+    return []
+
+
 
 window.get_list_sort_method = (tab) ->
   tab ?= get_current_tab_name()

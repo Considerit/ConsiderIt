@@ -254,7 +254,7 @@ Page = ReactiveComponent
         else if loc.url.startsWith('/dashboard')
           Dashboard()
         else if loc.url.startsWith('/docs/')
-          Documentation()
+          DocumentationGroup()
         else
           switch loc.url
             when '/'

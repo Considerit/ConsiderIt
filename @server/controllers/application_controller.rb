@@ -254,7 +254,8 @@ protected
           dev: (Rails.env.development? || request.host.end_with?('chlk.it')),
           asset_host: "#{Rails.application.config.action_controller.asset_host}",
           web_worker: "#{manifest['web_worker']}",
-          su: session[:su]
+          su: session[:su],
+          region: APP_CONFIG[:region]
         })
         
       elsif key == '/subdomain'

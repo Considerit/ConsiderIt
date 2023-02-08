@@ -273,13 +273,14 @@ window.CreateAccount = ReactiveComponent
       as_html: true
       privacy_link: 
         component: "a"
-        args: "href='/privacy_policy' style='font-weight: 700; color: #{selected_color};' target='_blank'"
+        args: "href='/docs/legal/privacy_policy' style='font-weight: 700; color: #{selected_color};' target='_blank'"
 
       terms_link:
         component: "a" 
-        args: "href='/terms_of_service' style='font-weight: 700; color: #{selected_color};' target='_blank'"
-
-      "By signing up, you agree to the Consider.it <privacy_link>Privacy Policy</privacy_link> and <terms_link>Terms of Service</terms_link>."
+        args: "href='/docs/legal/terms_of_service' style='font-weight: 700; color: #{selected_color};' target='_blank'"
+      br: 
+        component: 'br'
+      "By signing up, you agree to the Consider.it <privacy_link>Privacy Policy</privacy_link> and <terms_link>Terms of Service</terms_link>. <br>We will never sell your data to advertisers or other third-parties."
 
     terms = customization('terms') or default_terms.join('')
 

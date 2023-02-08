@@ -76,7 +76,10 @@ task :migrate_translations => :environment do
 
   def execute_translation_migration(overwrite = false)
     base_translations = Translations.GetTranslations '/translations'
-    base_translations["available_languages"].each do |langcode, lang| 
+    avail = base_translations["available_languages"].clone
+    avail['pseudo-en'] = "Pseudo-English (for testing)"
+
+    avail.each do |langcode, lang| 
       pp "",""
       pp "Migrating #{lang} (#{langcode})"
       pp ""
@@ -98,6 +101,9 @@ task :migrate_translations => :environment do
       end 
 
       $to_delete.each do |id, __|
+        # if id == 'translation'
+        #   pp lang_key, trans.has_key?(id)
+        # end
         if trans.has_key?(id)
           pp "  Deleting #{id}", trans[id]
           trans.delete(id)
@@ -262,6 +268,8 @@ task :migrate_translations => :environment do
   # delete_translation "engage.navigation_helper_current_location"
 
   delete_translation "engage.add_your_own"
+
+  delete_translation "translation"
 
   sync_keys_with_english
   execute_translation_migration

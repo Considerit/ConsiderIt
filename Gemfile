@@ -67,7 +67,7 @@ if local_config["default"]["product_page_installed"]
   gem 'mailgun-ruby'
 
   # for markdown parsing
-  gem 'commonmarker'
+  gem 'commonmarker',  "~>1.0.0.pre7"
 end 
 
 # Bundle gems for the local environment. Make sure to

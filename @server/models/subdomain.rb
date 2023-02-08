@@ -4,6 +4,9 @@ class Subdomain < ApplicationRecord
   has_many :points, :dependent => :destroy
   has_many :opinions, :dependent => :destroy
   has_many :comments, :dependent => :destroy
+  has_many :inclusions, :dependent => :destroy
+  has_many :moderations, :dependent => :destroy
+
   has_many :visits, class_name: 'Ahoy::Visit', :dependent => :destroy  
   has_many :events, class_name: 'Ahoy::Event', :dependent => :destroy  
 

@@ -3,11 +3,17 @@ require './logo' # no dependencies
 
 require "./svg" # no dependencies
 
-require './legal' # no dependencies
-
 require './element_viewport_positioning'  # no dependencies
 
 require './icons' # no dependencies
+
+require './shared'
+    # depends: 
+              # responsive_vars
+              # color
+
+require './document' # depends: 
+                          # shared 
 
 require './dashboard/translations'
                        # depends: customizations
@@ -32,11 +38,6 @@ require './browser_location'  #depends:
 
 require './tooltip' #depends: 
                             # shared
-
-require './shared'
-    # depends: 
-              # responsive_vars
-              # color
 
 require './permissions'
     # depends: 

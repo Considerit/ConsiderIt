@@ -184,6 +184,8 @@ window.T = window.t = window.translator = (args, native_text) ->
     translations_native[id] ||= {}
     translations_native[id].txt = native_text
     setTimeout ->
+      if translations_native.translation
+        delete translations_native.translation
       save translations_native  
     , 1000
 
@@ -411,7 +413,6 @@ TranslationsForLang = ReactiveComponent
     # TODO: I think this is making a shallow clone, which means that updated_translations and translations might 
     #       point to the same {txt, proposals} objects. 
     updated_translations = get_temporary_translations(lang, @props.translation_key_prefix)
-
 
     # sections = {"all": to_translate}
     sections = {}
@@ -705,8 +706,13 @@ promote_temporary_translations = (lang, key) ->
   key ||= '/translations'
   translations = fetch "#{key}/#{lang}"
   updated_translations = fetch "local#{translations.key}"
+
   Object.assign translations, updated_translations
   translations.key = "#{key}/#{lang}"
+
+  if translations.translation
+    delete translations.translation
+
   save translations, -> 
     trans_UI = fetch('translations_interface')
     trans_UI.saved_successfully = true 

@@ -58,6 +58,7 @@ export.rake
 lib/tasks/lists.csv
 lib/tasks/customizations
 lib/tasks/extract_customizations.rake
+lib/tasks/local
 
 @client/product_page
 @server/controllers/product_page_controller.rb

@@ -8,6 +8,17 @@ class NotJSON
   end
 end
 
+class IsJSON
+  # This match function returns true iff the request is json
+  def matches?(request)
+    json_header = request.format.to_s.include?('application/json')
+    json_query_param = (request.query_parameters.has_key?('json') \
+                        or request.query_parameters.has_key?('JSON'))
+    (json_query_param or json_header)
+  end
+end
+
+
 class IsSAMLRoute
   def matches?(request)
     request.subdomain.downcase == 'saml-auth'
@@ -62,8 +73,8 @@ Rails.application.routes.draw do
     get "/payments/payment_intent" => 'product_page#stripe_create_payment_intent'    
     get "/payments/public_key" => 'product_page#stripe_public' 
 
-    # legal agreements
-    get "/legal/:name" => "product_page#legal"   
+    # documents, including legal agreements
+    get "/docs/:name" => "product_page#documents", :constraints => IsJSON.new   
   end 
 
   get "/login_via_saml" => 'current_user#login_via_saml'
@@ -79,6 +90,8 @@ Rails.application.routes.draw do
 
   get '/page' => 'page#show'
   get '/page/*id' => 'page#show'
+  get '/docs/:name' => 'page#show'
+
   resources :user, :only => [:show]
   get '/users' => 'user#index'
   match '/user/:id' => 'user#update', :via => [:put]
@@ -118,9 +131,9 @@ Rails.application.routes.draw do
 
   match 'rename_forum' => 'subdomain#rename_forum', :via => [:post]
   match 'nuke_everything' => 'subdomain#nuke_everything', :via => [:put]
+  match 'destroy_forum' => 'subdomain#destroy', :via => [:delete]  
   match 'update_images_hack' => 'subdomain#update_images_hack', :via => [:put]
   match 'update_proposal_pic_hack' => 'proposal#update_images_hack', :via => [:put]
-  match 'destroy_forum' => 'subdomain#destroy', :via => [:put]
   match 'import_configuration_from_subdomain' => 'subdomain#copy_from', :via => [:put]
 
   post '/log' => 'log#create'
@@ -132,6 +145,7 @@ Rails.application.routes.draw do
   match 'current_user' => 'current_user#update', :via => [:put]
 
   match 'current_user' => 'current_user#destroy', :via => [:delete]
+  match 'delete_data_for_forum' => 'current_user#delete_data_for_forum', :via => [:delete]
 
   # This is for the special /opinion/current_user/234:
   match 'opinion/:id/:proposal_id' => 'opinion#show', :via => [:get, :put]

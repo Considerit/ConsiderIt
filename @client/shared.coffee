@@ -109,8 +109,20 @@ window.back_to_homepage_button = (style, text) ->
 
 
 
+window.get_region_name = ->
+  region = fetch('/application').region
+  return "" if !region
 
+  if region == 'US'
+    reg = "the United States"
+  else if region == 'CA'
+    reg = "Canada"
+  else if region == 'EU'
+    reg = "the European Union"
+  else 
+    throw "Unknown region #{region}"
 
+  translator "server.region_string", reg
 
 ####
 # Make the DIV, SPAN, etc.

@@ -239,7 +239,7 @@ class CurrentUserController < ApplicationController
 
       when 'edit profile'
         update_user_attrs 'edit profile', errors
-        try_update_password 'edit profile', errors
+        try_update_password 'edit profile', errors, true
         log('updating info')
 
         # if this user was created via SAML, note that
@@ -271,7 +271,7 @@ class CurrentUserController < ApplicationController
 
     # Wrap everything up
     response = current_user.current_user_hash(form_authenticity_token)
-    response[:errors] = errors
+    response[:errors] = errors.uniq
 
     # If a user is trying to log in, and there was an error, we can
     # re-send them the faulty information so they can fix it.
@@ -374,20 +374,26 @@ class CurrentUserController < ApplicationController
       errors.append Translations.translate("errors.user.user_at_email", 'There is already an account with that email. Click "log in" below instead.')  
     # And that it's valid
     elsif !/\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i.match(email)
-      errors.append Translations.translate("errors.user.bad_email", 'Email address is not properly formatted')  
+      errors.append Translations.translate("errors.user.bad_email", 'Email address is not properly formatted')
     elsif current_user.email != email
-      # puts("Updating email from #{current_user.email} to #{params[:email]}")
-      # Okay, here comes a new email address!
 
-      current_user.update({:email => email, :verified => false})
+      # And that we've validated old password on edit profile
+      if current_user.registered && current_user.email && !current_user.authenticate(params[:old_password])
+        errors.append Translations.translate("errors.user.bad_old_password", 'Wrong password.')
+      else 
+        # puts("Updating email from #{current_user.email} to #{params[:email]}")
+        # Okay, here comes a new email address!
 
-      if !current_user.save
-        raise "Error saving this user's email"
+        current_user.update({:email => email, :verified => false})
+
+        if !current_user.save
+          raise "Error saving this user's email"
+        end
       end
     end
   end
 
-  def try_update_password(trying_to, errors)
+  def try_update_password(trying_to, errors, check_old_password=false)
     # Update their password
     if !params[:password] || params[:password].length == 0
       if trying_to == 'create account' || trying_to == 'reset password'
@@ -396,10 +402,14 @@ class CurrentUserController < ApplicationController
     elsif params[:password].length < @min_pass
       errors.append Translations.translate({id: "errors.user.password_length", length: @min_pass}, "Password needs to be at least {length} letters")
     else
-      # puts("Changing user's password.")
-      current_user.password = params[:password]
-      if !current_user.save
-        raise "Error saving this user's password"
+      if check_old_password && !current_user.authenticate(params[:old_password])
+        errors.append Translations.translate("errors.user.bad_old_password", 'Wrong password.')
+      else 
+        # puts("Changing user's password.")
+        current_user.password = params[:password]
+        if !current_user.save
+          raise "Error saving this user's password"
+        end
       end
     end
   end
@@ -416,6 +426,17 @@ class CurrentUserController < ApplicationController
       current_user.destroy 
     end
   end 
+
+  def delete_data_for_forum
+    current_subdomain.proposals.where(:user_id => current_user.id).destroy_all
+    current_subdomain.opinions.where(:user_id => current_user.id).destroy_all
+    current_subdomain.points.where(:user_id => current_user.id).destroy_all
+    current_subdomain.comments.where(:user_id => current_user.id).destroy_all
+    current_subdomain.moderations.where(:user_id => current_user.id).destroy_all
+    current_subdomain.inclusions.where(:user_id => current_user.id).destroy_all
+
+    current_user.delete_tags_for_forum(current_subdomain)
+  end
 
 
   def update_via_third_party

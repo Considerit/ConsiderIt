@@ -111,6 +111,10 @@ class SubdomainController < ApplicationController
             }
           }
 
+          if APP_CONFIG[:region] == 'EU'
+            customizations["disable_google_translate"] = true
+          end
+
           new_subdomain.customizations = customizations
           new_subdomain.save
 
@@ -294,7 +298,6 @@ class SubdomainController < ApplicationController
   end
 
   def create_plausible_domain(subdomain=nil)
-    pp "CREATING!"
     begin
       subdomain ||= current_subdomain
 
@@ -361,7 +364,17 @@ class SubdomainController < ApplicationController
     subdomain_id = params['subdomain_to_destroy']    
     sub_to_destroy = Subdomain.find(subdomain_id.to_i)
     if sub_to_destroy && Permissions.permit('update subdomain', sub_to_destroy)
+
+      if sub_to_destroy.customizations.has_key?('user_tags')
+        users = User.where( "registered=1 AND active_in like '%\"#{sub_to_destroy.id}\"%'")
+        users.each do |u|
+          delete_tags_for_forum(sub_to_destroy)
+        end
+
+      end
+
       sub_to_destroy.destroy()
+
     end
 
     dirty_key '/your_forums'

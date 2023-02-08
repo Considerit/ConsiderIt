@@ -55,8 +55,11 @@ module Translations
       else 
         init = {key: k}
       end 
-      Translations.InsertToTranslations(k, init)
-
+      begin 
+        Translations.InsertToTranslations(k, init)
+      rescue
+      end
+      
       trans = sanitize_and_execute_query(["SELECT v FROM datastore WHERE k = ?", k]).to_a()[0]
     end
     trans = trans[0].gsub("''", "'").gsub(/\\{2,}"/, '\"')

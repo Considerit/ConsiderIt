@@ -115,6 +115,10 @@ class SubdomainController < ApplicationController
             customizations["disable_google_translate"] = true
           end
 
+          if new_subdomain.plan == 1
+            customizations['enable_plausible_analytics'] = true
+          end
+
           new_subdomain.customizations = customizations
           new_subdomain.save
 

@@ -47,6 +47,162 @@ styles += """
     background-color: white;
   }
 
+  .doc_groups {
+    display: flex;
+    justify-content: center; 
+  }
+
+  .doc_group {
+    padding: 12px 24px;
+  }
+
+  .doc_group h2 {
+    font-size: 14px;
+  }
+
+  .doc_group ul {
+    list-style: none;
+  }
+
+  .doc_group li {
+    list-style: none;
+    padding-top: 8px;
+  }
+
+  .doc_group ul a {
+    text-decoration: none;
+    font-weight: 500;
+    color: #444;
+  }
+
+  .doc_group ul a:hover {
+    text-decoration: underline;
+  }
+
+  .doc_group ul .active a {
+    color: black;
+    text-decoration: underline;
+  }
+
+
+  @media #{NOT_PHONE_MEDIA} {
+    .doc_groups {
+      flex-direction: row;
+    }
+  }
+
+  @media #{PHONE_MEDIA} {
+    .doc_groups {
+      flex-direction: column;
+    }
+    .doc_group li, .doc_group h2 {
+      text-align: center;
+    }
+  }
+
+"""
+
+
+
+doc_groups = {
+  legal: {
+    name: ''
+    groups: [
+      {
+        label: 'Terms'
+        docs: [
+          {name: 'Terms of Service', path: 'terms_of_service'}
+          {name: 'Forum Hosting Terms', path: 'standard_hosting_terms'}
+          {name: 'Data Processing Addendum', path: 'data_processing_addendum'}
+        ]
+      }
+      {
+        label: 'Policies'
+        docs: [
+          {name: 'Privacy Policy', path: 'privacy_policy'}
+          {name: 'Acceptable Use', path: 'use_restrictions'}
+          {name: 'Delete Your Data', path: 'deleting_your_data'}
+        ]
+      }
+      {
+        label: 'Background'
+        docs: [
+          {name: 'Security Practices', path: 'security'}                    
+          {name: 'Subprocessors', path: 'subprocessors'}          
+        ]
+      }          
+    ]
+  }
+}
+
+window.DocumentationGroup = ReactiveComponent
+  displayName: 'DocumentationGroup'
+
+  render: -> 
+    parts = fetch('location').url.split('/')
+    group = parts[parts.length - 2]
+    doc = parts[parts.length - 1]
+
+    group_config = doc_groups[group]
+    return SPAN null if !group_config
+
+    DIV 
+      className: 'Documentation'
+
+      if group_config.groups.length == 1 # flat list
+        DIV 
+          className: 'doc_menu'
+
+          UL 
+            style: {}
+
+            for item in group_config.groups[0].docs
+              fetch "/docs/#{item.path}" # just to preload
+              LI 
+                className: if item.path == doc then 'active'
+
+                A 
+                  href: "/docs/#{group}/#{item.path}"
+                  item.name
+
+      else 
+        DIV 
+          className: 'doc_groups_container'
+
+          H1
+            className: 'doc_center'
+            group_config.name
+
+          DIV 
+            className: 'doc_groups'
+
+            for ggroup in group_config.groups
+              DIV 
+                className: 'doc_group'
+
+                H2 null,
+                  ggroup.label
+
+                UL null,
+                  for item in ggroup.docs
+                    fetch "/docs/#{item.path}" # just to preload
+                    LI 
+                      className: if item.path == doc then 'active'
+
+                      A 
+                        href: "/docs/#{group}/#{item.path}"
+                        item.name
+
+
+
+
+
+      Documentation
+        doc: doc
+
+
+
+styles += """
   .Documentation .markdown_doc {
     width: 80%;
     max-width: 1100px;
@@ -99,58 +255,28 @@ styles += """
     padding: 0px 0px 8px 12px;
   }
 
+  .markdown-body b, .markdown-body strong {
+    color: black;
+  }
 
 """
-
-doc_menu = [
-  {name: 'Terms of Service', path: 'terms_of_service'}
-  {name: 'Privacy Policy', path: 'privacy_policy'}
-  {name: 'Hosting Terms', path: 'standard_hosting_terms'}
-  {name: 'Use Restrictions', path: 'use_restrictions'}
-  {name: 'Deleting Your Data', path: 'deleting_your_data'}
-  {name: 'Subprocessors', path: 'subprocessors'}
-]
-
 window.Documentation = ReactiveComponent
   displayName: 'Documentation'
 
   render: ->
-    parts = fetch('location').url.split('/')
-    path = parts[parts.length - 1]
-
-
-    html = fetch("/docs/#{path}").html
+    html = fetch("/docs/#{@props.doc}").html
     return SPAN(null) if !html
-
-    DIV 
-      className: 'Documentation'
-
-      DIV 
-        className: 'doc_menu'
-
-        UL 
-          style: {}
-
-          for item in doc_menu
-            fetch "/docs/#{item.path}" # just to preload
-            LI 
-              className: if item.path == path then 'active'
-
-              A 
-                href: "/docs/#{item.path}"
-                item.name
-
         
-      DIV 
-        className: 'markdown_doc'
+    DIV 
+      className: 'markdown_doc'
 
-        LINK 
-          rel: 'stylesheet' 
-          type: 'text/css'
-          href: asset("../vendor/github-markdown.css")
+      LINK 
+        rel: 'stylesheet' 
+        type: 'text/css'
+        href: asset("../vendor/github-markdown.css")
 
 
-        DIV className: 'markdown-body', dangerouslySetInnerHTML: {__html: html}
+      DIV className: 'markdown-body', dangerouslySetInnerHTML: {__html: html}
 
     
 

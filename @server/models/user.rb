@@ -475,7 +475,7 @@ class User < ApplicationRecord
     changed = false
     if subdomain.customizations.has_key?('user_tags')
       subdomain.customizations['user_tags'].each do |tag|
-        if self.tags[tag["key"]]
+        if self.tags[tag["key"]] && tag["key"].match(subdomain.name)
           pp "deleting #{tag["key"]} from #{self.name}"
           self.tags.delete tag["key"]
           changed = true

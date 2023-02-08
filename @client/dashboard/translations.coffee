@@ -184,7 +184,6 @@ window.T = window.t = window.translator = (args, native_text) ->
     translations_native[id] ||= {}
     translations_native[id].txt = native_text
     setTimeout ->
-      console.log translations_native
       if translations_native.translation
         delete translations_native.translation
       save translations_native  

@@ -3,8 +3,10 @@ class Ahoy::Store < Ahoy::DatabaseStore
 
   # Save subdomain with visit
   def track_visit(data)
-    data[:subdomain_id] = current_subdomain.id
-    @visit = visit_model.create!(slice_data(visit_model, data))
+    if current_subdomain
+      data[:subdomain_id] = current_subdomain.id
+      @visit = visit_model.create!(slice_data(visit_model, data))
+    end
   rescue => e
     raise e unless unique_exception?(e)
 

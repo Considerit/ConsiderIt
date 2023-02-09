@@ -139,12 +139,14 @@ class PointController < ApplicationController
 
   def destroy
     point = Point.find params[:id]
+    id = point.id
+
     proposal = point.proposal
     
     authorize! 'delete point', point
 
     point.destroy
-    proposal.opinions.where("point_inclusions like '%#{params[:id]}%'").map do |o|
+    proposal.opinions.where("point_inclusions like '%#{id}%'").map do |o|
       o.recache
       dirty_key "/opinion/#{o.id}"
     end

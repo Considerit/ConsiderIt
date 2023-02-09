@@ -179,9 +179,9 @@ class SubdomainController < ApplicationController
       else 
         token = current_user.auth_token(new_subdomain)
         if Rails.env.development?
-          redirect_to "/?u=#{current_user.email}&t=#{token}&domain=#{new_subdomain.name}"
+          redirect_to URI.parse("/?u=#{current_user.email}&t=#{token}&domain=#{new_subdomain.name}").to_s
         else
-          redirect_to "#{request.protocol}#{new_subdomain.url}?u=#{current_user.email}&t=#{token}"
+          redirect_to URI.parse("#{request.protocol}#{new_subdomain.url}?u=#{current_user.email}&t=#{token}").to_s
         end
       end
     end

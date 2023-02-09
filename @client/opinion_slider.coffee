@@ -300,6 +300,8 @@ window.OpinionSlider = ReactiveComponent
       if !slider.has_moved 
         translator "sliders.slide_prompt", 'Slide Your Overall Opinion'
       else if func = labels.slider_feedback or default_feedback
+        if typeof func == "string"
+          func = window[func]
         func slider.value, proposal
       else if TABLET_SIZE() 
         translator "sliders.slide_feedback_short", "Your opinion"

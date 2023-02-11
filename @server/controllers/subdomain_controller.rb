@@ -54,7 +54,7 @@ class SubdomainController < ApplicationController
       errors.push "You must specify a forum name"
     end 
 
-    existing = Subdomain.find_by_name(subdomain) || ['aeb', 'cs', 'de', 'en', 'es', 'fr', 'heb', 'hu', 'mi', 'nl', 'pt', 'sk'].index(subdomain) || subdomain.start_with?('oauth-')
+    existing = Subdomain.find_by_name(subdomain) || ['status', 'aeb', 'cs', 'de', 'en', 'es', 'fr', 'heb', 'hu', 'mi', 'nl', 'pt', 'sk'].index(subdomain) || subdomain.start_with?('oauth-')
     if existing
       errors.push "That forum already exists. Please choose a different name."
     end 

@@ -151,54 +151,49 @@ window.DocumentationGroup = ReactiveComponent
 
 
 
-      ##########################################
-      # Temporarily removed until new legal docs are ready
-      if false 
-        if group_config.groups.length == 1 # flat list
+      if group_config.groups.length == 1 # flat list
+        DIV 
+          className: 'doc_menu'
+
+          UL 
+            style: {}
+
+            for item in group_config.groups[0].docs
+              fetch "/docs/#{item.path}" # just to preload
+              LI 
+                className: if item.path == doc then 'active'
+
+                A 
+                  href: "/docs/#{group}/#{item.path}"
+                  item.name
+
+      else 
+        DIV 
+          className: 'doc_groups_container'
+
+          H1
+            className: 'doc_center'
+            group_config.name
+
           DIV 
-            className: 'doc_menu'
+            className: 'doc_groups'
 
-            UL 
-              style: {}
+            for ggroup in group_config.groups
+              DIV 
+                className: 'doc_group'
 
-              for item in group_config.groups[0].docs
-                fetch "/docs/#{item.path}" # just to preload
-                LI 
-                  className: if item.path == doc then 'active'
+                H2 null,
+                  ggroup.label
 
-                  A 
-                    href: "/docs/#{group}/#{item.path}"
-                    item.name
+                UL null,
+                  for item in ggroup.docs
+                    fetch "/docs/#{item.path}" # just to preload
+                    LI 
+                      className: if item.path == doc then 'active'
 
-        else 
-          DIV 
-            className: 'doc_groups_container'
-
-            H1
-              className: 'doc_center'
-              group_config.name
-
-            DIV 
-              className: 'doc_groups'
-
-              for ggroup in group_config.groups
-                DIV 
-                  className: 'doc_group'
-
-                  H2 null,
-                    ggroup.label
-
-                  UL null,
-                    for item in ggroup.docs
-                      fetch "/docs/#{item.path}" # just to preload
-                      LI 
-                        className: if item.path == doc then 'active'
-
-                        A 
-                          href: "/docs/#{group}/#{item.path}"
-                          item.name
-        ######################
-
+                      A 
+                        href: "/docs/#{group}/#{item.path}"
+                        item.name
 
 
 

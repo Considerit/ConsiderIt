@@ -56,8 +56,12 @@ OAUTH_SETUP_PROC = lambda do |env|
   #   - https://github.com/intridea/omniauth-oauth2/issues/32
 
   if Rails.env.production? && subdomain
+    redirect_domain = APP_CONFIG[:oauth_callback_subdomain]
+    if APP_CONFIG[:product_page] && APP_CONFIG[:product_page] != 'homepage'
+      redirect_domain += ".#{APP_CONFIG[:product_page]}"
+    end
     env['omniauth.strategy'].options['state'] = subdomain
-    env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://#{APP_CONFIG[:oauth_callback_subdomain]}.#{host}/auth/#{env['omniauth.strategy'].name()}/callback"
+    env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://#{redirect_domain}.#{host}/auth/#{env['omniauth.strategy'].name()}/callback"
   end
 end
 

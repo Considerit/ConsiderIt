@@ -56,7 +56,7 @@ class HtmlController < ApplicationController
     manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})
 
     @testing_local = false
-    if current_subdomain.name == 'homepage'
+    if current_subdomain.name == APP_CONFIG[:product_page]
       @app = "product_page"
       @js_dependencies = "/#{manifest['product_page_dependencies']}"
       @plausible_domain = APP_CONFIG[:plausible_domain_product]
@@ -149,7 +149,7 @@ class HtmlController < ApplicationController
     # subdomain defaults
     case current_subdomain.name
 
-    when 'homepage'
+    when APP_CONFIG[:product_page]
       @canonical = "#{request.protocol}#{request.host}#{page}"
 
       case page 

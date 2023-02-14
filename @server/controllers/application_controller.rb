@@ -103,9 +103,14 @@ protected
     rq = request
     candidate_subdomain = nil 
     subdomain_sought = nil 
+    regional_id = nil
 
     if rq.subdomain && rq.subdomain.length > 0  # case 1
-      subdomain_sought = rq.subdomain
+      ssubdomains = rq.subdomain.split('.')
+      subdomain_sought = ssubdomains[0]
+      if ssubdomains.length > 1
+        regional_id = ssubdomains[1]
+      end
     elsif params[:domain] # case 3
       subdomain_sought = params[:domain]
     elsif !Rails.env.development? && APP_CONFIG[:product_page_installed]  # case 2
@@ -128,7 +133,7 @@ protected
           session[:default_subdomain] = candidate_subdomain.name
           redirect_to "#{request.protocol}#{request.host_with_port}/create_forum?forum=#{subdomain_sought}"
         else 
-          redirect_to "#{request.protocol}#{request.domain(1)}/create_forum?forum=#{subdomain_sought}"
+          redirect_to "#{request.protocol}#{regional_id ? "#{regional_id}." : ""  }#{request.domain(1)}/create_forum?forum=#{subdomain_sought}"
         end
         
       else

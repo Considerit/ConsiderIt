@@ -23,13 +23,13 @@ OAUTH_SETUP_PROC = lambda do |env|
 
   request = Rack::Request.new(env)
   host = request.host.split('.')
-  subdomain = nil
-  if host.length >= 3
-    subdomain = host[0]
-  end
+
+  subdomain = host[0] == APP_CONFIG[:product_page] ? nil : host[0]
+
   if host.length > 2
     host = host[host.length-2..host.length-1]
   end
+
   host = host.join('.').intern
 
   provider_key = "oauth_#{provider}_client".intern

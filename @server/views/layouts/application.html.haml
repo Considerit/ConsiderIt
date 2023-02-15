@@ -125,7 +125,7 @@
 
 
           function getPlausibleHREF () {
-            if ("#{current_subdomain.name}" != 'homepage'){
+            if ("#{current_subdomain.name}" != "#{APP_CONFIG[:product_page]}"){
               return location.origin + "/#{current_subdomain.name}" + location.pathname + location.search
             }
             else 
@@ -199,7 +199,7 @@
       %script{:src => @js, :type => 'text/javascript'}
 
 
-      - if current_subdomain.name != 'homepage'
+      - if current_subdomain.name != APP_CONFIG[:product_page]
         %script{:async => "true", :src => "#{@vendor}/vendor/quill-1.0.js", :type => 'text/javascript'}
         %script{:async => "true", :src => "#{@vendor}/vendor/colorbrewer.js", :type => 'text/javascript'}
         %script{:async => "true", :src => "#{@vendor}/vendor/cassowary.js", :type => 'text/javascript'}
@@ -213,7 +213,7 @@
         %script{:async => true, :defer => true, :src => 'https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.5.3/jsoneditor.min.js', :type => 'text/javascript'}
         %link{:rel => 'stylesheet', :href => 'https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.5.3/jsoneditor.min.css'}
 
-        - if current_subdomain.name == 'homepage'
+        - if current_subdomain.name == APP_CONFIG[:product_page]
           %script{:async => "true", :src => "#{@vendor}/vendor/d3.v3.min.js", :type => 'text/javascript'}
 
       %script{:type => 'text/javascript', :src => "#{@vendor}/vendor/ahoy-0.4.0-min.js"}

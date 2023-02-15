@@ -11,7 +11,7 @@ class SubdomainController < ApplicationController
 
   def index 
     ActsAsTenant.without_tenant do 
-      subdomains = Subdomain.where('name != "homepage"').map {|s| {:id => s.id, :name => s.name, :customizations => s.customizations, :activity => s.points.published.count} }
+      subdomains = Subdomain.where("name != \"#{APP_CONFIG[:product_page]}\"").map {|s| {:id => s.id, :name => s.name, :customizations => s.customizations, :activity => s.points.published.count} }
       render :json => [{
         key: '/subdomains',
         subs: subdomains
@@ -34,7 +34,7 @@ class SubdomainController < ApplicationController
     errors = []
 
     # force it to come from consider.it
-    if current_subdomain.name != 'homepage'
+    if current_subdomain.name != APP_CONFIG[:product_page]
       errors.push "You can only create new forums from https://#{APP_CONFIG[:domain]}"
     end
 
@@ -169,7 +169,7 @@ class SubdomainController < ApplicationController
       
       current_user.add_to_active_in new_subdomain
 
-      set_current_tenant(Subdomain.find_by_name('homepage'))
+      set_current_tenant(Subdomain.find_by_name(APP_CONFIG[:product_page]))
 
       # Send welcome email to subdomain creator
       UserMailer.welcome_new_customer(current_user, new_subdomain).deliver_later

@@ -103,13 +103,18 @@ protected
     rq = request
     candidate_subdomain = nil 
     subdomain_sought = nil 
+    regional_id = nil
 
     if rq.subdomain && rq.subdomain.length > 0  # case 1
-      subdomain_sought = rq.subdomain
+      ssubdomains = rq.subdomain.split('.')
+      subdomain_sought = ssubdomains[0]
+      if ssubdomains.length > 1
+        regional_id = ssubdomains[1]
+      end
     elsif params[:domain] # case 3
       subdomain_sought = params[:domain]
-    elsif !Rails.env.development? && APP_CONFIG[:product_page_installed]  # case 2
-      subdomain_sought = 'homepage'
+    elsif !Rails.env.development? && APP_CONFIG[:product_page]  # case 2
+      subdomain_sought = APP_CONFIG[:product_page]
     elsif Rails.env.development? && session[:default_subdomain] # case 4
       subdomain_sought = session[:default_subdomain]
     end
@@ -119,8 +124,8 @@ protected
 
     if !candidate_subdomain # case 5
 
-      if APP_CONFIG[:product_page_installed]
-        candidate_subdomain = Subdomain.find_by_name 'homepage'
+      if APP_CONFIG[:product_page]
+        candidate_subdomain = Subdomain.find_by_name APP_CONFIG[:product_page]
         set_current_tenant(candidate_subdomain) if candidate_subdomain
 
 
@@ -128,7 +133,7 @@ protected
           session[:default_subdomain] = candidate_subdomain.name
           redirect_to "#{request.protocol}#{request.host_with_port}/create_forum?forum=#{subdomain_sought}"
         else 
-          redirect_to "#{request.protocol}#{request.domain(1)}/create_forum?forum=#{subdomain_sought}"
+          redirect_to "#{request.protocol}#{regional_id ? "#{regional_id}." : ""  }#{request.domain(1)}/create_forum?forum=#{subdomain_sought}"
         end
         
       else
@@ -399,7 +404,7 @@ protected
   end
 
   def dirty_proposals(real_user)
-    if current_subdomain.name != 'homepage'
+    if current_subdomain.name != APP_CONFIG[:product_page]
       dirty_key '/proposals'
     end
   end

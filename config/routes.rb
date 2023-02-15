@@ -66,7 +66,7 @@ Rails.application.routes.draw do
   get "/create_subdomain" => 'subdomain#create'
   post '/subdomain' => 'subdomain#create'
 
-  if APP_CONFIG[:product_page_installed]
+  if APP_CONFIG[:product_page]
     # Stripe payments
     get "/payments/successful" => 'product_page#stripe_successful'
     get "/payments/failed" => 'product_page#stripe_failed'  
@@ -124,7 +124,7 @@ Rails.application.routes.draw do
   match '/translations' => 'translations#update', :via => [:put]
   match '/translations/*subdomain' => 'translations#update', :via => [:put]
 
-  if APP_CONFIG[:product_page_installed]
+  if APP_CONFIG[:product_page]
     post "/contact_us" => 'product_page#contact'
     get '/metrics' => 'product_page#metrics'
   end

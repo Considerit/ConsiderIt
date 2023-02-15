@@ -1,9 +1,9 @@
 class PageController < ApplicationController
 
   def show
-    page = params[:id] ? params[:id] : 'homepage'
+    page = params[:id] ? params[:id] : APP_CONFIG[:product_page]
     
-    if page == 'homepage'
+    if page == APP_CONFIG[:product_page]
 
       authorize!("access forum", current_subdomain, "/page/")
 

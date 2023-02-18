@@ -1,6 +1,6 @@
 # previewable at /rails/mailers
 
-class Previews::UserPreview < ActionMailer::Preview
+class UserPreview < ActionMailer::Preview
    def welcome_new_customer
     UserMailer.welcome_new_customer(User.where('registered').last, Subdomain.last)
   end

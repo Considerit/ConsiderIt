@@ -6,8 +6,8 @@ window.translation_progress = (lang, key_prefix) ->
   translations = fetch "#{key_prefix}/#{lang}"
   dev_language = fetch "#{key_prefix}/en"
 
-  messages =   (k for k,v of dev_language when v.txt?.length > 0 or v.proposals?[0]?.txt?.length > 0)
-  translated = (k for k,v of translations when v.txt?.length > 0 or v.proposals?[0]?.txt?.length > 0)
+  messages =   (k for k,v of dev_language when v?.length > 0 or v?.proposals?[0]?.length > 0)
+  translated = (k for k,v of translations when v?.length > 0 or v?.proposals?[0]?.length > 0)
 
   translated.length / messages.length
 
@@ -70,7 +70,7 @@ IN_SITU_TRANSLATOR = ReactiveComponent
 
     translated = @props.lang_used == target_lang
     id = @props.id or @props.native_text
-    available_languages = fetch('/translations').available_languages
+    available_languages = fetch('/supported_languages').available_languages
     SPAN 
       style: 
         backgroundColor: if translated then "rgba(166, 195, 151, .5)" else "rgba(251,124,124,.5)"
@@ -178,12 +178,13 @@ window.T = window.t = window.translator = (args, native_text) ->
   native_text = native_text.replace(/\n/g, "")
 
   # ensure this string is in the translations database for the development language
-  if translations_native[id]?.txt != native_text
-    console.log 'updating', {id, native_text, saved: translations_native[id]?.txt}, translations_native[id]?.txt == native_text
+  if translations_native[id] != native_text
+    console.log 'updating', {id, native_text, saved: translations_native[id]}, translations_native[id] == native_text
 
     translations_native[id] ||= {}
-    translations_native[id].txt = native_text
+    translations_native[id] = native_text
     setTimeout ->
+
       if translations_native.translation
         delete translations_native.translation
       save translations_native  
@@ -201,13 +202,14 @@ window.T = window.t = window.translator = (args, native_text) ->
   for lang in langs
     translations = fetch "#{translations_key_prefix}/#{lang}"
     if translations[id]?
-      message = translations[id].txt
+      message = translations[id]
       # if this user has proposed one, use that
-      if translations[id].proposals?.length > 0
-        u = fetch('/current_user').user
-        for proposal in translations[id].proposals
-          if proposal.u == u 
-            message = proposal.txt 
+      # TODO!!!!! Update this
+      # if translations[id].proposals?.length > 0
+      #   u = fetch('/current_user').user
+      #   for proposal in translations[id].proposals
+      #     if proposal.u == u 
+      #       message = proposal.txt 
       if message
         lang_used = lang 
         break 
@@ -218,7 +220,7 @@ window.T = window.t = window.translator = (args, native_text) ->
   catch e
      # this is a bad fallback, as plural rules won't work
     console.error "Error translating #{id}", {error: e, message, native_text}
-    message = translations_native[id]?.txt
+    message = translations_native[id]
 
   if args.return_lang_used # useful for a T wrapper that enables in situ translations
     translation_cache[cache_key] = {message, lang_used, target_lang: fetch('translations').translating_lang or langs[0]}
@@ -234,7 +236,7 @@ TranslationsDash = ReactiveComponent
 
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
-    translations = fetch '/translations'
+    translations = fetch '/supported_languages'
 
     return DIV() if !translations.available_languages
 
@@ -400,7 +402,7 @@ TranslationsForLang = ReactiveComponent
 
     lang = @props.lang 
 
-    available_languages = fetch("/translations").available_languages
+    available_languages = fetch("/supported_languages").available_languages
     native_messages = fetch "#{@props.translation_key_prefix}/#{DEVELOPMENT_LANGUAGE}"
     translations = fetch "#{@props.translation_key_prefix}/#{lang}"
 

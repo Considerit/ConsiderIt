@@ -1,8 +1,8 @@
 - if @user.first_name
   %p
-    #{Translations.translate({id: "email.salutation", name: @user.first_name}, "Hi {name},")}  
+    #{Translations::Translation.get({id: "email.salutation", name: @user.first_name}, "Hi {name},")}  
 %p
-  #{Translations.translate({id: "email.invitation", action: @action, name: @inviter.name}, "{name} invites you to {action}")}
+  #{Translations::Translation.get({id: "email.invitation", action: @action, name: @inviter.name}, "{name} invites you to {action}")}
 
   = succeed '.' do
     - if @invitation_obj.class.to_s == "Proposal"
@@ -12,11 +12,11 @@
 
 - if @message
   %p 
-    #{Translations.translate({id: "email.message_from", sender: @inviter.first_name}, "{sender} says:")}
+    #{Translations::Translation.get({id: "email.message_from", sender: @inviter.first_name}, "{sender} says:")}
 
   %p
     %i{style: 'padding-left: 20px; display: block; border-left: 1px solid #eaeaea'}
       = @message
 
 %p
-  #{Translations.translate("email.received_in_error", "If you feel that you’re receiving this email in error, please contact admin@consider.it.")}
+  #{Translations::Translation.get("email.received_in_error", "If you feel that you’re receiving this email in error, please contact admin@consider.it.")}

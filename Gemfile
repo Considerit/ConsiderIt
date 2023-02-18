@@ -76,7 +76,7 @@ end
 group :development, :test do
   gem 'thin'
   gem 'ruby-prof' #, '~> 1.0.0'
-  gem 'mailcatcher'
+  # gem 'mailcatcher'
   gem 'listen'
   # gem 'rack-mini-profiler'
 end

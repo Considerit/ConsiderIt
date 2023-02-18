@@ -1,123 +1,130 @@
-task :fix_translations_escaping => :environment do 
-  base_translations = Translations.GetTranslations '/translations'
-  base_translations["available_languages"].each do |langcode, lang| 
-    pp "",""
-    pp "Migrating #{lang} (#{langcode})"
-    pp ""
-
-
-    lang_key = "/translations/#{langcode}"
-    trans = Translations.GetTranslations lang_key
-
-
-    to_fix = {}
-    trans.each do |key,val|
-      if val['txt'] && val['txt'].index('\\\"')
-        pp key, val # val['txt'].gsub(/(\\{2,}")/, "\"")
-
-        to_fix[key] = val['txt'].gsub(/(\\{3,}")/, "\"")
+task :supported_languages_to_active_record => :environment do 
+  langs = ActiveRecord::Base.connection.execute("SELECT v FROM datastore where k='/translations'")
+  langs.each do |r|
+    supported = JSON.load(r[0])
+    supported["available_languages"].each do |lang_code,name|
+      if !Translations::SupportedLanguage.find_by_name(name)
+        attrs = {
+                  "name": name, 
+                  "lang_code": lang_code
+                }
+        Translations::SupportedLanguage.create!(attrs)
+        pp "Added language #{lang_code}"
       end
     end
+  end
+end
 
-    to_fix.each do |key,val|
-      trans[key]['txt'] = val
-    end
-
-    Translations.UpdateTranslations lang_key, trans
-
+task :translations_to_active_record => :environment do
+  subdomains = {}
+  Subdomain.all.each do |s|
+    subdomains[s.name] = 1
   end
 
+  supported_languages = {}
+  Translations::SupportedLanguage.all.each do |sl|
+    supported_languages[sl.lang_code] = sl.name
+  end
+
+  def load_translations(lang_code, trans, subdomain_name=nil)
+    pp "Loading #{trans.values.length} Translations for #{lang_code} #{subdomain_name}"
+
+    if subdomain_name
+      subdomain = Subdomain.find_by_name(subdomain_name)
+    end
+
+    trans.each do |string_id, vals|
+      next if string_id == 'key'
+      u = vals["u"]
+      txt = vals["txt"]
+
+      attrs = {
+        "string_id": string_id,
+        "translation": txt,
+        "lang_code": lang_code,
+        "accepted": true,
+        "accepted_at": DateTime.now(),
+        "origin_server": "US"
+      }
+
+      if u 
+        attrs["user_id"] = u.split('/')[2]
+      end
+
+      if subdomain_name
+        attrs["subdomain_id"] = subdomain.id
+      end
+
+      if Translations::Translation.where(:string_id => string_id, :user_id => attrs["user_id"], :lang_code => lang_code).count == 0
+        Translations::Translation.create! attrs
+      end
+
+      proposals = vals["proposals"]
+
+      if proposals && proposals.length > 0
+        proposals.each do |proposal|
+          txt = proposal["txt"]
+          u = proposal["u"]
+          if u 
+            attrs["user_id"] = u.split('/')[2]
+          end
+
+          attrs["accepted"] = false
+          attrs["accepted_at"] = nil
+          attrs["user_id"] = u.split('/')[2]
+          attrs["translation"] = txt
+
+          if Translations::Translation.where(:string_id => string_id, :user_id => attrs["user_id"], :lang_code => lang_code).count == 0
+            Translations::Translation.create! attrs
+          end
+        end
+      end
+
+    end
+  
+  end
+
+  trans = ActiveRecord::Base.connection.execute("SELECT k,v FROM datastore")
+  trans.each do |t|
+    k = t[0]
+    v = Oj.load t[1]
+
+    parts = k.split('/')
+    if parts.length >= 3
+      if supported_languages.has_key?(parts[2]) && parts.length == 3
+        load_translations(parts[2], v)
+      elsif parts[2] == 'pseudo-en' || parts[3] == 'pseudo-en'
+        # we'll automatically fill in pseudo-en elsewhere
+      elsif subdomains.has_key?(parts[2])
+        if parts.length != 4
+          # junk
+        else 
+          load_translations(parts[3], v, parts[2])
+        end
+      else 
+        # subdomain not found or junk
+      end
+    else
+      # junk
+    end
+  end
 
 end
 
+
 task :migrate_translations => :environment do 
 
-  $to_delete = {}
   def delete_translation(id)
-    $to_delete[id] = 1
+    to_delete = Translations::Translation.where(:string_id => id)
+    pp "  Deleting #{id} (#{to_delete.count})"
+    to_delete.destroy_all
   end 
 
-  $to_rename = {}
   def rename_translation(source, dest)
-    $to_rename[source] = dest
+    to_rename = Translations::Translation.where(:string_id => source)
+    pp "renamed #{trans[source]} to  #{trans[dest]} (#{to_rename.count})"
+    to_rename.update_all(:string_id => dest)
   end
-
-
-  def sync_keys_with_english
-    base_translations = Translations.GetTranslations '/translations'
-
-    en_dict = Translations.GetTranslations "/translations/en"
-
-    base_translations["available_languages"].each do |langcode, lang| 
-      next if langcode == 'en'
-      pp "",""
-      pp "syncing #{lang} (#{langcode}) with english"
-      pp ""
-
-      lang_key = "/translations/#{langcode}"
-      trans = Translations.GetTranslations lang_key
-
-      deleted = false 
-      trans.each do |key, ___|
-        if !en_dict.has_key?(key)
-          pp "#{lang} has #{key} that en doesn't"
-          trans.delete(key)
-          deleted = true 
-        end
-      end
-
-      if deleted 
-        Translations.UpdateTranslations lang_key, trans
-      end
-
-    end 
-
-  end
-
-  def execute_translation_migration(overwrite = false)
-    base_translations = Translations.GetTranslations '/translations'
-    avail = base_translations["available_languages"].clone
-    avail['pseudo-en'] = "Pseudo-English (for testing)"
-
-    avail.each do |langcode, lang| 
-      pp "",""
-      pp "Migrating #{lang} (#{langcode})"
-      pp ""
-
-
-      lang_key = "/translations/#{langcode}"
-      trans = Translations.GetTranslations lang_key
-
-      $to_rename.each do |source, dest|
-        if trans.has_key?(source)
-          if trans.has_key?(dest) && !overwrite
-            $to_delete[source] = 1
-          else 
-            pp "  Rename #{source} to #{dest}", trans[source]
-            trans[dest] = trans.delete source
-            pp "renamed", trans[source], trans[dest]
-          end
-        end 
-      end 
-
-      $to_delete.each do |id, __|
-        # if id == 'translation'
-        #   pp lang_key, trans.has_key?(id)
-        # end
-        if trans.has_key?(id)
-          pp "  Deleting #{id}", trans[id]
-          trans.delete(id)
-
-          pp "  Deleted", trans[id]
-        end
-      end 
-
-      Translations.UpdateTranslations lang_key, trans
-
-    end
-
-  end 
-
 
   delete_translation "engage.save_your_opinion.button"
 
@@ -271,7 +278,6 @@ task :migrate_translations => :environment do
 
   delete_translation "translation"
 
-  sync_keys_with_english
   execute_translation_migration
 
 

@@ -308,10 +308,19 @@ protected
           ExceptionNotifier.notify_exception(e, data: {slug: slug, key: key})
         end
 
-      elsif key.match "/translations"
-        translations = Translations.GetTranslations(key)
-        response.append translations
+      elsif key.match "/supported_languages"
+        supported_languages = Translations::SupportedLanguage.get_all
+        response.append supported_languages
 
+      elsif key.match "/translations/"
+        split = key.split('/')
+        subdomain = split.length == 4 ? Subdomain.find_by_name(split[2]) : nil
+        lang = subdomain ? split[3] : split[2]
+
+        pp "GETTING TRANSLATIONS", key, lang
+        translations = Translations::Translation.translations_for lang, subdomain
+        # translations = Translations::Translation.GetTranslations(key)
+        response.append translations
 
       elsif key.match '/your_forums'
         response.append current_user.your_forums

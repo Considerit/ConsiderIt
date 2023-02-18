@@ -120,7 +120,7 @@ window.ForumSettingsDash = ReactiveComponent
 
 
           do => 
-            available_languages = Object.assign({}, fetch('/translations').available_languages or {})
+            available_languages = Object.assign({}, fetch('/supported_languages').available_languages or {})
             if current_user.is_super_admin
               available_languages['pseudo-en'] = "Pseudo English (for testing)"
               
@@ -137,7 +137,7 @@ window.ForumSettingsDash = ReactiveComponent
             TRANSLATE
               id: "translations.link"
               percent_complete: Math.round(translation_progress(lang) * 100)
-              language: (fetch('/translations').available_languages or {})[lang]
+              language: (fetch('/supported_languages').available_languages or {})[lang]
               link: 
                 component: A 
                 args: 

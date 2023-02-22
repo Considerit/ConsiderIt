@@ -2,8 +2,8 @@
 window.ANIMATION_SPEED_ITEM_EXPANSION = 0.6
 
 window.STAGE1_DELAY = 0
-window.STAGE2_DELAY = ANIMATION_SPEED_ITEM_EXPANSION * 2
-window.STAGE3_DELAY = ANIMATION_SPEED_ITEM_EXPANSION * 2
+window.STAGE2_DELAY = ANIMATION_SPEED_ITEM_EXPANSION * 1.5
+window.STAGE3_DELAY = ANIMATION_SPEED_ITEM_EXPANSION * .5
 
 # window.PROPOSAL_ITEM_SPRING = # 4000 / 800 is decent
 #   stiffness: 4000  #600
@@ -857,7 +857,7 @@ window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
     dom_possibly_shifting: true
     extra_height: if !expanded_state[proposal.key] then 4000 else 0
     force: mode == 'crafting'
-    speed_mult: 2
+    speed_mult: .5
     callback: =>
       loc = fetch 'location'
       expanded_state[proposal.key] = !expanded_state[proposal.key]

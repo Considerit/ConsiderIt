@@ -163,39 +163,77 @@ class Translations::Translation < ApplicationRecord
   def promote
 
     # demote any other translations for this string
-    competing_translation = Translations::Translation.where(:lang => self.lang_code, :string_id => self.string_id, :subdomain_id => self.subdomain_id, :accepted => true)
+    competing_translation = Translations::Translation.where(:lang_code => self.lang_code, :string_id => self.string_id, :subdomain_id => self.subdomain_id, :accepted => true)
     
-    if competing_translation.count > 1
-      raise "Error, multiple accepted translations for #{self.lang_code} #{self.subdomain_id} #{self.string_id}"
-    end
+    if competing_translation.count > 0
 
-    if competing_translation.first.id != self.id
-      competing_translation.first.accepted = false
-      competing_translation.save 
-    end
+      if competing_translation.count > 1
+        raise "Error, multiple accepted translations for #{self.lang_code} #{self.subdomain_id} #{self.string_id}"
+      end
 
+      competitor = competing_translation.first
+      if competitor.id != self.id
+        competitor.accepted = false
+        competitor.save 
+      end
+    end
 
     self.accepted = true
     self.accepted_at = DateTime.now
     save
   end
 
-  def self.translations_for(lang, subdomain = nil)
-    key = translations_key lang, subdomain
-    Rails.cache.fetch(key) do
-      if subdomain
-        key = "/translations/#{subdomain.name}/#{lang}"      
 
-        translations = sanitize_and_execute_query("""
-          SELECT string_id, translation FROM language_translations WHERE 
-            accepted=true AND lang_code='#{lang}' AND subdomain_id=#{subdomain.id};
-        """)
-      else 
-        translations = sanitize_and_execute_query("""
-          SELECT string_id, translation FROM language_translations WHERE 
-            accepted=true AND lang_code='#{lang}';
-        """)
+  def self.proposed_translations(lang, subdomain = nil)
+    proposals = {}
+
+    Translations::Translation.where(:lang_code => lang, :subdomain_id => subdomain ? subdomain.id : nil).each do |pt|
+      if !proposals.has_key? pt.string_id
+        proposals[pt.string_id] = {
+          proposals: []
+        }
       end
+      if pt.accepted
+        proposals[pt.string_id][:accepted] = pt
+      else 
+        proposals[pt.string_id][:proposals].push pt
+      end
+      if pt.user_id == current_user.id && pt.origin_server == APP_CONFIG[:region]
+        proposals[pt.string_id][:yours] = pt
+      end
+    end
+  
+    proposals
+
+  end
+
+
+  def self.translations_for(lang, subdomain = nil)
+    if current_user.registered 
+      translators = Rails.cache.fetch("translators") do 
+        people = ActiveRecord::Base.connection.execute "SELECT distinct(user_id) from language_translations where lang_code != 'en'"
+        all_translators = {}
+        people.each do |user_id|
+          all_translators[user_id[0]] = 1
+        end
+        all_translators
+      end
+    end
+
+    key = translations_key lang, subdomain
+
+
+    all_translations = Rails.cache.fetch(key) do
+      if subdomain
+        subdomain_clause = "subdomain_id=#{subdomain.id}"
+      else 
+        subdomain_clause = "subdomain_id IS NULL"
+      end 
+
+      translations = sanitize_and_execute_query("""
+        SELECT string_id, translation FROM language_translations WHERE 
+          accepted=true AND lang_code='#{lang}' AND #{subdomain_clause};
+      """)
 
       all_tr = {
         key: key
@@ -207,6 +245,28 @@ class Translations::Translation < ApplicationRecord
 
       all_tr
     end
+
+    # overwrite accepted translations for translators so that their translations 
+    # will show up for them even if they're not accepted
+
+    if current_user.registered && translators.has_key?(current_user.id)
+      if subdomain
+        subdomain_clause = "subdomain_id=#{subdomain.id}"
+      else 
+        subdomain_clause = "subdomain_id IS NULL"
+      end 
+
+      translations = sanitize_and_execute_query("""
+        SELECT string_id, translation FROM language_translations WHERE 
+          user_id=#{current_user.id} AND lang_code='#{lang}' AND #{subdomain_clause};
+      """)      
+
+      translations.each do |tr|
+        all_translations[tr[0]] = tr[1]
+      end
+    end
+
+    all_translations
   end
 
   def self.create_or_update_native_translation(string_id, translation, subdomain = nil)
@@ -221,6 +281,8 @@ class Translations::Translation < ApplicationRecord
       tr = Translations::Translation.where(:string_id => string_id, :lang_code => lang)
       if subdomain 
         tr = tr.where(:subdomain_id => subdomain.id)
+      else 
+        tr = tr.where(:subdomain_id => nil)
       end
       my_translation = lang == 'en' ? translation : pseudoize_string(translation)
       if tr.count == 0 
@@ -260,9 +322,16 @@ class Translations::Translation < ApplicationRecord
       tr = tr.where(:subdomain_id => subdomain.id)
     end
 
-    trans = tr.where(:user_id => current_user.id)
+    trans = nil 
 
-    return nil if trans.translation == translation # already proposed
+    # case where we're approving an existing translation
+    if Permissions.permit('update all translations') > 0 
+      trans = tr.where(:translation => translation).first
+    end
+
+    if !trans 
+      trans = tr.where(:user_id => current_user.id).first
+    end 
 
     if !trans
       attrs = {
@@ -276,14 +345,9 @@ class Translations::Translation < ApplicationRecord
       }
       trans = Translations::Translation.create! attrs
     else 
+      return nil if trans.translation == translation && trans.accepted # already proposed
       trans.translation = translation
     end
-
-    accepted = tr.where(:accepted => true)
-    if accepted.count > 1
-      raise "Error, multiple accepted translations for #{lang} #{subdomain ? subdomain.id : ''} #{string_id}"
-    end
-    accepted = accepted.first
 
     if Permissions.permit('update all translations') > 0
       trans.promote
@@ -294,6 +358,7 @@ class Translations::Translation < ApplicationRecord
     key = translations_key lang, subdomain
     Rails.cache.delete(key)
     dirty_key key
+    dirty_key "/proposed_translations/#{lang}#{subdomain ? "/#{subdomain.name}" : ''}"
     trans
   end
 

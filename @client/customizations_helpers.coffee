@@ -61,13 +61,10 @@ window.get_point_label = (id, proposal) ->
   if !val 
     ""
   else
-    if conf.translate
-      translator "point_labels.#{val}", val 
-    else 
-      translator 
-        id: "point_labels.#{val}"
-        key: "/translations/#{fetch('/subdomain').name}"
-        val 
+    translator 
+      id: "point_labels.#{val}"
+      local: !conf.translate
+      val 
 
 
 #####################
@@ -85,13 +82,10 @@ window.get_slider_label = (id, proposal, subdomain) ->
   if !label 
     ""
   else
-    if conf.translate
-      translator "sliders.pole.#{label}", label 
-    else 
-      translator 
-        id: "sliders.pole.#{label}"
-        key: "/translations/#{fetch('/subdomain').name}"
-        label 
+    translator 
+      id: "sliders.pole.#{label}"
+      local: !conf.translate
+      label 
 
 
 

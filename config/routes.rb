@@ -125,8 +125,14 @@ Rails.application.routes.draw do
   get '/translations/*lang' => 'translations#show'
   get '/translations/*subdomain/*lang' => 'translations#show'
 
-  match '/translations/*lang' => 'translations#update', :via => [:put]
-  match '/translations/*subdomain/*lang' => 'translations#update', :via => [:put]
+  match '/translations/' => 'translations#update', :via => [:put]
+  match '/translations/' => 'translations#delete', :via => [:delete]
+  match '/translation_proposal' => 'translations#reject_proposal', :via => [:delete]
+  
+  match '/proposed_translations/*lang' => 'translations#index', :via => [:get]
+  match '/proposed_translations/*lang/*subdomain' => 'translations#index', :via => [:get]
+
+
 
   if APP_CONFIG[:product_page]
     post "/contact_us" => 'product_page#contact'

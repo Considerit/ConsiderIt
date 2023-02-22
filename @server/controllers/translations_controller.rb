@@ -1,6 +1,14 @@
 
 class TranslationsController < ApplicationController
 
+  # getting all proposed translations
+  def index 
+    key = request.path
+    dirty_key key 
+    render :json => []
+  end
+
+
   def show 
     if !request.path.start_with?('/translations')
       return
@@ -14,7 +22,8 @@ class TranslationsController < ApplicationController
 
   # batch update translations
   def update
-    proposals = params[:proposals]
+    proposals = JSON.parse(params[:proposals])
+
 
     native_updates = []
     other_updates = []
@@ -24,14 +33,14 @@ class TranslationsController < ApplicationController
     proposals.each do |proposal|
       string_id = proposal['string_id']
       lang_code = proposal['lang_code']
-      subdomain = proposal['subdomain_id'] ? Subdomain.find_by_name(proposal['subdomain_id']) : nil
+      subdomain = proposal['subdomain_id'] ? Subdomain.find(proposal['subdomain_id'].to_i) : nil
 
       translation = proposal['translation']
 
-      existing = Translations.Translations.where(:string_id => string_id, :lang_code => lang_code, :subdomain_id => subdomain ? subdomain.id : nil)
+      existing = Translations::Translation.where(:string_id => string_id, :lang_code => lang_code, :subdomain_id => subdomain ? subdomain.id : nil)
       accepted = existing.where(:accepted => true).first
 
-      next if (accepted && accepted.string_id == string_id) || (!translation || translation.length == 0)
+      next if (accepted && accepted.translation == translation) || (!translation || translation.length == 0)
 
       # super admins can always directly update translations
       # allow non super admins to:
@@ -51,7 +60,7 @@ class TranslationsController < ApplicationController
     end
 
     if native_updates.length > 0
-      EventMailer.translations_for_native_updated(subdomain || current_subdomain, native_updates).deliver_later
+      EventMailer.translations_native_changed(subdomain || current_subdomain, native_updates).deliver_later
     end 
 
     if other_updates.length > 0 
@@ -64,125 +73,49 @@ class TranslationsController < ApplicationController
   end
 
 
+  # delete all translations of a string
+  def delete
+    return if Permissions.permit('update all translations') <= 0
 
-  # def update_old
+    string_id = params["string_id"]
 
+    Translations::Translation.where(:string_id => string_id).each do |str| 
+      if str.subdomain_id
+        subdomain = Subdomain.find(str.subdomain_id)
+      else 
+        subdomain = nil
+      end
+      lang = str.lang_code
 
-  #   key = params[:key]
+      dirty_key "/translations/#{subdomain ? "#{subdomain.name}/" : ""}#{lang}"
+      dirty_key "/proposed_translations/#{lang}#{subdomain ? "/#{subdomain.name}" : ''}"
 
+      str.destroy!
+    end
 
-  #   if !key.start_with?('/translations')
-  #     return
-  #   end 
-    
-  #   exclude = {'authenticity_token' => 1, 'subdomain' => 1, 'action' => 1, 'controller' => 1, 'translation' => 1}
-  #   updated = params.select{|k,v| !exclude.has_key?(k)}.to_h
+    render :json => {:success => true}
+  end
 
-  #   if Permissions.permit('update all translations') > 0
-  #     Translations.UpdateTranslations(key, updated)
-  #   else 
-  #     translations_made = false
+  def reject_proposal
+    return if Permissions.permit('update all translations') <= 0
 
-  #     # allow non super admins to:
-  #     #    - create a translatable message if that message is not yet populating the datastore
-  #     #    - propose new translations to existing translatable messages (only one per user per message)
+    string_id = params["string_id"]
+    proposal = params["proposal"]
 
-  #     old = Translations.GetTranslations(key)
+    id = JSON.parse(proposal)["id"]
 
-  #     updated.each do |id, message|
-  #       # if id == 'key'
-  #       #   next 
-  #       # end
+    to_delete = Translations::Translation.find(id)
+    if to_delete
+      to_delete.destroy
 
-  #       # if id == 'engage.slider_label.Agree'
-  #       #   begin
-  #       #     raise "Translator got a sneaky, old translation string"
-  #       #   rescue => e
-  #       #     if current_subdomain
-  #       #       sub = current_subdomain.name
-  #       #     else 
-  #       #       sub = nil
-  #       #     end 
-  #       #     ExceptionNotifier.notify_exception(e, data: {request: request, params: params, subdomain: sub})
-  #       #   end
-  #       # end
+      dirty_key "/translations/#{to_delete.subdomain_id ? "#{Subdomain.find(to_delete.subdomain_id).name}/" : ""}#{to_delete.lang_code}"
+      dirty_key "/proposed_translations/#{to_delete.lang_code}#{to_delete.subdomain_id ? "#{Subdomain.find(to_delete.subdomain_id).name}" : ''}"
 
+    end
 
-  #       # Check if this message is present; if not, allow it to be added. 
-  #       # If it is en, add it as default text, otherwise add it as a proposal.
-  #       if !old.has_key?(id)
-  #         if !key.end_with?('/en')
-  #           txt = message[:txt] || message["txt"]
-  #           if txt
-  #             message = {}
-  #             message["proposals"] = [{"txt": txt, u: "/user/#{current_user.id}"}]
-              
-  #           elsif message["proposals"]
-  #             message["proposals"] = [message["proposals"][0]] # only one proposal per user per message
-  #           else 
-  #             next # no txt and no proposals?
-  #           end 
-  #           translations_made = true
-  #         end 
+    render :json => {:success => true}
 
-  #         old[id] = message 
-
-  #       elsif message["proposals"]
-
-
-  #         # should only be allowed to add or replace their own proposal
-  #         old_proposals = old[id]["proposals"] || []
-  #         new_proposal = nil 
-  #         message["proposals"].each do |proposal|
-  #           if proposal["u"] == "/user/#{current_user.id}"
-  #             new_proposal = proposal 
-  #             break 
-  #           end 
-  #         end 
-
-  #         # # if it comes from the client not as a proposal, then turn it into one...
-  #         # if new_proposal && message["txt"] && new_proposal["txt"] != message["txt"]
-  #         #   new_proposal = {}
-  #         #   new_proposal["txt"] = message["txt"]
-  #         #   new_proposal["u"] = "/user/#{current_user.id}"
-  #         # end
-
-  #         if new_proposal
-  #           translations_made = true
-  #           old_proposal = nil
-  #           old_proposals.each do |proposal|
-  #             if proposal["u"] == "/user/#{current_user.id}"
-  #               old_proposal = proposal 
-  #             end 
-  #           end 
-  #           if old_proposal
-  #             old_proposal["txt"] = new_proposal["txt"]
-  #           else 
-  #             old_proposals.push new_proposal
-  #           end 
-
-  #           old[id]["proposals"] = old_proposals
-
-  #         end
-
-  #       end
-  #     end
-
-  #     Translations.UpdateTranslations(key, old)
-
-  #     if translations_made
-  #       EventMailer.translations_proposed(current_subdomain).deliver_later
-  #     end
- 
-  #   end
-
-  #   if key.end_with?('/en')
-  #     Translations::PSEUDOLOCALIZATION::synchronize(key)
-  #   end
-
-  #   dirty_key key
-  #   render :json => {:success => true}
-  # end
+  end
 
 end 
 

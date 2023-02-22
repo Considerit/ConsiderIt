@@ -317,15 +317,20 @@ protected
         subdomain = split.length == 4 ? Subdomain.find_by_name(split[2]) : nil
         lang = subdomain ? split[3] : split[2]
 
-        pp "GETTING TRANSLATIONS", key, lang
         translations = Translations::Translation.translations_for lang, subdomain
-        # translations = Translations::Translation.GetTranslations(key)
         response.append translations
+
+      elsif key.match "/proposed_translations/"
+        split = key.split('/')
+        lang = split[2]
+        subdomain = split.length == 4 ? Subdomain.find_by_name(split[3]) : nil
+        proposals = Translations::Translation.proposed_translations lang, subdomain
+        proposed = {:key => key, :proposals => proposals}
+
+        response.append proposed
 
       elsif key.match '/your_forums'
         response.append current_user.your_forums
-
-
       end
 
 

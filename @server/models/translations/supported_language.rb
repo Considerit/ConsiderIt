@@ -26,7 +26,6 @@ class Translations::SupportedLanguage < ApplicationRecord
       }
 
       langs.each do |lang|
-        pp lang, available, available["available_languages"]
         available[:available_languages][lang.lang_code] = lang.name
       end
 

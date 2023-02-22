@@ -122,7 +122,7 @@ task :migrate_translations => :environment do
 
   def rename_translation(source, dest)
     to_rename = Translations::Translation.where(:string_id => source)
-    pp "renamed #{trans[source]} to  #{trans[dest]} (#{to_rename.count})"
+    pp "renamed #{source} to  #{dest} (#{to_rename.count})"
     to_rename.update_all(:string_id => dest)
   end
 
@@ -278,7 +278,35 @@ task :migrate_translations => :environment do
 
   delete_translation "translation"
 
-  execute_translation_migration
+  delete_translation "\"proposal_list. \""
+
+  to_delete = Translations::Translation.where("string_id like 'engage.add_new_%' AND string_id != 'engage.add_new_proposal_to_list' AND subdomain_id is null")
+  pp "  Deleting bad response labels (#{to_delete.count})"
+  to_delete.destroy_all
+
+  to_delete = Translations::Translation.where("string_id like 'engage.opinion_header_results_%' AND subdomain_id is null")
+  pp "  Deleting bad opinion headers (#{to_delete.count})"
+  to_delete.destroy_all
+
+  to_delete = Translations::Translation.where("string_id like 'homepage_tab.%' AND string_id != 'homepage_tab.Show all' AND string_id != 'homepage_tab.add_more' AND string_id != 'homepage_tab.enable' AND string_id != 'homepage_tab.disable_confirmation' AND string_id != 'homepage_tab.confirm-tab-deletion' AND subdomain_id is null")
+  pp "  Deleting bad tabs (#{to_delete.count})"
+  to_delete.destroy_all
+
+  to_delete = Translations::Translation.where("string_id like 'opinion_filter.name.%' AND subdomain_id is null")
+  pp "  Deleting bad opinion filter names (#{to_delete.count})"
+  to_delete.destroy_all
+
+  to_delete = Translations::Translation.where("string_id like 'point_labels.header_%' AND subdomain_id is null")
+  pp "  Deleting bad point_labels (#{to_delete.count})"
+  to_delete.destroy_all
+
+  to_delete = Translations::Translation.where("string_id like 'proposal_list.%' AND subdomain_id is null")
+  pp "  Deleting bad proposal_list (#{to_delete.count})"
+  to_delete.destroy_all
+
+  ActiveRecord::Base.connection.execute("update language_translations set translation=REPLACE(translation,'[object Object]', '\"{question}\"') where string_id='auth.validation.invalid_answer' AND translation like '%[object Object]%'")
+
+  rename_translation "homepage_tab.Show all", "homepage_tab.name.Show all"
 
 
 end

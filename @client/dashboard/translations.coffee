@@ -313,7 +313,7 @@ TranslationsDash = ReactiveComponent
     DIV null, 
 
       DIV style: {},
-        "ConsiderIt's native development language is English (en). Please help us translate it to your language!"
+        "Consider.it's native development language is English (en). Please help us translate it to your language!"
 
       DIV 
         style: 

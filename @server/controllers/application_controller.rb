@@ -113,9 +113,9 @@ protected
       end
     elsif params[:domain] # case 3
       subdomain_sought = params[:domain]
-    elsif !Rails.env.development? && APP_CONFIG[:product_page]  # case 2
+    elsif Rails.env.production? && APP_CONFIG[:product_page]  # case 2
       subdomain_sought = APP_CONFIG[:product_page]
-    elsif Rails.env.development? && session[:default_subdomain] # case 4
+    elsif !Rails.env.production? && session[:default_subdomain] # case 4
       subdomain_sought = session[:default_subdomain]
     end
 
@@ -129,7 +129,7 @@ protected
         set_current_tenant(candidate_subdomain) if candidate_subdomain
 
 
-        if Rails.env.development?
+        if !Rails.env.production?
           session[:default_subdomain] = candidate_subdomain.name
           redirect_to "#{request.protocol}#{request.host_with_port}/create_forum?forum=#{subdomain_sought}"
         else 
@@ -148,6 +148,7 @@ protected
     end 
 
     set_current_tenant(candidate_subdomain) if candidate_subdomain
+
     current_subdomain
   end
 
@@ -256,7 +257,7 @@ protected
         manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})
         response.append({
           key: '/application',
-          dev: (Rails.env.development? || request.host.end_with?('chlk.it')),
+          dev: (!Rails.env.production? || request.host.end_with?('chlk.it')),
           asset_host: "#{Rails.application.config.action_controller.asset_host}",
           web_worker: "#{manifest['web_worker']}",
           su: session[:su],

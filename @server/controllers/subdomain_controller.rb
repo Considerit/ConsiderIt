@@ -178,7 +178,7 @@ class SubdomainController < ApplicationController
         render :json => [{key: 'new_subdomain', name: new_subdomain.name, t: current_user.auth_token(new_subdomain)}]
       else 
         token = current_user.auth_token(new_subdomain)
-        if Rails.env.development?
+        if !Rails.env.production?
           redirect_to URI.parse("/?u=#{current_user.email}&t=#{token}&domain=#{new_subdomain.name}").to_s
         else
           redirect_to URI.parse("#{request.protocol}#{new_subdomain.url}?u=#{current_user.email}&t=#{token}").to_s

@@ -16,7 +16,7 @@
 #
 
 
-DEBUG = Rails.env.development?
+DEBUG = !Rails.env.production?
 
 module Notifier
 

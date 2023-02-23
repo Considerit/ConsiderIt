@@ -27,7 +27,7 @@ end
 
 Rails.application.routes.draw do
 
-  if Rails.env.development?  
+  if !Rails.env.production?  
     get '/rails/mailers' => "rails/mailers#index"
     get '/rails/mailers/*path'   => "rails/mailers#preview"
   end

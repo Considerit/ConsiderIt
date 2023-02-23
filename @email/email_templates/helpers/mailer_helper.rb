@@ -277,7 +277,7 @@ module MailerHelper
 
     query_params = query_params.map{|k,v| "#{k}=#{v}"}.join('&')
     
-    "#{Rails.env.development? ? 'http://' : 'https://'}#{subdomain.url}/#{relative_path}?#{query_params}"    
+    "#{!Rails.env.production? ? 'http://' : 'https://'}#{subdomain.url}/#{relative_path}?#{query_params}"    
   end
 
 

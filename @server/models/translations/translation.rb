@@ -269,7 +269,10 @@ class Translations::Translation < ApplicationRecord
     all_translations
   end
 
-  def self.create_or_update_native_translation(string_id, translation, subdomain = nil)
+  def self.create_or_update_native_translation(string_id, translation, args = {})
+    subdomain = args.fetch(:subdomain, nil)
+    region = args.fetch(:region, APP_CONFIG[:region])
+    is_local = region == APP_CONFIG[:region]
 
     trans = nil
     key = nil 
@@ -291,10 +294,10 @@ class Translations::Translation < ApplicationRecord
           string_id: string_id,
           translation: my_translation, 
           subdomain_id: subdomain ? subdomain.id : nil,
-          origin_server: APP_CONFIG[:region],
+          origin_server: region,
           accepted: true, 
           accepted_at: DateTime.now,
-          user_id: current_user.id
+          user_id: is_local ? current_user.id : nil
         }
 
         trans = Translations::Translation.create! attrs
@@ -315,7 +318,10 @@ class Translations::Translation < ApplicationRecord
   end
 
 
-  def self.create_or_update_proposed_transation(lang, string_id, translation, subdomain = nil)
+  def self.create_or_update_proposed_transation(lang, string_id, translation, args = {})
+    subdomain = args.fetch(:subdomain, nil)
+    region = args.fetch(:region, APP_CONFIG[:region])
+    is_local = region == APP_CONFIG[:region]
 
     tr = Translations::Translation.where(:string_id => string_id, :lang_code => lang)
     if subdomain 
@@ -339,9 +345,9 @@ class Translations::Translation < ApplicationRecord
         string_id: string_id,
         translation: translation, 
         subdomain_id: subdomain ? subdomain.id : nil,
-        origin_server: APP_CONFIG[:region],
+        origin_server: region,
         accepted: false, 
-        user_id: current_user.id
+        user_id: is_local ? current_user.id : nil
       }
       trans = Translations::Translation.create! attrs
     else 
@@ -349,7 +355,7 @@ class Translations::Translation < ApplicationRecord
       trans.translation = translation
     end
 
-    if Permissions.permit('update all translations') > 0
+    if Permissions.permit('update all translations') > 0 || (!is_local && args[:accepted_elsewhere])
       trans.promote
     end
 

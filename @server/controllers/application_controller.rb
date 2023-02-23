@@ -58,6 +58,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def valid_API_call
+    params['considerit_API_key'] && params['considerit_API_key'] == APP_CONFIG[:considerit_API_key]
+  end    
+
   def initiate_saml_auth(sso_domain = nil)
     sso_domain ||= current_subdomain.SSO_domain
     if request.fullpath.match('login_via_saml')
@@ -70,7 +74,7 @@ class ApplicationController < ActionController::Base
 
 protected
   def csrf_skippable?
-    request.format.json? && request.content_type != "text/plain" && (!!request.xml_http_request?)
+    valid_API_call || (request.format.json? && request.content_type != "text/plain" && (!!request.xml_http_request?))
   end
 
   def write_to_log(options)
@@ -105,6 +109,8 @@ protected
     subdomain_sought = nil 
     regional_id = nil
 
+
+
     if rq.subdomain && rq.subdomain.length > 0  # case 1
       ssubdomains = rq.subdomain.split('.')
       subdomain_sought = ssubdomains[0]
@@ -118,7 +124,7 @@ protected
     elsif !Rails.env.production? && session[:default_subdomain] # case 4
       subdomain_sought = session[:default_subdomain]
     end
-
+    
     candidate_subdomain = Subdomain.find_by_name(subdomain_sought)
 
 

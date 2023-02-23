@@ -839,6 +839,8 @@ promote_temporary_translations = (key) ->
     continue if k == 'key'
     proposals.push v
 
+  return if proposals.length == 0
+
   updateTranslations proposals, -> 
     trans_UI = fetch('translations_interface')
     trans_UI.saved_successfully = true 

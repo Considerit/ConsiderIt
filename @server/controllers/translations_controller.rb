@@ -1,4 +1,8 @@
 
+# For testing peer synchronization of translations between servers locally, run:
+# rails s -p 3002 -e test --pid tmp/pids/server2.pid
+# ...to set up a second server running on local host
+
 class TranslationsController < ApplicationController
 
   # getting all proposed translations
@@ -56,7 +60,7 @@ class TranslationsController < ApplicationController
           trans = Translations::Translation.create_or_update_native_translation string_id, translation, {:subdomain => subdomain, :region => region}
           native_updates.push trans
         else 
-          trans = Translations::Translation.create_or_update_proposed_transation lang_code, string_id, translation, {:subdomain => subdomain, :region => region, :accepted_elsewhere => proposal['accepted']}
+          trans = Translations::Translation.create_or_update_proposed_translation lang_code, string_id, translation, {:subdomain => subdomain, :region => region, :accepted_elsewhere => proposal['accepted']}
           if trans 
             other_updates.push trans
           end

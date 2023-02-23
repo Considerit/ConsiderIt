@@ -17,6 +17,10 @@ require 'message_format'
 @translator_user = nil 
 @translator_subdomain = nil
 
+
+
+
+
 class Translations::Translation < ApplicationRecord
   
   self.table_name = "language_translations"
@@ -318,7 +322,7 @@ class Translations::Translation < ApplicationRecord
   end
 
 
-  def self.create_or_update_proposed_transation(lang, string_id, translation, args = {})
+  def self.create_or_update_proposed_translation(lang, string_id, translation, args = {})
     subdomain = args.fetch(:subdomain, nil)
     region = args.fetch(:region, APP_CONFIG[:region])
     is_local = region == APP_CONFIG[:region]

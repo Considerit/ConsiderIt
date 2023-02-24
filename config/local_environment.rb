@@ -10,9 +10,17 @@ def load_local_environment()
 
   if defined?(local_config.symbolize_keys!)
     recursive_symbolize_keys! local_config
-    return local_config[:default]
+    if Rails.env == 'test'
+      return local_config[:test]
+    else
+      return local_config[:default]
+    end
   else 
-    return local_config["default"]
+    if Rails.env = 'test'
+      return local_config["test"]
+    else 
+      return local_config["default"]
+    end
   end
 end
 

@@ -27,7 +27,7 @@ end
 
 Rails.application.routes.draw do
 
-  if Rails.env.development?  
+  if !Rails.env.production?  
     get '/rails/mailers' => "rails/mailers#index"
     get '/rails/mailers/*path'   => "rails/mailers#preview"
   end
@@ -119,10 +119,21 @@ Rails.application.routes.draw do
 
   get '/points' => 'point#index'
 
-  get '/translations' => 'translations#show'
-  get '/translations/*subdomain' => 'translations#show'
-  match '/translations' => 'translations#update', :via => [:put]
-  match '/translations/*subdomain' => 'translations#update', :via => [:put]
+  get '/supported_languages' => 'translations_languages#show'
+  match '/supported_languages' => 'translations_languages#update', :via => [:put]
+
+  get '/translations/*lang' => 'translations#show'
+  get '/translations/*subdomain/*lang' => 'translations#show'
+
+  match '/translations/' => 'translations#update', :via => [:put]
+  match '/translations/' => 'translations#delete', :via => [:delete]
+  match '/translation_proposal' => 'translations#reject_proposal', :via => [:delete]
+  
+  match '/proposed_translations/*lang' => 'translations#index', :via => [:get]
+  match '/proposed_translations/*lang/*subdomain' => 'translations#index', :via => [:get]
+
+  match '/log_translation_counts' => 'translations#log_translation_counts', :via => [:put]
+
 
   if APP_CONFIG[:product_page]
     post "/contact_us" => 'product_page#contact'

@@ -1,7 +1,7 @@
 - if @part == 'text'
 
   ***********************
-  *** #{Translations.translate({id: "email.digest.text_header"}, "Recent activity")} ***
+  *** #{Translations::Translation.get({id: "email.digest.text_header"}, "Recent activity")} ***
   ***********************
 
 - if @anonymize_everything || @hide_opinions || @frozen
@@ -10,15 +10,15 @@
 
   - if @frozen
     %div
-      = Translations.translate "email.frozen_forum_message", "The forum host has frozen this forum to additional participation. The activity summarized in this email happened before then."
+      = Translations::Translation.get "email.frozen_forum_message", "The forum host has frozen this forum to additional participation. The activity summarized in this email happened before then."
 
   - if @anonymize_everything
     %div
-      = Translations.translate "email.anonymize_message", "The forum host has participation set to anonymous, so you won't be able to see the identity of others at this time."
+      = Translations::Translation.get "email.anonymize_message", "The forum host has participation set to anonymous, so you won't be able to see the identity of others at this time."
 
   - if @hide_opinions
     %div
-      = Translations.translate "email.hide_opinions", "The forum host has hidden the opinions of other participants, so you won't be able to see their specific opinions at this time."
+      = Translations::Translation.get "email.hide_opinions", "The forum host has hidden the opinions of other participants, so you won't be able to see their specific opinions at this time."
 
   = end_section()
 
@@ -50,7 +50,7 @@
   - if num > 5
     - if @part == 'text'
       :ruby 
-        view_more = Translations.translate({
+        view_more = Translations::Translation.get({
           id: "email.digest.view_more_proposals.text",
           link: full_link('', {:sort_by => 'newest', :utm_source => 'digest'}), 
           more_than_5_proposals_count: num - 3}, 
@@ -61,7 +61,7 @@
       
     - else 
       :ruby 
-        view_more = Translations.translate({
+        view_more = Translations::Translation.get({
           id: "email.digest.view_more_proposals.html", 
           more_than_5_proposals_count: num - 3}, 
           "View {more_than_5_proposals_count} more new proposals"

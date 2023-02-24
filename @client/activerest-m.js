@@ -64,6 +64,7 @@
     var re_render_timer = null
     function update_cache(object, from_fetch) {
         do_not_recurse = !!object.key && object.key.startsWith('/translations/')
+
         function recurse(object) {
             // Recurses into object and folds it into the cache.
 
@@ -195,6 +196,8 @@
                     }
                 },
                         result)
+
+
                 update_cache(result)
                 if (continuation) continuation()
             }

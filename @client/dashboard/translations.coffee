@@ -3,20 +3,19 @@ require '../customizations'
 
 window.translation_progress = (lang, key_prefix) -> 
   key_prefix ||= '/translations'
-  translations = fetch "#{key_prefix}/#{lang}"
+  proposed_translations = fetch "/proposed_translations/#{lang}#{key_prefix.replace('/translations', '')}"
   dev_language = fetch "#{key_prefix}/en"
+  target_lang = fetch "#{key_prefix}/#{lang}"
 
-  messages =   (k for k,v of dev_language when v.txt?.length > 0 or v.proposals?[0]?.txt?.length > 0)
-  translated = (k for k,v of translations when v.txt?.length > 0 or v.proposals?[0]?.txt?.length > 0)
+  translated = (k for k,v of dev_language when target_lang[k] or proposed_translations[k])
 
-  translated.length / messages.length
-
+  translated.length / (Object.keys(dev_language).length - 1)
 
 
 regexp_tsplit = /<(\w+)>[^<]+<\/[\w|\s]+>/g
 regexp_tmatch = /<(\w+)>([^<]+)<\/[\w|\s]+>/g
 window.TRANSLATE = (args, native_text) -> 
-
+  
   if typeof args == "string"
     if native_text
       args = {id: args}
@@ -27,7 +26,10 @@ window.TRANSLATE = (args, native_text) ->
   tr = fetch 'translations'
 
   args.return_lang_used = true
-  {message, lang_used, target_lang} = T args, native_text 
+  if args.key
+    console.trace()
+    console.warn("args.key is no longer accepted for translator. use local=true instead")
+  {message, lang_used, target_lang} = translator args, native_text 
 
   return native_text if !message
   
@@ -58,9 +60,13 @@ window.TRANSLATE = (args, native_text) ->
   if !tr.in_situ_translations
     translation 
   else 
+    translations = fetch "/translations/#{target_lang}"
+
     props = _.extend({lang_used, target_lang, message, native_text}, args)
     props.translation_key = props.key
     IN_SITU_TRANSLATOR props, translation
+
+
 
 IN_SITU_TRANSLATOR = ReactiveComponent
   displayName: 'InSituTranslator'
@@ -70,19 +76,31 @@ IN_SITU_TRANSLATOR = ReactiveComponent
 
     translated = @props.lang_used == target_lang
     id = @props.id or @props.native_text
-    available_languages = fetch('/translations').available_languages
+
     SPAN 
       style: 
         backgroundColor: if translated then "rgba(166, 195, 151, .5)" else "rgba(251,124,124,.5)"
         position: 'relative'
       onMouseOver: =>
-        @local.show_translator = true 
-        save @local
+        if !@local.show_translator
+          @local.show_translator = true 
+          save @local
 
       @props.children
 
       if @local.show_translator
-        updated_translations = get_temporary_translations target_lang, key
+        available_languages = fetch('/supported_languages').available_languages
+
+        if @props.local 
+          subdomain = fetch('/subdomain')
+          updated_translations = fetch "local_translations/#{target_lang}/#{subdomain.name}"
+          proposed_translations = fetch "/proposed_translations/#{target_lang}/#{subdomain.name}"
+          subdomain_id = subdomain.id
+        else 
+          updated_translations = fetch "local_translations/#{target_lang}"
+          proposed_translations = fetch "/proposed_translations/#{target_lang}"
+          subdomain_id = null
+
         message_style = 
           fontWeight: 700
 
@@ -113,7 +131,7 @@ IN_SITU_TRANSLATOR = ReactiveComponent
             LABEL null, 
               "#{available_languages[target_lang]} translation:"
 
-            editable_translation id, updated_translations, message_style
+            editable_translation id, target_lang, subdomain_id, updated_translations, proposed_translations.proposals[id], message_style
 
 
           BUTTON 
@@ -121,7 +139,7 @@ IN_SITU_TRANSLATOR = ReactiveComponent
             style: 
               fontSize: 14
             onClick: => 
-              promote_temporary_translations(target_lang, key)
+              promote_temporary_translations(updated_translations.key)
               @local.show_translator = false 
               save @local 
 
@@ -147,7 +165,16 @@ DEVELOPMENT_LANGUAGE = 'en'
 
 translation_cache = {}
 translations_loaded = false 
-window.T = window.t = window.translator = (args, native_text) -> 
+window.T = window.t = (args, native_text) ->
+  console.trace()
+  console.warn "Deprecated: calling window.t or window.T should be replaced with window.translator"
+  translator args, native_text
+
+
+
+
+
+window.translator = (args, native_text) -> 
   # if !native_text
   #   native_text = ""
   #   console.error("Native text for translation is null", args, native_text)
@@ -155,15 +182,37 @@ window.T = window.t = window.translator = (args, native_text) ->
   if translations_loaded 
     cache_key = JSON.stringify(args, native_text)
     if cache_key of translation_cache
+
+      if typeof args == "string"
+        if native_text
+          args = {id: args}
+        else 
+          native_text = args 
+          args = {}
+
+      id = args.id or native_text
+      log_translation_count id
       return translation_cache[cache_key]
 
-  translations_key_prefix = args.key or "/translations"
+
+  if args.key
+    console.trace()
+    console.warn("Deprecated: do not pass args.key to translator. Pass in local: true instead")
+
+  subdomain = fetch '/subdomain'
+  if args.local && !subdomain.name 
+    return '...'
+
+  if args.local
+    translations_key_prefix = "/translations/#{subdomain.name}"
+  else 
+    translations_key_prefix = "/translations"
+
   translations_native = fetch "#{translations_key_prefix}/#{DEVELOPMENT_LANGUAGE}"
   return '...' if waiting_for(translations_native)
 
   translations_loaded ||= true
-
-  subdomain = fetch '/subdomain'
+  cache_key ?= JSON.stringify(args, native_text)
 
   if typeof args == "string"
     if native_text
@@ -174,19 +223,21 @@ window.T = window.t = window.translator = (args, native_text) ->
 
   id = args.id or native_text
 
-
   native_text = native_text.replace(/\n/g, "")
 
-  # ensure this string is in the translations database for the development language
-  if translations_native[id]?.txt != native_text
-    console.log 'updating', {id, native_text, saved: translations_native[id]?.txt}, translations_native[id]?.txt == native_text
 
-    translations_native[id] ||= {}
-    translations_native[id].txt = native_text
+  # ensure this string is in the translations database for the development language
+  if translations_native[id] != native_text
+    console.log 'updating', {args: args, key: translations_native.key, id, native_text, saved: translations_native[id]}, translations_native[id] == native_text
+
+    translations_native[id] = native_text
     setTimeout ->
-      if translations_native.translation
-        delete translations_native.translation
-      save translations_native  
+      proposed_update =
+        string_id: id
+        lang_code: DEVELOPMENT_LANGUAGE
+        subdomain_id: if args.local then subdomain.id else null
+        translation: native_text
+      updateTranslations [proposed_update]
     , 1000
 
   # which language should we use? ordered by preference. 
@@ -201,13 +252,14 @@ window.T = window.t = window.translator = (args, native_text) ->
   for lang in langs
     translations = fetch "#{translations_key_prefix}/#{lang}"
     if translations[id]?
-      message = translations[id].txt
+      message = translations[id]
       # if this user has proposed one, use that
-      if translations[id].proposals?.length > 0
-        u = fetch('/current_user').user
-        for proposal in translations[id].proposals
-          if proposal.u == u 
-            message = proposal.txt 
+      # TODO!!!!! Update this
+      # if translations[id].proposals?.length > 0
+      #   u = fetch('/current_user').user
+      #   for proposal in translations[id].proposals
+      #     if proposal.u == u 
+      #       message = proposal.txt 
       if message
         lang_used = lang 
         break 
@@ -218,14 +270,60 @@ window.T = window.t = window.translator = (args, native_text) ->
   catch e
      # this is a bad fallback, as plural rules won't work
     console.error "Error translating #{id}", {error: e, message, native_text}
-    message = translations_native[id]?.txt
+    message = translations_native[id]
 
   if args.return_lang_used # useful for a T wrapper that enables in situ translations
     translation_cache[cache_key] = {message, lang_used, target_lang: fetch('translations').translating_lang or langs[0]}
   else 
     translation_cache[cache_key] = message
 
+  log_translation_count id
+
   translation_cache[cache_key] 
+
+
+translation_uses = {}
+translation_uses_write_after = 1000 * 80 
+translation_uses_last_written_at = Date.now() - translation_uses_write_after * .75 # first one should be quicker
+
+log_translation_count = (string_id) -> 
+  translation_uses[string_id] = 1
+
+  if Date.now() - translation_uses_last_written_at >= translation_uses_write_after
+
+    if Object.keys(translation_uses).length > 0 
+      frm = new FormData()
+      frm.append "authenticity_token", fetch('/current_user').csrf
+      frm.append "counts", JSON.stringify(translation_uses)
+
+      xhr = new XMLHttpRequest
+      xhr.addEventListener 'readystatechange', null, false
+      xhr.open 'PUT', '/log_translation_counts', true
+      xhr.send frm
+
+    translation_uses = {}
+    translation_uses_last_written_at = Date.now()
+
+
+styles += """
+.translation_filters {
+  margin-top: 48px;
+}
+
+.translation_filters button {
+  background-color: #eaeaea;
+  border: none;
+  border-radius: 8px;
+  margin: 0 8px;
+}
+
+.translation_filters button.active {
+  background-color: #{focus_blue};
+  color: white;
+}
+
+"""
+
 
 TranslationsDash = ReactiveComponent
   displayName: 'TranslationsDash'
@@ -234,7 +332,7 @@ TranslationsDash = ReactiveComponent
 
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
-    translations = fetch '/translations'
+    translations = fetch '/supported_languages'
 
     return DIV() if !translations.available_languages
 
@@ -253,7 +351,7 @@ TranslationsDash = ReactiveComponent
     DIV null, 
 
       DIV style: {},
-        "ConsiderIt's native development language is English (en). Please help us translate it to your language!"
+        "Consider.it's native development language is English (en). Please help us translate it to your language!"
 
       DIV 
         style: 
@@ -274,7 +372,7 @@ TranslationsDash = ReactiveComponent
 
           for [k,v] in all_langs
             OPTION 
-              key: k
+              key: "#{k}-#{v}"
               value: k
               "#{v} (#{k})"
 
@@ -352,17 +450,51 @@ TranslationsDash = ReactiveComponent
       if local.translating_lang
         DIV null, 
 
+          DIV 
+            className: 'translation_filters'
+
+            LABEL null,
+              "Filter translations to:"
+            BUTTON
+              className: if local.filter == 'untranslated' then 'active'
+              onClick: => 
+                if local.filter == 'untranslated'
+                  local.filter = null
+                else 
+                  local.filter = 'untranslated'
+                save local
+              "Untranslated"
+
+            BUTTON
+              className: if local.filter == 'not by you' then 'active'            
+              onClick: => 
+                if local.filter == 'not by you'
+                  local.filter = null
+                else 
+                  local.filter = 'not by you'
+                save local
+              "Not translated by you"
+
+            BUTTON
+              className: if local.filter == 'under review' then 'active'            
+              onClick: => 
+                if local.filter == 'under review'
+                  local.filter = null
+                else 
+                  local.filter = 'under review'
+                save local
+              "Under review"
+
           TranslationsForLang
             key: "translations_for_#{local.translating_lang}"
-            translation_key_prefix: "/translations"
             lang: local.translating_lang
+            filter: local.filter
 
-          # if current_user.is_admin 
           TranslationsForLang
             key: "forum_translations_for_#{local.translating_lang}"            
-            translation_key_prefix: "/translations/#{subdomain.name}"
             lang: local.translating_lang
             forum_specific: true
+            filter: local.filter
 
 
           DIV
@@ -379,8 +511,8 @@ TranslationsDash = ReactiveComponent
             BUTTON 
               className: 'btn'
               onClick: => 
-                promote_temporary_translations(local.translating_lang, "/translations")                  
-                promote_temporary_translations(local.translating_lang, "/translations/#{subdomain.name}")
+                promote_temporary_translations("local_translations/#{local.translating_lang}")                  
+                promote_temporary_translations("local_translations/#{local.translating_lang}/#{subdomain.name}")
               
               "Save Changes"
 
@@ -393,30 +525,49 @@ TranslationsDash = ReactiveComponent
 
 
 
+
+
 TranslationsForLang = ReactiveComponent
   displayName: 'TranslationsForLang'
 
   render: ->
 
     lang = @props.lang 
+    subdomain = fetch('/subdomain')
 
-    available_languages = fetch("/translations").available_languages
-    native_messages = fetch "#{@props.translation_key_prefix}/#{DEVELOPMENT_LANGUAGE}"
-    translations = fetch "#{@props.translation_key_prefix}/#{lang}"
+    if @props.forum_specific
+      translation_key_prefix = "/translations/#{subdomain.name}"
+      proposed_translations = fetch "/proposed_translations/#{lang}/#{subdomain.name}"
+      subdomain_id = subdomain.id
+      updated_translations = fetch "local_translations/#{lang}/#{subdomain.name}"
 
-    return DIV() if waiting_for(native_messages) || waiting_for(translations)
+    else 
+      translation_key_prefix = "/translations"
+      proposed_translations = fetch "/proposed_translations/#{lang}"
+      subdomain_id = null
+      updated_translations = fetch "local_translations/#{lang}"
+
+    available_languages = fetch("/supported_languages").available_languages
+    native_messages = fetch "#{translation_key_prefix}/#{DEVELOPMENT_LANGUAGE}"
+
+
+    return DIV() if waiting_for(native_messages) || waiting_for(proposed_translations)
 
     to_translate = (k for k,v of native_messages when k != 'key')
     return DIV() if to_translate.length == 0 
 
-    # create local copy of proposed translations before saving
-    # TODO: I think this is making a shallow clone, which means that updated_translations and translations might 
-    #       point to the same {txt, proposals} objects. 
-    updated_translations = get_temporary_translations(lang, @props.translation_key_prefix)
-
     # sections = {"all": to_translate}
     sections = {}
+    could_not_find = {}
+
+    local = fetch 'translations'
     for name in to_translate
+      if local.filter
+        translation = proposed_translations.proposals[name]
+        continue if local.filter == 'untranslated' && !!translation
+        continue if local.filter == 'not by you' && !!translation?.yours
+        continue if local.filter == 'under review' && !translation?.proposals?.length > 0
+
       sp = name.split('.')
       if sp.length > 1
         sections[sp[0]] ||= []
@@ -424,7 +575,6 @@ TranslationsForLang = ReactiveComponent
       else 
         sections.misc ||= []
         sections.misc.push name
-
 
     current_user = fetch '/current_user'
 
@@ -444,22 +594,21 @@ TranslationsForLang = ReactiveComponent
 
         TRANSLATE 
           id: "translations.language_header"
-          percent_complete: Math.round(translation_progress(lang, @props.translation_key_prefix) * 100)
+          percent_complete: Math.round(translation_progress(lang, translation_key_prefix) * 100)
           language: available_languages[lang]
           "Translations for {language} ({percent_complete}% completed)"
 
       if current_user.is_super_admin
         BUTTON
           onClick: =>  
-            for name,v of updated_translations
-              if v.proposals?.length > 0
-                # accept the latest one
-                idx = v.proposals.length - 1
-                proposal = v.proposals[idx]
-                v.txt = proposal.txt 
-                v.u = proposal.u
-                v.proposals.splice(idx, 1)
-            save updated_translations
+            proposals = []
+            for id, props of proposed_translations.proposals
+              if props.proposals?.length > 0
+                proposals.push props.proposals[0]
+
+            if proposals.length > 0 
+              updateTranslations proposals
+
           "Accept all proposed translations"
 
 
@@ -472,6 +621,7 @@ TranslationsForLang = ReactiveComponent
 
 
           for section, names of sections
+            continue if names.length == 0
             names.sort()
 
             rows = []
@@ -517,7 +667,7 @@ TranslationsForLang = ReactiveComponent
 
             for name, idx in names
               do (name, idx) => 
-                no_id = name == native_messages[name].txt
+                no_id = name == native_messages[name]
                 rows.push TR 
                   key: "row-id-#{name}"
                   style: 
@@ -527,14 +677,12 @@ TranslationsForLang = ReactiveComponent
                     style: 
                       padding: "2px 4px"
                       width: "40%"
-                      # display: 'inline-block'
-                      # verticalAlign: 'top'
 
                     DIV 
                       ref: "message-#{name}-#{idx}"
                       title: if no_id then 'no ID' else name 
 
-                      "#{native_messages[name].txt}"
+                      "#{native_messages[name]}"
 
                   TD  
                     style: 
@@ -542,12 +690,8 @@ TranslationsForLang = ReactiveComponent
                       padding: "2px 4px"
                       position: 'relative'
 
-                    # width: "42%"
-                    # display: 'inline-block'
-                    # verticalAlign: 'top'
 
-
-                    editable_translation name, updated_translations
+                    editable_translation name, lang, subdomain_id, updated_translations, proposed_translations.proposals[name]
                     if current_user.is_super_admin
                       do (name) =>
                         BUTTON 
@@ -560,21 +704,20 @@ TranslationsForLang = ReactiveComponent
                             right: -25
                             padding: '4px'
                           onClick: => 
+                            deleteTranslationString name
                             delete native_messages[name]
                             delete updated_translations[name]
-                            save updated_translations
-                            save native_messages
                           "x"
 
 
-                    if current_user.is_super_admin && updated_translations[name]?.proposals
+                    if current_user.is_super_admin && proposed_translations.proposals[name]?.proposals.length > 0
                       UL  
                         style: {}
 
-                        for proposal, idx in updated_translations[name].proposals
+                        for proposal, idx in proposed_translations.proposals[name].proposals
                           do (proposal, name, idx) =>
-                            if proposal.u 
-                              proposer = fetch(proposal.u)
+                            if proposal.user_id
+                              proposer = fetch("/user/#{proposal.user_id}")
                             else 
                               proposer = current_user 
                             LI 
@@ -585,7 +728,7 @@ TranslationsForLang = ReactiveComponent
 
                               DIV 
                                 style: {}
-                                proposal.txt 
+                                proposal.translation 
 
                               SPAN 
                                 style: 
@@ -598,10 +741,8 @@ TranslationsForLang = ReactiveComponent
                                 style: 
                                   borderRadius: 8
                                 onClick: => 
-                                  updated_translations[name].txt = proposal.txt 
-                                  updated_translations[name].u = proposal.u
-                                  updated_translations[name].proposals.splice(idx, 1)
-                                  save updated_translations
+                                  updateTranslations [proposal]
+
                                 "Ok"
 
                               BUTTON
@@ -615,39 +756,78 @@ TranslationsForLang = ReactiveComponent
                                   fontSize: 14
 
                                 onClick: => 
-                                  updated_translations[name].proposals.splice(idx, 1)
-                                  save updated_translations
+                                  rejectProposal(name, proposal)
                                 "reject"
 
             rows
 
 
+updateTranslations = (proposals, cb) ->
+  frm = new FormData()
+  frm.append "authenticity_token", fetch('/current_user').csrf
+  frm.append "proposals", JSON.stringify(proposals)
+
+  xhr = new XMLHttpRequest
+  xhr.addEventListener 'readystatechange', cb, false
+  xhr.open 'PUT', '/translations', true
+  xhr.onload = ->
+    translation_cache = {}
+    result = JSON.parse(xhr.responseText)
+    arest.update_cache(result)
+
+  xhr.send frm
+
+deleteTranslationString = (string_id) -> 
+  frm = new FormData()
+  frm.append "authenticity_token", fetch('/current_user').csrf
+  frm.append "string_id", string_id
+
+  xhr = new XMLHttpRequest
+  xhr.addEventListener 'readystatechange', null, false
+  xhr.open 'DELETE', '/translations', true
+  xhr.onload = ->
+    result = JSON.parse(xhr.responseText)
+    arest.update_cache(result)
+
+  xhr.send frm
+
+rejectProposal = (string_id, proposal) -> 
+  frm = new FormData()
+  frm.append "authenticity_token", fetch('/current_user').csrf
+  frm.append "string_id", string_id
+  frm.append "proposal", JSON.stringify(proposal)
+
+  xhr = new XMLHttpRequest
+  xhr.addEventListener 'readystatechange', null, false
+  xhr.open 'DELETE', '/translation_proposal', true
+  xhr.onload = ->
+    result = JSON.parse(xhr.responseText)
+    arest.update_cache(result)
+
+  xhr.send frm
 
 
-window.get_temporary_translations = (lang, key) ->
-  key ||= '/translations'
-  translations = fetch "#{key}/#{lang}"
-  _.defaults fetch("local#{translations.key}"), JSON.parse(JSON.stringify(translations))
-
-
-editable_translation = (id, updated_translations, style) -> 
+editable_translation = (id, lang_code, subdomain_id, updated_translations, proposed_translations, style) -> 
   current_user = fetch '/current_user'
 
 
   accepted = proposed = val = null 
 
-  if updated_translations[id]?.txt 
-    accepted = val = updated_translations[id].txt
-  
-  if updated_translations[id]?.proposals
-    for proposal in updated_translations[id].proposals
-      if proposal.u == current_user.user 
-        proposed = val = proposal.txt 
+
+  if proposed_translations
+    if proposed_translations.accepted
+      accepted = val = proposed_translations.accepted.translation
+    
+    if proposed_translations.yours
+      proposed = val = proposed_translations.yours.translation
+
+
+
 
   SPAN 
-    key: "#{id}-#{updated_translations[id]?.proposals?.length}" 
+    key: "#{id}-#{accepted}-#{proposed}" 
 
-    if accepted && proposed 
+    if accepted && proposed && accepted.user_id != proposed.user_id
       DIV null, 
           
 
@@ -669,9 +849,6 @@ editable_translation = (id, updated_translations, style) ->
           "Your proposed translation:"
 
 
-
-
-
     AutoGrowTextArea
       defaultValue: val
       style: _.defaults (style or {}),
@@ -681,39 +858,29 @@ editable_translation = (id, updated_translations, style) ->
         borderColor: '#ddd'
       onChange: (e) -> 
         trans = e.target.value
-        updated_translations[id] ||= {}
-
-        if current_user.is_super_admin
-          updated_translations[id].txt = trans 
-          updated_translations[id].u = current_user.user 
-        else 
-          updated_translations[id].proposals ||= []
-          found = false 
-          for proposal in updated_translations[id].proposals
-            if proposal.u == current_user.user 
-              proposal.txt = trans 
-              found = true 
-              break 
-          if !found 
-            updated_translations[id].proposals.unshift {txt: trans, u: current_user.user}
-
-
-        save updated_translations
+        if !updated_translations[id]
+          updated_translations[id] = 
+            string_id: id
+            lang_code: lang_code
+            subdomain_id: subdomain_id
+            translation: e.target.value 
+        else  
+          updated_translations[id].translation = e.target.value 
 
 
 
-promote_temporary_translations = (lang, key) ->
-  key ||= '/translations'
-  translations = fetch "#{key}/#{lang}"
-  updated_translations = fetch "local#{translations.key}"
+promote_temporary_translations = (key) ->
 
-  Object.assign translations, updated_translations
-  translations.key = "#{key}/#{lang}"
+  updated_translations = fetch key
 
-  if translations.translation
-    delete translations.translation
+  proposals = []
+  for k,v of updated_translations
+    continue if k == 'key'
+    proposals.push v
 
-  save translations, -> 
+  return if proposals.length == 0
+
+  updateTranslations proposals, -> 
     trans_UI = fetch('translations_interface')
     trans_UI.saved_successfully = true 
     save trans_UI 

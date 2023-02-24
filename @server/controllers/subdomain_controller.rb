@@ -54,7 +54,7 @@ class SubdomainController < ApplicationController
       errors.push "You must specify a forum name"
     end 
 
-    existing = Subdomain.find_by_name(subdomain) || ['status', 'aeb', 'cs', 'de', 'en', 'es', 'fr', 'heb', 'hu', 'mi', 'nl', 'pt', 'sk'].index(subdomain) || subdomain.start_with?('oauth-')
+    existing = Subdomain.find_by_name(subdomain) || ['eu', 'ca', 'status'].index(subdomain) || subdomain.start_with?('oauth-')
     if existing
       errors.push "That forum already exists. Please choose a different name."
     end 
@@ -178,7 +178,7 @@ class SubdomainController < ApplicationController
         render :json => [{key: 'new_subdomain', name: new_subdomain.name, t: current_user.auth_token(new_subdomain)}]
       else 
         token = current_user.auth_token(new_subdomain)
-        if Rails.env.development?
+        if !Rails.env.production?
           redirect_to URI.parse("/?u=#{current_user.email}&t=#{token}&domain=#{new_subdomain.name}").to_s
         else
           redirect_to URI.parse("#{request.protocol}#{new_subdomain.url}?u=#{current_user.email}&t=#{token}").to_s

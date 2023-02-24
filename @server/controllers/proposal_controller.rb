@@ -24,7 +24,7 @@ class ProposalController < ApplicationController
     errors = []
 
     if !attrs['name'] || attrs['name'].length == 0
-      errors.append Translations.translate('errors.summary_required', 'A summary is required')
+      errors.append Translations::Translation.get('errors.summary_required', 'A summary is required')
     end
 
     return errors

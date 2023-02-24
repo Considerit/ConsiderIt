@@ -85,7 +85,7 @@
       // %script{:src => "https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en", :type => 'text/javascript'}
 
 
-      - if Rails.env.development?
+      - if !Rails.env.production?
         %script{:src => "#{@vendor}/vendor/react-18.2.js", :type => 'text/javascript'}
         %script{:src => "#{@vendor}/vendor/react-dom-18.2.js", :type => 'text/javascript'}
         %script{:src => "#{@vendor}/vendor/prop-types.js", :type => 'text/javascript'}
@@ -114,7 +114,7 @@
       %script{:src => "#{@vendor}/vendor/md5.js", :type => 'text/javascript'}
 
       - if (Rails.env.production? || @testing_local) && (@plausible_domain && @plausible_domain != '')
-        %script{:src => "#{Rails.env.development? ? 'https://plausible.io/js/script.local.manual.js' : '/js/plausible.js'}", :defer => true, :"data-domain" => @plausible_domain, :type => 'text/javascript'}
+        %script{:src => "#{!Rails.env.production? ? 'https://plausible.io/js/script.local.manual.js' : '/js/plausible.js'}", :defer => true, :"data-domain" => @plausible_domain, :type => 'text/javascript'}
 
         :javascript
           // Recommended from https://plausible.io/docs/script-extensions
@@ -186,7 +186,7 @@
     %body
       .hidden 
         %a{ :href => 'accessibility_support', :style => 'position:absolute;left:-10000px;' }   
-          #{Translations.translate("accessibility.link_to_support_page", "Accessibility support for considerit")}
+          #{Translations::Translation.get("accessibility.link_to_support_page", "Accessibility support for considerit")}
           
       #content.content{ subdomain: current_subdomain.name }
 

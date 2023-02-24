@@ -1,8 +1,8 @@
-#{Translations.translate({id: "email.salutation", name: @user.first_name}, "Hi {name},")}  
+#{Translations::Translation.get({id: "email.salutation", name: @user.first_name}, "Hi {name},")}  
 
 = "\r\n"
 
-#{Translations.translate({id: "email.invitation", action: @action, name: @inviter.name}, "{name} invites you to {action}")}
+#{Translations::Translation.get({id: "email.invitation", action: @action, name: @inviter.name}, "{name} invites you to {action}")}
 - if @invitation_obj.class.to_s == "Proposal"
   = full_link(@invitation_obj.slug)
 - elsif @invitation_obj.class.to_s == "Subdomain"
@@ -11,11 +11,11 @@
 = "\r\n"
 
 - if @message
-  #{Translations.translate({id: "email.message_from", sender: @inviter.first_name}, "{sender} says:")}
+  #{Translations::Translation.get({id: "email.message_from", sender: @inviter.first_name}, "{sender} says:")}
 
   = @message
 
 = "\r\n"
 
 \---
-#{Translations.translate("email.received_in_error", "If you feel that you’re receiving this email in error, please contact admin@consider.it.")}
+#{Translations::Translation.get("email.received_in_error", "If you feel that you’re receiving this email in error, please contact admin@consider.it.")}

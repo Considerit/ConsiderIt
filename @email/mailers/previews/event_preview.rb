@@ -1,6 +1,6 @@
 # previewable at /rails/mailers
 
-class Previews::EventPreview < ActionMailer::Preview
+class EventPreview < ActionMailer::Preview
 
   def send_message
     subdomain = Subdomain.first
@@ -18,7 +18,7 @@ class Previews::EventPreview < ActionMailer::Preview
   def translations_proposed
 
     subdomain = Subdomain.first
-    EventMailer.translations_proposed(subdomain)
+    EventMailer.translations_proposed(subdomain, Translations::Translation.where(:lang_code => 'sk'))
 
   end
 

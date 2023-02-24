@@ -80,10 +80,10 @@ class CurrentUserController < ApplicationController
             log('registered account')
 
           else
-            errors.append(Translations.translate({id: "errors.user.password_length", length: @min_pass}, "Password needs to be at least {length} letters")) if !ok_password
-            errors.append(Translations.translate("errors.user.blank_name", 'Name cannot be blank')) if !has_name
+            errors.append(Translations::Translation.get({id: "errors.user.password_length", length: @min_pass}, "Password needs to be at least {length} letters")) if !ok_password
+            errors.append(Translations::Translation.get("errors.user.blank_name", 'Name cannot be blank')) if !has_name
             if (!params[:email] || params[:email].length == 0) && errors.length == 0
-              errors.append(Translations.translate("errors.user.blank_email", 'Email address cannot be blank'))
+              errors.append(Translations::Translation.get("errors.user.blank_email", 'Email address cannot be blank'))
             end
           end
 
@@ -93,12 +93,12 @@ class CurrentUserController < ApplicationController
       when 'login'
         # puts("Signing in by email and password")
         if !params[:email] || params[:email].length == 0
-          errors.append Translations.translate("errors.user.blank_email", 'Email address cannot be blank')
+          errors.append Translations::Translation.get("errors.user.blank_email", 'Email address cannot be blank')
         elsif !params[:password] || params[:password].length == 0
-          errors.append Translations.translate("errors.user.missing_password", 'Password cannot be missing')
+          errors.append Translations::Translation.get("errors.user.missing_password", 'Password cannot be missing')
         elsif current_user.registered
           #puts("Trying to log in a user who is already in!")
-          errors.append Translations.translate("errors.user.already_logged_in", 'You are already logged in')  
+          errors.append Translations::Translation.get("errors.user.already_logged_in", 'You are already logged in')  
         else
 
           user = User.find_by_email(params[:email].downcase)
@@ -107,10 +107,10 @@ class CurrentUserController < ApplicationController
             # note: Returning this error message is a security risk as it
             #       reveals that a particular email address exists in the
             #       system or not.  But it's prolly the right tradeoff.
-            errors.append Translations.translate("errors.user.no_user_at_email", "No user exists at that email address. Maybe you should \"Create an Account\" instead.") 
+            errors.append Translations::Translation.get("errors.user.no_user_at_email", "No user exists at that email address. Maybe you should \"Create an Account\" instead.") 
 
           elsif !user.authenticate(params[:password])
-            errors.append Translations.translate("errors.user.bad_password", 'Wrong password. Click "I forgot my password" if you are having problems.')
+            errors.append Translations::Translation.get("errors.user.bad_password", 'Wrong password. Click "I forgot my password" if you are having problems.')
           else 
             replace_user(current_user, user)
             set_current_user(user)
@@ -137,10 +137,10 @@ class CurrentUserController < ApplicationController
         if !has_password
           # puts("They need to provide a longer password. Bailing.")
 
-          errors.append Translations.translate({id: "errors.user.password_length", length: @min_pass}, "Password needs to be at least {length} letters")
+          errors.append Translations::Translation.get({id: "errors.user.password_length", length: @min_pass}, "Password needs to be at least {length} letters")
 
         elsif current_user.registered
-          errors.append Translations.translate("errors.user.already_logged_in", 'You are already logged in') 
+          errors.append Translations::Translation.get("errors.user.already_logged_in", 'You are already logged in') 
         else 
         
           # Now let's take that raw reset_password_token, and compute the
@@ -167,7 +167,7 @@ class CurrentUserController < ApplicationController
             log('sign in by password reset')
 
           else
-            errors.append Translations.translate("errors.user.incorrect_verification_code", "Sorry, that is the wrong verification code.")   
+            errors.append Translations::Translation.get("errors.user.incorrect_verification_code", "Sorry, that is the wrong verification code.")   
           end  
                   
         end
@@ -181,7 +181,7 @@ class CurrentUserController < ApplicationController
           # note: returning this is a security risk as it reveals that a
           #       particular email address exists in the system or not.
           #       But it's prolly the right tradeoff.
-          errors.append Translations.translate("errors.user.invalid_email", "We have no account for that email address.")
+          errors.append Translations::Translation.get("errors.user.invalid_email", "We have no account for that email address.")
           # puts("Errors are #{errors}")
         else 
           # This algorithm is adapted from devise
@@ -367,19 +367,19 @@ class CurrentUserController < ApplicationController
     user = User.find_by_email(email)
     if !email || email.length == 0
       if trying_to == 'create account'
-        errors.append Translations.translate("errors.user.blank_email", 'Email address cannot be blank')
+        errors.append Translations::Translation.get("errors.user.blank_email", 'Email address cannot be blank')
       end
     # And if it's not taken
     elsif user && (user != current_user)
-      errors.append Translations.translate("errors.user.user_at_email", 'There is already an account with that email. Click "log in" below instead.')  
+      errors.append Translations::Translation.get("errors.user.user_at_email", 'There is already an account with that email. Click "log in" below instead.')  
     # And that it's valid
     elsif !/\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i.match(email)
-      errors.append Translations.translate("errors.user.bad_email", 'Email address is not properly formatted')
+      errors.append Translations::Translation.get("errors.user.bad_email", 'Email address is not properly formatted')
     elsif current_user.email != email
 
       # And that we've validated old password on edit profile
       if current_user.registered && current_user.email && !current_user.authenticate(params[:old_password])
-        errors.append Translations.translate("errors.user.bad_old_password", 'Wrong password.')
+        errors.append Translations::Translation.get("errors.user.bad_old_password", 'Wrong password.')
       else 
         # puts("Updating email from #{current_user.email} to #{params[:email]}")
         # Okay, here comes a new email address!
@@ -397,13 +397,13 @@ class CurrentUserController < ApplicationController
     # Update their password
     if !params[:password] || params[:password].length == 0
       if trying_to == 'create account' || trying_to == 'reset password'
-        errors.append Translations.translate("errors.user.missing_password", 'Password cannot be missing')
+        errors.append Translations::Translation.get("errors.user.missing_password", 'Password cannot be missing')
       end
     elsif params[:password].length < @min_pass
-      errors.append Translations.translate({id: "errors.user.password_length", length: @min_pass}, "Password needs to be at least {length} letters")
+      errors.append Translations::Translation.get({id: "errors.user.password_length", length: @min_pass}, "Password needs to be at least {length} letters")
     else
       if check_old_password && !current_user.authenticate(params[:old_password])
-        errors.append Translations.translate("errors.user.bad_old_password", 'Wrong password.')
+        errors.append Translations::Translation.get("errors.user.bad_old_password", 'Wrong password.')
       else 
         # puts("Changing user's password.")
         current_user.password = params[:password]

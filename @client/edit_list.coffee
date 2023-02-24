@@ -535,7 +535,7 @@ window.EditNewList = ReactiveComponent
           SPAN
             className: 'permissions_explanation'
 
-            "For community ideation"
+            translator "engage.ideation-description", "For community ideation"
 
       DIV
         className: 'LIST-option-block'
@@ -562,7 +562,7 @@ window.EditNewList = ReactiveComponent
           SPAN
             className: 'permissions_explanation'
 
-            "For feedback on pre-defined proposals"
+            translator "engage.closed-description", "For feedback on pre-defined proposals"
 
 
   drawDefineSpectrum: -> 
@@ -804,7 +804,7 @@ window.EditNewList = ReactiveComponent
           onClick: (e) => 
             @local.show_all_options = true 
             save @local
-          'Show advanced options'
+          translator "engage.show_advanced_options", 'Show advanced options'
 
       else 
         DIV null, 

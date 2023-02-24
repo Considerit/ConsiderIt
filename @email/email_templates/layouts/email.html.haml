@@ -35,7 +35,7 @@
 
           %div{style: "color:white; margin-top: 15px; font-size: 18px"}
             :ruby
-              tech_by_txt = Translations.TranslatorHTML({
+              tech_by_txt = Translations::Translation.getForHTML({
                 id: "email.considerit_link",
                 subdomain: subdomain,
                 link: {

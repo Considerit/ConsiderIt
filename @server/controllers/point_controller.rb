@@ -22,11 +22,11 @@ class PointController < ApplicationController
   def validate_input(attrs, proposal, point)
     errors = []
     if !attrs['nutshell'] || attrs['nutshell'].length == 0
-      errors.append Translations.translate('errors.summary_required', 'A summary is required')
+      errors.append Translations::Translation.get('errors.summary_required', 'A summary is required')
     end
 
     if (!point || (point && point.nutshell != attrs['nutshell'])) && proposal.points.find_by_nutshell(attrs['nutshell'])
-      errors.append Translations.translate('errors.duplicate_point', 'Someone has already made that point')
+      errors.append Translations::Translation.get('errors.duplicate_point', 'Someone has already made that point')
     end
 
     return errors

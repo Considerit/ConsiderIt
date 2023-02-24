@@ -1,10 +1,11 @@
 
 %p
-  There are translations pending approval at 
+  There are changes to the native language translations
   %a{ :href => @url } 
     =@url
 
-  - @updates.each do |trans|
+
+  - @native_updates.each do |trans|
     %div 
       = "#{trans.lang_code} #{trans.subdomain_id} #{trans.string_id} => #{trans.translation}"
 

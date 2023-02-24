@@ -1,137 +1,210 @@
 
+# For testing peer synchronization of translations between servers locally, run:
+# rails s -p 3002 -e test --pid tmp/pids/server2.pid
+# ...to set up a second server running on local host
+
 class TranslationsController < ApplicationController
 
-  include Translations::PSEUDOLOCALIZATION
+  # getting all proposed translations
+  def index 
+    key = request.path.split(".")[0]
 
+    dirty_key key 
 
-  def show 
-    if params.has_key? :subdomain
-      key = "/translations/#{params[:subdomain]}"
-    else 
-      key = "/translations"
-    end 
-
-    dirty_key key
     render :json => []
   end
 
 
-  def update
+  def show 
 
 
-    key = params[:key]
-
-
-    if !key.start_with?('/translations')
+    if !request.path.start_with?('/translations')
       return
     end 
-    
-    exclude = {'authenticity_token' => 1, 'subdomain' => 1, 'action' => 1, 'controller' => 1, 'translation' => 1}
-    updated = params.select{|k,v| !exclude.has_key?(k)}.to_h
 
-    if Permissions.permit('update all translations') > 0
-      Translations.UpdateTranslations(key, updated)
-    else 
-      translations_made = false
+    dirty_key request.path.split(".")[0]
+    render :json => []
+  end
 
-      # allow non super admins to:
-      #    - create a translatable message if that message is not yet populating the datastore
-      #    - propose new translations to existing translatable messages (only one per user per message)
 
-      old = Translations.GetTranslations(key)
 
-      updated.each do |id, message|
-        if id == 'key'
-          next 
-        end
+  # batch update translations
+  def update
+    proposals = JSON.parse(params[:proposals])
 
-        if id == 'engage.slider_label.Agree'
-          begin
-            raise "Translator got a sneaky, old translation string"
-          rescue => e
-            if current_subdomain
-              sub = current_subdomain.name
-            else 
-              sub = nil
-            end 
-            ExceptionNotifier.notify_exception(e, data: {request: request, params: params, subdomain: sub})
+    if current_user.registered || valid_API_call
+
+      native_updates = []
+      other_updates = []
+
+      subdomain = nil 
+
+      proposals.each do |proposal|
+        string_id = proposal['string_id']
+        lang_code = proposal['lang_code']
+        subdomain = proposal['subdomain_id'] ? Subdomain.find(proposal['subdomain_id'].to_i) : nil
+        region = proposal.fetch 'origin_server', APP_CONFIG[:region]
+        translation = proposal['translation']
+
+        existing = Translations::Translation.where(:string_id => string_id, :lang_code => lang_code, :subdomain_id => subdomain ? subdomain.id : nil)
+        accepted = existing.where(:accepted => true).first
+
+        next if (accepted && accepted.translation == translation) || (!translation || translation.length == 0)
+
+        # super admins can always directly update translations
+        # allow non super admins to:
+        #    - create a translatable message if that message is not yet populating the datastore
+        #    - propose new translations to existing translatable messages (only one per user per message)
+
+        if lang_code == "en" 
+          trans = Translations::Translation.create_or_update_native_translation string_id, translation, {:subdomain => subdomain, :region => region}
+          native_updates.push trans
+        else 
+          trans = Translations::Translation.create_or_update_proposed_translation lang_code, string_id, translation, {:subdomain => subdomain, :region => region, :accepted_elsewhere => proposal['accepted']}
+          if trans 
+            other_updates.push trans
           end
         end
 
-
-        # Check if this message is present; if not, allow it to be added. 
-        # If it is en, add it as default text, otherwise add it as a proposal.
-        if !old.has_key?(id)
-          if !key.end_with?('/en')
-            txt = message[:txt] || message["txt"]
-            if txt
-              message = {}
-              message["proposals"] = [{"txt": txt, u: "/user/#{current_user.id}"}]
-              
-            elsif message["proposals"]
-              message["proposals"] = [message["proposals"][0]] # only one proposal per user per message
-            else 
-              next # no txt and no proposals?
-            end 
-            translations_made = true
-          end 
-
-          old[id] = message 
-
-        elsif message["proposals"]
-
-
-          # should only be allowed to add or replace their own proposal
-          old_proposals = old[id]["proposals"] || []
-          new_proposal = nil 
-          message["proposals"].each do |proposal|
-            if proposal["u"] == "/user/#{current_user.id}"
-              new_proposal = proposal 
-              break 
-            end 
-          end 
-
-          # # if it comes from the client not as a proposal, then turn it into one...
-          # if new_proposal && message["txt"] && new_proposal["txt"] != message["txt"]
-          #   new_proposal = {}
-          #   new_proposal["txt"] = message["txt"]
-          #   new_proposal["u"] = "/user/#{current_user.id}"
-          # end 
-
-          if new_proposal
-            translations_made = true
-            old_proposal = nil
-            old_proposals.each do |proposal|
-              if proposal["u"] == "/user/#{current_user.id}"
-                old_proposal = proposal 
-              end 
-            end 
-            if old_proposal
-              old_proposal["txt"] = new_proposal["txt"]
-            else 
-              old_proposals.push new_proposal
-            end 
-
-            old[id]["proposals"] = old_proposals
-
+        # capture vals for passing along to peer servers
+        if !params['considerit_API_key']
+          proposal['origin_server'] = APP_CONFIG[:region]
+          if trans.accepted
+            proposal['accepted'] = true
           end
-
         end
       end
 
-      Translations.UpdateTranslations(key, old)
+      if native_updates.length > 0 && !params.has_key?('considerit_API_key')
+        EventMailer.translations_native_changed(subdomain || current_subdomain, native_updates).deliver_later
+      end 
 
-      if translations_made
-        EventMailer.translations_proposed(current_subdomain).deliver_later
+      if other_updates.length > 0 && !params.has_key?('considerit_API_key')
+        EventMailer.translations_proposed(subdomain || current_subdomain, other_updates).deliver_later
+      end 
+
+      # propagate translation updates to other servers
+      if !params['considerit_API_key'] && APP_CONFIG[:peers]
+        APP_CONFIG[:peers].each do |peer|
+          begin 
+            response = Excon.put(
+              "#{peer}/translations.json",
+              query: {
+                'domain' => current_subdomain.name,
+                'proposals' => JSON.dump(proposals),
+                'considerit_API_key' => APP_CONFIG[:considerit_API_key]
+              }
+            ) 
+          rescue => err
+            ExceptionNotifier.notify_exception err
+
+          end
+        end      
       end
- 
     end
 
-    if key.end_with?('/en')
-      Translations::PSEUDOLOCALIZATION::synchronize(key)
+
+    render :json => {:success => true}
+
+  end
+
+
+  # delete all translations of a string
+  def delete
+    return if Permissions.permit('update all translations') <= 0 && !valid_API_call
+
+    string_id = params["string_id"]
+
+    Translations::Translation.where(:string_id => string_id).each do |str| 
+      if str.subdomain_id
+        subdomain = Subdomain.find(str.subdomain_id)
+      else 
+        subdomain = nil
+      end
+      lang = str.lang_code
+
+      key = Translations::Translation.translations_key lang, subdomain
+      dirty_key key
+      dirty_key "/proposed_translations/#{lang}#{subdomain ? "/#{subdomain.name}" : ''}"
+      Rails.cache.delete(key)
+
+
+      str.destroy!
     end
 
-    dirty_key key
+    # propagate string deletion to other servers
+    if !params['considerit_API_key'] && APP_CONFIG[:peers]
+      APP_CONFIG[:peers].each do |peer|
+        begin 
+          response = Excon.delete(
+            "#{peer}/translations.json",
+            query: {
+              'domain' => current_subdomain.name,
+              'string_id' => params["string_id"],
+              'considerit_API_key' => APP_CONFIG[:considerit_API_key]
+            }
+          ) 
+        rescue => err
+          ExceptionNotifier.notify_exception err
+        end
+      end      
+    end
+
+
+
+    render :json => {:success => true}
+  end
+
+  def reject_proposal
+    return if Permissions.permit('update all translations') <= 0 && !valid_API_call
+
+    string_id = params["string_id"]
+    proposal = JSON.parse(params["proposal"])
+
+    to_delete = Translations::Translation.where(:string_id => string_id, :translation => proposal["translation"], :lang_code => proposal["lang_code"], :accepted => false)
+    to_delete = to_delete.first
+
+    if to_delete
+      to_delete.destroy
+
+      subdomain = to_delete.subdomain_id ? Subdomain.find(to_delete.subdomain_id) : nil
+      key = Translations::Translation.translations_key to_delete.lang_code, subdomain
+      dirty_key key
+      dirty_key "/proposed_translations/#{to_delete.lang_code}#{subdomain ? "/#{subdomain.name}" : ''}"
+      Rails.cache.delete(key)
+
+      # propagate proposal rejection to other servers
+      if !params['considerit_API_key'] && APP_CONFIG[:peers]
+        APP_CONFIG[:peers].each do |peer|
+
+          begin 
+            response = Excon.delete(
+              "#{peer}/translation_proposal.json",
+              query: {
+                'domain' => current_subdomain.name,
+                'proposal' => params["proposal"],
+                'string_id' => params["string_id"],
+                'considerit_API_key' => APP_CONFIG[:considerit_API_key]
+              }
+            ) 
+          rescue => err
+            ExceptionNotifier.notify_exception err
+
+          end
+        end      
+      end
+    end 
+
+
+
+    render :json => {:success => true}
+
+  end
+
+
+  def log_translation_counts
+    counts = params["counts"]
+    Translations::Translation.log_translation_count JSON.parse(counts).keys
     render :json => {:success => true}
   end
 

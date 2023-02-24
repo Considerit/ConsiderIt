@@ -944,7 +944,7 @@ window.PointsList = ReactiveComponent
 
       heading_t = translator
                     id: "point_labels.header_#{header_prefix}.#{heading}"
-                    key: if point_labels.translate then "/translations" else "/translations/#{fetch('/subdomain').name}"
+                    local: !point_labels.translate
                     arguments: capitalize(plural_point)
                     heading
 

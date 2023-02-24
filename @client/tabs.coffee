@@ -603,10 +603,13 @@ window.Tab = ReactiveComponent
 
 
         else 
-          translator
-            id: "homepage_tab.#{tab_name}"
-            key: if tab_name != 'Show all' then "/translations/#{subdomain.name}"
-            tab_name
+          if !subdomain.name
+            '...'
+          else 
+            translator
+              id: "homepage_tab.name.#{tab_name}"
+              local: tab_name != 'Show all'
+              tab_name
       
       if edit_forum.editing && tab_name == get_current_tab_name() && !tab.demo
         BUTTON 

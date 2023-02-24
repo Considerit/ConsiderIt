@@ -11,7 +11,7 @@ class User < ApplicationRecord
   has_many :opinions, :dependent => :destroy
   has_many :inclusions, :dependent => :destroy
   has_many :comments, :dependent => :destroy
-  has_many :proposals
+  has_many :proposals, :dependent => :destroy
 
   has_many :visits, class_name: 'Ahoy::Visit'
   has_many :events, class_name: 'Ahoy::Event'
@@ -125,7 +125,7 @@ class User < ApplicationRecord
       end
 
       if current_user.key != u['key'] && anonymize_everything
-        u['name'] = Translations.translate('anonymous', 'Anonymous')
+        u['name'] = Translations::Translation.get('anonymous', 'Anonymous')
         u['avatar_file_name'] = nil
       end 
     end 

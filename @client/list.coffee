@@ -730,12 +730,13 @@ window.NewList = ReactiveComponent
             className: 'LIST-title'
 
             SPAN null, 
-              "Create a New Focus"
+
+              translator "engage.create_new_focus", "Create a New Focus"
             
           DIV 
             className: 'LIST-description'
 
-            "Focus your community on evaluating specific proposals. Or pose an open-ended question to focus your community on generating ideas."
+            translator "engage.focus_description", "Focus your community on evaluating specific proposals. Or pose an open-ended question to focus your community on generating ideas."
 
 
 
@@ -749,20 +750,22 @@ window.list_i18n = ->
     if item_name == 'proposal' or !item_name
       translator "engage.add_new_proposal_to_list", 'Add new proposal'
     else 
+      subdomain = fetch('/subdomain')
       translator 
         id: "engage.add_new_#{item_name}_to_list"
-        key: "/translations/#{fetch('/subdomain').name}"
+        local: true
       , "Add a new #{item_name}"
   opinion_header: (list_key) ->
     item_name = customization('list_item_name', list_key)
     if item_name
       item_name = capitalize item_name
-    if item_name == 'proposal' or !item_name
+    if !item_name || item_name.toLowerCase() == 'proposal' 
       translator "engage.opinion_header_results", 'Opinions about this proposal'
     else 
+      subdomain = fetch('/subdomain')
       translator 
         id: "engage.opinion_header_results_#{item_name}"
-        key: "/translations/#{fetch('/subdomain').name}"
+        local: true
       , "Opinions about this #{item_name}"
 
 

@@ -548,7 +548,6 @@ window.ItemText = ReactiveComponent
                     proposal: proposal
 
               TRANSLATE
-                key: '/translations'
                 id: "engage.point_count"
                 cnt: proposal.point_count
 

@@ -58,6 +58,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def valid_API_call
+    params['considerit_API_key'] && params['considerit_API_key'] == APP_CONFIG[:considerit_API_key]
+  end    
+
   def initiate_saml_auth(sso_domain = nil)
     sso_domain ||= current_subdomain.SSO_domain
     if request.fullpath.match('login_via_saml')
@@ -70,7 +74,7 @@ class ApplicationController < ActionController::Base
 
 protected
   def csrf_skippable?
-    request.format.json? && request.content_type != "text/plain" && (!!request.xml_http_request?)
+    valid_API_call || (request.format.json? && request.content_type != "text/plain" && (!!request.xml_http_request?))
   end
 
   def write_to_log(options)
@@ -105,6 +109,8 @@ protected
     subdomain_sought = nil 
     regional_id = nil
 
+
+
     if rq.subdomain && rq.subdomain.length > 0  # case 1
       ssubdomains = rq.subdomain.split('.')
       subdomain_sought = ssubdomains[0]
@@ -113,12 +119,12 @@ protected
       end
     elsif params[:domain] # case 3
       subdomain_sought = params[:domain]
-    elsif !Rails.env.development? && APP_CONFIG[:product_page]  # case 2
+    elsif Rails.env.production? && APP_CONFIG[:product_page]  # case 2
       subdomain_sought = APP_CONFIG[:product_page]
-    elsif Rails.env.development? && session[:default_subdomain] # case 4
+    elsif !Rails.env.production? && session[:default_subdomain] # case 4
       subdomain_sought = session[:default_subdomain]
     end
-
+    
     candidate_subdomain = Subdomain.find_by_name(subdomain_sought)
 
 
@@ -129,7 +135,7 @@ protected
         set_current_tenant(candidate_subdomain) if candidate_subdomain
 
 
-        if Rails.env.development?
+        if !Rails.env.production?
           session[:default_subdomain] = candidate_subdomain.name
           redirect_to "#{request.protocol}#{request.host_with_port}/create_forum?forum=#{subdomain_sought}"
         else 
@@ -148,6 +154,7 @@ protected
     end 
 
     set_current_tenant(candidate_subdomain) if candidate_subdomain
+
     current_subdomain
   end
 
@@ -256,7 +263,7 @@ protected
         manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})
         response.append({
           key: '/application',
-          dev: (Rails.env.development? || request.host.end_with?('chlk.it')),
+          dev: (!Rails.env.production? || request.host.end_with?('chlk.it')),
           asset_host: "#{Rails.application.config.action_controller.asset_host}",
           web_worker: "#{manifest['web_worker']}",
           su: session[:su],
@@ -308,15 +315,29 @@ protected
           ExceptionNotifier.notify_exception(e, data: {slug: slug, key: key})
         end
 
-      elsif key.match "/translations"
-        translations = Translations.GetTranslations(key)
+      elsif key.match "/supported_languages"
+        supported_languages = Translations::SupportedLanguage.get_all
+        response.append supported_languages
+
+      elsif key.match "/translations/"
+        split = key.split('/')
+        subdomain = split.length == 4 ? Subdomain.find_by_name(split[2]) : nil
+        lang = subdomain ? split[3] : split[2]
+
+        translations = Translations::Translation.translations_for lang, subdomain
         response.append translations
 
+      elsif key.match "/proposed_translations/"
+        split = key.split('/')
+        lang = split[2]
+        subdomain = split.length == 4 ? Subdomain.find_by_name(split[3]) : nil
+        proposals = Translations::Translation.proposed_translations lang, subdomain
+        proposed = {:key => key, :proposals => proposals}
+
+        response.append proposed
 
       elsif key.match '/your_forums'
         response.append current_user.your_forums
-
-
       end
 
 

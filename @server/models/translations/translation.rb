@@ -152,7 +152,7 @@ class Translations::Translation < ApplicationRecord
       $translation_uses[string_id] = 1
     end
 
-    pp "logging translation count", DateTime.now, $translation_uses_last_written_at, $translation_uses_write_after, DateTime.now - $translation_uses_last_written_at >= $translation_uses_write_after
+    Rails.logger.info "logging translation count #{DateTime.now}, #{$translation_uses_last_written_at}, #{$translation_uses_write_after}, #{DateTime.now - $translation_uses_last_written_at}, #{DateTime.now - $translation_uses_last_written_at >= $translation_uses_write_after}"
     if DateTime.now - $translation_uses_last_written_at >= $translation_uses_write_after
       keys = $translation_uses.keys()
       if keys.length > 0 

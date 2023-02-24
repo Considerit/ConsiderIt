@@ -84,7 +84,7 @@ class TranslationsController < ApplicationController
       end 
 
       # propagate translation updates to other servers
-      if !params['considerit_API_key']
+      if !params['considerit_API_key'] && APP_CONFIG[:peers]
         APP_CONFIG[:peers].each do |peer|
           begin 
             response = Excon.put(
@@ -130,7 +130,7 @@ class TranslationsController < ApplicationController
     end
 
     # propagate string deletion to other servers
-    if !params['considerit_API_key']
+    if !params['considerit_API_key'] && APP_CONFIG[:peers]
       APP_CONFIG[:peers].each do |peer|
         begin 
           response = Excon.delete(
@@ -168,7 +168,7 @@ class TranslationsController < ApplicationController
       dirty_key "/proposed_translations/#{to_delete.lang_code}#{to_delete.subdomain_id ? "#{Subdomain.find(to_delete.subdomain_id).name}" : ''}"
 
       # propagate proposal rejection to other servers
-      if !params['considerit_API_key']
+      if !params['considerit_API_key'] && APP_CONFIG[:peers]
         APP_CONFIG[:peers].each do |peer|
 
           begin 

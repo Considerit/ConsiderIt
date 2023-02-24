@@ -566,7 +566,8 @@ TranslationsForLang = ReactiveComponent
         translation = proposed_translations.proposals[name]
         continue if local.filter == 'untranslated' && !!translation
         continue if local.filter == 'not by you' && !!translation?.yours
-        continue if local.filter == 'under review' && translation?.proposals?.length == 0
+        continue if local.filter == 'under review' && !translation?.proposals?.length > 0
+
       sp = name.split('.')
       if sp.length > 1
         sections[sp[0]] ||= []

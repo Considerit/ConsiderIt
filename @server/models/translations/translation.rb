@@ -385,7 +385,6 @@ class Translations::Translation < ApplicationRecord
       }
       trans = Translations::Translation.create! attrs
     else 
-      return nil if trans.translation == translation && trans.accepted # already proposed
       trans.translation = translation
     end
 

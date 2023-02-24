@@ -123,8 +123,11 @@ class TranslationsController < ApplicationController
       end
       lang = str.lang_code
 
-      dirty_key "/translations/#{subdomain ? "#{subdomain.name}/" : ""}#{lang}"
+      key = Translations::Translation.translations_key lang, subdomain
+      dirty_key key
       dirty_key "/proposed_translations/#{lang}#{subdomain ? "/#{subdomain.name}" : ''}"
+      Rails.cache.delete(key)
+
 
       str.destroy!
     end
@@ -164,8 +167,11 @@ class TranslationsController < ApplicationController
     if to_delete
       to_delete.destroy
 
-      dirty_key "/translations/#{to_delete.subdomain_id ? "#{Subdomain.find(to_delete.subdomain_id).name}/" : ""}#{to_delete.lang_code}"
-      dirty_key "/proposed_translations/#{to_delete.lang_code}#{to_delete.subdomain_id ? "#{Subdomain.find(to_delete.subdomain_id).name}" : ''}"
+      subdomain = to_delete.subdomain_id ? Subdomain.find(to_delete.subdomain_id) : nil
+      key = Translations::Translation.translations_key to_delete.lang_code, subdomain
+      dirty_key key
+      dirty_key "/proposed_translations/#{to_delete.lang_code}#{subdomain ? "/#{subdomain.name}" : ''}"
+      Rails.cache.delete(key)
 
       # propagate proposal rejection to other servers
       if !params['considerit_API_key'] && APP_CONFIG[:peers]

@@ -170,6 +170,10 @@ window.T = window.t = (args, native_text) ->
   console.warn "Deprecated: calling window.t or window.T should be replaced with window.translator"
   translator args, native_text
 
+
+
+
+
 window.translator = (args, native_text) -> 
   # if !native_text
   #   native_text = ""
@@ -178,6 +182,16 @@ window.translator = (args, native_text) ->
   if translations_loaded 
     cache_key = JSON.stringify(args, native_text)
     if cache_key of translation_cache
+
+      if typeof args == "string"
+        if native_text
+          args = {id: args}
+        else 
+          native_text = args 
+          args = {}
+
+      id = args.id or native_text
+      log_translation_count id
       return translation_cache[cache_key]
 
 
@@ -198,7 +212,7 @@ window.translator = (args, native_text) ->
   return '...' if waiting_for(translations_native)
 
   translations_loaded ||= true
-
+  cache_key ?= JSON.stringify(args, native_text)
 
   if typeof args == "string"
     if native_text
@@ -209,13 +223,12 @@ window.translator = (args, native_text) ->
 
   id = args.id or native_text
 
-
   native_text = native_text.replace(/\n/g, "")
 
 
   # ensure this string is in the translations database for the development language
   if translations_native[id] != native_text
-    console.log 'updating', {current: JSON.parse(JSON.stringify(translations_native)), args: args, key: translations_native.key, id, native_text, saved: translations_native[id]}, translations_native[id] == native_text
+    console.log 'updating', {args: args, key: translations_native.key, id, native_text, saved: translations_native[id]}, translations_native[id] == native_text
 
     translations_native[id] = native_text
     setTimeout ->
@@ -264,7 +277,32 @@ window.translator = (args, native_text) ->
   else 
     translation_cache[cache_key] = message
 
+  log_translation_count id
+
   translation_cache[cache_key] 
+
+
+translation_uses = {}
+translation_uses_write_after = 1000 * 80 
+translation_uses_last_written_at = Date.now() - translation_uses_write_after * .75 # first one should be quicker
+
+log_translation_count = (string_id) -> 
+  translation_uses[string_id] = 1
+
+  if Date.now() - translation_uses_last_written_at >= translation_uses_write_after
+
+    if Object.keys(translation_uses).length > 0 
+      frm = new FormData()
+      frm.append "authenticity_token", fetch('/current_user').csrf
+      frm.append "counts", JSON.stringify(translation_uses)
+
+      xhr = new XMLHttpRequest
+      xhr.addEventListener 'readystatechange', null, false
+      xhr.open 'PUT', '/log_translation_counts', true
+      xhr.send frm
+
+    translation_uses = {}
+    translation_uses_last_written_at = Date.now()
 
 
 styles += """

@@ -18,13 +18,14 @@ require 'message_format'
 @translator_subdomain = nil
 
 
-
-
+# for tracking usage of different translation strings
+$translation_uses = {}
+$translation_uses_last_written_at = DateTime.now
+$translation_uses_write_after = 30.minutes
 
 class Translations::Translation < ApplicationRecord
   
   self.table_name = "language_translations"
-
 
   def self.get(args, native_text = nil)
     if args.is_a? String
@@ -100,6 +101,7 @@ class Translations::Translation < ApplicationRecord
       message = native_text
     end
 
+    log_translation_count [id]
     message
   end
 
@@ -142,6 +144,24 @@ class Translations::Translation < ApplicationRecord
 
     message
 
+  end
+
+  def self.log_translation_count(strings)
+
+    strings.each do |string_id|
+      $translation_uses[string_id] = 1
+    end
+
+    if DateTime.now - $translation_uses_last_written_at >= $translation_uses_write_after
+      keys = $translation_uses.keys()
+      if keys.length > 0 
+        sanitize_and_execute_query """
+          UPDATE language_translations SET uses_this_period=uses_this_period+1 WHERE lang_code='en' AND string_id IN ('#{keys.join("','")}')
+        """
+      end
+      $translation_uses = {}
+      $translation_uses_last_written_at = DateTime.now
+    end
   end
 
   def self.SetTranslationContext(user, subdomain)
@@ -191,6 +211,8 @@ class Translations::Translation < ApplicationRecord
   def self.proposed_translations(lang, subdomain = nil)
     proposals = {}
 
+    user = @translator_user || current_user
+
     Translations::Translation.where(:lang_code => lang, :subdomain_id => subdomain ? subdomain.id : nil).each do |pt|
       if !proposals.has_key? pt.string_id
         proposals[pt.string_id] = {
@@ -202,7 +224,7 @@ class Translations::Translation < ApplicationRecord
       else 
         proposals[pt.string_id][:proposals].push pt
       end
-      if pt.user_id == current_user.id && pt.origin_server == APP_CONFIG[:region]
+      if pt.user_id == user.id && pt.origin_server == APP_CONFIG[:region]
         proposals[pt.string_id][:yours] = pt
       end
     end
@@ -213,7 +235,9 @@ class Translations::Translation < ApplicationRecord
 
 
   def self.translations_for(lang, subdomain = nil)
-    if current_user.registered 
+    user = @translator_user || current_user
+
+    if user.registered 
       translators = Rails.cache.fetch("translators") do 
         people = ActiveRecord::Base.connection.execute "SELECT distinct(user_id) from language_translations where lang_code != 'en'"
         all_translators = {}
@@ -253,7 +277,7 @@ class Translations::Translation < ApplicationRecord
     # overwrite accepted translations for translators so that their translations 
     # will show up for them even if they're not accepted
 
-    if current_user.registered && translators.has_key?(current_user.id)
+    if user.registered && translators.has_key?(user.id)
       if subdomain
         subdomain_clause = "subdomain_id=#{subdomain.id}"
       else 
@@ -262,7 +286,7 @@ class Translations::Translation < ApplicationRecord
 
       translations = sanitize_and_execute_query("""
         SELECT string_id, translation FROM language_translations WHERE 
-          user_id=#{current_user.id} AND lang_code='#{lang}' AND #{subdomain_clause};
+          user_id=#{user.id} AND lang_code='#{lang}' AND #{subdomain_clause};
       """)      
 
       translations.each do |tr|
@@ -273,10 +297,12 @@ class Translations::Translation < ApplicationRecord
     all_translations
   end
 
-  def self.create_or_update_native_translation(string_id, translation, args = {})
+  def self.create_or_update_native_translation(string_id, translation, args = nil)
+    args ||= {}
     subdomain = args.fetch(:subdomain, nil)
     region = args.fetch(:region, APP_CONFIG[:region])
     is_local = region == APP_CONFIG[:region]
+    user = @translator_user || current_user
 
     trans = nil
     key = nil 
@@ -301,14 +327,14 @@ class Translations::Translation < ApplicationRecord
           origin_server: region,
           accepted: true, 
           accepted_at: DateTime.now,
-          user_id: is_local ? current_user.id : nil
+          user_id: is_local ? user.id : nil
         }
 
         trans = Translations::Translation.create! attrs
       else 
         trans = tr.first
         trans.translation = my_translation
-        trans.user_id = current_user.id
+        trans.user_id = user.id
         trans.save
       end
 
@@ -322,11 +348,15 @@ class Translations::Translation < ApplicationRecord
   end
 
 
-  def self.create_or_update_proposed_translation(lang, string_id, translation, args = {})
+  def self.create_or_update_proposed_translation(lang, string_id, translation, args = nil)
+    args ||= {}
+
     subdomain = args.fetch(:subdomain, nil)
     region = args.fetch(:region, APP_CONFIG[:region])
     is_local = region == APP_CONFIG[:region]
 
+    user = @translator_user || current_user
+    
     tr = Translations::Translation.where(:string_id => string_id, :lang_code => lang)
     if subdomain 
       tr = tr.where(:subdomain_id => subdomain.id)
@@ -340,7 +370,7 @@ class Translations::Translation < ApplicationRecord
     end
 
     if !trans 
-      trans = tr.where(:user_id => current_user.id).first
+      trans = tr.where(:user_id => user.id).first
     end 
 
     if !trans
@@ -351,7 +381,7 @@ class Translations::Translation < ApplicationRecord
         subdomain_id: subdomain ? subdomain.id : nil,
         origin_server: region,
         accepted: false, 
-        user_id: is_local ? current_user.id : nil
+        user_id: is_local ? user.id : nil
       }
       trans = Translations::Translation.create! attrs
     else 
@@ -377,12 +407,6 @@ class Translations::Translation < ApplicationRecord
   end
 
 
-  # TODO: copy over translation counts
-  # Note: In Rails 5, by passing touch: false as an option to save, we can update the 
-  # object without updating timestamps. The default option for touch is true.
-  def self.write_translation_counts
-
-  end
 
 
 

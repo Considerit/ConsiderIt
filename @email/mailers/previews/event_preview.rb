@@ -18,7 +18,7 @@ class EventPreview < ActionMailer::Preview
   def translations_proposed
 
     subdomain = Subdomain.first
-    EventMailer.translations_proposed(subdomain)
+    EventMailer.translations_proposed(subdomain, Translations::Translation.where(:lang_code => 'sk'))
 
   end
 

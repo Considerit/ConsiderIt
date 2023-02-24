@@ -86,14 +86,19 @@ class TranslationsController < ApplicationController
       # propagate translation updates to other servers
       if !params['considerit_API_key']
         APP_CONFIG[:peers].each do |peer|
-          response = Excon.put(
-            "#{peer}/translations.json",
-            query: {
-              'domain' => current_subdomain.name,
-              'proposals' => JSON.dump(proposals),
-              'considerit_API_key' => APP_CONFIG[:considerit_API_key]
-            }
-          ) 
+          begin 
+            response = Excon.put(
+              "#{peer}/translations.json",
+              query: {
+                'domain' => current_subdomain.name,
+                'proposals' => JSON.dump(proposals),
+                'considerit_API_key' => APP_CONFIG[:considerit_API_key]
+              }
+            ) 
+          rescue => err
+            ExceptionNotifier.notify_exception err
+
+          end
         end      
       end
     end
@@ -127,14 +132,18 @@ class TranslationsController < ApplicationController
     # propagate string deletion to other servers
     if !params['considerit_API_key']
       APP_CONFIG[:peers].each do |peer|
-        response = Excon.delete(
-          "#{peer}/translations.json",
-          query: {
-            'domain' => current_subdomain.name,
-            'string_id' => params["string_id"],
-            'considerit_API_key' => APP_CONFIG[:considerit_API_key]
-          }
-        ) 
+        begin 
+          response = Excon.delete(
+            "#{peer}/translations.json",
+            query: {
+              'domain' => current_subdomain.name,
+              'string_id' => params["string_id"],
+              'considerit_API_key' => APP_CONFIG[:considerit_API_key]
+            }
+          ) 
+        rescue => err
+          ExceptionNotifier.notify_exception err
+        end
       end      
     end
 
@@ -161,15 +170,21 @@ class TranslationsController < ApplicationController
       # propagate proposal rejection to other servers
       if !params['considerit_API_key']
         APP_CONFIG[:peers].each do |peer|
-          response = Excon.delete(
-            "#{peer}/translation_proposal.json",
-            query: {
-              'domain' => current_subdomain.name,
-              'proposal' => params["proposal"],
-              'string_id' => params["string_id"],
-              'considerit_API_key' => APP_CONFIG[:considerit_API_key]
-            }
-          ) 
+
+          begin 
+            response = Excon.delete(
+              "#{peer}/translation_proposal.json",
+              query: {
+                'domain' => current_subdomain.name,
+                'proposal' => params["proposal"],
+                'string_id' => params["string_id"],
+                'considerit_API_key' => APP_CONFIG[:considerit_API_key]
+              }
+            ) 
+          rescue => err
+            ExceptionNotifier.notify_exception err
+
+          end
         end      
       end
     end 
@@ -178,6 +193,13 @@ class TranslationsController < ApplicationController
 
     render :json => {:success => true}
 
+  end
+
+
+  def log_translation_counts
+    counts = params["counts"]
+    Translations::Translation.log_translation_count JSON.parse(counts).keys
+    render :json => {:success => true}
   end
 
 end 

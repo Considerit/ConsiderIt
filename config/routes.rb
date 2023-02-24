@@ -132,6 +132,7 @@ Rails.application.routes.draw do
   match '/proposed_translations/*lang' => 'translations#index', :via => [:get]
   match '/proposed_translations/*lang/*subdomain' => 'translations#index', :via => [:get]
 
+  match '/log_translation_counts' => 'translations#log_translation_counts', :via => [:put]
 
 
   if APP_CONFIG[:product_page]

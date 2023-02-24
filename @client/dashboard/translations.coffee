@@ -287,6 +287,8 @@ translation_uses_write_after = 1000 * 80
 translation_uses_last_written_at = Date.now() - translation_uses_write_after * .75 # first one should be quicker
 
 log_translation_count = (string_id) -> 
+  return if window.navigator.userAgent?.indexOf('Prerender') > -1
+
   translation_uses[string_id] = 1
 
   if Date.now() - translation_uses_last_written_at >= translation_uses_write_after
@@ -764,7 +766,7 @@ TranslationsForLang = ReactiveComponent
 
 updateTranslations = (proposals, cb) ->
   return if window.navigator.userAgent?.indexOf('Prerender') > -1
-  
+
   frm = new FormData()
   frm.append "authenticity_token", fetch('/current_user').csrf
   frm.append "proposals", JSON.stringify(proposals)

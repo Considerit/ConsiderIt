@@ -317,7 +317,7 @@ window.ShowHostQuestions = ReactiveComponent
 
                   if question.tag.indexOf('pledge_taken') > -1
                     SPAN 
-                      title: translator('auth.required_field', 'required') 
+                      title: translator('auth.required_field', 'Required') 
                       "*"
 
 

@@ -56,7 +56,9 @@ class TranslationsController < ApplicationController
 
       if lang_code == "en" 
         trans = Translations::Translation.create_or_update_native_translation string_id, translation, {:subdomain => subdomain, :region => region}
-        native_updates.push trans
+        if trans && !subdomain
+          native_updates.push trans
+        end
       else 
         trans = Translations::Translation.create_or_update_proposed_translation lang_code, string_id, translation, {:subdomain => subdomain, :region => region, :accepted_elsewhere => proposal['accepted']}
         if trans && !subdomain

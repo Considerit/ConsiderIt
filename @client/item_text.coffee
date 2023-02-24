@@ -318,15 +318,19 @@ window.ItemText = ReactiveComponent
   setCollapsedSizes: ->
 
 
-    if !@waitForFonts(=> @setCollapsedSizes()) || (@local.collapsed_title_height? && @sized_at_window_width == WINDOW_WIDTH())
+    if !@waitForFonts(=> @setCollapsedSizes()) || (@local.collapsed_title_height? && @sized_at_window_width == WINDOW_WIDTH() && !@description_has_images)
       return
 
     proposal = fetch @props.proposal
 
     title_el = @refs.proposal_title_text
 
+    changed = false 
     if @is_expanded
-      @local.collapsed_title_height = title_el.getBoundingClientRect().height
+      collapsed_title_height = title_el.getBoundingClientRect().height
+      if collapsed_title_height != @local.collapsed_title_height
+        @local.collapsed_title_height = collapsed_title_height
+        changed = true
 
     else 
       first_height_calc = title_el.clientHeight # There is a bug in at least Chrome, where for some reason after some updates, 
@@ -335,10 +339,12 @@ window.ItemText = ReactiveComponent
       second_height_calc = title_el.clientHeight
       console.assert first_height_calc == second_height_calc, "First call to title_el.clientHeight was mysteriously wrong. First call: #{first_height_calc}, Second call: #{second_height_calc}"
 
-      @local.collapsed_title_height = second_height_calc
+      if @local.collapsed_title_height != second_height_calc
+        @local.collapsed_title_height = second_height_calc
+        changed = true
 
     @sized_at_window_width = WINDOW_WIDTH()
-    save @local
+    save @local if changed
 
 
 
@@ -346,15 +352,19 @@ window.ItemText = ReactiveComponent
       el = document.createElement 'div'
       el.classList.add 'proposal-description'
 
+      @description_has_images = proposal.description.toLowerCase().indexOf('<img') > -1
+
       # do we need to show the transparency fade when collapsed?
       height = heightWhenRendered proposal.description.replace(/<p><br><\/p>/g, ''), \
-                                  {width:"#{ITEM_TEXT_WIDTH()}px"}, el
+                                  {width:"#{ITEM_TEXT_WIDTH()}px"}, el, @description_has_images
 
       @exceeds_collapsed_description_height = height >= COLLAPSED_MAX_HEIGHT
 
       # do we need to show a show full text button when expanded? 
-      height = heightWhenRendered proposal.description, \
-                                  {width: "#{ITEM_TEXT_WIDTH() * LIST_ITEM_EXPANSION_SCALE()}px"}, el
+      if LIST_ITEM_EXPANSION_SCALE() != 1
+        height = heightWhenRendered proposal.description, \
+                                    {width: "#{ITEM_TEXT_WIDTH() * LIST_ITEM_EXPANSION_SCALE()}px"}, el, @description_has_images
+
       @super_long_description = height >= EXPANDED_MAX_HEIGHT
 
     

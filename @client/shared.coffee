@@ -535,10 +535,10 @@ window.widthWhenRendered = (str, style) ->
 
 
 height_cache = {}
-window.heightWhenRendered = (str, style, el) -> 
+window.heightWhenRendered = (str, style, el, skip_caching) -> 
   # This DOM manipulation is relatively expensive, so cache results
   key = JSON.stringify _.extend({str: str}, style)
-  if key not of height_cache
+  if (key not of height_cache) || skip_caching
     el ?= document.createElement 'div'
     el.style.position = 'absolute'
     el.style.visibility = 'hidden'
@@ -554,7 +554,6 @@ window.heightWhenRendered = (str, style, el) ->
     parent.appendChild el
     height = $$.height el
     parent.removeChild(el)
-
     height_cache[key] = height
   height_cache[key]
 

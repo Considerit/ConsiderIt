@@ -30,6 +30,8 @@ class TranslationsController < ApplicationController
 
   # batch update translations
   def update
+
+
     proposals = JSON.parse(params[:proposals])
 
     if current_user.registered || valid_API_call
@@ -61,7 +63,7 @@ class TranslationsController < ApplicationController
           native_updates.push trans
         else 
           trans = Translations::Translation.create_or_update_proposed_translation lang_code, string_id, translation, {:subdomain => subdomain, :region => region, :accepted_elsewhere => proposal['accepted']}
-          if trans 
+          if trans && !subdomain
             other_updates.push trans
           end
         end
@@ -174,7 +176,7 @@ class TranslationsController < ApplicationController
       Rails.cache.delete(key)
 
       # propagate proposal rejection to other servers
-      if !params['considerit_API_key'] && APP_CONFIG[:peers]
+      if !params['considerit_API_key'] && APP_CONFIG[:peers] && !subdomain
         APP_CONFIG[:peers].each do |peer|
 
           begin 

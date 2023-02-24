@@ -309,4 +309,7 @@ task :migrate_translations => :environment do
   rename_translation "homepage_tab.Show all", "homepage_tab.name.Show all"
 
 
+  ActiveRecord::Base.connection.execute("delete from language_translations where translation IS NULL")
+
+
 end

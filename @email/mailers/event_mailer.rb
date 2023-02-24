@@ -31,11 +31,13 @@ class EventMailer < Mailer
     @subdomain = subdomain
     @url = "https://#{subdomain.name}.#{APP_CONFIG[:domain]}/dashboard/translations"
     @updates = updates
+
+
     to = "translations@consider.it"
 
     from = format_email default_sender(subdomain), "Considerit Translator subsystem"
 
-    mail(:from => from, :to => to, :subject => subject_line("[considerit] translations awaiting approval", subdomain))
+    mail(:from => from, :to => to, :subject => subject_line("[considerit-#{APP_CONFIG[:region]}] translations awaiting approval", subdomain))
   end
 
   def translations_native_changed(subdomain, native_updates)
@@ -48,7 +50,7 @@ class EventMailer < Mailer
 
     from = format_email default_sender(subdomain), "Considerit Translator subsystem"
 
-    mail(:from => from, :to => to, :subject => subject_line("[considerit] translations awaiting approval", subdomain))
+    mail(:from => from, :to => to, :subject => subject_line("[considerit-#{APP_CONFIG[:region]}] native translations added", subdomain))
   end
   #####################################################
 

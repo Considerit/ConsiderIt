@@ -63,6 +63,8 @@ module ConsiderIt
 
     config.action_mailer.preview_path = "#{Rails.root}/@email/mailers/previews"
 
+    config.eager_load_paths << config.action_mailer.preview_path
+
     ########################################
 
 

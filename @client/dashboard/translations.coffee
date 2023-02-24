@@ -763,6 +763,8 @@ TranslationsForLang = ReactiveComponent
 
 
 updateTranslations = (proposals, cb) ->
+  return if window.navigator.userAgent?.indexOf('Prerender') > -1
+  
   frm = new FormData()
   frm.append "authenticity_token", fetch('/current_user').csrf
   frm.append "proposals", JSON.stringify(proposals)

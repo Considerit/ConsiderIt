@@ -20,7 +20,7 @@ require 'message_format'
 
 # for tracking usage of different translation strings
 $translation_uses = {}
-$translation_uses_last_written_at = DateTime.now
+$translation_uses_last_written_at = Time.current
 $translation_uses_write_after = 30.minutes
 
 class Translations::Translation < ApplicationRecord
@@ -152,8 +152,7 @@ class Translations::Translation < ApplicationRecord
       $translation_uses[string_id] = 1
     end
 
-    Rails.logger.info "logging translation count #{DateTime.now}, #{$translation_uses_last_written_at}, #{$translation_uses_write_after}, #{DateTime.now - $translation_uses_last_written_at}, #{DateTime.now - $translation_uses_last_written_at >= $translation_uses_write_after}"
-    if DateTime.now - $translation_uses_last_written_at >= $translation_uses_write_after
+    if Time.current - $translation_uses_last_written_at >= $translation_uses_write_after
       keys = $translation_uses.keys()
       if keys.length > 0 
         sanitize_and_execute_query """
@@ -161,7 +160,7 @@ class Translations::Translation < ApplicationRecord
         """
       end
       $translation_uses = {}
-      $translation_uses_last_written_at = DateTime.now
+      $translation_uses_last_written_at = Time.current
     end
   end
 

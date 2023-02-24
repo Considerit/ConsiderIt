@@ -237,7 +237,7 @@ class Translations::Translation < ApplicationRecord
   def self.translations_for(lang, subdomain = nil)
     user = @translator_user || current_user
 
-    if user.registered 
+    if user && user.registered 
       translators = Rails.cache.fetch("translators") do 
         people = ActiveRecord::Base.connection.execute "SELECT distinct(user_id) from language_translations where lang_code != 'en'"
         all_translators = {}
@@ -277,7 +277,7 @@ class Translations::Translation < ApplicationRecord
     # overwrite accepted translations for translators so that their translations 
     # will show up for them even if they're not accepted
 
-    if user.registered && translators.has_key?(user.id)
+    if user && user.registered && translators.has_key?(user.id)
       if subdomain
         subdomain_clause = "subdomain_id=#{subdomain.id}"
       else 
@@ -327,14 +327,14 @@ class Translations::Translation < ApplicationRecord
           origin_server: region,
           accepted: true, 
           accepted_at: DateTime.now,
-          user_id: is_local ? user.id : nil
+          user_id: is_local && user ? user.id : nil
         }
 
         trans = Translations::Translation.create! attrs
       else 
         trans = tr.first
         trans.translation = my_translation
-        trans.user_id = user.id
+        trans.user_id = user.id if user
         trans.save
       end
 
@@ -369,7 +369,7 @@ class Translations::Translation < ApplicationRecord
       trans = tr.where(:translation => translation).first
     end
 
-    if !trans 
+    if !trans && user
       trans = tr.where(:user_id => user.id).first
     end 
 
@@ -381,7 +381,7 @@ class Translations::Translation < ApplicationRecord
         subdomain_id: subdomain ? subdomain.id : nil,
         origin_server: region,
         accepted: false, 
-        user_id: is_local ? user.id : nil
+        user_id: is_local && user ? user.id : nil
       }
       trans = Translations::Translation.create! attrs
     else 

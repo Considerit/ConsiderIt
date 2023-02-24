@@ -602,7 +602,7 @@ TranslationsForLang = ReactiveComponent
         BUTTON
           onClick: =>  
             proposals = []
-            for id, props of proposed_translations
+            for id, props of proposed_translations.proposals
               if props.proposals?.length > 0
                 proposals.push props.proposals[0]
 

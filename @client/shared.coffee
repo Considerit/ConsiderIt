@@ -122,7 +122,7 @@ window.get_region_name = ->
   else 
     throw "Unknown region #{region}"
 
-  translator "server.region_string", reg
+  translator "server.region_string.#{reg}", reg
 
 ####
 # Make the DIV, SPAN, etc.

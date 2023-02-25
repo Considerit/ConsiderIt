@@ -21,7 +21,7 @@ require 'message_format'
 # for tracking usage of different translation strings
 $translation_uses = {}
 $translation_uses_last_written_at = Time.current
-$translation_uses_write_after = 15.minutes
+$translation_uses_write_after = 1.minutes
 
 class Translations::Translation < ApplicationRecord
   
@@ -153,12 +153,19 @@ class Translations::Translation < ApplicationRecord
     end
 
 
-    if false && Time.current - $translation_uses_last_written_at >= $translation_uses_write_after
+    if Time.current - $translation_uses_last_written_at >= $translation_uses_write_after
       keys = $translation_uses.keys().map {|string_id| string_id.gsub('\''){"\\'"}}
-      if keys.length > 0 
-        sanitize_and_execute_query """
-          UPDATE language_translations SET uses_this_period=uses_this_period+1 WHERE lang_code='en' AND string_id IN ('#{keys.join("','")}')
-        """
+
+      begin 
+        if keys.length > 0 
+          ActiveRecord::Base.connection.execute """
+            UPDATE language_translations SET uses_this_period=uses_this_period+1 
+              WHERE lang_code='en' AND 
+              string_id IN ('#{ActiveRecord::Base.sanitize_sql_for_conditions(keys.join("','"))}')
+          """
+        end
+      rescue => e
+        ExceptionNotifier.notify_exception(e)
       end
       $translation_uses = {}
       $translation_uses_last_written_at = Time.current

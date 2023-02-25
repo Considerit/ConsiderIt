@@ -21,7 +21,7 @@ require 'message_format'
 # for tracking usage of different translation strings
 $translation_uses = {}
 $translation_uses_last_written_at = Time.current
-$translation_uses_write_after = 1.minutes
+$translation_uses_write_after = 15.minutes
 
 class Translations::Translation < ApplicationRecord
   

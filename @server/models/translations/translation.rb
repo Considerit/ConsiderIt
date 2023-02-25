@@ -153,7 +153,7 @@ class Translations::Translation < ApplicationRecord
     end
 
 
-    if Time.current - $translation_uses_last_written_at >= $translation_uses_write_after
+    if false && Time.current - $translation_uses_last_written_at >= $translation_uses_write_after
       keys = $translation_uses.keys().map {|string_id| string_id.gsub('\''){"\\'"}}
       if keys.length > 0 
         sanitize_and_execute_query """

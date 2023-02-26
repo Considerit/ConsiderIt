@@ -51,7 +51,7 @@ class TranslationsController < ApplicationController
 
       # super admins can always directly update translations
       # allow non super admins to:
-      #    - create a translatable message if that message is not yet populating the datastore
+      #    - create a translatable message if that message is not yet populating the database
       #    - propose new translations to existing translatable messages (only one per user per message)
 
       if lang_code == "en" 

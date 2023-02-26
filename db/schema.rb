@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_01_24_190707) do
+ActiveRecord::Schema.define(version: 2023_02_26_220228) do
 
-  create_table "ahoy_events", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "ahoy_events", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "subdomain_id"
     t.bigint "visit_id"
     t.bigint "user_id"
@@ -25,7 +25,7 @@ ActiveRecord::Schema.define(version: 2023_01_24_190707) do
     t.index ["visit_id"], name: "index_ahoy_events_on_visit_id"
   end
 
-  create_table "ahoy_visits", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "ahoy_visits", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "subdomain_id"
     t.string "visit_token", collation: "utf8mb4_unicode_ci"
     t.string "visitor_token", collation: "utf8mb4_unicode_ci"
@@ -74,12 +74,6 @@ ActiveRecord::Schema.define(version: 2023_01_24_190707) do
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
-  create_table "datastore", id: false, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "k", null: false, collation: "utf8mb4_unicode_ci"
-    t.json "v"
-    t.index ["k"], name: "index_datastore_on_k", unique: true
-  end
-
   create_table "delayed_jobs", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "priority", default: 0
     t.integer "attempts", default: 0
@@ -105,6 +99,30 @@ ActiveRecord::Schema.define(version: 2023_01_24_190707) do
     t.index ["point_id"], name: "index_inclusions_on_point_id"
     t.index ["subdomain_id"], name: "index_inclusions_on_subdomain_id"
     t.index ["user_id"], name: "index_inclusions_on_user_id"
+  end
+
+  create_table "language_translations", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.text "string_id"
+    t.string "lang_code"
+    t.integer "subdomain_id"
+    t.text "translation"
+    t.boolean "accepted", default: false
+    t.datetime "accepted_at"
+    t.integer "user_id"
+    t.string "origin_server"
+    t.integer "uses_this_period", default: 0
+    t.integer "uses_last_period", default: 0
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["accepted", "lang_code", "subdomain_id"], name: "all_accepted_for_lang_with_subdomain"
+    t.index ["accepted", "lang_code"], name: "all_accepted_for_lang"
+  end
+
+  create_table "languages_supported", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.string "lang_code"
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "logs", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|

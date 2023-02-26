@@ -318,7 +318,7 @@ window.ItemText = ReactiveComponent
   setCollapsedSizes: ->
 
 
-    if !@waitForFonts(=> @setCollapsedSizes()) || (@local.collapsed_title_height? && @sized_at_window_width == WINDOW_WIDTH() && !@description_has_images)
+    if !@waitForFonts(=> @setCollapsedSizes()) || (@local.collapsed_title_height? && @sized_at_window_width == WINDOW_WIDTH() && (!@description_has_media || @local.media_is_loaded))
       return
 
     proposal = fetch @props.proposal
@@ -352,18 +352,34 @@ window.ItemText = ReactiveComponent
       el = document.createElement 'div'
       el.classList.add 'proposal-description'
 
-      @description_has_images = proposal.description.toLowerCase().indexOf('<img') > -1
+      @description_has_media = proposal.description.toLowerCase().indexOf('<img') > -1 || proposal.description.toLowerCase().indexOf('<video') > -1
+
+      if @description_has_media && !@local.media_is_loaded
+        desc = @refs.proposal_description
+
+        @local.media_is_loaded = true
+        for el in desc.querySelectorAll('img,video')
+          if el.tagName == 'IMG'
+            @local.media_is_loaded &&= el.complete
+          else if el.tagName == 'VIDEO'
+            @local.media_is_loaded &&= el.readyState >= 3
+        if !@local.media_is_loaded
+          setTimeout @setCollapsedSizes, 100
+        else
+          @local.media_is_loaded = true 
+          save @local
+
 
       # do we need to show the transparency fade when collapsed?
       height = heightWhenRendered proposal.description.replace(/<p><br><\/p>/g, ''), \
-                                  {width:"#{ITEM_TEXT_WIDTH()}px"}, el, @description_has_images
+                                  {width:"#{ITEM_TEXT_WIDTH()}px"}, el, @description_has_media
 
       @exceeds_collapsed_description_height = height >= COLLAPSED_MAX_HEIGHT
 
-      # do we need to show a show full text button when expanded? 
+      # do we need to show a "show full text" button when expanded? 
       if LIST_ITEM_EXPANSION_SCALE() != 1
         height = heightWhenRendered proposal.description, \
-                                    {width: "#{ITEM_TEXT_WIDTH() * LIST_ITEM_EXPANSION_SCALE()}px"}, el, @description_has_images
+                                    {width: "#{ITEM_TEXT_WIDTH() * LIST_ITEM_EXPANSION_SCALE()}px"}, el, @description_has_media
 
       @super_long_description = height >= EXPANDED_MAX_HEIGHT
 

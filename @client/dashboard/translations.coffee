@@ -717,6 +717,7 @@ TranslationsForLang = ReactiveComponent
                         style: {}
 
                         for proposal, idx in proposed_translations.proposals[name].proposals
+                          console.log proposal
                           do (proposal, name, idx) =>
                             if proposal.user_id
                               proposer = fetch("/user/#{proposal.user_id}")
@@ -737,7 +738,7 @@ TranslationsForLang = ReactiveComponent
                                   fontSize: 14
                                   color: "#aaa"
                                   paddingRight: 4
-                                "by #{proposer.name or proposer.user}"
+                                "#{proposal.origin_server} - #{proposer.name or proposer.user or proposal.user_id} #{prettyDate(proposal.created_at)}"
 
                               BUTTON
                                 style: 

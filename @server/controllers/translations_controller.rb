@@ -87,6 +87,7 @@ class TranslationsController < ApplicationController
     if !params['considerit_API_key'] && APP_CONFIG[:peers]
       APP_CONFIG[:peers].each do |peer|
         begin 
+          Rails.logger.info "Sharing translations with Peer #{peer}"
           response = Excon.put(
             "#{peer}/translations.json",
             query: {
@@ -95,6 +96,7 @@ class TranslationsController < ApplicationController
               'considerit_API_key' => APP_CONFIG[:considerit_API_key]
             }
           ) 
+          Rails.logger.info response
         rescue => err
           ExceptionNotifier.notify_exception err
 
@@ -134,6 +136,7 @@ class TranslationsController < ApplicationController
     if !params['considerit_API_key'] && APP_CONFIG[:peers]
       APP_CONFIG[:peers].each do |peer|
         begin 
+          Rails.logger.info "Sharing translation deletions with Peer #{peer}"
           response = Excon.delete(
             "#{peer}/translations.json",
             query: {
@@ -142,6 +145,7 @@ class TranslationsController < ApplicationController
               'considerit_API_key' => APP_CONFIG[:considerit_API_key]
             }
           ) 
+          Rails.logger.info response
         rescue => err
           ExceptionNotifier.notify_exception err
         end
@@ -176,6 +180,7 @@ class TranslationsController < ApplicationController
         APP_CONFIG[:peers].each do |peer|
 
           begin 
+            Rails.logger.info "Sharing translation rejections with Peer #{peer}"
             response = Excon.delete(
               "#{peer}/translation_proposal.json",
               query: {
@@ -185,6 +190,7 @@ class TranslationsController < ApplicationController
                 'considerit_API_key' => APP_CONFIG[:considerit_API_key]
               }
             ) 
+            Rails.logger.info response
           rescue => err
             ExceptionNotifier.notify_exception err
 

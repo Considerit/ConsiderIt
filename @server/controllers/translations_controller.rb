@@ -45,9 +45,6 @@ class TranslationsController < ApplicationController
       existing = Translations::Translation.where(:string_id => string_id, :lang_code => lang_code, :subdomain_id => subdomain ? subdomain.id : nil)
       accepted = existing.where(:accepted => true).first
 
-
-      pp proposal["id"], accepted.id, translation, accepted.translation
-
       next if (accepted && accepted.translation == translation) || (!translation || translation.length == 0)
 
       # super admins can always directly update translations

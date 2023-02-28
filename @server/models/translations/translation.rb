@@ -370,6 +370,8 @@ class Translations::Translation < ApplicationRecord
       tr = tr.where(:subdomain_id => subdomain.id)
     end
 
+    ########################################
+    # Try to identify the proposal to match
     trans = nil 
 
     # case where we're approving an existing translation
@@ -380,6 +382,15 @@ class Translations::Translation < ApplicationRecord
     if !trans && user
       trans = tr.where(:user_id => user.id).first
     end 
+
+    if !trans && region != APP_CONFIG[:region]
+      trans = tr.where(:origin_server => region).first
+    end 
+
+    if !trans
+      trans = tr.where(:translation => translation).first
+    end
+    ##########################################
 
     if !trans
       attrs = {

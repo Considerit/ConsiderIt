@@ -158,26 +158,26 @@ class TranslationsController < ApplicationController
 
   end
 
-  def push_to_peers(endpoint, params, http_method)
+  def push_to_peers(endpoint, query_params, http_method)
     return if params['considerit_API_key'] || !APP_CONFIG[:peers]
 
     APP_CONFIG[:peers].each do |peer|
       begin 
         Rails.logger.info "Replaying #{http_method} #{endpoint} on Peer #{peer}"
-        params['considerit_API_key'] = APP_CONFIG[:considerit_API_key]
+        query_params['considerit_API_key'] = APP_CONFIG[:considerit_API_key]
         if peer.count(':') > 1 || peer.index('ngrok') # a non-production peer
-          params['domain'] = current_subdomain.name
+          query_params['domain'] = current_subdomain.name
         end
 
         if http_method == 'PUT'
           response = Excon.put(
             "#{peer}/#{endpoint}", 
-            query: params
+            query: query_params
           )          
         elsif http_method == 'DELETE'
           response = Excon.delete(
             "#{peer}/#{endpoint}", 
-            query: params
+            query: query_params
           )
         else 
           raise "Unsupported method #{http_method} for pushing to peers"

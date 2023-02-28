@@ -181,7 +181,7 @@ class TranslationsController < ApplicationController
 
           begin 
             Rails.logger.info "Sharing translation rejections with Peer #{peer}"
-            query {
+            query = {
                 'proposal' => params["proposal"],
                 'string_id' => params["string_id"],
                 'considerit_API_key' => APP_CONFIG[:considerit_API_key]

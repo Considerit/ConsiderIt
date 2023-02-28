@@ -84,10 +84,10 @@ class TranslationsController < ApplicationController
     end 
 
     # propagate translation updates to other servers
-    params = {
+    query = {
       'proposals' => JSON.dump(proposals),
     }
-    push_to_peers "translations.json", params, 'PUT'       
+    push_to_peers "translations.json", query, 'PUT'       
 
     render :json => {:success => true}
 
@@ -118,10 +118,10 @@ class TranslationsController < ApplicationController
     end
 
     # propagate string deletion to other servers
-    params = {
+    query = {
       'string_id' => params["string_id"]          
     }
-    push_to_peers "translations.json", params, 'DELETE'    
+    push_to_peers "translations.json", query, 'DELETE'    
 
     render :json => {:success => true}
   end
@@ -146,11 +146,11 @@ class TranslationsController < ApplicationController
 
       # propagate proposal rejection to other servers
       if !subdomain
-        params = {
+        query = {
           'proposal' => params["proposal"],
           'string_id' => params["string_id"]          
         }
-        push_to_peers "translation_proposal.json", params, 'DELETE'
+        push_to_peers "translation_proposal.json", query, 'DELETE'
       end
     end 
 

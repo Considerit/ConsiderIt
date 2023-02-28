@@ -144,7 +144,7 @@ task :migrate_translations => :environment do
   rename_translation "banner.save_changes_button", "shared.save_changes_button"
   rename_translation "engage.cancel_button", "shared.cancel_button"
   rename_translation "auth.sign_up", "shared.auth.sign_up"
-  rename_translation "auth.log_in", "shared.auth.log_in"
+  rename_translation "shared.auth.log_in", "auth.log_in"
 
 
   delete_translation "engage.opinion_filter.label"

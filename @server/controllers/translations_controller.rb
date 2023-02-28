@@ -160,7 +160,7 @@ class TranslationsController < ApplicationController
 
     if to_propagate.length > 0
       query = {
-        'proposals' => to_propagate
+        'proposals' => JSON.dump(to_propagate)
       }
       push_to_peers "translation_proposal.json", query, 'DELETE'
     end

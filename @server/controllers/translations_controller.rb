@@ -165,7 +165,7 @@ class TranslationsController < ApplicationController
       begin 
         Rails.logger.info "Replaying #{http_method} #{endpoint} on Peer #{peer}"
         params['considerit_API_key'] = APP_CONFIG[:considerit_API_key]
-        if peer.index(':') || peer.index('ngrok') # a non-production peer
+        if peer.count(':') > 1 || peer.index('ngrok') # a non-production peer
           params['domain'] = current_subdomain.name
         end
 

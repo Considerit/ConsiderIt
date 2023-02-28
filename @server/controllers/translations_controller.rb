@@ -205,6 +205,10 @@ class TranslationsController < ApplicationController
   def log_translation_counts
     counts = params["counts"]
     Translations::Translation.log_translation_count JSON.parse(counts).keys
+    query = {
+      'counts' => counts
+    }
+    push_to_peers "log_translation_counts.json", query, 'PUT'
     render :json => {:success => true}
   end
 

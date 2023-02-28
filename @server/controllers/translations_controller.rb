@@ -181,14 +181,18 @@ class TranslationsController < ApplicationController
 
           begin 
             Rails.logger.info "Sharing translation rejections with Peer #{peer}"
-            response = Excon.delete(
-              "#{peer}/translation_proposal.json",
-              query: {
-                'domain' => current_subdomain.name,
+            query {
                 'proposal' => params["proposal"],
                 'string_id' => params["string_id"],
                 'considerit_API_key' => APP_CONFIG[:considerit_API_key]
-              }
+            }
+            if peer.index(':') || peer.index('ngrok') # a non-production peer
+              query['domain'] = current_subdomain.name
+            end
+
+            response = Excon.delete(
+              "#{peer}/translation_proposal.json", 
+              query: query
             ) 
             Rails.logger.info response
           rescue => err

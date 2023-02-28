@@ -478,14 +478,27 @@ TranslationsDash = ReactiveComponent
               "Not translated by you"
 
             BUTTON
-              className: if local.filter == 'under review' then 'active'            
+              className: if local.filter == 'high or medium use' then 'active'            
               onClick: => 
-                if local.filter == 'under review'
+                if local.filter == 'high or medium use'
                   local.filter = null
                 else 
-                  local.filter = 'under review'
+                  local.filter = 'high or medium use'
                 save local
-              "Under review"
+              "High or medium use"
+
+
+            if current_user.is_super_admin
+
+              BUTTON
+                className: if local.filter == 'under review' then 'active'            
+                onClick: => 
+                  if local.filter == 'under review'
+                    local.filter = null
+                  else 
+                    local.filter = 'under review'
+                  save local
+                "Under review"
 
           TranslationsForLang
             key: "translations_for_#{local.translating_lang}"
@@ -551,9 +564,10 @@ TranslationsForLang = ReactiveComponent
 
     available_languages = fetch("/supported_languages").available_languages
     native_messages = fetch "#{translation_key_prefix}/#{DEVELOPMENT_LANGUAGE}"
+    native_messages_with_count = fetch "/proposed_translations/#{DEVELOPMENT_LANGUAGE}"
 
 
-    return DIV() if waiting_for(native_messages) || waiting_for(proposed_translations)
+    return DIV() if waiting_for(native_messages) || waiting_for(proposed_translations) || waiting_for(native_messages_with_count)
 
     to_translate = (k for k,v of native_messages when k != 'key')
     return DIV() if to_translate.length == 0 
@@ -562,6 +576,37 @@ TranslationsForLang = ReactiveComponent
     sections = {}
     could_not_find = {}
 
+
+    percentRank = (array, n) ->
+      L = 0
+      S = 0
+      N = array.length
+
+      for aa, i in array 
+        if array[i] < n
+          L += 1
+        else if array[i] == n
+          S += 1
+
+      (L + (0.5 * S)) / N
+
+    percentiles = {}
+    uses = []
+    for name,trans of native_messages_with_count.proposals 
+      continue if name == 'key'
+      uses.push trans.accepted.uses_this_period + trans.accepted.uses_last_period
+
+    all_uses = uses.sort (a,b) -> a - b
+    for name,trans of native_messages_with_count.proposals 
+      continue if name == 'key'      
+      uses = trans.accepted.uses_this_period + trans.accepted.uses_last_period
+      if uses == 0
+        rank = 0
+      else 
+        rank = percentRank(all_uses, uses)
+      percentiles[name] = rank * 100
+
+
     local = fetch 'translations'
     for name in to_translate
       if local.filter
@@ -569,7 +614,7 @@ TranslationsForLang = ReactiveComponent
         continue if local.filter == 'untranslated' && !!translation
         continue if local.filter == 'not by you' && !!translation?.yours
         continue if local.filter == 'under review' && !translation?.proposals?.length > 0
-
+        continue if local.filter == 'high or medium use' && percentiles[name] < 30
       sp = name.split('.')
       if sp.length > 1
         sections[sp[0]] ||= []
@@ -702,6 +747,22 @@ TranslationsForLang = ReactiveComponent
             for name, idx in names
               do (name, idx) => 
                 no_id = name == native_messages[name]
+
+                percentile = percentiles[name]
+                if percentile >= 80 
+                  use_color = 'red' 
+                  use_label = 'high use'
+                else if percentile >= 30 
+                  use_color = 'orange'
+                  use_label = 'medium use'                  
+                else if percentile >= 10 
+                  use_color = 'green'
+                  use_label = 'low use'                  
+                else 
+                  use_color = 'blue'
+                  use_label = 'rarely used'
+
+
                 rows.push TR 
                   key: "row-id-#{name}"
                   style: 
@@ -717,6 +778,14 @@ TranslationsForLang = ReactiveComponent
                       title: if no_id then 'no ID' else name 
 
                       "#{native_messages[name]}"
+
+                      SPAN 
+                        style: 
+                          color: use_color
+                          fontSize: 12
+                          paddingLeft: 12
+                        use_label
+
 
                   TD  
                     style: 

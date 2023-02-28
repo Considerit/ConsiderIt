@@ -16,8 +16,6 @@ class TranslationsController < ApplicationController
 
 
   def show 
-
-
     if !request.path.start_with?('/translations')
       return
     end 
@@ -193,9 +191,6 @@ class TranslationsController < ApplicationController
         else 
           raise "Unsupported method #{http_method} for pushing to peers"
         end 
-
-
-        Rails.logger.info response
       rescue => err
         ExceptionNotifier.notify_exception err
       end

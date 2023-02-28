@@ -202,7 +202,7 @@ task :migrate_translations => :environment do
   pp "Removing duplicates..."
   trans_hash = {}
   Translations::Translation.all.each do |tr|
-    key = "#{tr.lang_code} #{tr.string_id} #{tr.translation}"
+    key = "#{tr.lang_code} #{tr.string_id} #{tr.translation} #{tr.subdomain_id}"
     if trans_hash.has_key? key
       pp "   FOUND DUPLICATE", tr
       tr.destroy

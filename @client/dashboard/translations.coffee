@@ -339,6 +339,7 @@ TranslationsDash = ReactiveComponent
     return DIV() if !translations.available_languages
 
     local = fetch 'translations'
+    local.filters ?= []
 
     all_langs = ( [k,v] for k,v of translations.available_languages when k != DEVELOPMENT_LANGUAGE)
     if current_user.is_super_admin
@@ -384,30 +385,30 @@ TranslationsDash = ReactiveComponent
           "Is your language not available? Email us at hello@consider.it to get your language added."
 
 
-      DIV 
-        style: 
-          marginTop: 24
-
-        LABEL 
-          htmlFor: 'insitutranslations'
-          "Enable in-situ translations?"
-
-        INPUT 
-          id: 'insitutranslations'
-          type: 'checkbox' 
-          checked: fetch('translations').in_situ_translations
-          style: 
-            fontSize: 36
-          onChange: => 
-            tr = fetch 'translations'
-            tr.in_situ_translations = !tr.in_situ_translations
-            save tr 
-
-
+      if current_user.is_super_admin
         DIV 
           style: 
-            fontSize: 12
-          "In-situ mode lets you browse the rest of the site and add some translations in context."
+            marginTop: 24
+
+          LABEL 
+            htmlFor: 'insitutranslations'
+            "Enable in-situ translations?"
+
+          INPUT 
+            id: 'insitutranslations'
+            type: 'checkbox' 
+            checked: fetch('translations').in_situ_translations
+            style: 
+              fontSize: 36
+            onChange: => 
+              tr = fetch 'translations'
+              tr.in_situ_translations = !tr.in_situ_translations
+              save tr 
+
+          DIV 
+            style: 
+              fontSize: 12
+            "In-situ mode lets you browse the rest of the site and add some translations in context."
 
 
       if current_user.is_super_admin
@@ -450,6 +451,10 @@ TranslationsDash = ReactiveComponent
 
 
       if local.translating_lang
+        filters = ['Untranslated', 'Not translated by you', 'High use', 'Medium use', 'Low use', 'Rarely used']
+        if current_user.is_super_admin
+          filters.push 'Under review'
+
         DIV null, 
 
           DIV 
@@ -457,59 +462,31 @@ TranslationsDash = ReactiveComponent
 
             LABEL null,
               "Filter translations to:"
-            BUTTON
-              className: if local.filter == 'untranslated' then 'active'
-              onClick: => 
-                if local.filter == 'untranslated'
-                  local.filter = null
-                else 
-                  local.filter = 'untranslated'
-                save local
-              "Untranslated"
 
-            BUTTON
-              className: if local.filter == 'not by you' then 'active'            
-              onClick: => 
-                if local.filter == 'not by you'
-                  local.filter = null
-                else 
-                  local.filter = 'not by you'
-                save local
-              "Not translated by you"
+            for filter in filters
+              do (filter) => 
+                BUTTON
+                  key: filter
+                  className: if filter in local.filters then 'active'
+                  onClick: => 
+                    if filter in local.filters
+                      local.filters.splice local.filters.indexOf(filter), 1
+                    else 
+                      local.filters.push filter
+                    save local
+                  filter
 
-            BUTTON
-              className: if local.filter == 'high or medium use' then 'active'            
-              onClick: => 
-                if local.filter == 'high or medium use'
-                  local.filter = null
-                else 
-                  local.filter = 'high or medium use'
-                save local
-              "High or medium use"
-
-
-            if current_user.is_super_admin
-
-              BUTTON
-                className: if local.filter == 'under review' then 'active'            
-                onClick: => 
-                  if local.filter == 'under review'
-                    local.filter = null
-                  else 
-                    local.filter = 'under review'
-                  save local
-                "Under review"
 
           TranslationsForLang
             key: "translations_for_#{local.translating_lang}"
             lang: local.translating_lang
-            filter: local.filter
+            filtered_users: local.filters
 
           TranslationsForLang
             key: "forum_translations_for_#{local.translating_lang}"            
             lang: local.translating_lang
             forum_specific: true
-            filter: local.filter
+            filters: local.filters
 
 
           DIV
@@ -577,44 +554,68 @@ TranslationsForLang = ReactiveComponent
     could_not_find = {}
 
 
-    percentRank = (array, n) ->
-      L = 0
-      S = 0
-      N = array.length
 
-      for aa, i in array 
-        if array[i] < n
-          L += 1
-        else if array[i] == n
-          S += 1
+    if !@props.forum_specific
+      percentRank = (array, n) ->
+        L = 0
+        S = 0
+        N = array.length
 
-      (L + (0.5 * S)) / N
+        for aa, i in array 
+          if array[i] < n
+            L += 1
+          else if array[i] == n
+            S += 1
 
-    percentiles = {}
-    uses = []
-    for name,trans of native_messages_with_count.proposals 
-      continue if name == 'key'
-      uses.push trans.accepted.uses_this_period + trans.accepted.uses_last_period
+        (L + (0.5 * S)) / N
 
-    all_uses = uses.sort (a,b) -> a - b
-    for name,trans of native_messages_with_count.proposals 
-      continue if name == 'key'      
-      uses = trans.accepted.uses_this_period + trans.accepted.uses_last_period
-      if uses == 0
-        rank = 0
-      else 
-        rank = percentRank(all_uses, uses)
-      percentiles[name] = rank * 100
+      percentiles = {}
+      uses = []
+      for name,trans of native_messages_with_count.proposals 
+        continue if name == 'key'
+        if trans.accepted.uses_this_period + trans.accepted.uses_last_period > 0 
+          uses.push trans.accepted.uses_this_period + trans.accepted.uses_last_period
+
+      all_uses = uses.sort (a,b) -> a - b
+      for name,trans of native_messages_with_count.proposals 
+        continue if name == 'key'      
+
+        uses = trans.accepted.uses_this_period + trans.accepted.uses_last_period
+        if uses == 0
+          rank = -1
+        else 
+          rank = percentRank(all_uses, uses) * 100
+        percentiles[name] = rank 
+
+      console.log {percentiles}
 
 
     local = fetch 'translations'
     for name in to_translate
-      if local.filter
+      if local.filters?.length > 0 
         translation = proposed_translations.proposals[name]
-        continue if local.filter == 'untranslated' && !!translation
-        continue if local.filter == 'not by you' && !!translation?.yours
-        continue if local.filter == 'under review' && !translation?.proposals?.length > 0
-        continue if local.filter == 'high or medium use' && percentiles[name] < 30
+        continue if 'Untranslated' in local.filters && !!translation
+        continue if 'Not translated by you' in local.filters && !!translation?.yours
+        continue if 'Under review' in local.filters && !translation?.proposals?.length > 0
+
+        if !@props.forum_specific
+          passes_use_range = false
+          has_use_filter = false
+          if 'High use' in local.filters
+            has_use_filter = true
+            passes_use_range ||= percentiles[name] >= 75
+          if 'Medium use' in local.filters 
+            has_use_filter = true
+            passes_use_range ||= percentiles[name] >= 25 && percentiles[name] < 75
+          if 'Low use' in local.filters 
+            has_use_filter = true
+            passes_use_range ||= percentiles[name] >= 0 && percentiles[name] < 25
+          if 'Rarely used' in local.filters
+            has_use_filter = true
+            passes_use_range ||= percentiles[name] == -1
+
+          continue if !passes_use_range && has_use_filter
+
       sp = name.split('.')
       if sp.length > 1
         sections[sp[0]] ||= []
@@ -748,19 +749,20 @@ TranslationsForLang = ReactiveComponent
               do (name, idx) => 
                 no_id = name == native_messages[name]
 
-                percentile = percentiles[name]
-                if percentile >= 80 
-                  use_color = 'red' 
-                  use_label = 'high use'
-                else if percentile >= 30 
-                  use_color = 'orange'
-                  use_label = 'medium use'                  
-                else if percentile >= 10 
-                  use_color = 'green'
-                  use_label = 'low use'                  
-                else 
-                  use_color = 'blue'
-                  use_label = 'rarely used'
+                if !@props.forum_specific
+                  percentile = percentiles[name]
+                  if percentile >= 75 
+                    use_color = 'red' 
+                    use_label = 'high use'
+                  else if percentile >= 25 
+                    use_color = 'orange'
+                    use_label = 'medium use'                  
+                  else if percentile >= 0 
+                    use_color = 'green'
+                    use_label = 'low use'                  
+                  else 
+                    use_color = 'blue'
+                    use_label = 'rarely used'
 
 
                 rows.push TR 
@@ -779,12 +781,13 @@ TranslationsForLang = ReactiveComponent
 
                       "#{native_messages[name]}"
 
-                      SPAN 
-                        style: 
-                          color: use_color
-                          fontSize: 12
-                          paddingLeft: 12
-                        use_label
+                      if !@props.forum_specific
+                        SPAN 
+                          style: 
+                            color: use_color
+                            fontSize: 12
+                            paddingLeft: 12
+                          use_label
 
 
                   TD  

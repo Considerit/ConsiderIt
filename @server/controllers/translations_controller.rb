@@ -88,13 +88,18 @@ class TranslationsController < ApplicationController
       APP_CONFIG[:peers].each do |peer|
         begin 
           Rails.logger.info "Sharing translations with Peer #{peer}"
-          response = Excon.put(
-            "#{peer}/translations.json",
-            query: {
-              'domain' => current_subdomain.name,
+
+          query = {
               'proposals' => JSON.dump(proposals),
               'considerit_API_key' => APP_CONFIG[:considerit_API_key]
-            }
+          }
+          if peer.index(':') || peer.index('ngrok') # a non-production peer
+            query['domain'] = current_subdomain.name
+          end
+
+          response = Excon.put(
+            "#{peer}/translations.json",
+            query: query
           ) 
           Rails.logger.info response
         rescue => err
@@ -137,13 +142,17 @@ class TranslationsController < ApplicationController
       APP_CONFIG[:peers].each do |peer|
         begin 
           Rails.logger.info "Sharing translation deletions with Peer #{peer}"
-          response = Excon.delete(
-            "#{peer}/translations.json",
-            query: {
-              'domain' => current_subdomain.name,
+          query = {
               'string_id' => params["string_id"],
               'considerit_API_key' => APP_CONFIG[:considerit_API_key]
-            }
+          }
+          if peer.index(':') || peer.index('ngrok') # a non-production peer
+            query['domain'] = current_subdomain.name
+          end
+
+          response = Excon.delete(
+            "#{peer}/translations.json",
+            query: query
           ) 
           Rails.logger.info response
         rescue => err

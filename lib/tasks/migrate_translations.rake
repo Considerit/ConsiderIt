@@ -197,8 +197,18 @@ task :migrate_translations => :environment do
 
   rename_translation "homepage_tab.Show all", "homepage_tab.name.Show all"
 
-
   ActiveRecord::Base.connection.execute("delete from language_translations where translation IS NULL")
 
+  pp "Removing duplicates..."
+  trans_hash = {}
+  Translations::Translation.all.each do |tr|
+    key = "#{tr.lang_code} #{tr.string_id} #{tr.translation}"
+    if trans_hash.has_key? key
+      pp "   FOUND DUPLICATE", tr
+      tr.destroy
+    else 
+      trans_hash[key] = tr
+    end
+  end
 
 end

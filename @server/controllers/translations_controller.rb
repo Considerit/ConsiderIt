@@ -47,6 +47,9 @@ class TranslationsController < ApplicationController
       existing = Translations::Translation.where(:string_id => string_id, :lang_code => lang_code, :subdomain_id => subdomain ? subdomain.id : nil)
       accepted = existing.where(:accepted => true).first
 
+
+      pp proposal["id"], accepted.id, translation, accepted.translation
+
       next if (accepted && accepted.translation == translation) || (!translation || translation.length == 0)
 
       # super admins can always directly update translations
@@ -60,7 +63,7 @@ class TranslationsController < ApplicationController
           native_updates.push trans
         end
       else 
-        trans = Translations::Translation.create_or_update_proposed_translation lang_code, string_id, translation, {:subdomain => subdomain, :region => region, :accepted_elsewhere => proposal['accepted']}
+        trans = Translations::Translation.create_or_update_proposed_translation lang_code, string_id, translation, {:subdomain => subdomain, :region => region, :accepted => proposal['accepted']}
         if trans && !subdomain
           other_updates.push trans
         end
@@ -129,30 +132,38 @@ class TranslationsController < ApplicationController
   def reject_proposal
     return if Permissions.permit('update all translations') <= 0 && !valid_API_call
 
-    string_id = params["string_id"]
-    proposal = JSON.parse(params["proposal"])
+    proposals = JSON.parse(params["proposals"])
 
-    to_delete = Translations::Translation.where(:string_id => string_id, :translation => proposal["translation"], :lang_code => proposal["lang_code"], :accepted => false)
-    to_delete = to_delete.first
+    to_propagate = []
 
-    if to_delete
-      to_delete.destroy
+    proposals.each do |proposal|
+      string_id = proposal["string_id"]
 
-      subdomain = to_delete.subdomain_id ? Subdomain.find(to_delete.subdomain_id) : nil
-      key = Translations::Translation.translations_key to_delete.lang_code, subdomain
-      dirty_key key
-      dirty_key "/proposed_translations/#{to_delete.lang_code}#{subdomain ? "/#{subdomain.name}" : ''}"
-      Rails.cache.delete(key)
+      to_delete = Translations::Translation.where(:string_id => string_id, :translation => proposal["translation"], :lang_code => proposal["lang_code"], :accepted => false)
+      to_delete = to_delete.first
 
-      # propagate proposal rejection to other servers
-      if !subdomain
-        query = {
-          'proposal' => params["proposal"],
-          'string_id' => params["string_id"]          
-        }
-        push_to_peers "translation_proposal.json", query, 'DELETE'
-      end
-    end 
+      if to_delete
+        to_delete.destroy
+
+        subdomain = to_delete.subdomain_id ? Subdomain.find(to_delete.subdomain_id) : nil
+        key = Translations::Translation.translations_key to_delete.lang_code, subdomain
+        dirty_key key
+        dirty_key "/proposed_translations/#{to_delete.lang_code}#{subdomain ? "/#{subdomain.name}" : ''}"
+        Rails.cache.delete(key)
+
+        # propagate proposal rejection to other servers
+        if !subdomain
+          to_propagate.push proposal
+        end
+      end 
+    end
+
+    if to_propagate.length > 0
+      query = {
+        'proposals' => to_propagate
+      }
+      push_to_peers "translation_proposal.json", query, 'DELETE'
+    end
 
     render :json => {:success => true}
 

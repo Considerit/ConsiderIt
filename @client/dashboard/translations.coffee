@@ -601,17 +601,49 @@ TranslationsForLang = ReactiveComponent
           "Translations for {language} ({percent_complete}% completed)"
 
       if current_user.is_super_admin
-        BUTTON
-          onClick: =>  
-            proposals = []
-            for id, props of proposed_translations.proposals
-              if props.proposals?.length > 0
-                proposals.push props.proposals[0]
 
-            if proposals.length > 0 
-              updateTranslations proposals
+        DIV null,
 
-          "Accept all proposed translations"
+          BUTTON
+            onClick: =>  
+              proposals = []
+              for id, props of proposed_translations.proposals
+                if props.proposals?.length > 0
+                  latest = null
+                  to_accept = null
+                  candidates = props.proposals.slice()
+                  if props.accepted
+                    candidates.push props.accepted 
+                  for proposal in candidates
+                    if !latest || proposal.created_at > latest
+                      latest = proposal.created_at
+                      to_accept = proposal
+                  if !to_accept.accepted
+                    console.log "Promoting", to_accept.id, " over ", props.accepted.id, "(#{proposal.created_at} over #{props.accepted.created_at}"
+                    to_accept['accepted'] = true
+                    proposals.push to_accept
+
+              # TODO: These aren't actually getting promoted
+              if proposals.length > 0 
+                updateTranslations proposals
+
+            "Accept latest proposed translations"
+
+          BUTTON 
+            onClick: => 
+              proposals = []
+              for id, props of proposed_translations.proposals
+                if props.proposals?.length > 0
+                  for proposal in props.proposals
+                    continue if proposal.accepted || (proposed_translations.accepted && proposal.translation == proposed_translations.accepted.translation)
+                    console.log "Proposed to delete:", proposal
+                    proposals.push proposal
+
+              if proposals.length > 0 
+                rejectProposals proposals
+
+            "Clear proposals"
+
 
 
       TABLE 
@@ -693,23 +725,28 @@ TranslationsForLang = ReactiveComponent
                       position: 'relative'
 
 
-                    editable_translation name, lang, subdomain_id, updated_translations, proposed_translations.proposals[name]
-                    if current_user.is_super_admin
-                      do (name) =>
-                        BUTTON 
-                          style: 
-                            fontSize: 14
-                            backgroundColor: 'transparent'
-                            border: 'none'
-                            color: '#ccc'
-                            position: 'absolute'
-                            right: -25
-                            padding: '4px'
-                          onClick: => 
-                            deleteTranslationString name
-                            delete native_messages[name]
-                            delete updated_translations[name]
-                          "x"
+                    DIV 
+                      style: 
+                        position: 'relative'
+
+                      editable_translation name, lang, subdomain_id, updated_translations, proposed_translations.proposals[name]
+                      if current_user.is_super_admin
+                        do (name) =>
+                          BUTTON 
+                            style: 
+                              fontSize: 14
+                              backgroundColor: 'transparent'
+                              border: 'none'
+                              color: '#ccc'
+                              position: 'absolute'
+                              right: -25
+                              padding: '4px'
+                              top: 'calc(50% - 14px)'
+                            onClick: => 
+                              deleteTranslationString name
+                              delete native_messages[name]
+                              delete updated_translations[name]
+                            "x"
 
 
                     if current_user.is_super_admin && proposed_translations.proposals[name]?.proposals.length > 0
@@ -717,14 +754,9 @@ TranslationsForLang = ReactiveComponent
                         style: {}
 
                         for proposal, idx in proposed_translations.proposals[name].proposals
-                          console.log proposal
                           do (proposal, name, idx) =>
-                            if proposal.user_id
-                              proposer = fetch("/user/#{proposal.user_id}")
-                            else 
-                              proposer = current_user 
                             LI 
-                              key: name
+                              key: "#{name}-#{proposal.translation}-#{proposal.id}"
                               style: 
                                 padding: "2px 0px 8px 0px"
                                 listStyle: 'none'
@@ -733,12 +765,8 @@ TranslationsForLang = ReactiveComponent
                                 style: {}
                                 proposal.translation 
 
-                              SPAN 
-                                style: 
-                                  fontSize: 14
-                                  color: "#aaa"
-                                  paddingRight: 4
-                                "#{proposal.origin_server} - #{proposer.name or proposer.user or proposal.user_id} #{prettyDate(proposal.created_at)}"
+
+                              draw_translation_metadata(proposal)
 
                               BUTTON
                                 style: 
@@ -759,11 +787,23 @@ TranslationsForLang = ReactiveComponent
                                   fontSize: 14
 
                                 onClick: => 
-                                  rejectProposal(name, proposal)
+                                  rejectProposals(name, [proposal])
                                 "reject"
 
             rows
 
+draw_translation_metadata = (proposal) -> 
+  if proposal.user_id
+    proposer = fetch("/user/#{proposal.user_id}")
+  else 
+    proposer = fetch('/current_user') 
+  
+  SPAN 
+    style: 
+      fontSize: 14
+      color: "#aaa"
+      paddingRight: 4
+    "#{proposal.origin_server} - #{proposer.name or proposer.user or proposal.user_id} #{prettyDate(proposal.created_at)}"
 
 updateTranslations = (proposals, cb) ->
   return if window.navigator.userAgent?.indexOf('Prerender') > -1
@@ -796,11 +836,10 @@ deleteTranslationString = (string_id) ->
 
   xhr.send frm
 
-rejectProposal = (string_id, proposal) -> 
+rejectProposals = (proposals) -> 
   frm = new FormData()
   frm.append "authenticity_token", fetch('/current_user').csrf
-  frm.append "string_id", string_id
-  frm.append "proposal", JSON.stringify(proposal)
+  frm.append "proposals", JSON.stringify(proposals)
 
   xhr = new XMLHttpRequest
   xhr.addEventListener 'readystatechange', null, false
@@ -816,16 +855,16 @@ editable_translation = (id, lang_code, subdomain_id, updated_translations, propo
   current_user = fetch '/current_user'
 
 
-  accepted = proposed = val = null 
+  accepted = proposed = val = proposal = null 
 
 
   if proposed_translations
     if proposed_translations.accepted
       accepted = val = proposed_translations.accepted.translation
-    
+      proposal = proposed_translations.accepted
     if proposed_translations.yours
       proposed = val = proposed_translations.yours.translation
-
+      proposal = proposed_translations.yours
 
 
 
@@ -872,6 +911,8 @@ editable_translation = (id, lang_code, subdomain_id, updated_translations, propo
         else  
           updated_translations[id].translation = e.target.value 
 
+    if proposal
+      draw_translation_metadata proposal
 
 
 promote_temporary_translations = (key) ->

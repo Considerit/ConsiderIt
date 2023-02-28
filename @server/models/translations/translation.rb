@@ -407,7 +407,7 @@ class Translations::Translation < ApplicationRecord
       trans.translation = translation
     end
 
-    if Permissions.permit('update all translations') > 0 || (!is_local && args[:accepted_elsewhere])
+    if (Permissions.permit('update all translations') > 0 || !is_local) && args[:accepted]
       trans.promote
     end
 

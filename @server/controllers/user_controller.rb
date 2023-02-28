@@ -14,8 +14,7 @@ class UserController < ApplicationController
              }]
       return
     end
-    
-    user = User.find(params[:id])
+
     dirty_key "/user/#{params[:id]}"
     render :json => []
   end

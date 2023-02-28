@@ -84,30 +84,10 @@ class TranslationsController < ApplicationController
     end 
 
     # propagate translation updates to other servers
-    if !params['considerit_API_key'] && APP_CONFIG[:peers]
-      APP_CONFIG[:peers].each do |peer|
-        begin 
-          Rails.logger.info "Sharing translations with Peer #{peer}"
-
-          query = {
-              'proposals' => JSON.dump(proposals),
-              'considerit_API_key' => APP_CONFIG[:considerit_API_key]
-          }
-          if peer.index(':') || peer.index('ngrok') # a non-production peer
-            query['domain'] = current_subdomain.name
-          end
-
-          response = Excon.put(
-            "#{peer}/translations.json",
-            query: query
-          ) 
-          Rails.logger.info response
-        rescue => err
-          ExceptionNotifier.notify_exception err
-
-        end
-      end      
-    end
+    params = {
+      'proposals' => JSON.dump(proposals),
+    }
+    push_to_peers "translations.json", params, 'PUT'       
 
     render :json => {:success => true}
 
@@ -138,30 +118,10 @@ class TranslationsController < ApplicationController
     end
 
     # propagate string deletion to other servers
-    if !params['considerit_API_key'] && APP_CONFIG[:peers]
-      APP_CONFIG[:peers].each do |peer|
-        begin 
-          Rails.logger.info "Sharing translation deletions with Peer #{peer}"
-          query = {
-              'string_id' => params["string_id"],
-              'considerit_API_key' => APP_CONFIG[:considerit_API_key]
-          }
-          if peer.index(':') || peer.index('ngrok') # a non-production peer
-            query['domain'] = current_subdomain.name
-          end
-
-          response = Excon.delete(
-            "#{peer}/translations.json",
-            query: query
-          ) 
-          Rails.logger.info response
-        rescue => err
-          ExceptionNotifier.notify_exception err
-        end
-      end      
-    end
-
-
+    params = {
+      'string_id' => params["string_id"]          
+    }
+    push_to_peers "translations.json", params, 'DELETE'    
 
     render :json => {:success => true}
   end
@@ -185,39 +145,51 @@ class TranslationsController < ApplicationController
       Rails.cache.delete(key)
 
       # propagate proposal rejection to other servers
-      if !params['considerit_API_key'] && APP_CONFIG[:peers] && !subdomain
-        APP_CONFIG[:peers].each do |peer|
-
-          begin 
-            Rails.logger.info "Sharing translation rejections with Peer #{peer}"
-            query = {
-                'proposal' => params["proposal"],
-                'string_id' => params["string_id"],
-                'considerit_API_key' => APP_CONFIG[:considerit_API_key]
-            }
-            if peer.index(':') || peer.index('ngrok') # a non-production peer
-              query['domain'] = current_subdomain.name
-            end
-
-            response = Excon.delete(
-              "#{peer}/translation_proposal.json", 
-              query: query
-            ) 
-            Rails.logger.info response
-          rescue => err
-            ExceptionNotifier.notify_exception err
-
-          end
-        end      
+      if !subdomain
+        params = {
+          'proposal' => params["proposal"],
+          'string_id' => params["string_id"]          
+        }
+        push_to_peers "translation_proposal.json", params, 'DELETE'
       end
     end 
-
-
 
     render :json => {:success => true}
 
   end
 
+  def push_to_peers(endpoint, params, http_method)
+    return if params['considerit_API_key'] || !APP_CONFIG[:peers]
+
+    APP_CONFIG[:peers].each do |peer|
+      begin 
+        Rails.logger.info "Replaying #{http_method} #{endpoint} on Peer #{peer}"
+        params['considerit_API_key'] = APP_CONFIG[:considerit_API_key]
+        if peer.index(':') || peer.index('ngrok') # a non-production peer
+          params['domain'] = current_subdomain.name
+        end
+
+        if http_method == 'PUT'
+          response = Excon.put(
+            "#{peer}/#{endpoint}", 
+            query: params
+          )          
+        elsif http_method == 'DELETE'
+          response = Excon.delete(
+            "#{peer}/#{endpoint}", 
+            query: params
+          )
+        else 
+          raise "Unsupported method #{http_method} for pushing to peers"
+        end 
+
+
+        Rails.logger.info response
+      rescue => err
+        ExceptionNotifier.notify_exception err
+      end
+    end    
+  end
 
   def log_translation_counts
     counts = params["counts"]

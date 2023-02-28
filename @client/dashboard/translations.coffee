@@ -844,6 +844,7 @@ TranslationsForLang = ReactiveComponent
                                 style: 
                                   borderRadius: 8
                                 onClick: => 
+                                  proposal.accepted = true
                                   updateTranslations [proposal]
 
                                 "Ok"

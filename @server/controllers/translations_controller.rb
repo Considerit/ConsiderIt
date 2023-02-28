@@ -35,6 +35,7 @@ class TranslationsController < ApplicationController
 
     subdomain = nil 
 
+    for_peers = []
     proposals.each do |proposal|
       string_id = proposal['string_id']
       lang_code = proposal['lang_code']
@@ -56,11 +57,13 @@ class TranslationsController < ApplicationController
         trans = Translations::Translation.create_or_update_native_translation string_id, translation, {:subdomain => subdomain, :region => region}
         if trans && !subdomain
           native_updates.push trans
+          for_peers.push proposal
         end
       else 
         trans = Translations::Translation.create_or_update_proposed_translation lang_code, string_id, translation, {:subdomain => subdomain, :region => region, :accepted => proposal['accepted']}
         if trans && !subdomain
           other_updates.push trans
+          for_peers.push proposal
         end
       end
 
@@ -82,10 +85,12 @@ class TranslationsController < ApplicationController
     end 
 
     # propagate translation updates to other servers
-    query = {
-      'proposals' => JSON.dump(proposals),
-    }
-    push_to_peers "translations.json", query, 'PUT'       
+    if for_peers.length > 0 
+      query = {
+        'proposals' => JSON.dump(for_peers),
+      }
+      push_to_peers "translations.json", query, 'PUT' 
+    end       
 
     render :json => {:success => true}
 

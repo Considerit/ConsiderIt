@@ -29,6 +29,11 @@ window.DataAnalytics = ReactiveComponent
         width: @local.width
         cumulative_default: true
 
+      CommentsAnalytics
+        width: @local.width
+        cumulative_default: true
+
+
 
 # generated at http://jnnnnn.github.io/category-colors-constrained.html with   return J < 80 && J > 50; 
 color50scheme = ["#1b70fc", "#fd1105", "#28e207", "#fc90fd", "#74755a", "#29d6e0", "#f6aa0b", "#c8128d", "#c5bab6", "#a62afd", "#a0aefd", "#149103", "#0d8995", "#9b7b9f", "#f4808b", "#b9660b", "#6fb985", "#9a9823", "#a6585e", "#ec07fb", "#10aceb", "#899da8", "#64749d", "#b68b6f", "#27865e", "#bc81fa", "#fa2b71", "#ff7227", "#c0c178", "#d969b2", "#c1a7cf", "#adc80a", "#f6a679", "#846ffe", "#a44ca8", "#9ec7c0", "#1ead9f", "#8a6f10", "#c14024", "#60b636", "#8f9b82", "#90c6ea", "#64787a", "#f1a1c8", "#0fdcb1", "#8263b2", "#5e7f37", "#836c72", "#8f8bc5", "#c68f2d"]
@@ -37,8 +42,9 @@ color50scheme = ["#1b70fc", "#fd1105", "#28e207", "#fc90fd", "#74755a", "#29d6e0
 get_forum_time_domain = ->
   opinions = fetch '/opinions'
   visits = fetch '/visits'
+  proposals = fetch '/proposals'
 
-  if !window.forum_time_domain && opinions.opinions && visits.visits
+  if !window.forum_time_domain && opinions.opinions && visits.visits && proposals.proposals
 
     earliest_visit = 0
     latest_visit = Infinity
@@ -60,6 +66,13 @@ get_forum_time_domain = ->
       if latest_opinion > days_ago
         latest_opinion = days_ago
 
+    for o in proposals.proposals
+      days_ago = Math.round (now - new Date(o.created_at).getTime()) / 1000 / 60 / 60 / 24
+      if earliest_opinion < days_ago
+        earliest_opinion = days_ago
+      if latest_opinion > days_ago
+        latest_opinion = days_ago
+
     window.forum_time_domain = {earliest_visit, latest_visit, earliest_opinion, latest_opinion, earliest: Math.max(earliest_visit, earliest_opinion), latest: Math.min(latest_visit, latest_opinion)}
 
   window.forum_time_domain
@@ -75,7 +88,7 @@ styles += """
     position: relative;
   }
   .graph_padding {
-    padding: 0 28px 0 36px;
+    position: relative;
   }
 
   .segments-container {
@@ -131,28 +144,33 @@ styles += """
     padding-right: 12px;
   }
 
-  .cumulative_toggle {
-    display: flex;
+  .options_area {
     position: absolute;
     right: 28px;
+    bottom: 0px;
   } 
 
-  .cumulative_toggle > span {
+  .toggle {
+    display: flex;   
+    padding-bottom: 8px; 
+  }
+
+  .toggle > span {
     font-size: 11px;
     margin-left: 8px;           
   }
 
-  .cumulative_toggle .toggle_switch {
+  .toggle .toggle_switch {
     width: 36px;
     height: 16px;
   }
-  .cumulative_toggle .toggle_switch .toggle_switch_circle:before {
+  .toggle .toggle_switch .toggle_switch_circle:before {
     height: 12px; 
     width: 12px;
     bottom: 2px;
   }
 
-  .cumulative_toggle input:checked + .toggle_switch_circle:before {
+  .toggle input:checked + .toggle_switch_circle:before {
     transform: translateX(18px);
   }
 
@@ -170,35 +188,71 @@ styles += """
 GraphSection =    
 
   get_color: (vals) -> 
-    console.log {vals}
-    if false && vals.length <= 10
-      color = d3.scaleOrdinal vals, d3.schemeTableau10
-    else 
-      color = d3.scaleOrdinal vals, color50scheme
+    vals.sort()
+    color = d3.scaleOrdinal vals, color50scheme
     color
 
 
-  drawCumulativeToggle: -> 
-    if !@local.cumulative?
-      @local.cumulative = @props.cumulative_default
+  drawGraphHeading: (args) -> 
+    DIV 
+      key: 'graph_padding'
+      className: 'graph_padding'
+
+      H1 
+        style: 
+          fontSize: 28
+
+        args.heading
+
+        for [label, amt] in (args.data or [])
+          SPAN
+            key: label
+            style:
+              marginBottom: 12
+              fontSize: 13
+              fontWeight: 400
+              paddingLeft: 12
+
+            "#{label}: #{amt}"
+
+      args.options_area or @drawOptionsArea([@cumulative_option()])  
+
+
+  cumulative_option: ->
+    label: 'cumulative'
+    default_value: @props.cumulative_default
+    attr: 'cumulative'  
+
+  drawOptionsArea: (additional_options) -> 
+    DIV
+      className: 'options_area'
+
+      for option in additional_options
+        @drawToggle(option)
+
+  drawToggle: (opts) -> 
+    {label, attr, default_value} = opts
+    if !@local[attr]?
+      @local[attr] = default_value
 
     LABEL 
-      className: 'cumulative_toggle '
+      key: label
+      className: 'toggle'
       LABEL 
         className: 'toggle_switch'
 
         INPUT 
           type: 'checkbox'
-          defaultChecked: @props.cumulative_default
+          defaultChecked: default_value
           onChange: (ev) => 
-            @local.cumulative = !@local.cumulative
+            @local[attr] = !@local[attr]
             save @local
 
         SPAN 
           className: 'toggle_switch_circle'
 
       SPAN null,
-        "cumulative"
+        label
 
   drawSegments: (segment_by, current_segment, color, labels) ->
     return SPAN {key: 'segments'} if segment_by.length == 0 
@@ -381,7 +435,7 @@ window.VisitAnalytics = ReactiveComponent
     for visitor, visits of visitors
       if fetch(visitor).name 
         registered += 1
-        console.log 'REGISTERED:', fetch(visitor).name
+        # console.log 'REGISTERED:', fetch(visitor).name
 
     zDomain = if @local.segment_by then Object.keys(segments[@local.segment_by]) else ['Unique Visitors']
 
@@ -402,37 +456,20 @@ window.VisitAnalytics = ReactiveComponent
     DIV 
       className: 'VisitAnalytics analytics_section'
 
-      DIV 
-        className: 'graph_padding'
-        H1 
-          style: 
-            fontSize: 28
-            # marginBottom: 12
-          "Visits"
+      @drawGraphHeading
+        heading: "Unique Visitors"
+        data: [
+          ["Total", Object.keys(visitors).length]
+          ["Registered", "#{registered} (#{(registered / Object.keys(visitors).length * 100).toFixed(1)}%)"]          
+        ]
 
-        DIV
-          style:
-            marginBottom: 12
-
-          "Unique visitors: #{Object.keys(visitors).length}" 
-          BR null
-          "Registered: #{registered} (#{(registered / Object.keys(visitors).length * 100).toFixed(1)}%)"
-
-        if time_domain.earliest_visit < time_domain.earliest_opinion # note that time_domain is in "days ago", so less is more
-          DIV 
-            className: 'notice'
-            SPAN null,
-              "* This forum started before Consider.it started tracking visits, so only a subset of visits is represented here."
-
-
-        @drawCumulativeToggle()
 
       TimeSeriesAreaGraph
         key: "visitors-#{@local.segment_by}-#{@local.cumulative}"
         time_format: "%Y-%m-%d"
         width: @props.width
         log: 'linear'
-        yLabel: 'Unique Visitors Per Day'
+        yLabel: '' # 'Unique Visitors Per Day'
         cumulative: @local.cumulative
         segment_by: (d) => 
           if @local.segment_by
@@ -442,6 +479,12 @@ window.VisitAnalytics = ReactiveComponent
         data: visits_per_day
         zDomain: zDomain
         color: color
+
+      if time_domain.earliest_visit < time_domain.earliest_opinion # note that time_domain is in "days ago", so less is more
+        DIV 
+          className: 'notice'
+          SPAN null,
+            "* This forum started before Consider.it started tracking visits, so only a subset of visits is represented here."
 
       @drawSegments segment_by, segments[@local.segment_by], color, visitor_segment_labels
 
@@ -455,6 +498,13 @@ styles += """
 """
 
 
+getForumParticipants = (additional_items) -> 
+  opinions_by_user = get_opinions_by_users()
+  for i in (additional_items or [])
+    if i.user not of opinions_by_user
+      opinions_by_user[i.user] = 1
+  participants = ( {key: u} for u,__ of opinions_by_user)
+  participants 
 
 window.ParticipantAnalytics = ReactiveComponent
   displayName: 'ParticipantAnalytics'
@@ -468,7 +518,7 @@ window.ParticipantAnalytics = ReactiveComponent
 
     opinions_by_user = get_opinions_by_users()
 
-    participants = ( {key: u} for u,o of opinions_by_user)
+    participants = getForumParticipants()
 
     # segments: 
     #   - each sign-up question
@@ -481,7 +531,7 @@ window.ParticipantAnalytics = ReactiveComponent
     segment_by = ( attr.name or attr.key for attr in attributes )
 
     if @local.segment_by
-      zDomain = {}
+      zDomain = {'(unknown)': 1} 
     else 
       zDomain = [@defaultZ]
 
@@ -489,16 +539,18 @@ window.ParticipantAnalytics = ReactiveComponent
 
     checklist_phantoms = [] # With checklists, a participant can have multiple values for a given attribute.
                             # We want them to count toward both. So we replicate them as phantoms to count
-                            # toward each attribute. 
+                            # toward each attribute.
+
     for attr in attributes
       name = attr.name or attr.key     
-      console.log {attr}, @local.segment_by, name
 
       continue if @local.segment_by != name
+
 
       for u in participants
         vals = []
         for option in attr.options
+          zDomain[option] = 1
           if (attr.pass? && attr.pass(u.key, option)) || (!attr.pass && attribute_passes(u.key, attr, [option]) )
             vals.push option
             current_segment[option] ?= []
@@ -510,6 +562,7 @@ window.ParticipantAnalytics = ReactiveComponent
           current_segment[option] ?= []
           current_segment[option].push u
 
+
         for val, idx in vals
           if idx > 0 
             uu = {}
@@ -520,7 +573,7 @@ window.ParticipantAnalytics = ReactiveComponent
             uu = u
 
           uu[name] = val
-          zDomain[val] = 1
+
       zDomain = Object.keys zDomain
 
 
@@ -564,7 +617,6 @@ window.ParticipantAnalytics = ReactiveComponent
     return SPAN null if !fetch('/subdomain').name || !fetch('/users').users || !fetch('/opinions').opinions || !@props.width
 
     {per_day, participants, zDomain, current_segment, multi_valued_segment} = @getData()
-    console.log {zDomain}
     color = @get_color(zDomain)
 
     attributes = get_participant_attributes()
@@ -573,30 +625,18 @@ window.ParticipantAnalytics = ReactiveComponent
     DIV 
       className: 'ParticipantAnalytics analytics_section'
 
-      DIV 
-        key: 'graph_padding'
-        className: 'graph_padding'
-
-        H1 
-          style: 
-            fontSize: 28
-            # marginBottom: 12
-          "Participants"
-
-        DIV
-          style:
-            marginBottom: 12
-
-          "Total: #{participants.length}"
-
-        @drawCumulativeToggle()
+      @drawGraphHeading
+        heading: "Participants"
+        data: [
+          ["Total", participants.length]
+        ]
       
       TimeSeriesAreaGraph
         key: "participants-#{@local.segment_by}-#{@local.cumulative}"
         time_format: "%Y-%m-%d"
         width: @props.width
         log: 'linear'
-        yLabel: 'New Participants'
+        yLabel: '' # 'New Participants'
         cumulative: @local.cumulative
         segment_by: (d) => 
           if @local.segment_by
@@ -628,13 +668,13 @@ window.OpinionGraphAnalytics = ReactiveComponent
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 
-    opinions_by_user = {}
+    by_user = {}
     for user, opinions of get_opinions_by_users()
-      opinions_by_user[user] = []
+      by_user[user] = []
       for o in opinions 
-        opinions_by_user[user].push {key: o.key, o, u: user}
+        by_user[user].push {key: o.key, o, u: user}
 
-    participants = ( {key: u} for u,o of opinions_by_user)
+    participants = getForumParticipants()
     data = []
 
 
@@ -643,7 +683,7 @@ window.OpinionGraphAnalytics = ReactiveComponent
     segment_by = ( attr.name or attr.key for attr in attributes )
 
     if @local.segment_by
-      zDomain = {}
+      zDomain = {'(unknown)': 1}
     else 
       zDomain = [@defaultZ]
 
@@ -659,6 +699,7 @@ window.OpinionGraphAnalytics = ReactiveComponent
       for u in participants
         vals = []
         for option in attr.options
+          zDomain[option] = 1
           if (attr.pass? && attr.pass(u.key, option)) || (!attr.pass && attribute_passes(u.key, attr, [option]) )
             vals.push option
 
@@ -666,7 +707,7 @@ window.OpinionGraphAnalytics = ReactiveComponent
           option = '(unknown)'
           vals.push option 
 
-        items = opinions_by_user[u.key] or []
+        items = by_user[u.key] or []
 
         for val, idx in vals
           if idx > 0             
@@ -678,7 +719,7 @@ window.OpinionGraphAnalytics = ReactiveComponent
               current_segment[val] ?= []
               current_segment[val].push oo
               checklist_phantoms.push oo
-              opinions_by_user[u.key].push oo
+              by_user[u.key].push oo
 
           else 
             for o in items
@@ -686,12 +727,7 @@ window.OpinionGraphAnalytics = ReactiveComponent
               current_segment[val] ?= []
               current_segment[val].push o
 
-          zDomain[val] = 1
-
-
-
       zDomain = Object.keys zDomain
-
 
     # if checklist_phantoms.length > 0
     #   participants = participants.concat checklist_phantoms
@@ -704,7 +740,7 @@ window.OpinionGraphAnalytics = ReactiveComponent
 
     for user in participants
       # first_opinion_given = null
-      for o in (opinions_by_user[user.key] or [])
+      for o in (by_user[user.key] or [])
         # if !first_opinion_given || o.created_at < first_opinion_given
         #   first_opinion_given = o.created_at
 
@@ -722,7 +758,6 @@ window.OpinionGraphAnalytics = ReactiveComponent
 
     per_day.reverse()
 
-    console.log {per_day}
     multi_valued_segment = checklist_phantoms.length > 0 
 
     {per_day, data, participants, zDomain, current_segment, multi_valued_segment}
@@ -742,35 +777,215 @@ window.OpinionGraphAnalytics = ReactiveComponent
     DIV 
       className: 'ParticipantAnalytics analytics_section'
 
-      DIV 
-        key: 'graph_padding'
-        className: 'graph_padding'
-
-        H1 
-          style: 
-            fontSize: 28
-          "Opinions"
-
-        DIV
-          style:
-            marginBottom: 12
-
-          "Total: #{opinions.length}"
-
-        DIV
-          style:
-            marginBottom: 12
-
-          "Average # opinions per participant: #{(opinions.length / participants.length).toFixed(1)}"
-
-        @drawCumulativeToggle()
+      @drawGraphHeading
+        heading: "Opinions"
+        data: [
+          ["Total", opinions.length]
+          ["Avg. per participant", (opinions.length / participants.length).toFixed(1)]
+        ]
       
       TimeSeriesAreaGraph
         key: "opinions-#{@local.segment_by}-#{@local.cumulative}"
         time_format: "%Y-%m-%d"
         width: @props.width
         log: 'linear'
-        yLabel: 'Opinions'
+        yLabel: '' # 'Opinions'
+        cumulative: @local.cumulative
+        segment_by: (d) => 
+          if @local.segment_by
+            d[@local.segment_by]
+          else 
+            @defaultZ
+        data: per_day
+        zDomain: zDomain
+        color: color
+
+      if multi_valued_segment
+        DIV 
+          className: 'notice'
+          SPAN null,
+            "* This attribute is multi-valued. Some participants are counted in multiple categories."
+
+
+      @drawSegments segment_by, current_segment, color
+
+
+
+
+
+
+
+
+window.CommentsAnalytics = ReactiveComponent
+  displayName: 'CommentsAnalytics'
+  mixins: [GraphSection]
+
+  defaultZ: 'Comments'
+
+  getData : -> 
+    subdomain = fetch '/subdomain'
+    current_user = fetch '/current_user'
+
+    fetch('/all_comments')
+    fetch('/proposals?all_points=true')  
+      
+    proposals = fetch '/proposals'
+
+    should_include =
+      comment: @local.include_comments
+      point: @local.include_points
+      proposal: @local.include_proposals
+
+    exclude_hosts = @local.exclude_hosts
+
+    hosts = {}
+    for h in (subdomain.roles.admin or [])
+      hosts[h] = 1 
+    for h in (subdomain.customizations.organizational_account or [])
+      hosts[h] = 1
+
+    by_user = {}
+    include_item = (item, type) -> 
+      if should_include[type] && (!exclude_hosts || !hosts[item.user])
+        by_user[item.user] ?= []
+        by_user[item.user].push {key: item.key, u: item.user, o: item}
+        all_comments.push item
+
+    all_comments = []
+    for proposal in (proposals.proposals or [])
+      proposal = fetch proposal
+      include_item proposal, 'proposal'
+
+      for point in (proposal.points or [])
+        point = fetch(point)
+        include_item point, 'point'
+
+        for comment in (fetch("/comments/#{point.id}")?.comments or [])
+          comment = fetch comment
+          include_item comment, 'comment'
+
+
+    participants = getForumParticipants(all_comments)
+    data = []
+
+    # divide participants into segments
+    current_segment = {}
+
+    if !@local.segment_by
+      zDomain = [@defaultZ]
+    else
+      zDomain = {'(unknown)': 1}          
+      checklist_phantoms = [] # With checklists, a participant can have multiple values for a given attribute.
+                              # We want them to count toward both. So we replicate them as phantoms to count
+                              # toward each attribute.
+
+      attr = get_participant_attributes().find (a) => @local.segment_by == (a.name or a.key)
+      for u in participants
+        vals = []
+        if u.key != '/user/-1' # skip for anonymity
+          for option in attr.options
+            zDomain[option] = 1
+            if (attr.pass? && attr.pass(u.key, option)) || (!attr.pass && attribute_passes(u.key, attr, [option]) )
+              vals.push option
+
+        if vals.length == 0
+          option = '(unknown)'
+          vals.push option 
+
+        items = by_user[u.key] or []
+
+        for val, idx in vals
+          if idx > 0             
+            for o in items
+              oo = {}
+              for k,v of o
+                oo[k] = v 
+              oo[name] = val
+              current_segment[val] ?= []
+              current_segment[val].push oo
+              checklist_phantoms.push oo
+              by_user[u.key].push oo
+
+          else 
+            for o in items
+              o[name] = val
+              current_segment[val] ?= []
+              current_segment[val].push o
+
+      zDomain = Object.keys zDomain
+
+    time_series = {}
+
+    time_domain = get_forum_time_domain()
+
+    now = Date.now()
+
+    for user in participants
+      for o in (by_user[user.key] or [])
+        days_ago = Math.round (now - new Date(o.o.created_at).getTime()) / 1000 / 60 / 60 / 24
+        time_series[days_ago] ?= []
+        time_series[days_ago].push o
+
+    per_day = []
+
+    for days_ago in [time_domain.latest_opinion..time_domain.earliest]
+      day = new Date( now - days_ago * 24 * 60 * 60 * 1000 )
+      date_str = day.toISOString().split('T')[0]
+
+      per_day.push [days_ago, date_str, time_series[days_ago] or [] ]
+
+    per_day.reverse()
+
+    multi_valued_segment = @local.segment_by && checklist_phantoms.length > 0 
+
+    {per_day, data, participants, zDomain, current_segment, multi_valued_segment, all_comments}
+
+
+
+  render : -> 
+    fetch('/all_comments')
+    fetch('/proposals?all_points=true')  
+
+    return SPAN null if !fetch('/subdomain').name || !fetch('/proposals').proposals || !fetch('/users').users || !@props.width
+
+    options_area = @drawOptionsArea [
+          {attr: 'include_proposals', label: 'Proposals', default_value: true}
+          {attr: 'include_points', label: 'Pros & Cons', default_value: true}
+          {attr: 'include_comments', label: 'Other Comments', default_value: true}
+          {attr: 'exclude_hosts', label: 'Exclude Host Comments', default_value: true}
+          @cumulative_option()
+        ]
+
+    {per_day, participants, all_comments, zDomain, current_segment, multi_valued_segment} = @getData()
+    color = @get_color(zDomain)
+
+
+    attributes = get_participant_attributes()
+    segment_by = ( attr.name or attr.key for attr in attributes )
+
+
+    # TODO: should host-contributed comments automatically be excluded?
+    
+    DIV 
+      className: 'CommentAnalytics analytics_section'
+
+
+
+      @drawGraphHeading
+        heading: "Comments"
+        data: [
+          ["Total", all_comments.length]
+          ["Avg. per participant", (all_comments.length / participants.length).toFixed(1)]
+        ]
+        options_area: options_area
+
+
+      TimeSeriesAreaGraph
+        key: "comments-#{@local.segment_by}-#{@local.cumulative}-#{@local.exclude_hosts}-#{@local.include_proposals}-#{@local.include_points}-#{@local.include_comments}-#{all_comments.length}"
+        time_format: "%Y-%m-%d"
+        width: @props.width
+        log: 'linear'
+        yLabel: '' # @defaultZ
         cumulative: @local.cumulative
         segment_by: (d) => 
           if @local.segment_by
@@ -804,10 +1019,11 @@ window.TimeSeriesAreaGraph = ReactiveComponent
       ref: 'container'
 
   componentDidMount: -> 
+
     data = @props.data
 
     # Set the dimensions of the canvas / graph
-    margin = {top: 40, right: 28, bottom: 50, left: 36}
+    margin = {top: 10, right: 28, bottom: 50, left: 36}
     width = @props.width - margin.left - margin.right
     height = 250 - margin.top - margin.bottom
     

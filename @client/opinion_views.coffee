@@ -68,6 +68,14 @@ window.compose_opinion_views = (opinions, proposal, opinion_views, ignore) ->
 
   {weights, salience, groups}
   
+window.get_opinions_by_users = ->
+  opinions = fetch('/opinions')
+  opinions_by_user = {}
+  for o in (opinions.opinions or [])
+    opinions_by_user[o.user] ?= []
+    opinions_by_user[o.user].push o
+
+  opinions_by_user
 
 window.get_opinions_for_proposal = (opinions, proposal, weights) ->
   if !opinions
@@ -91,13 +99,17 @@ window.get_participant_attributes = ->
   if show_others
     if custom_views
       for view in custom_views
-        if view.visibility == 'open' || is_admin
-          if view.pass || view.type == 'filter'
-            attributes.push _.extend {}, view, 
-              key: view.label
-              name: view.label
-              options: ['true', 'false']
-              continuous_value: view.continuous_value
+        do (view) ->
+          if view.visibility == 'open' || is_admin
+            if view.pass || view.type == 'filter'
+              attributes.push _.extend {}, view, 
+                key: view.label
+                name: view.label
+                options: ['true', 'false']
+                continuous_value: view.continuous_value
+                pass: (u, value) -> # view pass functions only take a user. This helps make the API equivalent to user_tags
+                  value ?= 'true'
+                  (value == 'true') == view.pass(u)
 
     if user_tags
       for tag in user_tags 
@@ -112,6 +124,9 @@ window.get_participant_attributes = ->
             pass: if (tag.self_report?.input or tag.input) != 'checklist' then do(name, tag) -> (u, value) -> 
               result = tag.compute?(u) or fetch(u).tags[name]
               if value?
+                if (tag.self_report?.input or tag.input) == 'boolean' && value in [true, false, "true", "false"] && result in [true, false, "true", "false"]
+                  result = "#{result}"
+                  value = "#{value}"
                 result == value
               else 
                 result
@@ -893,6 +908,38 @@ toggle_attribute_visibility = (attribute) ->
     delete opinion_views.active_views[attribute.key]
     save opinion_views
 
+
+window.attribute_passes = (u, attribute, passing_vals) -> 
+  user = fetch(u)
+
+  return false if !user.tags
+
+  val_for_user = user.tags[attribute.key]
+
+  if attribute.input_type == 'checklist' && val_for_user
+    val_for_user = val_for_user.split(CHECKLIST_SEPARATOR)
+    is_array = true
+
+
+  passes = false
+  for passing_val in passing_vals
+
+    if attribute.pass 
+      val = attribute.pass(u)
+      passes ||= passing_val == val 
+
+      if passing_val == 'true'
+        passes ||= true == val 
+      else if passing_val == 'false'
+        passes ||= false == val
+        passes ||= undefined == val  
+
+    else 
+      passes ||= val_for_user == passing_val || (is_array && passing_val in val_for_user)
+
+
+  passes 
+
 # Creates a view function on the fly given the values selected for an attribute by a user
 construct_view_for_attribute = (attribute) ->
   opinion_views_ui = fetch 'opinion_views_ui'
@@ -905,46 +952,15 @@ construct_view_for_attribute = (attribute) ->
     opinion_views_ui.visible_attribute_values[attr_key] = {}
 
   pass = (u) -> 
-    user = fetch(u)
-
-    return false if !user.tags
-
-    val_for_user = user.tags[attr_key]
-
-    if attribute.input_type == 'checklist' && val_for_user
-      val_for_user = val_for_user.split(CHECKLIST_SEPARATOR)
-      is_array = true
-
     passing_vals = (val for val,enabled of opinion_views_ui.visible_attribute_values[attr_key] when enabled)
-
     if 'either' in passing_vals
       passing_vals.push 'true'
       passing_vals.push 'false'
 
-    passes = false
-    for passing_val in passing_vals
-
-      if attribute.pass 
-        val = attribute.pass(u)
-        passes ||= passing_val == val 
-
-        if passing_val == 'true'
-          passes ||= true == val 
-        else if passing_val == 'false'
-          passes ||= false == val
-          passes ||= undefined == val  
-
-      else 
-
-
-        passes ||= val_for_user == passing_val || (is_array && passing_val in val_for_user)
-
-
-    passes 
+    attribute_passes u, attribute, passing_vals
 
   view = 
     key: attr_key
-    # pass: pass
     salience: (u) -> if pass(u) then 1 else .1
     weight:   (u) -> if pass(u) then 1 else .1
     options: attribute.options

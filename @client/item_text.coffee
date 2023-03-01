@@ -317,7 +317,6 @@ window.ItemText = ReactiveComponent
 
   setCollapsedSizes: ->
 
-
     if !@waitForFonts(=> @setCollapsedSizes()) || (@local.collapsed_title_height? && @sized_at_window_width == WINDOW_WIDTH() && (!@description_has_media || @local.media_is_loaded))
       return
 
@@ -346,9 +345,7 @@ window.ItemText = ReactiveComponent
     @sized_at_window_width = WINDOW_WIDTH()
     save @local if changed
 
-
-
-    if proposal.description 
+    if proposal.description
       el = document.createElement 'div'
       el.classList.add 'proposal-description'
 
@@ -358,15 +355,16 @@ window.ItemText = ReactiveComponent
         desc = @refs.proposal_description
 
         @local.media_is_loaded = true
-        for el in desc.querySelectorAll('img,video')
-          if el.tagName == 'IMG'
-            @local.media_is_loaded &&= el.complete
-          else if el.tagName == 'VIDEO'
-            @local.media_is_loaded &&= el.readyState >= 3
+
+        for media_el in desc.querySelectorAll('img,video')
+          if media_el.tagName == 'IMG'
+            @local.media_is_loaded &&= media_el.complete
+          else if media_el.tagName == 'VIDEO'
+            @local.media_is_loaded &&= media_el.readyState >= 3
+
         if !@local.media_is_loaded
           setTimeout @setCollapsedSizes, 100
         else
-          @local.media_is_loaded = true 
           save @local
 
 

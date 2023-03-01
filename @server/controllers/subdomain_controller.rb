@@ -372,7 +372,7 @@ class SubdomainController < ApplicationController
       if sub_to_destroy.customizations.has_key?('user_tags')
         users = User.where( "registered=1 AND active_in like '%\"#{sub_to_destroy.id}\"%'")
         users.each do |u|
-          delete_tags_for_forum(sub_to_destroy)
+          u.delete_tags_for_forum(sub_to_destroy)
         end
 
       end

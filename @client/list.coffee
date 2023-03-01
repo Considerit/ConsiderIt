@@ -171,7 +171,7 @@ window.List = ReactiveComponent
     proposals = list.proposals or []
 
     list_state = fetch list_key
-    list_state.show_first_num_items ?= @props.show_first_num_items or SHOW_FIRST_N_PROPOSALS
+    list_state.show_first_num_items ?= @props.show_first_num_items or customization('show_first_n_proposals', list_key) or SHOW_FIRST_N_PROPOSALS
     list_state.collapsed ?= customization('list_is_archived', list_key)
 
     is_collapsed = list_state.collapsed

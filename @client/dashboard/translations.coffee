@@ -940,9 +940,6 @@ editable_translation = (id, lang_code, subdomain_id, updated_translations, propo
       proposal = proposed_translations.yours
 
 
-  if proposal 
-
-
   SPAN 
     key: "#{id}-#{accepted}-#{proposed}" 
 

@@ -940,6 +940,8 @@ editable_translation = (id, lang_code, subdomain_id, updated_translations, propo
       proposal = proposed_translations.yours
 
 
+  if proposal 
+
 
   SPAN 
     key: "#{id}-#{accepted}-#{proposed}" 
@@ -967,7 +969,7 @@ editable_translation = (id, lang_code, subdomain_id, updated_translations, propo
 
 
     AutoGrowTextArea
-      defaultValue: val
+      defaultValue: updated_translations[id]?.translation or val
       style: _.defaults (style or {}),
         verticalAlign: 'top'
         fontSize: 'inherit'

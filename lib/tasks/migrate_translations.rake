@@ -5,14 +5,24 @@ task :migrate_translations => :environment do
 
   def delete_translation(id)
     to_delete = Translations::Translation.where(:string_id => id)
-    pp "  Deleting #{id} (#{to_delete.count})"
-    to_delete.destroy_all
+    if to_delete.count > 0 
+      pp "  Deleting #{id} (#{to_delete.count})"
+      to_delete.destroy_all
+    end
   end 
 
   def rename_translation(source, dest)
     to_rename = Translations::Translation.where(:string_id => source)
-    pp "renamed #{source} to  #{dest} (#{to_rename.count})"
-    to_rename.update_all(:string_id => dest)
+    if to_rename.count > 0 
+      pp "renamed #{source} to  #{dest} (#{to_rename.count})"
+      existing = Translations::Translation.where(:string_id => dest, :accepted => true)
+      if existing.count > 0
+        to_rename.where(:lang_code => 'en').destroy_all 
+        to_rename.update_all(:string_id => dest, :accepted => false)
+      else 
+        to_rename.update_all(:string_id => dest)
+      end
+    end
   end
 
   delete_translation "engage.save_your_opinion.button"

@@ -510,9 +510,6 @@ window.ItemText = ReactiveComponent
               className: 'separated monospaced metadata-piece'
               style: 
                 borderBottom: 'none'
-
-              # if !show_author_name_in_meta_data
-              #   TRANSLATE 'engage.proposal_metadata_date_added', "Added: "
               
               prettyDate(proposal.created_at)
 

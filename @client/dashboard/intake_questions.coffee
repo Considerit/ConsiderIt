@@ -117,9 +117,18 @@ window.IntakeQuestions = ReactiveComponent
           fontStyle: 'italic'
           marginTop: 18
         """
-          Recommendation: Because each question makes the registration process take longer, 
-          only ask questions you are confident will be important in your analysis. Aim for five 
-          or fewer questions.
+          Recommendation: Each question makes the registration process take longer. Only ask questions 
+          you are confident will be important in your analysis. Aim for five or fewer questions.
+        """
+
+      P
+        style: 
+          fontStyle: 'italic'
+          marginTop: 18
+        """
+          Recommendation: Use the Preamble to describe why you're collecting this 
+          information and, for sensitive data, how you will protect it. If 
+          you have a privacy policy, the preamble is a good place for a link to it.
         """
 
 
@@ -453,7 +462,7 @@ window.EditIntakeQuestion = ReactiveComponent
           LABEL 
             htmlFor: "#responses"
 
-            'Possible responses (1 per line)'
+            'Response options (1 per line)'
 
           AutoGrowTextArea
             id: '#responses'
@@ -468,6 +477,8 @@ window.EditIntakeQuestion = ReactiveComponent
             style: 
               fontSize: 12
               color: '#373737'
+            'It is best practice to enable a “Prefer not to answer” option for nonessential questions.'
+            BR null
             'To enable an open-ended response option, include a response named “Other”'
 
 
@@ -482,7 +493,7 @@ window.EditIntakeQuestion = ReactiveComponent
             style: 
               marginBottom: 8
 
-            "Who can see answers to this question?"
+            "Who can see responses to this question?"
 
           LABEL 
             style: 
@@ -537,7 +548,7 @@ window.EditIntakeQuestion = ReactiveComponent
           defaultChecked: @local.required
           onChange: (e) =>
             @local.required = e.target.checked
-
+            save @local 
         SPAN 
           style: 
             paddingLeft: 12

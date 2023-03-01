@@ -96,7 +96,7 @@ class SamlController < ApplicationController
         user ||= User.new 
 
         # TODO: does SAML sometimes give avatars?
-        user.update_attributes({
+        user.update({
           :email => email,
           :password => SecureRandom.urlsafe_base64(60),
           :name => name,

@@ -46,7 +46,6 @@ window.Notifications = ReactiveComponent
 
           TRANSLATE
             id: "email_notifications.watched_proposals_ack"
-            subdomain_name: subdomain.name
             "You are unsubscribed from summary emails from this forum"
       
       if customization('email_notifications_disabled')
@@ -54,7 +53,10 @@ window.Notifications = ReactiveComponent
           style: 
             margin: "18px 0 36px 0"
             fontStyle: 'italic'
-          "The forum host has disabled email summaries"
+
+          TRANSLATE
+            id: "email_notifications.disabled"
+            "The forum host has disabled email summaries"
 
       DIV 
         className: 'input_group checkbox'

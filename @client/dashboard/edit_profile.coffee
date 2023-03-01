@@ -32,7 +32,7 @@ window.EditProfile = ReactiveComponent
   mixins: [AuthForm]
 
   render: -> 
-
+    current_user = fetch '/current_user'
     i18n = @i18n()
 
     is_SSO = fetch('/subdomain').SSO_domain  
@@ -60,8 +60,16 @@ window.EditProfile = ReactiveComponent
           @RenderInput 
             type: 'password'
             name: 'password'
-            label: i18n.password_label
-            on_submit: on_submit      
+            label: i18n.new_password_label
+            on_submit: on_submit  
+
+          if @local.updates.password != current_user.password || @local.updates.email != current_user.email
+            @RenderInput   
+              type: 'password'
+              name: 'old_password'
+              label: i18n.old_password_label
+              on_submit: on_submit  
+              
         ]
 
       @RenderInput
@@ -115,7 +123,6 @@ window.EditProfile = ReactiveComponent
       @ShowErrors()
 
 
-
       DIV 
         style: 
           marginTop: 80
@@ -126,12 +133,11 @@ window.EditProfile = ReactiveComponent
 
           INPUT
             type: 'submit' 
-            value: translator 'auth.delete_account', 'Delete your Account'
+            value: translator 'auth.delete_account', 'Delete your account'
             # className: 'like_link'
             style: 
               color: '#b74e4e'
               fontWeight: 600
-              textTransform: 'lowercase'
               padding: '10px 18px'
               borderRadius: 8
               border: 'none'
@@ -141,7 +147,7 @@ window.EditProfile = ReactiveComponent
             onClick: (ev) =>
               ev.preventDefault()
 
-              if confirm translator 'auth.delete_account_confirmation', "We're sorry to see you go! Just to check first, though: this will irreversibly delete your account and any material you have contributed to this or any other Consider.it forums. Do you still want to proceed?"
+              if confirm translator 'auth.delete_account_confirmation', "We're sorry to see you go! Just to check first, though: this will irreversibly delete your account and any material you have contributed to this or any other Consider.it forums with be removed or anonymized. Do you still want to proceed?"
                 error_msg = "Something went wrong trying to delete your account. Please contact help@consider.it and we'll get it done. If you've created a Consider.it forum in the past, that is the most likely cause."
                 
                 ajax_submit_files_in_form
@@ -161,6 +167,65 @@ window.EditProfile = ReactiveComponent
                   error: (results) => 
                     @local.errors = [translator('auth.delete_account_contact_us', error_msg)]
                     save @local 
+
+        FORM 
+          id: 'delete_data_form'
+          
+
+          INPUT
+            type: 'submit' 
+            value: translator 'auth.delete_data', 'Delete your data on this forum'
+            # className: 'like_link'
+            style: 
+              marginTop: 18
+              color: '#b74e4e'
+              fontWeight: 600
+              padding: '10px 18px'
+              borderRadius: 8
+              border: 'none'
+              backgroundColor: '#efefef'
+              boxShadow: '0 1px 2px rgba(0,0,0,.2)'
+
+            onClick: (ev) =>
+              ev.preventDefault()
+
+              if confirm translator 'auth.delete_data_confirmation', "Your opinions, comments, and other data associated with this forum will be irreversibly deleted or anonymized. Your Consider.it account will remain active. Do you still want to proceed?"
+                error_msg = "Something went wrong trying to delete your data. Please contact help@consider.it and we'll get it done."
+                
+                ajax_submit_files_in_form
+                  uri: '/delete_data_for_forum'
+                  type: 'delete'
+                  form: '#delete_data_form'
+                  additional_data: 
+                    authenticity_token: fetch('/current_user').csrf
+
+                  success: (resp) =>
+                    if resp.length > 0 && JSON.parse(resp)?.error?
+                      @local.errors = [translator('auth.delete_data_contact_us', error_msg)]
+                      save @local
+                    else 
+                      window.location.href = location.origin
+
+                  error: (results) => 
+                    @local.errors = [translator('auth.delete_data_contact_us', error_msg)]
+                    save @local 
+
+
+
+      DIV 
+        style: 
+          marginTop: 36
+
+        TRANSLATE
+          id: 'contact.about_data_export'
+          LINK: 
+            component: A 
+            args: 
+              href: 'mailto:help@consider.it'
+              treat_as_external_link: true
+
+          "Please contact us at <LINK>help@consider.it</LINK> if you would like an export of your data from this forum."
+
             
 
 

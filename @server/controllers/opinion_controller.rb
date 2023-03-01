@@ -35,7 +35,7 @@ class OpinionController < ApplicationController
     if existing_opinion
       opinion = existing_opinion
       dirty_key "/opinion/#{opinion.id}"
-      opinion.update_attributes updates
+      opinion.update updates
     else 
       opinion = Opinion.new updates 
     end
@@ -86,7 +86,7 @@ class OpinionController < ApplicationController
     proposal = Proposal.find(updates['proposal_id'])
     
     # Update the normal fields
-    opinion.update_attributes updates
+    opinion.update updates
     opinion.save
 
 

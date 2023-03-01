@@ -231,7 +231,7 @@ if(!is_dev){
         // sync embedding
         uploadDir( 'public/embedding', 'embedding')
 
-        // sync embedding
+        // sync vendor
         uploadDir( 'public/vendor', 'vendor')
 
 

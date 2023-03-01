@@ -109,8 +109,20 @@ window.back_to_homepage_button = (style, text) ->
 
 
 
+window.get_region_name = ->
+  region = fetch('/application').region
+  return "" if !region
 
+  if region == 'US'
+    reg = "the United States"
+  else if region == 'CA'
+    reg = "Canada"
+  else if region == 'EU'
+    reg = "the European Union"
+  else 
+    throw "Unknown region #{region}"
 
+  translator "server.region_string.#{reg}", reg
 
 ####
 # Make the DIV, SPAN, etc.
@@ -228,6 +240,20 @@ window.asset = (name) ->
     a = "#{window.asset_host or ''}/images/#{name}"
 
   a
+
+window.lazyLoadJavascript = (src, args) ->
+  id = slugify src
+  already_loaded = document.body.querySelector("script##{id}")
+  if !already_loaded
+    script = document.createElement('script')
+    script.type = 'text/javascript'
+    script.id = id
+    script.src = src
+    script.onload = args.onload if args.onload
+    script.onerror = args.onerror if args.onerror
+    document.body.appendChild script
+  !!already_loaded
+
 
 #####
 # data 
@@ -509,10 +535,10 @@ window.widthWhenRendered = (str, style) ->
 
 
 height_cache = {}
-window.heightWhenRendered = (str, style, el) -> 
+window.heightWhenRendered = (str, style, el, skip_caching) -> 
   # This DOM manipulation is relatively expensive, so cache results
   key = JSON.stringify _.extend({str: str}, style)
-  if key not of height_cache
+  if (key not of height_cache) || skip_caching
     el ?= document.createElement 'div'
     el.style.position = 'absolute'
     el.style.visibility = 'hidden'
@@ -528,10 +554,8 @@ window.heightWhenRendered = (str, style, el) ->
     parent.appendChild el
     height = $$.height el
     parent.removeChild(el)
-
     height_cache[key] = height
   height_cache[key]
-
 
 
 

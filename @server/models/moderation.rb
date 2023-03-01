@@ -50,7 +50,12 @@ class Moderation < ApplicationRecord
             moderation = existing_moderations[obj['id']]
           else 
             # Create a moderation for each that doesn't yet exist.           
-            moderation = Moderation.create! :moderatable_type => moderation_class.name, :moderatable_id => obj['id'], :subdomain_id => current_subdomain.id
+            begin 
+              moderation = Moderation.create! :moderatable_type => moderation_class.name, :moderatable_id => obj['id'], :subdomain_id => current_subdomain.id
+            rescue ActiveRecord::RecordInvalid
+              # I believe this happens when a user was destroyed, but some moderatable object did not get properly cleaned up
+              next
+            end
           end
 
           moderations[moderation_class.name].push moderation

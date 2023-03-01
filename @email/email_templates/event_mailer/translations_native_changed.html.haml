@@ -1,0 +1,11 @@
+
+%p
+  There are changes to the native language translations
+  %a{ :href => @url } 
+    =@url
+
+
+  - @native_updates.each do |trans|
+    %div 
+      = "#{trans.lang_code} #{trans.subdomain_id} #{trans.string_id} => #{trans.translation}"
+

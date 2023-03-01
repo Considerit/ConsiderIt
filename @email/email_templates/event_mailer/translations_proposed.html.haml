@@ -3,3 +3,8 @@
   There are translations pending approval at 
   %a{ :href => @url } 
     =@url
+
+  - @updates.each do |trans|
+    %div 
+      = "#{trans.lang_code} #{trans.subdomain_id} #{trans.string_id} => #{trans.translation}"
+

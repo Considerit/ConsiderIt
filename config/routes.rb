@@ -8,15 +8,26 @@ class NotJSON
   end
 end
 
+class IsJSON
+  # This match function returns true iff the request is json
+  def matches?(request)
+    json_header = request.format.to_s.include?('application/json')
+    json_query_param = (request.query_parameters.has_key?('json') \
+                        or request.query_parameters.has_key?('JSON'))
+    (json_query_param or json_header)
+  end
+end
+
+
 class IsSAMLRoute
   def matches?(request)
     request.subdomain.downcase == 'saml-auth'
   end 
 end
 
-ConsiderIt::Application.routes.draw do
+Rails.application.routes.draw do
 
-  if Rails.env.development?  
+  if !Rails.env.production?  
     get '/rails/mailers' => "rails/mailers#index"
     get '/rails/mailers/*path'   => "rails/mailers#preview"
   end
@@ -31,17 +42,20 @@ ConsiderIt::Application.routes.draw do
   # oauth submits an HTML GET request back to the server 
   # with the user data, which is handled by 
   # CurrentUserController#update_via_third_party.
-  match "/auth/:provider",
-    constraints: { provider: /google_oauth2|facebook|twitter/},
-    to: "current_user#passthru",
-    as: :user_omniauth_authorize,
-    via: [:get, :post]
 
-  match "/auth/:action/callback",
-    constraints: { action: /google_oauth2|facebook|twitter/ },
-    to: "current_user#update_via_third_party",
-    as: :user_omniauth_callback,
-    via: [:get, :post]
+  providers = ['google_oauth2', 'facebook', 'twitter']
+  providers.each do |provider|
+    match "/auth/#{provider}",
+      to: "current_user#passthru",
+      # as: :user_omniauth_authorize,
+      via: [:get, :post]
+
+
+    match "/auth/#{provider}/callback",
+      to: "current_user#update_via_third_party",
+      # as: :user_omniauth_callback,
+      via: [:get, :post]
+  end
   ###################
 
   get '/oembed(.:format)' => 'oembed#show'
@@ -52,15 +66,15 @@ ConsiderIt::Application.routes.draw do
   get "/create_subdomain" => 'subdomain#create'
   post '/subdomain' => 'subdomain#create'
 
-  if APP_CONFIG[:product_page_installed]
+  if APP_CONFIG[:product_page]
     # Stripe payments
     get "/payments/successful" => 'product_page#stripe_successful'
     get "/payments/failed" => 'product_page#stripe_failed'  
     get "/payments/payment_intent" => 'product_page#stripe_create_payment_intent'    
     get "/payments/public_key" => 'product_page#stripe_public' 
 
-    # legal agreements
-    get "/legal/:name" => "product_page#legal"   
+    # documents, including legal agreements
+    get "/docs/:name" => "product_page#documents", :constraints => IsJSON.new   
   end 
 
   get "/login_via_saml" => 'current_user#login_via_saml'
@@ -76,6 +90,8 @@ ConsiderIt::Application.routes.draw do
 
   get '/page' => 'page#show'
   get '/page/*id' => 'page#show'
+  get '/docs/:name' => 'page#show'
+
   resources :user, :only => [:show]
   get '/users' => 'user#index'
   get '/visits' => 'visit#index'
@@ -104,21 +120,32 @@ ConsiderIt::Application.routes.draw do
 
   get '/points' => 'point#index'
 
-  get '/translations' => 'translations#show'
-  get '/translations/*subdomain' => 'translations#show'
-  match '/translations' => 'translations#update', :via => [:put]
-  match '/translations/*subdomain' => 'translations#update', :via => [:put]
+  get '/supported_languages' => 'translations_languages#show'
+  match '/supported_languages' => 'translations_languages#update', :via => [:put]
 
-  if APP_CONFIG[:product_page_installed]
+  get '/translations/*lang' => 'translations#show'
+  get '/translations/*subdomain/*lang' => 'translations#show'
+
+  match '/translations/' => 'translations#update', :via => [:put]
+  match '/translations/' => 'translations#delete', :via => [:delete]
+  match '/translation_proposal' => 'translations#reject_proposal', :via => [:delete]
+  
+  match '/proposed_translations/*lang' => 'translations#index', :via => [:get]
+  match '/proposed_translations/*lang/*subdomain' => 'translations#index', :via => [:get]
+
+  match '/log_translation_counts' => 'translations#log_translation_counts', :via => [:put]
+
+
+  if APP_CONFIG[:product_page]
     post "/contact_us" => 'product_page#contact'
     get '/metrics' => 'product_page#metrics'
   end
 
   match 'rename_forum' => 'subdomain#rename_forum', :via => [:post]
   match 'nuke_everything' => 'subdomain#nuke_everything', :via => [:put]
+  match 'destroy_forum' => 'subdomain#destroy', :via => [:delete]  
   match 'update_images_hack' => 'subdomain#update_images_hack', :via => [:put]
   match 'update_proposal_pic_hack' => 'proposal#update_images_hack', :via => [:put]
-  match 'destroy_forum' => 'subdomain#destroy', :via => [:put]
   match 'import_configuration_from_subdomain' => 'subdomain#copy_from', :via => [:put]
 
   post '/log' => 'log#create'
@@ -130,6 +157,7 @@ ConsiderIt::Application.routes.draw do
   match 'current_user' => 'current_user#update', :via => [:put]
 
   match 'current_user' => 'current_user#destroy', :via => [:delete]
+  match 'delete_data_for_forum' => 'current_user#delete_data_for_forum', :via => [:delete]
 
   # This is for the special /opinion/current_user/234:
   match 'opinion/:id/:proposal_id' => 'opinion#show', :via => [:get, :put]

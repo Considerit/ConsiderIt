@@ -1,6 +1,5 @@
 
 require 'exception_notification'
-
 require Rails.root.join("@email", "send_digest")
 
 task :send_email_notifications => :environment do
@@ -26,7 +25,8 @@ task :send_email_notifications => :environment do
             next if !triggered
 
             user = User.find_by_id user_id
-            next if !user || user.email.match('.ghost')
+
+            next if !user || !user.registered || user.email.match('.ghost')
             
             prefs = user.subscription_settings(subdomain)
 

@@ -171,7 +171,7 @@ window.List = ReactiveComponent
     proposals = list.proposals or []
 
     list_state = fetch list_key
-    list_state.show_first_num_items ?= @props.show_first_num_items or SHOW_FIRST_N_PROPOSALS
+    list_state.show_first_num_items ?= @props.show_first_num_items or customization('show_first_n_proposals', list_key) or SHOW_FIRST_N_PROPOSALS
     list_state.collapsed ?= customization('list_is_archived', list_key)
 
     is_collapsed = list_state.collapsed
@@ -730,12 +730,13 @@ window.NewList = ReactiveComponent
             className: 'LIST-title'
 
             SPAN null, 
-              "Create a New Focus"
+
+              translator "engage.create_new_focus", "Create a New Focus"
             
           DIV 
             className: 'LIST-description'
 
-            "Focus your community on evaluating specific proposals. Or pose an open-ended question to focus your community on generating ideas."
+            translator "engage.focus_description", "Focus your community on evaluating specific proposals. Or pose an open-ended question to focus your community on generating ideas."
 
 
 
@@ -749,20 +750,22 @@ window.list_i18n = ->
     if item_name == 'proposal' or !item_name
       translator "engage.add_new_proposal_to_list", 'Add new proposal'
     else 
+      subdomain = fetch('/subdomain')
       translator 
         id: "engage.add_new_#{item_name}_to_list"
-        key: "/translations/#{fetch('/subdomain').name}"
+        local: true
       , "Add a new #{item_name}"
   opinion_header: (list_key) ->
     item_name = customization('list_item_name', list_key)
     if item_name
       item_name = capitalize item_name
-    if item_name == 'proposal' or !item_name
+    if !item_name || item_name.toLowerCase() == 'proposal' 
       translator "engage.opinion_header_results", 'Opinions about this proposal'
     else 
+      subdomain = fetch('/subdomain')
       translator 
         id: "engage.opinion_header_results_#{item_name}"
-        key: "/translations/#{fetch('/subdomain').name}"
+        local: true
       , "Opinions about this #{item_name}"
 
 
@@ -923,7 +926,7 @@ CollapseList = (list_key) ->
 
           # google translate widget causes weird behavior when animating height of document
           google_translate = document.querySelector('[data-widget="GoogleTranslate"]')
-          google_translate.style.display = "none"
+          google_translate?.style.display = "none"
 
           list_el.style.transition = "max-height 1000ms ease"
           padding_el = if TABLET_SIZE() then list_el.querySelector('.ListHeader-wrapper') else list_el
@@ -945,7 +948,7 @@ CollapseList = (list_key) ->
               list_el.style.maxHeight = ''
               list_el.style.overflow = ''
               setTimeout -> 
-                google_translate.style.display = ""     
+                google_translate?.style.display = ""     
               , 1000
             , 100
 
@@ -1204,6 +1207,35 @@ window.get_all_lists = ->
 
   all_lists = _.uniq all_lists
   all_lists
+
+window.get_all_lists_not_configured_for_a_page = ->
+  subdomain = fetch('/subdomain')
+  if get_tabs()
+    all_configured_lists = {}
+    unconfigured_lists = {}
+    for tab in get_tabs()
+      for l in tab.lists 
+        if l != '*' && l != '*-'
+          all_configured_lists[l] = 1
+
+    # lists might also just be defined as a customization, without any proposals in them yet
+    subdomain_name = subdomain.name?.toLowerCase()
+    config = customizations[subdomain_name]
+    for k,v of config 
+      if k.match( /list\// ) && k not of all_configured_lists
+        unconfigured_lists[k] = 1
+
+    proposals = fetch '/proposals'
+    for p in proposals.proposals
+      l = "list/#{(p.cluster or 'Proposals').trim()}"
+      if l not of all_configured_lists
+        unconfigured_lists[l] = 1
+
+    Object.keys(unconfigured_lists)
+
+  else 
+    return []
+
 
 
 window.get_list_sort_method = (tab) ->

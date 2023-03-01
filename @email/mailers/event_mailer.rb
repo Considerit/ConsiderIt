@@ -7,7 +7,7 @@ class EventMailer < Mailer
     message['recipient'] = User.find key_id(message['recipient'])
     message['sender'] = current_user
 
-    set_translation_context(message['recipient'], subdomain)
+    Translations::Translation.SetTranslationContext(message['recipient'], subdomain)
 
     @message = message
     @subdomain = subdomain
@@ -19,25 +19,40 @@ class EventMailer < Mailer
     reply_to = format_email current_user.email, message['sender_mask']
 
     mail(:from => from, :to => to, :subject => subject_line(@message['subject'], subdomain), :bcc => from, :reply_to => reply_to)
-    clear_translation_context()
+    Translations::Translation.ClearTranslationContext()
   end
 
+
+  #################################
+  # TRANSLATIONS
   # HARDCODING ALERT BELOW!!!
-  def translations_proposed(subdomain)
-    message['recipient'] = "translations@consider.it"
-    message['sender'] = current_user
+  def translations_proposed(subdomain, updates)
 
     @subdomain = subdomain
     @url = "https://#{subdomain.name}.#{APP_CONFIG[:domain]}/dashboard/translations"
+    @updates = updates
+
 
     to = "translations@consider.it"
 
-    # from e.g. Moderator <hank@cityclub.org>
     from = format_email default_sender(subdomain), "Considerit Translator subsystem"
 
-    mail(:from => from, :to => to, :subject => subject_line("[considerit] translations awaiting approval", subdomain))
+    mail(:from => from, :to => to, :subject => subject_line("[considerit-#{APP_CONFIG[:region]}] translations awaiting approval", subdomain))
   end
 
+  def translations_native_changed(subdomain, native_updates)
+
+    @subdomain = subdomain
+    @url = "https://#{subdomain.name}.#{APP_CONFIG[:domain]}/dashboard/translations"
+    @native_updates = native_updates
+
+    to = "translations@consider.it"
+
+    from = format_email default_sender(subdomain), "Considerit Translator subsystem"
+
+    mail(:from => from, :to => to, :subject => subject_line("[considerit-#{APP_CONFIG[:region]}] native translations added", subdomain))
+  end
+  #####################################################
 
 end
 

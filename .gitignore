@@ -48,6 +48,7 @@ token.yml
 
 Vagrantfile
 public/images
+public/legal
 export.rake
 
 @client/product_page
@@ -57,6 +58,7 @@ export.rake
 lib/tasks/lists.csv
 lib/tasks/customizations
 lib/tasks/extract_customizations.rake
+lib/tasks/local
 
 @client/product_page
 @server/controllers/product_page_controller.rb

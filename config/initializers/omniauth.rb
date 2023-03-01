@@ -23,13 +23,13 @@ OAUTH_SETUP_PROC = lambda do |env|
 
   request = Rack::Request.new(env)
   host = request.host.split('.')
-  subdomain = nil
-  if host.length == 3
-    subdomain = host[0]
-  end
+
+  subdomain = host[0] == APP_CONFIG[:product_page] ? nil : host[0]
+
   if host.length > 2
     host = host[host.length-2..host.length-1]
   end
+
   host = host.join('.').intern
 
   provider_key = "oauth_#{provider}_client".intern
@@ -56,8 +56,12 @@ OAUTH_SETUP_PROC = lambda do |env|
   #   - https://github.com/intridea/omniauth-oauth2/issues/32
 
   if Rails.env.production? && subdomain
+    redirect_domain = APP_CONFIG[:oauth_callback_subdomain]
+    if APP_CONFIG[:product_page] && APP_CONFIG[:product_page] != 'homepage'
+      redirect_domain += ".#{APP_CONFIG[:product_page]}"
+    end
     env['omniauth.strategy'].options['state'] = subdomain
-    env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://#{APP_CONFIG[:oauth_callback_subdomain]}.#{host}/auth/#{env['omniauth.strategy'].name()}/callback"
+    env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://#{redirect_domain}.#{host}/auth/#{env['omniauth.strategy'].name()}/callback"
   end
 end
 
@@ -65,17 +69,21 @@ OMNIAUTH_SETUP_PROC = lambda do |env|
 
   request = Rack::Request.new(env)
   host = request.host.split('.')
-  subdomain = nil
-  if host.length == 3
-    subdomain = host[0]
-  end
+
+  subdomain = host[0] == APP_CONFIG[:product_page] ? nil : host[0]
+
   if host.length > 2
     host = host[host.length-2..host.length-1]
   end
   host = host.join('.').intern
 
   if Rails.env.production? && subdomain
-    "#{request.scheme}://#{APP_CONFIG[:oauth_callback_subdomain]}.#{host}"
+    redirect_domain = APP_CONFIG[:oauth_callback_subdomain]
+    if APP_CONFIG[:product_page] && APP_CONFIG[:product_page] != 'homepage'
+      redirect_domain += ".#{APP_CONFIG[:product_page]}"
+    end
+
+    "#{request.scheme}://#{redirect_domain}.#{host}"
   else 
     "#{request.scheme}://#{request.host_with_port}"
   end

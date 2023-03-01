@@ -229,13 +229,12 @@ window.DefaultFooter = ReactiveComponent
                 '© Consider.it LLC. All rights reserved. '
 
               TRANSLATE
-                key: '/translations'
                 id: 'footer.policies'
                 privacy_link: 
                   component: A 
                   args: 
                     key: 'privacy_link'
-                    href: '/privacy_policy'
+                    href: '/docs/legal/privacy_policy'
                     style: 
                       textDecoration: 'underline'
 
@@ -244,7 +243,7 @@ window.DefaultFooter = ReactiveComponent
                   component: A 
                   args: 
                     key: 'terms_link'
-                    href: '/terms_of_service'
+                    href: '/docs/legal/terms_of_service'
                     style: 
                       textDecoration: 'underline'
 
@@ -266,9 +265,17 @@ window.DefaultFooter = ReactiveComponent
 
                 "Report bugs to <link>help@consider.it</link>"
 
-            if !customization('google_translate_style') || fetch('location').url != '/'
-              DIV 
-                className: 'google-translate-candidate-container'
+            DIV 
+              className: 'region'
+              key: 'region'
+
+              translator 'server.region_hosted', "Hosted in"
+              " "
+              get_region_name()
+
+          if !customization('google_translate_style') || fetch('location').url != '/'
+            DIV 
+              className: 'google-translate-candidate-container'
 
 
 

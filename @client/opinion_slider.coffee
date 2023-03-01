@@ -227,63 +227,6 @@ window.OpinionSlider = ReactiveComponent
           top: 15
 
 
-  # saveYourOpinionNotice : -> 
-  #   proposal = fetch @props.proposal
-  #   your_opinion = @props.your_opinion
-  #   slider = fetch @props.slider_key
-
-  #   style = 
-  #     #backgroundColor: '#eee'
-  #     padding: 10
-  #     color: 'white'
-  #     textAlign: 'center'
-  #     fontSize: 16
-  #     position: 'relative'
-  #     fontWeight: 700
-  #     textDecoration: 'underline'
-  #     cursor: 'pointer'
-  #     color: focus_color()
-
-  #   notice = translator "engage.login_to_save_opinion", 'Log in to add your opinion'
-    
-  #   s = sizeWhenRendered notice, style
-
-  #   save_opinion = (proposal) => 
-  #     can_opine = @props.permitted()
-
-  #     if can_opine > 0
-  #       your_opinion.published = true
-  #       your_opinion.key ?= "/new/opinion"
-  #       save your_opinion, ->
-  #         show_flash(translator('engage.flashes.opinion_saved', "Your opinion has been saved"))
-
-  #     else
-  #       # trigger authentication
-  #       reset_key 'auth',
-  #         form: 'create account'
-  #         goal: 'To participate, please introduce yourself.'
-  #         after: =>
-  #           can_opine = @props.permitted()
-  #           if can_opine > 0
-  #             save_opinion(proposal)
-
-  #   DIV 
-  #     style: 
-  #       width: @props.width
-  #       margin: 'auto'
-  #       position: 'relative'
-
-  #     BUTTON
-  #       className: 'like_link'
-  #       style: _.extend style, 
-  #         left: (slider.value + 1) / 2 * @props.width - s.width / 2 - 10
-
-  #       onClick: => save_opinion(proposal)
-  #       onKeyPress: (e) => 
-  #         if e.which == 32 || e.which == 13
-  #           save_opinion(proposal)
-
-  #       notice 
 
   drawFeedback: -> 
     proposal = fetch @props.proposal
@@ -300,6 +243,8 @@ window.OpinionSlider = ReactiveComponent
       if !slider.has_moved 
         translator "sliders.slide_prompt", 'Slide Your Overall Opinion'
       else if func = labels.slider_feedback or default_feedback
+        if typeof func == "string"
+          func = window[func]
         func slider.value, proposal
       else if TABLET_SIZE() 
         translator "sliders.slide_feedback_short", "Your opinion"

@@ -94,7 +94,8 @@ window.OAuthLogin =
     root = fetch('root')
     new OAuthHandler
       provider : provider
-      callback : (new_data) => 
+      callback : (new_data) =>
+
         # Yay we got a new current_user object!  But this hasn't gone
         # through the normal arest channel, so we gotta save it in
         # sneakily with updateCache()
@@ -104,7 +105,10 @@ window.OAuthLogin =
         # poll the server until we have an avatar
         poll_until_avatar_arrives()
 
-
+        if forum_has_host_questions()
+          auth = fetch 'auth'
+          auth.show_user_questions_after_account_creation = true 
+          save auth
 
 
 

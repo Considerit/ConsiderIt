@@ -15,10 +15,8 @@
 #      Notifications subsystem. (e.g. email notifications or on-site messages)
 #
 
-require Rails.root.join('@server', 'extras', 'permissions')
 
-
-DEBUG = Rails.env.development?
+DEBUG = !Rails.env.production?
 
 module Notifier
 
@@ -162,7 +160,7 @@ module Notifier
       next if user.id == protagonist_id
 
       # only create notifications for permitted users (relevant if the forum permissions have changed)
-      next if permit("access forum", subdomain, user) < 0 
+      next if Permissions.permit("access forum", subdomain, user) < 0 
 
       settings = user.subscription_settings(subdomain)
 

@@ -33,6 +33,8 @@ CustomizeGoogleTranslate = ReactiveComponent
       config: fetch('/subdomain').customizations
 
   render: -> 
+    return SPAN null if customization('disable_google_translate')
+    
     is_light = is_light_background()
     subdomain = fetch '/subdomain'
 

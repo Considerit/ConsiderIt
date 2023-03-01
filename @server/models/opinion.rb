@@ -38,7 +38,7 @@ class Opinion < ApplicationRecord
     data
   end
 
-  def self.get_or_make(proposal, user)
+  def self.get_or_make(proposal, user=nil)
     # Each (user,proposal) should have only one opinion.
     user ||= current_user
     

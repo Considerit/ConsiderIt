@@ -591,6 +591,9 @@ window.AuthForm =
     name_label: translator('auth.create.name_label', 'Your name or pseudonym')
     email_label: translator('auth.login.email_label', 'Your email')
     password_label: translator('auth.login.password_label', 'Your password')
+    old_password_label: translator('auth.login.old_password_label', 'Your old password')
+    new_password_label: translator('auth.login.new_password_label', 'New password')
+
     pic_prompt: translator('auth.create.pic_prompt', 'Your picture')
     code_label: translator('auth.code_entry', 'Code')
     successful_update: translator("auth.successful_update", "Updated successfully")

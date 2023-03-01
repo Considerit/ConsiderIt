@@ -1,8 +1,7 @@
-require Rails.root.join('@server', 'extras', 'translations')
 
 class Mailer < ActionMailer::Base
   layout 'email'
-  add_template_helper MailerHelper
+  helper MailerHelper
 
 private
 
@@ -25,7 +24,7 @@ private
     if !title || title == ''
       #raise "huh?? #{subdomain.id} #{subdomain.name}"
       title = 'untitled'
-    elsif title == 'homepage'
+    elsif title == APP_CONFIG[:product_page]
       title = 'Consider.it'
     end
 

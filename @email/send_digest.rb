@@ -1,4 +1,3 @@
-require Rails.root.join('@server', 'extras', 'translations')
 
 NOTIFICATION_LAG = 15.minutes
 

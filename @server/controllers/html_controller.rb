@@ -5,7 +5,7 @@ class HtmlController < ApplicationController
 
   def index
 
-    if Rails.env.development? && params[:domain]
+    if !Rails.env.production? && params[:domain]
       candidate_subdomain = Subdomain.find_by_name(params[:domain])
       if candidate_subdomain && session[:default_subdomain] != params[:domain]
         session[:default_subdomain] = candidate_subdomain.name
@@ -55,16 +55,33 @@ class HtmlController < ApplicationController
 
     manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})
 
-    
-    if current_subdomain.name == 'homepage'
+    @testing_local = false
+    if current_subdomain.name == APP_CONFIG[:product_page]
       @app = "product_page"
-      @google_analytics_code = APP_CONFIG[:google_analytics_product]
       @js_dependencies = "/#{manifest['product_page_dependencies']}"
+      @plausible_domain = APP_CONFIG[:plausible_domain_product]
+
+      fonts = [ 
+                {name: 'IBM Plex Sans', prefix: "ibm-plex-sans-v14", charsets: 'vietnamese_latin-ext_latin_greek_cyrillic-ext_cyrillic', styles: {normal: [300, 400, 500, 600, 700], italic: [300,400,700]}},
+                {name: 'Fira Sans Condensed', prefix: "fira-sans-condensed-v10", charsets: 'vietnamese_latin-ext_latin_greek-ext_greek_cyrillic-ext_cyrillic', styles: {normal: [200,400,700,800,900]}}                 
+              ]
+
     else 
       @app = "franklin"
-      @google_analytics_code = APP_CONFIG[:google_analytics]
       @js_dependencies = nil
+      @plausible_domain = APP_CONFIG[:plausible_domain]
+      if @plausible_domain && @plausible_domain.length > 0 && current_subdomain.customizations['enable_plausible_analytics']
+        @plausible_domain += ",#{current_subdomain.name}.#{APP_CONFIG[:plausible_domain]}"
+      end
+      fonts = [ 
+                {name: 'IBM Plex Sans', prefix: "ibm-plex-sans-v14", charsets: 'vietnamese_latin-ext_latin_greek_cyrillic-ext_cyrillic', styles: {normal: [300, 400, 500, 600, 700], italic: [400]}},
+                {name: 'IBM Plex Sans Condensed', prefix: "ibm-plex-sans-condensed-v13", charsets: 'vietnamese_latin-ext_latin_cyrillic-ext', styles: {normal: [400, 700]}},
+                {name: 'IBM Plex Mono', prefix: "ibm-plex-mono-v15", charsets: 'vietnamese_latin-ext_latin_cyrillic-ext_cyrillic', styles: {normal: [400]}}                 
+              ]
+
     end 
+
+
 
     @js = "/#{manifest[@app]}"
 
@@ -72,8 +89,30 @@ class HtmlController < ApplicationController
 
     if Rails.application.config.action_controller.asset_host
       @js = "https:#{Rails.application.config.action_controller.asset_host}#{@js}"
-      @vendor = 'https:' + Rails.application.config.action_controller.asset_host
+      @vendor = "https:#{Rails.application.config.action_controller.asset_host}"
     end
+
+
+
+    # download filename format from https://gwfh.mranftl.com/
+    @fonts_declaration = ""
+    fonts.each do |font|
+      font[:styles].each do |sty, weights|
+        weights.each do |weight|
+            @fonts_declaration += """
+              @font-face {
+                font-family: '#{font[:name]}';
+                font-style: #{sty};
+                font-weight: #{weight};
+                src: local(''),
+                     url('#{@vendor}/vendor/fonts/#{font[:prefix]}-#{font[:charsets]}-#{weight!=400 ? weight : ''}#{sty==:italic ? 'italic' : (weight==400 ? 'regular' : '')}.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+                     url('#{@vendor}/vendor/fonts/#{font[:prefix]}-#{font[:charsets]}-#{weight!=400 ? weight : ''}#{sty==:italic ? 'italic' : (weight==400 ? 'regular' : '')}.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+              }                
+            """
+        end
+      end
+    end 
+
 
     # CSP policy if we ever want to implement in future
     # protocol = request.protocol == 'https:' ? 'https' : 'http:' 
@@ -110,7 +149,7 @@ class HtmlController < ApplicationController
     # subdomain defaults
     case current_subdomain.name
 
-    when 'homepage'
+    when APP_CONFIG[:product_page]
       @canonical = "#{request.protocol}#{request.host}#{page}"
 
       case page 

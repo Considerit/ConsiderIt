@@ -18,7 +18,8 @@ require './browser_hacks'
 # Public API
 
 window.is_a_dialogue_page = ->
-  fetch('location').url.indexOf('/dashboard') == -1
+  url = fetch('location').url
+  url.indexOf('/dashboard') == -1 && url.indexOf('/docs/') == -1
 
 parseURL = (url) ->
   parser = document.createElement('a')
@@ -103,6 +104,9 @@ window.A = React.createFactory createReactClass
   render : -> 
 
     props = _.extend {}, @props
+    if props.treat_as_external_link?
+      delete props.treat_as_external_link
+      
     if props.href
       @_onclick = props.onClick or (-> null)
 

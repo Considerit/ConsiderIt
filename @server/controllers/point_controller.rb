@@ -22,11 +22,11 @@ class PointController < ApplicationController
   def validate_input(attrs, proposal, point)
     errors = []
     if !attrs['nutshell'] || attrs['nutshell'].length == 0
-      errors.append translator('errors.summary_required', 'A summary is required')
+      errors.append Translations::Translation.get('errors.summary_required', 'A summary is required')
     end
 
     if (!point || (point && point.nutshell != attrs['nutshell'])) && proposal.points.find_by_nutshell(attrs['nutshell'])
-      errors.append translator('errors.duplicate_point', 'Someone has already made that point')
+      errors.append Translations::Translation.get('errors.duplicate_point', 'Someone has already made that point')
     end
 
     return errors
@@ -100,7 +100,7 @@ class PointController < ApplicationController
 
     errors = []
 
-    if permit('update point', point) > 0
+    if Permissions.permit('update point', point) > 0
 
       fields = ["nutshell", "text", "hide_name"]
       updates = params.select{|k,v| fields.include? k}.to_h
@@ -115,7 +115,7 @@ class PointController < ApplicationController
 
       if errors.length == 0
 
-        point.update_attributes! updates
+        point.update! updates
 
         if point.published
           write_to_log({
@@ -139,12 +139,14 @@ class PointController < ApplicationController
 
   def destroy
     point = Point.find params[:id]
+    id = point.id
+
     proposal = point.proposal
     
     authorize! 'delete point', point
 
     point.destroy
-    proposal.opinions.where("point_inclusions like '%#{params[:id]}%'").map do |o|
+    proposal.opinions.where("point_inclusions like '%#{id}%'").map do |o|
       o.recache
       dirty_key "/opinion/#{o.id}"
     end

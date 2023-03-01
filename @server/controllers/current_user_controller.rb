@@ -80,10 +80,10 @@ class CurrentUserController < ApplicationController
             log('registered account')
 
           else
-            errors.append(translator({id: "errors.user.password_length", length: @min_pass}, "Password needs to be at least {length} letters")) if !ok_password
-            errors.append(translator("errors.user.blank_name", 'Name cannot be blank')) if !has_name
+            errors.append(Translations::Translation.get({id: "errors.user.password_length", length: @min_pass}, "Password needs to be at least {length} letters")) if !ok_password
+            errors.append(Translations::Translation.get("errors.user.blank_name", 'Name cannot be blank')) if !has_name
             if (!params[:email] || params[:email].length == 0) && errors.length == 0
-              errors.append(translator("errors.user.blank_email", 'Email address cannot be blank'))
+              errors.append(Translations::Translation.get("errors.user.blank_email", 'Email address cannot be blank'))
             end
           end
 
@@ -93,12 +93,12 @@ class CurrentUserController < ApplicationController
       when 'login'
         # puts("Signing in by email and password")
         if !params[:email] || params[:email].length == 0
-          errors.append translator("errors.user.blank_email", 'Email address cannot be blank')
+          errors.append Translations::Translation.get("errors.user.blank_email", 'Email address cannot be blank')
         elsif !params[:password] || params[:password].length == 0
-          errors.append translator("errors.user.missing_password", 'Password cannot be missing')
+          errors.append Translations::Translation.get("errors.user.missing_password", 'Password cannot be missing')
         elsif current_user.registered
           #puts("Trying to log in a user who is already in!")
-          errors.append translator("errors.user.already_logged_in", 'You are already logged in')  
+          errors.append Translations::Translation.get("errors.user.already_logged_in", 'You are already logged in')  
         else
 
           user = User.find_by_email(params[:email].downcase)
@@ -107,10 +107,10 @@ class CurrentUserController < ApplicationController
             # note: Returning this error message is a security risk as it
             #       reveals that a particular email address exists in the
             #       system or not.  But it's prolly the right tradeoff.
-            errors.append translator("errors.user.no_user_at_email", "No user exists at that email address. Maybe you should \"Create an Account\" instead.") 
+            errors.append Translations::Translation.get("errors.user.no_user_at_email", "No user exists at that email address. Maybe you should \"Create an Account\" instead.") 
 
           elsif !user.authenticate(params[:password])
-            errors.append translator("errors.user.bad_password", 'Wrong password. Click "I forgot my password" if you are having problems.')
+            errors.append Translations::Translation.get("errors.user.bad_password", 'Wrong password. Click "I forgot my password" if you are having problems.')
           else 
             replace_user(current_user, user)
             set_current_user(user)
@@ -137,10 +137,10 @@ class CurrentUserController < ApplicationController
         if !has_password
           # puts("They need to provide a longer password. Bailing.")
 
-          errors.append translator({id: "errors.user.password_length", length: @min_pass}, "Password needs to be at least {length} letters")
+          errors.append Translations::Translation.get({id: "errors.user.password_length", length: @min_pass}, "Password needs to be at least {length} letters")
 
         elsif current_user.registered
-          errors.append translator("errors.user.already_logged_in", 'You are already logged in') 
+          errors.append Translations::Translation.get("errors.user.already_logged_in", 'You are already logged in') 
         else 
         
           # Now let's take that raw reset_password_token, and compute the
@@ -167,7 +167,7 @@ class CurrentUserController < ApplicationController
             log('sign in by password reset')
 
           else
-            errors.append translator("errors.user.incorrect_verification_code", "Sorry, that is the wrong verification code.")   
+            errors.append Translations::Translation.get("errors.user.incorrect_verification_code", "Sorry, that is the wrong verification code.")   
           end  
                   
         end
@@ -181,7 +181,7 @@ class CurrentUserController < ApplicationController
           # note: returning this is a security risk as it reveals that a
           #       particular email address exists in the system or not.
           #       But it's prolly the right tradeoff.
-          errors.append translator("errors.user.invalid_email", "We have no account for that email address.")
+          errors.append Translations::Translation.get("errors.user.invalid_email", "We have no account for that email address.")
           # puts("Errors are #{errors}")
         else 
           # This algorithm is adapted from devise
@@ -239,7 +239,7 @@ class CurrentUserController < ApplicationController
 
       when 'edit profile'
         update_user_attrs 'edit profile', errors
-        try_update_password 'edit profile', errors
+        try_update_password 'edit profile', errors, true
         log('updating info')
 
         # if this user was created via SAML, note that
@@ -264,14 +264,14 @@ class CurrentUserController < ApplicationController
         log('verification token sent')
 
       when 'update_avatar_hack'
-        if !current_user.update_attributes({ avatar: params['avatar'] })
+        if !current_user.update({ avatar: params['avatar'] })
           errors.push current_user.errors.messages[:avatar][0]
         end
     end
 
     # Wrap everything up
     response = current_user.current_user_hash(form_authenticity_token)
-    response[:errors] = errors
+    response[:errors] = errors.uniq
 
     # If a user is trying to log in, and there was an error, we can
     # re-send them the faulty information so they can fix it.
@@ -353,7 +353,7 @@ class CurrentUserController < ApplicationController
       new_params[:subscriptions] = current_user.update_subscriptions(new_params[:subscriptions].to_h)
     end
 
-    if !current_user.update_attributes(new_params)
+    if !current_user.update(new_params)
       for err in current_user.errors.messages 
         if !errors.index(err[1])
           errors.push err[1]
@@ -367,39 +367,49 @@ class CurrentUserController < ApplicationController
     user = User.find_by_email(email)
     if !email || email.length == 0
       if trying_to == 'create account'
-        errors.append translator("errors.user.blank_email", 'Email address cannot be blank')
+        errors.append Translations::Translation.get("errors.user.blank_email", 'Email address cannot be blank')
       end
     # And if it's not taken
     elsif user && (user != current_user)
-      errors.append translator("errors.user.user_at_email", 'There is already an account with that email. Click "log in" below instead.')  
+      errors.append Translations::Translation.get("errors.user.user_at_email", 'There is already an account with that email. Click "log in" below instead.')  
     # And that it's valid
     elsif !/\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i.match(email)
-      errors.append translator("errors.user.bad_email", 'Email address is not properly formatted')  
+      errors.append Translations::Translation.get("errors.user.bad_email", 'Email address is not properly formatted')
     elsif current_user.email != email
-      # puts("Updating email from #{current_user.email} to #{params[:email]}")
-      # Okay, here comes a new email address!
 
-      current_user.update_attributes({:email => email, :verified => false})
+      # And that we've validated old password on edit profile
+      if current_user.registered && current_user.email && !current_user.authenticate(params[:old_password])
+        errors.append Translations::Translation.get("errors.user.bad_old_password", 'Wrong password.')
+      else 
+        # puts("Updating email from #{current_user.email} to #{params[:email]}")
+        # Okay, here comes a new email address!
 
-      if !current_user.save
-        raise "Error saving this user's email"
+        current_user.update({:email => email, :verified => false})
+
+        if !current_user.save
+          raise "Error saving this user's email"
+        end
       end
     end
   end
 
-  def try_update_password(trying_to, errors)
+  def try_update_password(trying_to, errors, check_old_password=false)
     # Update their password
     if !params[:password] || params[:password].length == 0
       if trying_to == 'create account' || trying_to == 'reset password'
-        errors.append translator("errors.user.missing_password", 'Password cannot be missing')
+        errors.append Translations::Translation.get("errors.user.missing_password", 'Password cannot be missing')
       end
     elsif params[:password].length < @min_pass
-      errors.append translator({id: "errors.user.password_length", length: @min_pass}, "Password needs to be at least {length} letters")
+      errors.append Translations::Translation.get({id: "errors.user.password_length", length: @min_pass}, "Password needs to be at least {length} letters")
     else
-      # puts("Changing user's password.")
-      current_user.password = params[:password]
-      if !current_user.save
-        raise "Error saving this user's password"
+      if check_old_password && !current_user.authenticate(params[:old_password])
+        errors.append Translations::Translation.get("errors.user.bad_old_password", 'Wrong password.')
+      else 
+        # puts("Changing user's password.")
+        current_user.password = params[:password]
+        if !current_user.save
+          raise "Error saving this user's password"
+        end
       end
     end
   end
@@ -416,6 +426,17 @@ class CurrentUserController < ApplicationController
       current_user.destroy 
     end
   end 
+
+  def delete_data_for_forum
+    current_subdomain.proposals.where(:user_id => current_user.id).destroy_all
+    current_subdomain.opinions.where(:user_id => current_user.id).destroy_all
+    current_subdomain.points.where(:user_id => current_user.id).destroy_all
+    current_subdomain.comments.where(:user_id => current_user.id).destroy_all
+    current_subdomain.moderations.where(:user_id => current_user.id).destroy_all
+    current_subdomain.inclusions.where(:user_id => current_user.id).destroy_all
+
+    current_user.delete_tags_for_forum(current_subdomain)
+  end
 
 
   def update_via_third_party
@@ -483,7 +504,7 @@ class CurrentUserController < ApplicationController
         
       end
 
-      current_user.update_attributes! attrs
+      current_user.update! attrs
       user = current_user
 
     elsif !user.avatar_file_name

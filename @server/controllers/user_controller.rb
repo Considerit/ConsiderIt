@@ -14,8 +14,7 @@ class UserController < ApplicationController
              }]
       return
     end
-    
-    user = User.find(params[:id])
+
     dirty_key "/user/#{params[:id]}"
     render :json => []
   end
@@ -23,7 +22,7 @@ class UserController < ApplicationController
   def update 
     user = User.find(params[:id])
 
-    if permit('update user', user) > 0 && params.has_key?("tags")
+    if Permissions.permit('update user', user) > 0 && params.has_key?("tags")
 
       new_tags = params["tags"]
       old_tags = user.tags || {}

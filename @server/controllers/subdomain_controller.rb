@@ -1,4 +1,8 @@
 
+# for Plausible API calls
+require 'uri'
+require 'net/http'
+
 class SubdomainController < ApplicationController
   skip_before_action :verify_authenticity_token, :only => :update_images_hack
   include Invitations
@@ -7,7 +11,7 @@ class SubdomainController < ApplicationController
 
   def index 
     ActsAsTenant.without_tenant do 
-      subdomains = Subdomain.where('name != "homepage"').map {|s| {:id => s.id, :name => s.name, :customizations => s.customizations, :activity => s.points.published.count} }
+      subdomains = Subdomain.where("name != \"#{APP_CONFIG[:product_page]}\"").map {|s| {:id => s.id, :name => s.name, :customizations => s.customizations, :activity => s.points.published.count} }
       render :json => [{
         key: '/subdomains',
         subs: subdomains
@@ -16,21 +20,21 @@ class SubdomainController < ApplicationController
   end
 
   def create
-    permitted = permit('create subdomain')
+    permitted = Permissions.permit('create subdomain')
     if permitted < 0
       if params[:sso_domain]
         # redirect to IdP for authentication
         initiate_saml_auth(params[:sso_domain])
         return
       else 
-        raise PermissionDenied.new permitted
+        raise Permissions::Denied.new permitted
       end
     end
 
     errors = []
 
     # force it to come from consider.it
-    if current_subdomain.name != 'homepage'
+    if current_subdomain.name != APP_CONFIG[:product_page]
       errors.push "You can only create new forums from https://#{APP_CONFIG[:domain]}"
     end
 
@@ -50,7 +54,7 @@ class SubdomainController < ApplicationController
       errors.push "You must specify a forum name"
     end 
 
-    existing = Subdomain.find_by_name(subdomain) || ['aeb', 'cs', 'de', 'en', 'es', 'fr', 'heb', 'hu', 'mi', 'nl', 'pt', 'sk'].index(subdomain) || subdomain.start_with?('oauth-')
+    existing = Subdomain.find_by_name(subdomain) || ['eu', 'ca', 'status'].index(subdomain) || subdomain.start_with?('oauth-')
     if existing
       errors.push "That forum already exists. Please choose a different name."
     end 
@@ -75,6 +79,7 @@ class SubdomainController < ApplicationController
 
       if (params[:upgrade] && current_user.paid_forums > Subdomain.where(:created_by => current_user).where("plan > 0").count) || (Rails.env == 'development' && params[:skip_seeding])
         new_subdomain.plan = 1
+        create_plausible_domain new_subdomain
       end 
 
       new_subdomain.save
@@ -88,7 +93,7 @@ class SubdomainController < ApplicationController
           template_sub = Subdomain.find(params[:copy_from].to_i)
 
           # validate that current user is a host of template_sub
-          if permit('update subdomain', template_sub) > 0
+          if Permissions.permit 'update subdomain', template_sub > 0
             new_subdomain.import_configuration template_sub
           end
 
@@ -105,6 +110,14 @@ class SubdomainController < ApplicationController
               }
             }
           }
+
+          if APP_CONFIG[:region] == 'EU'
+            customizations["disable_google_translate"] = true
+          end
+
+          if new_subdomain.plan == 1
+            customizations['enable_plausible_analytics'] = true
+          end
 
           new_subdomain.customizations = customizations
           new_subdomain.save
@@ -138,7 +151,7 @@ class SubdomainController < ApplicationController
               }
             })
             if img 
-              proposal.pic = open(img)
+              proposal.pic = URI.open(img)
             end
             proposal.save
 
@@ -156,7 +169,7 @@ class SubdomainController < ApplicationController
       
       current_user.add_to_active_in new_subdomain
 
-      set_current_tenant(Subdomain.find_by_name('homepage'))
+      set_current_tenant(Subdomain.find_by_name(APP_CONFIG[:product_page]))
 
       # Send welcome email to subdomain creator
       UserMailer.welcome_new_customer(current_user, new_subdomain).deliver_later
@@ -165,10 +178,10 @@ class SubdomainController < ApplicationController
         render :json => [{key: 'new_subdomain', name: new_subdomain.name, t: current_user.auth_token(new_subdomain)}]
       else 
         token = current_user.auth_token(new_subdomain)
-        if Rails.env.development?
-          redirect_to "/?u=#{current_user.email}&t=#{token}&domain=#{new_subdomain.name}"
+        if !Rails.env.production?
+          redirect_to URI.parse("/?u=#{current_user.email}&t=#{token}&domain=#{new_subdomain.name}").to_s
         else
-          redirect_to "#{request.protocol}#{new_subdomain.url}?u=#{current_user.email}&t=#{token}"
+          redirect_to URI.parse("#{request.protocol}#{new_subdomain.url}?u=#{current_user.email}&t=#{token}").to_s
         end
       end
     end
@@ -200,12 +213,12 @@ class SubdomainController < ApplicationController
     authorize! 'update subdomain', subdomain
 
     if subdomain.id != current_subdomain.id
-      raise PermissionDenied.new Permission::DISABLED
+      raise Permissions::Denied.new Permissions::Status::DISABLED
     end
 
     update_roles    
 
-    fields = ['roles', 'customizations', 'lang', 'moderation_policy', 'about_page_url', 'external_project_url', 'google_analytics_code']
+    fields = ['roles', 'customizations', 'lang', 'moderation_policy', 'about_page_url', 'external_project_url']
     attrs = params.select{|k,v| fields.include? k}.to_h
 
     if current_user.super_admin && params.has_key?('plan')
@@ -231,18 +244,26 @@ class SubdomainController < ApplicationController
       template_sub = Subdomain.find(params[:copy_from].to_i)
 
       # validate that current user is a host of template_sub
-      authorize! 'update subdomain', template_sub
 
+      authorize! 'update subdomain', template_sub
       subdomain.import_configuration template_sub
     end
 
+    change_in_plausible_status = attrs['customizations'] && attrs['customizations']['enable_plausible_analytics'] != current_subdomain.customizations['enable_plausible_analytics']
+
 
     current_user.add_to_active_in
-    current_subdomain.update_attributes! attrs
+    current_subdomain.update! attrs
 
     response = current_subdomain.as_json
     if errors.length > 0
       response[:errors] = errors
+    elsif change_in_plausible_status
+      if current_subdomain.customizations['enable_plausible_analytics']
+        create_plausible_domain
+      else 
+        destroy_plausible_domain
+      end
     end
     render :json => [response]
 
@@ -280,13 +301,87 @@ class SubdomainController < ApplicationController
     render :json => []
   end
 
+  def create_plausible_domain(subdomain=nil)
+    begin
+      subdomain ||= current_subdomain
+
+      site = "#{subdomain.name}.#{APP_CONFIG[:plausible_domain]}"
+      # curl -X POST https://plausible.io/api/v1/sites \
+      #   -H "Authorization: Bearer ${TOKEN}" \
+      #   -F 'domain="test-domain.com"' \
+      #   -F 'timezone="America/Los_Angeles"'
+
+      uri = URI('https://plausible.io/api/v1/sites')
+      req = Net::HTTP::Post.new(uri)
+      req.set_form_data('domain' => site, 'timezone' => 'America/Los_Angeles')
+      req['Authorization'] = "Bearer #{APP_CONFIG[:plausible_api_key]}"
+
+      res = Net::HTTP.start(uri.hostname, uri.port, :use_ssl => true) do |http|
+        http.request(req)
+      end
+
+      # curl -X PUT https://plausible.io/api/v1/sites/goals \
+      #   -H "Authorization: Bearer ${TOKEN}" \
+      #   -F 'site_id="test-domain.com"' \
+      #   -F 'goal_type="event"' \
+      #   -F 'event_name="Signup"'
+
+      uri = URI('https://plausible.io/api/v1/sites/goals')
+      req = Net::HTTP::Put.new(uri)
+      req.set_form_data('site_id' => site, 'goal_type' => "event", 'event_name' => 'Signup')
+      req['Authorization'] = "Bearer #{APP_CONFIG[:plausible_api_key]}"
+
+      res = Net::HTTP.start(uri.hostname, uri.port, :use_ssl => true) do |http|
+        http.request(req)
+      end
+
+    rescue => e
+      ExceptionNotifier.notify_exception(e) 
+      pp "Could not create plausible domain #{site}", e
+    end
+
+
+  end
+
+  def destroy_plausible_domain(subdomain=nil)
+    begin
+
+      subdomain ||= current_subdomain
+
+      site = "#{subdomain.name}.#{APP_CONFIG[:plausible_domain]}"
+
+      # curl -X DELETE https://plausible.io/api/v1/sites/test-domain.com \
+      #   -H "Authorization: Bearer ${TOKEN}"
+      uri = URI("https://plausible.io/api/v1/sites/#{site}")
+      req = Net::HTTP::Delete.new(uri)
+      req['Authorization'] = "Bearer #{APP_CONFIG[:plausible_api_key]}"
+      res = Net::HTTP.start(uri.hostname, uri.port, :use_ssl => true) do |http|
+        http.request(req)
+      end
+    rescue => e
+      ExceptionNotifier.notify_exception(e) 
+      pp "Could not destroy plausible domain"
+    end
+  end
+
   def destroy
     subdomain_id = params['subdomain_to_destroy']    
     sub_to_destroy = Subdomain.find(subdomain_id.to_i)
+
     authorize!('update subdomain', sub_to_destroy)
 
-    if sub_to_destroy 
+    if sub_to_destroy
+
+      if sub_to_destroy.customizations.has_key?('user_tags')
+        users = User.where( "registered=1 AND active_in like '%\"#{sub_to_destroy.id}\"%'")
+        users.each do |u|
+          u.delete_tags_for_forum(sub_to_destroy)
+        end
+
+      end
+
       sub_to_destroy.destroy()
+
     end
 
     dirty_key '/your_forums'
@@ -341,7 +436,7 @@ class SubdomainController < ApplicationController
       end
     end
 
-    current_subdomain.update_attributes! attrs
+    current_subdomain.update! attrs
     dirty_key '/subdomain'
     render :json => []
   end

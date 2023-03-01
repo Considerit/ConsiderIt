@@ -24,7 +24,7 @@ class ProposalController < ApplicationController
     errors = []
 
     if !attrs['name'] || attrs['name'].length == 0
-      errors.append translator('errors.summary_required', 'A summary is required')
+      errors.append Translations::Translation.get('errors.summary_required', 'A summary is required')
     end
 
     return errors
@@ -92,11 +92,11 @@ class ProposalController < ApplicationController
     proposal = Proposal.find params[:id]
     errors = []
 
-    if permit('update proposal', proposal) > 0
+    if Permissions.permit('update proposal', proposal) > 0
       fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage']
 
       if params.has_key?('cluster') && params['cluster'] != proposal.cluster 
-        if permit('set category', params['cluster']) <= 0 
+        if Permissions.permit('set category', params['cluster']) <= 0 
           params.delete('cluster')
         end 
       end
@@ -124,7 +124,7 @@ class ProposalController < ApplicationController
 
         update_roles(proposal)
 
-        proposal.update_attributes! updated_fields
+        proposal.update! updated_fields
 
         if text_updated
           proposal.redo_moderation
@@ -173,7 +173,7 @@ class ProposalController < ApplicationController
     if params['banner']
       attrs['banner'] = params['banner']
     end
-    proposal.update_attributes attrs
+    proposal.update attrs
     dirty_key proposal.key
     render :json => []
   end

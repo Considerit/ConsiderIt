@@ -3,10 +3,10 @@ require 'mail'
 class UserMailer < Mailer
 
   def welcome_new_customer(user, subdomain)
-    set_translation_context(user, subdomain)
+    Translations::Translation.SetTranslationContext(user, subdomain)
 
     @user = user
-    subject = translator("email.welcome.subject_line", "Welcome to Consider.it!")
+    subject = Translations::Translation.get("email.welcome.subject_line", "Welcome to Consider.it!")
     @subdomain = subdomain
 
     to = format_email @user.email, @user.name
@@ -24,41 +24,41 @@ class UserMailer < Mailer
       @part = 'html'
       format.html
     end
-    clear_translation_context()
+    Translations::Translation.ClearTranslationContext()
   end
 
 
   def reset_password_instructions(user, token, subdomain)
-    set_translation_context(user, subdomain)
+    Translations::Translation.SetTranslationContext(user, subdomain)
 
     @user = user
     @token = token 
-    subject = translator("email.password_reset.subject_line", "password reset instructions")
+    subject = Translations::Translation.get("email.password_reset.subject_line", "password reset instructions")
     @subdomain = subdomain
 
     to = format_email @user.email, @user.name
     from = format_email(default_sender(subdomain), (subdomain.title))
     mail(:from => from, :to => to, :subject => subject_line(subject, subdomain))
-    clear_translation_context()
+    Translations::Translation.ClearTranslationContext()
   end
 
   def verification(user, subdomain)
-    set_translation_context(user, subdomain)
+    Translations::Translation.SetTranslationContext(user, subdomain)
 
     @user = user
     @token = user.auth_token(subdomain)
     @subdomain = subdomain
-    subject = translator("email.email_verification.subject_line", "please verify your email address")
+    subject = Translations::Translation.get("email.email_verification.subject_line", "please verify your email address")
 
     # puts "And the token is ", @token
     to = format_email @user.email, @user.name
     from = format_email(default_sender(subdomain), (subdomain.title))
     mail(:from => from, :to => to, :subject => subject_line(subject, subdomain))
-    clear_translation_context()
+    Translations::Translation.ClearTranslationContext()
   end
 
   def invitation(inviter, invitee, invitation_obj, role, subdomain, message = nil)
-    set_translation_context(invitee, subdomain)
+    Translations::Translation.SetTranslationContext(invitee, subdomain)
 
     @user = invitee
     @inviter = inviter
@@ -95,10 +95,10 @@ class UserMailer < Mailer
     case invitation_obj.class.to_s
 
     when 'Subdomain'
-      subject = translator({id: "email.invitation.#{role}", name: inviter.name, place: invitation_obj.name}, 
+      subject = Translations::Translation.get({id: "email.invitation.#{role}", name: inviter.name, place: invitation_obj.name}, 
                            "{name} invites you to #{@action} {place}")
     when 'Proposal'
-      subject = translator({id: "email.invitation.#{role}", name: inviter.name, place: invitation_obj.name}, 
+      subject = Translations::Translation.get({id: "email.invitation.#{role}", name: inviter.name, place: invitation_obj.name}, 
                            "{name} invites you to #{@action} {place}")
 
     else
@@ -106,7 +106,7 @@ class UserMailer < Mailer
     end
 
     mail(:from => from, :to => to, :subject => subject, :reply_to => reply_to)
-    clear_translation_context()
+    Translations::Translation.ClearTranslationContext()
   end
 
 end

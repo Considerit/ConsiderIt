@@ -317,16 +317,19 @@ window.ItemText = ReactiveComponent
 
   setCollapsedSizes: ->
 
-
-    if !@waitForFonts(=> @setCollapsedSizes()) || (@local.collapsed_title_height? && @sized_at_window_width == WINDOW_WIDTH())
+    if !@waitForFonts(=> @setCollapsedSizes()) || (@local.collapsed_title_height? && @sized_at_window_width == WINDOW_WIDTH() && (!@description_has_media || @local.media_is_loaded))
       return
 
     proposal = fetch @props.proposal
 
     title_el = @refs.proposal_title_text
 
+    changed = false 
     if @is_expanded
-      @local.collapsed_title_height = title_el.getBoundingClientRect().height
+      collapsed_title_height = title_el.getBoundingClientRect().height
+      if collapsed_title_height != @local.collapsed_title_height
+        @local.collapsed_title_height = collapsed_title_height
+        changed = true
 
     else 
       first_height_calc = title_el.clientHeight # There is a bug in at least Chrome, where for some reason after some updates, 
@@ -335,26 +338,47 @@ window.ItemText = ReactiveComponent
       second_height_calc = title_el.clientHeight
       console.assert first_height_calc == second_height_calc, "First call to title_el.clientHeight was mysteriously wrong. First call: #{first_height_calc}, Second call: #{second_height_calc}"
 
-      @local.collapsed_title_height = second_height_calc
+      if @local.collapsed_title_height != second_height_calc
+        @local.collapsed_title_height = second_height_calc
+        changed = true
 
     @sized_at_window_width = WINDOW_WIDTH()
-    save @local
+    save @local if changed
 
-
-
-    if proposal.description 
+    if proposal.description
       el = document.createElement 'div'
       el.classList.add 'proposal-description'
 
+      @description_has_media = proposal.description.toLowerCase().indexOf('<img') > -1 || proposal.description.toLowerCase().indexOf('<video') > -1
+
+      if @description_has_media && !@local.media_is_loaded
+        desc = @refs.proposal_description
+
+        @local.media_is_loaded = true
+
+        for media_el in desc.querySelectorAll('img,video')
+          if media_el.tagName == 'IMG'
+            @local.media_is_loaded &&= media_el.complete
+          else if media_el.tagName == 'VIDEO'
+            @local.media_is_loaded &&= media_el.readyState >= 3
+
+        if !@local.media_is_loaded
+          setTimeout @setCollapsedSizes, 100
+        else
+          save @local
+
+
       # do we need to show the transparency fade when collapsed?
       height = heightWhenRendered proposal.description.replace(/<p><br><\/p>/g, ''), \
-                                  {width:"#{ITEM_TEXT_WIDTH()}px"}, el
+                                  {width:"#{ITEM_TEXT_WIDTH()}px"}, el, @description_has_media
 
       @exceeds_collapsed_description_height = height >= COLLAPSED_MAX_HEIGHT
 
-      # do we need to show a show full text button when expanded? 
-      height = heightWhenRendered proposal.description, \
-                                  {width: "#{ITEM_TEXT_WIDTH() * LIST_ITEM_EXPANSION_SCALE()}px"}, el
+      # do we need to show a "show full text" button when expanded? 
+      if LIST_ITEM_EXPANSION_SCALE() != 1
+        height = heightWhenRendered proposal.description, \
+                                    {width: "#{ITEM_TEXT_WIDTH() * LIST_ITEM_EXPANSION_SCALE()}px"}, el, @description_has_media
+
       @super_long_description = height >= EXPANDED_MAX_HEIGHT
 
     
@@ -484,9 +508,6 @@ window.ItemText = ReactiveComponent
               className: 'separated monospaced metadata-piece'
               style: 
                 borderBottom: 'none'
-
-              # if !show_author_name_in_meta_data
-              #   TRANSLATE 'engage.proposal_metadata_date_added', "Added: "
               
               prettyDate(proposal.created_at)
 
@@ -538,7 +559,6 @@ window.ItemText = ReactiveComponent
                     proposal: proposal
 
               TRANSLATE
-                key: '/translations'
                 id: "engage.point_count"
                 cnt: proposal.point_count
 

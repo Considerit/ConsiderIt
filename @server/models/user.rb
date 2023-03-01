@@ -11,7 +11,7 @@ class User < ApplicationRecord
   has_many :opinions, :dependent => :destroy
   has_many :inclusions, :dependent => :destroy
   has_many :comments, :dependent => :destroy
-  has_many :proposals
+  has_many :proposals, :dependent => :destroy
 
   has_many :visits, class_name: 'Ahoy::Visit'
   has_many :events, class_name: 'Ahoy::Event'
@@ -63,10 +63,10 @@ class User < ApplicationRecord
       name: name,
       lang: lang,
       reset_password_token: nil,
-      tags: tags || {},
+      tags: tags_for_subdomain(true) || {},
       is_super_admin: self.super_admin,
       is_admin: is_admin?,
-      is_moderator: permit('moderate content', nil) > 0,
+      is_moderator: Permissions.permit('moderate content', nil) > 0,
       trying_to: nil,
       subscriptions: subscription_settings(current_subdomain),
       verified: verified,
@@ -125,7 +125,7 @@ class User < ApplicationRecord
       end
 
       if current_user.key != u['key'] && anonymize_everything
-        u['name'] = translator('anonymous', 'Anonymous')
+        u['name'] = Translations::Translation.get('anonymous', 'Anonymous')
         u['avatar_file_name'] = nil
       end 
     end 
@@ -151,20 +151,26 @@ class User < ApplicationRecord
       data['email'] = email
     end
 
+    data['tags'] = tags_for_subdomain(current_user.is_admin?)
+    data
+  end
+
+
+  def tags_for_subdomain(ignore_visibility)
+    customizations = current_subdomain.customization_json
+
     tags_config = customizations.fetch('user_tags', [])
 
     my_tags = self.tags || {}
-    data['tags'] = {}
+    tag_subset = {}
     tags_config.each do |vals|
 
       tag = vals["key"]
-      if my_tags.has_key?(tag) && (current_user.is_admin? || vals.fetch('visibility', 'host-only') == 'open')
-        data['tags'][tag] = my_tags[tag]
+      if my_tags.has_key?(tag) && (ignore_visibility || vals.fetch('visibility', 'host-only') == 'open')
+        tag_subset[tag] = my_tags[tag]
       end
     end
-
-
-    data
+    tag_subset
   end
 
   def is_admin?(subdomain = nil)
@@ -353,7 +359,7 @@ class User < ApplicationRecord
     if self.downloaded.nil?
       self.downloaded = true
       self.avatar_url = self.avatar_remote_url if avatar_url.nil?
-      io = open(URI.parse(self.avatar_url))
+      io = URI.open(URI.parse(self.avatar_url))
       def io.original_filename; base_uri.path.split('/').last; end
 
       self.avatar = io if !(io.original_filename.blank?)
@@ -465,6 +471,22 @@ class User < ApplicationRecord
   ##################
 
 
+  def delete_tags_for_forum(subdomain)
+    changed = false
+    if subdomain.customizations.has_key?('user_tags')
+      subdomain.customizations['user_tags'].each do |tag|
+        if self.tags[tag["key"]] && tag["key"].match(subdomain.name)
+          pp "deleting #{tag["key"]} from #{self.name}"
+          self.tags.delete tag["key"]
+          changed = true
+        end
+      end
+
+      if changed 
+        self.save
+      end
+    end
+  end
 
   def your_forums
 

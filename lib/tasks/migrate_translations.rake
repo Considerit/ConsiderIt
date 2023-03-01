@@ -1,120 +1,29 @@
-require Rails.root.join('@server', 'extras', 'translations')
 
 
-task :fix_translations_escaping => :environment do 
-  base_translations = get_translations '/translations'
-  base_translations["available_languages"].each do |langcode, lang| 
-    pp "",""
-    pp "Migrating #{lang} (#{langcode})"
-    pp ""
-
-
-    lang_key = "/translations/#{langcode}"
-    trans = get_translations lang_key
-
-
-    to_fix = {}
-    trans.each do |key,val|
-      if val['txt'] && val['txt'].index('\\\"')
-        pp key, val # val['txt'].gsub(/(\\{2,}")/, "\"")
-
-        to_fix[key] = val['txt'].gsub(/(\\{3,}")/, "\"")
-      end
-    end
-
-    to_fix.each do |key,val|
-      trans[key]['txt'] = val
-    end
-
-    update_translations lang_key, trans
-
-  end
-
-
-end
 
 task :migrate_translations => :environment do 
 
-  $to_delete = {}
   def delete_translation(id)
-    $to_delete[id] = 1
-  end 
-
-  $to_rename = {}
-  def rename_translation(source, dest)
-    $to_rename[source] = dest
-  end
-
-
-  def sync_keys_with_english
-    base_translations = get_translations '/translations'
-
-    en_dict = get_translations "/translations/en"
-
-    base_translations["available_languages"].each do |langcode, lang| 
-      next if langcode == 'en'
-      pp "",""
-      pp "syncing #{lang} (#{langcode}) with english"
-      pp ""
-
-      lang_key = "/translations/#{langcode}"
-      trans = get_translations lang_key
-
-      deleted = false 
-      trans.each do |key, ___|
-        if !en_dict.has_key?(key)
-          pp "#{lang} has #{key} that en doesn't"
-          trans.delete(key)
-          deleted = true 
-        end
-      end
-
-      if deleted 
-        update_translations lang_key, trans
-      end
-
-    end 
-
-  end
-
-  def execute_translation_migration(overwrite = false)
-    base_translations = get_translations '/translations'
-    base_translations["available_languages"].each do |langcode, lang| 
-      pp "",""
-      pp "Migrating #{lang} (#{langcode})"
-      pp ""
-
-
-      lang_key = "/translations/#{langcode}"
-      trans = get_translations lang_key
-
-      $to_rename.each do |source, dest|
-        if trans.has_key?(source)
-          if trans.has_key?(dest) && !overwrite
-            $to_delete[source] = 1
-          else 
-            pp "  Rename #{source} to #{dest}", trans[source]
-            trans[dest] = trans.delete source
-            pp "renamed", trans[source], trans[dest]
-          end
-        end 
-      end 
-
-      $to_delete.each do |id, __|
-        if trans.has_key?(id)
-          pp "  Deleting #{id}", trans[id]
-          trans.delete(id)
-
-          pp "  Deleted", trans[id]
-        end
-      end 
-
-      update_translations lang_key, trans
-
+    to_delete = Translations::Translation.where(:string_id => id)
+    if to_delete.count > 0 
+      pp "  Deleting #{id} (#{to_delete.count})"
+      to_delete.destroy_all
     end
-
   end 
 
+  def rename_translation(source, dest)
+    to_rename = Translations::Translation.where(:string_id => source)
+    if to_rename.count > 0 
+      pp "renamed #{source} to  #{dest} (#{to_rename.count})"
+      existing = Translations::Translation.where(:string_id => dest, :accepted => true)
+      if existing.count > 0
+        to_rename.where(:lang_code => 'en').destroy_all 
+        to_rename.update_all(:string_id => dest, :accepted => false)
+      else 
+        to_rename.update_all(:string_id => dest)
+      end
+    end
+  end
 
   delete_translation "engage.save_your_opinion.button"
 
@@ -245,7 +154,7 @@ task :migrate_translations => :environment do
   rename_translation "banner.save_changes_button", "shared.save_changes_button"
   rename_translation "engage.cancel_button", "shared.cancel_button"
   rename_translation "auth.sign_up", "shared.auth.sign_up"
-  rename_translation "auth.log_in", "shared.auth.log_in"
+  rename_translation "shared.auth.log_in", "auth.log_in"
 
 
   delete_translation "engage.opinion_filter.label"
@@ -266,8 +175,50 @@ task :migrate_translations => :environment do
 
   delete_translation "engage.add_your_own"
 
-  sync_keys_with_english
-  execute_translation_migration
+  delete_translation "translation"
 
+  delete_translation "\"proposal_list. \""
+
+  to_delete = Translations::Translation.where("string_id like 'engage.add_new_%' AND string_id != 'engage.add_new_proposal_to_list' AND subdomain_id is null")
+  pp "  Deleting bad response labels (#{to_delete.count})"
+  to_delete.destroy_all
+
+  to_delete = Translations::Translation.where("string_id like 'engage.opinion_header_results_%' AND subdomain_id is null")
+  pp "  Deleting bad opinion headers (#{to_delete.count})"
+  to_delete.destroy_all
+
+  to_delete = Translations::Translation.where("string_id like 'homepage_tab.%' AND string_id != 'homepage_tab.Show all' AND string_id != 'homepage_tab.add_more' AND string_id != 'homepage_tab.enable' AND string_id != 'homepage_tab.disable_confirmation' AND string_id != 'homepage_tab.confirm-tab-deletion' AND subdomain_id is null")
+  pp "  Deleting bad tabs (#{to_delete.count})"
+  to_delete.destroy_all
+
+  to_delete = Translations::Translation.where("string_id like 'opinion_filter.name.%' AND subdomain_id is null")
+  pp "  Deleting bad opinion filter names (#{to_delete.count})"
+  to_delete.destroy_all
+
+  to_delete = Translations::Translation.where("string_id like 'point_labels.header_%' AND subdomain_id is null")
+  pp "  Deleting bad point_labels (#{to_delete.count})"
+  to_delete.destroy_all
+
+  to_delete = Translations::Translation.where("string_id like 'proposal_list.%' AND subdomain_id is null")
+  pp "  Deleting bad proposal_list (#{to_delete.count})"
+  to_delete.destroy_all
+
+  ActiveRecord::Base.connection.execute("update language_translations set translation=REPLACE(translation,'[object Object]', '\"{question}\"') where string_id='auth.validation.invalid_answer' AND translation like '%[object Object]%'")
+
+  rename_translation "homepage_tab.Show all", "homepage_tab.name.Show all"
+
+  ActiveRecord::Base.connection.execute("delete from language_translations where translation IS NULL")
+
+  pp "Removing duplicates..."
+  trans_hash = {}
+  Translations::Translation.all.each do |tr|
+    key = "#{tr.lang_code} #{tr.string_id} #{tr.translation} #{tr.subdomain_id}"
+    if trans_hash.has_key? key
+      pp "   FOUND DUPLICATE", tr
+      tr.destroy
+    else 
+      trans_hash[key] = tr
+    end
+  end
 
 end

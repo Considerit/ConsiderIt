@@ -20,9 +20,9 @@ def stats(vals)
 
 end
 
-module Exports
+module DataExports
 
-  def opinions(subdomain)
+  def DataExports.opinions(subdomain)
     fname = "#{subdomain.name}-opinions"
     heading = ["proposal_slug","proposal_name", 'created', "username", "email", "opinion", "#points"]
     rows = []
@@ -43,7 +43,7 @@ module Exports
     rows
   end
 
-  def points(subdomain)
+  def DataExports.points(subdomain)
     fname = "#{subdomain.name}-points"
     heading = ['proposal', 'type', 'created', "username", "author", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
     rows = []
@@ -67,7 +67,7 @@ module Exports
     rows
   end
 
-  def proposals(subdomain)
+  def DataExports.proposals(subdomain)
     fname = "#{subdomain.name}-proposals"
     rows = []
     heading = ['slug', 'url', 'created', "username", "author", 'name', 'category', 'description', '#points', '#opinions', 'total score', 'avg score', 'std deviation']
@@ -113,7 +113,7 @@ module Exports
     rows
   end
 
-  def users(subdomain, tag_whitelist)
+  def DataExports.users(subdomain, tag_whitelist)
     fname = "#{subdomain.name}-users"
 
     heading = ['email', 'name', 'date joined'] 

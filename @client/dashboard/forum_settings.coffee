@@ -294,6 +294,7 @@ window.ForumSettingsDash = ReactiveComponent
                     no_opinion_view: true
                     visibility: "host-only"
                     participation_pledge: true
+                    view_name: 'participation_pledge'
                     self_report: 
                       input: "boolean"
                       question: 'I pledge to be civil and to use only one account'

@@ -42,6 +42,7 @@ require './viewport_visibility_sensor'
 require './icons'
 require './google_translate'
 require './new_forum_onboarding'
+require './iframe_embedding'
 
 try 
   require './product_page/payment'
@@ -350,6 +351,7 @@ Root = ReactiveComponent
       BrowserLocation()
       GoogleTranslate()
       LoadAvatars?()
+      IframeEmbedding()
 
 
 

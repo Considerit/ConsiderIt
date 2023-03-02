@@ -122,15 +122,21 @@ window.DefaultFooter = ReactiveComponent
       #dangerouslySetInnerHTML: { __html: "&bull;"}
       '|'
 
+    footer_bonus = customization('footer_bonus')
+
     DIV 
       className: "Footer"
 
-      if customization('footer_bonus')?
+      if footer_bonus?
         DIV 
           className: 'main_background'
-          style: 
-            paddingBottom: 36
-          customization('footer_bonus')?()
+
+          if typeof footer_bonus == "function"
+            footer_bonus()
+          else 
+            DIV 
+              dangerouslySetInnerHTML: __html: footer_bonus
+
 
 
       DIV 

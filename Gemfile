@@ -82,6 +82,8 @@ group :development, :test do
   # gem 'mailcatcher'
   gem 'listen'
   # gem 'rack-mini-profiler'
+
+  gem 'css_parser' # for aeroparticpa
 end
 
 group :production do

@@ -79,6 +79,11 @@ class HtmlController < ApplicationController
                 {name: 'IBM Plex Mono', prefix: "ibm-plex-mono-v15", charsets: 'vietnamese_latin-ext_latin_cyrillic-ext_cyrillic', styles: {normal: [400]}}                 
               ]
 
+      # https://gwfh.mranftl.com/fonts is a good resource for downloading google fonts for self-hosting
+      current_subdomain.customization_json.fetch("additional_fonts", []).each do |font|
+        fonts.push font.deep_symbolize_keys
+      end
+
     end 
 
 

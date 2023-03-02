@@ -27,7 +27,6 @@ window.AuthCallout = ReactiveComponent
     return SPAN null if current_user.logged_in || customization('contribution_phase') == 'frozen'
 
     create_account_button_style = 
-      backgroundColor: selected_color
       marginRight: 8
 
     DIV  

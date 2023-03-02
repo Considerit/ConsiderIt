@@ -405,9 +405,6 @@ ParticipationStatus = ReactiveComponent
             id: 'engage.permissions.read_only'
             "This proposal is read-only. The forum hosts specify who can participate."
 
-        # else if true || can_opine == Permission.NOT_LOGGED_IN
-        #   AUTH_CALLOUT_BUTTONS()
-
         else if can_opine == Permission.UNVERIFIED_EMAIL
           A
             style:

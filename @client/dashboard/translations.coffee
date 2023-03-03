@@ -665,7 +665,7 @@ TranslationsForLang = ReactiveComponent
                       latest = proposal.created_at
                       to_accept = proposal
                   if !to_accept.accepted
-                    console.log "Promoting", to_accept.id, " over ", props.accepted.id, "(#{proposal.created_at} over #{props.accepted.created_at}"
+                    console.log "Promoting", to_accept.id, " over ", props.accepted?.id, "(#{proposal.created_at} over #{props.accepted?.created_at}"
                     to_accept['accepted'] = true
                     proposals.push to_accept
 

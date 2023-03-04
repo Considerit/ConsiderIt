@@ -8,7 +8,7 @@ class OAuthHandler
 
     @callback = callback
 
-    @popup = @openPopupWindow "#{location.protocol}//#{fetch('/subdomain').considerit_host}/auth/#{provider}"
+    @popup = @openPopupWindow "#{location.protocol}//#{fetch('/subdomain').host}/auth/#{provider}"
 
   openPopupWindow : (url) ->
     openidpopup = window.open(url, 'openid_popup', 'width=450,height=500,location=1,status=1,resizable=yes')

@@ -49,8 +49,7 @@ class Subdomain < ApplicationRecord
       json['shared_code'] = shared
     end
 
-    json['considerit_host'] = considerit_host
-
+    json['host'] = url
     json['customizations'] = self.customization_json
     json
   end

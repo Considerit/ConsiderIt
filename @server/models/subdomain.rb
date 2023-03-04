@@ -49,12 +49,18 @@ class Subdomain < ApplicationRecord
       json['shared_code'] = shared
     end
 
+    json['considerit_host'] = considerit_host
+
     json['customizations'] = self.customization_json
     json
   end
 
   def url
-    self.custom_url || "#{self.name}.#{APP_CONFIG[:domain]}"
+    self.custom_url || considerit_url
+  end
+
+  def considerit_host
+    "#{self.name}.#{APP_CONFIG[:domain]}"
   end
 
 

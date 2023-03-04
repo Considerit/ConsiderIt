@@ -564,7 +564,7 @@ class CurrentUserController < ApplicationController
   end
 
   def passthru
-
+    
     render :inline =>
       "<html>" +
       "<body>" +
@@ -587,7 +587,7 @@ class CurrentUserController < ApplicationController
 
   end
 
-  # when something goes wrong in an oauth transation, this method gets called
+  # when something goes wrong in an oauth transition, this method gets called
   def failure
     # TODO: handle this gracefully for the user
     raise request.env['omniauth.error.type']

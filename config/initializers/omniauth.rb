@@ -81,7 +81,6 @@ OMNIAUTH_SETUP_PROC = lambda do |env|
   host = host.join('.').intern
 
 
-
   if Rails.env.production? && subdomain 
     forum = Subdomain.find_by_name(subdomain)
     if forum && !forum.custom_url
@@ -92,12 +91,13 @@ OMNIAUTH_SETUP_PROC = lambda do |env|
       return "#{request.scheme}://#{redirect_domain}.#{host}"
     end
   end
+
   "#{request.scheme}://#{request.host_with_port}"
 
 end
 
 Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :facebook, :setup => OAUTH_SETUP_PROC, :scope => 'email', :display => 'popup', :image_size => 'large' #, :client_options => {:ssl => {:ca_path => '/etc/ssl/certs'}}
+  # provider :facebook, :setup => OAUTH_SETUP_PROC, :scope => 'email', :display => 'popup', :image_size => 'large' #, :client_options => {:ssl => {:ca_path => '/etc/ssl/certs'}}
   # provider :twitter, :setup => OAUTH_SETUP_PROC
 
   provider :google_oauth2, :setup => OAUTH_SETUP_PROC, :provider_ignores_state => true, :client_options => { :access_type => "offline", :prompt => "", :scope => 'email,profile'}

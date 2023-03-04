@@ -54,7 +54,7 @@ class Subdomain < ApplicationRecord
   end
 
   def url
-    "#{self.name}.#{APP_CONFIG[:domain]}"
+    self.custom_url || "#{self.name}.#{APP_CONFIG[:domain]}"
   end
 
 

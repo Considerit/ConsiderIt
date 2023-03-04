@@ -19,7 +19,7 @@ class Subdomain < ApplicationRecord
   validates_attachment_content_type :logo, :content_type => ["image/jpg", "image/jpeg", "image/pjpeg", "image/png","image/x-png", "image/gif", "image/webp"], message: "Only jpeg, png, gif, and webp images types are allowed"
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:id, :lang, :name, :created_at, :about_page_url, :external_project_url, :moderation_policy, :plan, :SSO_domain]
+  self.my_public_fields = [:id, :lang, :name, :created_at, :about_page_url, :external_project_url, :moderation_policy, :plan, :SSO_domain, :custom_url]
 
   scope :public_fields, -> { select(self.my_public_fields) }
 

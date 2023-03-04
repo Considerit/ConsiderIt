@@ -97,11 +97,31 @@ window.OAuthLogin =
       provider : provider
       callback : (new_data) =>
 
-        console.log "GOT oauth!", new_data
         # Yay we got a new current_user object!  But this hasn't gone
         # through the normal arest channel, so we gotta save it in
         # sneakily with updateCache()
         arest.updateCache(new_data)
+
+        console.log('GOT DATA:', new_data)
+
+        #######################
+        # If the subdomain has a vanity url, after logging in via oauth, 
+        # we need to replay the login in third party auth. This is because 
+        # the third party login was successful at the session of the consider.it 
+        # domain, but not on the custom domain. To get around this, when a 
+        # vanity url is used, the user will be given a single use secure code 
+        # (via user.add_token), which is then passed here in new_data
+        # from current_user_controller#update_via_third_party. We'll then 
+        # replay the login from the vanity url to login in the current session, 
+        # using the single use code to authenticate. See also references to 
+        # oauth_single_use_code in current_user_controller#update. 
+
+        subdomain = fetch('/subdomain')
+        if subdomain.custom_url
+          current_user = fetch '/current_user'
+          current_user.trying_to = 'login'
+          save current_user
+        #####################
 
 
         # poll the server until we have an avatar

@@ -94,7 +94,7 @@ class CurrentUserController < ApplicationController
         # puts("Signing in by email and password")
         if !params[:email] || params[:email].length == 0
           errors.append Translations::Translation.get("errors.user.blank_email", 'Email address cannot be blank')
-        elsif !params[:password] || params[:password].length == 0
+        elsif (!params[:password] || params[:password].length == 0) && !params[:oauth_single_use_code]
           errors.append Translations::Translation.get("errors.user.missing_password", 'Password cannot be missing')
         elsif current_user.registered
           #puts("Trying to log in a user who is already in!")
@@ -109,8 +109,10 @@ class CurrentUserController < ApplicationController
             #       system or not.  But it's prolly the right tradeoff.
             errors.append Translations::Translation.get("errors.user.no_user_at_email", "No user exists at that email address. Maybe you should \"Create an Account\" instead.") 
 
-          elsif !user.authenticate(params[:password])
+          elsif !params[:oauth_single_use_code] && !user.authenticate(params[:password])
             errors.append Translations::Translation.get("errors.user.bad_password", 'Wrong password. Click "I forgot my password" if you are having problems.')
+          elsif params[:oauth_single_use_code] && params[:oauth_single_use_code] != user.unique_token
+            errors.append Translations::Translation.get("errors.user.bad_token", 'Authentication failed.')            
           else 
             replace_user(current_user, user)
             set_current_user(user)
@@ -122,6 +124,10 @@ class CurrentUserController < ApplicationController
             if user.is_admin?
               dirty_key '/subdomain'
               dirty_key '/users'
+            end
+
+            if params[:oauth_single_use_code]
+              current_user.add_token # reset token after use
             end
 
             # puts("Now current is #{current_user && current_user.id}")
@@ -537,7 +543,17 @@ class CurrentUserController < ApplicationController
       :details => {:provider => user.third_party_authenticated}
     })
 
-    response = [current_user.current_user_hash(form_authenticity_token)]
+    current_user_hash = current_user.current_user_hash(form_authenticity_token)
+
+    #######################################################
+    # See comment in third_party.coffee#startThirdPartyAuth
+    if current_subdomain.custom_url 
+      current_user.add_token
+      current_user_hash["oauth_single_use_code"] = current_user.unique_token
+    end
+    ########################
+
+    response = [current_user_hash]
     response.concat(compile_dirty_objects())
 
     render :inline =>

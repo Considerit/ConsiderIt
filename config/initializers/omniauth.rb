@@ -57,8 +57,9 @@ OAUTH_SETUP_PROC = lambda do |env|
 
   if Rails.env.production? && subdomain 
     forum = Subdomain.find_by_name(subdomain)
+
     if forum 
-      if !forum.custom_url
+      if !forum.custom_url || true
         redirect_domain = APP_CONFIG[:oauth_callback_subdomain]
         if APP_CONFIG[:product_page] && APP_CONFIG[:product_page] != 'homepage'
           redirect_domain += ".#{APP_CONFIG[:product_page]}"
@@ -88,7 +89,7 @@ OMNIAUTH_SETUP_PROC = lambda do |env|
   if Rails.env.production? && subdomain 
     forum = Subdomain.find_by_name(subdomain)
     if forum
-      if !forum.custom_url
+      if !forum.custom_url || true
         redirect_domain = APP_CONFIG[:oauth_callback_subdomain]
         if APP_CONFIG[:product_page] && APP_CONFIG[:product_page] != 'homepage'
           redirect_domain += ".#{APP_CONFIG[:product_page]}"

@@ -565,8 +565,8 @@ class CurrentUserController < ApplicationController
 
   def passthru
 
-    if current_subdomain.custom_url
-      url = "#{request.scheme}://#{forum.url}#{request.path}"
+    if current_subdomain.custom_url && false
+      url = "#{request.scheme}://#{current_subdomain.url}#{request.path}"
     else 
       url = request.original_url
     end

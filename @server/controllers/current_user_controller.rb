@@ -524,7 +524,7 @@ class CurrentUserController < ApplicationController
     replace_user current_user, user
     set_current_user(user)
 
-    current_user.add_to_active_in
+    new_participant = current_user.add_to_active_in() == 'added'
     current_user.update_roles_and_permissions
 
     dirty_key '/proposals'
@@ -546,7 +546,7 @@ class CurrentUserController < ApplicationController
     })
 
     current_user_hash = current_user.current_user_hash(form_authenticity_token)
-    current_user_hash["created_now_via_oauth"] = created
+    current_user_hash["first_visit_to_forum"] = created || new_participant
     #######################################################
     # See comment in third_party.coffee#startThirdPartyAuth
     if current_subdomain.custom_url 

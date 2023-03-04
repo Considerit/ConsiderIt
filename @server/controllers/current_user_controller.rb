@@ -581,19 +581,13 @@ class CurrentUserController < ApplicationController
 
   def passthru
 
-    if current_subdomain.custom_url && false
-      url = "#{request.scheme}://#{current_subdomain.url}#{request.path}"
-    else 
-      url = request.original_url
-    end
-
     render :inline =>
       "<html>" +
       "<body>" +
       "<script type=\"text/javascript\">" +
       "var form = document.createElement(\"form\");\n" +
       "form.method = \"POST\";\n" + 
-      "form.action = '#{url}';\n" +  
+      "form.action = '#{request.original_url}';\n" +  
       "csrf = document.createElement('input');\n" + 
       "csrf.setAttribute(\"type\", \"hidden\");\n" + 
       "csrf.setAttribute(\"name\", \"authenticity_token\");\n" + 

@@ -102,8 +102,6 @@ window.OAuthLogin =
         # sneakily with updateCache()
         arest.updateCache(new_data)
 
-        console.log('GOT DATA:', new_data)
-
         #######################
         # If the subdomain has a vanity url, after logging in via oauth, 
         # we need to replay the login in third party auth. This is because 

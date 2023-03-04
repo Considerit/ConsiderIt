@@ -57,13 +57,17 @@ OAUTH_SETUP_PROC = lambda do |env|
 
   if Rails.env.production? && subdomain 
     forum = Subdomain.find_by_name(subdomain)
-    if forum && !forum.custom_url
-      redirect_domain = APP_CONFIG[:oauth_callback_subdomain]
-      if APP_CONFIG[:product_page] && APP_CONFIG[:product_page] != 'homepage'
-        redirect_domain += ".#{APP_CONFIG[:product_page]}"
+    if forum 
+      if !forum.custom_url
+        redirect_domain = APP_CONFIG[:oauth_callback_subdomain]
+        if APP_CONFIG[:product_page] && APP_CONFIG[:product_page] != 'homepage'
+          redirect_domain += ".#{APP_CONFIG[:product_page]}"
+        end
+        env['omniauth.strategy'].options['state'] = subdomain
+        env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://#{redirect_domain}.#{host}/auth/#{env['omniauth.strategy'].name()}/callback"
+      else 
+        env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://#{forum.host}/auth/#{env['omniauth.strategy'].name()}/callback"
       end
-      env['omniauth.strategy'].options['state'] = subdomain
-      env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://#{redirect_domain}.#{host}/auth/#{env['omniauth.strategy'].name()}/callback"
     end
   end
 end
@@ -83,12 +87,16 @@ OMNIAUTH_SETUP_PROC = lambda do |env|
 
   if Rails.env.production? && subdomain 
     forum = Subdomain.find_by_name(subdomain)
-    if forum && !forum.custom_url
-      redirect_domain = APP_CONFIG[:oauth_callback_subdomain]
-      if APP_CONFIG[:product_page] && APP_CONFIG[:product_page] != 'homepage'
-        redirect_domain += ".#{APP_CONFIG[:product_page]}"
+    if forum
+      if !forum.custom_url
+        redirect_domain = APP_CONFIG[:oauth_callback_subdomain]
+        if APP_CONFIG[:product_page] && APP_CONFIG[:product_page] != 'homepage'
+          redirect_domain += ".#{APP_CONFIG[:product_page]}"
+        end
+        return "#{request.scheme}://#{redirect_domain}.#{host}"
+      else 
+        return "#{request.scheme}://#{forum.host}"
       end
-      return "#{request.scheme}://#{redirect_domain}.#{host}"
     end
   end
 

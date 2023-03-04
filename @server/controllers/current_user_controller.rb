@@ -483,6 +483,7 @@ class CurrentUserController < ApplicationController
     end 
 
     # create this user if it doesn't exist
+    created_new = false
     if !user 
       attrs = { 
         'name' => access_token.info.name,
@@ -512,6 +513,7 @@ class CurrentUserController < ApplicationController
 
       current_user.update! attrs
       user = current_user
+      created = true
 
     elsif !user.avatar_file_name
       user.avatar_url = avatar_url
@@ -544,7 +546,7 @@ class CurrentUserController < ApplicationController
     })
 
     current_user_hash = current_user.current_user_hash(form_authenticity_token)
-
+    current_user_hash["created_now_via_oauth"] = created
     #######################################################
     # See comment in third_party.coffee#startThirdPartyAuth
     if current_subdomain.custom_url 

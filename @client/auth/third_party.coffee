@@ -114,25 +114,21 @@ window.OAuthLogin =
         # using the single use code to authenticate. See also references to 
         # oauth_single_use_code in current_user_controller#update. 
 
-        show_host_questions = -> 
-          if forum_has_host_questions()
-            auth = fetch 'auth'
-            auth.show_user_questions_after_account_creation = true 
-            save auth
-
         subdomain = fetch('/subdomain')
         if subdomain.custom_url
           current_user = fetch '/current_user'
           current_user.trying_to = 'login'
-          save current_user, show_host_questions
-        else 
-          show_host_questions()
+          save current_user
         #####################
 
 
         # poll the server until we have an avatar
         poll_until_avatar_arrives()
 
+        if forum_has_host_questions() && current_user.created_now_via_oauth
+          auth = fetch 'auth'
+          auth.show_user_questions_after_account_creation = true 
+          save auth
 
 
 

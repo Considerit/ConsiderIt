@@ -66,7 +66,7 @@ OAUTH_SETUP_PROC = lambda do |env|
         env['omniauth.strategy'].options['state'] = subdomain
         env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://#{redirect_domain}.#{host}/auth/#{env['omniauth.strategy'].name()}/callback"
       else 
-        env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://#{forum.host}/auth/#{env['omniauth.strategy'].name()}/callback"
+        env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://#{forum.url}/auth/#{env['omniauth.strategy'].name()}/callback"
       end
     end
   end
@@ -95,7 +95,7 @@ OMNIAUTH_SETUP_PROC = lambda do |env|
         end
         return "#{request.scheme}://#{redirect_domain}.#{host}"
       else 
-        return "#{request.scheme}://#{forum.host}"
+        return "#{request.scheme}://#{forum.url}"
       end
     end
   end

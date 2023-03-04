@@ -8,7 +8,7 @@ class OAuthHandler
 
     @callback = callback
 
-    @popup = @openPopupWindow "#{location.protocol}//#{fetch('/subdomain').host}/auth/#{provider}"
+    @popup = @openPopupWindow "#{location.protocol}//#{fetch('/subdomain').host}/auth/#{provider}"  
 
   openPopupWindow : (url) ->
     openidpopup = window.open(url, 'openid_popup', 'width=450,height=500,location=1,status=1,resizable=yes')
@@ -97,6 +97,7 @@ window.OAuthLogin =
       provider : provider
       callback : (new_data) =>
 
+        console.log "GOT oauth!", new_data
         # Yay we got a new current_user object!  But this hasn't gone
         # through the normal arest channel, so we gotta save it in
         # sneakily with updateCache()

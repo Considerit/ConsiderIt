@@ -55,7 +55,7 @@ OAUTH_SETUP_PROC = lambda do |env|
   #   - https://github.com/intridea/omniauth-oauth2/pull/18/files; https://github.com/zquestz/omniauth-google-oauth2/issues/31#issuecomment-8922362
   #   - https://github.com/intridea/omniauth-oauth2/issues/32
 
-  if Rails.env.production? && subdomain
+  if Rails.env.production? && subdomain && !subdomain.custom_url
     redirect_domain = APP_CONFIG[:oauth_callback_subdomain]
     if APP_CONFIG[:product_page] && APP_CONFIG[:product_page] != 'homepage'
       redirect_domain += ".#{APP_CONFIG[:product_page]}"
@@ -77,7 +77,7 @@ OMNIAUTH_SETUP_PROC = lambda do |env|
   end
   host = host.join('.').intern
 
-  if Rails.env.production? && subdomain
+  if Rails.env.production? && subdomain && !subdomain.custom_url
     redirect_domain = APP_CONFIG[:oauth_callback_subdomain]
     if APP_CONFIG[:product_page] && APP_CONFIG[:product_page] != 'homepage'
       redirect_domain += ".#{APP_CONFIG[:product_page]}"

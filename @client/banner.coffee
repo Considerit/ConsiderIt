@@ -130,6 +130,24 @@ CustomizeGoogleTranslate = ReactiveComponent
             className: 'google-translate-candidate-container'
 
 
+styles += """
+
+.CustomizeTitle > .banner_title {
+  display: block;
+  border: none;
+  background-color: transparent;
+  color: inherit;
+  width: 100%;
+  padding: 0px;
+  line-height: 1.4;
+}
+.CustomizeTitle > .banner_title::placeholder {
+  color: rgba(0,0,0,.4);
+}
+.dark .CustomizeTitle > .banner_title::placeholder, .with-image .CustomizeTitle > .banner_title::placeholder {
+  color: rgb(255,255,255,.6);
+}
+"""
 
 CustomizeTitle = ReactiveComponent
   displayName: 'CustomizeTitle'
@@ -154,26 +172,6 @@ CustomizeTitle = ReactiveComponent
 
     DIV 
       className: 'CustomizeTitle'
-
-      STYLE
-        dangerouslySetInnerHTML: __html: """
-          .CustomizeTitle > .banner_title {
-            display: block;
-            border: none;
-            background-color: transparent;
-            color: inherit;
-            width: 100%;
-            padding: 0px;
-            line-height: 1.4;
-          }
-          .CustomizeTitle > .banner_title::placeholder {
-            color: rgba(0,0,0,.4);
-          }
-          .dark .CustomizeTitle > .banner_title::placeholder, .with-image .CustomizeTitle > .banner_title::placeholder {
-            color: rgb(255,255,255,.6);
-          }
-
-        """
 
       if is_admin && edit_forum.editing
 
@@ -214,6 +212,21 @@ styles += """
   #forum-description .ql-editor.ql-blank::before {
     text-align: left;
   }
+
+  .banner_description.wysiwyg_text, .banner_description #editor {
+    padding: 6px 8px;
+    min-height: 20px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  #edit_banner_description .ql-editor {
+    min-height: 48px;
+  }
+  .wrapper.with-image .CustomizeDescription .ql-editor.ql-blank::before {
+    color: rgba(255,255,255,.4);
+  } 
+
 
 """
 CustomizeDescription = ReactiveComponent
@@ -265,16 +278,6 @@ CustomizeDescription = ReactiveComponent
         className: "banner_description CustomizeDescription"
         ref: "description"
 
-        STYLE
-          dangerouslySetInnerHTML: __html: """
-            #edit_banner_description .ql-editor {
-              min-height: 48px;
-            }
-            .wrapper.with-image .CustomizeDescription .ql-editor.ql-blank::before {
-              color: rgba(255,255,255,.4);
-            } 
-
-          """
         WysiwygEditor
           editor_key: "forum-description"
           style: @props.style
@@ -291,10 +294,6 @@ CustomizeDescription = ReactiveComponent
           DIV 
             className: "banner_description wysiwyg_text"
             ref: "description"
-            style: 
-              fontSize: @props.style.fontSize or 18
-              padding: @props.style.padding or '6px 8px'
-              fontWeight: @props.style.fontWeight or 400
             dangerouslySetInnerHTML: __html: description
             onDoubleClick: if is_admin then => 
               edit_forum.editing = true 
@@ -1258,10 +1257,6 @@ window.PhotoBanner = (opts) ->
             opts: opts
             style: 
               border: if !has_description then (if has_image_background || is_dark_theme then '1px solid rgba(255,255,255,.5)' else '1px solid rgba(0,0,0,.5)')
-              padding: "6px 8px"
-              minHeight: 20
-              fontSize: 16
-              fontWeight: 600
 
       CustomizeBackground()
 

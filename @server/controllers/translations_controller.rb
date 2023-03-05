@@ -46,7 +46,9 @@ class TranslationsController < ApplicationController
       existing = Translations::Translation.where(:string_id => string_id, :lang_code => lang_code, :subdomain_id => subdomain ? subdomain.id : nil)
       accepted = existing.where(:accepted => true).first
 
-      next if (accepted && accepted.translation == translation) || (!translation || translation.length == 0)
+      if (accepted && accepted.translation == translation) || (!translation || translation.length == 0)
+        for_peers.push proposal # we still want to push it to peers incase they haven't received it yet. 
+      end 
 
       # super admins can always directly update translations
       # allow non super admins to:

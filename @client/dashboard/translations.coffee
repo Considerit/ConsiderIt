@@ -669,7 +669,6 @@ TranslationsForLang = ReactiveComponent
                     to_accept['accepted'] = true
                     proposals.push to_accept
 
-              # TODO: These aren't actually getting promoted
               if proposals.length > 0 
                 updateTranslations proposals
 
@@ -689,6 +688,19 @@ TranslationsForLang = ReactiveComponent
                 rejectProposals proposals
 
             "Clear proposals"
+
+
+          BUTTON
+            onClick: =>  
+              proposals = []
+              for id, props of proposed_translations.proposals
+                if props.accepted
+                  proposals.push props.accepted
+
+              if proposals.length > 0 
+                updateTranslations proposals
+
+            "Propagate accepted"
 
 
 

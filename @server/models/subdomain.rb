@@ -55,7 +55,7 @@ class Subdomain < ApplicationRecord
   end
 
   def url
-    self.custom_url || considerit_url
+    self.custom_url || considerit_host
   end
 
   def considerit_host

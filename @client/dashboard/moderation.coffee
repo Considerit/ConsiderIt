@@ -759,7 +759,7 @@ DirectMessage = ReactiveComponent
       subject: el.querySelector('#message_subject').value
       body: el.querySelector('#message_body').value 
       sender_mask: @props.sender_mask or fetch('/current_user').name
-      # authenticity_token: fetch('/current_user').csrf
+      # authenticity_token: arest.csrf()
 
     save new_message, =>
       @props.parent.messaging = null

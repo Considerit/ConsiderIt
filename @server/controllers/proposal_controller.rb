@@ -1,5 +1,4 @@
 class ProposalController < ApplicationController
-  skip_before_action :verify_authenticity_token, :only => :update_images_hack
 
   include Invitations
 

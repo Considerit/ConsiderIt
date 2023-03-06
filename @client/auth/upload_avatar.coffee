@@ -81,14 +81,13 @@ window.AvatarInput = ReactiveComponent
             @refs.avatar_preview.setAttribute 'src', asset('no_image_preview.png')
 
 window.upload_avatar = ->
-  current_user = fetch '/current_user'
   avatar_file_input = document.getElementById('user_avatar')
   if avatar_file_input?.files.length > 0
     ajax_submit_files_in_form 
       type: 'PUT'
       form: '#user_avatar_form'
       additional_data:  
-        authenticity_token: current_user.csrf
+        authenticity_token: arest.csrf()
         trying_to: 'update_avatar_hack'
       success: (resp) -> 
         # It is important that a user that just submitted a user picture see the picture

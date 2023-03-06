@@ -301,11 +301,6 @@ log_translation_count = (string_id) ->
       xhr = new XMLHttpRequest
       xhr.addEventListener 'readystatechange', null, false
 
-      xhr.setRequestHeader('Accept','application/json')
-      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
-      xhr.setRequestHeader('X-CSRF-Token', arest.csrf())
-      xhr.setRequestHeader('X-Requested-With','XMLHttpRequest')
-
       xhr.open 'PUT', '/log_translation_counts', true
       xhr.send frm
 

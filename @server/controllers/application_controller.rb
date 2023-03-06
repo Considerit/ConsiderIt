@@ -6,6 +6,7 @@ require 'exception_notifier'
 class ApplicationController < ActionController::Base
 
   protect_from_forgery with: :exception
+
   skip_before_action :verify_authenticity_token, if: :csrf_skippable?
 
   set_current_tenant_through_filter
@@ -74,7 +75,7 @@ class ApplicationController < ActionController::Base
 
 protected
   def csrf_skippable?
-    valid_API_call || (request.format.json? && request.content_type != "text/plain" && (!!request.xml_http_request?))
+    valid_API_call
   end
 
   def write_to_log(options)
@@ -96,6 +97,7 @@ protected
 
 
   # Some cases to handle: 
+  #   0) from request header, for supporting vanity domains
   #   1) looking up domain when a subdomain is set
   #   2) defaulting to product domain when at the base domain name
   #   3) changing subdomains via ?domain= parameter in development
@@ -109,9 +111,9 @@ protected
     subdomain_sought = nil 
     regional_id = nil
 
-
-
-    if rq.subdomain && rq.subdomain.length > 0  # case 1
+    if request.headers["Considerit-Forum"] && request.headers["Considerit-Forum"].length > 0 # case 0
+      subdomain_sought = request.headers["Considerit-Forum"]
+    elsif rq.subdomain && rq.subdomain.length > 0  # case 1
       ssubdomains = rq.subdomain.split('.')
       subdomain_sought = ssubdomains[0]
       if ssubdomains.length > 1

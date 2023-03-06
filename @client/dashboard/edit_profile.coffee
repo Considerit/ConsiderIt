@@ -155,7 +155,7 @@ window.EditProfile = ReactiveComponent
                   type: 'delete'
                   form: '#delete_account_form'
                   additional_data: 
-                    authenticity_token: fetch('/current_user').csrf
+                    authenticity_token: arest.csrf()
 
                   success: (resp) =>
                     if resp.length > 0 && JSON.parse(resp)?.error?
@@ -197,7 +197,7 @@ window.EditProfile = ReactiveComponent
                   type: 'delete'
                   form: '#delete_data_form'
                   additional_data: 
-                    authenticity_token: fetch('/current_user').csrf
+                    authenticity_token: arest.csrf()
 
                   success: (resp) =>
                     if resp.length > 0 && JSON.parse(resp)?.error?

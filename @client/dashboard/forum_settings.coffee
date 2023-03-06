@@ -536,7 +536,7 @@ window.ForumSettingsDash = ReactiveComponent
           INPUT 
             type: 'hidden'
             name: 'authenticity_token'
-            value: current_user.csrf
+            value: arest.csrf()
 
 
           INPUT

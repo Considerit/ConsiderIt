@@ -176,6 +176,7 @@ class TranslationsController < ApplicationController
 
     APP_CONFIG[:peers].each do |peer|
       begin 
+        Rails.logger.info "***************"
         Rails.logger.info "Replaying #{http_method} #{endpoint} on Peer #{peer}"
         query_params['considerit_API_key'] = APP_CONFIG[:considerit_API_key]
         if peer.count(':') > 1 || peer.index('ngrok') # a non-production peer
@@ -195,6 +196,11 @@ class TranslationsController < ApplicationController
         else 
           raise "Unsupported method #{http_method} for pushing to peers"
         end 
+
+        Rails.logger.info "#{response.body}"
+        Rails.logger.info "***************"
+
+
       rescue => err
         ExceptionNotifier.notify_exception err
       end

@@ -225,7 +225,6 @@ window.translator = (args, native_text) ->
 
   native_text = native_text.replace(/\n/g, "")
 
-
   # ensure this string is in the translations database for the development language
   if translations_native[id] != native_text
     console.log 'updating', {args: args, key: translations_native.key, id, native_text, saved: translations_native[id]}, translations_native[id] == native_text
@@ -267,6 +266,7 @@ window.translator = (args, native_text) ->
   try 
     translator = new IntlMessageFormat.IntlMessageFormat message, lang_used
     message = translator.format(args)
+
   catch e
      # this is a bad fallback, as plural rules won't work
     console.error "Error translating #{id}", {error: e, message, native_text}
@@ -588,7 +588,6 @@ TranslationsForLang = ReactiveComponent
           rank = percentRank(all_uses, uses) * 100
         percentiles[name] = rank 
 
-      console.log {percentiles}
 
 
     local = fetch 'translations'
@@ -893,7 +892,7 @@ draw_translation_metadata = (proposal) ->
 
 
 
-CHUNK_SIZE = 50
+CHUNK_SIZE = 20
 submitTranslationProposalsInChunks = (proposals, http_method, endpoint, cb) -> 
 
   submit_form = (chunk_o_proposals) -> 

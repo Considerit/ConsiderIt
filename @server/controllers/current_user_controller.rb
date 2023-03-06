@@ -3,7 +3,6 @@ require 'securerandom'
 
 
 class CurrentUserController < ApplicationController
-  skip_before_action :verify_authenticity_token, :only => [:acs]
 
   # minimum password length
   MIN_PASS = 4

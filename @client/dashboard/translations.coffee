@@ -295,11 +295,12 @@ log_translation_count = (string_id) ->
 
     if Object.keys(translation_uses).length > 0 
       frm = new FormData()
-      frm.append "authenticity_token", fetch('/current_user').csrf
+      frm.append "authenticity_token", arest.csrf()
       frm.append "counts", JSON.stringify(translation_uses)
 
       xhr = new XMLHttpRequest
       xhr.addEventListener 'readystatechange', null, false
+
       xhr.open 'PUT', '/log_translation_counts', true
       xhr.send frm
 
@@ -894,7 +895,7 @@ updateTranslations = (proposals, cb) ->
   return if window.navigator.userAgent?.indexOf('Prerender') > -1
 
   frm = new FormData()
-  frm.append "authenticity_token", fetch('/current_user').csrf
+  frm.append "authenticity_token", arest.csrf()
   frm.append "proposals", JSON.stringify(proposals)
 
   xhr = new XMLHttpRequest
@@ -909,7 +910,7 @@ updateTranslations = (proposals, cb) ->
 
 deleteTranslationString = (string_id) -> 
   frm = new FormData()
-  frm.append "authenticity_token", fetch('/current_user').csrf
+  frm.append "authenticity_token", arest.csrf()
   frm.append "string_id", string_id
 
   xhr = new XMLHttpRequest
@@ -923,7 +924,7 @@ deleteTranslationString = (string_id) ->
 
 rejectProposals = (proposals) -> 
   frm = new FormData()
-  frm.append "authenticity_token", fetch('/current_user').csrf
+  frm.append "authenticity_token", arest.csrf()
   frm.append "proposals", JSON.stringify(proposals)
 
   xhr = new XMLHttpRequest

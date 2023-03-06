@@ -1000,10 +1000,9 @@ window.EditBanner = ReactiveComponent
 
   submit_files: (cb) ->
     subdomain = fetch '/subdomain'
-    current_user = fetch '/current_user'
 
     data = 
-      authenticity_token: current_user.csrf
+      authenticity_token: arest.csrf()
     
     if @delete_logo
       data.logo = '*delete*'

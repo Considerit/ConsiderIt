@@ -892,7 +892,7 @@ draw_translation_metadata = (proposal) ->
 
 
 
-CHUNK_SIZE = 20
+CHUNK_SIZE = 10
 submitTranslationProposalsInChunks = (proposals, http_method, endpoint, cb) -> 
 
   submit_form = (chunk_o_proposals) -> 
@@ -909,7 +909,9 @@ submitTranslationProposalsInChunks = (proposals, http_method, endpoint, cb) ->
     xhr.onload = ->
       result = JSON.parse(xhr.responseText)
       arest.update_cache(result)
-      submit_form next_chunk()
+      next_proposals = next_chunk()
+      console.log("SUBMITTING", next_proposals)
+      submit_form next_proposals
 
     xhr.send frm
 

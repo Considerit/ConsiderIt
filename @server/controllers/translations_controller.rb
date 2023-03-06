@@ -197,7 +197,10 @@ class TranslationsController < ApplicationController
           raise "Unsupported method #{http_method} for pushing to peers"
         end 
 
-        Rails.logger.info "#{response.body}"
+        if response.status != 200
+          Rails.logger.info "Failed to replay transactions to #{peer}."
+          Rails.logger.info "#{response.body}"
+        end
         Rails.logger.info "***************"
 
 

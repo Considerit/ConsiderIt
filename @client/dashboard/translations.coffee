@@ -892,7 +892,7 @@ draw_translation_metadata = (proposal) ->
 
 
 
-CHUNK_SIZE = 10
+CHUNK_SIZE = 15
 submitTranslationProposalsInChunks = (proposals, http_method, endpoint, cb) -> 
 
   submit_form = (chunk_o_proposals) -> 

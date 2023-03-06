@@ -82,7 +82,7 @@ class TranslationsController < ApplicationController
       EventMailer.translations_native_changed(subdomain || current_subdomain, native_updates).deliver_later
     end 
 
-    if other_updates.length > 0 && !params.has_key?('considerit_API_key')
+    if other_updates.length > 0 && !params.has_key?('considerit_API_key') && !current_user.super_admin
       EventMailer.translations_proposed(subdomain || current_subdomain, other_updates).deliver_later
     end 
 

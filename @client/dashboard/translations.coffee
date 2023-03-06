@@ -891,22 +891,48 @@ draw_translation_metadata = (proposal) ->
       paddingRight: 4
     "#{proposal.origin_server} - #{proposer.name or proposer.user or proposal.user_id} #{prettyDate(proposal.created_at)}"
 
+
+
+CHUNK_SIZE = 50
+submitTranslationProposalsInChunks = (proposals, http_method, endpoint, cb) -> 
+
+  submit_form = (chunk_o_proposals) -> 
+    if !(chunk_o_proposals?.length > 0)
+      cb?()
+      return 
+    frm = new FormData()
+    frm.append "authenticity_token", arest.csrf()
+    frm.append "proposals", JSON.stringify(chunk_o_proposals)
+
+    xhr = new XMLHttpRequest
+    xhr.addEventListener 'readystatechange', null, false
+    xhr.open http_method, endpoint, true
+    xhr.onload = ->
+      result = JSON.parse(xhr.responseText)
+      arest.update_cache(result)
+      submit_form next_chunk()
+
+    xhr.send frm
+
+  chunk_id = 0 
+  next_chunk = -> 
+    chunk_id += 1
+    proposals.slice((chunk_id - 1) * CHUNK_SIZE, chunk_id * CHUNK_SIZE)
+
+  submit_form next_chunk()
+
+
+
 updateTranslations = (proposals, cb) ->
   return if window.navigator.userAgent?.indexOf('Prerender') > -1
 
-  frm = new FormData()
-  frm.append "authenticity_token", arest.csrf()
-  frm.append "proposals", JSON.stringify(proposals)
-
-  xhr = new XMLHttpRequest
-  xhr.addEventListener 'readystatechange', cb, false
-  xhr.open 'PUT', '/translations', true
-  xhr.onload = ->
+  submitTranslationProposalsInChunks proposals, 'PUT', '/translations', -> 
     translation_cache = {}
-    result = JSON.parse(xhr.responseText)
-    arest.update_cache(result)
+    cb?()
 
-  xhr.send frm
+rejectProposals = (proposals) -> 
+  submitTranslationProposalsInChunks proposals, 'DELETE', '/translation_proposal'
+
 
 deleteTranslationString = (string_id) -> 
   frm = new FormData()
@@ -922,19 +948,6 @@ deleteTranslationString = (string_id) ->
 
   xhr.send frm
 
-rejectProposals = (proposals) -> 
-  frm = new FormData()
-  frm.append "authenticity_token", arest.csrf()
-  frm.append "proposals", JSON.stringify(proposals)
-
-  xhr = new XMLHttpRequest
-  xhr.addEventListener 'readystatechange', null, false
-  xhr.open 'DELETE', '/translation_proposal', true
-  xhr.onload = ->
-    result = JSON.parse(xhr.responseText)
-    arest.update_cache(result)
-
-  xhr.send frm
 
 
 editable_translation = (id, lang_code, subdomain_id, updated_translations, proposed_translations, style) -> 

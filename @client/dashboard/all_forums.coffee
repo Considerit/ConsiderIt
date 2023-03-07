@@ -124,7 +124,7 @@ window.AllYourForums = ReactiveComponent
                     if confirm("Are you sure you want to import this configuration? It will overwrite the configuration of this forum.")
 
                       frm = new FormData()
-                      frm.append "authenticity_token", fetch('/current_user').csrf
+                      frm.append "authenticity_token", arest.csrf()
                       frm.append "subdomain_to_import_configuration", forum.id
 
                       cb = =>
@@ -154,7 +154,7 @@ window.AllYourForums = ReactiveComponent
                     if confirm("Are you sure you want to delete this entire forum? You cannot undo it.")
 
                       frm = new FormData()
-                      frm.append "authenticity_token", fetch('/current_user').csrf
+                      frm.append "authenticity_token", arest.csrf()
                       frm.append "subdomain_to_destroy", forum.id
 
                       cb = =>
@@ -199,7 +199,7 @@ window.AllYourForums = ReactiveComponent
         DIV null,
           "You have not yet hosted a forum. "
           A 
-            href: 'https://consider.it/create_forum'
+            href: "https://#{fetch('/application').base_domain}/create_forum"
             'Create your own'
           " if you wish."
 

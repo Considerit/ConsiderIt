@@ -1014,10 +1014,16 @@ window.PointsList = ReactiveComponent
               display: if WINDOW_WIDTH() < 430 then 'none'
 
             if none_given
-              "No #{get_point_label(@props.valence.substring(0, @props.valence.length - 1) + 's', proposal)} given"
+              translator 
+                id: 'engage.no_pro_or_con_given'
+                pros_or_cons: get_point_label(@props.valence.substring(0, @props.valence.length - 1) + 's', proposal)
+                "No {pros_or_cons} given"
 
             else               
-              "Be the first to add a #{get_point_label(@props.valence.substring(0, @props.valence.length - 1), proposal)}"
+              translator 
+                id: 'engage.first_to_add'
+                pro_or_con: get_point_label(@props.valence.substring(0, @props.valence.length - 1), proposal)
+                "Be the first to add a {pro_or_con}" 
 
 
       if @props.drop_target && permit('create point', proposal) > 0

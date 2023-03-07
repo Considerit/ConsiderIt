@@ -26,7 +26,6 @@ window.Header = ReactiveComponent
     
 
     header_bonus = customization('header_bonus') # currently used for things like inserting google font
-
     HEADER 
       style: 
         position: 'relative'
@@ -48,10 +47,17 @@ window.Header = ReactiveComponent
 
       #   "Consider.it server upgrade scheduled for 5:30pm - 6:00pm UTC"
       
-      header_bonus?()
+      if header_bonus?
+        if typeof header_bonus == "function"
+          header_bonus()
+        else 
+          DIV 
+            dangerouslySetInnerHTML: __html: header_bonus
+
       DIV 
         style: 
           margin: '0 auto'
+          position: 'relative'
 
 
         ProfileMenu()

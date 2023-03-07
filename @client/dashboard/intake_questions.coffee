@@ -384,7 +384,7 @@ window.EditIntakeQuestion = ReactiveComponent
       {name: 'text', description: 'open-ended response'}
     ]
 
-    validated = @local.view_name?.length > 0 && @local.question?.length > 0 && @local.input_type?.length > 0 && (@local.input_type == 'text' || @local.options?.length > 0)
+    validated = @local.view_name?.length > 0 && @local.question?.length > 0 && @local.input_type?.length > 0 && (@local.input_type == 'boolean' || @local.input_type == 'text' || @local.options?.length > 0)
 
     wrap_in_modal null, close_modal, DIV null,
 
@@ -427,32 +427,33 @@ window.EditIntakeQuestion = ReactiveComponent
             @local.question = e.target.value
             save @local
 
-      DIV 
-        className: 'field'
+      if question && !question.participation_pledge
+        DIV 
+          className: 'field'
 
-        LABEL 
-          htmlFor: "#question_type"
+          LABEL 
+            htmlFor: "#question_type"
 
-          'Question type'
-          SPAN 
-            className: 'required'
-            '*'
+            'Question type'
+            SPAN 
+              className: 'required'
+              '*'
 
-        SELECT
-          id: '#question_type'
-          type: 'text'
-          defaultValue: @local.input_type
-          onChange: (e) =>
-            @local.input_type = e.target.value
-            save @local          
-          style: 
-            fontSize: 16
+          SELECT
+            id: '#question_type'
+            type: 'text'
+            defaultValue: @local.input_type
+            onChange: (e) =>
+              @local.input_type = e.target.value
+              save @local          
+            style: 
+              fontSize: 16
 
-          for typ in question_types
-            OPTION 
-              key: typ.name
-              value: typ.name
-              "#{typ.name} – #{typ.description}"
+            for typ in question_types
+              OPTION 
+                key: typ.name
+                value: typ.name
+                "#{typ.name} – #{typ.description}"
 
 
       if @local.input_type in ['dropdown', 'checklist']
@@ -483,7 +484,7 @@ window.EditIntakeQuestion = ReactiveComponent
 
 
 
-      if @local.input_type != 'text'
+      if @local.input_type != 'text' && (!question || !question.participation_pledge)
         DIV 
           style: 
             marginBottom: 24
@@ -537,25 +538,25 @@ window.EditIntakeQuestion = ReactiveComponent
 
 
 
-
-      LABEL 
-        style: 
-          display: 'flex'
-
-        INPUT 
-          className: 'bigger'
-          type: 'checkbox'
-          defaultChecked: @local.required
-          onChange: (e) =>
-            @local.required = e.target.checked
-            save @local 
-        SPAN 
+      if !question || !question.participation_pledge
+        LABEL 
           style: 
-            paddingLeft: 12
+            display: 'flex'
 
-          "Participants are "
-          B null, "required" 
-          " to answer this question"
+          INPUT 
+            className: 'bigger'
+            type: 'checkbox'
+            defaultChecked: @local.required
+            onChange: (e) =>
+              @local.required = e.target.checked
+              save @local 
+          SPAN 
+            style: 
+              paddingLeft: 12
+
+            "Participants are "
+            B null, "required" 
+            " to answer this question"
 
 
 

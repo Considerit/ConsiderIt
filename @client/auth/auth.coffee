@@ -27,7 +27,6 @@ window.AuthCallout = ReactiveComponent
     return SPAN null if current_user.logged_in || customization('contribution_phase') == 'frozen'
 
     create_account_button_style = 
-      backgroundColor: selected_color
       marginRight: 8
 
     DIV  
@@ -118,7 +117,7 @@ window.AuthTransition = ReactiveComponent
     @local.logged_in_last_render ?= current_user.logged_in
 
     if current_user.csrf
-      arest.csrf(current_user.csrf)
+      arest.csrf() # resets csrf
 
 
     # When we switch to new auth_mode screens, wipe out all the old

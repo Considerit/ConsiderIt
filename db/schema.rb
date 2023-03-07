@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_02_26_220228) do
+ActiveRecord::Schema.define(version: 2023_03_03_235919) do
 
   create_table "ahoy_events", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "subdomain_id"
@@ -258,6 +258,7 @@ ActiveRecord::Schema.define(version: 2023_02_26_220228) do
     t.integer "moderation_policy", default: 0
     t.json "digest_triggered_for"
     t.integer "created_by"
+    t.string "custom_url"
     t.index ["created_by"], name: "fk_rails_46999ec1f4"
     t.index ["name"], name: "by_identifier", length: 10
   end

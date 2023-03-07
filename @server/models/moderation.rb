@@ -4,7 +4,7 @@ class Moderation < ApplicationRecord
   self.STATUSES = %w(fails passes)
 
   belongs_to :moderatable, :polymorphic=>true
-  belongs_to :user
+  belongs_to :user, optional: true
   
   acts_as_tenant :subdomain
 
@@ -50,7 +50,7 @@ class Moderation < ApplicationRecord
             moderation = existing_moderations[obj['id']]
           else 
             # Create a moderation for each that doesn't yet exist.           
-            begin 
+            begin
               moderation = Moderation.create! :moderatable_type => moderation_class.name, :moderatable_id => obj['id'], :subdomain_id => current_subdomain.id
             rescue ActiveRecord::RecordInvalid
               # I believe this happens when a user was destroyed, but some moderatable object did not get properly cleaned up

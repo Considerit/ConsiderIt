@@ -186,7 +186,7 @@ window.NewForumOnBoarding = ReactiveComponent
         'Learn more about the '
 
         A
-          href: "https://consider.it/tour#basics"
+          href: "https://#{fetch('/application').base_domain}/tour#basics"
           target: '_blank'
           style:
             fontWeight: 400

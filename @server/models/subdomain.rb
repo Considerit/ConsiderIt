@@ -19,7 +19,7 @@ class Subdomain < ApplicationRecord
   validates_attachment_content_type :logo, :content_type => ["image/jpg", "image/jpeg", "image/pjpeg", "image/png","image/x-png", "image/gif", "image/webp"], message: "Only jpeg, png, gif, and webp images types are allowed"
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:id, :lang, :name, :created_at, :about_page_url, :external_project_url, :moderation_policy, :plan, :SSO_domain]
+  self.my_public_fields = [:id, :lang, :name, :created_at, :about_page_url, :external_project_url, :moderation_policy, :plan, :SSO_domain, :custom_url]
 
   scope :public_fields, -> { select(self.my_public_fields) }
 
@@ -49,12 +49,21 @@ class Subdomain < ApplicationRecord
       json['shared_code'] = shared
     end
 
+    json['host'] = considerit_host
     json['customizations'] = self.customization_json
     json
   end
 
   def url
-    "#{self.name}.#{APP_CONFIG[:domain]}"
+    self.custom_url || considerit_host
+  end
+
+  def considerit_host
+    if APP_CONFIG[:product_page] == self.name
+      "#{APP_CONFIG[:domain]}"
+    else 
+      "#{self.name}.#{APP_CONFIG[:domain]}"
+    end
   end
 
 

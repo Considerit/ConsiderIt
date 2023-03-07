@@ -55,13 +55,18 @@ OAUTH_SETUP_PROC = lambda do |env|
   #   - https://github.com/intridea/omniauth-oauth2/pull/18/files; https://github.com/zquestz/omniauth-google-oauth2/issues/31#issuecomment-8922362
   #   - https://github.com/intridea/omniauth-oauth2/issues/32
 
-  if Rails.env.production? && subdomain
-    redirect_domain = APP_CONFIG[:oauth_callback_subdomain]
-    if APP_CONFIG[:product_page] && APP_CONFIG[:product_page] != 'homepage'
-      redirect_domain += ".#{APP_CONFIG[:product_page]}"
+  if Rails.env.production? && subdomain 
+    if APP_CONFIG[:product_page] && APP_CONFIG[:product_page] == subdomain
+      env['omniauth.strategy'].options['state'] = subdomain
+      env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://#{request.host}/auth/#{env['omniauth.strategy'].name()}/callback"
+    else 
+      redirect_domain = APP_CONFIG[:oauth_callback_subdomain]
+      if APP_CONFIG[:product_page] && APP_CONFIG[:region] != 'US'
+        redirect_domain += ".#{APP_CONFIG[:product_page]}"
+      end
+      env['omniauth.strategy'].options['state'] = subdomain
+      env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://#{redirect_domain}.#{host}/auth/#{env['omniauth.strategy'].name()}/callback"
     end
-    env['omniauth.strategy'].options['state'] = subdomain
-    env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://#{redirect_domain}.#{host}/auth/#{env['omniauth.strategy'].name()}/callback"
   end
 end
 
@@ -77,21 +82,21 @@ OMNIAUTH_SETUP_PROC = lambda do |env|
   end
   host = host.join('.').intern
 
-  if Rails.env.production? && subdomain
+
+  if Rails.env.production? && subdomain 
     redirect_domain = APP_CONFIG[:oauth_callback_subdomain]
     if APP_CONFIG[:product_page] && APP_CONFIG[:product_page] != 'homepage'
       redirect_domain += ".#{APP_CONFIG[:product_page]}"
     end
-
-    "#{request.scheme}://#{redirect_domain}.#{host}"
-  else 
-    "#{request.scheme}://#{request.host_with_port}"
+    return "#{request.scheme}://#{redirect_domain}.#{host}"
   end
+
+  "#{request.scheme}://#{request.host_with_port}"
 
 end
 
 Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :facebook, :setup => OAUTH_SETUP_PROC, :scope => 'email', :display => 'popup', :image_size => 'large' #, :client_options => {:ssl => {:ca_path => '/etc/ssl/certs'}}
+  # provider :facebook, :setup => OAUTH_SETUP_PROC, :scope => 'email', :display => 'popup', :image_size => 'large' #, :client_options => {:ssl => {:ca_path => '/etc/ssl/certs'}}
   # provider :twitter, :setup => OAUTH_SETUP_PROC
 
   provider :google_oauth2, :setup => OAUTH_SETUP_PROC, :provider_ignores_state => true, :client_options => { :access_type => "offline", :prompt => "", :scope => 'email,profile'}

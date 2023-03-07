@@ -1,0 +1,5 @@
+#!/bin/sh
+DIR="$( cd "$( dirname "$0" )" && pwd )"
+git pull
+BUILD_PRODUCTION=1 node_modules/webpack/bin/webpack.js
+touch tmp/restart.txt

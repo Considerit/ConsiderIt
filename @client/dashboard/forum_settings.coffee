@@ -294,6 +294,7 @@ window.ForumSettingsDash = ReactiveComponent
                     no_opinion_view: true
                     visibility: "host-only"
                     participation_pledge: true
+                    view_name: 'participation_pledge'
                     self_report: 
                       input: "boolean"
                       question: 'I pledge to be civil and to use only one account'
@@ -535,7 +536,7 @@ window.ForumSettingsDash = ReactiveComponent
           INPUT 
             type: 'hidden'
             name: 'authenticity_token'
-            value: current_user.csrf
+            value: arest.csrf()
 
 
           INPUT

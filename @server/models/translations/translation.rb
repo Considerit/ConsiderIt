@@ -206,7 +206,7 @@ class Translations::Translation < ApplicationRecord
       competitor = competing_translation.first
       if competitor.id != self.id
         competitor.accepted = false
-        competitor.save 
+        competitor.save(touch: false)
       end
     end
 

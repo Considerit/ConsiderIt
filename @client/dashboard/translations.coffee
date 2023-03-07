@@ -225,7 +225,6 @@ window.translator = (args, native_text) ->
 
   native_text = native_text.replace(/\n/g, "")
 
-
   # ensure this string is in the translations database for the development language
   if translations_native[id] != native_text
     console.log 'updating', {args: args, key: translations_native.key, id, native_text, saved: translations_native[id]}, translations_native[id] == native_text
@@ -267,6 +266,7 @@ window.translator = (args, native_text) ->
   try 
     translator = new IntlMessageFormat.IntlMessageFormat message, lang_used
     message = translator.format(args)
+
   catch e
      # this is a bad fallback, as plural rules won't work
     console.error "Error translating #{id}", {error: e, message, native_text}
@@ -295,11 +295,12 @@ log_translation_count = (string_id) ->
 
     if Object.keys(translation_uses).length > 0 
       frm = new FormData()
-      frm.append "authenticity_token", fetch('/current_user').csrf
+      frm.append "authenticity_token", arest.csrf()
       frm.append "counts", JSON.stringify(translation_uses)
 
       xhr = new XMLHttpRequest
       xhr.addEventListener 'readystatechange', null, false
+
       xhr.open 'PUT', '/log_translation_counts', true
       xhr.send frm
 
@@ -587,7 +588,6 @@ TranslationsForLang = ReactiveComponent
           rank = percentRank(all_uses, uses) * 100
         percentiles[name] = rank 
 
-      console.log {percentiles}
 
 
     local = fetch 'translations'
@@ -665,11 +665,10 @@ TranslationsForLang = ReactiveComponent
                       latest = proposal.created_at
                       to_accept = proposal
                   if !to_accept.accepted
-                    console.log "Promoting", to_accept.id, " over ", props.accepted.id, "(#{proposal.created_at} over #{props.accepted.created_at}"
+                    console.log "Promoting", to_accept.id, " over ", props.accepted?.id, "(#{proposal.created_at} over #{props.accepted?.created_at}"
                     to_accept['accepted'] = true
                     proposals.push to_accept
 
-              # TODO: These aren't actually getting promoted
               if proposals.length > 0 
                 updateTranslations proposals
 
@@ -689,6 +688,19 @@ TranslationsForLang = ReactiveComponent
                 rejectProposals proposals
 
             "Clear proposals"
+
+
+          BUTTON
+            onClick: =>  
+              proposals = []
+              for id, props of proposed_translations.proposals
+                if props.accepted
+                  proposals.push props.accepted
+
+              if proposals.length > 0 
+                updateTranslations proposals
+
+            "Propagate accepted"
 
 
 
@@ -822,10 +834,13 @@ TranslationsForLang = ReactiveComponent
 
 
                     if current_user.is_super_admin && proposed_translations.proposals[name]?.proposals.length > 0
+                      proposals = proposed_translations.proposals[name].proposals
+                      if proposed_translations.proposals[name].accepted
+                        proposals.unshift proposed_translations.proposals[name].accepted
                       UL  
                         style: {}
 
-                        for proposal, idx in proposed_translations.proposals[name].proposals
+                        for proposal, idx in proposals
                           do (proposal, name, idx) =>
                             LI 
                               key: "#{name}-#{proposal.translation}-#{proposal.id}"
@@ -834,34 +849,38 @@ TranslationsForLang = ReactiveComponent
                                 listStyle: 'none'
 
                               DIV 
-                                style: {}
+                                style: 
+                                  color: if proposal.accepted then 'darkgreen'
                                 proposal.translation 
 
 
                               draw_translation_metadata(proposal)
 
-                              BUTTON
-                                style: 
-                                  borderRadius: 8
-                                onClick: => 
-                                  proposal.accepted = true
-                                  updateTranslations [proposal]
+                              if !proposal.accepted
+                                DIV null,
 
-                                "Ok"
+                                  BUTTON
+                                    style: 
+                                      borderRadius: 8
+                                    onClick: => 
+                                      proposal.accepted = true
+                                      updateTranslations [proposal]
 
-                              BUTTON
-                                style: 
-                                  backgroundColor: 'transparent'
-                                  display: 'inline-block'
-                                  marginLeft: 20
-                                  border: 'none'
-                                  color: '#999'
-                                  textDecoration: 'underline'
-                                  fontSize: 14
+                                    "Ok"
 
-                                onClick: => 
-                                  rejectProposals(name, [proposal])
-                                "reject"
+                                  BUTTON
+                                    style: 
+                                      backgroundColor: 'transparent'
+                                      display: 'inline-block'
+                                      marginLeft: 20
+                                      border: 'none'
+                                      color: '#999'
+                                      textDecoration: 'underline'
+                                      fontSize: 14
+
+                                    onClick: => 
+                                      rejectProposals(name, [proposal])
+                                    "reject"
 
             rows
 
@@ -878,26 +897,54 @@ draw_translation_metadata = (proposal) ->
       paddingRight: 4
     "#{proposal.origin_server} - #{proposer.name or proposer.user or proposal.user_id} #{prettyDate(proposal.created_at)}"
 
+
+
+CHUNK_SIZE = 15
+submitTranslationProposalsInChunks = (proposals, http_method, endpoint, cb) -> 
+
+  submit_form = (chunk_o_proposals) -> 
+    if !(chunk_o_proposals?.length > 0)
+      cb?()
+      return 
+    frm = new FormData()
+    frm.append "authenticity_token", arest.csrf()
+    frm.append "proposals", JSON.stringify(chunk_o_proposals)
+
+    xhr = new XMLHttpRequest
+    xhr.addEventListener 'readystatechange', null, false
+    xhr.open http_method, endpoint, true
+    xhr.onload = ->
+      result = JSON.parse(xhr.responseText)
+      arest.update_cache(result)
+      next_proposals = next_chunk()
+      console.log("SUBMITTING", next_proposals)
+      submit_form next_proposals
+
+    xhr.send frm
+
+  chunk_id = 0 
+  next_chunk = -> 
+    chunk_id += 1
+    proposals.slice((chunk_id - 1) * CHUNK_SIZE, chunk_id * CHUNK_SIZE)
+
+  submit_form next_chunk()
+
+
+
 updateTranslations = (proposals, cb) ->
   return if window.navigator.userAgent?.indexOf('Prerender') > -1
 
-  frm = new FormData()
-  frm.append "authenticity_token", fetch('/current_user').csrf
-  frm.append "proposals", JSON.stringify(proposals)
-
-  xhr = new XMLHttpRequest
-  xhr.addEventListener 'readystatechange', cb, false
-  xhr.open 'PUT', '/translations', true
-  xhr.onload = ->
+  submitTranslationProposalsInChunks proposals, 'PUT', '/translations', -> 
     translation_cache = {}
-    result = JSON.parse(xhr.responseText)
-    arest.update_cache(result)
+    cb?()
 
-  xhr.send frm
+rejectProposals = (proposals) -> 
+  submitTranslationProposalsInChunks proposals, 'DELETE', '/translation_proposal'
+
 
 deleteTranslationString = (string_id) -> 
   frm = new FormData()
-  frm.append "authenticity_token", fetch('/current_user').csrf
+  frm.append "authenticity_token", arest.csrf()
   frm.append "string_id", string_id
 
   xhr = new XMLHttpRequest
@@ -909,19 +956,6 @@ deleteTranslationString = (string_id) ->
 
   xhr.send frm
 
-rejectProposals = (proposals) -> 
-  frm = new FormData()
-  frm.append "authenticity_token", fetch('/current_user').csrf
-  frm.append "proposals", JSON.stringify(proposals)
-
-  xhr = new XMLHttpRequest
-  xhr.addEventListener 'readystatechange', null, false
-  xhr.open 'DELETE', '/translation_proposal', true
-  xhr.onload = ->
-    result = JSON.parse(xhr.responseText)
-    arest.update_cache(result)
-
-  xhr.send frm
 
 
 editable_translation = (id, lang_code, subdomain_id, updated_translations, proposed_translations, style) -> 
@@ -983,8 +1017,6 @@ editable_translation = (id, lang_code, subdomain_id, updated_translations, propo
         else  
           updated_translations[id].translation = e.target.value 
 
-    if proposal
-      draw_translation_metadata proposal
 
 
 promote_temporary_translations = (key) ->
@@ -999,6 +1031,11 @@ promote_temporary_translations = (key) ->
   return if proposals.length == 0
 
   updateTranslations proposals, -> 
+    for k,v of updated_translations
+      if k != 'key'
+        delete updated_translations[k]
+    save updated_translations
+
     trans_UI = fetch('translations_interface')
     trans_UI.saved_successfully = true 
     save trans_UI 

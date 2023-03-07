@@ -122,15 +122,21 @@ window.DefaultFooter = ReactiveComponent
       #dangerouslySetInnerHTML: { __html: "&bull;"}
       '|'
 
+    footer_bonus = customization('footer_bonus')
+
     DIV 
       className: "Footer"
 
-      if customization('footer_bonus')?
+      if footer_bonus?
         DIV 
           className: 'main_background'
-          style: 
-            paddingBottom: 36
-          customization('footer_bonus')?()
+
+          if typeof footer_bonus == "function"
+            footer_bonus()
+          else 
+            DIV 
+              dangerouslySetInnerHTML: __html: footer_bonus
+
 
 
       DIV 
@@ -207,7 +213,7 @@ window.DefaultFooter = ReactiveComponent
               A 
                 className: 'create-forum'
                 key: 'create-forum'
-                href: 'https://consider.it'
+                href: "https://#{fetch('/application').base_domain}"
 
                 translator 
                   id: "footer.created_your_own_forum"
@@ -300,7 +306,7 @@ window.TechnologyByConsiderit = ReactiveComponent
         onMouseLeave: => 
           @local.hover = false
           save @local
-        href: 'https://consider.it'
+        href: "https://#{fetch('/application').base_domain}"
         target: '_blank'
         title: 'Consider.it\'s homepage'
         style: 

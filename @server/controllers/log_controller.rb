@@ -1,5 +1,4 @@
 class LogController < ApplicationController
-  skip_before_action :verify_authenticity_token
   
   def create
     if session[:search_bot]

@@ -46,7 +46,9 @@ class TranslationsController < ApplicationController
       existing = Translations::Translation.where(:string_id => string_id, :lang_code => lang_code, :subdomain_id => subdomain ? subdomain.id : nil)
       accepted = existing.where(:accepted => true).first
 
-      next if (accepted && accepted.translation == translation) || (!translation || translation.length == 0)
+      if (accepted && accepted.translation == translation) || (!translation || translation.length == 0)
+        for_peers.push proposal # we still want to push it to peers incase they haven't received it yet. 
+      end 
 
       # super admins can always directly update translations
       # allow non super admins to:
@@ -80,7 +82,7 @@ class TranslationsController < ApplicationController
       EventMailer.translations_native_changed(subdomain || current_subdomain, native_updates).deliver_later
     end 
 
-    if other_updates.length > 0 && !params.has_key?('considerit_API_key')
+    if other_updates.length > 0 && !params.has_key?('considerit_API_key') && !current_user.super_admin
       EventMailer.translations_proposed(subdomain || current_subdomain, other_updates).deliver_later
     end 
 
@@ -174,6 +176,7 @@ class TranslationsController < ApplicationController
 
     APP_CONFIG[:peers].each do |peer|
       begin 
+        Rails.logger.info "***************"
         Rails.logger.info "Replaying #{http_method} #{endpoint} on Peer #{peer}"
         query_params['considerit_API_key'] = APP_CONFIG[:considerit_API_key]
         if peer.count(':') > 1 || peer.index('ngrok') # a non-production peer
@@ -193,6 +196,14 @@ class TranslationsController < ApplicationController
         else 
           raise "Unsupported method #{http_method} for pushing to peers"
         end 
+
+        if response.status != 200
+          Rails.logger.info "Failed to replay transactions to #{peer}."
+          Rails.logger.info "#{response.body}"
+        end
+        Rails.logger.info "***************"
+
+
       rescue => err
         ExceptionNotifier.notify_exception err
       end

@@ -70,7 +70,7 @@ class HtmlController < ApplicationController
       @app = "franklin"
       @js_dependencies = nil
       @plausible_domain = APP_CONFIG[:plausible_domain]
-      if @plausible_domain && @plausible_domain.length > 0 && current_subdomain.customizations['enable_plausible_analytics']
+      if @plausible_domain && @plausible_domain.length > 0 && current_subdomain.customizations && current_subdomain.customizations['enable_plausible_analytics']
         @plausible_domain += ",#{current_subdomain.name}.#{APP_CONFIG[:plausible_domain]}"
       end
       fonts = [ 
@@ -78,6 +78,11 @@ class HtmlController < ApplicationController
                 {name: 'IBM Plex Sans Condensed', prefix: "ibm-plex-sans-condensed-v13", charsets: 'vietnamese_latin-ext_latin_cyrillic-ext', styles: {normal: [400, 700]}},
                 {name: 'IBM Plex Mono', prefix: "ibm-plex-mono-v15", charsets: 'vietnamese_latin-ext_latin_cyrillic-ext_cyrillic', styles: {normal: [400]}}                 
               ]
+
+      # https://gwfh.mranftl.com/fonts is a good resource for downloading google fonts for self-hosting
+      current_subdomain.customization_json.fetch("additional_fonts", []).each do |font|
+        fonts.push font.deep_symbolize_keys
+      end
 
     end 
 

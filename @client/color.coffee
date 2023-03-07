@@ -13,6 +13,14 @@ window.upgrade_color = '#16a1e3'
 window.attention_orange = "#fb7e26"
 window.main_background_color = '#f6f7f9'
 
+
+# Ugly! Need to have responsive colors or responsive styles. 
+if location.href.indexOf('aeroparticipa') > -1
+  window.focus_blue = "#073682"
+  window.selected_color = focus_blue
+
+
+
 window.parseCssRgb = (css_color_str) ->
   test = document.createElement('div')
   test.style.color = css_color_str

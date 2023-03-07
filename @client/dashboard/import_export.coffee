@@ -77,7 +77,7 @@ window.DataDash = ReactiveComponent
         INPUT 
           type: 'hidden'
           name: 'authenticity_token'
-          value: current_user.csrf
+          value: arest.csrf()
 
         H4
           style: 
@@ -226,7 +226,7 @@ window.DataDash = ReactiveComponent
                 form: '#import_data'
                 type: 'POST'
                 additional_data: 
-                  authenticity_token: current_user.csrf
+                  authenticity_token: arest.csrf()
                   trying_to: 'update_avatar_hack'   
                 success: @successful_import_cb
                 error: @failed_import_cb
@@ -278,7 +278,7 @@ window.DataDash = ReactiveComponent
                 if confirm("Are you sure you want to delete all proposals, opinions, and comments on this forum?")
                   
                   frm = new FormData()
-                  frm.append "authenticity_token", current_user.csrf
+                  frm.append "authenticity_token", arest.csrf()
 
                   cb = =>
                     location.reload()
@@ -299,7 +299,7 @@ window.DataDash = ReactiveComponent
                 if confirm("Are you sure you want to entirely delete this forum? In addition to removing all content, the forum and all its configuration will be removed.")
                   
                   frm = new FormData()
-                  frm.append "authenticity_token", current_user.csrf
+                  frm.append "authenticity_token", arest.csrf()
                   frm.append "subdomain_to_destroy", subdomain.id
 
                   cb = =>
@@ -317,7 +317,6 @@ window.DataDash = ReactiveComponent
 
 
   drawArgdownImport: -> 
-    current_user = fetch '/current_user'
     FORM 
       id: 'import_argdown'
       action: '/dashboard/data_import_argdown'
@@ -362,7 +361,7 @@ window.DataDash = ReactiveComponent
             form: '#import_argdown'
             type: 'POST'
             additional_data: 
-              authenticity_token: current_user.csrf
+              authenticity_token: arest.csrf()
               trying_to: 'update_avatar_hack'   
             success: @successful_import_cb
             error: @failed_import_cb
@@ -372,7 +371,6 @@ window.DataDash = ReactiveComponent
 
 
   drawArgdownExport: -> 
-    current_user = fetch '/current_user'
 
     FORM 
       className: "argdown-export"
@@ -397,7 +395,7 @@ window.DataDash = ReactiveComponent
       INPUT 
         type: 'hidden'
         name: 'authenticity_token'
-        value: current_user.csrf
+        value: arest.csrf()
 
       H2
         style: 

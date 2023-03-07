@@ -4,7 +4,6 @@ require 'uri'
 require 'net/http'
 
 class SubdomainController < ApplicationController
-  skip_before_action :verify_authenticity_token, :only => :update_images_hack
   include Invitations
 
   before_action :verify_user, only: [:create]

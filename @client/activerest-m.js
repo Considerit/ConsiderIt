@@ -129,7 +129,7 @@
     }
 
     var outstanding_fetches = {}
-    function server_fetch(key) {
+    function server_fetch(key, continuation) {
         // Error check
         if (outstanding_fetches[key]) {
             console.error('Duplicate request for '+key)
@@ -145,6 +145,7 @@
                 if (window.arest.trans_in)
                     result = arest.trans_in(result)
                 update_cache(result)
+                if (continuation) continuation()                
             }
             else if (request.status === 500)
                 if (window.on_ajax_error) window.on_ajax_error()

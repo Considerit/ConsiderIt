@@ -546,6 +546,8 @@ class CurrentUserController < ApplicationController
 
     current_user_hash = current_user.current_user_hash(form_authenticity_token)
     current_user_hash["first_visit_to_forum"] = created || new_participant
+    current_user_hash.delete(:csrf) # csrf value for the redirected url can be invalid
+    
     #######################################################
     # See comment in third_party.coffee#startThirdPartyAuth
     if current_subdomain.custom_url 

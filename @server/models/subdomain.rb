@@ -59,7 +59,11 @@ class Subdomain < ApplicationRecord
   end
 
   def considerit_host
-    "#{self.name}.#{APP_CONFIG[:domain]}"
+    if APP_CONFIG[:product_page] == self.name
+      "#{APP_CONFIG[:domain]}"
+    else 
+      "#{self.name}.#{APP_CONFIG[:domain]}"
+    end
   end
 
 

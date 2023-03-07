@@ -56,20 +56,21 @@ window.BUBBLE_WRAP = ReactiveComponent
           boxShadow: '#b5b5b5 0 1px 1px 0px'
 
 
-        DIV 
-          style: mouth_style
+        if @props.user || @props.pic
+          DIV 
+            style: mouth_style
 
-          Bubblemouth 
-            apex_xfrac: 0
-            width: mouth_w
-            height: mouth_w
-            fill: considerit_gray
-            stroke: 'none'
-            box_shadow: _.defaults {}, (@props.mouth_shadow or {}),   
-              dx: 3
-              dy: 0
-              stdDeviation: 2
-              opacity: .5
+            Bubblemouth 
+              apex_xfrac: 0
+              width: mouth_w
+              height: mouth_w
+              fill: considerit_gray
+              stroke: 'none'
+              box_shadow: _.defaults {}, (@props.mouth_shadow or {}),   
+                dx: 3
+                dy: 0
+                stdDeviation: 2
+                opacity: .5
 
 
         @props.children or STATEMENT @props

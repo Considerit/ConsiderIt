@@ -373,7 +373,10 @@ ModerateItem = ReactiveComponent
           DIV null, 
 
             if class_name == 'Comment'
+
+
               DIV 
+                class_name: 'context'
                 style: 
                   opacity: .5
                 BUBBLE_WRAP 
@@ -382,7 +385,7 @@ ModerateItem = ReactiveComponent
                   anon: point.hide_name
                   user: point.user
                   body: point.text
-                  width: 'min(700px,75vw)'
+                  width: 'min(100%, 700px)'
                   avatar_style: if TABLET_SIZE() then {width: 32, height: 32, left: -44}
 
 
@@ -391,16 +394,63 @@ ModerateItem = ReactiveComponent
                     key: comment
                     title: fetch(comment).body
                     user: fetch(comment).user
-                    width: 'min(700px,75vw)'
+                    width: 'min(100%, 700px)'
                     avatar_style: if TABLET_SIZE() then {width: 32, height: 32, left: -44}
 
-            BUBBLE_WRAP
-              title: header
-              body: moderatable.description
-              anon: !!moderatable.hide_name
-              user: moderatable.user
-              width: 'min(700px,75vw)'
-              avatar_style: if TABLET_SIZE() then {width: 32, height: 32, left: -44}
+            else if class_name == 'Point'
+
+              DIV 
+                class_name: 'context'
+                style: 
+                  opacity: .5
+                BUBBLE_WRAP 
+                  key: proposal.key
+                  title: proposal.name 
+                  user: proposal.user
+                  body: proposal.description
+                  width: 'min(100%, 700px)'
+                  avatar_style: if TABLET_SIZE() then {width: 32, height: 32, left: -44}
+
+            else if class_name == 'Proposal'
+              list_key = get_list_for_proposal(proposal)
+              DIV 
+                class_name: 'context'
+                style: 
+                  opacity: .5
+
+
+                BUBBLE_WRAP 
+                  key: list_key
+                  title: get_list_title(list_key) 
+                  body: customization('list_description', list_key)
+                  width: 'min(100%, 700px)'
+
+
+            DIV 
+              style: 
+                position: 'relative'
+
+              if class_name == 'Point'
+                DIV
+                  style: 
+                    position: 'absolute'
+                    left: "calc(100% + 16px)"
+                    top: 4
+                    fontSize: 12
+                    zIndex: 999
+                  if point.is_pro
+                    translator 'point_labels.pro', 'pro'
+                  else 
+                    translator 'point_labels.con', 'con'
+
+              BUBBLE_WRAP
+                title: header
+                body: moderatable.description
+                anon: !!moderatable.hide_name
+                user: moderatable.user
+                width: 'min(100%, 700px)'
+                avatar_style: if TABLET_SIZE() then {width: 32, height: 32, left: -44}
+
 
             DIV null,
               "by #{author?.name or anonymous_label()}"

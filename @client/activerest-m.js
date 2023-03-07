@@ -264,7 +264,15 @@
 
     var csrf_token = null
     function csrf(new_token) {
-        if (new_token) csrf_token = new_token
+        if (new_token) {
+            csrf_token = new_token;
+            return csrf_token;
+        }
+
+        if (cache['/current_user']) {
+            csrf_token = cache['/current_user'].csrf
+        }
+
         if (csrf_token) return csrf_token
         var metas = document.getElementsByTagName('meta')
         for (i=0; i<metas.length; i++) { 

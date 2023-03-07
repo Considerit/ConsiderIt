@@ -117,7 +117,7 @@ window.AuthTransition = ReactiveComponent
     @local.logged_in_last_render ?= current_user.logged_in
 
     if current_user.csrf
-      arest.csrf(current_user.csrf)
+      arest.csrf() # resets csrf
 
 
     # When we switch to new auth_mode screens, wipe out all the old

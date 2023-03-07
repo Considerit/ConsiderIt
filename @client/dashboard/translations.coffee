@@ -834,10 +834,13 @@ TranslationsForLang = ReactiveComponent
 
 
                     if current_user.is_super_admin && proposed_translations.proposals[name]?.proposals.length > 0
+                      proposals = proposed_translations.proposals[name].proposals
+                      if proposed_translations.proposals[name].accepted
+                        proposals.unshift proposed_translations.proposals[name].accepted
                       UL  
                         style: {}
 
-                        for proposal, idx in proposed_translations.proposals[name].proposals
+                        for proposal, idx in proposals
                           do (proposal, name, idx) =>
                             LI 
                               key: "#{name}-#{proposal.translation}-#{proposal.id}"
@@ -846,34 +849,38 @@ TranslationsForLang = ReactiveComponent
                                 listStyle: 'none'
 
                               DIV 
-                                style: {}
+                                style: 
+                                  color: if proposal.accepted then 'darkgreen'
                                 proposal.translation 
 
 
                               draw_translation_metadata(proposal)
 
-                              BUTTON
-                                style: 
-                                  borderRadius: 8
-                                onClick: => 
-                                  proposal.accepted = true
-                                  updateTranslations [proposal]
+                              if !proposal.accepted
+                                DIV null,
 
-                                "Ok"
+                                  BUTTON
+                                    style: 
+                                      borderRadius: 8
+                                    onClick: => 
+                                      proposal.accepted = true
+                                      updateTranslations [proposal]
 
-                              BUTTON
-                                style: 
-                                  backgroundColor: 'transparent'
-                                  display: 'inline-block'
-                                  marginLeft: 20
-                                  border: 'none'
-                                  color: '#999'
-                                  textDecoration: 'underline'
-                                  fontSize: 14
+                                    "Ok"
 
-                                onClick: => 
-                                  rejectProposals(name, [proposal])
-                                "reject"
+                                  BUTTON
+                                    style: 
+                                      backgroundColor: 'transparent'
+                                      display: 'inline-block'
+                                      marginLeft: 20
+                                      border: 'none'
+                                      color: '#999'
+                                      textDecoration: 'underline'
+                                      fontSize: 14
+
+                                    onClick: => 
+                                      rejectProposals(name, [proposal])
+                                    "reject"
 
             rows
 
@@ -1010,8 +1017,6 @@ editable_translation = (id, lang_code, subdomain_id, updated_translations, propo
         else  
           updated_translations[id].translation = e.target.value 
 
-    if proposal
-      draw_translation_metadata proposal
 
 
 promote_temporary_translations = (key) ->
@@ -1026,6 +1031,11 @@ promote_temporary_translations = (key) ->
   return if proposals.length == 0
 
   updateTranslations proposals, -> 
+    for k,v of updated_translations
+      if k != 'key'
+        delete updated_translations[k]
+    save updated_translations
+
     trans_UI = fetch('translations_interface')
     trans_UI.saved_successfully = true 
     save trans_UI 

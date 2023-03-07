@@ -274,7 +274,7 @@ TechnologyByConsiderit = ReactiveComponent
         onMouseLeave: => 
           @local.hover = false
           save @local
-        href: 'https://consider.it'
+        href: "https://#{fetch('/application').base_domain}"
         target: '_blank'
         style: 
           position: 'relative'

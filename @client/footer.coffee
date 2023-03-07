@@ -213,7 +213,7 @@ window.DefaultFooter = ReactiveComponent
               A 
                 className: 'create-forum'
                 key: 'create-forum'
-                href: 'https://consider.it'
+                href: "https://#{fetch('/application').base_domain}"
 
                 translator 
                   id: "footer.created_your_own_forum"
@@ -306,7 +306,7 @@ window.TechnologyByConsiderit = ReactiveComponent
         onMouseLeave: => 
           @local.hover = false
           save @local
-        href: 'https://consider.it'
+        href: "https://#{fetch('/application').base_domain}"
         target: '_blank'
         title: 'Consider.it\'s homepage'
         style: 

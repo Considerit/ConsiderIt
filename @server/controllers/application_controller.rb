@@ -265,6 +265,7 @@ protected
         manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})
         response.append({
           key: '/application',
+          base_domain: APP_CONFIG[:domain] || 'localhost:3000',
           dev: (!Rails.env.production? || request.host.end_with?('chlk.it')),
           asset_host: "#{Rails.application.config.action_controller.asset_host}",
           web_worker: "#{manifest['web_worker']}",

@@ -199,7 +199,7 @@ window.AllYourForums = ReactiveComponent
         DIV null,
           "You have not yet hosted a forum. "
           A 
-            href: 'https://consider.it/create_forum'
+            href: "https://#{fetch('/application').base_domain}/create_forum"
             'Create your own'
           " if you wish."
 

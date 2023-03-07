@@ -70,7 +70,7 @@ class HtmlController < ApplicationController
       @app = "franklin"
       @js_dependencies = nil
       @plausible_domain = APP_CONFIG[:plausible_domain]
-      if @plausible_domain && @plausible_domain.length > 0 && current_subdomain.customizations['enable_plausible_analytics']
+      if @plausible_domain && @plausible_domain.length > 0 && current_subdomain.customizations && current_subdomain.customizations['enable_plausible_analytics']
         @plausible_domain += ",#{current_subdomain.name}.#{APP_CONFIG[:plausible_domain]}"
       end
       fonts = [ 

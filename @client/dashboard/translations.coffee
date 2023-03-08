@@ -286,26 +286,50 @@ translation_uses = {}
 translation_uses_write_after = 1000 * 80 
 translation_uses_last_written_at = Date.now() - translation_uses_write_after * .75 # first one should be quicker
 
+pending_translation_log = null
 log_translation_count = (string_id) -> 
   return if window.navigator.userAgent?.indexOf('Prerender') > -1
 
   translation_uses[string_id] = 1
 
-  if Date.now() - translation_uses_last_written_at >= translation_uses_write_after
+  logging_due = Date.now() - translation_uses_last_written_at >= translation_uses_write_after \
+                  && Object.keys(translation_uses).length > 0 \
+                  && !pending_translation_log
 
-    if Object.keys(translation_uses).length > 0 
-      frm = new FormData()
-      frm.append "authenticity_token", arest.csrf()
-      frm.append "counts", JSON.stringify(translation_uses)
+  return unless logging_due
 
-      xhr = new XMLHttpRequest
-      xhr.addEventListener 'readystatechange', null, false
+  try_submit = -> 
+    frm = new FormData()
+    frm.append "authenticity_token", arest.csrf()
+    frm.append "counts", JSON.stringify(translation_uses)
 
-      xhr.open 'PUT', '/log_translation_counts', true
-      xhr.send frm
+    xhr = new XMLHttpRequest
+    xhr.addEventListener 'readystatechange', (evt) -> 
+      if xhr.status == 200
+        translation_uses = {}
+        translation_uses_last_written_at = Date.now()        
+      else if xhr.status == 422
+        # CSRF error. In some edge cases, CSRF errors have been occurring. 
+        # This is not necessarily caused by logging translation counts, 
+        # but this request is happening enough that we're trying to mitigate 
+        # the impact of the error here. 
+        arest.serverFetch('/current_user') # will return an updated CSRF token
 
-    translation_uses = {}
-    translation_uses_last_written_at = Date.now()
+    , false
+
+    xhr.open 'PUT', '/log_translation_counts', true
+    xhr.send frm
+
+  pending_translation_log = setInterval ->
+    if Object.keys(arest.pending_saves).length == 0 
+      try_submit()
+      clearInterval pending_translation_log
+      pending_translation_log = null
+  , 200
+
+
+
+
 
 
 styles += """

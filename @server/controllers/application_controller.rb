@@ -443,8 +443,7 @@ protected
   end  
 
   def get_authenticity_token
-    session[:_csrf_token] ||= form_authenticity_token
-    session[:_csrf_token]
+    form_authenticity_token()
   end
 
 end

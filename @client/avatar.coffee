@@ -358,8 +358,7 @@ window.Avatar = ReactiveComponent
 
 styles += """
 .avatar {
-  /* position: relative;
-  vertical-align: top; */
+  position: relative; /* for containing the :after image */
   border: none;
   display: inline-block;
   margin: 0;

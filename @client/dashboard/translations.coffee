@@ -283,49 +283,53 @@ window.translator = (args, native_text) ->
 
 
 translation_uses = {}
-translation_uses_write_after = 1000 * 80 
-translation_uses_last_written_at = Date.now() - translation_uses_write_after * .75 # first one should be quicker
 
-pending_translation_log = null
 log_translation_count = (string_id) -> 
   return if window.navigator.userAgent?.indexOf('Prerender') > -1
-
   translation_uses[string_id] = 1
 
-  logging_due = Date.now() - translation_uses_last_written_at >= translation_uses_write_after \
-                  && Object.keys(translation_uses).length > 0 \
-                  && !pending_translation_log
 
-  return unless logging_due
+translation_uses_write_after = 1000 * 60 
+translation_uses_last_written_at = Date.now() - translation_uses_write_after * .95 # first one should be quicker
+translation_logging_in_progress = false
+try_submit_translations = -> 
+  frm = new FormData()
+  frm.append "authenticity_token", arest.csrf()
+  frm.append "counts", JSON.stringify(translation_uses)
 
-  try_submit = -> 
-    frm = new FormData()
-    frm.append "authenticity_token", arest.csrf()
-    frm.append "counts", JSON.stringify(translation_uses)
-
-    xhr = new XMLHttpRequest
-    xhr.addEventListener 'readystatechange', (evt) -> 
+  translation_logging_in_progress = true
+  xhr = new XMLHttpRequest
+  xhr.addEventListener 'readystatechange', (evt) -> 
+    if xhr.readyState >= 3
       if xhr.status == 200
         translation_uses = {}
-        translation_uses_last_written_at = Date.now()        
+        translation_uses_last_written_at = Date.now()
+        translation_logging_in_progress = false
       else if xhr.status == 422
         # CSRF error. In some edge cases, CSRF errors have been occurring. 
         # This is not necessarily caused by logging translation counts, 
         # but this request is happening enough that we're trying to mitigate 
         # the impact of the error here. 
-        arest.serverFetch('/current_user') # will return an updated CSRF token
+        arest.serverFetch '/current_user', -> # will return an updated CSRF token
+          setTimeout -> 
+            translation_logging_in_progress = false 
+          , 1000
+      else 
+        translation_logging_in_progress = false
 
-    , false
+  , false
 
-    xhr.open 'PUT', '/log_translation_counts', true
-    xhr.send frm
+  xhr.open 'PUT', '/log_translation_counts', true
+  xhr.send frm
 
-  pending_translation_log = setInterval ->
-    if Object.keys(arest.pending_saves).length == 0 
-      try_submit()
-      clearInterval pending_translation_log
-      pending_translation_log = null
-  , 200
+setInterval ->
+  logging_due = Object.keys(translation_uses).length > 0 \
+                  && Date.now() - translation_uses_last_written_at >= translation_uses_write_after
+
+  if logging_due && !translation_logging_in_progress && Object.keys(arest.pending_saves).length == 0 
+    try_submit_translations()
+
+, 200
 
 
 

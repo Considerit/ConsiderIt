@@ -323,6 +323,7 @@ try_submit_translations = ->
   xhr.send frm
 
 setInterval ->
+  return false
   logging_due = Object.keys(translation_uses).length > 0 \
                   && Date.now() - translation_uses_last_written_at >= translation_uses_write_after
 

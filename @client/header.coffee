@@ -24,13 +24,15 @@ window.Header = ReactiveComponent
     loc = fetch('location')
     homepage = is_a_dialogue_page()
     
+    light_bg = is_light_background() 
 
     header_bonus = customization('header_bonus') # currently used for things like inserting google font
+
     HEADER 
       style: 
         position: 'relative'
         zIndex: if fetch('edit_forum').editing then 1 # necessary b/c of payment modal
-      className: if !is_light_background() then 'dark'
+      className: if !light_bg then 'dark'
 
       if current_user.is_admin
         HostHeader()
@@ -81,6 +83,19 @@ window.Header = ReactiveComponent
             background: 'white'
             text: ''
             logo_src: false
+
+
+        if homepage && subdomain.customizations?.banner?.masthead_copyright_notice
+          DIV
+            style: 
+              position: 'absolute'
+              right: 4
+              bottom: 4
+              color: if light_bg then 'black' else 'white'
+              fontSize: 14
+            target: '_blank'
+            dangerouslySetInnerHTML: __html: subdomain.customizations?.banner?.masthead_copyright_notice
+
 
         DIV 
           style: 

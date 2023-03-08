@@ -49,7 +49,7 @@ class User < ApplicationRecord
 
   # This will output the data for this user _as if this user is currently logged in_
   # So make sure to only send this data to the client if the client is authorized. 
-  def current_user_hash(form_authenticity_token)
+  def current_user_hash(authenticity_token)
     data = {
       id: id, #leave the id in for now for backwards compatability with Dash
       key: '/current_user',
@@ -57,7 +57,7 @@ class User < ApplicationRecord
       logged_in: registered,
       email: email,
       password: nil,
-      csrf: form_authenticity_token,
+      csrf: authenticity_token,
       avatar_remote_url: avatar_remote_url,
       url: url,
       name: name,

@@ -275,7 +275,7 @@ class CurrentUserController < ApplicationController
     end
 
     # Wrap everything up
-    response = current_user.current_user_hash(form_authenticity_token)
+    response = current_user.current_user_hash(get_authenticity_token())
     response[:errors] = errors.uniq
 
     # If a user is trying to log in, and there was an error, we can
@@ -544,7 +544,7 @@ class CurrentUserController < ApplicationController
       :details => {:provider => user.third_party_authenticated}
     })
 
-    current_user_hash = current_user.current_user_hash(form_authenticity_token)
+    current_user_hash = current_user.current_user_hash(get_authenticity_token())
     current_user_hash["first_visit_to_forum"] = created || new_participant
     current_user_hash.delete(:csrf) # csrf value for the redirected url can be invalid
     
@@ -572,7 +572,6 @@ class CurrentUserController < ApplicationController
 
 
 
-
   # Omniauth oauth handlers
   def facebook
     update_via_third_party
@@ -594,7 +593,7 @@ class CurrentUserController < ApplicationController
       "csrf = document.createElement('input');\n" + 
       "csrf.setAttribute(\"type\", \"hidden\");\n" + 
       "csrf.setAttribute(\"name\", \"authenticity_token\");\n" + 
-      "csrf.setAttribute(\"value\", \"#{form_authenticity_token}\");\n" + 
+      "csrf.setAttribute(\"value\", \"#{get_authenticity_token()}\");\n" + 
 
       "form.appendChild(csrf);\n" +
       "document.body.appendChild(form);\n" +
@@ -617,6 +616,11 @@ class CurrentUserController < ApplicationController
   def all_forums
     dirty_key '/your_forums'
     render :json => []    
+  end
+
+  def get_authenticity_token
+    session[:_csrf_token] ||= form_authenticity_token
+    session[:_csrf_token]
   end
 
 end

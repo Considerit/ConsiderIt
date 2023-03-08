@@ -283,7 +283,7 @@ protected
         response.append Subdomain.all.map { |s| s.as_json({:include_id => true})  }
 
       elsif key == '/current_user'
-        response.append current_user.current_user_hash(form_authenticity_token)
+        response.append current_user.current_user_hash(get_authenticity_token())
 
       elsif key == '/proposals'
         response.append Proposal.summaries current_subdomain, params.has_key?(:all_points)

@@ -119,13 +119,14 @@ window.OAuthLogin =
           current_user = fetch '/current_user'
           current_user.trying_to = 'login'
           save current_user
+
         #####################
 
 
         # poll the server until we have an avatar
         poll_until_avatar_arrives()
 
-        if forum_has_host_questions() && current_user.first_visit_to_forum
+        if forum_has_host_questions() && fetch('/current_user').first_visit_to_forum
           auth = fetch 'auth'
           auth.show_user_questions_after_account_creation = true 
           save auth

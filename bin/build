@@ -2,4 +2,5 @@
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 git pull
 BUILD_PRODUCTION=1 node_modules/webpack/bin/webpack.js
+echo "flush_all" | nc -q 2 localhost 11211
 touch tmp/restart.txt

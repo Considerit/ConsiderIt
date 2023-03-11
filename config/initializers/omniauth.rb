@@ -56,9 +56,6 @@ OAUTH_SETUP_PROC = lambda do |env|
     else
       subdomain = host[0]
       redirect_domain = APP_CONFIG[:oauth_callback_subdomain]
-      if APP_CONFIG[:product_page] && APP_CONFIG[:region] != 'US'
-        redirect_domain += ".#{APP_CONFIG[:product_page]}"
-      end
       env['omniauth.strategy'].options['state'] = subdomain
       env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://#{redirect_domain}.#{APP_CONFIG[:domain]}/auth/#{env['omniauth.strategy'].name()}/callback"
     end

@@ -315,7 +315,7 @@ sort_options = [
   { 
     key: 'average_score'
     name: 'Average Score'
-    description: "each proposal is scored by the average opinion, where each opinion expresses a score on a spectrum from -1 to 1. "
+    description: "Each proposal is scored by the average opinion, where each opinion expresses a score on a spectrum from -1 to 1. "
     order: (proposals) -> 
       cache = {}
       opinion_views = fetch 'opinion_views'

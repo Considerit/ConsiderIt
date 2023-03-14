@@ -88,7 +88,7 @@ window.OpinionSlider = ReactiveComponent
       else if value < -.03 
         "#{-1 * (value * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.oppose", proposal, subdomain)}"
       else 
-        translator "engage.slider_feedback.neutral", "Neutral"
+        translator "sliders.feedback-short.neutral", "Neutral"
 
     could_possibly_opine = couldUserMaybeOpine proposal
 

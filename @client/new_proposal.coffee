@@ -350,7 +350,7 @@ window.NewProposal = ReactiveComponent
 
                     set_sort_order('Date: Earliest first')
 
-                    show_flash("Your response has been added")
+                    show_flash(translator('engage.flashes.response-saved', "Your response has been added"))
 
                     $$.ensure_in_viewport_when_appears "[data-name=\"#{slugify(proposal.name)}\"]"
                       

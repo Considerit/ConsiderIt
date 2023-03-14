@@ -222,7 +222,7 @@ class CurrentUserController < ApplicationController
         end
 
       when 'switch_users'
-        # Only enable god mode for 3 hours since the last time 
+        # Only allow for switching users 3 hours since the last time 
         # the super admin invoked su
         if current_user.super_admin
           session[:su] = Time.now.to_i 
@@ -270,7 +270,8 @@ class CurrentUserController < ApplicationController
 
       when 'update_avatar_hack'
         if !current_user.update({ avatar: params['avatar'] })
-          errors.push current_user.errors.messages[:avatar][0]
+          first_error = current_user.errors.messages[:avatar][0]
+          errors.push Translations::Translation.get("errors.user.trouble-saving-avatar-#{first_error}", first_error)
         end
     end
 

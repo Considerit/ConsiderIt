@@ -155,8 +155,11 @@ task :migrate_translations => :environment do
   rename_translation "engage.cancel_button", "shared.cancel_button"
   rename_translation "auth.sign_up", "shared.auth.sign_up"
   rename_translation "shared.auth.log_in", "auth.log_in"
+  rename_translation "flash.Your response has been added", "engage.flashes.response-saved"
+  rename_translation "flash.Link copied to clipboard", "engage.list-configuration.link-copied"
+  rename_translation "flash.Problem copying link to clipboard", "engage.list-configuration.problem-copying-link"
 
-
+  
   delete_translation "engage.opinion_filter.label"
   delete_translation "engage.proposal_score_summary.explanation"
   delete_translation "engage.proposal_score_summary.explanation"

@@ -224,4 +224,6 @@ task :migrate_translations => :environment do
     end
   end
 
+  Rails.cache.clear
+
 end

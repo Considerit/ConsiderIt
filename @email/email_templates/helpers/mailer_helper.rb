@@ -92,7 +92,7 @@ module MailerHelper
                     other {# points}
                   }")
 
-    opinions_count = Translations::Translation.get({id: 'email.digest.points_count', cnt: opinions.count}, "{ cnt, plural,
+    opinions_count = Translations::Translation.get({id: 'email.digest.opinions_count', cnt: opinions.count}, "{ cnt, plural,
                     =0 {no opinions}
                     one {# opinion}
                     other {# opinions}

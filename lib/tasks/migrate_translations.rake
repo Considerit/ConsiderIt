@@ -161,6 +161,9 @@ task :migrate_translations => :environment do
   rename_translation "flash.Only jpeg, png, gif, and webp images types are allowed", "errors.user.trouble-saving-avatar-Only jpeg, png, gif, and webp images types are allowed"
   rename_translation "flash.Thank you for upgrading!", "admin.thanks-for-upgrading"
   
+  rename_translation "email.digest.points_count", "email.digest.opinions_count"
+
+
   delete_translation "engage.opinion_filter.label"
   delete_translation "engage.proposal_score_summary.explanation"
   delete_translation "engage.proposal_score_summary.explanation"

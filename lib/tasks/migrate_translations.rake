@@ -158,7 +158,8 @@ task :migrate_translations => :environment do
   rename_translation "flash.Your response has been added", "engage.flashes.response-saved"
   rename_translation "flash.Link copied to clipboard", "engage.list-configuration.link-copied"
   rename_translation "flash.Problem copying link to clipboard", "engage.list-configuration.problem-copying-link"
-
+  rename_translation "flash.Only jpeg, png, gif, and webp images types are allowed", "errors.user.trouble-saving-avatar-Only jpeg, png, gif, and webp images types are allowed"
+  rename_translation "flash.Thank you for upgrading!", "admin.thanks-for-upgrading"
   
   delete_translation "engage.opinion_filter.label"
   delete_translation "engage.proposal_score_summary.explanation"

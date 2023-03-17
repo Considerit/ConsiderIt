@@ -257,8 +257,6 @@ window.DataDash = ReactiveComponent
         className: 'dangerzone'
         style: 
           marginTop: 24
-          pointerEvents: if !paid then 'none'
-          opacity: if !paid then .4
 
 
         H4

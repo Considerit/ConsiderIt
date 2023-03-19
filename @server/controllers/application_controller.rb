@@ -260,6 +260,9 @@ protected
       elsif key.match "/comments/"
         point = Point.find(key[10..key.length])
         response.append Comment.comments_for_point(point)
+
+      elsif key == '/all_comments'
+        response.append Comment.comments_for_forum 
       
       elsif key == '/application'
         manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})

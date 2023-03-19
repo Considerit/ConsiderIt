@@ -54,4 +54,24 @@ class Comment < ApplicationRecord
   end
 
 
+  # Fetches all comments associated with this Point. 
+  def self.comments_for_forum(forum=nil)
+    forum ||= current_subdomain
+    if forum.moderation_policy == 1
+      moderation_status_check = 'moderation_status=1'
+    else 
+      moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
+    end
+    
+    comments = {
+      :comments => forum.comments.where("#{moderation_status_check} OR user_id=#{current_user.id}"),
+      :key => "/all_comments"
+    }
+
+
+    comments
+
+  end
+
+
 end

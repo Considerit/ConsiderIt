@@ -20,10 +20,10 @@ class PageController < ApplicationController
       when 'dashboard/create_subdomain'
         authorize_action = "create subdomain"
 
-      when 'dashboard/application', 'dashboard/roles', 'dashboard/data_import_export', 'dashboard/tags', 'dashboard/customizations'
+      when 'dashboard/application', 'dashboard/roles', 'dashboard/data_import_export', 'dashboard/tags', 'dashboard/customizations', 'dashboard/analytics', 'dashboard/intake_questions'
         authorize_action = "update subdomain"
 
-      when 'dashboard/edit_profile', 'dashboard/notifications'
+      when 'dashboard/edit_profile', 'dashboard/notifications', 'dashboard/translations', 'dashboard/all_forums'
         authorize_action = 'access forum'
       else
         authorize_action = nil

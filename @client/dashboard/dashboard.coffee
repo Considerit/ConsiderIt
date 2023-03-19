@@ -65,7 +65,7 @@ window.styles += """
   #DASHBOARD-main {
     flex: 1;
     padding: 30px 0 30px 72px;
-    max-width: 850px;
+    max-width: 1050px;
   }
   #DASHBOARD-title {
     font-weight: 700;

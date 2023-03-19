@@ -7,7 +7,7 @@ class Ahoy::Visit < ApplicationRecord
   belongs_to :user, optional: true
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:browser, :ip, :device_type, :landing_page, :referrer, :referring_domain, :started_at, :user_id]
+  self.my_public_fields = [:browser, :ip, :device_type, :landing_page, :referring_domain, :started_at, :user_id, :utm_source]
 
   def as_json(options={})
     options[:only] ||= Ahoy::Visit.my_public_fields

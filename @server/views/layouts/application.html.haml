@@ -213,9 +213,6 @@
         %script{:async => true, :defer => true, :src => 'https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.5.3/jsoneditor.min.js', :type => 'text/javascript'}
         %link{:rel => 'stylesheet', :href => 'https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.5.3/jsoneditor.min.css'}
 
-      - if (current_user.super_admin && current_subdomain.name == APP_CONFIG[:product_page]) || (current_user.is_admin? && current_subdomain.name != APP_CONFIG[:product_page])
-        %script{:async => "true", :src => "#{@vendor}/vendor/d3.v7.min.js", :type => 'text/javascript'}
-
       %script{:type => 'text/javascript', :src => "#{@vendor}/vendor/ahoy-0.4.0-min.js"}
 
 

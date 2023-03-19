@@ -120,9 +120,9 @@ window.EditList = ReactiveComponent
             else if option.action == 'copy_link'
               link = "#{location.origin}#{location.search}##{list_link(list_key)}"
               navigator.clipboard.writeText(link).then -> 
-                show_flash("Link copied to clipboard")
+                show_flash(translator("engage.list-configuration.link-copied", "Link copied to clipboard"))
               , (err) ->
-                show_flash_error("Problem copying link to clipboard")
+                show_flash_error(translator("engage.list-configuration.problem-copying-link", "Problem copying link to clipboard"))
       else 
         EditNewList
           list: list

@@ -24,24 +24,19 @@ OAUTH_SETUP_PROC = lambda do |env|
   request = Rack::Request.new(env)
   host = request.host.split('.')
 
-  subdomain = host[0] == APP_CONFIG[:product_page] ? nil : host[0]
-
-  if host.length > 2
-    host = host[host.length-2..host.length-1]
-  end
-
-  host = host.join('.').intern
+  is_product_page = (request.host == 'consider.it' && APP_CONFIG[:region] == 'US') || (host[0] == APP_CONFIG[:product_page] && host.length == 3) || request.host == 'chlk.it'
 
   provider_key = "oauth_#{provider}_client".intern
   provider_secret = "oauth_#{provider}_secret".intern
 
   if !conf.has_key?(provider_key) || !conf.has_key?(provider_secret)
-    raise "#{host} is not a configured host for third party authentication with #{provider}."
+    raise "#{request.host} is not a configured host for third party authentication with #{provider}."
   end
 
 
   env['omniauth.strategy'].options[key] = conf[provider_key]
   env['omniauth.strategy'].options[secret] = conf[provider_secret]
+  env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://#{request.host}/auth/#{env['omniauth.strategy'].name()}/callback"
 
   # In order to support wildcard subdomains without manually 
   # entering all valid subdomains into google dev console, 
@@ -55,17 +50,14 @@ OAUTH_SETUP_PROC = lambda do |env|
   #   - https://github.com/intridea/omniauth-oauth2/pull/18/files; https://github.com/zquestz/omniauth-google-oauth2/issues/31#issuecomment-8922362
   #   - https://github.com/intridea/omniauth-oauth2/issues/32
 
-  if Rails.env.production? && subdomain 
-    if APP_CONFIG[:product_page] && APP_CONFIG[:product_page] == subdomain
-      env['omniauth.strategy'].options['state'] = subdomain
-      env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://#{request.host}/auth/#{env['omniauth.strategy'].name()}/callback"
-    else 
+  if Rails.env.production? 
+    if is_product_page
+      env['omniauth.strategy'].options['state'] = APP_CONFIG[:product_page]
+    else
+      subdomain = host[0]
       redirect_domain = APP_CONFIG[:oauth_callback_subdomain]
-      if APP_CONFIG[:product_page] && APP_CONFIG[:region] != 'US'
-        redirect_domain += ".#{APP_CONFIG[:product_page]}"
-      end
       env['omniauth.strategy'].options['state'] = subdomain
-      env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://#{redirect_domain}.#{host}/auth/#{env['omniauth.strategy'].name()}/callback"
+      env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://#{redirect_domain}.#{APP_CONFIG[:domain]}/auth/#{env['omniauth.strategy'].name()}/callback"
     end
   end
 end

@@ -155,6 +155,13 @@ task :migrate_translations => :environment do
   rename_translation "engage.cancel_button", "shared.cancel_button"
   rename_translation "auth.sign_up", "shared.auth.sign_up"
   rename_translation "shared.auth.log_in", "auth.log_in"
+  rename_translation "flash.Your response has been added", "engage.flashes.response-saved"
+  rename_translation "flash.Link copied to clipboard", "engage.list-configuration.link-copied"
+  rename_translation "flash.Problem copying link to clipboard", "engage.list-configuration.problem-copying-link"
+  rename_translation "flash.Only jpeg, png, gif, and webp images types are allowed", "errors.user.trouble-saving-avatar-Only jpeg, png, gif, and webp images types are allowed"
+  rename_translation "flash.Thank you for upgrading!", "admin.thanks-for-upgrading"
+  
+  rename_translation "email.digest.points_count", "email.digest.opinions_count"
 
 
   delete_translation "engage.opinion_filter.label"
@@ -220,5 +227,7 @@ task :migrate_translations => :environment do
       trans_hash[key] = tr
     end
   end
+
+  Rails.cache.clear
 
 end

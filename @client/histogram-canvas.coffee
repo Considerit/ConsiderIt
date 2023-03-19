@@ -298,7 +298,7 @@ window.Histogram = ReactiveComponent
     else if avg > .03
       exp = "#{(avg * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.support", @props.proposal, subdomain)}"
     else 
-      exp = translator "engage.slider_feedback.neutral", "Neutral"
+      exp = translator "sliders.feedback-short.neutral", "Neutral"
 
 
     if @enable_range_selection || enable_individual_selection

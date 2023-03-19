@@ -71,7 +71,7 @@ window.show_flash = (message, time_in_ms, args) ->
   time_in_ms ?= 3000
 
   flash = fetch('flash')
-  flash.message = translator "flash.#{message}", message
+  flash.message = message
   flash.time = time_in_ms
   flash.args = args
   save flash

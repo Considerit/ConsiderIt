@@ -574,6 +574,7 @@ window.VisitAnalytics = ReactiveComponent
           log: 'linear'
           yLabel: '' # 'Unique Visitors Per Day'
           cumulative: @props.cumulative
+          name: 'Unique Visitors'
           segment_by: (d) =>
             if analytics_state.segment_by
               d[analytics_state.segment_by]
@@ -634,6 +635,7 @@ window.ParticipantAnalytics = ReactiveComponent
           width: @props.width
           log: 'linear'
           yLabel: '' # 'New Participants'
+          name: 'New Participants'
           cumulative: @props.cumulative
           segment_by: (d) => 
             if analytics_state.segment_by
@@ -689,6 +691,7 @@ window.OpinionGraphAnalytics = ReactiveComponent
           time_format: "%Y-%m-%d"
           width: @props.width
           log: 'linear'
+          name: 'Opinions'
           yLabel: '' # 'Opinions'
           cumulative: @props.cumulative
           segment_by: (d) => 
@@ -751,6 +754,7 @@ window.CommentsAnalytics = ReactiveComponent
           width: @props.width
           log: 'linear'
           yLabel: '' # @defaultZ
+          name: 'Comments'
           cumulative: @props.cumulative
           segment_by: (d) => 
             if analytics_state.segment_by
@@ -767,7 +771,70 @@ window.CommentsAnalytics = ReactiveComponent
 
 
 
+styles += """
+.d3-tooltip {
+  position: absolute;
+  text-align: center;
+  padding: 6px 12px;
+  font: 16px sans-serif;
+  background: #000000cc;
+  border: none;
+  border-radius: 4px;
+  pointer-events: none;
+  color: white;
+}
 
+
+.d3-tooltip .date {
+  font-size: 14px;
+}
+
+.d3-tooltip .quantity .amount {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.d3-tooltip .quantity .type {
+  padding-left: 8px;
+  font-size: 16px;  
+  # font-weight: 700;
+}
+
+.d3-tooltip .multi_lines {
+  margin-top: 8px;
+}
+
+.d3-tooltip .multi_lines .stack-line {
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+
+}
+
+.d3-tooltip .multi_lines .stack-line .amount {
+  padding-right: 6px;
+  flex-shrink: 0;
+}
+
+.d3-tooltip .multi_lines .stack-line .type {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.d3-tooltip .multi_lines .stack-color {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  border-radius: 50%;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
+
+"""
 
 window.TimeSeriesAreaGraph = ReactiveComponent
   displayName: 'TimeSeriesAreaGraph'
@@ -938,6 +1005,107 @@ window.TimeSeriesAreaGraph = ReactiveComponent
         .text (d) -> d.id
 
 
+    # Create a tooltip element with a class of "d3-tooltip"
+    tooltip = d3.select('body')
+      .append('div')
+      .attr('class', 'd3-tooltip')
+      .style('opacity', 0)
+
+
+
+    
+    # Add a transparent rect to the SVG to capture mouse events
+    g.append('rect')
+      .attr('width', width)
+      .attr('height', height)
+      .attr('fill', 'none')
+      .attr('pointer-events', 'all')
+      .on('mousemove', (event) =>
+        # Get the mouse position relative to the SVG element
+        [xPos, yPos] = d3.pointer(event)
+        closest_date = x.invert(xPos)
+        search_date = d3.timeFormat(@props.time_format or "%d-%b-%y")(closest_date)
+        tooltip_date = d3.timeFormat("%A %B %e, %Y")(closest_date)
+
+        for d in data
+          if d[1] == search_date
+            pnt = d 
+            break
+
+
+        # Update the tooltip position and content
+
+        # Remove any existing data point
+        g.selectAll('.data-point').remove()
+
+        stacks = []
+
+        # Add a new data point at the current mouse position
+
+
+
+
+        r = 4
+        current_x = x(new Date(search_date)) + r # / 2
+        current_y = 0
+        for stack in series
+          series_idx = stack[1].length - pnt[0] - 1
+
+          current_y += stack[1][series_idx][1]
+          colr = color(stack[0])
+          val = stack[1][series_idx][1]
+          continue if val == 0
+          g.append('circle')
+            .attr('class', 'data-point')
+            .attr('cx', current_x)
+            .attr('cy', y(current_y))
+            .attr('r', r)
+            .style('fill', colr)
+
+          stacks.push [(if stack[0] == 'null' then '(unknown)' else stack[0]), val, colr]
+
+        multi_lines = null
+        if stacks.length > 1 
+          multi_lines = "<div class='multi_lines'>"
+          for stack in stacks
+            if stack[1] > 0
+              stack_name = stack[0]
+              if stack_name.length > 40
+                stack_name = stack_name.substring(0, 38) + '...'
+              multi_lines += """
+                <div class="stack-line">
+                  <span class='stack-color' style='background-color: #{stack[2]}'></span>
+                  <span class='amount'>#{stack[1]}</span>
+                  <span class='type'>#{stack_name}</span>
+                </div>
+              """
+
+          multi_lines += '</div>'
+
+        tooltip_html = """
+          <div class="analytics_tooltip">
+          <div class="date">#{tooltip_date}</div>
+          <div class="quantity"><span class="amount">#{current_y}</span><span class="type">#{@props.name} #{if @props.cumulative then ' to date' else ''}</span></div>
+          #{if multi_lines then multi_lines else ''}
+          </div>
+        """        
+
+        tooltip.transition()
+          .duration(200)
+          .style('opacity', .9)
+        tooltip.html(tooltip_html)
+          .style('left', (event.pageX + 24) + 'px')
+          .style('top', (event.pageY - 64) + 'px')
+
+
+      )
+      .on('mouseleave', ->
+        # Hide the tooltip and remove the data point
+        tooltip.transition()
+          .duration(500)
+          .style('opacity', 0)
+        g.selectAll('.data-point').remove()
+      )
 
 
 window.PieChart = ReactiveComponent

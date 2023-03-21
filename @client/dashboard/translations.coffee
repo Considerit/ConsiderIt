@@ -326,7 +326,7 @@ setInterval ->
   logging_due = Object.keys(translation_uses).length > 0 \
                   && Date.now() - translation_uses_last_written_at >= translation_uses_write_after
 
-  if logging_due && !translation_logging_in_progress && Object.keys(arest.pending_saves).length == 0 
+  if logging_due && !translation_logging_in_progress && Object.keys(arest.pending_saves).length == 0 && Object.keys(arest.outstanding_fetches).length == 0 
     try_submit_translations()
 
 , 200

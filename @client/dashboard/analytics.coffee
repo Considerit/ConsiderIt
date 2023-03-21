@@ -36,7 +36,7 @@ window.DataAnalytics = ReactiveComponent
 
 
   render: -> 
-    return SPAN null unless @local.loaded 
+    return ResponsiveAnalyticsDataset() unless @local.loaded 
 
     analytics_state = fetch 'analytics'
     analytics_data_loaded = fetch('analytics_data_loaded')
@@ -1244,13 +1244,17 @@ ResponsiveAnalyticsDataset = ReactiveComponent
   displayName: 'ResponsiveAnalyticsDataset'
 
   render: -> 
+
     requirements_loaded = true
+
+    fetch('/proposals?all_points=true')
+    
     requirements = [ fetch('/subdomain').name, \
                      fetch('/visits').visits, \
                      fetch('/opinions').opinions, \
                      fetch('/all_comments').comments, \
                      fetch('/users').users, \
-                     fetch('/proposals?all_points=true') && arest.cache['/proposals'].proposals \
+                     arest.cache['/proposals'].proposals \
                    ]
 
     for req in requirements

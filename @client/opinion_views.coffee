@@ -122,7 +122,7 @@ window.get_participant_attributes = ->
             key: name
             name: tag.view_name or tag.name or tag.self_report?.question or name
             pass: if (tag.self_report?.input or tag.input) != 'checklist' then do(name, tag) -> (u, value) -> 
-              result = tag.compute?(u) or fetch(u).tags[name]
+              result = tag.compute?(u) or fetch(u)?.tags?[name]
               if value?
                 if (tag.self_report?.input or tag.input) == 'boolean' && value in [true, false, "true", "false"] && result in [true, false, "true", "false"]
                   result = "#{result}"

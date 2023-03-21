@@ -158,7 +158,7 @@ AnalyticsTabs = ReactiveComponent
 
     analytics_pages = [ 'VisitAnalytics', 'ParticipantAnalytics', 'OpinionGraphAnalytics', 'CommentsAnalytics' ]
 
-    is_premium_forum = (fetch('/subdomain').plan > 0) # || fetch('/current_user').is_super_admin
+    is_premium_forum = (fetch('/subdomain').plan > 0) || fetch('/current_user').is_super_admin
 
     DIV 
       className: "AnalyticsTabs #{if !is_premium_forum then 'free-forum'}"
@@ -859,9 +859,13 @@ window.TimeSeriesAreaGraph = ReactiveComponent
 
     formatDate = d3.timeParse(@props.time_format or "%d-%b-%y")
 
+
+    first_day = d3.min([data], (c) -> d3.min(c, (d) -> formatDate(d[1])))
+    last_day = d3.max([data], (c) -> d3.max(c, (d) -> formatDate(d[1])))
+    last_day.setHours 3,0,0
     x.domain [
-      d3.min([data], (c) -> d3.min(c, (d) -> formatDate(d[1])))
-      d3.max([data], (c) -> d3.max(c, (d) -> formatDate(d[1])))
+      first_day
+      last_day
     ]
 
     y_areas = []
@@ -928,6 +932,9 @@ window.TimeSeriesAreaGraph = ReactiveComponent
 
       y_areas.push {id, values: y_area}
       idx += 1
+
+
+    y_areas.reverse()
 
 
 
@@ -1027,11 +1034,10 @@ window.TimeSeriesAreaGraph = ReactiveComponent
         search_date = d3.timeFormat(@props.time_format or "%d-%b-%y")(closest_date)
         tooltip_date = d3.timeFormat("%A %B %e, %Y")(closest_date)
 
-        for d in data
+        for d, series_idx in data
           if d[1] == search_date
             pnt = d 
             break
-
 
         # Update the tooltip position and content
 
@@ -1042,19 +1048,18 @@ window.TimeSeriesAreaGraph = ReactiveComponent
 
         # Add a new data point at the current mouse position
 
-
-
-
-        r = 4
-        current_x = x(new Date(search_date)) + r # / 2
+        closest_date.setHours(0,0,0,0)
+        current_x = x(closest_date)
         current_y = 0
-        for stack in series
-          series_idx = stack[1].length - pnt[0] - 1
 
-          current_y += stack[1][series_idx][1]
+        for stack in series
           colr = color(stack[0])
           val = stack[1][series_idx][1]
-          continue if val == 0
+          current_y += val
+
+          continue if val == 0 && series.length > 1
+
+          r = 4
           g.append('circle')
             .attr('class', 'data-point')
             .attr('cx', current_x)
@@ -1545,15 +1550,15 @@ ResponsiveAnalyticsDataset = ReactiveComponent
     all_comments = []
     for proposal in (proposals.proposals or [])
       proposal = fetch proposal
-      include_item proposal, 'proposal', 'Proposal'
+      include_item proposal, 'proposal', 'Proposals'
 
       for point in (proposal.points or [])
         point = fetch(point)
-        include_item point, 'point', 'Pro or Con Point'
+        include_item point, 'point', 'Pro or Con Points'
 
     for comment in (fetch("/all_comments")?.comments or [])
       comment = fetch comment
-      include_item comment, 'comment', 'Reply to a Point'
+      include_item comment, 'comment', 'Replies to a Point'
 
     
 
@@ -1565,7 +1570,7 @@ ResponsiveAnalyticsDataset = ReactiveComponent
     # add in comment type
     name = 'Comment Type'     
     current_segment = segments[name] = 
-      segment_data: {'Reply to a Point': [], 'Pro or Con Point': [], 'Proposal': []} 
+      segment_data: {'Replies to a Point': [], 'Pro or Con Points': [], 'Proposals': []} 
       multi_valued_segment: false
     current_segment.zDomain = Object.keys current_segment.segment_data
     for comment in all_comments

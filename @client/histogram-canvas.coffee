@@ -115,7 +115,6 @@ require './histogram_layout'
 #   - need to provide instructions, probably in tooltip or aria-describedby.
 
 
-# require './vendor/d3.v3.min'
 require './shared'
 
 # REGION_SELECTION_WIDTH controls the size of the selection region when 

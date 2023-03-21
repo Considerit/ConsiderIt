@@ -505,11 +505,11 @@
 
         // Then we sweep through and update them
         for (var comp_key in dirty_components){
-            // console.log("\tREDO", comp_key, arest.components[comp_key])
             // the check on both dirty_components and components is a PATCH
             // for a possible inconsistency between dirty_components and components
             // that occurs if a component has a componentWillUnmount method.
             if (dirty_components[comp_key] && components[comp_key]){ // Since one component might update another
+                // console.log("\tREDO", comp_key, arest.components[comp_key], keys)
                 components[comp_key].forceUpdate()
             }
         }

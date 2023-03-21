@@ -47,9 +47,11 @@ UserTags = ReactiveComponent
           all_tags[tag].not_answered.push user
 
       for tag, val of user.tags 
-        if val.self_report?.input == 'checklist'
+        console.log tag, val, user
+
+        if val?.self_report?.input == 'checklist'
           my_vals = val.split(',')
-        else if val.self_report?.input == 'boolean' && (typeof val == 'string') && val.toLowerCase() in ["no", "false", "yes", "true"]
+        else if val?.self_report?.input == 'boolean' && (typeof val == 'string') && val.toLowerCase() in ["no", "false", "yes", "true"]
           if val.toLowerCase() in ["no", "false"]
             my_vals = [false]
           else

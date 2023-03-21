@@ -2,12 +2,7 @@
 class CommentController < ApplicationController
 
   def all_for_subdomain
-
-    current_subdomain.points.each do |point|
-      if Permissions.permit('read point', point) > 0 && point.comment_count > 0
-        dirty_key "/comments/#{point.id}"
-      end
-    end 
+    dirty_key '/all_comments'
 
     render :json => []
   end 

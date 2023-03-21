@@ -1,4 +1,8 @@
 class OpinionController < ApplicationController
+  def index
+    dirty_key '/opinions'
+    render :json => []
+  end
 
   def show
     opinion = Opinion.find(params[:id])

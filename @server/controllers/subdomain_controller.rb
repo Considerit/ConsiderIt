@@ -92,7 +92,7 @@ class SubdomainController < ApplicationController
           template_sub = Subdomain.find(params[:copy_from].to_i)
 
           # validate that current user is a host of template_sub
-          if Permissions.permit 'update subdomain', template_sub
+          if Permissions.permit 'update subdomain', template_sub > 0
             new_subdomain.import_configuration template_sub
           end
 
@@ -243,9 +243,9 @@ class SubdomainController < ApplicationController
       template_sub = Subdomain.find(params[:copy_from].to_i)
 
       # validate that current user is a host of template_sub
-      if Permissions.permit 'update subdomain', template_sub
-        subdomain.import_configuration template_sub
-      end
+
+      authorize! 'update subdomain', template_sub
+      subdomain.import_configuration template_sub
     end
 
     change_in_plausible_status = attrs['customizations'] && attrs['customizations']['enable_plausible_analytics'] != current_subdomain.customizations['enable_plausible_analytics']
@@ -287,16 +287,16 @@ class SubdomainController < ApplicationController
   end
 
   def nuke_everything
-    if Permissions.permit 'update subdomain', current_subdomain
-      current_subdomain.proposals.destroy_all
-      current_subdomain.opinions.destroy_all
-      current_subdomain.points.destroy_all
-      current_subdomain.comments.destroy_all
+    authorize!('update subdomain', current_subdomain)
 
-      dirty_key '/subdomain'
-      dirty_key '/proposals'
-    end
+    current_subdomain.proposals.destroy_all
+    current_subdomain.opinions.destroy_all
+    current_subdomain.points.destroy_all
+    current_subdomain.comments.destroy_all
 
+    dirty_key '/subdomain'
+    dirty_key '/proposals'
+  
     render :json => []
   end
 
@@ -366,7 +366,10 @@ class SubdomainController < ApplicationController
   def destroy
     subdomain_id = params['subdomain_to_destroy']    
     sub_to_destroy = Subdomain.find(subdomain_id.to_i)
-    if sub_to_destroy && Permissions.permit('update subdomain', sub_to_destroy)
+
+    authorize!('update subdomain', sub_to_destroy)
+
+    if sub_to_destroy
 
       if sub_to_destroy.customizations.has_key?('user_tags')
         users = User.where( "registered=1 AND active_in like '%\"#{sub_to_destroy.id}\"%'")
@@ -388,11 +391,11 @@ class SubdomainController < ApplicationController
 
     template_sub = Subdomain.find(params[:subdomain_to_import_configuration].to_i)
 
-    # validate that current user is a host of template_sub
-    if Permissions.permit('update subdomain', template_sub) && Permissions.permit('update subdomain', current_subdomain)
-      current_subdomain.import_configuration template_sub
-    end
+    authorize!('update subdomain', template_sub) 
+    authorize!('update subdomain', current_subdomain)
 
+    # validate that current user is a host of template_sub
+    current_subdomain.import_configuration template_sub
     render :json => []
 
   end

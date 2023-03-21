@@ -260,6 +260,9 @@ protected
       elsif key.match "/comments/"
         point = Point.find(key[10..key.length])
         response.append Comment.comments_for_point(point)
+
+      elsif key == '/all_comments'
+        response.append Comment.comments_for_forum 
       
       elsif key == '/application'
         manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})
@@ -288,6 +291,9 @@ protected
       elsif key == '/proposals'
         response.append Proposal.summaries current_subdomain, params.has_key?(:all_points)
 
+      elsif key == '/opinions'
+        response.append Opinion.get_all.as_json
+
       elsif key == '/users'
         response.append User.all_for_subdomain
 
@@ -302,6 +308,9 @@ protected
 
       elsif key == '/page/dashboard/moderate'
         response.append Moderation.all_for_subdomain
+
+      elsif key.match '/visits'
+        response.append({key: '/visits', visits: current_subdomain.visits})
 
       elsif key.match "/page/dashboard"
         noop = 1

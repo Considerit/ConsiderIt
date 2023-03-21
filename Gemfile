@@ -36,9 +36,16 @@ gem 'delayed_job_active_record', :git => 'https://github.com/collectiveidea/dela
 gem "daemons" # for the daemonize method used in bin/delayed_job
 gem 'rubyzip'
 
+
+#####################
+# For topic modeling
+gem "tomoto"
+gem "lemmatizer"
+
 #############
 # API calls
 gem 'excon'
+
 
 #############
 # i18n

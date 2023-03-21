@@ -13,6 +13,7 @@ require './forum_settings'
 require './customize'
 require './intake_questions'
 require './all_forums'
+require './analytics'
 
 
 window.styles += """
@@ -27,6 +28,7 @@ window.styles += """
     background: rgb(246,246,246);
     background: linear-gradient(180deg, rgba(246,246,246,1) 88%, rgba(255,255,255,1) 100%);
     padding-bottom: 70px;
+    border: 1px solid #ddd;
   }
 
   #DASHBOARD-menu a {
@@ -34,8 +36,9 @@ window.styles += """
     color: black;
     padding: 8px 24px;
     display: block;
-    font-weight: 600;
+    font-weight: 400;
     white-space: nowrap;
+    font-size: 14px;  
   } #DASHBOARD-menu a.active {
      background-color: #{selected_color};
      color: white;
@@ -53,15 +56,16 @@ window.styles += """
   }
   #DASHBOARD-menu div {
     text-transform: uppercase;
-    padding: 56px 24px 8px 24px;
+    padding: 25px 24px 8px 24px;
     font-weight: 600;
     opacity: .5;
-    font-size: 14px;
+    font-size: 0px;
+    visibility: hidden;    
   }  
   #DASHBOARD-main {
     flex: 1;
     padding: 30px 0 30px 72px;
-    max-width: 850px;
+    max-width: 1050px;
   }
   #DASHBOARD-title {
     font-weight: 700;
@@ -126,6 +130,8 @@ get_dash_widget = (url) ->
       TranslationsDash
     when '/dashboard/all_forums'
       AllYourForums
+    when '/dashboard/analytics'
+      DataAnalytics
     else 
       null
 get_dash_title = (url) ->
@@ -152,6 +158,8 @@ get_dash_title = (url) ->
       title = 'Language Translation'
     when '/dashboard/all_forums'
       title = 'All Your Consider.it Forums'
+    when '/dashboard/analytics'
+      title = 'Analytics'
     else 
       null
   title
@@ -183,8 +191,8 @@ window.Dashboard = ReactiveComponent
         key: opts.href
         className: if active then 'active'
         href: opts.href
-        style: 
-          paddingLeft: 44
+        # style: 
+        #   paddingLeft: 44
         if opts.icon && false
           SPAN
             className: 'icon'
@@ -236,6 +244,7 @@ window.Dashboard = ReactiveComponent
           [
             draw_menu_separator "administration"
             draw_menu_option {href: '/dashboard/moderate', label: 'Moderate', icon: 'moderation'} 
+            draw_menu_option {href: '/dashboard/analytics', label: 'Analytics'} 
             draw_menu_option {href: '/dashboard/data_import_export', label: 'Import / Export Data', icon: 'upload', paid: true}
           ]
         
@@ -383,8 +392,6 @@ window.styles += """
   # }
 
   input:checked + .toggle_switch_circle:before {
-    -webkit-transform: translateX(26px);
-    -ms-transform: translateX(26px);
     transform: translateX(26px);
   }
 """

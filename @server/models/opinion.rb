@@ -23,10 +23,19 @@ class Opinion < ApplicationRecord
     result['point_inclusions'] = result['point_inclusions'] || []
     result['point_inclusions'].map! {|p| "/point/#{p}"}
 
-    if self.explanation
-      result['explanation'] = self.explanation 
-    end
+    # if self.explanation
+    #   result['explanation'] = self.explanation 
+    # end
     result
+  end
+
+  def self.get_all
+    opinionz = Opinion.published.public_fields.map {|o| o.as_json}
+    data = {
+      key: '/opinions',
+      opinions: opinionz
+    }
+    data
   end
 
   def self.get_or_make(proposal, user=nil)

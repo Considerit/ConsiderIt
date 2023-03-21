@@ -468,7 +468,7 @@ window.LoadAvatars = ReactiveComponent
   load: -> 
     users = fetch '/users'
     current_user = fetch '/current_user'  # subscribe for changes to login status & avatar
-    return if !users.users 
+    return if !users.users || fetch('location').url.match('/dashboard')
 
     loading = fetch('avatar_loading')
     app = arest.cache['/application'] or fetch('/application')

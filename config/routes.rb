@@ -94,11 +94,14 @@ Rails.application.routes.draw do
 
   resources :user, :only => [:show]
   get '/users' => 'user#index'
+  get '/visits' => 'visit#index'
+
   match '/user/:id' => 'user#update', :via => [:put]
 
   resources :proposal
   get '/proposals' => 'proposal#index'
   get '/all_comments' => 'comment#all_for_subdomain'
+  get '/opinions' => 'opinion#index'
 
   resources :point, :only => [:create, :update, :destroy, :show]
   resources :opinion, :only => [:create, :update, :show]
@@ -114,8 +117,6 @@ Rails.application.routes.draw do
 
   match '/subdomain' => 'subdomain#update', :via => [:put]
   get '/subdomains' => 'subdomain#index'
-
-
 
   get '/points' => 'point#index'
 

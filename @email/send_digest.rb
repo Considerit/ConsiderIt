@@ -61,25 +61,52 @@ def get_new_activity(subdomain, user, since)
   start_period = Time.parse(since).utc - NOTIFICATION_LAG
   end_period   = Time.current.utc - NOTIFICATION_LAG
 
+  is_admin = user.is_admin?(subdomain)
 
 
   pp "#{since}: <#{start_period}, #{end_period}>"
   new_proposals = {}
+
   subdomain.proposals.where("created_at > '#{start_period}' AND created_at < '#{end_period}'").each do |proposal|
-    if proposal.user && proposal.opinions.published.where(:user_id => user.id).count == 0 
+    if proposal.user && proposal.opinions.published.where(:user_id => user.id).count == 0 && (proposal.okay_to_email_notification || is_admin)
       new_proposals[proposal.id] = proposal 
     end 
   end 
 
-  new_points   = subdomain.points.published.named.where("created_at > '#{start_period}' AND created_at < '#{end_period}' AND user_id != #{user.id} AND last_inclusion != -1")
-  new_opinions = subdomain.opinions.published.where("created_at > '#{start_period}' AND created_at < '#{end_period}' AND user_id != #{user.id}")
-  new_comments = subdomain.comments.where("created_at > '#{start_period}' AND created_at < '#{end_period}' AND user_id != #{user.id}")
+  new_points   = subdomain.points.published.named.where("created_at > '#{start_period}' AND created_at < '#{end_period}' AND user_id != #{user.id} AND last_inclusion != -1").to_a
+  new_opinions = subdomain.opinions.published.where("created_at > '#{start_period}' AND created_at < '#{end_period}' AND user_id != #{user.id}").to_a
+  new_comments = subdomain.comments.where("created_at > '#{start_period}' AND created_at < '#{end_period}' AND user_id != #{user.id}").to_a
+
+
+  # if the moderation policy requires content to be moderated before going out in email notifications, 
+  # then we also need to do extra work to find content that was moderated between start & end period
+  withhold_until_moderation = subdomain.moderation_policy in [1,2]
+  if withhold_until_moderation
+    moderations = subdomain.moderations.where(:status => 1).where("updated_at > '#{start_period}' AND updated_at < '#{end_period}'")    
+    moderations.where(moderatable_type: 'Proposal').each do |moderation|
+      proposal = moderation.root_object
+      if proposal.user && proposal.opinions.published.where(:user_id => user.id).count == 0
+        new_proposals[proposal.id] = proposal 
+      end 
+    end    
+    moderations.where(moderatable_type: 'Point').each do |moderation|
+      obj = moderation.root_object
+      new_points.push obj
+    end
+    moderations.where(moderatable_type: 'Comment').each do |moderation|
+      obj = moderation.root_object
+      new_comments.push obj
+    end
+    new_comments.uniq!
+    new_points.uniq!
+  end
 
   your_proposals = {}
   active_proposals = {}
   new_points.each do |pnt|
     proposal = pnt.proposal
-    next if new_proposals.key?(proposal.id) || !proposal.user
+    next if new_proposals.key?(proposal.id) || !proposal.user 
+    next if !(proposal.okay_to_email_notification || is_admin)
 
     proposal_dict = proposal.user_id == user.id ? your_proposals : active_proposals
     if !proposal_dict.has_key? proposal.id 
@@ -102,6 +129,7 @@ def get_new_activity(subdomain, user, since)
     pnt = comment.point
     proposal = pnt.proposal
     next if new_proposals.key?(proposal.id) || !proposal.user
+    next if !(proposal.okay_to_email_notification || is_admin)    
     proposal_dict = proposal.user_id == user.id ? your_proposals : active_proposals
     if !proposal_dict.has_key?(proposal.id)
       proposal_dict[proposal.id] = {
@@ -135,6 +163,7 @@ def get_new_activity(subdomain, user, since)
   new_opinions.each do |opinion|
     proposal = opinion.proposal
     next if new_proposals.key?(proposal.id) || !proposal.user
+    next if !proposal.okay_to_email_notification
 
     proposal_dict = proposal.user_id == user.id ? your_proposals : active_proposals
     if !proposal_dict.has_key?(proposal.id)

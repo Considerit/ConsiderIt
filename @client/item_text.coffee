@@ -72,7 +72,6 @@ styles += """
   }
 
   .is_collapsed .proposal-description {
-    max-height: #{COLLAPSED_MAX_HEIGHT}px;
     color: #888;
   }
 
@@ -227,6 +226,9 @@ window.ItemText = ReactiveComponent
              .is_expanded #proposal-text-#{proposal.id} .proposal-description-wrapper {
                 max-width: #{ITEM_TEXT_WIDTH() * LIST_ITEM_EXPANSION_SCALE()}px;
              }
+             .is_collapsed .proposal-description {
+                max-height: #{customization('collapsed_max_height') or COLLAPSED_MAX_HEIGHT}px;
+             }
 
           """
 
@@ -372,7 +374,7 @@ window.ItemText = ReactiveComponent
       height = heightWhenRendered proposal.description.replace(/<p><br><\/p>/g, ''), \
                                   {width:"#{ITEM_TEXT_WIDTH()}px"}, el, @description_has_media
 
-      @exceeds_collapsed_description_height = height >= COLLAPSED_MAX_HEIGHT
+      @exceeds_collapsed_description_height = height >= customization('collapsed_max_height') or COLLAPSED_MAX_HEIGHT
 
       # do we need to show a "show full text" button when expanded? 
       if LIST_ITEM_EXPANSION_SCALE() != 1

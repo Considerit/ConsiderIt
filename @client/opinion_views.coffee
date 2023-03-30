@@ -92,7 +92,7 @@ window.get_opinions_for_proposal = (opinions, proposal, weights) ->
 window.get_participant_attributes = -> 
   attributes = [] 
   is_admin = fetch('/current_user').is_admin
-  show_others = (!customization('hide_opinions') || is_admin) && !customization('anonymize_everything')
+  show_others = (!customization('hide_opinions') || is_admin) && (!customization('anonymize_everything') || customization('anonymization_safe_opinion_filters'))
   custom_views = customization 'opinion_views'
   user_tags = customization 'user_tags'
 
@@ -355,7 +355,7 @@ default_weights = ->
 get_weights = ->
   custom_views = customization 'opinion_views'
   is_admin = fetch('/current_user').is_admin
-  show_others = (!customization('hide_opinions') || is_admin) && !customization('anonymize_everything')
+  show_others = (!customization('hide_opinions') || is_admin) && (!customization('anonymize_everything') || customization('anonymization_safe_opinion_filters'))
 
   weights = default_weights()
 

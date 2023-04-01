@@ -92,7 +92,7 @@ class SubdomainController < ApplicationController
           template_sub = Subdomain.find(params[:copy_from].to_i)
 
           # validate that current user is a host of template_sub
-          if Permissions.permit 'update subdomain', template_sub > 0
+          if Permissions.permit('update subdomain', template_sub) > 0
             new_subdomain.import_configuration template_sub
           end
 
@@ -248,8 +248,11 @@ class SubdomainController < ApplicationController
       subdomain.import_configuration template_sub
     end
 
-    change_in_plausible_status = attrs['customizations'] && attrs['customizations']['enable_plausible_analytics'] != current_subdomain.customizations['enable_plausible_analytics']
 
+    change_in_plausible_status = attrs['customizations'] && attrs['customizations']['enable_plausible_analytics']
+    if current_subdomain.customizations 
+      change_in_plausible_status = change_in_plausible_status != current_subdomain.customizations['enable_plausible_analytics']
+    end 
 
     current_user.add_to_active_in
     current_subdomain.update! attrs
@@ -371,7 +374,7 @@ class SubdomainController < ApplicationController
 
     if sub_to_destroy
 
-      if sub_to_destroy.customizations.has_key?('user_tags')
+      if sub_to_destroy.customizations && sub_to_destroy.customizations.has_key?('user_tags')
         users = User.where( "registered=1 AND active_in like '%\"#{sub_to_destroy.id}\"%'")
         users.each do |u|
           u.delete_tags_for_forum(sub_to_destroy)

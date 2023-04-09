@@ -330,7 +330,7 @@ Placer = (opts, bodies) ->
             y = options[x]
 
  
-            if layout_params.jostle
+            if layout_params.jostle && (opinions.length < 400 || height > 60)
               x_dist = x_target - x 
               y_dist = ( height - radius ) - y
               x_dist *= 2

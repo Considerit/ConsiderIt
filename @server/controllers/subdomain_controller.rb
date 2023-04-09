@@ -438,9 +438,14 @@ class SubdomainController < ApplicationController
       end
     end
 
-    current_subdomain.update! attrs
-    dirty_key '/subdomain'
-    render :json => []
+    begin 
+      current_subdomain.update! attrs
+      dirty_key '/subdomain'
+      render :json => []
+
+    rescue => e
+      render :status => 422, :json => {:error => e.message}
+    end
   end
 
 end

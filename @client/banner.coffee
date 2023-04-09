@@ -902,7 +902,7 @@ window.EditBanner = ReactiveComponent
         EditForum()
 
       if @local.file_errors
-        DIV style: {color: 'red'}, 'Error uploading files!'
+        DIV style: {color: 'red'}, @local.file_errors
 
       FORM 
         id: 'banner_files'
@@ -1029,9 +1029,13 @@ window.EditBanner = ReactiveComponent
         for obj in resp
           arest.updateCache(obj)
         cb?(true)
-      error: => 
-        @local.file_errors = true
+      error: (response) =>
+        response = JSON.parse response.response
+        @local.file_errors = response.error or 'Error uploading files!'
         save @local
+        alert(@local.file_errors)
+        @refs.masthead_file_input?.value = null
+        @refs.logo_file_input?.value = null        
         cb?(false)
 
 

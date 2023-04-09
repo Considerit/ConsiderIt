@@ -330,7 +330,7 @@ Placer = (opts, bodies) ->
             y = options[x]
 
  
-            if layout_params.jostle && (opinions.length < 400 || height > 60)
+            if layout_params.jostle
               x_dist = x_target - x 
               y_dist = ( height - radius ) - y
               x_dist *= 2
@@ -340,7 +340,12 @@ Placer = (opts, bodies) ->
                 sag = base_radius * layout_params.jostle * Math.random()
                 if layout_params.density_modified_jostle
                   sag *= (1 - layout_params.density_modified_jostle) + layout_params.density_modified_jostle * get_opinion_density(o)
-                sag += .5
+                
+                if radius <= 1 
+                  sag += radius / 4  # I'm not entirely sure why things go so haywire when r <= 1
+                else 
+                  sag += .5
+
                 x += sag * x_dist / total_dist 
                 y += sag * y_dist / total_dist
 

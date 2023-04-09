@@ -10,6 +10,8 @@ window.HistogramTester = ReactiveComponent
 
     common_layout_params = 
       show_histogram_layout: false  
+      save_snapshots: !!fetch('histo_layout_explorer_options').show_explorer
+      use_global_window: true 
       verbose: true
       fill_ratio: 1
       cleanup_overlap: 1.95
@@ -18,9 +20,9 @@ window.HistogramTester = ReactiveComponent
     layout_params = []
 
     for fill_ratio in [1]
-      for cleanup_overlap in [2] # [1.98] #1.8
-        for jostle in [0]
-          for rando_order in [0]
+      for cleanup_overlap in [1.95] # [1.98] #1.8
+        for jostle in [0,.1,.2,.3,.4]
+          for rando_order in [.1]
             for topple_towers in [.05]
               for density_modified_jostle in [1]
                 layout_params.push {density_modified_jostle, topple_towers, rando_order, jostle, cleanup_overlap, fill_ratio}
@@ -33,10 +35,10 @@ window.HistogramTester = ReactiveComponent
       param.param_hash = param_hash
 
     sizes = [
-      {
-        width: ITEM_OPINION_WIDTH() * 2
-        height: 170   
-      }
+      # {
+      #   width: ITEM_OPINION_WIDTH() * 2
+      #   height: 170   
+      # }
       # {
       #   width: PROPOSAL_HISTO_WIDTH()
       #   height: 400   
@@ -47,10 +49,11 @@ window.HistogramTester = ReactiveComponent
       #   height: 350   
       # }
 
-      # {
-      #   width: PROPOSAL_HISTO_WIDTH() / 2
-      #   height: 170 / 2
-      # } 
+      {
+        width: 444
+        height: 40
+      } 
+
 
     ]
 
@@ -67,10 +70,14 @@ window.HistogramTester = ReactiveComponent
 
     proposals_to_show = proposals.slice(start_idx,start_idx + num_histos)
 
+    proposals_to_show = []
+    for p in proposals
+      if p.slug == 'beja-opes-estratgicas-17-31247' # p.cluster == "opes-estratgicas-17"
+        proposals_to_show.push p
 
     DIV 
       style:
-        width: PROPOSAL_HISTO_WIDTH() 
+        width: HOMEPAGE_WIDTH() 
         margin: 'auto'
 
       OpinionViews()
@@ -92,6 +99,7 @@ window.HistogramTester = ReactiveComponent
             display: 'none'
 
         DIV 
+          key: idx
           style: 
             marginTop: 40
 
@@ -109,21 +117,22 @@ window.HistogramTester = ReactiveComponent
             DIV null, 
               for hist, i in histos 
                 params = _.defaults {histo_key: "#{namespaced_key('histogram', proposal)}-#{i}"}, histo, hist
-                RenderedHist = Histogram params 
+                RenderedHist = Histogram params
 
                 DIV 
+                  key: RenderedHist.props.histo_key
                   style: 
                     marginBottom: 20 
                     position: 'relative'
                   RenderedHist 
 
                   HistoDetails
-                    running_state: RenderedHist.props.key
+                    running_state: RenderedHist.props.histo_key
                     hist: hist
                     param_sets: param_sets
 
                   LayoutExplorer 
-                    running_state: RenderedHist.props.key
+                    running_state: RenderedHist.props.histo_key
                     hist: params 
 
 
@@ -155,6 +164,7 @@ LayoutExplorerOptions = ReactiveComponent
 
       for k,v of opts when k != 'key' && (opts.show_explorer || k == 'show_explorer')
         DIV 
+          key: k
           style: 
             fontSize: 12        
           do(k,v) =>
@@ -578,55 +588,55 @@ GlobalHistTiming = ReactiveComponent
         width: 1400
       
       TABLE null, 
-
-        TR null, 
-          TH {style: th_style}, 'Param set'
-          TH {style: th_style}, 'Truth'
-          TH {style: th_style}, 'Visibility'
-          TH {style: th_style}, 'Stability'
-          TH {style: th_style}, 'Time (ms)'
-
-
-          
-        for param_hash, param_set of param_sets
-          vals = global_running_state[param_hash]
-
-          continue if !vals
-          i = -1
-
-          TR null,
+        TBODY null,
+          TR null, 
+            TH {style: th_style}, 'Param set'
+            TH {style: th_style}, 'Truth'
+            TH {style: th_style}, 'Visibility'
+            TH {style: th_style}, 'Stability'
+            TH {style: th_style}, 'Time (ms)'
 
 
-                
-            TD 
-              style: td_style 
-                           
-              for k,v of param_set when params_with_multiple_vals[k]
-                i += 1
-                DIV 
-                  style:
-                    color: hsv2rgb(colors[i], .7, .5)
-                    fontSize: 14
-                    fontWeight: 'bold'
-                  "#{k} = #{v}"
+            
+          for param_hash, param_set of param_sets
+            vals = global_running_state[param_hash]
+
+            continue if !vals
+            i = -1
+
+            TR null,
+
+
+                  
+              TD 
+                style: td_style 
+                             
+                for k,v of param_set when params_with_multiple_vals[k]
+                  i += 1
+                  DIV 
+                    style:
+                      color: hsv2rgb(colors[i], .7, .5)
+                      fontSize: 14
+                      fontWeight: 'bold'
+                    "#{k} = #{v}"
 
 
 
-            TD 
-              style: td_style 
-              (100 * vals.truth / vals.cnt).toFixed(1)
+              TD 
+                style: td_style 
+                (100 * vals.truth / vals.cnt).toFixed(1)
 
-            TD 
-              style: td_style 
-              (100 * vals.visibility / vals.cnt ).toFixed(1)
+              TD 
+                style: td_style 
+                (100 * vals.visibility / vals.cnt ).toFixed(1)
 
-            TD 
-              style: td_style 
-              (100 * vals.stability / vals.cnt ).toFixed(1)
+              TD 
+                style: td_style 
+                (100 * vals.stability / vals.cnt ).toFixed(1)
 
-            TD 
-              style: td_style 
-              Math.round(vals.tick_time / vals.cnt)
+              TD 
+                style: td_style 
+                Math.round(vals.tick_time / vals.cnt)
 
 
       do =>
@@ -639,49 +649,51 @@ GlobalHistTiming = ReactiveComponent
           style: 
             marginTop: 36 
 
-          TR null, 
-            TH {style: th_style}, 'Param'
-            TH {style: th_style}, 'Sets'
-            TH {style: th_style}, 'Truth'
-            TH {style: th_style}, 'Visibility'
-            TH {style: th_style}, 'Stability'
-            TH {style: th_style}, 'Time (ms)'
+          TBODY null,
+
+            TR null, 
+              TH {style: th_style}, 'Param'
+              TH {style: th_style}, 'Sets'
+              TH {style: th_style}, 'Truth'
+              TH {style: th_style}, 'Visibility'
+              TH {style: th_style}, 'Stability'
+              TH {style: th_style}, 'Time (ms)'
 
 
-          for param in keys 
-            [cnt, total_run_time, truth, visibility, stability, total_histos] = totals[param]
-            i += 1
+            for param in keys 
+              [cnt, total_run_time, truth, visibility, stability, total_histos] = totals[param]
+              i += 1
 
 
-            TR 
-              style: 
-                backgroundColor: if i % 2 == 1 then '#f8f8f8'
+              TR 
+                style: 
+                  backgroundColor: if i % 2 == 1 then '#f8f8f8'
 
 
-                  
-              TD 
-                style: _.extend {}, td_style, color: hsv2rgb(colors[i], .7, .5)
-                param
+                    
+                TD 
+                  style: _.extend {}, td_style, color: hsv2rgb(colors[i], .7, .5)
+                  param
 
 
-              TD 
-                style: td_style 
-                total_histos
+                TD 
+                  style: td_style 
+                  total_histos
 
-              TD 
-                style: td_style 
-                Math.round(100 * truth / total_histos).toFixed(1)
+                TD 
+                  style: td_style 
+                  Math.round(100 * truth / total_histos).toFixed(1)
 
-              TD 
-                style: td_style 
-                Math.round(100 * visibility / total_histos).toFixed(1)
+                TD 
+                  style: td_style 
+                  Math.round(100 * visibility / total_histos).toFixed(1)
 
-              TD 
-                style: td_style 
-                Math.round(100 * stability / total_histos).toFixed(1)
+                TD 
+                  style: td_style 
+                  Math.round(100 * stability / total_histos).toFixed(1)
 
-              TD 
-                style: td_style 
-                Math.round(total_run_time / total_histos)
+                TD 
+                  style: td_style 
+                  Math.round(total_run_time / total_histos)
 
 

@@ -41,6 +41,7 @@ positionAvatarsWithJustLayout = (opts) ->
 
   placer = Placer opts  
   nodes = placer.pixelated_layout()
+
   while !nodes && opts.r > 0 # continuously reduce the avatar radius until we can place all of them
     console.error("At least one avatar couldn't be placed with base radius #{opts.r}. Trying again with base radius=#{opts.r - 1}")
     opts.r -= 1
@@ -48,7 +49,6 @@ positionAvatarsWithJustLayout = (opts) ->
     nodes = placer.pixelated_layout()
 
   
-
   # sort so we can optimize by knowing that bodies are ordered by x_target
   nodes.sort (a,b) -> a.x_target - b.x_target
 
@@ -80,10 +80,9 @@ positionAvatarsWithJustLayout = (opts) ->
     r = n.radius
     positions[n.user] = [ Math.round((n.x - r) * 10) / 10, Math.round((n.y - r) * 10) / 10, r]
 
-
   if layout_params.verbose 
     global_running_state = fetch 'histo-timing'
-    running_state = fetch opts.running_state
+    running_state = fetch opts.histo_key
 
     global_running_state[layout_params.param_hash] ?=
       tick_time: 0 
@@ -194,10 +193,10 @@ Placer = (opts, bodies) ->
   weights = opts.weights
   cleanup_overlap = layout_params.cleanup_overlap or 2
   if layout_params.verbose 
-    running_state = fetch opts.running_state
-    histo_layout_explorer_options = fetch('histo_layout_explorer_options')
+    running_state = fetch opts.histo_key
+    # histo_layout_explorer_options = fetch('histo_layout_explorer_options')
 
-  save_snapshots = layout_params.verbose && histo_layout_explorer_options.show_explorer
+  save_snapshots = layout_params.verbose && layout_params.save_snapshots #histo_layout_explorer_options.show_explorer
 
   opinion_density = null
   window_sizes = [.1,.25,.4]
@@ -248,7 +247,6 @@ Placer = (opts, bodies) ->
 
 
   pixelated_layout = ->
-
     laid_out = []
     return laid_out if opinions.length == 0 
 
@@ -260,7 +258,6 @@ Placer = (opts, bodies) ->
       radius = o.radius
       adjusted_stance = (o.stance + 1) / 2
       o.x_target = adjusted_stance * (width - 2 * radius) + radius
-
 
     # order strategically, placing bigger bodies first, then ordered from the poles inward
     opinions.sort (a,b) ->
@@ -288,7 +285,6 @@ Placer = (opts, bodies) ->
 
     # For tracking valid placements of bodies' centroids
     openings = Openings()
-
     
     moves_within = [Math.round(width * .125), Math.round(width * .5), width]
 
@@ -383,9 +379,11 @@ Placer = (opts, bodies) ->
 
     if save_snapshots
       current_cleanup = []
+      running_state = fetch opts.histo_key
 
     if !layout_params.show_histogram_layout
       for o,idx in opinions 
+
         success = place_body o,idx
         if !success
           return false
@@ -394,6 +392,7 @@ Placer = (opts, bodies) ->
         running_state.cleanup ?= []
         running_state.cleanup.push current_cleanup
         save running_state        
+
     else 
 
       idx = 0
@@ -700,12 +699,12 @@ EvaluateLayout = (opts, bodies, placer) ->
 
   if layout_params.verbose 
     global_running_state = fetch 'histo-timing'
-    running_state = fetch opts.running_state
+    running_state = fetch opts.histo_key
 
   #   running_state = fetch opts.running_state
   #   histo_layout_explorer_options = fetch('histo_layout_explorer_options')
 
-  # save_snapshots = layout_params.verbose && histo_layout_explorer_options.show_explorer
+  # save_snapshots = layout_params.verbose && layout_params.save_snapshots #histo_layout_explorer_options.show_explorer
 
 
   # Determines which bodies are adjacent to a body. For each body, sets the angle {0, 360º} which represents 
@@ -923,7 +922,9 @@ EvaluateLayout = (opts, bodies, placer) ->
         stability += Math.pow body.stability, 2 # body.space_below
 
     stability /= bodies.length 
-    _.extend running_state, {truth, visibility, stability}
+    running_state.truth = truth
+    running_state.visibility = visibility
+    running_state.stability = stability
 
     global_running_state[layout_params.param_hash].truth += truth
     global_running_state[layout_params.param_hash].visibility += visibility

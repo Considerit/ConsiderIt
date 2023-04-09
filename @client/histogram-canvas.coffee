@@ -1,7 +1,7 @@
 require './browser_hacks'
 require './histogram_layout'
 
-# require './histogram_lab'  # for testing only
+require './histogram_lab'  # for testing only
 
 
 # md5 = require './vendor/md5' 
@@ -415,7 +415,7 @@ window.Histogram = ReactiveComponent
       key: 'histoavatars'
 
       HistoAvatars
-        histo_key: @props.proposal.key or @props.proposal   
+        histo_key: @props.histo_key or @props.proposal.key or @props.proposal   
         weights: @weights
         salience: @salience
         groups: @groups
@@ -1292,6 +1292,7 @@ HistoAvatars = ReactiveComponent
       delegate_layout_task
         task: 'layoutAvatars'
         histo: @local.key
+        histo_key: @props.histo_key
         k: histocache_key
         r: @avatar_size / 2
         w: @props.width or 400
@@ -1311,21 +1312,43 @@ HistoAvatars = ReactiveComponent
 num_layout_workers = 10
 num_layout_tasks_delegated = 0
 # num_completed = 0
-window.delegate_layout_task = (opts) -> 
-  after_loaded = ->
-    histo_layout_worker = histo_layout_workers[num_layout_tasks_delegated % num_layout_workers]  
-    histo_layout_worker.postMessage opts
-    num_layout_tasks_delegated += 1
 
-  if window.histo_layout_workers
-    after_loaded()
+get_histo_positions = (e) ->
+  {opts, positions} = e.data 
+
+  local = fetch opts.histo
+  histocache_key = opts.k 
+  
+  local.histocache ?= {} 
+  local.histocache[histocache_key] = 
+    hash: histocache_key
+    positions: positions
+  save local
+
+window.delegate_layout_task = (opts) -> 
+  if opts.layout_params.use_global_window
+    # really only used for histogram lab
+    enqueue_histo_layout opts
+
+    window.onmessage = get_histo_positions
+
+
   else 
-    intv = setInterval ->
-      if window.histo_layout_workers
-        after_loaded()
-        clearInterval intv
-      configure_histo_layout_web_worker()
-    , 20
+    # use webworkers, this is the normal thing
+    after_loaded = ->
+      histo_layout_worker = histo_layout_workers[num_layout_tasks_delegated % num_layout_workers]  
+      histo_layout_worker.postMessage opts
+      num_layout_tasks_delegated += 1
+
+    if window.histo_layout_workers
+      after_loaded()
+    else 
+      intv = setInterval ->
+        if window.histo_layout_workers
+          after_loaded()
+          clearInterval intv
+        configure_histo_layout_web_worker()
+      , 20
 
 
 configure_histo_layout_web_worker = ->
@@ -1333,20 +1356,7 @@ configure_histo_layout_web_worker = ->
   if !window.histo_layout_workers && arest.cache['/application']?.web_worker
     window.histo_layout_workers = (new Worker(arest.cache['/application'].web_worker) for i in [0..num_layout_workers - 1])
 
-    onmessage = (e) ->
-      {opts, positions} = e.data 
-
-      local = fetch opts.histo
-      histocache_key = opts.k 
-      
-      local.histocache ?= {} 
-      local.histocache[histocache_key] = 
-        hash: histocache_key
-        positions: positions
-
-      # num_completed += 1
-      # console.log {num_layout_tasks_delegated, num_completed}
-      save local
+    onmessage = get_histo_positions
 
     for worker in histo_layout_workers
       worker.onmessage = onmessage

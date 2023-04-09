@@ -17,7 +17,7 @@ window.Footer = ReactiveComponent
 styles += """
   .footer_wrapper {
     padding: 65px 0 15px 0;
-    background-color: #{selected_color};
+    background-color: #4f4f4f; /* #{selected_color}; */
     position: relative;
     z-index: 3;
     color: white;

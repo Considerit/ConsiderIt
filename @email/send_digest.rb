@@ -35,6 +35,7 @@ def send_digest(subdomain, user, subscription_settings, deliver = true, since = 
   has_activity_to_report = false 
   new_activity.each do |k,v|
     has_activity_to_report ||= v.count > 0
+    break if has_activity_to_report
   end 
 
   return if !has_activity_to_report && !force
@@ -54,8 +55,6 @@ def send_digest(subdomain, user, subscription_settings, deliver = true, since = 
 
 end
 
-
-
 def get_new_activity(subdomain, user, since)
 
   start_period = Time.parse(since).utc - NOTIFICATION_LAG
@@ -63,12 +62,19 @@ def get_new_activity(subdomain, user, since)
 
   is_admin = user.is_admin?(subdomain)
 
-
   pp "#{since}: <#{start_period}, #{end_period}>"
   new_proposals = {}
 
+  @okay_to_email_notification = {}
+  def okay_to_email_for_proposal(prop)
+    if !@okay_to_email_notification.has_key?(prop.id)
+      @okay_to_email_notification[prop.id] = prop.okay_to_email_notification
+    end
+    @okay_to_email_notification[prop.id]
+  end
+
   subdomain.proposals.where("created_at > '#{start_period}' AND created_at < '#{end_period}'").each do |proposal|
-    if proposal.user && proposal.opinions.published.where(:user_id => user.id).count == 0 && (proposal.okay_to_email_notification || is_admin)
+    if proposal.user && proposal.opinions.published.where(:user_id => user.id).count == 0 && (okay_to_email_for_proposal(proposal) || is_admin)
       new_proposals[proposal.id] = proposal 
     end 
   end 
@@ -101,12 +107,13 @@ def get_new_activity(subdomain, user, since)
     new_points.uniq!
   end
 
+
   your_proposals = {}
   active_proposals = {}
   new_points.each do |pnt|
     proposal = pnt.proposal
     next if new_proposals.key?(proposal.id) || !proposal.user 
-    next if !(proposal.okay_to_email_notification || is_admin)
+    next if !( (okay_to_email_for_proposal(proposal) && pnt.okay_to_email_notification) || is_admin)
 
     proposal_dict = proposal.user_id == user.id ? your_proposals : active_proposals
     if !proposal_dict.has_key? proposal.id 
@@ -129,7 +136,7 @@ def get_new_activity(subdomain, user, since)
     pnt = comment.point
     proposal = pnt.proposal
     next if new_proposals.key?(proposal.id) || !proposal.user
-    next if !(proposal.okay_to_email_notification || is_admin)    
+    next if !( (okay_to_email_for_proposal(proposal) && pnt.okay_to_email_notification && comment.okay_to_email_notification) || is_admin)    
     proposal_dict = proposal.user_id == user.id ? your_proposals : active_proposals
     if !proposal_dict.has_key?(proposal.id)
       proposal_dict[proposal.id] = {
@@ -163,7 +170,7 @@ def get_new_activity(subdomain, user, since)
   new_opinions.each do |opinion|
     proposal = opinion.proposal
     next if new_proposals.key?(proposal.id) || !proposal.user
-    next if !proposal.okay_to_email_notification
+    next if !okay_to_email_for_proposal(proposal)
 
     proposal_dict = proposal.user_id == user.id ? your_proposals : active_proposals
     if !proposal_dict.has_key?(proposal.id)
@@ -223,6 +230,7 @@ def get_new_activity(subdomain, user, since)
     end 
   end
 
+
   active = active_proposals.values()
   your = your_proposals.values()
 
@@ -239,6 +247,7 @@ def get_new_activity(subdomain, user, since)
 
   new_proposals = new_proposals.values()
   new_proposals.sort_by! {|p| -p.opinions.published.count }
+
 
   return {
     :new_proposals => new_proposals,

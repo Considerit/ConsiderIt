@@ -789,7 +789,7 @@ class ImportDataController < ApplicationController
         end
         comment.save
 
-        current_point.comment_count = current_point.comments.count
+        current_point.set_comment_count
         current_point.save
 
 

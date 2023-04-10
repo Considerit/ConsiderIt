@@ -27,6 +27,11 @@ class ModerationController < ApplicationController
       if moderatable.moderation_status == 1 && [1,2].include?(current_subdomain.moderation_policy)
         Notifier.notify_parties 'new', moderatable
       end
+
+      if moderation.moderatable_type.downcase == 'comment'
+        moderation.root_object.point.set_comment_count
+      end
+
     end
 
     if moderation.moderatable_type.downcase == 'proposal'

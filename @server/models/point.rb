@@ -99,8 +99,18 @@ class Point < ApplicationRecord
     is_pro ? 'pro' : 'con'
   end
 
+  def set_comment_count 
+    self.comment_count = 0 
+    self.comments.each do |c|
+      if c.okay_to_email_notification
+        self.comment_count += 1
+      end
+    end
+    self.save
+  end
+
   def recache
-    self.comment_count = comments.count
+    set_comment_count
 
     # if we just look at self.inclusions, authors of unpublished opinions that
     # included this point will be set as includers

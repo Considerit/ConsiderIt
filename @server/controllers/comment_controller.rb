@@ -50,10 +50,7 @@ class CommentController < ApplicationController
       result['key'] = "/comment/#{comment.id}?original_id=#{original_id}"
       dirty_key "/comments/#{point.id}"
 
-      # TODO: BUG: comment count won't accurate if this comment has to be 
-      #            moderated first...
-      point.comment_count = point.comments.count
-      point.save
+      point.set_comment_count
       dirty_key "/point/#{point.id}"  
 
       current_user.update_subscription_key(point.proposal.key, 'watched', :force => false)
@@ -90,7 +87,7 @@ class CommentController < ApplicationController
     comment.destroy
 
     point = comment.point
-    point.comment_count = point.comments.count
+    point.set_comment_count
     point.save
 
     dirty_key "/point/#{point.id}"

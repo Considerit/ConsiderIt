@@ -411,11 +411,11 @@ GraphSection =
     color = d3.scaleOrdinal vals, color50scheme
     color
 
-  drawSegments: (segment_by, current_segment, color, notice, labels) ->
+  drawSegments: ({segment_by, current_segment, color, notice, labels, total}) ->
     return SPAN {key: 'segments'} if segment_by.length == 0 
 
-
     analytics_state = fetch 'analytics_state'
+
     DIV 
       className: 'segments graph_padding'
 
@@ -429,7 +429,6 @@ GraphSection =
 
           for segment in segment_by
             do (segment) =>
-
               LI 
                 key: segment
 
@@ -459,12 +458,21 @@ GraphSection =
             notice
 
       if analytics_state.segment_by
-        @drawSegment (labels?[analytics_state.segment_by] or analytics_state.segment_by), current_segment, color
+        @drawSegment (labels?[analytics_state.segment_by] or analytics_state.segment_by), current_segment, color, total
 
-  drawSegment : (name, segment, colors) ->
+  drawSegment : (name, segment, colors, total) ->
     segment_vals = Object.entries segment
 
     segment_vals.sort (a,b) -> b[1].length - a[1].length
+
+    if !total?
+      total = 0
+      for [val, incidents] in segment_vals
+        if val == 'Eventually registered'
+          seg_count = participation_data.participants.length # to deal with bot false positives in the visitation dataset
+        else    
+          seg_count = incidents.length 
+        total += seg_count
 
     color_vals = []
 
@@ -487,6 +495,10 @@ GraphSection =
 
           for [val, incidents] in segment_vals
             color_vals.push colors(val) + '66'
+            if val == 'Eventually registered'
+              seg_count = participation_data.participants.length # to deal with bot false positives in the visitation dataset
+            else    
+              seg_count = incidents.length 
 
             DIV 
               key: val
@@ -511,10 +523,12 @@ GraphSection =
                 style: 
                   backgroundColor: colors(val) + '66'
 
-                if val == 'Eventually registered'
-                  participation_data.participants.length # to deal with bot false positives in the visitation dataset
-                else    
-                  incidents.length 
+                seg_count
+                if seg_count > 0 && total > 0
+                  DIV 
+                    style: 
+                      fontSize: 15
+                    "#{(seg_count / total * 100).toFixed(1)}%"
       DIV 
         style: 
           width: '48%'
@@ -535,7 +549,7 @@ visitor_segment_labels =
   # 'referrer': 'Referrer'
   'device_type': 'Device Type'
   'browser': 'Browser'
-  'ip': 'IP Prefix'
+  # 'ip': 'IP Prefix'
 
 window.VisitAnalytics = ReactiveComponent
   displayName: 'VisitAnalytics'
@@ -546,6 +560,7 @@ window.VisitAnalytics = ReactiveComponent
 
     return SPAN null if !fetch('visitation_data').dummy
     analytics_state = fetch 'analytics_state'
+
 
     {visitors, visits_per_day, segments, total_visits} = visitation_data
     @review_state(segments)
@@ -584,7 +599,7 @@ window.VisitAnalytics = ReactiveComponent
           zDomain: zDomain
           color: color
 
-        @drawSegments segment_by, segments[analytics_state.segment_by], color, notice, visitor_segment_labels
+        @drawSegments {segment_by, current_segment: segments[analytics_state.segment_by], color, notice, labels: visitor_segment_labels}
 
 
 
@@ -646,7 +661,8 @@ window.ParticipantAnalytics = ReactiveComponent
           zDomain: zDomain
           color: color
 
-        @drawSegments segment_by, segment_data, color, notice
+
+        @drawSegments {segment_by, current_segment: segment_data, color, notice, total: participants.length}
 
 
 
@@ -703,7 +719,8 @@ window.OpinionGraphAnalytics = ReactiveComponent
           zDomain: zDomain
           color: color
 
-        @drawSegments segment_by, segment_data, color, notice
+
+        @drawSegments {segment_by, current_segment: segment_data, color, notice, total: opinions.length}
 
 
 
@@ -765,8 +782,8 @@ window.CommentsAnalytics = ReactiveComponent
           zDomain: zDomain
           color: color
 
-        @drawSegments segment_by, segment_data, color, notice
 
+        @drawSegments {segment_by, current_segment: segment_data, color, notice, total: all_comments.length}
 
 
 

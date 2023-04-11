@@ -726,7 +726,7 @@ HistoAvatars = ReactiveComponent
     @last_key = histocache_key
 
     # give the canvas extra space at the top so that overflow avatars on the top aren't cut off
-    @cut_off_buffer = if @resolution > 1 then 0 else Math.round @props.height / 2 #@avatar_size / 2
+    @cut_off_buffer = Math.round @props.height / 2 #@avatar_size / 2
     @adjusted_height = Math.round @props.height +     @cut_off_buffer 
     @adjusted_width  = Math.round @props.width  + 2 * @cut_off_buffer
 
@@ -929,8 +929,8 @@ HistoAvatars = ReactiveComponent
       pos = histocache?.positions?[user.key]
       continue if !pos
 
-      x = Math.round(pos[0] + @cut_off_buffer) / @resolution
-      y = Math.round(pos[1] + @cut_off_buffer) / @resolution
+      x = Math.round(pos[0]) / @resolution + @cut_off_buffer
+      y = Math.round(pos[1]) / @resolution + @cut_off_buffer
       r = Math.round(pos[2]) / @resolution
       width = height = r * 2
 
@@ -1193,10 +1193,10 @@ HistoAvatars = ReactiveComponent
         pos = histocache?.positions?[user]
 
         coords = 
-          top:  pos[1] + @canvas_bounding_rect.top  + window.pageYOffset - document.documentElement.clientTop + @cut_off_buffer
-          left: pos[0] + @canvas_bounding_rect.left + window.pageXOffset - document.documentElement.clientLeft + pos[2] + @cut_off_buffer
-          height: 2 * pos[2]
-          width: 2 * pos[2]
+          top:  pos[1] / @resolution + @canvas_bounding_rect.top  + window.pageYOffset - document.documentElement.clientTop + @cut_off_buffer
+          left: pos[0] / @resolution + @canvas_bounding_rect.left + window.pageXOffset - document.documentElement.clientLeft + pos[2] + @cut_off_buffer
+          height: 2 * pos[2] / @resolution
+          width: 2 * pos[2] / @resolution
 
         opts = 
           id: id

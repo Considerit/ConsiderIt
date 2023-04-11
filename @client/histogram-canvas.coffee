@@ -712,9 +712,12 @@ HistoAvatars = ReactiveComponent
     
     histocache_key = @histocache_key()
 
+    @resolution = if @props.opinions.length > 1000 then 10 else 1
+
+
     if !@local.avatar_sizes?[histocache_key]
       @local.avatar_sizes ?= {}
-      radius = calculateAvatarRadius @props.width, @props.height, @props.opinions, @props.weights, 
+      radius = calculateAvatarRadius @props.width * @resolution, @props.height * @resolution, @props.opinions, @props.weights, 
                         fill_ratio: @getFillRatio()
       @local.avatar_sizes[histocache_key] = 2 * radius
 
@@ -723,7 +726,7 @@ HistoAvatars = ReactiveComponent
     @last_key = histocache_key
 
     # give the canvas extra space at the top so that overflow avatars on the top aren't cut off
-    @cut_off_buffer = Math.round @props.height / 2 #@avatar_size / 2
+    @cut_off_buffer = if @resolution > 1 then 0 else Math.round @props.height / 2 #@avatar_size / 2
     @adjusted_height = Math.round @props.height +     @cut_off_buffer 
     @adjusted_width  = Math.round @props.width  + 2 * @cut_off_buffer
 
@@ -926,11 +929,10 @@ HistoAvatars = ReactiveComponent
       pos = histocache?.positions?[user.key]
       continue if !pos
 
-      x = Math.round pos[0] + @cut_off_buffer
-      y = Math.round pos[1] + @cut_off_buffer 
-      r = Math.round pos[2]
+      x = Math.round(pos[0] + @cut_off_buffer) / @resolution
+      y = Math.round(pos[1] + @cut_off_buffer) / @resolution
+      r = Math.round(pos[2]) / @resolution
       width = height = r * 2
-
 
       opacity = if @props.backgrounded then 0.1 else (@props.salience[user.key] or 1)
 
@@ -1294,9 +1296,9 @@ HistoAvatars = ReactiveComponent
         histo: @local.key
         histo_key: @props.histo_key
         k: histocache_key
-        r: @avatar_size / 2
-        w: @props.width or 400
-        h: (@props.height or 70) # - @avatar_size / 2 # gives some padding for canvas drawing
+        r: (@avatar_size / 2)
+        w: (@props.width or 400) * @resolution
+        h: (@props.height or 70) * @resolution
         o: opinions
         weights: @props.weights
         groups: if has_groups then @props.groups

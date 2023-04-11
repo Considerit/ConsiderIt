@@ -25,12 +25,31 @@ window.moderation_options = [
 
 
 styles += """
+
+.moderation { 
+  font-weight: 600; 
+  display: inline-block; 
+  margin-right: 10px; 
+  font-size: 22px;
+  padding: 0;
+}
+.moderation label {
+  display: inline-block;
+  padding: 18px 24px; 
+  box-shadow: 0px 1px 2px rgba(0,0,0,.4);  
+  border-radius: 8px;         
+}
+.moderation label, .moderation input { 
+  font-size: 22px; 
+  cursor: pointer;            
+}
+
 .moderation.btn input {
   display: none;
 }
 
 .moderation.btn {
-  padding: 8px 18px;
+  /* padding: 8px 18px; */
 }
 
 .moderate-item-wrapper {
@@ -50,12 +69,13 @@ styles += """
 
   }
   .moderation.btn {
-    padding: 4px 8px;
   }
 
   .moderation.btn label {
     font-size: 18px;
+    padding: 8px 12px;    
   }
+
   .moderate-item-wrapper {
     padding: 8px 0px;
   }
@@ -67,6 +87,10 @@ styles += """
 }
 """
 
+
+default_quarantine_message = null
+default_fail_message = null
+
 window.ModerationDash = ReactiveComponent
   displayName: 'ModerationDash'
 
@@ -74,6 +98,11 @@ window.ModerationDash = ReactiveComponent
     moderations = @data().moderations
     subdomain = fetch '/subdomain'
     dash = fetch 'moderation_dash'
+
+
+    default_quarantine_message ?= subdomain.customizations.moderation_default_quarantine_message
+    default_fail_message ?= subdomain.customizations.moderation_default_fail_message
+
 
     @local.model ?= 'Proposal'
 
@@ -298,24 +327,6 @@ window.ModerationDash = ReactiveComponent
 
 
 
-styles += """
-  .moderation { 
-    font-weight: 600; 
-    border-radius: 8px;  
-    display: inline-block; 
-    margin-right: 10px; 
-    box-shadow: 0px 1px 2px rgba(0,0,0,.4);
-    font-size: 22px;
-  }
-  .moderation label {
-    display: inline-block;
-    padding: 10px 14px;    
-  }
-  .moderation label, .moderation input { 
-    font-size: 22px; 
-    cursor: pointer;            
-  }
-"""
 
 ModerateItem = ReactiveComponent
   displayName: 'ModerateItem'
@@ -326,6 +337,7 @@ ModerateItem = ReactiveComponent
     class_name = item.moderatable_type
     moderatable = fetch(item.moderatable)
     author = if moderatable.user then fetch(moderatable.user) else null
+
 
     if class_name == 'Point'
       point = moderatable
@@ -353,8 +365,17 @@ ModerateItem = ReactiveComponent
     current_user = fetch('/current_user')
     
     judge = (e) => 
-      item.status = e.target.value
-      save item
+      if parseInt(e.target.value) == 1
+        item.status = e.target.value
+        save item
+      else 
+        @local.messaging = 
+          from_prompt: true 
+          ultimate_judgment: parseInt(e.target.value)
+          moderatable: moderatable
+
+
+        save @local
 
     LI 
       'data-id': item.key
@@ -362,6 +383,9 @@ ModerateItem = ReactiveComponent
       style: 
         position: 'relative'
         listStyle: 'none'
+
+
+
 
       DIV 
         className: 'moderate-item-wrapper'
@@ -475,7 +499,9 @@ ModerateItem = ReactiveComponent
                     backgroundColor: 'transparent'
                     border: 'none'
                   onClick: => 
-                    @local.messaging = moderatable
+                    @local.messaging =
+                      moderatable: moderatable
+                      from_prompt: false
                     save(@local)
 
                   'Message author'
@@ -483,10 +509,45 @@ ModerateItem = ReactiveComponent
 
 
           if @local.messaging
-            DirectMessage 
-              to: @local.messaging.user
+            MESSAGE_WIDGET = DirectMessage
+
+            default_message = null
+            if @local.messaging.from_prompt
+              default_message = if parseInt(@local.messaging.ultimate_judgment) == 0 then default_fail_message else default_quarantine_message
+              MESSAGE_WIDGET = ModalDirectMessage
+
+            MESSAGE_WIDGET 
+              to: @local.messaging.moderatable.user
               parent: @local
               sender_mask: 'Moderator'
+              default_message: default_message
+              cancel_button_label: if @local.messaging.from_prompt then "skip message"
+              title: if @local.messaging.from_prompt then "Inform author about moderation decision"
+
+              callback: (message) => 
+                if @local.messaging.ultimate_judgment?
+                  judgment = parseInt(@local.messaging.ultimate_judgment)
+
+                  if message
+                    is_quarantine = judgment == 2
+                    is_failure = judgment == 0
+                    subdomain = fetch '/subdomain'
+
+                    if is_failure && !subdomain.customizations.moderation_default_fail_message
+                      default_fail_message = 
+                        subject: message.subject
+                        body: message.body
+                    else if is_quarantine && !subdomain.customizations.moderation_default_quarantine_message
+                      default_quarantine_message = 
+                        subject: message.subject
+                        body: message.body
+
+                  item.status = judgment
+                  save item
+
+                @local.messaging = null
+                save @local
+
 
         if class_name == 'Proposal'
           # Category
@@ -517,7 +578,7 @@ ModerateItem = ReactiveComponent
         DIV 
           style:       
             margin: '10px 0px 20px 63px'
-            marginLeft: if TABLET_SIZE() then 36
+            marginLeft: if TABLET_SIZE() then 36 else 63
             position: 'relative'
 
           SPAN 
@@ -757,13 +818,42 @@ DirectMessage = ReactiveComponent
 
     user = fetch(@props.to)
 
+
+    if @props.default_message
+      {body, subject} = @props.default_message
+    else 
+      body = subject = null
+
     text_style = 
       width: "min(550px, 70vw)"
       fontSize: 16
       display: 'block'
       padding: '4px 8px'
 
-    DIV style: {margin: '18px 0', padding: '15px 20px', backgroundColor: 'white', width: "min(590px, calc(70vw + 40px))", backgroundColor: considerit_gray, boxShadow: "0 2px 4px rgba(0,0,0,.4)"}, 
+    wrapper_style =
+      width: "min(590px, calc(70vw + 40px))"
+
+    if !@props.title
+      _.defaults wrapper_style, 
+        margin: '18px 0'
+        padding: '15px 20px'
+        backgroundColor: 'white'
+        backgroundColor: considerit_gray
+        boxShadow: "0 2px 4px rgba(0,0,0,.4)"
+
+
+
+    DIV 
+      style: wrapper_style
+
+
+      if @props.title 
+        H2 
+          style: 
+            fontSize: 24
+            marginBottom: 18
+          @props.title
+
       DIV style: {marginBottom: 8},
         LABEL null, 'To: ', user.name
 
@@ -775,6 +865,7 @@ DirectMessage = ReactiveComponent
           placeholder: 'Subject line'
           min_height: 25
           style: text_style
+          defaultValue: subject
 
       DIV style: {marginBottom: 8},
         LABEL htmlFor: 'message_body', 'Body'
@@ -784,6 +875,7 @@ DirectMessage = ReactiveComponent
           placeholder: 'Email message'
           min_height: 75
           style: text_style
+          defaultValue: body
 
       BUTTON
         className: "btn"
@@ -796,9 +888,8 @@ DirectMessage = ReactiveComponent
           backgroundColor: 'transparent'
           border: 'none'
         onClick: => 
-          @props.parent.messaging = null
-          save @props.parent
-        'cancel'
+          @props.callback?()
+        @props.cancel_button_label or 'cancel'
 
   submitMessage : -> 
     el = ReactDOM.findDOMNode(@)
@@ -812,5 +903,16 @@ DirectMessage = ReactiveComponent
       # authenticity_token: arest.csrf()
 
     save new_message, =>
-      @props.parent.messaging = null
-      save @props.parent
+      @props.callback?(new_message)
+
+
+ModalDirectMessage = ReactiveComponent
+  displayName: 'ModalDirectMessage'
+  mixins: [Modal]
+
+  render : ->
+
+    wrap_in_modal HOMEPAGE_WIDTH(), @props.done_callback, DIV null,
+
+
+      DirectMessage @props  

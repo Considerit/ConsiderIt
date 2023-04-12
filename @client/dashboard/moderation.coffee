@@ -592,11 +592,10 @@ ModerateItem = ReactiveComponent
 
               INPUT 
                 name: 'moderation'
-                type: 'radio'
+                type: 'button'
                 id: "pass-#{@props.item}"
                 value: 1
-                defaultChecked: item.status == 1
-                onChange: judge
+                onClick: judge
 
               'Pass'
 
@@ -609,11 +608,10 @@ ModerateItem = ReactiveComponent
               htmlFor: "quar-#{@props.item}"
               INPUT 
                 name: 'moderation'
-                type: 'radio'
+                type: 'button'
                 id: "quar-#{@props.item}"
                 value: 2
-                defaultChecked: item.status == 2
-                onChange: judge
+                onClick: judge
 
               'Quarantine'
 
@@ -627,11 +625,10 @@ ModerateItem = ReactiveComponent
 
               INPUT 
                 name: 'moderation'
-                type: 'radio'
+                type: 'button'
                 id: "fail-#{@props.item}"
                 value: 0
-                defaultChecked: item.status == 0
-                onChange: judge
+                onClick: judge
 
               'Fail'
 

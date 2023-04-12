@@ -980,7 +980,7 @@ set_group_by_attribute = (attribute) ->
     group: (u, opinion, proposal) -> 
       group_val = (if attribute.pass then attribute.pass(u) else fetch(u).tags[opinion_views_ui.group_by]) or i18n().unreported
       if attribute.input_type == 'checklist'
-        group_val.split(CHECKLIST_SEPARATOR)
+        vals = group_val.split(CHECKLIST_SEPARATOR).filter (i) -> i.length > 0
       else 
         group_val
     options: attribute.options

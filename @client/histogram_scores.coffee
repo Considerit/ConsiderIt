@@ -53,6 +53,8 @@ window.AggregatedHistogram =  ReactiveComponent
       is_weighted ||= view.view_type == 'weight'
 
 
+    min_weight = Infinity
+    max_weight = 0
     for group in all_groups 
 
       weight = 0
@@ -65,12 +67,24 @@ window.AggregatedHistogram =  ReactiveComponent
         weight += w
         cnt += 1
 
+
       if weight > 0 
         avg = score / weight
         group_scores[group] = {avg, cnt}
 
+
+        if cnt < min_weight
+          min_weight = cnt
+
+        if cnt > max_weight
+          max_weight = cnt
+
         group_weights[group] = cnt
         group_opinions.push {stance: avg, user: group}
+
+    if min_weight < Infinity && min_weight != max_weight
+      for k,v of group_weights
+        group_weights[k] = v /  ((max_weight - min_weight) / 2)
 
     visible_groups = Object.keys group_scores
     visible_groups.sort (a,b) -> group_scores[b].avg - group_scores[a].avg
@@ -136,6 +150,7 @@ window.AggregatedHistogram =  ReactiveComponent
               position: 'relative'
 
             if histocache
+
               for group in visible_groups
                 pos = histocache[group]
                 continue if !pos

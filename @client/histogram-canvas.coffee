@@ -709,13 +709,10 @@ SKIP_FRAMES = 1
 HistoAvatars = ReactiveComponent 
   displayName: 'HistoAvatars'
 
-  render: -> 
-    
-    
+  render: ->     
     histocache_key = @histocache_key()
 
     @resolution = if @props.opinions.length > 1000 then 10 else 1
-
 
     if !@local.avatar_sizes?[histocache_key]
       @local.avatar_sizes ?= {}
@@ -1224,7 +1221,7 @@ HistoAvatars = ReactiveComponent
     else 
       1
 
-  isMultiWeighedHistogram: -> 
+  isMultiWeighedHistogram: ->  # if there are differently sized avatars
     multi_weighed = false
     previous = null  
 

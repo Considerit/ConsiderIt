@@ -775,15 +775,11 @@ HistoAvatars = ReactiveComponent
 
   ready_to_draw: ->
     users = fetch '/users'    
-    users.users && @getAvatarPositions() && @local.in_viewport
+    users.users && @local.in_viewport && @getAvatarPositions()
 
   getAvatarPositions: -> 
-    histocache_key = @histocache_key()
-    histocache = @local.histocache?[histocache_key]
+    histocache = @local.histocache?[@last_key]
     
-    if !histocache
-      histocache = @local.histocache?[@last_key] # try old one if current one temporarily doesn't exist yet
-
     last_histogram_position[@props.histo_key] = histocache
 
     if !!histocache && !histocache.ordered_users?

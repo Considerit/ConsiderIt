@@ -1,7 +1,7 @@
 require './shared'
 require './popover'
 require './customizations'
-
+require './murmurhash'
 
 # globally accessible method for getting the URL of a user's avatar
 window.avatarUrl = (user, img_size) -> 
@@ -424,8 +424,6 @@ window.getGroupIcon = (key, color) ->
     group_colored_icons[key] = createUserIcon color
   group_colored_icons[key]
 
-
-
 # Note: this is actually kinda expensive on large forums, in memory and cpu
 createUserIcon = (fill) ->
 
@@ -438,6 +436,30 @@ createUserIcon = (fill) ->
   ctx.arc(rx, rx, rx, 0, 2 * Math.PI)            
   ctx.fillStyle = fill
   ctx.fill()
+  canv
+
+window.getCompositeGroupIcon = (key, groups, colors) -> 
+  if key not of group_colored_icons
+    group_colored_icons[key] = createCompositeGroupIcon groups, colors
+  group_colored_icons[key]
+
+createCompositeGroupIcon = (groups, colors) -> 
+  num = groups.length
+
+  canv = document.createElement('canvas')
+  canv.width = canv.height = 50 * window.devicePixelRatio
+  rx = canv.width / 2
+  ctx = canv.getContext("2d")
+
+  for group, idx in groups
+    color = colors[group]
+    # ctx.save()
+    ctx.beginPath()
+    ctx.moveTo(rx,rx)
+    ctx.arc rx, rx, rx, idx * 2 * Math.PI / num, (idx + 1) * 2 * Math.PI / num
+    ctx.fillStyle = color
+    ctx.fill()
+    # ctx.restore()
   canv
 
 
@@ -511,7 +533,7 @@ window.LoadAvatars = ReactiveComponent
             @loading_cnt -= 1
             if @loading_cnt == 0
               loading.loading = false
-              loading.loaded = md5 "#{JSON.stringify(Object.keys(loaded_images))}-#{JSON.stringify((u.name for u in avatars_to_load))}"
+              loading.loaded = murmurhash "#{JSON.stringify(Object.keys(loaded_images))}-#{JSON.stringify((u.name for u in avatars_to_load))}", 0
               save loading
           pic.onerror = do(user) => =>
             @loading_cnt -= 1

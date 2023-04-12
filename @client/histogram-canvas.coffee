@@ -6,6 +6,8 @@ require './histogram_lab'  # for testing only
 
 # md5 = require './vendor/md5' 
 
+require './murmurhash.js'
+
 ##
 # Histogram
 #
@@ -949,24 +951,8 @@ HistoAvatars = ReactiveComponent
           group = @props.groups[user.key][0]
           sprite.img = getGroupIcon(group, colors[group])
         else 
-          num = @props.groups[user.key].length
-
-          canv = document.createElement('canvas')
-          canv.width = canv.height = 50 * window.devicePixelRatio
-          rx = canv.width / 2
-          ctx = canv.getContext("2d")
-
-          for group, idx in @props.groups[user.key]
-            color = colors[group]
-            ctx.save()
-            ctx.beginPath()
-            ctx.moveTo(rx,rx)
-            ctx.arc rx, rx, rx, idx * 2 * Math.PI / num, (idx + 1) * 2 * Math.PI / num
-            ctx.fillStyle = color
-            ctx.fill()
-            ctx.restore()
-
-          sprite.img = canv
+          rainbow_group = @props.groups[user.key].join('-')
+          sprite.img = getCompositeGroupIcon(rainbow_group, @props.groups[user.key], colors)
 
       if (sprite.x != x && sprite.target_x != x) || (sprite.y != y && sprite.target_y != y) || \
          (sprite.width != r * 2 && sprite.target_size != r * 2) || \
@@ -1231,7 +1217,7 @@ HistoAvatars = ReactiveComponent
 
   histocache_key: -> # based on variables that could alter the layout
     key = """#{JSON.stringify( (fetch(o.key).stance for o in @props.opinions) )} #{JSON.stringify(@props.weights)} #{JSON.stringify(@props.groups)} (#{@props.width}, #{@props.height})"""
-    md5 key
+    murmurhash key, 0
       
 
   getFillRatio: -> 

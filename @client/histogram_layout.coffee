@@ -12,7 +12,7 @@ top_level.enqueue_histo_layout = (opts) ->
 
 write_layout = (opts, positions) ->
   # write message back about positions
-  postMessage {opts, positions}
+  postMessage {opts: {k: opts.k, histo: opts.histo}, positions}
 
 
 layout_complete = (opts, positions) -> 

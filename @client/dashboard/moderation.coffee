@@ -32,12 +32,12 @@ styles += """
   margin-right: 10px; 
   font-size: 22px;
   padding: 0;
+  box-shadow: 0px 1px 2px rgba(0,0,0,.4);  
+  border-radius: 8px;         
 }
 .moderation label {
   display: inline-block;
   padding: 18px 24px; 
-  box-shadow: 0px 1px 2px rgba(0,0,0,.4);  
-  border-radius: 8px;         
 }
 .moderation label, .moderation input { 
   font-size: 22px; 
@@ -364,7 +364,7 @@ ModerateItem = ReactiveComponent
 
     current_user = fetch('/current_user')
     
-    judge = (e) => 
+    judge = (e, immediate_with_message) => 
       if parseInt(e.target.value) == 1
         item.status = e.target.value
         save item
@@ -373,8 +373,7 @@ ModerateItem = ReactiveComponent
           from_prompt: true 
           ultimate_judgment: parseInt(e.target.value)
           moderatable: moderatable
-
-
+          send_immediately: immediate_with_message
         save @local
 
     LI 
@@ -523,7 +522,7 @@ ModerateItem = ReactiveComponent
               default_message: default_message
               cancel_button_label: if @local.messaging.from_prompt then "skip message"
               title: if @local.messaging.from_prompt then "Inform author about moderation decision"
-
+              send_immediately: @local.messaging.send_immediately
               callback: (message) => 
                 if @local.messaging.ultimate_judgment?
                   judgment = parseInt(@local.messaging.ultimate_judgment)
@@ -631,6 +630,40 @@ ModerateItem = ReactiveComponent
                 onClick: judge
 
               'Fail'
+
+          if fetch('/subdomain').customizations.moderation_default_fail_message
+            SPAN 
+              style: 
+                position: 'relative'
+
+              SPAN 
+                className: 'moderation btn'
+                style: 
+                  backgroundColor: '#f94747'
+                  minWidth: 150
+                  display: 'inline-block'
+
+                LABEL 
+                  htmlFor: "failm-#{@props.item}"
+
+                  INPUT 
+                    name: 'moderation'
+                    type: 'button'
+                    id: "failm-#{@props.item}"
+                    value: 0
+                    onClick: (e) => 
+                      judge(e, true)
+
+                  'Fail'
+              BR null
+              SPAN 
+                style: 
+                  fontSize: 13
+                  position: 'absolute'
+                  right: 19
+                  marginTop: 4
+                "& send default message"
+
 
         # status area
         DIV 
@@ -838,8 +871,6 @@ DirectMessage = ReactiveComponent
         backgroundColor: considerit_gray
         boxShadow: "0 2px 4px rgba(0,0,0,.4)"
 
-
-
     DIV 
       style: wrapper_style
 
@@ -887,6 +918,10 @@ DirectMessage = ReactiveComponent
         onClick: => 
           @props.callback?()
         @props.cancel_button_label or 'cancel'
+
+  componentDidMount: -> 
+    if @props.send_immediately
+      @submitMessage()    
 
   submitMessage : -> 
     el = ReactDOM.findDOMNode(@)

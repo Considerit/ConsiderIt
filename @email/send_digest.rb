@@ -112,7 +112,7 @@ def get_new_activity(subdomain, user, since)
   active_proposals = {}
   new_points.each do |pnt|
     proposal = pnt.proposal
-    next if new_proposals.key?(proposal.id) || !proposal.user 
+    next if !proposal || new_proposals.key?(proposal.id) || !proposal.user 
     next if !( (okay_to_email_for_proposal(proposal) && pnt.okay_to_email_notification) || is_admin)
 
     proposal_dict = proposal.user_id == user.id ? your_proposals : active_proposals

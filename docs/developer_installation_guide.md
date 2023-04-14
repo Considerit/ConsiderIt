@@ -15,8 +15,8 @@ sudo -E apt-get -y install advancecomp autoconf automake bison build-essential \
      libmagickwand-dev libmysqlclient-dev libreadline6 libreadline6-dev \
      libreadline-dev libssl-dev libncurses5-dev libtool libxml2-dev \
      libxslt1-dev memcached mysql-server openssl optipng nodejs npm \
-     pngcrush python-apt python-pip python-mysqldb unattended-upgrades \
-     unzip zlib1g zlib1g-dev
+     pngcrush python-apt python-pip python-mysqldb ruby-dev \
+     unattended-upgrades unzip zlib1g zlib1g-dev
 sudo ln -s /usr/bin/nodejs /usr/bin/node
 ```
 
@@ -24,7 +24,7 @@ The non-interactive prompt prevents mysql-server from asking for a root password
 
 ### Install Ruby
 ```
-git clone git://github.com/sstephenson/rbenv.git ~/.rbenv
+git clone https://github.com/rbenv/rbenv.git ~/.rbenv
 echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.profile
 echo 'eval "$(rbenv init -)"' >> ~/.profile
 git clone git://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build

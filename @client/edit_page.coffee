@@ -649,6 +649,8 @@ window.EditPage = ReactiveComponent
             marginTop: 36
             fontWeight: 700
             marginRight: 12
+            marginBottom: 6
+            display: 'block'
 
           "Default landing page"
 

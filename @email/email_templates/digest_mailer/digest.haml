@@ -3,6 +3,7 @@
   ***********************
   *** #{Translations::Translation.get({id: "email.digest.text_header"}, "Recent activity")} ***
   ***********************
+  = render :partial => 'event_mailer/unsubscribe'
 
 - if @anonymize_everything || @hide_opinions || @frozen
 

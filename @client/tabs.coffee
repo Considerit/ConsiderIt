@@ -275,7 +275,7 @@ window.HomepageTabs = ReactiveComponent
         tabs.push {name: "Help Organize", demo: true}
         tabs.push {name: "Your Forum", demo: true, default: true}
       else 
-        tabs.push {name: "add new tab", add_new: true}
+        tabs.push {name: "add new Page", add_new: true}
 
     paid = permit('configure paid feature') > 0
 

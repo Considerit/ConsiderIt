@@ -25,6 +25,12 @@ styles += """
     }
   }
 
+  .feedback-for-hosts {
+    font-size: 12px;
+    color: #888;
+    font-weight: 400;
+  }
+
 
 """
 
@@ -82,16 +88,29 @@ window.NewProposal = ReactiveComponent
 
         DIV className: 'proposal-avatar-spacing'
 
-        SPAN 
-          className: 'proposal-title-text-inline'
+        DIV 
           style: 
-            # marginLeft: 23
-            color: focus_color() 
+            textAlign: 'left' 
 
-          if permitted
-            list_i18n().new_response_label(list_key)
-          else 
-            translator "engage.login_to_add_new_proposal", 'Create an account to share a response'
+          SPAN 
+            className: 'proposal-title-text-inline'
+            style: 
+              # marginLeft: 23
+              color: focus_color() 
+
+            if permitted
+              list_i18n().new_response_label(list_key)
+            else 
+              translator "engage.login_to_add_new_proposal", 'Create an account to share a response'
+
+          if current_user.is_admin
+            DIV 
+              className: 'feedback-for-hosts'
+
+              if customization('list_permit_new_items', list_key)
+                translator 'engage.anyone-can-propose', "Any registered participant can add a new proposal"
+              else 
+                translator 'engage.hosts-can-propose', "Only forum hosts can add a new proposal"
 
     else 
       label_style = 
@@ -100,7 +119,7 @@ window.NewProposal = ReactiveComponent
         display: 'block'
 
       w = ITEM_TEXT_WIDTH()
-      showing_proposer = customization('show_proposer_icon', list_key)
+      showing_proposer = customization('show_proposer_icon', list_key) && !customization('anonymize_everything')
       proposal_fields = customization('new_proposal_fields', list_key)()
 
       

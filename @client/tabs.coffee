@@ -52,29 +52,39 @@ window.HomepageTabTransition = ReactiveComponent
           tab_state.active_tab = decodeURIComponent(loc.query_params.tab)
         else if is_a_dialogue_page() && loc.url != '/' # if we have a focus on a particular item
           slug = loc.url.substring(1)
+          find_tab = null
 
           look_for_tab_for_proposal = ->
-            proposal = null
-            find_tab = null
-            for k,v of arest.cache
-              if v.slug? && v.slug == slug
-                proposal = v
-                break
 
-            if proposal
-              list = get_list_for_proposal proposal
-              tab = get_page_for_list list
+            if arest.cache['/proposals']?.proposals
+              proposal = null
+              @checked_times += 1
 
-              tab_state.active_tab = tab
-              save tab_state
 
-              if find_tab != null
+              
+              for v in arest.cache['/proposals'].proposals
+                if v.slug == slug
+                  proposal = v
+                  break
+
+              if proposal
+                list = get_list_for_proposal proposal
+                tab = get_page_for_list list
+
+                tab_state.active_tab = tab
+                save tab_state
+
+                if find_tab != null
+                  clearInterval find_tab
+
+              if @checked_times > 100 && find_tab != null
                 clearInterval find_tab
 
             proposal
 
           result = look_for_tab_for_proposal()
           if !result 
+            @checked_times = 0
             find_tab = setInterval look_for_tab_for_proposal, 100
 
         else 

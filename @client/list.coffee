@@ -149,7 +149,7 @@ window.styles += """
 window.list_link = (list_key) ->
   list_key.substring(5).toLowerCase().replace(/ /g, '_')
 
-SHOW_FIRST_N_PROPOSALS = 6
+window.SHOW_FIRST_N_PROPOSALS = 6
 
 window.List = ReactiveComponent
   displayName: 'List'

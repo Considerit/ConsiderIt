@@ -236,6 +236,18 @@ styles += """
     outline: none;
   }
 
+
+  .list_advanced_options {
+    margin: 36px 0 12px 0;
+  }
+  .list_advanced_option {
+    margin-bottom: 24px;
+  }
+
+  .list_advanced_option label span {
+    padding-left: 4px;
+  }
+
 """
 
 
@@ -275,7 +287,7 @@ window.EditNewList = ReactiveComponent
       list_config = customizations[list_key]
 
       fields = ['list_title', 'list_description', 'list_permit_new_items', 'list_item_name', 'list_category', \
-                'slider_pole_labels', 'list_opinions_title', 'discussion_enabled', 'list_is_archived']
+                'slider_pole_labels', 'list_opinions_title', 'discussion_enabled', 'list_is_archived', 'show_first_n_proposals']
 
       for f in fields
         val = edit_list[f]
@@ -339,6 +351,7 @@ window.EditNewList = ReactiveComponent
     edit_list.list_item_name ?= customization('list_item_name', list_key)
     edit_list.discussion_enabled ?= customization('discussion_enabled', list_key)
     edit_list.list_is_archived ?= customization('list_is_archived', list_key)
+    edit_list.show_first_n_proposals ?= customization('show_first_n_proposals', list_key)
 
     title = edit_list.title or get_list_title list_key, true, subdomain
 
@@ -807,16 +820,13 @@ window.EditNewList = ReactiveComponent
           translator "engage.show_advanced_options", 'Show advanced options'
 
       else 
-        DIV null, 
+        DIV 
+          className: 'list_advanced_options'
 
 
           DIV 
-            style:
-              marginTop: 36
-              marginBottom: 24
-            LABEL 
-              style: {}
-
+            className: 'list_advanced_option'
+            LABEL null,
               INPUT 
                 type: 'checkbox'
                 defaultChecked: !edit_list.discussion_enabled
@@ -825,21 +835,16 @@ window.EditNewList = ReactiveComponent
                   edit_list.discussion_enabled = !edit_list.discussion_enabled
                   save edit_list
 
-              SPAN 
-                style: 
-                  paddingLeft: 4
+              SPAN null,
                 translator 
                   id: 'engage.list-config-discussion-enabled'
                   ITEM_NAME: edit_list.list_item_name or translator('shared.proposal', 'proposal')
 
                   'Disable pro/con commenting on each {ITEM_NAME}. Spectrums only.'
 
-          DIV                   
-            style:
-              marginBottom: 36
-            LABEL 
-              style: {}
-
+          DIV       
+            className: 'list_advanced_option'
+            LABEL null,
               INPUT 
                 type: 'checkbox'
                 defaultChecked: edit_list.list_is_archived
@@ -848,11 +853,29 @@ window.EditNewList = ReactiveComponent
                   edit_list.list_is_archived = !edit_list.list_is_archived
                   save edit_list
 
-              SPAN 
-                style: 
-                  paddingLeft: 4
+              SPAN null,
                 translator 'engage.list-config-archived', 'Closed by default. Useful for archiving.'
 
+          DIV       
+            className: 'list_advanced_option'
+            LABEL null,
+              INPUT 
+                type: 'checkbox'
+                defaultChecked: edit_list.show_first_n_proposals != SHOW_FIRST_N_PROPOSALS
+                name: 'show_first_n_proposals'
+                onChange: (e) =>
+                  if edit_list.show_first_n_proposals != SHOW_FIRST_N_PROPOSALS
+                    edit_list.show_first_n_proposals = SHOW_FIRST_N_PROPOSALS
+                  else 
+                    edit_list.show_first_n_proposals = 999
+
+                  save edit_list
+
+              SPAN null,
+                translator 
+                  id: 'engage.list-config-show_first_n_proposals'
+                  DEFAULT: SHOW_FIRST_N_PROPOSALS
+                  'Show all proposals in this focus, without forcing people to click "show all". The default is to show the first {DEFAULT}.'
 
 
   componentDidMount: -> 

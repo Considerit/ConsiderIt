@@ -430,6 +430,7 @@ window.Histogram = ReactiveComponent
         navigating_inside: @local.navigating_inside
         layout_params: @props.layout_params
         onClick: onClick
+        resolution: @props.resolution
 
 
 
@@ -712,16 +713,27 @@ HistoAvatars = ReactiveComponent
   render: ->     
     histocache_key = @histocache_key()
 
-    @resolution = if @props.opinions.length > 1000 then 10 else 1
-
     if !@local.avatar_sizes?[histocache_key]
       @local.avatar_sizes ?= {}
-      radius = calculateAvatarRadius @props.width * @resolution, @props.height * @resolution, @props.opinions, @props.weights, 
-                        fill_ratio: @getFillRatio()
+
+      if @props.resolution == 'auto'
+        radius = 1
+        @resolution = 0
+
+        while radius <= 1
+          @resolution += .5
+          radius = calculateAvatarRadius @props.width * @resolution, @props.height * @resolution, @props.opinions, @props.weights, 
+                            fill_ratio: @getFillRatio()
+
+      else 
+        @resolution = @props.resolution or (if @props.opinions.length > 1000 then 1.5 else 1)
+        radius = calculateAvatarRadius @props.width * @resolution, @props.height * @resolution, @props.opinions, @props.weights, 
+                          fill_ratio: @getFillRatio()
+
       @local.avatar_sizes[histocache_key] = 2 * radius
 
-    @avatar_size = @local.avatar_sizes[histocache_key]
 
+    @avatar_size = @local.avatar_sizes[histocache_key]
     @last_key = histocache_key
 
     # give the canvas extra space at the top so that overflow avatars on the top aren't cut off
@@ -730,8 +742,6 @@ HistoAvatars = ReactiveComponent
     @adjusted_width  = Math.round @props.width  + 2 * @cut_off_buffer
 
     proposal = fetch @props.histo_key
-
-
 
     DIV 
       id: histocache_key
@@ -1270,6 +1280,7 @@ HistoAvatars = ReactiveComponent
           density_modified_jostle: 1
 
       has_groups = Object.keys(@props.groups).length > 0
+
       delegate_layout_task
         task: 'layoutAvatars'
         histo: @local.key
@@ -1295,16 +1306,16 @@ num_layout_tasks_delegated = 0
 # num_completed = 0
 
 get_histo_positions = (e) ->
-  {opts, positions} = e.data 
-
-  local = fetch opts.histo
-  histocache_key = opts.k 
-  
-  local.histocache ?= {} 
-  local.histocache[histocache_key] = 
-    hash: histocache_key
-    positions: positions
-  save local
+  if e.data?.opts
+    {opts, positions} = e.data 
+    local = fetch opts.histo
+    histocache_key = opts.k 
+    
+    local.histocache ?= {} 
+    local.histocache[histocache_key] = 
+      hash: histocache_key
+      positions: positions
+    save local
 
 window.delegate_layout_task = (opts) -> 
   if opts.layout_params.use_global_window

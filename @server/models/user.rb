@@ -105,9 +105,14 @@ class User < ApplicationRecord
 
   # Gets all of the users active for this subdomain
   def self.all_for_subdomain
+
+
+    is_admin = current_user.is_admin?
+
     fields = "CONCAT('\/user\/',id) as 'key',users.name,users.avatar_file_name,users.tags"
-    if current_user.is_admin?
-      fields += ",email"
+
+    if is_admin
+      fields += ",email,created_at,verified"
     end
     users = ActiveRecord::Base.connection.exec_query( "SELECT #{fields} FROM users WHERE registered=1 AND active_in like '%\"#{current_subdomain.id}\"%'")
 
@@ -119,7 +124,7 @@ class User < ApplicationRecord
       u['tags'] = {}
       tags_config.each do |vals|
         tag = vals["key"]
-        if u_tags.has_key?(tag) && (current_user.is_admin? || vals.fetch('visibility', 'host-only') == 'open')
+        if u_tags.has_key?(tag) && (is_admin || vals.fetch('visibility', 'host-only') == 'open')
           u['tags'][tag] = u_tags[tag]
         end
       end
@@ -128,6 +133,7 @@ class User < ApplicationRecord
         u['name'] = Translations::Translation.get('anonymous', 'Anonymous')
         u['avatar_file_name'] = nil
       end 
+
     end 
     
     {key: '/users', users: users.as_json}

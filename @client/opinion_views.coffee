@@ -101,15 +101,25 @@ window.get_participant_attributes = ->
       for view in custom_views
         do (view) ->
           if view.visibility == 'open' || is_admin
-            if view.pass || view.type == 'filter'
+            if view.pass || view.type == 'filter' || view.compute
               attributes.push _.extend {}, view, 
                 key: view.label
                 name: view.label
-                options: ['true', 'false']
+                options: view.options or ['true', 'false']
                 continuous_value: view.continuous_value
                 pass: (u, value) -> # view pass functions only take a user. This helps make the API equivalent to user_tags
-                  value ?= 'true'
-                  (value == 'true') == view.pass(u)
+                  result = view.compute?(u) or view.pass?(u)
+
+                  if value?
+                    if value in [true, false, "true", "false"] && result in [true, false, "true", "false"]
+                      result = "#{result}"
+                      value = "#{value}"
+                    result == value
+                  else 
+                    result
+
+                  # value ?= 'true'
+                  # (value == 'true') == view.pass(u)
 
     if user_tags
       for tag in user_tags 

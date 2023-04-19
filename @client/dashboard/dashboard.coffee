@@ -14,6 +14,7 @@ require './customize'
 require './intake_questions'
 require './all_forums'
 require './analytics'
+require './meanies'
 
 
 window.styles += """
@@ -132,6 +133,8 @@ get_dash_widget = (url) ->
       AllYourForums
     when '/dashboard/analytics'
       DataAnalytics
+    when '/dashboard/meanies'
+      Meanies 
     else 
       null
 get_dash_title = (url) ->
@@ -160,6 +163,9 @@ get_dash_title = (url) ->
       title = 'All Your Consider.it Forums'
     when '/dashboard/analytics'
       title = 'Analytics'
+    when '/dashboard/meanies'
+      title = 'Sniffing for Suspicious Activity'
+
     else 
       null
   title

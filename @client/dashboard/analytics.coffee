@@ -6,24 +6,15 @@ styles += """
 
 """
 
+
+
 window.DataAnalytics = ReactiveComponent
   displayName: 'DataAnalytics'
-
-  componentDidMount: -> @setWidth(); @loadD3()
-  componentDidUpdate: -> @setWidth(); @loadD3()
-  loadD3: -> 
-    if !@local.loading
-      @local.loaded = lazyLoadJavascript "#{fetch('/application').asset_host}/vendor/d3.v7.min.js", 
-        onload: => 
-          @local.loaded = true 
-          @local.loading = false 
-          save @local
-        onerror: => 
-          @local.error = true
-          @local.loaded = false 
-          @local.loading = false 
-          save @local      
-      @local.loading = !@local.loaded
+  mixins: [LoadScripts]
+  js_dependencies: ['d3.v7.min.js']
+  
+  componentDidMount: -> @setWidth(); @loadScripts()
+  componentDidUpdate: -> @setWidth(); @loadScripts()
 
   setWidth: -> 
     el = document.querySelector('#DASHBOARD-title')

@@ -241,6 +241,7 @@ window.asset = (name) ->
 
   a
 
+
 window.lazyLoadJavascript = (src, args) ->
   id = slugify src
   already_loaded = document.body.querySelector("script##{id}")
@@ -253,6 +254,37 @@ window.lazyLoadJavascript = (src, args) ->
     script.onerror = args.onerror if args.onerror
     document.body.appendChild script
   !!already_loaded
+
+window.LoadScripts = 
+  loadScripts: -> 
+    if !@local.loading && !@local.loaded
+      @scripts_loaded ?= {}
+      done_loading = => 
+        loaded = 0
+        for k,v of @scripts_loaded
+          loaded += 1 if v
+        loaded >= (@js_dependencies or []).length
+
+
+      for req in (@js_dependencies or [])
+        do (req) => 
+          if !@scripts_loaded[req]
+            @scripts_loaded[req] = lazyLoadJavascript "#{fetch('/application').asset_host}/vendor/#{req}", 
+              onload: => 
+                @scripts_loaded[req] = true 
+                @local.loading = done_loading() 
+                save @local
+              onerror: => 
+                @scripts_loaded[req] = false
+                @local.error = true
+                @local.loaded = false 
+                @local.loading = false 
+                save @local
+
+      @local.loading = !done_loading()
+
+
+
 
 
 #####

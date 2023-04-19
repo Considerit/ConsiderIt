@@ -1219,7 +1219,7 @@ HistoAvatars = ReactiveComponent
 
 
   histocache_key: -> # based on variables that could alter the layout
-    key = """#{JSON.stringify( (fetch(o.key).stance for o in @props.opinions) )} #{JSON.stringify(@props.weights)} #{JSON.stringify(@props.groups)} (#{@props.width}, #{@props.height})"""
+    key = """#{JSON.stringify( (fetch(o.key).stance for o in @props.opinions) )} #{JSON.stringify(@props.weights)} #{JSON.stringify(@props.groups)} #{JSON.stringify(@props.salience)} (#{@props.width}, #{@props.height})"""
     murmurhash key, 0
       
 
@@ -1291,6 +1291,7 @@ HistoAvatars = ReactiveComponent
         h: (@props.height or 70) * @resolution
         o: opinions
         weights: @props.weights
+        salience: @props.salience
         groups: if has_groups then @props.groups
         all_groups: if has_groups then get_user_groups_from_views(@props.groups)
         layout_params: layout_params

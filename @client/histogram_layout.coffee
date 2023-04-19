@@ -185,7 +185,10 @@ top_level.calculateAvatarRadius = (width, height, opinions, weights, {fill_ratio
   Math.max 1, Math.round r
 
 Placer = (opts, bodies) -> 
-  opinions = opts.o
+  salience = opts.salience
+
+  opinions = (o for o in opts.o when salience[o.user] == 1)
+
   width = Math.round opts.w
   height = Math.round opts.h
   layout_params = opts.layout_params
@@ -250,6 +253,7 @@ Placer = (opts, bodies) ->
     laid_out = []
     return laid_out if opinions.length == 0 
 
+
     for o in opinions
       weight = weights[o.user] or 1
       o.radius = Math.round Math.sqrt(weight) * base_radius  # circle area of avatar grows linearly with weight 
@@ -260,10 +264,12 @@ Placer = (opts, bodies) ->
       o.x_target = adjusted_stance * (width - 2 * radius) + radius
 
     # order strategically, placing bigger bodies first, then ordered from the poles inward
+
     opinions.sort (a,b) ->
       diff = Math.abs(b.stance - a.stance)
-      # if diff < .02 && weights[b.user] != weights[a.user]
-      if weights[b.user] != weights[a.user]        
+      if salience && salience[b.user] != salience[a.user]
+        salience[b.user] - salience[a.user]      
+      else if weights[b.user] != weights[a.user]        
         weights[b.user] - weights[a.user]
       else if layout_params.rando_order && diff < layout_params.rando_order && Math.abs(b.stance) < 1 - layout_params.rando_order
         # Introduce some randomness to the sort when two bodies are close to one another. 

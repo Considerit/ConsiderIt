@@ -5,12 +5,12 @@ window.HistogramTester = ReactiveComponent
     # num_histos = 1
     # start_idx = 42
 
-    num_histos = 1
-    start_idx = 6
+    num_histos = 30
+    start_idx = 1
 
     common_layout_params = 
       show_histogram_layout: false  
-      save_snapshots: !!fetch('histo_layout_explorer_options').show_explorer
+      save_snapshots: false # !!fetch('histo_layout_explorer_options').show_explorer
       use_global_window: true 
       verbose: true
       fill_ratio: 1
@@ -21,11 +21,12 @@ window.HistogramTester = ReactiveComponent
 
     for fill_ratio in [1]
       for cleanup_overlap in [1.95] # [1.98] #1.8
-        for jostle in [0,.1,.2,.3,.4]
-          for rando_order in [.1]
-            for topple_towers in [.05]
+        for jostle in [.4] #.4]
+          for rando_order in [.1] #.1]
+            for topple_towers in [.05] #[.05]
               for density_modified_jostle in [1]
-                layout_params.push {density_modified_jostle, topple_towers, rando_order, jostle, cleanup_overlap, fill_ratio}
+                for resolution in [1, 1.5,2.1,10] #[1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3,3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8,3.9,4,4.1,4.2,4.3,4.4,4.5,6,7.5]
+                  layout_params.push {resolution, density_modified_jostle, topple_towers, rando_order, jostle, cleanup_overlap, fill_ratio}
 
     param_sets = {}
     for param in layout_params 
@@ -54,7 +55,6 @@ window.HistogramTester = ReactiveComponent
         height: 40
       } 
 
-
     ]
 
     histos = []
@@ -70,10 +70,10 @@ window.HistogramTester = ReactiveComponent
 
     proposals_to_show = proposals.slice(start_idx,start_idx + num_histos)
 
-    proposals_to_show = []
-    for p in proposals
-      if p.slug == 'beja-opes-estratgicas-17-31247' # p.cluster == "opes-estratgicas-17"
-        proposals_to_show.push p
+    # proposals_to_show = []
+    # for p in proposals
+    #   if p.slug == 'beja-opes-estratgicas-17-31247' # p.cluster == "opes-estratgicas-17"
+    #     proposals_to_show.push p
 
     DIV 
       style:
@@ -117,6 +117,7 @@ window.HistogramTester = ReactiveComponent
             DIV null, 
               for hist, i in histos 
                 params = _.defaults {histo_key: "#{namespaced_key('histogram', proposal)}-#{i}"}, histo, hist
+                params.resolution = params.layout_params?.resolution
                 RenderedHist = Histogram params
 
                 DIV 
@@ -131,9 +132,9 @@ window.HistogramTester = ReactiveComponent
                     hist: hist
                     param_sets: param_sets
 
-                  LayoutExplorer 
-                    running_state: RenderedHist.props.histo_key
-                    hist: params 
+                  # LayoutExplorer 
+                  #   running_state: RenderedHist.props.histo_key
+                  #   hist: params 
 
 
 histo_layout_explorer_options = fetch('histo_layout_explorer_options')
@@ -341,7 +342,6 @@ LayoutExplorer = ReactiveComponent
       map = running_state.occupancy_map
       openings = running_state.openings 
 
-
     for col in [0..width]
       opening_this_col = false
       
@@ -455,8 +455,8 @@ LayoutExplorer = ReactiveComponent
     if opts.connect_to_xtarget
 
       for body in tick_data.bodies 
-        x2 = body.x 
-        y2 = body.y 
+        x2 = body.x
+        y2 = body.y
         ctx.beginPath()
         ctx.moveTo(x2, y2)
         ctx.lineWidth = 1
@@ -525,7 +525,8 @@ HistoDetails = ReactiveComponent
 
         for k,v of hist.layout_params when k not in ['verbose', 'show_histogram_layout', 'param_hash'] && params_with_multiple_vals[k]
           i += 1
-          DIV null,
+          DIV 
+            key: k
             "#{k} = "
             SPAN
               style:
@@ -535,7 +536,8 @@ HistoDetails = ReactiveComponent
               "#{v}"
 
       for k,v of running_state when v && k not in ['initialized', 'key', 'occupancy_map', 'bodies', 'openings', 'cleanup']
-        DIV null,
+        DIV 
+          key: k
           "#{k} = #{v}"
 
       if running_state.layout_time 
@@ -601,7 +603,7 @@ GlobalHistTiming = ReactiveComponent
           for param_hash, param_set of param_sets
             vals = global_running_state[param_hash]
 
-            continue if !vals
+            continue if !vals && vals != 0
             i = -1
 
             TR null,

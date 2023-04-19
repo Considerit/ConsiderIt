@@ -187,7 +187,10 @@ top_level.calculateAvatarRadius = (width, height, opinions, weights, {fill_ratio
 Placer = (opts, bodies) -> 
   salience = opts.salience
 
-  opinions = (o for o in opts.o when salience[o.user] == 1)
+  if salience?
+    opinions = (o for o in opts.o when salience[o.user] == 1)
+  else 
+    opinions = opts.o
 
   width = Math.round opts.w
   height = Math.round opts.h

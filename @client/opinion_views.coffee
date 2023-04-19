@@ -774,7 +774,7 @@ OpinionViews = ReactiveComponent
               className: 'custom_view_triangle'
               style: 
                 left: "calc(50% - 15px)"
-                bottom: if TABLET_SIZE() then -29 else -27
+                bottom: -29
               dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="rgb(182,182,182)"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
 
       }

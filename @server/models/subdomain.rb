@@ -334,7 +334,7 @@ class Subdomain < ApplicationRecord
         elsif proposal_config[:meta].has_key?("id") && Proposal.find_by_id(proposal_config[:meta]["id"])
           current_proposal = Proposal.find proposal_config[:meta]["id"]
         else 
-          current_proposal = Proposal.find_by_name proposal_config[:title]
+          current_proposal = subdomain.proposals.find_by_name proposal_config[:title]
         end
 
         if proposal_config[:meta].has_key?("user")

@@ -292,10 +292,7 @@ class SubdomainController < ApplicationController
   def nuke_everything
     authorize!('update subdomain', current_subdomain)
 
-    current_subdomain.proposals.destroy_all
-    current_subdomain.opinions.destroy_all
-    current_subdomain.points.destroy_all
-    current_subdomain.comments.destroy_all
+    current_subdomain.nuke
 
     dirty_key '/subdomain'
     dirty_key '/proposals'

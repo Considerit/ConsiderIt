@@ -265,14 +265,14 @@ window.LoadScripts =
           loaded += 1 if v
         loaded >= (@js_dependencies or []).length
 
-
       for req in (@js_dependencies or [])
         do (req) => 
           if !@scripts_loaded[req]
             @scripts_loaded[req] = lazyLoadJavascript "#{fetch('/application').asset_host}/vendor/#{req}", 
               onload: => 
                 @scripts_loaded[req] = true 
-                @local.loading = done_loading() 
+                @local.loaded = done_loading() 
+                @local.loading = !@local.loaded
                 save @local
               onerror: => 
                 @scripts_loaded[req] = false

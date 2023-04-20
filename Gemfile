@@ -46,6 +46,11 @@ gem "lemmatizer"
 # API calls
 gem 'excon'
 
+#############
+# Generative AI
+gem "ruby-openai"
+
+
 
 #############
 # i18n

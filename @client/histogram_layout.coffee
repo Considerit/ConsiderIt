@@ -22,6 +22,7 @@ layout_complete = (opts, positions) ->
 
 process_next_layout = -> 
   if !histo_running && histo_queue.length > 0
+
     histo_running = histo_queue.shift()
     positionAvatarsWithJustLayout histo_running 
 
@@ -185,18 +186,12 @@ top_level.calculateAvatarRadius = (width, height, opinions, weights, {fill_ratio
   Math.max 1, Math.round r
 
 Placer = (opts, bodies) -> 
-  salience = opts.salience
-
-  if salience?
-    opinions = (o for o in opts.o when salience[o.user] == 1)
-  else 
-    opinions = opts.o
-
+  opinions = opts.o
   width = Math.round opts.w
   height = Math.round opts.h
   layout_params = opts.layout_params
   base_radius = opts.r
-  weights = opts.weights
+
   cleanup_overlap = layout_params.cleanup_overlap or 2
   if layout_params.verbose 
     running_state = fetch opts.histo_key
@@ -212,7 +207,7 @@ Placer = (opts, bodies) ->
       # in dense regions, and spread out avatars in sparse areas to prevent towers
       opinion_density = {}
       sorted_opinions = opinions.slice()
-      sorted_opinions.sort (a,b) -> a.stance - b.stance
+      sorted_opinions.sort (a,b) -> a[1] - b[1]
 
       avg_inc = .01
 
@@ -227,12 +222,12 @@ Placer = (opts, bodies) ->
           o = idx
           area = 0
           while o < sorted_opinions.length
-            if sorted_opinions[o].stance < stance - window_size
+            if sorted_opinions[o][1] < stance - window_size
               idx = o
-            else if sorted_opinions[o].stance > stance + window_size
+            else if sorted_opinions[o][1] > stance + window_size
               break
             else 
-              area += weights[sorted_opinions[o].user] or 1 
+              area += sorted_opinions[o][2] or 1 
             o += 1
           if max_density < area 
             max_density = area 
@@ -258,23 +253,23 @@ Placer = (opts, bodies) ->
 
 
     for o in opinions
-      weight = weights[o.user] or 1
+      weight = o[2] or 1
       o.radius = Math.round Math.sqrt(weight) * base_radius  # circle area of avatar grows linearly with weight 
       if o.radius < 1
         o.radius = 1
       radius = o.radius
-      adjusted_stance = (o.stance + 1) / 2
+      adjusted_stance = (o[1] + 1) / 2
       o.x_target = adjusted_stance * (width - 2 * radius) + radius
 
     # order strategically, placing bigger bodies first, then ordered from the poles inward
 
     opinions.sort (a,b) ->
-      diff = Math.abs(b.stance - a.stance)
-      if salience && salience[b.user] != salience[a.user]
-        salience[b.user] - salience[a.user]      
-      else if weights[b.user] != weights[a.user]        
-        weights[b.user] - weights[a.user]
-      else if layout_params.rando_order && diff < layout_params.rando_order && Math.abs(b.stance) < 1 - layout_params.rando_order
+      diff = Math.abs(b[1] - a[1])
+      if (b[3] || a[3]) && b[3] != a[3] # salience
+        b[3] - a[3]  
+      else if b[2] != a[2] # weights        
+        b[2] - a[2]
+      else if layout_params.rando_order && diff < layout_params.rando_order && Math.abs(b[1]) < 1 - layout_params.rando_order
         # Introduce some randomness to the sort when two bodies are close to one another. 
         # This helps make it look less machine laid out. Without it, you get these leaning
         # towers. With the randomness, you still get some unstable towers, but they look a 
@@ -287,8 +282,8 @@ Placer = (opts, bodies) ->
         # can generally sort by the magnitude of the stance, as the stance is in [-1,1]. 
         # To get at the middle of the spectrum, we change the sort so that the middle is 
         # first when both opinions being compared is near the middle. 
-        b_abs = Math.abs(b.stance)
-        a_abs = Math.abs(a.stance)        
+        b_abs = Math.abs(b[1])
+        a_abs = Math.abs(a[1])        
 
         b_abs - a_abs
 
@@ -363,7 +358,7 @@ Placer = (opts, bodies) ->
               x: x
               y: y
               x_target: x_target
-              user: o.user 
+              user: o[0] # user 
             
             laid_out.push b
 
@@ -387,7 +382,7 @@ Placer = (opts, bodies) ->
           occupancy: occupancy_map
           prime_positions: options.slice()
           unstable_bodies: []
-          bodies: JSON.parse JSON.stringify ({user: b.user, neighbors: b.neighbors, x: b.x, y: b.y, radius: b.radius, x_target: b.x_target} for b in laid_out)
+          bodies: JSON.parse JSON.stringify ({user: b[0], neighbors: b.neighbors, x: b.x, y: b.y, radius: b.radius, x_target: b.x_target} for b in laid_out)
           iteration: 0
       true
 
@@ -418,7 +413,7 @@ Placer = (opts, bodies) ->
         for body in laid_out
           r = body.radius
 
-          positions[body.user] = \
+          positions[body[0]] = \
             [Math.round((body.x - r) * 10) / 10, Math.round((body.y - r) * 10) / 10, r]
 
 
@@ -707,7 +702,6 @@ EvaluateLayout = (opts, bodies, placer) ->
   height = opts.h
   layout_params = opts.layout_params
   base_radius = opts.r
-  weights = opts.weights
 
   cleanup_overlap = layout_params.cleanup_overlap or 2
 

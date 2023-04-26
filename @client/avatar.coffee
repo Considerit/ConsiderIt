@@ -425,7 +425,10 @@ window.getGroupIcon = (key, color) ->
   group_colored_icons[key]
 
 # Note: this is actually kinda expensive on large forums, in memory and cpu
+icon_cache = {}
 createUserIcon = (fill) ->
+  if fill of icon_cache
+    return icon_cache[fill]
 
   # create a gray-ish avatar for folks who don't have an avatar (or if its broken)
   # Note: this is actually kinda expensive on large forums, in memory and cpu
@@ -436,6 +439,8 @@ createUserIcon = (fill) ->
   ctx.arc(rx, rx, rx, 0, 2 * Math.PI)            
   ctx.fillStyle = fill
   ctx.fill()
+  icon_cache[fill] = canv
+
   canv
 
 window.getCompositeGroupIcon = (key, groups, colors) -> 
@@ -464,7 +469,15 @@ createCompositeGroupIcon = (groups, colors) ->
 
 
 createFallbackIcon = (user) ->
-  user.bg_color ?= hsv2rgb(Math.random() / 5 + .6, Math.random() / 8 + .025, Math.random() / 4 + .4)  # create a gray-ish avatar for folks who don't have an avatar (or if its broken)
+  if !user.bg_color?
+    h = Math.random() / 5 + .6
+    s = Math.random() / 8 + .025
+    v = Math.random() / 4 + .4
+    h = Math.round(h * 15) / 15
+    s = Math.round(s * 15) / 15
+    v = Math.round(v * 15) / 15 
+    user.bg_color = hsv2rgb(h,s,v)  # create a gray-ish avatar for folks who don't have an avatar (or if its broken)
+
   createUserIcon user.bg_color
 
 
@@ -539,8 +552,8 @@ window.LoadAvatars = ReactiveComponent
             @loading_cnt -= 1
             missing_images[user.avatar_file_name] = 1
 
-          setTimeout do(user, pic) -> -> 
-            pic.src = avatarUrl user, 'large'
+          # setTimeout do(user, pic) -> -> 
+          pic.src = avatarUrl user, 'large'
 
       else 
         setTimeout @load, 10   

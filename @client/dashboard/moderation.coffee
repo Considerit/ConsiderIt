@@ -326,7 +326,19 @@ window.ModerationDash = ReactiveComponent
 
 
 
-
+# When the moderator makes a judgment, /proposals and /lists/* are dirty. 
+# However, returning them with each judgment is unnecessarily problematic 
+# for performance. So we'll try to wait until after the moderator is back 
+# on a dialogue page to finally fetch the dirty objects. 
+delayed_fetch_timer = null
+delayed_fetch_after_moderation_judgment = -> 
+  if !delayed_fetch_timer
+    delayed_fetch_timer = setInterval -> 
+      if is_a_dialogue_page()
+        live_update()
+        clearInterval delayed_fetch_timer
+        delayed_fetch_timer = null
+    , 250
 
 ModerateItem = ReactiveComponent
   displayName: 'ModerateItem'
@@ -367,7 +379,7 @@ ModerateItem = ReactiveComponent
     judge = (e, immediate_with_message) => 
       if parseInt(e.target.value) == 1
         item.status = e.target.value
-        save item
+        save item, delayed_fetch_after_moderation_judgment
       else 
         @local.messaging = 
           from_prompt: true 
@@ -542,7 +554,7 @@ ModerateItem = ReactiveComponent
                         body: message.body
 
                   item.status = judgment
-                  save item
+                  save item, delayed_fetch_after_moderation_judgment
 
                 @local.messaging = null
                 save @local
@@ -708,7 +720,7 @@ BanHammer = ReactiveComponent
           for item in items.items
             if fetch(item.moderatable).user == user.key
               item.status = 0
-              save item
+              save item, delayed_fetch_after_moderation_judgment
 
     filtered_users = _.filter users.users, (u) =>  
                         bans.indexOf(u.key) < 0 &&

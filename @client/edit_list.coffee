@@ -103,7 +103,7 @@ window.EditList = ReactiveComponent
                   else 
                     for proposal in list.proposals 
                       proposal.active = false 
-                      save proposal 
+                      save_proposal(proposal)
 
                 customizations = subdomain.customizations
 

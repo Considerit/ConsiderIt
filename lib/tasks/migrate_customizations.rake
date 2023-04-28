@@ -184,3 +184,56 @@ task :migrate_list_headers => :environment do
 
   end
 end
+
+
+task :migrate_list_names => :environment do 
+
+
+  Subdomain.all.each do |subdomain|
+    next if !subdomain.customizations
+    
+    customizations = subdomain.customizations
+
+    changed = false
+    changes = {}
+    customizations.each do |k,v|
+      if k.match( /list\// )
+        clust = k[5..-1]
+
+        if clust.index('/') || clust.index('.') || clust.index('#') || clust.index('&') || clust.index('?') || clust.index(':')
+          new_name = "#{slugify(clust)}-#{(rand() * 100).round}"
+          new_key = "list/#{new_name}"
+          changed = true
+          changes[k] = new_key
+        end
+      end 
+    end
+
+    changes.each do |old, updated|
+      # pp "SET KEY #{old} TO: #{updated}"
+      v = customizations[updated] = customizations[old]
+      customizations.delete(old)
+      if v.has_key?('key')
+        v['key'] = updated
+      end 
+
+      old_clust = old[5..-1]
+      new_clust = updated[5..-1]
+
+      props_to_update = subdomain.proposals.where(cluster: old_clust)
+      if props_to_update.count == 0 
+        pp "NO PROPOSALS FOUND FOR #{old_clust} #{old}"
+      end
+      props_to_update.each do |p|
+        p.cluster = new_clust
+        p.save
+      end
+
+      subdomain.customizations = JSON.parse(JSON.dump(subdomain.customizations).gsub("\"#{old}\"", "\"#{updated}\""))
+
+    end 
+    subdomain.save if changed
+  end
+end
+
+

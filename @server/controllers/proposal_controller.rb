@@ -63,12 +63,14 @@ class ProposalController < ApplicationController
       result['key'] = "/proposal/#{proposal.id}?original_id=#{original_id}"
 
       dirty_key '/proposals'
+      dirty_key "/list/#{proposal.get_cluster}"
 
       current_user.update_subscription_key(proposal.key, 'watched', :force => false)
       dirty_key '/current_user'
 
       Notifier.notify_parties 'new', proposal
       proposal.notify_moderator
+      Proposal.clear_cache
 
       write_to_log({
         :what => 'created new proposal',
@@ -124,6 +126,7 @@ class ProposalController < ApplicationController
         update_roles(proposal)
 
         proposal.update! updated_fields
+        Proposal.clear_cache
 
         if text_updated
           proposal.redo_moderation
@@ -159,6 +162,8 @@ class ProposalController < ApplicationController
     proposal = Proposal.find(params[:id])
     authorize! 'delete proposal', proposal
     dirty_key '/proposals'
+    dirty_key "/list/#{proposal.get_cluster}"
+    Proposal.clear_cache
     proposal.destroy
     render :json => {:success => true}
   end
@@ -174,6 +179,7 @@ class ProposalController < ApplicationController
     end
     proposal.update attrs
     dirty_key proposal.key
+    Proposal.clear_cache
     render :json => []
   end
 

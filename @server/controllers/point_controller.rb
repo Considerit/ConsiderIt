@@ -79,6 +79,8 @@ class PointController < ApplicationController
 
       dirty_key "/page/#{proposal.slug}"
       dirty_key "/proposal/#{proposal.id}"
+      Proposal.clear_cache
+
       write_to_log({
         :what => 'wrote new point',
         :where => request.fullpath,
@@ -123,6 +125,7 @@ class PointController < ApplicationController
             :where => request.fullpath,
             :details => {:point => "/point/#{point.id}"}
           })
+          Proposal.clear_cache
 
           point.redo_moderation
         end
@@ -150,6 +153,8 @@ class PointController < ApplicationController
       o.recache
       dirty_key "/opinion/#{o.id}"
     end
+
+    Proposal.clear_cache
 
     dirty_key("/page/#{proposal.slug}") #because /points is changed...
     dirty_key("/proposal/#{proposal.id}")

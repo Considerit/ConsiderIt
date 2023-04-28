@@ -55,6 +55,9 @@ class OpinionController < ApplicationController
       :where => proposal.slug
     })
 
+    Proposal.clear_cache
+
+
     original_id = key_id(params[:key])
     result = opinion.as_json
     result['key'] = "/opinion/#{opinion.id}?original_id=#{original_id}"
@@ -114,7 +117,7 @@ class OpinionController < ApplicationController
     end
 
     dirty_key "/proposal/#{proposal.id}"
-    
+    Proposal.clear_cache
 
     render :json => []
 

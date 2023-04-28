@@ -42,6 +42,8 @@ class UserController < ApplicationController
     end
 
     dirty_key "/user/#{params[:id]}"
+    Proposal.clear_cache    
+    
     render :json => []
   end
 

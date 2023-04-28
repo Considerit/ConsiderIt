@@ -111,6 +111,8 @@ class Opinion < ApplicationRecord
     points_to_exclude = points_already_included.select {|point_id| not points_to_include.include? point_id}
     points_to_add    = points_to_include.select {|p_id| not points_already_included.include? p_id }
 
+    return unless points_to_exclude.length + points_to_exclude.length > 0
+
     # puts("Excluding points #{points_to_exclude}, including points #{points_to_add}")
 
     # Delete goners
@@ -123,6 +125,7 @@ class Opinion < ApplicationRecord
       self.include point_id
     end
 
+    Proposal.clear_cache
   end
 
   def include(point, subdomain = nil)
@@ -155,6 +158,7 @@ class Opinion < ApplicationRecord
 
     point.recache
     self.recache
+    Proposal.clear_cache
 
     dirty_key("/point/#{point.id}")
     dirty_key("/opinion/#{self.id}")
@@ -171,6 +175,7 @@ class Opinion < ApplicationRecord
     inclusion = user.inclusions.find_by_point_id point.id
 
     inclusion.destroy
+    Proposal.clear_cache
     point.recache
     self.recache
   end

@@ -554,7 +554,7 @@ class ImportDataController < ApplicationController
     @argdown = "///// Forum: #{current_subdomain.name} /////"
 
     def get_list_for_proposal(proposal)
-      "list/#{(proposal.cluster or 'Proposals').strip}"
+      "list/#{proposal.get_cluster.strip}"
     end
 
 

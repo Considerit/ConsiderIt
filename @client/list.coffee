@@ -158,9 +158,8 @@ window.List = ReactiveComponent
   # list of proposals
   render: -> 
     current_user = fetch '/current_user'
-    list = @props.list
-    if !list.key?
-      list = get_list(@props.list)
+    
+    list = get_list(@props.list)
 
 
     list_key = list.key
@@ -186,8 +185,6 @@ window.List = ReactiveComponent
                 done_callback: => 
                   edit_list.editing = false 
                   save edit_list
-
-
 
     ARTICLE
       key: list_key
@@ -225,6 +222,7 @@ window.List = ReactiveComponent
           #    ((@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || (permitted > 0 || permitted == Permission.NOT_LOGGED_IN) )
           show_new_button: (@props.combines_these_lists && lists_current_user_can_add_to(@props.combines_these_lists).length > 0) || (permitted > 0 || permitted == Permission.NOT_LOGGED_IN)
           expansion_key: @props.expansion_key
+
 
       if customization('footer', list_key) && !is_collapsed
         customization('footer', list_key)()
@@ -270,6 +268,7 @@ ListItems = ReactiveComponent
     list_key = list.key
 
     sort_key = "sorted-proposals-#{list_key}"
+
     proposals = if !@props.fresh then sorted_proposals(list.proposals, sort_key, true) or [] else []
 
 
@@ -389,6 +388,13 @@ ListItems = ReactiveComponent
       UL 
         className: 'ListItems'
         ref: 'list_wrapper'
+
+        if !list.proposals
+          LI 
+            style: 
+              listStyle: 'none'
+            className: 'sized_for_homepage'
+            ProposalsLoading()  
 
         for proposal,idx in proposals_to_render
           ProposalItem
@@ -1185,31 +1191,11 @@ category_value = (list_key, fresh, subdomain) ->
 
 
 window.get_all_lists = ->
-  all_lists = []
-
-  # Give primacy to specified order of lists in tab config or ordered_list customization
-  subdomain = fetch('/subdomain')
-  if get_tabs()
-    for tab in get_tabs()
-      all_lists = all_lists.concat (l for l in tab.lists when l != '*' && l != '*-')
-  else if customization 'lists'
-    all_lists = (l for l in customization('lists') when l != '*' && l != '*-')
-
-  # lists might also just be defined as a customization, without any proposals in them yet
-  subdomain_name = subdomain.name?.toLowerCase()
-  config = customizations[subdomain_name]
-  for k,v of config 
-    if k.match( /list\// )
-      all_lists.push k
-
-  proposals = fetch '/proposals'
-  all_lists = all_lists.concat("list/#{(p.cluster or 'Proposals').trim()}" for p in proposals.proposals)
-
-  all_lists = _.uniq all_lists
-  all_lists
+  fetch('/lists').lists
 
 window.get_all_lists_not_configured_for_a_page = ->
-  subdomain = fetch('/subdomain')
+  lists = fetch('/lists').lists or []
+
   if get_tabs()
     all_configured_lists = {}
     unconfigured_lists = {}
@@ -1218,18 +1204,10 @@ window.get_all_lists_not_configured_for_a_page = ->
         if l != '*' && l != '*-'
           all_configured_lists[l] = 1
 
-    # lists might also just be defined as a customization, without any proposals in them yet
-    subdomain_name = subdomain.name?.toLowerCase()
-    config = customizations[subdomain_name]
-    for k,v of config 
-      if k.match( /list\// ) && k not of all_configured_lists
-        unconfigured_lists[k] = 1
 
-    proposals = fetch '/proposals'
-    for p in proposals.proposals
-      l = "list/#{(p.cluster or 'Proposals').trim()}"
-      if l not of all_configured_lists
-        unconfigured_lists[l] = 1
+    for lst in lists
+      if lst not of all_configured_lists
+        unconfigured_lists[k] = 1
 
     Object.keys(unconfigured_lists)
 
@@ -1255,6 +1233,7 @@ window.get_lists_for_page = (tab) ->
   homepage_tabs = fetch 'homepage_tabs'
   tab ?= get_current_tab_name()
   tabs_config = get_tabs()
+  lists = get_all_lists()
 
   if tabs_config
     eligible_lists = get_tab(tab)?.lists
@@ -1276,7 +1255,7 @@ window.get_lists_for_page = (tab) ->
   for list in eligible_lists
 
     if list == '*' || (list == '*-' && !tabs_config)
-      for ll in get_all_lists()
+      for ll in lists
         if ll not in eligible_lists
           lists_in_tab.push ll      
 
@@ -1290,7 +1269,7 @@ window.get_lists_for_page = (tab) ->
           if ll != '*' && ll != '*-'
             referenced_elsewhere[ll] = true
 
-      for ll in get_all_lists()
+      for ll in lists
         if ll not of referenced_elsewhere && ll not in eligible_lists
           lists_in_tab.push ll
 
@@ -1298,29 +1277,10 @@ window.get_lists_for_page = (tab) ->
       lists_in_tab.push list
 
 
-
-  ######################################################
-  # now we'll flesh the lists out with proposals
-  proposals = fetch '/proposals'
-  lists_with_proposals = {}
-
-  for list_key in lists_in_tab
-    lists_with_proposals[list_key] = 
-      key: list_key
-      proposals: []
-
-  for proposal in proposals.proposals 
-    list_key = get_list_for_proposal(proposal)
-    if list_key of lists_with_proposals
-      lists_with_proposals[list_key].proposals.push proposal
-
-
   ######################################################
   # ...and finally, let's sort the lists if there's a different sorted order other than fixed
 
   list_sort_method = get_list_sort_method(tab)
-
-  lists_in_order = (lists_with_proposals[list_key] for list_key in lists_in_tab) # this is already fixed sort
 
   if list_sort_method == 'newest_item'
 
@@ -1329,49 +1289,50 @@ window.get_lists_for_page = (tab) ->
     # so that lists don't move around when someone adds a new proposal.
     lists_ordered_by_most_recent_update[tab] ?= {}
     by_recency = lists_ordered_by_most_recent_update[tab]
+    current_time = (new Date()).getTime()
 
-    if Object.keys(by_recency).length != lists_in_order.length
-      for lst in lists_in_order 
-        by_recency[lst.key] = -1 # in case there aren't any proposals in it
-        for proposal in lst.proposals 
+    ready = true 
+
+    for lst in lists_in_tab
+      server_lst = '/' + lst
+      if !arest.cache[server_lst]?.proposals
+        fetch(server_lst).proposals or []
+        ready = false
+
+    return lists_in_tab if !ready || lists_in_tab.length == 0 
+
+
+    if Object.keys(by_recency).length != lists_in_tab.length
+      for lst in lists_in_tab
+        proposals = fetch('/' + lst).proposals or []
+        by_recency[lst] = -1 # in case there aren't any proposals in it
+        for proposal in proposals
           time = (new Date(proposal.created_at).getTime())
-          if !by_recency[lst.key] || time > by_recency[lst.key]
-            by_recency[lst.key] = time 
+          if !by_recency[lst] || time > by_recency[lst]
+            by_recency[lst] = time
 
-    for lst in lists_in_order
-      if by_recency[lst.key] && by_recency[lst.key] > 0
-        lst.order = (new Date()).getTime() - by_recency[lst.key]
-      else 
-        lst.order = 9999999999999
-
-    lists_in_order.sort (a,b) -> a.order - b.order
+    lists_in_tab.sort (a,b) -> ( (current_time - by_recency[a]) or 99999999999) - ( (current_time - by_recency[b]) or 99999999999)
 
   else if list_sort_method == 'randomized'
     lists_ordered_by_randomized[tab] ?= {}
     by_random = lists_ordered_by_randomized[tab]
-    if Object.keys(by_random).length != lists_in_order.length
-      for lst in lists_in_order
-        by_random[lst.key] = Math.random()
+    if Object.keys(by_random).length != lists_in_tab.length
+      for lst in lists_in_tab
+        by_random[lst] = Math.random()
 
-    for lst in lists_in_order
-      if by_random[lst.key]
-        lst.order = by_random[lst.key]
-      else 
-        lst.order = 9999999999999
-
-    lists_in_order.sort (a,b) -> a.order - b.order
+    lists_in_tab.sort (a,b) -> (by_random[a] or 99999999999) - (by_random[b] or 99999999999)
 
 
-  lists_in_order
+  lists_in_tab
 
 
 window.get_proposals_in_list = (list_key) -> 
-  proposals = fetch '/proposals'
-
-  (p for p in proposals.proposals when "list/#{(p.cluster or 'Proposals').trim()}" == list_key)
+  list = fetch "/#{list_key}"
+  list.proposals
 
 
 window.get_list = (list_key) ->
+  return list_key if list_key.key
   lst = _.extend {}, customization(list_key),
     key: list_key
     proposals: get_proposals_in_list(list_key)

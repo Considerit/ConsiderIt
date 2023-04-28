@@ -527,7 +527,7 @@ class CurrentUserController < ApplicationController
     new_participant = current_user.add_to_active_in() == 'added'
     current_user.update_roles_and_permissions
 
-    dirty_key '/proposals'
+    dirty_proposals(user)
     if user.is_admin?
       dirty_key '/subdomain'
       dirty_key '/users'

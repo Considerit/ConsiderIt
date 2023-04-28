@@ -315,6 +315,11 @@ protected
       elsif key.match "/page/dashboard"
         noop = 1
 
+      elsif key.match "/list/"
+        response.append(List.all_data(key))
+      elsif key.match '/lists'
+        response.append({key: '/lists', lists: List.list_lists})
+
       elsif key.match "/page/"
         # default to proposal 
         slug = key[6..key.length]
@@ -439,7 +444,11 @@ protected
   def dirty_proposals(real_user)
     if current_subdomain.name != APP_CONFIG[:product_page]
       dirty_key '/proposals'
+      List.list_lists(current_subdomain).each do |lst|
+        dirty_key "/#{lst}"
+      end
     end
+
   end
 
   

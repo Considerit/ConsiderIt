@@ -121,84 +121,82 @@ window.Homepage = ReactiveComponent
         id: 'homepagetab'
         role: if get_tabs() then "tabpanel"
 
-        if !fetch('/proposals').proposals
-          DIV 
-            className: 'sized_for_homepage'
-            ProposalsLoading()   
+
+        if fetch('edit_forum').editing
+          for page in get_tabs() or [{name: null}]
+            EditPage
+              key: "#{page?.name}-#{!!get_tabs()}"
+              page_name: page?.name
         else 
+          DIV null,
+            DIV 
+              className: 'sized_for_homepage'                  
 
-          if fetch('edit_forum').editing
-            for page in get_tabs() or [{name: null}]
-              EditPage
-                key: "#{page?.name}-#{!!get_tabs()}"
-                page_name: page?.name
-          else 
-            DIV null,
-              DIV 
-                className: 'sized_for_homepage'                  
-
-                if customization('auth_callout')
-                  DIV 
-                    style: 
-                      marginBottom: 36
-                    AuthCallout()
-
-                NewForumOnBoarding()
-
-                for message in messages
-                  DIV 
-                    key: message
-                    style: 
-                      fontStyle: 'italic'
-                      maxWidth: 700
-                      margin: "0 auto 24px auto"
-                      textAlign: 'center'
-
-                    message
-
-                if preamble = get_page_preamble()
-                  DIV
-                    style: 
-                      marginBottom: 24
-                    dangerouslySetInnerHTML: __html: preamble
-
-
-              if (proposal_editing = fetch('proposal_editing')).editing
-                EditProposal 
-                  proposal: proposal_editing.editing
-                  done_callback: (e) =>
-                    proposal_editing.editing = null
-                    if proposal_editing.callback
-                      proposal_editing.callback()
-                      delete proposal_editing.callback
-                    save proposal_editing
-
-
-              get_current_tab_view()
-
-              if get_tabs() && !embedded_demo()
+              if customization('auth_callout')
                 DIV 
                   style: 
-                    paddingTop: 68
-                    paddingRight: if TABLET_SIZE() then 36
+                    marginBottom: 36
+                  AuthCallout()
 
-                  DIV 
-                    style: 
-                      textAlign: 'center'
-                      color: selected_color
-                      fontWeight: 600
-                    translator 'tabs.footer_label', "Find more proposals on a different page:"
-                    
-                  HomepageTabs
-                    go_to_hash: 'active_tab'
-                    active_style: 
-                      backgroundColor: '#666'
-                      color: 'white'
-                    tab_style: 
-                      backgroundColor: 'transparent'
-                      margin: 4
-                      padding: "8px 20px"
-                      color: '#555'
+              NewForumOnBoarding()
+
+              for message in messages
+                DIV 
+                  key: message
+                  style: 
+                    backgroundColor: "rgb(184 226 187)"
+                    borderRadius: 12
+                    padding: '8px 24px'
+                    maxWidth: 700
+                    margin: "0 auto 16px auto"
+                    fontSize: 14
+                    # textAlign: 'center'
+
+                  message
+
+              if preamble = get_page_preamble()
+                DIV
+                  style: 
+                    marginBottom: 24
+                  dangerouslySetInnerHTML: __html: preamble
+
+
+            if (proposal_editing = fetch('proposal_editing')).editing
+              EditProposal 
+                proposal: proposal_editing.editing
+                done_callback: (e) =>
+                  proposal_editing.editing = null
+                  if proposal_editing.callback
+                    proposal_editing.callback()
+                    delete proposal_editing.callback
+                  save proposal_editing
+
+
+            get_current_tab_view()
+
+            if get_tabs() && !embedded_demo()
+              DIV 
+                style: 
+                  paddingTop: 68
+                  paddingRight: if TABLET_SIZE() then 36
+
+                DIV 
+                  style: 
+                    textAlign: 'center'
+                    color: selected_color
+                    fontWeight: 600
+                  translator 'tabs.footer_label', "Find more proposals on a different page:"
+                  
+                HomepageTabs
+                  go_to_hash: 'active_tab'
+                  active_style: 
+                    backgroundColor: '#666'
+                    color: 'white'
+                  tab_style: 
+                    backgroundColor: 'transparent'
+                    margin: 4
+                    padding: "8px 20px"
+                    color: '#555'
 
 
   typeset : -> 
@@ -226,6 +224,7 @@ window.TagHomepage = ReactiveComponent
     current_user = fetch('/current_user')
 
     aggregate_list_key = "list/#{get_current_tab_name()}"
+    proposals = fetch('/proposals').proposals
 
     DIV null,
 
@@ -235,7 +234,7 @@ window.TagHomepage = ReactiveComponent
         list: 
           key: aggregate_list_key
           name: aggregate_list_key
-          proposals: fetch('/proposals').proposals
+          proposals: if proposals then (fetch(p) for p in proposals)
 
 
 #############
@@ -251,13 +250,13 @@ window.SimpleHomepage = ReactiveComponent
     current_user = fetch('/current_user')
     current_tab = get_current_tab_name()
     
-    lists = get_lists_for_page(current_tab).slice()
+    lists = get_lists_for_page(current_tab)
 
     DIV null, 
-      for list, index in lists or []
+      for list_key, index in lists or []
         List
-          key: list.key
-          list: list 
+          key: list_key
+          list: list_key
 
       if current_user.is_admin && current_tab not in ['About', 'FAQ'] && get_tab(current_tab)?.type not in [PAGE_TYPES.ABOUT, PAGE_TYPES.ALL]
         NewList()
@@ -265,19 +264,18 @@ window.SimpleHomepage = ReactiveComponent
 
 
 
-ProposalsLoading = ReactiveComponent
+window.ProposalsLoading = ReactiveComponent
   displayName: 'ProposalLoading'
 
   render: ->  
 
-    if !@local.cnt?
-      @local.cnt = 0
+    if !@cnt?
+      @cnt = 0
 
-    negative = Math.floor((@local.cnt / 284)) % 2 == 1
+    negative = Math.floor((@cnt / 284)) % 2 == 1
 
     DIV 
       style: 
-        width: HOMEPAGE_WIDTH()
         margin: 'auto'
         padding: '60px 0px'
         textAlign: 'center'
@@ -286,10 +284,12 @@ ProposalsLoading = ReactiveComponent
         fontSize: 24
 
       DIV 
+        ref: 'wrapper'
         style: 
           position: 'relative'
           top: 6
           left: 3
+
         
         drawLogo 
           height: 50
@@ -298,16 +298,18 @@ ProposalsLoading = ReactiveComponent
           clip: false
           draw_line: true 
           line_color: logo_red
-          i_dot_x: if negative then 284 - @local.cnt % 284 else @local.cnt % 284
+          i_dot_x: if negative then 284 - @cnt % 284 else @cnt % 284
           transition: false
 
 
       translator "loading_indicator", "Loading...there is much to consider!"
 
-  UNSAFE_componentWillMount: -> 
-    @int = setInterval => 
-      @local.cnt += 1 
-      save @local 
+  componentDidMount: ->     
+    circle = @refs.wrapper.querySelector('circle')
+    @int = setInterval =>
+      negative = Math.floor((@cnt / 284)) % 2 == 1
+      circle.setAttribute 'cx', if negative then 284 - @cnt % 284 else @cnt % 284
+      @cnt += 1 
     , 25
 
   componentWillUnmount: -> 

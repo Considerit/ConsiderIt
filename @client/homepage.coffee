@@ -102,16 +102,16 @@ window.Homepage = ReactiveComponent
     messages = []
     phase = customization('contribution_phase')
     if phase == 'frozen'
-      messages.push translator "engage.frozen_message", "The forum host has frozen this forum so no changes can be made."
+      messages.push {style: {backgroundColor: '#2e98c0', color: 'white'}, img: 'snowflake.png', label: translator("engage.frozen_message", "The forum host has frozen this forum so no changes can be made.")}
     else if phase == 'ideas-only'
-      messages.push translator "engage.ideas_only_message", "The forum host has set this forum to be ideas only. No opinions for now."
+      messages.push {style: {backgroundColor: '#fcde04', color: 'black'}, img: 'lightning.png', label: translator("engage.ideas_only_message", "The forum host has set this forum to be ideas only. No opinions for now.")}
     else if phase == 'opinions-only'
-      messages.push translator "engage.opinions_only_message", "The forum host has set this forum to be opinions only. No new ideas for now."
+      messages.push {style: {backgroundColor: '#c1ccd0', color: 'black'}, img: 'magnifying_glass.png', label: translator("engage.opinions_only_message", "The forum host has set this forum to be opinions only. No new ideas for now.")}
 
     if customization('anonymize_everything')
-      messages.push translator "engage.anonymize_message", "The forum host has set participation to anonymous, so you won't be able to see the identity of others at this time."
+      messages.push {style: {backgroundColor: '#b88dd1', color: 'black'}, img: 'venetian-mask.png', label: translator("engage.anonymize_message", "The forum host has set participation to anonymous. You won't be able to see the identity of others at this time.")}
     if customization('hide_opinions')
-      messages.push translator "engage.hide_opinions_message", "The forum host has hidden the opinions of other participants."
+      messages.push {style: {backgroundColor: '#faa199', color: 'black'}, img: 'hiding.png', label: translator("engage.hide_opinions_message", "The forum host has hidden the opinions of other participants.")}
 
     DIV 
       key: "homepage_#{subdomain.name}"      
@@ -143,16 +143,30 @@ window.Homepage = ReactiveComponent
               for message in messages
                 DIV 
                   key: message
-                  style: 
+                  style: _.defaults {}, (message.style or {}),
                     backgroundColor: "rgb(184 226 187)"
                     borderRadius: 12
-                    padding: '8px 24px'
+                    padding: '4px 24px'
                     maxWidth: 700
                     margin: "0 auto 16px auto"
                     fontSize: 14
+                    display: 'flex'
+                    alignItems: 'center'
+                    minHeight: 44
                     # textAlign: 'center'
 
-                  message
+                  if message.img 
+                    DIV 
+                      style:
+                        minWidth: 40
+                        paddingRight: 24
+                      IMG 
+                        style: 
+                          maxWidth: 34
+
+                        src: "#{fetch('/application').asset_host}/images/#{message.img}"
+
+                  message.label
 
               if preamble = get_page_preamble()
                 DIV

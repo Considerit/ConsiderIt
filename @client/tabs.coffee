@@ -46,6 +46,7 @@ window.HomepageTabTransition = ReactiveComponent
       default_tab = customization('homepage_default_tab') or get_tabs()[0]?.name or 'Show all'
 
       tab_state_changing = (loc.query_params.tab && loc.query_params.tab != tab_state.active_tab)
+
       if !tab_state.active_tab? || tab_state_changing
 
         if loc.query_params.tab && get_tab(decodeURIComponent(loc.query_params.tab))
@@ -54,20 +55,16 @@ window.HomepageTabTransition = ReactiveComponent
           slug = loc.url.substring(1)
           find_tab = null
 
-          look_for_tab_for_proposal = ->
+          look_for_tab_for_proposal = =>
+            key = "/page/#{slug}"
+            page = arest.cache[key]
+            @checked_times += 1
+            proposal = null
 
-            if arest.cache['/proposals']?.proposals
-              proposal = null
-              @checked_times += 1
+            if page?.proposal
 
-
-              
-              for v in arest.cache['/proposals'].proposals
-                if v.slug == slug
-                  proposal = v
-                  break
-
-              if proposal
+              proposal = fetch(page.proposal)
+              if proposal.name
                 list = get_list_for_proposal proposal
                 tab = get_page_for_list list
 
@@ -77,10 +74,10 @@ window.HomepageTabTransition = ReactiveComponent
                 if find_tab != null
                   clearInterval find_tab
 
-              if @checked_times > 100 && find_tab != null
-                clearInterval find_tab
+            if @checked_times > 100 && find_tab != null
+              clearInterval find_tab
 
-            proposal
+            !!proposal
 
           result = look_for_tab_for_proposal()
           if !result 
@@ -229,7 +226,7 @@ window.delete_tab = (tab_name, skip_confirmation) ->
 window.get_page_for_list = (list_key) -> 
   for page in get_tabs() or []    
     for list in get_lists_for_page(page.name)
-      if list.key == list_key
+      if list == list_key
         return page.name
 
   return null

@@ -42,6 +42,7 @@ ApplyFilters = ReactiveComponent
         regexes[filter] = new RegExp filter, 'i'
 
     for proposal in proposals.proposals
+      proposal = fetch proposal
       editor = proposal_editor(proposal)
       if editor 
         editor = fetch(editor).name 
@@ -81,7 +82,7 @@ window.sorted_proposals = (proposals, sort_key, require_force) ->
   sort = fetch 'sort_and_filter_proposals'
   set_default_sort() if !sort.name? 
 
-  proposals = proposals.slice()
+  proposals = (proposals or []).slice()
 
 
   # filter out filtered proposals
@@ -426,7 +427,6 @@ ProposalSort = ReactiveComponent
 
   render : -> 
 
-    proposals = fetch '/proposals' # registering dependency so that we get re-rendered...ApplyFilters is actually dependent
     subdomain = fetch '/subdomain'
 
     return SPAN null if !subdomain.name

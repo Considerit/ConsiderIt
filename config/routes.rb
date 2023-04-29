@@ -98,6 +98,9 @@ Rails.application.routes.draw do
 
   match '/user/:id' => 'user#update', :via => [:put]
 
+  get '/lists' => 'list#index'
+  get '/list/:list_name' => 'list#show'
+
   resources :proposal
   get '/proposals' => 'proposal#index'
   get '/all_comments' => 'comment#all_for_subdomain'

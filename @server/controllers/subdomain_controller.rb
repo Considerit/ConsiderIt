@@ -257,6 +257,8 @@ class SubdomainController < ApplicationController
     current_user.add_to_active_in
     current_subdomain.update! attrs
 
+    Proposal.clear_cache
+
     response = current_subdomain.as_json
     if errors.length > 0
       response[:errors] = errors
@@ -267,6 +269,8 @@ class SubdomainController < ApplicationController
         destroy_plausible_domain
       end
     end
+
+    dirty_key '/lists' # in case list order changed
     render :json => [response]
 
   end
@@ -283,7 +287,8 @@ class SubdomainController < ApplicationController
         roles[k] = [] if !v
       end
 
-      dirty_key '/proposals' # proposals inherit roles from subdomain
+      dirty_proposals(current_user)
+      Proposal.clear_cache
 
       current_subdomain.roles = roles
     end
@@ -292,11 +297,14 @@ class SubdomainController < ApplicationController
   def nuke_everything
     authorize!('update subdomain', current_subdomain)
 
+    
+    dirty_key '/subdomain'
+
+    dirty_proposals(current_user)
+
     current_subdomain.nuke
 
-    dirty_key '/subdomain'
-    dirty_key '/proposals'
-  
+
     render :json => []
   end
 

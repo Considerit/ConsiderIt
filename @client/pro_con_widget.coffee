@@ -1232,7 +1232,7 @@ window.PointsList = ReactiveComponent
         STYLE 
           dangerouslySetInnerHTML: __html: """
             .point-in-decision-board.with-drop-target .write_#{@props.valence}::before {
-              content: "#{t('or', 'or')}";
+              content: "#{translator('or', 'or')}";
               position: absolute;
               left: -25px;
               top: 5px;

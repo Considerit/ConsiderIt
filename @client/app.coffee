@@ -302,10 +302,7 @@ Root = ReactiveComponent
 
     setTimeout ->
       fetch '/users'
-      if is_a_dialogue_page()
 
-        setTimeout ->
-          fetch '/proposals'
 
     if !fetch('customizations_signature').signature || !app.web_worker
       return  DIV 

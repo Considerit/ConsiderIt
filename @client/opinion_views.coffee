@@ -2000,6 +2000,7 @@ window.participation_timelapse = (step, interval) ->
   first = Infinity
 
   for prop in proposals.proposals
+    prop = fetch(prop)
     for o in prop.opinions
       t = new Date(o.created_at or o.updated_at).getTime()
       if t > last 

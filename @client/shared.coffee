@@ -141,24 +141,16 @@ if ReactFlipToolkit?
 
 
 window.LIVE_UPDATE_INTERVAL = 3 * 60 * 1000
-
-# live updating
-setInterval ->
-  dependent_keys = []
-  proposals = false 
+window.live_update = ->  
   for key of arest.components_4_key.hash
     if key[0] == '/' && arest.components_4_key.get(key).length > 0 && \
-       !key.match(/\/(current_user|user|opinion|point|subdomain|application|translations)/)
+       !key.match(/\/(current_user|proposal|user|opinion|point|visits|subdomain|application|translations)/)
 
-      if key.match(/\/proposal\/|\/proposals\//)
-        proposals = true 
-      else
-        arest.serverFetch(key)
+      arest.serverFetch(key)
 
-  if proposals 
-    arest.serverFetch('/proposals')
+# live updating
+setInterval live_update, LIVE_UPDATE_INTERVAL
 
-, LIVE_UPDATE_INTERVAL 
 
 
 # To help reduce the chance of clobbering forum customizations when multiple admins have windows open,

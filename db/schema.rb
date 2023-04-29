@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_03_03_235919) do
+ActiveRecord::Schema.define(version: 2023_04_26_220818) do
 
   create_table "ahoy_events", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "subdomain_id"
@@ -208,7 +208,6 @@ ActiveRecord::Schema.define(version: 2023_03_03_235919) do
     t.string "seo_keywords"
     t.string "cluster"
     t.json "roles"
-    t.json "histocache"
     t.json "json"
     t.string "pic_file_name"
     t.string "pic_content_type"

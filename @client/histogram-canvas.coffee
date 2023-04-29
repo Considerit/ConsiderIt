@@ -688,6 +688,10 @@ window.styles += """
   img.histo_avatar.avatar {
     z-index: 1;
   }
+
+  .HistoAvatars .sk-wave {
+    margin: 0;
+  }
 """
 
 
@@ -742,12 +746,12 @@ HistoAvatars = ReactiveComponent
     @adjusted_width  = Math.round @props.width  + 2 * @cut_off_buffer
 
     proposal = fetch @props.histo_key
-
     DIV 
+      className: 'HistoAvatars'
       id: histocache_key
       key: @props.histo_key or @local.key
       ref: 'histo'
-      'data-receive-viewport-visibility-updates': 2
+      'data-receive-viewport-visibility-updates': 1.5
       'data-visibility-name': 'histogram'
       'data-component': @local.key      
       style: 
@@ -760,6 +764,12 @@ HistoAvatars = ReactiveComponent
                     @enable_range_selection then 'pointer'
         # borderLeft: "3px solid black"
         # borderRight: "3px solid black"
+
+
+      if !@ready_to_draw()
+        DIV 
+          style: {position: 'absolute', top: @props.height / 2 - 20, left: @props.width / 2 - 25}
+          LOADING_INDICATOR
 
       CANVAS
         ref: 'canvas'
@@ -782,7 +792,7 @@ HistoAvatars = ReactiveComponent
 
   ready_to_draw: ->
     users = fetch '/users'    
-    users.users && @local.in_viewport && @getAvatarPositions()
+    users.users && @getAvatarPositions()
 
   getAvatarPositions: -> 
     histocache = @local.histocache?[@last_key]
@@ -1253,11 +1263,10 @@ HistoAvatars = ReactiveComponent
     # the javascript does when moving one's slider)
     histocache_key = @last_key
     
-    if histocache_key not of (@local.histocache or {}) && @current_request != histocache_key
+    if @local.in_viewport && histocache_key not of (@local.histocache or {}) && @current_request != histocache_key
       @current_request = histocache_key
 
-      opinions = ({stance: o.stance, user: o.user} for o in @props.opinions)
-      
+      opinions = ([o.user, o.stance, @props.weights[o.user]] for o in @props.opinions when !@props.salience? || @props.salience[o.user] == 1)
 
       if @isMultiWeighedHistogram()
         layout_params = _.defaults {}, (@props.layout_params or {}), 
@@ -1290,8 +1299,6 @@ HistoAvatars = ReactiveComponent
         w: (@props.width or 400) * @resolution
         h: (@props.height or 70) * @resolution
         o: opinions
-        weights: @props.weights
-        salience: @props.salience
         groups: if has_groups then @props.groups
         all_groups: if has_groups then get_user_groups_from_views(@props.groups)
         layout_params: layout_params
@@ -1302,7 +1309,7 @@ HistoAvatars = ReactiveComponent
 
 
 
-num_layout_workers = 10
+num_layout_workers = 1
 num_layout_tasks_delegated = 0
 # num_completed = 0
 

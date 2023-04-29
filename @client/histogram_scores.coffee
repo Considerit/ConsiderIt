@@ -80,7 +80,7 @@ window.AggregatedHistogram =  ReactiveComponent
           max_weight = cnt
 
         group_weights[group] = cnt
-        group_opinions.push {stance: avg, user: group}
+        group_opinions.push [group, avg]
 
     if min_weight < Infinity && min_weight != max_weight
       for k,v of group_weights

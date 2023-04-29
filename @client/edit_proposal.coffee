@@ -377,7 +377,7 @@ window.EditProposal = ReactiveComponent
         save @local
 
 
-    save proposal, => 
+    save_proposal proposal, => 
       if @submit_pic
         form_to_upload = document.getElementById('proposal_pic_files')
         ajax_submit_files_in_form
@@ -392,3 +392,13 @@ window.EditProposal = ReactiveComponent
             save @local
       else 
         after_save()
+
+window.save_proposal = (proposal, cb) ->
+  if proposal.opinions
+    stripped_proposal = {}
+    for k,v of proposal
+      if k != 'opinions'
+        stripped_proposal[k] = v
+    proposal = stripped_proposal
+  save proposal, cb
+

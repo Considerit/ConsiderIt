@@ -41,8 +41,9 @@ You can probably install a more recent version of Ruby. I just haven't tested it
 ### Configure mysql 
 
 ```
-service mysql restart
-mysqladmin -u root password root
+sudo service mysql restart
+sudo mysqladmin -u root password root
+echo "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';"  | sudo mysql
 echo "create database considerit_dev;" | mysql -u root -proot
 ```
 

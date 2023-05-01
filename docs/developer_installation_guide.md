@@ -10,14 +10,13 @@ sudo apt-get update
 sudo apt-get -y upgrade
 export DEBIAN_FRONTEND=noninteractive
 sudo -E apt-get -y install advancecomp autoconf automake bison build-essential \
-     curl emacs23-nox exuberant-ctags gifsicle git-core imagemagick \
+     curl exuberant-ctags gifsicle git-core imagemagick \
      jpegoptim libcurl4-openssl-dev libjpeg-progs libmagickcore-dev \
-     libmagickwand-dev libmysqlclient-dev libreadline6 libreadline6-dev \
+     libmagickwand-dev libmysqlclient-dev libreadline6-dev \
      libreadline-dev libssl-dev libncurses5-dev libtool libxml2-dev \
-     libxslt1-dev memcached mysql-server openssl optipng nodejs npm \
-     pngcrush python-apt python-pip python-mysqldb ruby-dev \
+     libxslt1-dev libyaml-dev memcached mysql-server openssl optipng nodejs npm \
+     pngcrush python3-apt python-pip python3-mysqldb ruby-build ruby-dev \
      unattended-upgrades unzip zlib1g zlib1g-dev
-sudo ln -s /usr/bin/nodejs /usr/bin/node
 ```
 
 The non-interactive prompt prevents mysql-server from asking for a root password to your database. We'll set that later. 

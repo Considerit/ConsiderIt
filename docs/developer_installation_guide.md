@@ -102,6 +102,14 @@ u.super_admin=true
 u.save
 ```
 
+Then manually create a forum using mysql:
+
+```
+mysql -u root -proot considerit_dev
+insert into subdomains (id, name, created_at, updated_at, created_by) values 
+( 1, 'MY DOMAIN NAME', now(), now(), (select id from users where email='my_test@email.address') );
+quit
+```
 
 ### Development enviroments used
 

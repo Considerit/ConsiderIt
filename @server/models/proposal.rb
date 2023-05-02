@@ -253,6 +253,7 @@ class Proposal < ApplicationRecord
         end
       end
 
+
       #################
       # PROPOSALS
       proposals_key = "#{subdomain.name}-Proposals"
@@ -354,7 +355,7 @@ class Proposal < ApplicationRecord
           }
         end
 
-        pnts = points_by_proposal.fetch(proposal["id"], [])
+        pnts = points_by_proposal.fetch(proposal["id"].to_s, [])
 
         if all_points
           proposal[:points] = pnts
@@ -362,7 +363,10 @@ class Proposal < ApplicationRecord
 
         pnts_with_inclusions = pnts.select{ |pnt| pnt["includers"].length > 0 }
 
+
+
         proposal['point_count'] = pnts_with_inclusions.length
+
         proposals.push proposal
       end
     end

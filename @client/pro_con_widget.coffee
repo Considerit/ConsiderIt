@@ -20,6 +20,18 @@ window.getProposalMode = (proposal) ->
   local_state.mode
 
 
+window.clearStateNewPointInput = -> setStateNewPointInput(null)
+
+window.setStateNewPointInput = ( new_point_input ) ->
+  state_of_new_point_input = fetch('new_point_input')
+  state_of_new_point_input['words'] = new_point_input
+  save state_of_new_point_input
+
+window.getStateNewPointInput = ( new_point_input ) ->
+  state_of_new_point_input = fetch('new_point_input')
+  return if state_of_new_point_input  then state_of_new_point_input['words']  else null
+
+
 window.update_proposal_mode = (proposal, proposal_mode, triggered_by) ->
   can_opine = canUserOpine proposal
   proposal = fetch proposal
@@ -31,6 +43,8 @@ window.update_proposal_mode = (proposal, proposal_mode, triggered_by) ->
        (can_opine == Permission.DISABLED && your_opinion.key))
 
     proposal_mode = 'results' 
+  else
+    clearStateNewPointInput()
 
   local_state = fetch shared_local_key proposal
   if local_state.mode != proposal_mode 

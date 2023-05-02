@@ -20,6 +20,7 @@ window.Point = ReactiveComponent
 
     current_user = fetch('/current_user')
 
+    new_point_words = getStateNewPointInput()
 
     renderIncluders = (draw_all_includers) =>
 
@@ -178,7 +179,7 @@ window.Point = ReactiveComponent
           DIV 
             className: 'point_nutshell'
 
-            splitParagraphs point.nutshell, append
+            splitParagraphs point.nutshell, append, new_point_words
 
 
 

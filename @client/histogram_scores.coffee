@@ -80,11 +80,15 @@ window.AggregatedHistogram =  ReactiveComponent
           max_weight = cnt
 
         group_weights[group] = cnt
-        group_opinions.push [group, avg]
+        group_opinions.push [group, avg, group_weights[group]]
 
     if min_weight < Infinity && min_weight != max_weight
       for k,v of group_weights
         group_weights[k] = v /  ((max_weight - min_weight) / 2)
+
+      for group,idx in all_groups 
+        group_opinions[idx][2] = group_weights[group]
+
 
     visible_groups = Object.keys group_scores
     visible_groups.sort (a,b) -> group_scores[b].avg - group_scores[a].avg
@@ -107,7 +111,6 @@ window.AggregatedHistogram =  ReactiveComponent
         w: width
         h: h
         o: group_opinions
-        weights: group_weights
         layout_params: 
           fill_ratio: fill_ratio
           cleanup_overlap: 2
@@ -145,9 +148,14 @@ window.AggregatedHistogram =  ReactiveComponent
 
           DIV 
             style: 
-              width: w
+              width: width
               height: h
               position: 'relative'
+
+            if !histocache
+              DIV 
+                style: {position: 'absolute', top: h / 2 - 20, left: width / 2 - 25}
+                LOADING_INDICATOR
 
             if histocache
 

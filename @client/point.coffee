@@ -112,6 +112,9 @@ window.Point = ReactiveComponent
     else 
       append = null
 
+    do_display = !@props.any_point_matches_new_input or !new_point_words or (new_point_words.length <= 0) or \
+      containsAnyWord(point.nutshell, new_point_words)
+
     LI
       key: "point-#{point.id}"
       'data-id': @props.point
@@ -122,6 +125,8 @@ window.Point = ReactiveComponent
         if (is_selected && e.which == 27) || e.which == 13 || e.which == 32
           @selectPoint(e)
           e.preventDefault()
+      style:
+        display: if do_display then null else 'none'
 
       if @props.rendered_as == 'decision_board_point'
         DIV 

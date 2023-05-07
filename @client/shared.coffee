@@ -529,6 +529,9 @@ window.extractWords = ( text ) ->
   words = if text  then text.toLowerCase().split( /\W+/ )  else []
   return words.filter( (w) -> !STOP_WORDS.has(w) and (1 < w.length) )
 
+ window.containsAnyWord = ( text, words ) ->
+   return words and extractTokens(text).some( (token) => words.find((word) => (word==token.toLowerCase())) )
+
 window.extractTokens = ( text ) ->
   # Split keeping delimiters, punctuation, original case
   tokens = if text  then text.split( /(\W+)/ )  else []

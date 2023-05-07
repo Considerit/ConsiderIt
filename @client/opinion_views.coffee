@@ -171,6 +171,8 @@ window.group_colors = {}
 window.get_color_for_groups = (group_array) ->
   opinion_views = fetch 'opinion_views'  
   return group_colors if !opinion_views.active_views.group_by
+  group_array ||= []
+
   if i18n().unreported not in group_array
     group_array = group_array.slice()
     group_array.push i18n().unreported

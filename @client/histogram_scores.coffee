@@ -31,9 +31,9 @@ window.AggregatedHistogram =  ReactiveComponent
     opinions = get_opinions_for_proposal opinions, proposal, weights
 
     all_groups = get_user_groups_from_views groups
+    all_groups ||= []
 
     has_groups = !!all_groups
-
 
     colors = get_color_for_groups all_groups
 

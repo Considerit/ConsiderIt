@@ -16,6 +16,7 @@ window.PROPOSAL_DESCRIPTION_MAX_HEIGHT_ON_EXPAND = 500
 require './item_text'
 require './item_opinion'
 require './histogram_scores'
+htmlToImage = require 'html-to-image'
 
 
 
@@ -590,8 +591,43 @@ styles += """
   }
 
 
-"""
+  .ProposalItem .screenshot-menu-button {
+    display:none;
+  }
+  .ProposalItem.is_expanded .screenshot-menu-button {
+    display:block;
+  }
+  .ProposalItem .screenshot-menu {
+    display:none;
+  }
+  .ProposalItem.is_expanded .screenshot-menu {
+    display:block;
+  }
+  .ProposalBlock .screenshot-menu {
+    border: solid 1px black;
+    background-color: white;
+    padding: 20px;
+    position: absolute;
+    z-index: 100;
+    box-shadow: 5px 5px 20px #888888;
+  }
+  .ProposalBlock .screenshot-menu-close {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+  }
+  .ProposalBlock .screenshot-image {
+    border: solid 1px #888888;
+  }
+  .ProposalBlock .screenshot-include {
+    margin: 5px;
+  }
+  .ProposalBlock .screenshot-button {
+    margin: 10px;
+  }
 
+"""
 
 
 
@@ -756,6 +792,117 @@ ProposalBlock = ReactiveComponent
 
 
           trash_icon 18, 18, '#444'
+
+
+
+      BUTTON
+        className: 'like_link screenshot-menu-button'
+        onClick: @toggleScreenshotMenu
+        import_icon 20, 20, '#222'
+      DIV
+        className: 'screenshot-menu'
+        style:
+          display: 'none'
+        DIV
+          className: 'screenshot-menu-close'
+          onClick: @toggleScreenshotMenu
+          'X'
+        DIV
+          className: 'screenshot-image'
+          'screenshot preview'
+        DIV
+          className: 'screenshot-include'
+          LABEL
+            htmlFor: 'include'
+            'Include: '
+          SELECT
+            id: 'include'
+            className: 'screenshot-include-select'
+            onChange: @updateScreenshot
+
+            for option in ['opinions and reasons', 'opinions', 'reasons']
+              OPTION
+                key: option
+                value: option
+                option
+        BUTTON
+          className: 'screenshot-button'
+          onClick: (e) ->
+            proposalDiv = e.target.closest( '.proposal-block-container' )
+            previewDiv = proposalDiv.querySelector('.screenshot-image')
+            dataUrlState = fetch 'screenshot'
+            dataUrl = if dataUrlState  then dataUrlState['data']  else null
+            console.info( 'dataUrl=', dataUrl )
+            if dataUrl and navigator.clipboard
+              navigator.clipboard.write(  [ new ClipboardItem({'image/png': dataUrl}) ]  )
+              alert( 'Copied screenshot to clipboard' )
+            else
+              alert( 'Screenshot copy failed for dataUrl=' + dataUrl )
+          'Copy screenshot'
+        BUTTON
+          className: 'screenshot-button'
+          onClick: (e) ->
+            proposalItem = e.target.closest( '.ProposalItem' )
+            console.info( 'proposalItem=', proposalItem )
+            proposalId = proposalItem.id.substring(1).replace('_', '-')
+            console.info( 'proposalId=', proposalId )
+            pageUrl = new URL( document.location )
+            proposalUrl = pageUrl.protocol + '//' + pageUrl.host + '/' + proposalId
+            console.info( 'proposalUrl=', proposalUrl )
+            if proposalUrl and navigator.clipboard
+              navigator.clipboard.writeText( proposalUrl )
+              alert( 'Copied URL to clipboard: ' + proposalUrl )
+            else
+              alert( 'Screenshot copy failed for proposalUrl=' + proposalUrl )
+          'Copy link'
+
+
+  toggleScreenshotMenu: (e) ->
+    proposalDiv = e.target.closest( '.proposal-block-container' )
+    console.info( 'toggleScreenshotMenu() proposalDiv=', proposalDiv )
+    screenshotMenu = proposalDiv.querySelector('.screenshot-menu')
+    console.info( 'toggleScreenshotMenu() screenshotMenu=', screenshotMenu )
+    screenshotMenu.style.display =  if screenshotMenu.style.display  then null  else 'none'
+    if screenshotMenu.style.display != 'none'
+      @updateScreenshot(e)
+
+
+  updateScreenshot: (e) ->
+    console.info( 'updateScreenshot e=', e )
+
+    proposalDiv = e.target.closest( '.proposal-block-container' )
+    reasonsDiv = proposalDiv.querySelector('section.reasons_region')
+    includeSelect = proposalDiv.querySelector('.screenshot-include-select')
+
+    opinionsAndReasonsDiv = proposalDiv.querySelector('.OpinionBlock')
+    opinionsDiv = proposalDiv.querySelector('.fast-thought')
+    reasonsDiv = proposalDiv.querySelector('.slow-thought')
+    targetDiv = opinionsAndReasonsDiv
+
+    if includeSelect.value == 'reasons'
+      targetDiv = reasonsDiv
+    if includeSelect.value == 'opinions'
+      targetDiv = opinionsDiv
+
+    htmlToImage.toPng( targetDiv ).then( (dataUrl) =>
+      targetBounds = targetDiv.getBoundingClientRect()
+      image = new Image( targetBounds.width, targetBounds.height )
+      image.src = dataUrl
+      image.style.width = '500px'
+      image.style.height = 'auto'
+      console.warn( 'image=', image )
+
+      previewDiv = proposalDiv.querySelector('.screenshot-image')
+      previewDiv.replaceChild( image, previewDiv.firstChild )
+
+      dataUrlState = fetch 'screenshot'
+      dataUrlState['data'] = dataUrl
+      save dataUrlState
+    ).catch( (err) =>
+      console.warn('toPng err=', err)
+    )
+
+
 
 
 

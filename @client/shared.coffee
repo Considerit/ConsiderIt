@@ -362,7 +362,7 @@ window.prettyDate = (time) ->
   return if isNaN(day_diff) || day_diff < 0
 
   if subdomain.lang != 'en'
-    return "#{date.getMonth() + 1}/#{date.getDate() + 1}/#{date.getFullYear()}" 
+    return "#{date.getMonth() + 1}/#{date.getDate()}/#{date.getFullYear()}" 
 
   r = day_diff == 0 && (
     diff < 60 && "just now" || 

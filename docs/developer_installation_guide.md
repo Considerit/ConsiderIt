@@ -5,7 +5,7 @@ This installation guide is written for development on Ubuntu, and has been teste
 
 ### Obtain an Ubuntu machine
 
-For development on MacOS, a simple way to get an Ubuntu virtual machine is to install Canonical's Multipass.  Then create and launch the virtual machine:
+I've run considerit in an Ubuntu VM on my Mac, managed by Vagrant and provisioned by Ansible. I also have run it directly on my Mac. For development on MacOS, a simple way to get an Ubuntu virtual machine is to install Canonical's Multipass.  Then create and launch the virtual machine:
 ```
 multipass launch --disk 10G
 ```
@@ -117,7 +117,3 @@ insert into subdomains (id, name, created_at, updated_at, created_by) values
 ( 1, 'MY DOMAIN NAME', now(), now(), (select id from users where email='my_test@email.address') );
 quit
 ```
-
-### Development enviroments used
-
-I've run considerit in an Ubuntu VM on my Mac, managed by Vagrant and provisioned by Ansible. I also have run it on my Mac.

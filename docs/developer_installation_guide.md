@@ -41,7 +41,7 @@ rbenv global 3.2.2
 gem install bundler
 ```
 
-You can probably install a more recent version of Ruby. I just haven't tested it with required gems. 
+You can probably install a more recent version of Ruby. I just haven't tested it with required gems.  `gem install` may require several attempts to complete.  If dependency `tomoto` fails to build, it can be manually deleted from Gemfile, since it is not necessary for all development work.
 
 
 ### Configure mysql 

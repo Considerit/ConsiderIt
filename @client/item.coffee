@@ -884,7 +884,7 @@ ProposalBlock = ReactiveComponent
     if includeSelect.value == 'opinions'
       targetDiv = opinionsDiv
 
-    htmlToImage.toPng( targetDiv ).then( (dataUrl) =>
+    htmlToImage.toPng( targetDiv, {backgroundColor:'#ffffff'} ).then( (dataUrl) =>
       targetBounds = targetDiv.getBoundingClientRect()
       image = new Image( targetBounds.width, targetBounds.height )
       image.src = dataUrl

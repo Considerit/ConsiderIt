@@ -75,13 +75,13 @@ Note that if you plan on committing a lot of code, you might want to take the ti
 
 Make sure you're in your considerit directory.
 
-You'll want to have webpack watching in the background for changes to your javascript.
+You'll want to have webpack watching in the background for changes to your javascript.  Webpack may occasionally freeze and need a restart.
 
 ```
 bin/webpack &
 ```
 
-Then start your rails server:
+Then start your rails server.  If using a Multipass VM, set flag `--binding` using the IP from `multipass list`.
 
 ```
 rails s

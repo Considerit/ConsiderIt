@@ -3,6 +3,13 @@ Getting started for local development
 
 This installation guide is written for development on Ubuntu, and has been tested on Ubuntu 12.04, 14.04, and 22.04.
 
+### Obtain an Ubuntu machine
+
+For development on MacOS, a simple way to get an Ubuntu virtual machine is to install Canonical's Multipass.  Then create and launch the virtual machine:
+```
+multipass launch --disk 10G
+```
+
 ### Upgrade system & install dependencies
 
 ```

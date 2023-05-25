@@ -1,7 +1,7 @@
 Getting started for local development
 -------------------------------------
 
-This installation guide is written for development on Ubuntu, and has been tested on Ubuntu 12.04 and 14.04. 
+This installation guide is written for development on Ubuntu, and has been tested on Ubuntu 12.04, 14.04, and 22.04.
 
 ### Upgrade system & install dependencies
 

@@ -36,9 +36,9 @@ echo 'eval "$(rbenv init -)"' >> ~/.profile
 git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
 echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> ~/.profile
 source ~/.profile
-rbenv install -v 2.2.2
-rbenv global 2.2.2
-gem install bundler --no-rdoc --no-ri
+rbenv install -v 3.2.2
+rbenv global 3.2.2
+gem install bundler
 ```
 
 You can probably install a more recent version of Ruby. I just haven't tested it with required gems. 

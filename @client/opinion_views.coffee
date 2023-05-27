@@ -241,10 +241,11 @@ window.ensureUsersClustered = ( ) ->
 # Automatically cluster users based on similarity of their opinions across all opinions
 window.cluster = ( clusters ) ->
   # Halt based on minimum-cluster-coverage and minimum-similarity.  Enforce maximum-number-of-groups.
-  MIN_CLUSTERED_USERS_FRAC = 0.3
-  MIN_SIMILARITY = 0.7
+  MIN_CLUSTERED_USERS_FRAC = 0.50
+  MAX_GROUP_USERS_FRAC = 0.30
+  MIN_SIMILARITY = 0.50
   MAX_CLUSTERS = 5
-  MAX_LOOPS = 1000
+  MAX_LOOPS = Math.floor( clusters.length * MIN_CLUSTERED_USERS_FRAC )
 
   # Cluster bottom-up, merging the most similar pair of users/clusters
   numUsers = clusters.length
@@ -269,7 +270,8 @@ window.cluster = ( clusters ) ->
       for index2 in [ index1+1 ... clusters.length ]
         cluster2 = clusters[ index2 ]
         similarity = cosineSimilarity( cluster1.center, cluster2.center )
-        if ( maxSimilarity < similarity )
+        groupFrac = ( cluster1.userIds.length + cluster2.userIds.length ) / numUsers
+        if ( maxSimilarity < similarity ) and ( groupFrac < MAX_GROUP_USERS_FRAC )
           maxSimilarity = similarity
           maxSimilarityPair = [ cluster1, cluster2 ]
 

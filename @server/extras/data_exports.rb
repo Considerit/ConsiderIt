@@ -131,8 +131,10 @@ module DataExports
 
     heading = ['email', 'name', 'date joined'] 
     anonymize_everything = subdomain.customization_json['anonymize_everything']
+    anonymization_safe_opinion_filters = subdomain.customization_json['anonymization_safe_opinion_filters']
+    export_tags = !anonymize_everything || anonymization_safe_opinion_filters
 
-    if tag_whitelist
+    if export_tags && tag_whitelist
       tag_whitelist.each do |tag|
         heading.append tag
       end

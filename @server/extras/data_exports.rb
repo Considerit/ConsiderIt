@@ -159,7 +159,7 @@ module DataExports
       user_email = anonymize_everything ?  'ANONYMOUS'  : user.email.gsub('.ghost', '')
       row = [user_email, user_name, user.created_at]
 
-      if tag_whitelist
+      if export_tags && tag_whitelist
         user_tags = user.tags || {}
 
         tag_whitelist.each do |tag|

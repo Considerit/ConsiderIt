@@ -263,7 +263,7 @@ window.ForumSettingsDash = ReactiveComponent
             if confirmed
               return confirmed
             # Prompt user for confirmation, and stop click-events if user cancels change
-            confirmed = confirm( 'User identities will be gone forever. Are you certain?' )
+            confirmed = confirm( 'This makes anonymization of this forum permanent. You will not be able to revert. Are you certain?' )
             if confirmed
               @lastConfirmTime = new Date()
             else
@@ -295,7 +295,7 @@ window.ForumSettingsDash = ReactiveComponent
           
           DIV 
             className: 'explanation'
-            "Anonymization will become irreversible. Data export will not reveal the real identity of authors."
+            "Anonymization will become irreversible. You will never see the identities of participants. Data export will not reveal the real identity of authors."
 
 
       ########################

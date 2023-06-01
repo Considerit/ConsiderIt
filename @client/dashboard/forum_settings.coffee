@@ -243,6 +243,8 @@ window.ForumSettingsDash = ReactiveComponent
 
       DIV 
         className: 'input_group checkbox'
+        style: 
+          paddingLeft: 70
         
         LABEL 
           className: 'toggle_switch' + ( if allow_change_perm_anon  then ''  else ' disabled' )

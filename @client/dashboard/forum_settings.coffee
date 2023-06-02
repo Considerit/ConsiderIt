@@ -50,6 +50,10 @@ window.styles += """
     margin-top: 6px;
   }
 
+  .FORUM_SETTINGS .input_group.checkbox .toggle_switch.disabled{
+    opacity: 0.3;
+  }
+
   """
 
 window.ForumSettingsDash = ReactiveComponent
@@ -65,6 +69,8 @@ window.ForumSettingsDash = ReactiveComponent
 
     return SPAN null if !subdomain.name
 
+    allow_change_anon = not subdomain.customizations.anonymize_permanently
+    allow_change_perm_anon = subdomain.customizations.anonymize_everything and (not subdomain.customizations.anonymize_permanently)
 
 
     DIV 
@@ -202,13 +208,14 @@ window.ForumSettingsDash = ReactiveComponent
         className: 'input_group checkbox'
         
         LABEL 
-          className: 'toggle_switch'
+          className: 'toggle_switch' + ( if allow_change_anon  then ''  else ' disabled' )
 
           INPUT 
             id: 'anonymize_everything'
             type: 'checkbox'
             name: 'anonymize_everything'
             defaultChecked: customization('anonymize_everything')
+            disabled: not allow_change_anon
             onChange: (ev) -> 
               subdomain.customizations ||= {}
               subdomain.customizations.anonymize_everything = ev.target.checked
@@ -229,6 +236,69 @@ window.ForumSettingsDash = ReactiveComponent
             className: 'explanation'
 
             "The authors of opinions, points, proposals, and comments will be hidden. Participants still need to be registered. The real identity of authors will still be accessible via the data export."
+
+
+      ########################
+      # Anonymize permanently
+
+      DIV 
+        className: 'input_group checkbox'
+        style: 
+          paddingLeft: 70
+        
+        LABEL 
+          className: 'toggle_switch' + ( if allow_change_perm_anon  then ''  else ' disabled' )
+          onClick: (ev) -> 
+            # Enforce disabled condition
+            if not allow_change_perm_anon
+              ev.stopPropagation()
+              ev.preventDefault()
+              return
+            # Receives click-events from both label and span, which should be deduplicated to prevent redundant confirmation-dialogs
+            # Deduplicate by time between confirm() finish and second event.
+            #   Deduplicating by time between events fails, because second event time is delayed until confirm() response.
+            #   Deduplicating by target is fragile, assumes specific target order.
+            #   Deduplicating by event X/Y coordinates would fail for accessibility cases like keyboard control.
+            # If user just ok'd to confirm change... this is a duplicate click event, do not re-prompt to confirm
+            now = new Date()
+            confirmed = @lastConfirmTime and ( now - @lastConfirmTime < 100 )
+            if confirmed
+              return confirmed
+            # Prompt user for confirmation, and stop click-events if user cancels change
+            confirmed = confirm( 'This makes anonymization of this forum permanent. You will not be able to revert. Are you certain?' )
+            if confirmed
+              @lastConfirmTime = new Date()
+            else
+              ev.stopPropagation()
+              ev.preventDefault()
+
+          INPUT 
+            id: 'anonymize_permanently'
+            type: 'checkbox'
+            name: 'anonymize_permanently'
+            defaultChecked: customization('anonymize_permanently')
+            disabled: not allow_change_perm_anon
+            onChange: (ev) -> 
+              subdomain.customizations ||= {}
+              if ev.target.checked
+                subdomain.customizations.anonymize_everything = true
+              subdomain.customizations.anonymize_permanently = ev.target.checked
+              save subdomain, ->
+                arest.serverFetch('/users') # anonymity may have changed, so force a refetch
+          
+          SPAN 
+            className: 'toggle_switch_circle'
+
+        LABEL 
+          className: 'indented'
+          htmlFor: 'anonymize_permanently'
+          B null,
+            'Anonymize permanently.'
+          
+          DIV 
+            className: 'explanation'
+            "Anonymization will become irreversible. You will never see the identities of participants. Data export will not reveal the real identity of authors."
+
 
       ########################
       # HIDE OPINIONS OF EVERYONE

@@ -64,6 +64,10 @@ window.NewProposal = ReactiveComponent
 
     return SPAN null if !permitted && !needs_to_login
 
+    if !@local.sign_name?
+      _.defaults @local, 
+        sign_name : true
+
     if !adding 
       BUTTON  
         name: "new_#{list_name}"
@@ -352,6 +356,7 @@ window.NewProposal = ReactiveComponent
                   description : description
                   cluster : category
                   active: active
+                  hide_name: !@local.sign_name
 
                 InitializeProposalRoles(proposal)
                 
@@ -399,6 +404,32 @@ window.NewProposal = ReactiveComponent
 
               translator 'shared.cancel_button', 'cancel'
 
+          DIV 
+            style: 
+              position: 'relative'
+              marginTop: '20px'
+
+            INPUT
+              className: 'newpoint-anonymous'
+              type:      'checkbox'
+              id:        "sign_name"
+              name:      "sign_name"
+              checked:   @local.sign_name
+              style: 
+                verticalAlign: 'middle'
+                marginRight: 8
+              onChange: =>
+                @local.sign_name = !@local.sign_name
+                save(@local)
+          
+            LABEL 
+              htmlFor: "sign_name"
+              title: translator 'engage.point_anonymous_toggle_explanation', \
+                       """This won\'t make your point perfectly anonymous, but will make \
+                       it considerably harder for others to associate with you. \
+                       Note that signing your name lends your point more weight \
+                       with peers."""
+              translator 'engage.point_anonymous_toggle', 'Sign your name'
 
 
 

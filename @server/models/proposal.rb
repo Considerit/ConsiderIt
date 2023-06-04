@@ -23,7 +23,7 @@ class Proposal < ApplicationRecord
   include Moderatable, Notifier
   
   class_attribute :my_public_fields
-  self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :name, :description, :active, :hide_on_homepage, :published, :subdomain_id, :json]
+  self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :name, :description, :active, :hide_on_homepage, :hide_name, :published, :subdomain_id, :json]
 
   scope :active, -> {where( :active => true, :published => true )}
 
@@ -265,7 +265,7 @@ class Proposal < ApplicationRecord
 
         qry = """\
           SELECT id, concat('/proposal/', id) as \"key\", slug, cluster, concat('/user/', user_id) as user, created_at, 
-                 updated_at, name, 
+                 updated_at, name, hide_name,
                  description, active, published, subdomain_id, json,
                  moderation_status, pic_file_name, banner_file_name, roles
               FROM proposals 
@@ -411,6 +411,7 @@ class Proposal < ApplicationRecord
       "slug" => self.slug, 
       "cluster" => self.cluster, 
       "user_id" => self.user_id, 
+      "hide_name" => self.hide_name,
       "created_at" => self.created_at.to_time.utc, 
       "updated_at" => self.updated_at.to_time.utc, 
       "name" => self.name, 
@@ -421,7 +422,10 @@ class Proposal < ApplicationRecord
       "json" => self.json
     }
 
-
+    # If anonymous, hide user id
+    if (json['hide_name'] && (current_user.nil? || current_user.id != json['user_id']))
+      json['user_id'] = -1
+    end
 
     # Find an existing opinion for this user
     if !options.has_key?(:opinions)

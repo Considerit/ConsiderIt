@@ -32,7 +32,7 @@ class ProposalController < ApplicationController
   def create
     authorize! 'create proposal', params.fetch('cluster', nil)
 
-    fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage']
+    fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage', 'hide_name']
     attrs = params.select{|k,v| fields.include? k}.to_h
 
     errors = validate_input attrs, nil
@@ -94,7 +94,7 @@ class ProposalController < ApplicationController
     errors = []
 
     if Permissions.permit('update proposal', proposal) > 0
-      fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage']
+      fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage', 'hide_name']
 
       if params.has_key?('cluster') && params['cluster'] != proposal.cluster 
         if Permissions.permit('set category', params['cluster']) <= 0 

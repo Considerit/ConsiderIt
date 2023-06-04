@@ -96,7 +96,9 @@ window.EditProposal = ReactiveComponent
 
     available_lists = lists_current_user_can_add_to get_all_lists()
 
-
+    if !@local.sign_name?
+      _.defaults @local, 
+        sign_name : !proposal.hide_name
 
     local = @local
 
@@ -323,6 +325,33 @@ window.EditProposal = ReactiveComponent
 
             translator 'shared.cancel_button', 'cancel'
 
+        DIV 
+          style: 
+            position: 'relative'
+            marginTop: '20px'
+
+          INPUT
+            className: 'newpoint-anonymous'
+            type:      'checkbox'
+            id:        "sign_name"
+            name:      "sign_name"
+            checked:   @local.sign_name
+            style: 
+              verticalAlign: 'middle'
+              marginRight: 8
+            onChange: =>
+              @local.sign_name = !@local.sign_name
+              save(@local)
+
+          LABEL 
+            htmlFor: "sign_name"
+            title: translator 'engage.point_anonymous_toggle_explanation', \
+                     """This won\'t make your point perfectly anonymous, but will make \
+                     it considerably harder for others to associate with you. \
+                     Note that signing your name lends your point more weight \
+                     with peers."""
+            translator 'engage.point_anonymous_toggle', 'Sign your name'
+
         if @local.file_errors
           DIV style: {color: 'red'}, 'Error uploading files!'
 
@@ -341,6 +370,7 @@ window.EditProposal = ReactiveComponent
 
     active = document.getElementById('open_for_discussion').checked
     # hide_on_homepage = !document.getElementById('listed_on_homepage').checked
+    hide_name = !@local.sign_name
 
     if @props.fresh
       proposal =
@@ -350,7 +380,7 @@ window.EditProposal = ReactiveComponent
         cluster: category
         active: active
         # hide_on_homepage: hide_on_homepage
-
+        hide_name: hide_name
     else 
       _.extend proposal, 
         cluster: category
@@ -358,7 +388,7 @@ window.EditProposal = ReactiveComponent
         description: description
         active: active
         # hide_on_homepage: hide_on_homepage
-
+        hide_name: hide_name
 
     # Editing the proposal shouldn't mess with the current roles
     # This is sloppy, but can lead to permission problems if we don't. 

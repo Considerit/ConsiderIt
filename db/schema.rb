@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_04_26_220818) do
+ActiveRecord::Schema.define(version: 2023_06_02_224640) do
 
   create_table "ahoy_events", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "subdomain_id"
@@ -217,6 +217,7 @@ ActiveRecord::Schema.define(version: 2023_04_26_220818) do
     t.string "banner_content_type"
     t.integer "banner_file_size"
     t.datetime "banner_updated_at"
+    t.boolean "hide_name", default: false
     t.index ["subdomain_id", "active"], name: "select_proposal_by_active"
     t.index ["subdomain_id", "id"], name: "select_proposal"
     t.index ["subdomain_id", "slug"], name: "select_proposal_by_long_id"

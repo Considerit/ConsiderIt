@@ -474,10 +474,13 @@ window.ItemText = ReactiveComponent
     proposal = fetch @props.proposal
 
     subdomain = fetch '/subdomain'
+    current_user = fetch('/current_user')
     icons = customization('show_proposer_icon', proposal, subdomain) && !@props.hide_icons && !customization('anonymize_everything')
     opinion_publish_permission = permit('publish opinion', proposal, subdomain)
 
     opinion_prompt = getOpinionPrompt {proposal}
+
+    FOLLOW_UP_ID_TO_NAME = { hold:'On hold', draft:'Drafting', done:'Done' }
 
     DIV
       className: 'proposal-metadata'   
@@ -607,6 +610,7 @@ window.ItemText = ReactiveComponent
           style: 
             position: 'relative'
             top: 2;
+            marginRight: '15px'
           "data-tooltip": translator 'engage.proposal_closed', 'Closed to new contributions.'
           
           closedIcon 
@@ -618,11 +622,134 @@ window.ItemText = ReactiveComponent
           style: 
             position: 'relative'
             top: 2;
+            marginRight: '15px'
           "data-tooltip": translator "engage.proposal_read_only.short", 'read-only'
 
           closedIcon 
             size: 12
             fill: 'rgb(158, 78, 35)'
+
+      if current_user.is_admin
+        # Display follow-up dialog, to set status and link to more info
+        SPAN
+          className: 'separated'
+          style: { position:'relative' }
+          [
+            BUTTON
+              key: 'follow_up'
+              tabIndex: 0
+              'aria-haspopup': "true"
+              'aria-owns': "dropMenu-#{@local.key}"
+              className: 'separated monospaced metadata-piece follow_up'
+              state: proposal.follow_up
+              onClick: (e) =>
+                if fetch('tooltip').tip
+                  clear_tooltip()     
+                @showFollowUpDialog( !@local.show_menu )
+                e.stopPropagation()
+                e.preventDefault()
+              onKeyDown: (e) => 
+                if (e.key == 'Enter') or (e.key == ' ') or (e.key == 'Escape')
+                  @showFollowUpDialog( !@local.show_menu and (e.key != 'Escape') )
+                  e.preventDefault()
+                  e.stopPropagation() 
+              FOLLOW_UP_ID_TO_NAME[ proposal.follow_up ]  ?  translator('Follow up')
+
+            if @local.show_menu
+              DIV
+                key: 'follow_up_dialog'
+                style:
+                  position: 'relative'
+                  minWidth: '400px'
+                  borderRadius: '8px'
+                  boxShadow: '0 2px 8px rgba(0,0,0,.7)'
+                  backgroundColor: 'rgb(238, 238, 238)'
+                  padding: '10px'
+                  zIndex:99999
+                H1
+                  style: { fontSize:'1.2em' }
+                  translator( 'Follow-up status' )
+                BUTTON
+                  style: { position:'absolute', top:'5px', right:'5px' }
+                  onClick: (e) => @showFollowUpDialog( false )
+                  'X'
+
+                SELECT
+                  className: 'follow_up_select'
+                  style: { backgroundColor:'white' , margin:'10px 0px 15px 0px' }
+                  defaultValue: proposal.follow_up
+                  onChange: ( event ) =>
+                    @local.follow_up_state = event.target?.value
+                    save @local
+                  OPTION
+                    key:''
+                    value:''
+                    ''
+                  for id, name  of FOLLOW_UP_ID_TO_NAME
+                    OPTION
+                      key: id
+                      value: id
+                      name
+
+                LABEL
+                  htmlFor: 'follow_up_url_input'
+                  style: { display:'block' }
+                  translator( 'Link to more information:' )
+                INPUT
+                  type: 'url'
+                  style: { width:'100%' }
+                  id: 'follow_up_url_input'
+                  placeholder: 'https://...'
+                  defaultValue: proposal.follow_up_url
+                  onChange: ( event ) =>
+                    @local.follow_up_url = event.target?.value
+                    save @local
+
+                DIV
+                  key: 'follow_up_save_or_cancel'
+                  BUTTON 
+                    className: 'btn'
+                    style: { marginTop:35 }
+                    onClick: ( event ) =>
+                      proposal = fetch @props.proposal
+                      proposal.follow_up = @local.follow_up_state
+                      proposal.follow_up_url = @local.follow_up_url
+                      save proposal, => @showFollowUpDialog( false )
+                    translator( 'Update' )
+                  BUTTON
+                    className: 'like_link'
+                    style: { fontSize:20, color:'#777', position:'relative', top:20, marginLeft:12 }
+                    onClick: ( event ) => @showFollowUpDialog( false )
+                    translator( 'shared.cancel_button', 'cancel' )
+          ]
+
+      else if proposal.follow_up
+        if proposal.follow_up_url
+          # Display follow-up status, and link to more info
+          A
+            key: 'follow_up_link'
+            href: proposal.follow_up_url
+            target: '_blank'
+            className: 'separated monospaced metadata-piece'
+            style: { textDecoration:'none' , borderBottom:'none' }
+            SPAN
+              className: 'metadata-piece follow_up'
+              state: proposal.follow_up
+              FOLLOW_UP_ID_TO_NAME[ proposal.follow_up ]  ?  translator('Follow up')
+
+        else
+          # Display follow-up status only
+          SPAN
+            className: 'separated monospaced metadata-piece follow_up'
+            state: proposal.follow_up
+            style: { cursor: 'default' }
+            FOLLOW_UP_ID_TO_NAME[ proposal.follow_up ]  ?  translator('Follow up')
+
+
+  showFollowUpDialog: ( show ) -> 
+    @local.show_menu = show
+    save @local
+
 
 
 window.getOpinionPrompt = ({proposal, prefer_drag_prompt}) ->
@@ -711,6 +838,17 @@ styles += """
   .is_expanded .proposal-metadata .small-give-your-opinion {
     display: none;
   }
+
+  .proposal-metadata .metadata-piece.follow_up {
+    border: solid 1px grey;
+    background-color: lightgrey;
+    border-radius: 5px;
+    padding: 0px 5px;
+    color: black;
+  }
+  .proposal-metadata .metadata-piece.follow_up[state='hold'] {  border:solid 1px red;  background-color:pink;  }
+  .proposal-metadata .metadata-piece.follow_up[state='draft'] {  border:solid 1px #aaaa00;  background-color:lightyellow;  }
+  .proposal-metadata .metadata-piece.follow_up[state='done'] {  border:solid 1px green;  background-color:lightgreen;  }
 
 
 """

@@ -2,7 +2,7 @@ class Comment < ApplicationRecord
   include Moderatable, Notifier
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:id, :body, :user_id, :created_at, :point_id, :moderation_status, :subdomain_id ]
+  self.my_public_fields = [:id, :body, :user_id, :hide_name, :created_at, :point_id, :moderation_status, :subdomain_id ]
 
   scope :public_fields, -> {select(self.my_public_fields)}
   
@@ -28,6 +28,13 @@ class Comment < ApplicationRecord
     make_key(result, 'comment')
     stubify_field(result, 'user')
     stubify_field(result, 'point')
+
+
+    # If anonymous, hide user id
+    if (result['hide_name'] && (current_user.nil? || current_user.id != result['user_id']))
+      result['user_id'] = -1
+    end
+
     result
   end
 
@@ -54,7 +61,7 @@ class Comment < ApplicationRecord
   end
 
 
-  # Fetches all comments associated with this Point. 
+  # Fetches all comments associated with this Forum.
   def self.comments_for_forum(forum=nil)
     forum ||= current_subdomain
     if forum.moderation_policy == 1

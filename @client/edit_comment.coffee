@@ -5,6 +5,10 @@ window.EditComment = ReactiveComponent
     proposal = fetch @props.proposal
     permitted = permit 'create comment', proposal
 
+    if !@local.sign_name?
+      _.defaults @local,
+        sign_name : !@data().hide_name
+
     DIV 
       className: 'comment_entry'
 
@@ -122,8 +126,9 @@ window.EditComment = ReactiveComponent
             marginTop: 10
             marginBottom: 10
             marginLeft: 60 
-          for error in @local.errors
-            DIV null, 
+          for error, error_index in @local.errors
+            DIV
+              key: 'error' + error_index
               I
                 className: 'fa fa-exclamation-circle'
                 style: {paddingRight: 9}
@@ -131,42 +136,68 @@ window.EditComment = ReactiveComponent
               SPAN null, error
 
       if permitted > 0
-
-        BUTTON 
-          className: "btn"
-          style: 
-            marginLeft: 60
-            padding: '8px 16px'
-            # fontSize: if browser.is_mobile then 24
-          'data-action': 'save-comment'
+        [
+          BUTTON 
+            key: 'save_button'
+            className: "btn"
+            style: 
+              marginLeft: 60
+              padding: '8px 16px'
+              # fontSize: if browser.is_mobile then 24
+            'data-action': 'save-comment'
           
-          onClick: (e) =>
-            e.stopPropagation()
-            if @props.fresh
-              comment =
-                key: '/new/comment'
-                body: @local.new_comment
-                user: fetch('/current_user').user
-                point: "/point/#{@props.point}"
-            else
-              comment = @data()
-              comment.body = @local.new_comment
-              comment.editing = false
+            onClick: (e) =>
+              e.stopPropagation()
+              if @props.fresh
+                comment =
+                  key: '/new/comment'
+                  body: @local.new_comment
+                  user: fetch('/current_user').user
+                  point: "/point/#{@props.point}"
+                  hide_name: !@local.sign_name
+              else
+                comment = @data()
+                comment.body = @local.new_comment
+                comment.editing = false
+                comment.hide_name = !@local.sign_name
 
-            if !comment.body || comment.body.length == 0 
-              @local.errors = ["Comment can't be empty"]
-              save @local
-            else 
-
-              save comment, =>
-
-                if comment.errors?.length > 0
-                  @local.errors = comment.errors
-                else
-                  show_flash(translator('engage.flashes.comment_saved', "Your comment has been saved"))
-
-                @local.new_comment = null
+              if !comment.body || comment.body.length == 0 
+                @local.errors = ["Comment can't be empty"]
                 save @local
+              else 
 
-          translator "engage.save_comment_button", 'Save comment'
+                save comment, =>
 
+                  if comment.errors?.length > 0
+                    @local.errors = comment.errors
+                  else
+                    show_flash(translator('engage.flashes.comment_saved', "Your comment has been saved"))
+
+                  @local.new_comment = null
+                  save @local
+
+            translator "engage.save_comment_button", 'Save comment'
+
+
+          DIV
+            key: 'sign_checkbox'
+            style: { position:'relative', margin:'20px 0px 0px 60px' }
+
+            INPUT
+              className: 'newpoint-anonymous'
+              type:      'checkbox'
+              id:        'sign_name'
+              name:      'sign_name'
+              checked:   @local.sign_name
+              style: { verticalAlign:'middle', marginRight:8 }
+              onChange: =>
+                @local.sign_name = !@local.sign_name
+                save(@local)
+
+            LABEL
+              htmlFor: "sign_name"
+              title: translator 'engage.comment_anonymous_toggle_explanation', \
+                       """This won\'t make your comment perfectly anonymous, but will make \
+                       it considerably harder for others to associate with you."""
+              translator 'engage.point_anonymous_toggle', 'Sign your name'
+        ]

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_04_26_220818) do
+ActiveRecord::Schema.define(version: 2023_06_08_162632) do
 
   create_table "ahoy_events", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "subdomain_id"
@@ -67,6 +67,7 @@ ActiveRecord::Schema.define(version: 2023_04_26_220818) do
     t.integer "subdomain_id"
     t.integer "moderation_status"
     t.integer "point_id"
+    t.boolean "hide_name", default: false
     t.index ["commentable_id"], name: "index_comments_on_commentable_id"
     t.index ["subdomain_id", "commentable_id", "commentable_type", "moderation_status"], name: "select_comments"
     t.index ["subdomain_id", "commentable_id", "commentable_type"], name: "select_comments_on_commentable"

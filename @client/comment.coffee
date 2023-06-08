@@ -4,6 +4,8 @@ window.Comment = ReactiveComponent
   render: -> 
     comment = fetch @props.comment
     current_user = fetch '/current_user'
+    commentor_name =  if comment.hide_name  then translator('Anonymous')  else fetch(comment.user).name
+
 
     if comment.editing
       # Sharing keys, with some non-persisted client data getting saved...
@@ -22,11 +24,12 @@ window.Comment = ReactiveComponent
 
         # Comment author name
         DIV className: 'comment_entry_name',
-          fetch(comment.user).name + ':'
+          commentor_name + ':'
 
         # Comment author icon
         Avatar
           key: comment.user
+          anonymous: comment.hide_name
           hide_popover: true
           set_bg_color: true
           style: 

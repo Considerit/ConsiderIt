@@ -27,7 +27,7 @@ class CommentController < ApplicationController
   end
 
   def create
-    fields = ['body']
+    fields = ['body', 'hide_name']
     comment = params.select{|k,v| fields.include? k}.to_h
 
     comment['user_id'] = current_user && current_user.id || nil
@@ -68,7 +68,7 @@ class CommentController < ApplicationController
     comment = Comment.find(params[:id])
     authorize! 'update comment', comment
 
-    fields = ['body']
+    fields = ['body', 'hide_name']
     comment_vals = params.select{|k,v| fields.include? k}.to_h
 
     comment.update! comment_vals

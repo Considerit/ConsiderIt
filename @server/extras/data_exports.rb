@@ -110,9 +110,9 @@ module DataExports
       s = stats opinions.map{|o| o.stance}
 
       user_name = proposal.user ?  proposal.user.name  : 'Unknown'
-      user_name = anonymize_everything ?  'ANONYMOUS' :  user_name
+      user_name = anonymize_everything || proposal.hide_name ?  'ANONYMOUS' :  user_name
       user_email = proposal.user ?  proposal.user.email.gsub('.ghost', '')  : 'Unknown'
-      user_email = anonymize_everything ?  'ANONYMOUS'  :  user_email
+      user_email = anonymize_everything || proposal.hide_name ?  'ANONYMOUS'  :  user_email
       row = [proposal.slug, "https://#{subdomain.url}/#{proposal.slug}", proposal.created_at, user_name, user_email, proposal.name, (proposal.cluster || 'Proposals'), proposal.description, proposal.points.published.count, opinions.count, s[:total].round(2), s[:avg].round(2), s[:std_dev].round(2)]
       group_diffs = group_differences proposal 
       group_diffs.each do |diff|

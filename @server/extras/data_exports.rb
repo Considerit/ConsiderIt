@@ -63,8 +63,8 @@ module DataExports
 
           pnt.comments.each do |comment|
             opinion = comment.user.opinions.find_by_proposal_id(pnt.proposal.id)
-            comment_user_name = anonymize_everything ?  'ANONYMOUS'  : comment.user.name
-            comment_user_email = anonymize_everything ?  'ANONYMOUS'  : comment.user.email.gsub('.ghost', '')
+            comment_user_name = anonymize_everything || comment.hide_name ?  'ANONYMOUS'  : comment.user.name
+            comment_user_email = anonymize_everything || comment.hide_name ?  'ANONYMOUS'  : comment.user.email.gsub('.ghost', '')
             rows.append [pnt.proposal.slug, 'COMMENT', comment.created_at, comment_user_name, comment_user_email, "", comment.body, '', opinion ? opinion.stance : '-', '', '']
           end
         rescue 

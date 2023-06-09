@@ -77,19 +77,20 @@ class Proposal < ApplicationRecord
 
   end
 
-  def self.clear_cache
-    Proposal.clear_cache_points
-    Proposal.clear_cache_proposals
-    Proposal.clear_cache_opinions
+  def self.clear_cache(subdomain=nil)
+    subdomain ||= current_subdomain
+    Proposal.clear_cache_points(subdomain)
+    Proposal.clear_cache_proposals(subdomain)
+    Proposal.clear_cache_opinions(subdomain)
   end
-  def self.clear_cache_opinions
-    Rails.cache.delete "#{current_subdomain.name}-Opinions"
+  def self.clear_cache_opinions(subdomain)
+    Rails.cache.delete "#{subdomain.name}-Opinions"
   end
-  def self.clear_cache_points
-    Rails.cache.delete "#{current_subdomain.name}-Points"
+  def self.clear_cache_points(subdomain)
+    Rails.cache.delete "#{subdomain.name}-Points"
   end
-  def self.clear_cache_proposals
-    Rails.cache.delete "#{current_subdomain.name}-Proposals"
+  def self.clear_cache_proposals(subdomain)
+    Rails.cache.delete "#{subdomain.name}-Proposals"
   end
 
   def self.summaries(subdomain = nil, all_points = false)
@@ -253,6 +254,7 @@ class Proposal < ApplicationRecord
         end
       end
 
+
       #################
       # PROPOSALS
       proposals_key = "#{subdomain.name}-Proposals"
@@ -354,7 +356,7 @@ class Proposal < ApplicationRecord
           }
         end
 
-        pnts = points_by_proposal.fetch(proposal["id"], [])
+        pnts = points_by_proposal.fetch(proposal["id"].to_s, [])
 
         if all_points
           proposal[:points] = pnts
@@ -362,7 +364,10 @@ class Proposal < ApplicationRecord
 
         pnts_with_inclusions = pnts.select{ |pnt| pnt["includers"].length > 0 }
 
+
+
         proposal['point_count'] = pnts_with_inclusions.length
+
         proposals.push proposal
       end
     end

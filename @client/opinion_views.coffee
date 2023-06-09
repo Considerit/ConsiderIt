@@ -108,7 +108,12 @@ window.get_participant_attributes = ->
                 options: view.options or ['true', 'false']
                 continuous_value: view.continuous_value
                 pass: (u, value) -> # view pass functions only take a user. This helps make the API equivalent to user_tags
-                  result = view.compute?(u) or view.pass?(u)
+                  
+                  try
+                    result = view.compute?(u) or view.pass?(u)
+                  catch e 
+                    console.error "Opinion view failed", view, u, value
+                    return false
 
                   if value?
                     if value in [true, false, "true", "false"] && result in [true, false, "true", "false"]
@@ -166,6 +171,8 @@ window.group_colors = {}
 window.get_color_for_groups = (group_array) ->
   opinion_views = fetch 'opinion_views'  
   return group_colors if !opinion_views.active_views.group_by
+  group_array ||= []
+
   if i18n().unreported not in group_array
     group_array = group_array.slice()
     group_array.push i18n().unreported

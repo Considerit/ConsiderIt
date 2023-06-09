@@ -1,7 +1,14 @@
 Getting started for local development
 -------------------------------------
 
-This installation guide is written for development on Ubuntu, and has been tested on Ubuntu 12.04 and 14.04. 
+This installation guide is written for development on Ubuntu, and has been tested on Ubuntu 12.04, 14.04, and 22.04.
+
+### Obtain an Ubuntu machine
+
+I've run considerit in an Ubuntu VM on my Mac, managed by Vagrant and provisioned by Ansible. I also have run it directly on my Mac. For development on MacOS, a simple way to get an Ubuntu virtual machine is to install Canonical's Multipass, then create and launch the virtual machine:
+```
+multipass launch --disk 10G
+```
 
 ### Upgrade system & install dependencies
 
@@ -10,14 +17,13 @@ sudo apt-get update
 sudo apt-get -y upgrade
 export DEBIAN_FRONTEND=noninteractive
 sudo -E apt-get -y install advancecomp autoconf automake bison build-essential \
-     curl emacs23-nox exuberant-ctags gifsicle git-core imagemagick \
+     curl exuberant-ctags gifsicle git-core imagemagick \
      jpegoptim libcurl4-openssl-dev libjpeg-progs libmagickcore-dev \
-     libmagickwand-dev libmysqlclient-dev libreadline6 libreadline6-dev \
+     libmagickwand-dev libmysqlclient-dev libreadline6-dev \
      libreadline-dev libssl-dev libncurses5-dev libtool libxml2-dev \
-     libxslt1-dev memcached mysql-server openssl optipng nodejs npm \
-     pngcrush python-apt python-pip python-mysqldb ruby-dev \
+     libxslt1-dev libyaml-dev memcached mysql-server openssl optipng nodejs npm \
+     pngcrush python3-apt python-pip python3-mysqldb ruby-build ruby-dev \
      unattended-upgrades unzip zlib1g zlib1g-dev
-sudo ln -s /usr/bin/nodejs /usr/bin/node
 ```
 
 The non-interactive prompt prevents mysql-server from asking for a root password to your database. We'll set that later. 
@@ -30,19 +36,20 @@ echo 'eval "$(rbenv init -)"' >> ~/.profile
 git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
 echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> ~/.profile
 source ~/.profile
-rbenv install -v 2.2.2
-rbenv global 2.2.2
-gem install bundler --no-rdoc --no-ri
+rbenv install -v 3.2.2
+rbenv global 3.2.2
+gem install bundler
 ```
 
-You can probably install a more recent version of Ruby. I just haven't tested it with required gems. 
+You can probably install a more recent version of Ruby. I just haven't tested it with required gems.  `gem install` may require several attempts to complete.  If dependency `tomoto` fails to build, it can be manually deleted from Gemfile, since it is not necessary for all development work.
 
 
 ### Configure mysql 
 
 ```
-service mysql restart
-mysqladmin -u root password root
+sudo service mysql restart
+sudo mysqladmin -u root password root
+echo "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';"  | sudo mysql
 echo "create database considerit_dev;" | mysql -u root -proot
 ```
 
@@ -68,13 +75,13 @@ Note that if you plan on committing a lot of code, you might want to take the ti
 
 Make sure you're in your considerit directory.
 
-You'll want to have webpack watching in the background for changes to your javascript.
+You'll want to have webpack watching in the background for changes to your javascript.  Webpack may occasionally freeze and need a restart.
 
 ```
 bin/webpack &
 ```
 
-Then start your rails server:
+Then start your rails server.  If using a Multipass VM, set flag `--binding` using the IP from `multipass list`.
 
 ```
 rails s
@@ -102,7 +109,11 @@ u.super_admin=true
 u.save
 ```
 
+Then manually create a forum using mysql:
 
-### Development enviroments used
-
-I've run considerit in an Ubuntu VM on my Mac, managed by Vagrant and provisioned by Ansible. I also have run it on my Mac.
+```
+mysql -u root -proot considerit_dev
+insert into subdomains (id, name, created_at, updated_at, created_by) values 
+( 1, 'MY DOMAIN NAME', now(), now(), (select id from users where email='my_test@email.address') );
+quit
+```

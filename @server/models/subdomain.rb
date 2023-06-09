@@ -184,7 +184,7 @@ class Subdomain < ApplicationRecord
     self.opinions.destroy_all
     self.points.destroy_all
     self.comments.destroy_all
-    Proposal.clear_cache
+    Proposal.clear_cache(self)
   end
 
   def import_from_argdown(argdown, active_user)

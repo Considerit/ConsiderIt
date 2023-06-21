@@ -109,7 +109,11 @@ window.Homepage = ReactiveComponent
       messages.push {style: {backgroundColor: '#c1ccd0', color: 'black'}, img: 'magnifying_glass.png', label: translator("engage.opinions_only_message", "The forum host has set this forum to be opinions only. No new ideas for now.")}
 
     if customization('anonymize_everything')
-      messages.push {style: {backgroundColor: '#b88dd1', color: 'black'}, img: 'venetian-mask.png', label: translator("engage.anonymize_message", "The forum host has set participation to anonymous. You won't be able to see the identity of others at this time.")}
+      if customization('anonymize_permanently')
+        messages.push {style: {backgroundColor: '#d1d08d', color: 'black'}, img: 'venetian-mask.png', label: translator("engage.anonymize_permanently_message", "The forum host has permanently set participation to anonymous. No one, including the host, will ever have access to the identity of participants.")}
+      else 
+        messages.push {style: {backgroundColor: '#b88dd1', color: 'black'}, img: 'venetian-mask.png', label: translator("engage.anonymize_message", "The forum host has set participation to anonymous. You won't be able to see the identity of others at this time. However, the host may reveal identity later.")}
+
     if customization('hide_opinions')
       messages.push {style: {backgroundColor: '#faa199', color: 'black'}, img: 'hiding.png', label: translator("engage.hide_opinions_message", "The forum host has hidden the opinions of other participants.")}
 

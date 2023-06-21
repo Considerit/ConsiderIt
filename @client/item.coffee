@@ -626,8 +626,14 @@ styles += """
     margin: 5px;
   }
   .ProposalBlock .screenshot-button {
-    margin: 10px;
     opacity: 1.0;
+    margin: 10px;
+    border-radius: 8px;
+    border: none;
+    padding: 5px;
+    background-color: #456ae4;
+    color: white;
+    font-weight: bold;
   }
 
 """

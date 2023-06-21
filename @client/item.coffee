@@ -592,16 +592,17 @@ styles += """
 
 
   .ProposalItem .screenshot-menu-button {
-    display:none;
+    display: none;
   }
   .ProposalItem.is_expanded .screenshot-menu-button {
-    display:block;
+    display: block;
   }
   .ProposalItem .screenshot-menu {
-    display:none;
+    display: none;
+    min-width: 400px;
   }
   .ProposalItem.is_expanded .screenshot-menu {
-    display:block;
+    display: block;
   }
   .ProposalBlock .screenshot-menu {
     border: solid 1px black;
@@ -809,27 +810,52 @@ ProposalBlock = ReactiveComponent
           'X'
         DIV
           className: 'screenshot-image'
-          'screenshot preview'
+          'Screenshot not available'
         DIV
           className: 'screenshot-include'
           LABEL
-            htmlFor: 'include'
-            'Include: '
-          SELECT
-            id: 'include'
-            className: 'screenshot-include-select'
+            htmlFor: 'includeTitle'
+            'Include title'
+          INPUT
+            type: 'checkbox'
+            id: 'includeTitle'
+            defaultChecked: true
+            onChange: @updateScreenshot
+        DIV
+          className: 'screenshot-include'
+          LABEL
+            htmlFor: 'includeMetadata'
+            'Include time & counts'
+          INPUT
+            type: 'checkbox'
+            id: 'includeMetadata'
+            defaultChecked: false
+            onChange: @updateScreenshot
+        DIV
+          className: 'screenshot-include'
+          LABEL
+            htmlFor: 'includeOpinions'
+            'Include opinions'
+          INPUT
+            type: 'checkbox'
+            id: 'includeOpinions'
+            defaultChecked: true
+            onChange: @updateScreenshot
+        DIV
+          className: 'screenshot-include'
+          LABEL
+            htmlFor: 'includeReasons'
+            'Include pros & cons'
+          INPUT
+            type: 'checkbox'
+            id: 'includeReasons'
+            defaultChecked: true
             onChange: @updateScreenshot
 
-            for option in ['opinions and reasons', 'opinions', 'reasons']
-              OPTION
-                key: option
-                value: option
-                option
         BUTTON
           className: 'screenshot-button'
           onClick: (e) ->
             proposalDiv = e.target.closest( '.proposal-block-container' )
-            previewDiv = proposalDiv.querySelector('.screenshot-image')
             dataUrlState = fetch 'screenshot'
             dataUrl = if dataUrlState  then dataUrlState['data']  else null
             console.info( 'dataUrl=', dataUrl )
@@ -853,7 +879,7 @@ ProposalBlock = ReactiveComponent
               navigator.clipboard.writeText( proposalUrl )
               alert( 'Copied URL to clipboard: ' + proposalUrl )
             else
-              alert( 'Screenshot copy failed for proposalUrl=' + proposalUrl )
+              alert( 'Link copy failed for proposalUrl=' + proposalUrl )
           'Copy link'
 
 
@@ -868,29 +894,57 @@ ProposalBlock = ReactiveComponent
 
 
   updateScreenshot: (e) ->
-    console.info( 'updateScreenshot e=', e )
-
+    # Use CSS to hide some elements during screenshot, removing their space as well.
+    # Directly access proposal-element class because we do not want to save screenshot-state to proposal on server,
+    # we and cannot push it up to proposal-display through @local.
     proposalDiv = e.target.closest( '.proposal-block-container' )
+    proposalDiv.classList.add( 'screenshot_in_progress' )
+
     reasonsDiv = proposalDiv.querySelector('section.reasons_region')
-    includeSelect = proposalDiv.querySelector('.screenshot-include-select')
+    includeTitleCheckbox = proposalDiv.querySelector('#includeTitle')
+    includeMetadataCheckbox = proposalDiv.querySelector('#includeMetadata')
+    includeOpinionsCheckbox = proposalDiv.querySelector('#includeOpinions')
+    includeReasonsCheckbox = proposalDiv.querySelector('#includeReasons')
 
-    opinionsAndReasonsDiv = proposalDiv.querySelector('.OpinionBlock')
-    opinionsDiv = proposalDiv.querySelector('.fast-thought')
+    # Use javascript to hide elements based on selected checkboxes.
+    # Could screenshot each part with toCanvas(), then merge canvases -- but parts would be poorly aligned.
+    opinionsDiv = proposalDiv.querySelector('.Slidergram')
+    opinionsDiv.style.display = if includeOpinionsCheckbox.checked  then null  else 'none'
     reasonsDiv = proposalDiv.querySelector('.slow-thought')
-    targetDiv = opinionsAndReasonsDiv
+    reasonsDiv.style.display = if includeReasonsCheckbox.checked  then null  else 'none'
+    titleDiv = proposalDiv.querySelector('.proposal-title-text')
+    titleDiv.style.display = if includeTitleCheckbox.checked  then null  else 'none'
+    metadataDiv = proposalDiv.querySelector('.proposal-metadata')
+    metadataDiv.style.display = if includeMetadataCheckbox.checked  then null  else 'none'
+    targetDiv = proposalDiv
 
-    if includeSelect.value == 'reasons'
-      targetDiv = reasonsDiv
-    if includeSelect.value == 'opinions'
-      targetDiv = opinionsDiv
+    # Use htmlToImage filter-callback to exclude some elements, but keep their space.
+    excludeClasses = [ 'avatar', 'proposal-avatar-wrapper', 'opinion-views-container', 'opinion-heading', 'DecisionBoard', \
+      'proposal-description-wrapper', 'bottom_closer', 'edit_and_delete_block' ]
+    if not includeOpinionsCheckbox.checked
+      excludeClasses.push( 'Slidergram' )
+    if not includeReasonsCheckbox.checked
+      excludeClasses.push( 'slow-thought' )
+    if not includeTitleCheckbox.checked
+      excludeClasses.push( 'proposal-title-text' )
+    if not includeMetadataCheckbox.checked
+      excludeClasses.push( 'proposal-metadata' )
+    filter = ( htmlElement ) ->
+      elementHasClass = ( className ) -> htmlElement?.classList?.contains( className )
+      not excludeClasses.some( elementHasClass )
 
-    htmlToImage.toPng( targetDiv ).then( (dataUrl) =>
+    htmlToImage.toPng( targetDiv, {backgroundColor:'#ffffff', filter:filter} ).then( (dataUrl) =>
+      proposalDiv.classList.remove( 'screenshot_in_progress' )
+      opinionsDiv.style.display = null
+      reasonsDiv.style.display = null
+      titleDiv.style.display = null
+      metadataDiv.style.display = null
+
       targetBounds = targetDiv.getBoundingClientRect()
       image = new Image( targetBounds.width, targetBounds.height )
       image.src = dataUrl
       image.style.width = '500px'
       image.style.height = 'auto'
-      console.warn( 'image=', image )
 
       previewDiv = proposalDiv.querySelector('.screenshot-image')
       previewDiv.replaceChild( image, previewDiv.firstChild )
@@ -898,8 +952,14 @@ ProposalBlock = ReactiveComponent
       dataUrlState = fetch 'screenshot'
       dataUrlState['data'] = dataUrl
       save dataUrlState
+
     ).catch( (err) =>
-      console.warn('toPng err=', err)
+      console.warn('htmlToImage.toPng() err=', err)
+      proposalDiv.classList.remove( 'screenshot_in_progress' )
+      opinionsDiv.style.display = null
+      reasonsDiv.style.display = null
+      titleDiv.style.display = null
+      metadataDiv.style.display = null
     )
 
 

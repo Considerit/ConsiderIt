@@ -606,7 +606,8 @@ styles += """
   }
   .ProposalBlock .screenshot-menu {
     border: solid 1px black;
-    background-color: white;
+    border-radius: 8px;
+    background-color: #eeeeee;
     padding: 20px;
     position: absolute;
     z-index: 100;
@@ -626,6 +627,7 @@ styles += """
   }
   .ProposalBlock .screenshot-button {
     margin: 10px;
+    opacity: 1.0;
   }
 
 """

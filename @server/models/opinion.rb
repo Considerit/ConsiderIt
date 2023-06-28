@@ -7,11 +7,11 @@ class Opinion < ApplicationRecord
   acts_as_tenant :subdomain
 
   scope :published, -> {where( :published => true )}
-  scope :public_fields, -> {select( [:created_at, :updated_at, :id, :proposal_id, :stance, :user_id, :point_inclusions, :published, :subdomain_id] )}
+  scope :public_fields, -> {select( [:created_at, :updated_at, :id, :proposal_id, :stance, :user_id, :hide_name, :point_inclusions, :published, :subdomain_id] )}
 
   def as_json(options={})
     pubs = ['created_at', 'updated_at', 'id', 'point_inclusions',
-            'proposal_id', 'stance', 'user_id',
+            'proposal_id', 'stance', 'user_id', 'hide_name',
             'published']
 
     result = super(options)
@@ -22,6 +22,11 @@ class Opinion < ApplicationRecord
     stubify_field(result, 'proposal')
     result['point_inclusions'] = result['point_inclusions'] || []
     result['point_inclusions'].map! {|p| "/point/#{p}"}
+
+    # If anonymous, hide user id
+    if (result['hide_name'] && (current_user.nil? || current_user.id != result['user_id']))
+      result['user_id'] = -1
+    end
 
     # if self.explanation
     #   result['explanation'] = self.explanation 

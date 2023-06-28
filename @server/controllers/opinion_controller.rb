@@ -15,7 +15,7 @@ class OpinionController < ApplicationController
     proposal = Proposal.find(key_id(params['proposal']))
     authorize! 'publish opinion', proposal
 
-    fields = ['proposal', 'stance', 'point_inclusions']
+    fields = ['proposal', 'stance', 'point_inclusions', 'hide_name']
     updates = params.select{|k,v| fields.include? k}.to_h
 
     # Convert proposal key to id
@@ -71,7 +71,7 @@ class OpinionController < ApplicationController
     opinion = Opinion.find key_id(params)
     authorize! 'update opinion', opinion
 
-    fields = ['stance', 'point_inclusions', 'explanation']
+    fields = ['stance', 'point_inclusions', 'explanation', 'hide_name']
     updates = params.select{|k,v| fields.include? k}.to_h
 
     # Convert proposal key to id

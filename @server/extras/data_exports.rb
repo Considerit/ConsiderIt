@@ -27,13 +27,17 @@ module DataExports
     heading = ["proposal_slug","proposal_name", 'created', "username", "email", "opinion", "#points"]
     rows = []
     rows.append heading 
+    anonymize_everything = subdomain.customization_json['anonymize_everything']
 
     subdomain.proposals.each do |proposal|
 
       proposal.opinions.published.each do |opinion|
         user = opinion.user
+        anonymize_opinion = anonymize_everything || opinion.hide_name
+        user_name = anonymize_opinion ?  'ANONYMOUS'  : user.name
+        user_email = anonymize_opinion ?  'ANONYMOUS'  : user.email.gsub('.ghost', '')
         begin 
-          rows.append [proposal.slug, proposal.name, opinion.created_at, user.name, user.email.gsub('.ghost', ''), opinion.stance, user.points.where(:proposal_id => proposal.id).count]
+          rows.append [proposal.slug, proposal.name, opinion.created_at, user_name, user_email, opinion.stance, user.points.where(:proposal_id => proposal.id).count]
         rescue 
         end 
       end
@@ -48,16 +52,23 @@ module DataExports
     heading = ['proposal', 'type', 'created', "username", "author", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
     rows = []
     rows.append heading 
+    anonymize_everything = subdomain.customization_json['anonymize_everything']
 
     subdomain.proposals.each do |proposal|
       proposal.points.published.each do |pnt|
         begin 
           opinion = pnt.user.opinions.find_by_proposal_id(pnt.proposal.id)
-          rows.append [pnt.proposal.slug, 'POINT', pnt.created_at, pnt.hide_name ? 'ANONYMOUS' : pnt.user.name, pnt.hide_name ? 'ANONYMOUS' : pnt.user.email.gsub('.ghost', ''), pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance : '-', pnt.inclusions.count, pnt.comments.count]
+          anonymize_point = anonymize_everything || opinion.hide_name || pnt.hide_name
+          pnt_user_name = anonymize_point ?  'ANONYMOUS'  : pnt.user.name
+          pnt_user_email = anonymize_point ?  'ANONYMOUS'  : pnt.user.email.gsub('.ghost', '')
+          rows.append [pnt.proposal.slug, 'POINT', pnt.created_at, pnt_user_name, pnt_user_email, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance : '-', pnt.inclusions.count, pnt.comments.count]
 
           pnt.comments.each do |comment|
             opinion = comment.user.opinions.find_by_proposal_id(pnt.proposal.id)
-            rows.append [pnt.proposal.slug, 'COMMENT', comment.created_at, comment.user.name, comment.user.email.gsub('.ghost', ''), "", comment.body, '', opinion ? opinion.stance : '-', '', '']
+            anonymize_comment = anonymize_everything || opinion.hide_name || comment.hide_name
+            comment_user_name = anonymize_comment ?  'ANONYMOUS'  : comment.user.name
+            comment_user_email = anonymize_comment ?  'ANONYMOUS'  : comment.user.email.gsub('.ghost', '')
+            rows.append [pnt.proposal.slug, 'COMMENT', comment.created_at, comment_user_name, comment_user_email, "", comment.body, '', opinion ? opinion.stance : '-', '', '']
           end
         rescue 
         end 

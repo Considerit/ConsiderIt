@@ -8,10 +8,11 @@ window.EditPoint = ReactiveComponent
   render : ->
     proposal = fetch @props.proposal
     point = fetch @props.point 
+    opinion = fetch proposal.your_opinion
 
     if !@local.sign_name?
       _.defaults @local, 
-        sign_name : if @props.fresh then true else !point.hide_name
+        sign_name : not opinion.hide_name
         add_details : false
 
     textarea_style = 
@@ -147,8 +148,9 @@ window.EditPoint = ReactiveComponent
               verticalAlign: 'middle'
               marginRight: 8
             onChange: =>
-              @local.sign_name = !@local.sign_name
-              save(@local)
+              if not @local.sign_name  or  confirm( translator('This will anonymize your whole opinion about this proposal, including your icon in the histogram and all pros and cons you have written. Are you sure you wish to anonymize?') )
+                @local.sign_name = !@local.sign_name
+                save(@local)
           
           LABEL 
             htmlFor: "sign_name-#{@props.valence}"
@@ -259,7 +261,6 @@ window.EditPoint = ReactiveComponent
       point = fetch @props.point
       point.nutshell = nutshell
       point.text = text
-      point.hide_name = hide_name
     else
       current_user = fetch('/current_user').user
       point =
@@ -271,13 +272,20 @@ window.EditPoint = ReactiveComponent
         proposal : proposal.key
         nutshell : nutshell
         text : text
-        hide_name : hide_name
 
     point.errors = []
     save point, => 
       if point.errors?.length == 0
         @done()
         show_flash(translator('engage.flashes.point_saved', "Your point has been saved"))
+
+        # Save opinion anonymity
+        proposal = fetch @props.proposal
+        opinion = fetch proposal.your_opinion
+        if opinion.hide_name != hide_name
+          opinion.hide_name = hide_name
+          save opinion
+
       else
         @local.errors = point.errors
         save @local

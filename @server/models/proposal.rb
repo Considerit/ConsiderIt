@@ -114,7 +114,7 @@ class Proposal < ApplicationRecord
       opinions_by_proposal = Rails.cache.fetch(opinions_key, {expires_in: 29.minutes} ) do 
         opinions = ActiveRecord::Base.connection.execute """\
           SELECT CONCAT('/opinion/', id) as \"key\", point_inclusions, proposal_id, 
-          stance, CONCAT('/user/', user_id) as user, updated_at
+          stance, CONCAT('/user/', user_id) as user, hide_name, updated_at
               FROM opinions 
               WHERE subdomain_id=#{subdomain.id};
           """
@@ -144,7 +144,7 @@ class Proposal < ApplicationRecord
       if current_user.registered
         your_opinions = ActiveRecord::Base.connection.execute """\
           SELECT CONCAT('/opinion/', id) as \"key\", point_inclusions, proposal_id, 
-          stance, CONCAT('/user/', user_id) as user, updated_at
+          stance, CONCAT('/user/', user_id) as user, hide_name, updated_at
               FROM opinions 
               WHERE subdomain_id=#{subdomain.id} AND user_id=#{current_user.id};
           """
@@ -456,7 +456,7 @@ class Proposal < ApplicationRecord
 
       o = ActiveRecord::Base.connection.execute """\
         SELECT created_at, id, point_inclusions, proposal_id, 
-        stance, user_id, updated_at, explanation
+        stance, user_id, hide_name, updated_at, explanation
             FROM opinions 
             WHERE subdomain_id=#{self.subdomain_id} AND
                   proposal_id=#{self.id} AND 

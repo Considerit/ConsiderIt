@@ -957,7 +957,7 @@ HistoAvatars = ReactiveComponent
 
 
       sprite = @sprites[user.key]      
-      sprite.img = getCanvasAvatar(user)
+      sprite.img = getCanvasAvatar( if opinion.hide_name then 'default' else user )
 
       if has_groups && @props.groups[user.key]?
         if @props.groups[user.key].length == 1
@@ -1197,11 +1197,13 @@ HistoAvatars = ReactiveComponent
           height: 2 * pos[2] / @resolution
           width: 2 * pos[2] / @resolution
 
+        opinionId = @user_to_opinion_map[user]
+        opinion = fetch( opinionId )
         opts = 
           id: id
           user: user
-          anon: customization('anonymize_everything')
-          opinion: @user_to_opinion_map[user]
+          anon: customization('anonymize_everything') or opinion?.hide_name
+          opinion: opinionId
           coords: coords
 
       else 
@@ -1229,7 +1231,7 @@ HistoAvatars = ReactiveComponent
 
 
   histocache_key: -> # based on variables that could alter the layout
-    key = """#{JSON.stringify( (fetch(o.key).stance for o in @props.opinions) )} #{JSON.stringify(@props.weights)} #{JSON.stringify(@props.groups)} #{JSON.stringify(@props.salience)} (#{@props.width}, #{@props.height})"""
+    key = """#{JSON.stringify( (fetch(o.key).stance + (if fetch(o.key).hide_name then 'hide') for o in @props.opinions) )} #{JSON.stringify(@props.weights)} #{JSON.stringify(@props.groups)} #{JSON.stringify(@props.salience)} (#{@props.width}, #{@props.height})"""
     murmurhash key, 0
       
 

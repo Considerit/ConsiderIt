@@ -40,7 +40,7 @@ window.AvatarPopover = ReactiveComponent
     {user, anon, opinion} = @props
     user = fetch user
 
-    anonymous = user.key != fetch('/current_user').user && (customization('anonymize_everything') || anon)      
+    anonymous = customization('anonymize_everything') or anon
     opinion_views = fetch 'opinion_views'
 
 
@@ -69,7 +69,7 @@ window.AvatarPopover = ReactiveComponent
           display: 'flex'
           # alignItems: 'center'
 
-        if user.avatar_file_name
+        if user.avatar_file_name and not anonymous
           IMG 
             alt: @props.alt or alt or "Image of #{user.name}"
             style: 
@@ -231,7 +231,7 @@ window.AvatarPopover = ReactiveComponent
                     style: 
                       fontStyle: 'italic'
                       marginLeft: 12
-                    "~ #{if point.hide_name then anonymous_label() else fetch(point.user).name}"
+                    "~ #{if anonymous or point.hide_name then anonymous_label() else fetch(point.user).name}"
 
 
 
@@ -281,7 +281,7 @@ window.avatar = (user, props) ->
   # Setting avatar image
   #   Don't show one if it should be anonymous or the user doesn't have one
   #   Default to small size if the width is small  
-  anonymous = (user.key != arest.cache['/current_user']?.user) && (attrs.anonymous? && attrs.anonymous) 
+  anonymous = Boolean(attrs.anonymous)
   src = null
 
   if !anonymous && !props.custom_bg_color && user.avatar_file_name 

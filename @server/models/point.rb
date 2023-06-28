@@ -148,7 +148,7 @@ class Point < ApplicationRecord
     if changed?
       save(:validate => false) 
       dirty_key "/point/#{self.id}"
-      Proposal.clear_cache      
+      Proposal.clear_cache(self.subdomain)      
     end
   end
         

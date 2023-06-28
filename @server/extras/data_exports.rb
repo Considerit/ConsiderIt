@@ -65,7 +65,7 @@ module DataExports
 
           pnt.comments.each do |comment|
             opinion = comment.user.opinions.find_by_proposal_id(pnt.proposal.id)
-            anonymize_comment = anonymize_everything || opinion.hide_name || comment.hide_name
+            anonymize_comment = anonymize_everything || opinion.hide_name
             comment_user_name = anonymize_comment ?  'ANONYMOUS'  : comment.user.name
             comment_user_email = anonymize_comment ?  'ANONYMOUS'  : comment.user.email.gsub('.ghost', '')
             rows.append [pnt.proposal.slug, 'COMMENT', comment.created_at, comment_user_name, comment_user_email, "", comment.body, '', opinion ? opinion.stance : '-', '', '']
@@ -82,6 +82,7 @@ module DataExports
     fname = "#{subdomain.name}-proposals"
     rows = []
     heading = ['slug', 'url', 'created', "username", "author", 'name', 'category', 'description', '#points', '#opinions', 'total score', 'avg score', 'std deviation']
+    anonymize_everything = subdomain.customization_json['anonymize_everything']
     
 
     if SPECIAL_GROUPS.has_key?(subdomain.name.downcase)
@@ -111,7 +112,11 @@ module DataExports
 
       s = stats opinions.map{|o| o.stance}
 
-      row = [proposal.slug, "https://#{subdomain.url}/#{proposal.slug}", proposal.created_at, (proposal.user ? proposal.user.name : "Unknown"), (proposal.user ? proposal.user.email.gsub('.ghost', '') : 'Unknown'), proposal.name, proposal.get_cluster, proposal.description, proposal.points.published.count, opinions.count, s[:total].round(2), s[:avg].round(2), s[:std_dev].round(2)]
+      user_name = proposal.user ?  proposal.user.name  : 'Unknown'
+      user_name = anonymize_everything ?  'ANONYMOUS' :  user_name
+      user_email = proposal.user ?  proposal.user.email.gsub('.ghost', '')  : 'Unknown'
+      user_email = anonymize_everything ?  'ANONYMOUS'  :  user_email
+      row = [proposal.slug, "https://#{subdomain.url}/#{proposal.slug}", proposal.created_at, user_name, user_email, proposal.name, (proposal.cluster || 'Proposals'), proposal.description, proposal.points.published.count, opinions.count, s[:total].round(2), s[:avg].round(2), s[:std_dev].round(2)]
       group_diffs = group_differences proposal 
       group_diffs.each do |diff|
         row.append diff[:ingroup][:count]
@@ -128,8 +133,11 @@ module DataExports
     fname = "#{subdomain.name}-users"
 
     heading = ['email', 'name', 'date joined'] 
+    anonymize_everything = subdomain.customization_json['anonymize_everything']
+    anonymization_safe_opinion_filters = subdomain.customization_json['anonymization_safe_opinion_filters']
+    export_tags = !anonymize_everything || anonymization_safe_opinion_filters
 
-    if tag_whitelist
+    if export_tags && tag_whitelist
       tag_whitelist.each do |tag|
         heading.append tag
       end
@@ -150,9 +158,11 @@ module DataExports
 
     subdomain.users.each do |user|
       
-      row = [user.email, user.name, user.created_at]
+      user_name = anonymize_everything ?  'ANONYMOUS'  : user.name
+      user_email = anonymize_everything ?  'ANONYMOUS'  : user.email.gsub('.ghost', '')
+      row = [user_email, user_name, user.created_at]
 
-      if tag_whitelist
+      if export_tags && tag_whitelist
         user_tags = user.tags || {}
 
         tag_whitelist.each do |tag|

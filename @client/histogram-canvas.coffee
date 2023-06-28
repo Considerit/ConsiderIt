@@ -692,6 +692,10 @@ window.styles += """
   .HistoAvatars .sk-wave {
     margin: 0;
   }
+
+  .AggregatedHistogram .sk-wave {
+    margin: 0;
+  }  
 """
 
 

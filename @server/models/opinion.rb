@@ -130,11 +130,11 @@ class Opinion < ApplicationRecord
       self.include point_id
     end
 
-    Proposal.clear_cache
+    Proposal.clear_cache(self.subdomain)
   end
 
   def include(point, subdomain = nil)
-    subdomain ||= current_subdomain
+    subdomain ||= self.subdomain || current_subdomain
     if not point.is_a? Point
       point = Point.find point
     end
@@ -163,7 +163,7 @@ class Opinion < ApplicationRecord
 
     point.recache
     self.recache
-    Proposal.clear_cache
+    Proposal.clear_cache(self.subdomain)
 
     dirty_key("/point/#{point.id}")
     dirty_key("/opinion/#{self.id}")
@@ -180,7 +180,7 @@ class Opinion < ApplicationRecord
     inclusion = user.inclusions.find_by_point_id point.id
 
     inclusion.destroy
-    Proposal.clear_cache
+    Proposal.clear_cache(self.subdomain)
     point.recache
     self.recache
   end

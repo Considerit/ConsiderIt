@@ -572,13 +572,13 @@ window.ItemText = ReactiveComponent
           SPAN
             key: 'yourOpinion'
             className: 'separated monospaced metadata-piece'
-            style:  {  border:'solid 2px #dddddd', borderRadius:'8px', padding:'3px 10px', backgroundColor:'#f8f8f8'  }
+            style:  {  border:'solid 1px #dddddd', borderRadius:'8px', padding:'3px 10px', backgroundColor:'#f8f8f8'  }
             LABEL
               key: 'yourOpinionLabel'
               htmlFor: "give-opinion-#{proposal.key}"
               className: 'monospaced metadata-piece'
               style: {  borderBottom:'none', marginRight:'7px'  }
-              translator('Your opinion:')
+              translator('engage.your_opinion_section_label', 'Your opinion:')
 
             # Edit
             if opinion_prompt && !TABLET_SIZE()

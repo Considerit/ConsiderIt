@@ -1235,7 +1235,7 @@ HistoAvatars = ReactiveComponent
 
 
   histocache_key: -> # based on variables that could alter the layout
-    key = """#{JSON.stringify( (fetch(o.key).stance + (if fetch(o.key).hide_name then 'hide') for o in @props.opinions) )} #{JSON.stringify(@props.weights)} #{JSON.stringify(@props.groups)} #{JSON.stringify(@props.salience)} (#{@props.width}, #{@props.height})"""
+    key = """#{JSON.stringify( (fetch(o.key).stance + (if fetch(o.key).hide_name then 'hide' else '') for o in @props.opinions) )} #{JSON.stringify(@props.weights)} #{JSON.stringify(@props.groups)} #{JSON.stringify(@props.salience)} (#{@props.width}, #{@props.height})"""
     murmurhash key, 0
       
 

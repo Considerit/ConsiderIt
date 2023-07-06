@@ -27,14 +27,14 @@ module DataExports
     heading = ["proposal_slug","proposal_name", 'created', "username", "email", "opinion", "#points"]
     rows = []
     rows.append heading 
-    anonymize_everything = subdomain.customization_json['anonymize_everything']
+    anonymize_permanently = subdomain.customization_json['anonymize_permanently']
 
     subdomain.proposals.each do |proposal|
 
       proposal.opinions.published.each do |opinion|
         user = opinion.user
-        user_name = anonymize_everything ?  'ANONYMOUS'  : user.name
-        user_email = anonymize_everything ?  'ANONYMOUS'  : user.email.gsub('.ghost', '')
+        user_name = anonymize_permanently ?  'ANONYMOUS'  : user.name
+        user_email = anonymize_permanently ?  'ANONYMOUS'  : user.email.gsub('.ghost', '')
         begin 
           rows.append [proposal.slug, proposal.name, opinion.created_at, user_name, user_email, opinion.stance, user.points.where(:proposal_id => proposal.id).count]
         rescue 
@@ -51,20 +51,20 @@ module DataExports
     heading = ['proposal', 'type', 'created', "username", "author", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
     rows = []
     rows.append heading 
-    anonymize_everything = subdomain.customization_json['anonymize_everything']
+    anonymize_permanently = subdomain.customization_json['anonymize_permanently']
 
     subdomain.proposals.each do |proposal|
       proposal.points.published.each do |pnt|
         begin 
           opinion = pnt.user.opinions.find_by_proposal_id(pnt.proposal.id)
-          pnt_user_name = anonymize_everything || pnt.hide_name ?  'ANONYMOUS'  : pnt.user.name
-          pnt_user_email = anonymize_everything || pnt.hide_name ?  'ANONYMOUS'  : pnt.user.email.gsub('.ghost', '')
+          pnt_user_name = anonymize_permanently || pnt.hide_name ?  'ANONYMOUS'  : pnt.user.name
+          pnt_user_email = anonymize_permanently || pnt.hide_name ?  'ANONYMOUS'  : pnt.user.email.gsub('.ghost', '')
           rows.append [pnt.proposal.slug, 'POINT', pnt.created_at, pnt_user_name, pnt_user_email, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance : '-', pnt.inclusions.count, pnt.comments.count]
 
           pnt.comments.each do |comment|
             opinion = comment.user.opinions.find_by_proposal_id(pnt.proposal.id)
-            comment_user_name = anonymize_everything ?  'ANONYMOUS'  : comment.user.name
-            comment_user_email = anonymize_everything ?  'ANONYMOUS'  : comment.user.email.gsub('.ghost', '')
+            comment_user_name = anonymize_permanently ?  'ANONYMOUS'  : comment.user.name
+            comment_user_email = anonymize_permanently ?  'ANONYMOUS'  : comment.user.email.gsub('.ghost', '')
             rows.append [pnt.proposal.slug, 'COMMENT', comment.created_at, comment_user_name, comment_user_email, "", comment.body, '', opinion ? opinion.stance : '-', '', '']
           end
         rescue 
@@ -79,7 +79,7 @@ module DataExports
     fname = "#{subdomain.name}-proposals"
     rows = []
     heading = ['slug', 'url', 'created', "username", "author", 'name', 'category', 'description', '#points', '#opinions', 'total score', 'avg score', 'std deviation']
-    anonymize_everything = subdomain.customization_json['anonymize_everything']
+    anonymize_permanently = subdomain.customization_json['anonymize_permanently']
     
 
     if SPECIAL_GROUPS.has_key?(subdomain.name.downcase)
@@ -110,9 +110,9 @@ module DataExports
       s = stats opinions.map{|o| o.stance}
 
       user_name = proposal.user ?  proposal.user.name  : 'Unknown'
-      user_name = anonymize_everything ?  'ANONYMOUS' :  user_name
+      user_name = anonymize_permanently ?  'ANONYMOUS' :  user_name
       user_email = proposal.user ?  proposal.user.email.gsub('.ghost', '')  : 'Unknown'
-      user_email = anonymize_everything ?  'ANONYMOUS'  :  user_email
+      user_email = anonymize_permanently ?  'ANONYMOUS'  :  user_email
       row = [proposal.slug, "https://#{subdomain.url}/#{proposal.slug}", proposal.created_at, user_name, user_email, proposal.name, (proposal.cluster || 'Proposals'), proposal.description, proposal.points.published.count, opinions.count, s[:total].round(2), s[:avg].round(2), s[:std_dev].round(2)]
       group_diffs = group_differences proposal 
       group_diffs.each do |diff|
@@ -130,9 +130,9 @@ module DataExports
     fname = "#{subdomain.name}-users"
 
     heading = ['email', 'name', 'date joined'] 
-    anonymize_everything = subdomain.customization_json['anonymize_everything']
+    anonymize_permanently = subdomain.customization_json['anonymize_permanently']
     anonymization_safe_opinion_filters = subdomain.customization_json['anonymization_safe_opinion_filters']
-    export_tags = !anonymize_everything || anonymization_safe_opinion_filters
+    export_tags = !anonymize_permanently || anonymization_safe_opinion_filters
 
     if export_tags && tag_whitelist
       tag_whitelist.each do |tag|
@@ -155,8 +155,8 @@ module DataExports
 
     subdomain.users.each do |user|
       
-      user_name = anonymize_everything ?  'ANONYMOUS'  : user.name
-      user_email = anonymize_everything ?  'ANONYMOUS'  : user.email.gsub('.ghost', '')
+      user_name = anonymize_permanently ?  'ANONYMOUS'  : user.name
+      user_email = anonymize_permanently ?  'ANONYMOUS'  : user.email.gsub('.ghost', '')
       row = [user_email, user_name, user.created_at]
 
       if export_tags && tag_whitelist

@@ -478,6 +478,12 @@ window.ItemText = ReactiveComponent
     opinion_publish_permission = permit('publish opinion', proposal, subdomain)
 
     opinion_prompt = getOpinionPrompt {proposal}
+    you_have_opinion = Boolean( proposal?.your_opinion?.key )
+
+    toggleExpandPreferPersonal = ( ) ->
+      toggle_expand
+        proposal: proposal
+        prefer_personal_view: true
 
     YOUR_OPINION_BUTTON_SIZE = 18
     YOUR_OPINION_BUTTON_COLOR = '#444'
@@ -573,46 +579,52 @@ window.ItemText = ReactiveComponent
             key: 'yourOpinion'
             className: 'separated monospaced metadata-piece'
             style:  {  border:'solid 1px #dddddd', borderRadius:'8px', padding:'3px 10px', backgroundColor:'#f8f8f8'  }
-            LABEL
-              key: 'yourOpinionLabel'
-              htmlFor: "give-opinion-#{proposal.key}"
-              className: 'monospaced metadata-piece'
-              style: {  borderBottom:'none', marginRight:'7px'  }
-              translator('engage.your_opinion_section_label', 'Your opinion:')
 
             # Edit
-            if opinion_prompt && !TABLET_SIZE()
-              BUTTON 
-                key: 'give-opinion'
-                id: "give-opinion-#{proposal.key}"
-                "aria-label": translator('engage.edit_opinion_button', 'Edit your opinion')
-                "data-tooltip": translator('engage.edit_opinion_button', 'Edit your opinion')
-                className: 'metadata-piece'
-                style: {  border:'none', verticalAlign:'bottom', marginBottom:'-3px'  }
-                onClick: =>
-                  toggle_expand
-                    proposal: proposal
-                    prefer_personal_view: true
+            if opinion_prompt
+              [
+                BUTTON
+                  key: 'edit-opinion-text'
+                  className: 'monospaced'
+                  style: {  border:'none', backgroundColor:'rgba(0,0,0,0)', padding:0  }
+                  onClick: toggleExpandPreferPersonal
+                  onKeyPress: (e) =>
+                    if e.which == 32 or e.which == 13
+                      toggleExpandPreferPersonal()
 
-                onKeyPress: (e) =>
-                  if e.which == 32 || e.which == 13
-                    toggle_expand
-                      proposal: proposal
-                      prefer_personal_view: true
+                  if you_have_opinion
+                    translator('engage.your_opinion_section_label', 'Your opinion')
+                  else
+                    opinion_prompt
 
-                edit_icon YOUR_OPINION_BUTTON_SIZE, YOUR_OPINION_BUTTON_SIZE, YOUR_OPINION_BUTTON_COLOR
+                if you_have_opinion and not TABLET_SIZE()
+                  BUTTON
+                    key: 'edit-opinion-button'
+                    id: "edit-opinion-#{proposal.key}"
+                    "aria-label": translator('engage.edit_opinion_button', 'Edit your opinion')
+                    "data-tooltip": translator('engage.edit_opinion_button', 'Edit your opinion')
+                    className: 'metadata-piece'
+                    style: {  border:'none', verticalAlign:'bottom', marginBottom:'-3px', marginLeft:'10px'  }
+                    onClick: toggleExpandPreferPersonal
+                    onKeyPress: (e) =>
+                      if e.which == 32 || e.which == 13
+                        toggleExpandPreferPersonal()
+
+                    edit_icon YOUR_OPINION_BUTTON_SIZE, YOUR_OPINION_BUTTON_SIZE, YOUR_OPINION_BUTTON_COLOR
+               ]
 
             if (your_opinion = proposal.your_opinion) && your_opinion.key && permit('update opinion', proposal, your_opinion) > 0
-              remove_opinion = ->
-                if confirm( translator('This will remove your opinion from the histogram, but keep the pros and cons and comments that you have written for this proposal. Are you sure you wish to remove?') )
-                  your_opinion.stance = 0
-                  your_opinion.point_inclusions = []
-                  your_opinion.published = false
-                  save your_opinion
 
               toggle_anonymize_opinion = ->
                 if your_opinion.hide_name or confirm( translator('This will anonymize your whole opinion about the proposal, including your icon in the histogram and all pros and cons you have written. Are you sure you wish to anonymize?') )
                   your_opinion.hide_name = not your_opinion.hide_name
+                  save your_opinion
+
+              remove_opinion = ->
+                if confirm( translator('This will remove your opinion about the proposal, including your icon in the histogram, and all the pros and cons and comments that you have written for this proposal. Are you sure you wish to remove?') )
+                  your_opinion.stance = 0
+                  your_opinion.point_inclusions = []
+                  your_opinion.published = false
                   save your_opinion
               [
                 # Anonymize
@@ -623,8 +635,9 @@ window.ItemText = ReactiveComponent
                   "aria-label": translator('engage.anonymize_opinion_button', 'Anonymize your opinion')
                   "data-tooltip": translator('engage.anonymize_opinion_button', 'Anonymize your opinion')
                   className: 'metadata-piece'
-                  style: {  border:'none', verticalAlign:'bottom', marginBottom:'-2px', marginLeft:'15px'  }
+                  style: {  border:'none', verticalAlign:'bottom', marginBottom:'-1px', marginLeft:'15px'  }
                   onClick: toggle_anonymize_opinion
+
                   iconAnonymousMask YOUR_OPINION_BUTTON_SIZE*1.4, YOUR_OPINION_BUTTON_SIZE, \
                     if your_opinion.hide_name then '#456ae4' else '#888888'
 
@@ -636,7 +649,8 @@ window.ItemText = ReactiveComponent
                   className: 'metadata-piece'
                   style: {  border:'none', verticalAlign:'bottom', marginBottom:'-3px', marginLeft:'15px'  }
                   onClick: remove_opinion
-                  trash_icon YOUR_OPINION_BUTTON_SIZE, YOUR_OPINION_BUTTON_SIZE, YOUR_OPINION_BUTTON_COLOR
+
+                  iconX YOUR_OPINION_BUTTON_SIZE, YOUR_OPINION_BUTTON_COLOR
               ]
 
         ]

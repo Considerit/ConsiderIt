@@ -506,6 +506,18 @@ styles += """
     display: none;
   }
 
+  .below_save {  text-align:center;  }
+  .below_save .btn {
+    margin: 10px;
+    border: solid 1px #ddd;
+    border-radius: 15px;
+    font-weight: lighter;
+    font-size: 0.9em;
+    background-color: #eee;
+    color: black;
+  }
+  .below_save .btn svg {  margin-left:20px;  }
+
 
   .decision_board_body {
     border-radius: 16px;
@@ -558,6 +570,8 @@ window.DecisionBoard = ReactiveComponent
     your_opinion = proposal.your_opinion
     if your_opinion.key
       fetch your_opinion
+
+    YOUR_OPINION_BUTTON_SIZE = 18
 
     can_opine = canUserOpine proposal
 
@@ -747,23 +761,58 @@ window.DecisionBoard = ReactiveComponent
               
 
         if your_opinion.key && permit('update opinion', proposal, your_opinion) > 0 && mode == 'crafting'
+
+          toggle_anonymize_opinion = ->
+            if your_opinion.hide_name or confirm( translator('This will anonymize your whole opinion about the proposal, including your icon in the histogram and all pros and cons you have written. Are you sure you wish to anonymize?') )
+              your_opinion.hide_name = not your_opinion.hide_name
+              save your_opinion
+
           remove_opinion = -> 
-            your_opinion.stance = 0
-            your_opinion.point_inclusions = []                   
-            your_opinion.published = false 
-            save your_opinion
+            if confirm( translator('This will remove your opinion about the proposal, including your icon in the histogram, and all the pros and cons and comments that you have written for this proposal. Are you sure you wish to remove?') )
+              your_opinion.stance = 0
+              your_opinion.point_inclusions = []
+              your_opinion.published = false
+              save your_opinion
 
           DIV 
             className: 'below_save'
                       
-            BUTTON 
-              style: 
-                textDecoration: 'underline'
-              className:'cancel_opinion_button primary_cancel_button'
-              onClick: remove_opinion
+            [
+              BUTTON
+                key: 'anonymize opinion button'
+                className: 'btn'
+                style:  {  borderColor: if your_opinion.hide_name then '#456ae4' else null  }
+                onClick: toggle_anonymize_opinion
 
-              translator "engage.remove_my_opinion", 'Remove your opinion'
+                SPAN
+                  key: 'anonymize opinion label'
+                  if your_opinion.hide_name
+                    translator 'engage.deanonymize_opinion_button', 'Opinion is anonymous'
+                  else
+                    translator 'engage.anonymize_opinion_button', 'Anonymize your opinion'
 
+                if not TABLET_SIZE()
+                  SPAN
+                    key: 'anonymize opinion icon'
+                    style: {  height:'22px', display:'inline-block', verticalAlign:'bottom'  }
+                    iconAnonymousMask YOUR_OPINION_BUTTON_SIZE*1.4, YOUR_OPINION_BUTTON_SIZE, if your_opinion.hide_name then '#456ae4' else '#888888'
+
+              BUTTON
+                key: 'remove opinion button'
+                className: 'btn'
+                onClick: remove_opinion
+
+                SPAN
+                  key: 'remove opinion label'
+                  translator "engage.remove_my_opinion", 'Remove your opinion'
+
+                if not TABLET_SIZE()
+                  SPAN
+                    key: 'remove opinion icon'
+                    style: {  height:'20px', display:'inline-block', verticalAlign:'bottom'  }
+                    iconX YOUR_OPINION_BUTTON_SIZE, '#444444'
+
+            ]
 
 
   componentDidUpdate : ->

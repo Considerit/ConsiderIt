@@ -110,7 +110,30 @@ window.Homepage = ReactiveComponent
 
     if customization('anonymize_everything')
       if customization('anonymize_permanently')
-        messages.push {style: {backgroundColor: '#d1d08d', color: 'black'}, img: 'venetian-mask.png', label: translator("engage.anonymize_permanently_message", "The forum host has permanently set participation to anonymous. No one, including the host, will ever have access to the identity of participants.")}
+        
+
+        strong_privacy = TRANSLATE
+          id: "engage.anonymize_permanently_message"
+          privacy_link: 
+            component: A 
+            args: 
+              key: 'privacy_link'
+              href: '/docs/legal/privacy_policy'
+              style: 
+                textDecoration: 'underline'
+                fontWeight: 400
+          b:
+            component: B 
+
+          """
+          <b>The forum host has permanently set participation to anonymous.</b> The forum host will never have access to the 
+          identity of participants. Identity information will continue to be stored on the Consider.it server, but as always, 
+          will <privacy_link>never be provided to third-parties</privacy_link>. You can delete your identity information at 
+          any time in your account settings.
+          """
+
+
+        messages.push {style: {backgroundColor: '#d1d08d', color: 'black'}, img: 'venetian-mask.png', label: strong_privacy}
       else 
         messages.push {style: {backgroundColor: '#b88dd1', color: 'black'}, img: 'venetian-mask.png', label: translator("engage.anonymize_message", "The forum host has set participation to anonymous. You won't be able to see the identity of others at this time. However, the host may reveal identity later.")}
 
@@ -163,14 +186,15 @@ window.Homepage = ReactiveComponent
                     DIV 
                       style:
                         minWidth: 40
-                        paddingRight: 24
+                        paddingRight: 36
                       IMG 
                         style: 
                           maxWidth: 34
 
                         src: "#{fetch('/application').asset_host}/images/#{message.img}"
 
-                  message.label
+                  SPAN null,
+                    message.label
 
               if preamble = get_page_preamble()
                 DIV

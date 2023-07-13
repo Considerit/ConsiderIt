@@ -1,4 +1,20 @@
 
+window.iconX = (size, color) ->
+  size ?= 30
+  SVG
+    width: size
+    height: size
+    viewBox: "-50 -50 200 200"
+    stroke: color
+    fill: 'none'
+
+    dangerouslySetInnerHTML: __html: """
+       <g>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="15" d="M 0 0 L 100 100 M 0 100 L 100 0 Z"/>
+       </g>
+    """
+
+
 window.iconAnonymousMask = (width, height, color) ->
   color ?= 'black'
   SVG

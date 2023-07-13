@@ -15,8 +15,6 @@ window.Point = ReactiveComponent
     return SPAN null if !point.proposal
 
     proposal = fetch point.proposal
-    point_maker_opinion = _.findWhere proposal.opinions, {user: point.user}
-    anonymous = point.hide_name  or  point_maker_opinion?.hide_name
 
     is_selected = get_selected_point() == @props.point
 
@@ -58,19 +56,18 @@ window.Point = ReactiveComponent
 
             style[left_right] = side_offset
 
-            # Finally draw the guys
-            # Avatar
-            #   key: includer
-            #   className: "point_includer_avatar"
-            #   style: style
-            #   set_bg_color: true
-            #   anonymous: point.user == includer && point.hide_name
+            includer_opinion = _.findWhere proposal.opinions, {user: includer}
+
+            anonymous = includer_opinion?.hide_name || (point.hide_name && point.user == includer)
             avatar includer, 
               key: includer
               className: "point_includer_avatar"
               style: style
               set_bg_color: true
               anonymous: anonymous
+    
+
+
     point_content_style = {}
 
     if is_selected

@@ -132,6 +132,9 @@ class User < ApplicationRecord
       if current_user.key != u['key'] && anonymize_everything
         u['name'] = Translations::Translation.get('anonymous', 'Anonymous')
         u['avatar_file_name'] = nil
+        if is_admin
+          u['email'] = Translations::Translation.get('withheld', 'withheld')
+        end
       end 
 
     end 
@@ -155,6 +158,9 @@ class User < ApplicationRecord
 
     if current_user.is_admin?
       data['email'] = email
+      if anonymize_everything
+        data['email'] = Translations::Translation.get('withheld', 'withheld')
+      end
     end
 
     data['tags'] = tags_for_subdomain(current_user.is_admin?)

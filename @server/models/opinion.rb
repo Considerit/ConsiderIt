@@ -17,16 +17,17 @@ class Opinion < ApplicationRecord
     result = super(options)
     result = result.select{|k,v| pubs.include? k}
 
+    # If anonymous, hide user id
+    if (result['hide_name'] && (current_user.nil? || current_user.id != result['user_id']))
+      result['user_id'] = -1
+    end
+
     make_key(result, 'opinion')
     stubify_field(result, 'user')
     stubify_field(result, 'proposal')
     result['point_inclusions'] = result['point_inclusions'] || []
     result['point_inclusions'].map! {|p| "/point/#{p}"}
 
-    # If anonymous, hide user id
-    if (result['hide_name'] && (current_user.nil? || current_user.id != result['user_id']))
-      result['user_id'] = -1
-    end
 
     # if self.explanation
     #   result['explanation'] = self.explanation 

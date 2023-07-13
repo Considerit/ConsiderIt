@@ -111,23 +111,33 @@ class Opinion < ApplicationRecord
     dirty_key "/proposal/#{proposal.id}"
   end
 
-  def update_inclusions (points_to_include)
+  def update_inclusions (points_to_include, allow_excluding=true)
     points_already_included = inclusions.map {|i| i.point_id}.compact
     points_to_exclude = points_already_included.select {|point_id| not points_to_include.include? point_id}
     points_to_add    = points_to_include.select {|p_id| not points_already_included.include? p_id }
 
-    return unless points_to_exclude.length + points_to_exclude.length > 0
+    return unless points_to_add.length + points_to_exclude.length > 0
 
-    # puts("Excluding points #{points_to_exclude}, including points #{points_to_add}")
+    if points_to_exclude.length > 0 && allow_excluding
+      puts("Excluding points #{points_to_exclude}")
+    end
 
-    # Delete goners
-    points_to_exclude.each do |point_id|
-      self.exclude point_id
+    if points_to_add.length > 0
+      puts("Including points #{points_to_add}")
     end
     
+    # Delete goners
+    if allow_excluding
+      points_to_exclude.each do |point_id|
+        self.exclude point_id
+      end
+    end    
     # Add newbies
     points_to_add.each do |point_id|
-      self.include point_id
+      pnt = Point.where(:id => point_id).first
+      if pnt
+        self.include pnt
+      end
     end
 
     Proposal.clear_cache(self.subdomain)
@@ -250,6 +260,16 @@ class Opinion < ApplicationRecord
           end
         end
       end
+    end
+  end
+
+  def self.fix_inclusions
+    i = 0 
+    to_fix = Opinion.where("JSON_LENGTH(point_inclusions) > 0")
+    cnt = to_fix.count
+    to_fix.each_with_index do |o,i| 
+      o.update_inclusions(o.point_inclusions, allow_excluding=false)
+      print "\r#{i.to_f / cnt * 100}%"
     end
   end
 

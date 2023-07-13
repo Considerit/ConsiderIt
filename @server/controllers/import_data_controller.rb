@@ -705,7 +705,7 @@ class ImportDataController < ApplicationController
           lists.push k
         end
       end      
-      pages = [{"name": '', "lists": lists }]
+      pages = [{"name" => '', "lists" => lists }]
     end
 
     pages.each do |page|

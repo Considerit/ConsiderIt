@@ -615,17 +615,6 @@ window.ItemText = ReactiveComponent
 
             if (your_opinion = proposal.your_opinion) && your_opinion.key && permit('update opinion', proposal, your_opinion) > 0
 
-              toggle_anonymize_opinion = ->
-                if your_opinion.hide_name or confirm( translator('This will anonymize your whole opinion about the proposal, including your icon in the histogram and all pros and cons you have written. Are you sure you wish to anonymize?') )
-                  your_opinion.hide_name = not your_opinion.hide_name
-                  save your_opinion
-
-              remove_opinion = ->
-                if confirm( translator('This will remove your opinion about the proposal, including your icon in the histogram, and all the pros and cons and comments that you have written for this proposal. Are you sure you wish to remove?') )
-                  your_opinion.stance = 0
-                  your_opinion.point_inclusions = []
-                  your_opinion.published = false
-                  save your_opinion
               [
                 # Anonymize
                 BUTTON
@@ -636,7 +625,7 @@ window.ItemText = ReactiveComponent
                   "data-tooltip": translator('engage.anonymize_opinion_button', 'Anonymize your opinion')
                   className: 'metadata-piece'
                   style: {  border:'none', verticalAlign:'bottom', marginBottom:'-1px', marginLeft:'15px'  }
-                  onClick: toggle_anonymize_opinion
+                  onClick: -> toggle_anonymize_opinion(your_opinion)
 
                   iconAnonymousMask YOUR_OPINION_BUTTON_SIZE*1.4, YOUR_OPINION_BUTTON_SIZE, \
                     if your_opinion.hide_name then '#456ae4' else '#888888'
@@ -648,7 +637,7 @@ window.ItemText = ReactiveComponent
                   "data-tooltip": translator('engage.remove_opinion_button', 'Remove your opinion')
                   className: 'metadata-piece'
                   style: {  border:'none', verticalAlign:'bottom', marginBottom:'-3px', marginLeft:'15px'  }
-                  onClick: remove_opinion
+                  onClick: -> remove_opinion(your_opinion)
 
                   iconX YOUR_OPINION_BUTTON_SIZE, YOUR_OPINION_BUTTON_COLOR
               ]
@@ -678,6 +667,18 @@ window.ItemText = ReactiveComponent
             size: 12
             fill: 'rgb(158, 78, 35)'
 
+
+window.toggle_anonymize_opinion = (your_opinion) ->
+  if your_opinion.hide_name or confirm( translator('This will anonymize your whole opinion about the proposal, including your icon in the histogram and all pros and cons you have written. Are you sure you wish to anonymize?') )
+    your_opinion.hide_name = not your_opinion.hide_name
+    save your_opinion
+
+window.remove_opinion = (your_opinion) -> 
+  if confirm( translator('This will remove your opinion about the proposal, including your icon in the histogram, and all the pros and cons and comments that you have written for this proposal. Are you sure you wish to remove?') )
+    your_opinion.stance = 0
+    your_opinion.point_inclusions = []
+    your_opinion.published = false
+    save your_opinion
 
 window.getOpinionPrompt = ({proposal, prefer_drag_prompt}) ->
   proposal = fetch proposal

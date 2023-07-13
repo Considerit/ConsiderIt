@@ -555,6 +555,8 @@ styles += """
 """
 
 
+
+
 ##
 # DecisionBoard
 # Handles the user's list of important points in crafting page. 
@@ -762,17 +764,8 @@ window.DecisionBoard = ReactiveComponent
 
         if your_opinion.key && permit('update opinion', proposal, your_opinion) > 0 && mode == 'crafting'
 
-          toggle_anonymize_opinion = ->
-            if your_opinion.hide_name or confirm( translator('This will anonymize your whole opinion about the proposal, including your icon in the histogram and all pros and cons you have written. Are you sure you wish to anonymize?') )
-              your_opinion.hide_name = not your_opinion.hide_name
-              save your_opinion
 
-          remove_opinion = -> 
-            if confirm( translator('This will remove your opinion about the proposal, including your icon in the histogram, and all the pros and cons and comments that you have written for this proposal. Are you sure you wish to remove?') )
-              your_opinion.stance = 0
-              your_opinion.point_inclusions = []
-              your_opinion.published = false
-              save your_opinion
+
 
           DIV 
             className: 'below_save'
@@ -782,7 +775,7 @@ window.DecisionBoard = ReactiveComponent
                 key: 'anonymize opinion button'
                 className: 'btn'
                 style:  {  borderColor: if your_opinion.hide_name then '#456ae4' else null  }
-                onClick: toggle_anonymize_opinion
+                onClick: -> toggle_anonymize_opinion(your_opinion)
 
                 SPAN
                   key: 'anonymize opinion label'
@@ -800,7 +793,7 @@ window.DecisionBoard = ReactiveComponent
               BUTTON
                 key: 'remove opinion button'
                 className: 'btn'
-                onClick: remove_opinion
+                onClick: -> remove_opinion(your_opinion)
 
                 SPAN
                   key: 'remove opinion label'

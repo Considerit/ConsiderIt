@@ -19,7 +19,7 @@ class Opinion < ApplicationRecord
 
     # If anonymous, hide user id
     if (result['hide_name'] && (current_user.nil? || current_user.id != result['user_id']))
-      result['user_id'] = -1
+      result['user_id'] = User.anonimized_id(result['user_id'])
     end
 
     make_key(result, 'opinion')

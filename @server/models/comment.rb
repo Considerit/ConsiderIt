@@ -2,7 +2,7 @@ class Comment < ApplicationRecord
   include Moderatable, Notifier
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:id, :body, :user_id, :created_at, :point_id, :moderation_status, :subdomain_id ]
+  self.my_public_fields = [:id, :body, :user_id, :created_at, :point_id, :moderation_status, :subdomain_id, :hide_name ]
 
   scope :public_fields, -> {select(self.my_public_fields)}
   
@@ -26,6 +26,11 @@ class Comment < ApplicationRecord
     options[:only] ||= Comment.my_public_fields
     result = super(options)
     make_key(result, 'comment')
+
+    if (  result['hide_name'] && (current_user.nil? || current_user.id != result['user_id']))
+      result['user_id'] = User.anonimized_id(result['user_id'])
+    end
+
     stubify_field(result, 'user')
     stubify_field(result, 'point')
     result

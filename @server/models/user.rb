@@ -120,12 +120,6 @@ class User < ApplicationRecord
 
     tags_config = current_subdomain.customization_json.fetch('user_tags', [])
 
-    if anonymize_everything
-      anon_name = Translations::Translation.get('anonymous', 'Anonymous')
-      if is_admin
-        withheld_email = Translations::Translation.get('withheld', 'withheld')
-      end
-    end
 
     users.each do |u| 
       u_tags = Oj.load(u['tags']||'{}')
@@ -138,11 +132,7 @@ class User < ApplicationRecord
       end
 
       if current_user.key != u['key'] && anonymize_everything
-        u['name'] = anon_name
-        u['avatar_file_name'] = nil
-        if is_admin
-          u['email'] = withheld_email
-        end
+        u.merge! User.anonimized_info(u["id"], is_admin)  
       end 
 
     end 
@@ -159,17 +149,14 @@ class User < ApplicationRecord
 
     customizations = current_subdomain.customization_json
     anonymize_everything = customizations['anonymize_everything']
-    if anonymize_everything && self.id != current_user.id
-      data['name'] = 'Anonymous'
-      data['avatar_file_name'] = nil
-    end 
-
+    
     if current_user.is_admin?
       data['email'] = email
-      if anonymize_everything
-        data['email'] = Translations::Translation.get('withheld', 'withheld')
-      end
     end
+
+    if anonymize_everything && self.id != current_user.id
+      data.merge User.anonimized_info(data["id"], is_admin)
+    end 
 
     data['tags'] = tags_for_subdomain(current_user.is_admin?)
     data
@@ -561,6 +548,25 @@ class User < ApplicationRecord
 
 
     results
+  end
+
+
+  def self.anonimized_id(id)
+    return -1
+  end
+
+  def self.anonimized_info(id, include_email=false)
+    info = {
+      "id" => -1,
+      "name" => Translations::Translation.get('anonymous', 'Anonymous'),
+      "avatar_file_name" => nil
+    }
+
+    if include_email
+      info["email"] = Translations::Translation.get('withheld', 'withheld')
+    end
+
+    info
   end
 
 

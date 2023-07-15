@@ -50,11 +50,12 @@ class Point < ApplicationRecord
     result = super(options)
 
     # If anonymous, hide user id
-    if (result['hide_name'] && (current_user.nil? || current_user.id != result['user_id']))
+    if (  result['hide_name'] && (current_user.nil? || current_user.id != result['user_id']))
       result['user_id'] = -1
     end
 
     result['includers'] = result['includers'] || []
+
     result['includers'].map! {|u| hide_name && u == user_id ? -1 : u}
     result['includers'].map! {|u| u.is_a?(Integer) ? "/user/#{u}" : u}
         
@@ -117,9 +118,16 @@ class Point < ApplicationRecord
     opinions = Opinion.published \
             .where(:proposal_id => self.proposal_id) \
             .where("user_id IN (?)", self.inclusions.map {|i| i.user_id} ) \
-            .select(:stance, :user_id)
+            .select(:stance, :user_id, :hide_name)
 
-    updated_includers = opinions.map {|x| x.user_id}
+    anonymize_everything = current_subdomain.customization_json['anonymize_everything']
+    updated_includers = opinions.map do |x|
+      if x.hide_name || anonymize_everything
+        User.anonimized_info(x.user_id)["id"]
+      else
+        x.user_id
+      end
+    end 
 
     # ###
     # # define cross-spectrum appeal

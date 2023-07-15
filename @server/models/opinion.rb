@@ -196,6 +196,31 @@ class Opinion < ApplicationRecord
     self.recache
   end
 
+  def change_visibility(anon)
+    self.hide_name = anon
+
+    points = Point.where(proposal_id: proposal_id, user_id: user_id)
+    points.update_all(hide_name: hide_name)
+
+    user.comments.each do |comment|
+      if comment.point.proposal_id == self.proposal_id
+        if comment.hide_name != self.hide_name
+          comment.hide_name = self.hide_name
+          comment.save
+        end
+      end
+    end
+    
+    points.each do |pnt|
+      pnt.recache
+    end
+
+    inclusions.each do |inc|
+      inc.point.recache
+    end
+
+  end
+
   def recache
     self.point_inclusions = inclusions.select(:point_id).map {|x| x.point_id }.uniq.compact
     self.save

@@ -57,6 +57,9 @@ class OpinionController < ApplicationController
 
     Proposal.clear_cache
 
+    if opinion.hide_name
+      opinion.change_visibility(true)
+    end
 
     original_id = key_id(params[:key])
     result = opinion.as_json
@@ -71,7 +74,7 @@ class OpinionController < ApplicationController
     opinion = Opinion.find key_id(params)
     authorize! 'update opinion', opinion
 
-    fields = ['stance', 'point_inclusions', 'explanation', 'hide_name']
+    fields = ['stance', 'point_inclusions', 'explanation']
     updates = params.select{|k,v| fields.include? k}.to_h
 
     # Convert proposal key to id
@@ -87,7 +90,7 @@ class OpinionController < ApplicationController
 
     # Grab the proposal
     proposal = Proposal.find(updates['proposal_id'])
-    
+
     # Update the normal fields
     opinion.update updates
     opinion.save
@@ -114,6 +117,10 @@ class OpinionController < ApplicationController
         :where => proposal.slug
       })
 
+    end
+
+    if opinion.hide_name != params['hide_name']
+      opinion.change_visibility(params['hide_name'])
     end
 
     dirty_key "/proposal/#{proposal.id}"

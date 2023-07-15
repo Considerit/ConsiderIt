@@ -21,6 +21,7 @@ window.Point = ReactiveComponent
     current_user = fetch('/current_user')
 
 
+
     renderIncluders = (draw_all_includers) =>
 
       if point.includers
@@ -58,7 +59,7 @@ window.Point = ReactiveComponent
 
             includer_opinion = _.findWhere proposal.opinions, {user: includer}
 
-            anonymous = includer_opinion?.hide_name || (point.hide_name && point.user == includer)
+            anonymous = customization('anonymize_everything') || includer_opinion?.hide_name || (point.hide_name && point.user == includer)
             avatar includer, 
               key: includer
               className: "point_includer_avatar"

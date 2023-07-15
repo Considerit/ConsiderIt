@@ -119,6 +119,14 @@ class User < ApplicationRecord
     anonymize_everything = current_subdomain.customization_json['anonymize_everything']
 
     tags_config = current_subdomain.customization_json.fetch('user_tags', [])
+
+    if anonymize_everything
+      anon_name = Translations::Translation.get('anonymous', 'Anonymous')
+      if is_admin
+        withheld_email = Translations::Translation.get('withheld', 'withheld')
+      end
+    end
+
     users.each do |u| 
       u_tags = Oj.load(u['tags']||'{}')
       u['tags'] = {}
@@ -130,10 +138,10 @@ class User < ApplicationRecord
       end
 
       if current_user.key != u['key'] && anonymize_everything
-        u['name'] = Translations::Translation.get('anonymous', 'Anonymous')
+        u['name'] = anon_name
         u['avatar_file_name'] = nil
         if is_admin
-          u['email'] = Translations::Translation.get('withheld', 'withheld')
+          u['email'] = withheld_email
         end
       end 
 

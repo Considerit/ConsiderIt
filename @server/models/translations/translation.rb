@@ -62,8 +62,7 @@ class Translations::Translation < ApplicationRecord
       raise "Could not get langs for translating for email: user #{user} subdomain #{subdomain} args #{args}"
     end 
 
-    key = "TRANSLATION: #{id}, #{langs}"
-    
+    key = "TRANSLATION: #{args}, #{native_text}"
     message = Rails.cache.fetch(key) do 
 
       translations_native = self.translations_for(DEVELOPMENT_LANGUAGE, use_subdomain ? subdomain : nil) 

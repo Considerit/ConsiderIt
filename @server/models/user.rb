@@ -597,6 +597,19 @@ class User < ApplicationRecord
     info
   end
 
+  def self.anonymized_name_for(object, recipient = nil)
+    subdomain = object.subdomain
+    anonymize_everything = subdomain.customization_json['anonymize_everything']
+
+    if ((object.respond_to?(:hide_name) && object.hide_name) || anonymize_everything) && (!recipient || recipient.id != object.user_id)
+      return User.anonymized_info(object.user_id)["name"]
+    else
+      return object.user.name
+    end 
+
+  end
+
+
   def self.generate_anonymous_name
     names = [
       "Scholar",

@@ -66,9 +66,6 @@ module MailerHelper
 
 
 
-
-
-
   def time_ago(timestamp)
     timestamp_translation = Translations::Translation.get({id: "email.digest.proposal_timestamp", T: timestamp.to_datetime}, "at {T, time, short} on {T, date, full}")
     if @translation_lang == 'en'
@@ -85,7 +82,7 @@ module MailerHelper
     has_relationship = proposal_info.key?(:relationship) && proposal_info[:relationship]
 
 
-    author_text = Translations::Translation.get({id: 'email.digest.proposal_author', author: @anonymize_everything ? 'Anonymous' : proposal.user.name}, "by {author}")
+    author_text = Translations::Translation.get({id: 'email.digest.proposal_author', author: User.anonymized_name_for(proposal)}, "by {author}")
     points_count = Translations::Translation.get({id: 'email.digest.points_count', cnt: points.count}, "{ cnt, plural,
                     =0 {no points}
                     one {# point}
@@ -242,22 +239,22 @@ module MailerHelper
     end
   end
 
-  def people_list(users)
+  def people_list(people)
     if @anonymize_everything
-      Translations::Translation.get({id: "email.digest.anonymized_people_list", cnt: users.length}, 
+      return Translations::Translation.get({id: "email.digest.anonymized_people_list", cnt: people.length}, 
                 "{ cnt, plural,
                   one {One participant}
                   other {# participants}
                  }")        
 
-    elsif users.length > 1
-      Translations::Translation.get({id: "email.digest.people_list", name: users[0].name, cnt: users.length - 1}, 
+    elsif people.length > 1
+      return Translations::Translation.get({id: "email.digest.people_list", name: people[0], cnt: people.length - 1}, 
                 "{name} and { cnt, plural,
                   one {one other}
                   other {# others}
                  }")
     else 
-      users[0].name
+      return people[0]
     end
   end
 

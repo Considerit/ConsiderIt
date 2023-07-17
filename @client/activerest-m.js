@@ -609,7 +609,7 @@
     }
 
     function key_id(string) {
-        return string.match(/\/[^\/]+\/(\d+)/)[1]
+        return string.match(/\/[^\/]+\/(-?\d+)/)[1]
     }
 
     // Camelcased API options

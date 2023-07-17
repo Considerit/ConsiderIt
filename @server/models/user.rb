@@ -133,7 +133,7 @@ class User < ApplicationRecord
 
       if current_user.key != u['key'] && anonymize_everything
         id = key_id(u["key"])
-        u.merge! User.anonymized_info(id, is_admin)  
+        u.merge! User.anonymized_info(id, current_subdomain, is_admin)  
       end 
 
     end 
@@ -156,7 +156,7 @@ class User < ApplicationRecord
     end
 
     if anonymize_everything && self.id != current_user.id
-      data.merge User.anonymized_info(key_id(data["key"]), current_user.is_admin?)
+      data.merge User.anonymized_info(key_id(data["key"]), current_subdomain, current_user.is_admin?)
     end 
 
     data['tags'] = tags_for_subdomain(current_user.is_admin?)
@@ -583,11 +583,13 @@ class User < ApplicationRecord
     Rails.cache.fetch("deanonymized-#{anon_id}")
   end
 
-  def self.anonymized_info(id, include_email=false)
+  def self.anonymized_info(id, subdomain, include_email=false)
+    theme = subdomain.customizations.fetch('anonymization_theme', nil)
+
     info = {
       "key" => "/user/#{User.anonymized_id(id)}",
-      "name" => Rails.cache.fetch("anonymized-name-#{id}"){ generate_anonymous_name },
-      "avatar_file_name" => "#{Rails.application.config.action_controller.asset_host}/images/anonymous_avatars/mask#{rand(1..27)}.png"
+      "name" => Rails.cache.fetch("anonymized-name-#{id}-#{theme}"){ generate_anonymous_name(theme) },
+      "avatar_file_name" => Rails.cache.fetch("anonymized-avatar-#{id}-#{theme}"){ generate_anonymous_avatar(theme) }
     }
 
     if include_email
@@ -602,89 +604,94 @@ class User < ApplicationRecord
     anonymize_everything = subdomain.customization_json['anonymize_everything']
 
     if ((object.respond_to?(:hide_name) && object.hide_name) || anonymize_everything) && (!recipient || recipient.id != object.user_id)
-      return User.anonymized_info(object.user_id)["name"]
+      return User.anonymized_info(object.user_id, subdomain)["name"]
     else
       return object.user.name
     end 
 
   end
 
+  def self.generate_anonymous_avatar(theme)
+    if theme == 'playful' 
+      "#{Rails.application.config.action_controller.asset_host}/images/anonymous_avatars/playful/mask#{rand(1..27)}.png"
+    else 
+      nil
+    end
+  end
 
-  def self.generate_anonymous_name
-    names = [
-      "Scholar",
-      "Professor",
-      "Scientist",
-      "Philosopher",
-      "Academic",
-      "Thinker",
-      "Intellectual",
-      "Mystic",
-      "Healer",
-      "Student",
-      "Sage",
-      "Savant",
-      "Researcher",
-      "Monastic",
-      "Critic",
-      "Pupil",
-      "Theorist",
-      "Faculty",
-      "Inventor",
-      "Polymath",
-      "Artist",
-      "Creator",
-      "Observer",
-      "Apprentice",
-      "Tutor",
-      "Scribe",
-      "Writer",
-      "Citizen",
-      "Human",
-      "Denizen",
-      "Civilian",
-      "Individual"
-    ]
 
-    adjectives = [
-      "Secretive",
-      "Sneaky",
-      "Anonymous",
-      "Masked",
-      "Invisible",
-      "Covert",
-      "Mysterious",
-      "Undercover",
-      "Private",
-      "Furtive",
-      "Disguised",
-      "Incognito",
-      "Hermetic",
-      "Reclusive",
-      "Hidden",
-      "Cloaked",
-      "Midnight",
-      "Shadowed",
-      "Shy",
-      "Inconspicuous",
-      "Obscured",
-      "Unnoticed",
-      "Clandestine",
-      "Surreptitious",
-      "Cryptic",
-      "Enigmatic",
-      "Unseen",
-      "Veiled",
-      "Elusive"
-    ]
+  def self.generate_anonymous_name(theme)
+    if theme == 'playful'
+      names = [
+        "Scholar",
+        "Professor",
+        "Scientist",
+        "Philosopher",
+        "Academic",
+        "Thinker",
+        "Intellectual",
+        "Mystic",
+        "Healer",
+        "Student",
+        "Sage",
+        "Savant",
+        "Researcher",
+        "Monastic",
+        "Critic",
+        "Pupil",
+        "Theorist",
+        "Faculty",
+        "Inventor",
+        "Polymath",
+        "Artist",
+        "Creator",
+        "Observer",
+        "Apprentice",
+        "Tutor",
+        "Scribe",
+        "Writer",
+        "Citizen",
+        "Human",
+        "Denizen",
+        "Civilian",
+        "Individual"
+      ]
 
-    adjective = adjectives.sample
-    adjective = Translations::Translation.get("anon-name-#{adjective}", adjective)
+      adjectives = [
+        "Secretive",
+        "Sneaky",
+        "Anonymous",
+        "Masked",
+        "Invisible",
+        "Covert",
+        "Mysterious",
+        "Undercover",
+        "Furtive",
+        "Disguised",
+        "Incognito",
+        "Hermetic",
+        "Reclusive",
+        "Hidden",
+        "Cloaked",
+        "Shadowed",
+        "Obscured",
+        "Clandestine",
+        "Surreptitious",
+        "Cryptic",
+        "Unseen",
+        "Veiled"
+      ]
 
-    noun = names.sample
-    noun = Translations::Translation.get("anon-name-#{noun}", noun)
+      adjective = adjectives.sample
+      adjective = Translations::Translation.get("anon-name-#{adjective}", adjective)
 
-    "#{adjective} #{noun}"
+      noun = names.sample
+      noun = Translations::Translation.get("anon-name-#{noun}", noun)
+
+      "#{adjective} #{noun}"
+    else
+      Translations::Translation.get('anonymous', 'Anonymous')
+    end
   end
 
 

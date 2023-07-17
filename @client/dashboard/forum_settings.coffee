@@ -69,8 +69,6 @@ window.ForumSettingsDash = ReactiveComponent
 
     return SPAN null if !subdomain.name
 
-    allow_change_anon = not subdomain.customizations.anonymize_permanently
-    allow_change_perm_anon = subdomain.customizations.anonymize_everything and (not subdomain.customizations.anonymize_permanently)
 
 
     DIV 
@@ -202,135 +200,13 @@ window.ForumSettingsDash = ReactiveComponent
 
 
 
-      ########################
-      # ANONYMIZE EVERYTHING
-      DIV 
-        className: 'input_group checkbox'
-        
-        LABEL 
-          className: 'toggle_switch' + ( if allow_change_anon  then ''  else ' disabled' )
-
-          INPUT 
-            id: 'anonymize_everything'
-            type: 'checkbox'
-            name: 'anonymize_everything'
-            defaultChecked: customization('anonymize_everything')
-            disabled: not allow_change_anon
-            onChange: (ev) -> 
-              subdomain.customizations ||= {}
-              subdomain.customizations.anonymize_everything = ev.target.checked
-              save subdomain, ->
-                arest.serverFetch('/users') # anonymity may have changed, so force a refetch
-          
-          SPAN 
-            className: 'toggle_switch_circle'
 
 
-        LABEL 
-          className: 'indented'
-          htmlFor: 'anonymize_everything'
-          B null,
-            'Anonymize everything.'
-          
-          DIV 
-            className: 'explanation'
-
-            "The authors of opinions, points, proposals, and comments will be hidden. Participants still need to be registered. The real identity of authors will still be accessible via the data export."
 
 
-      ########################
-      # Anonymize permanently
-
-      DIV 
-        className: 'input_group checkbox'
-        style: 
-          paddingLeft: 70
-        
-        LABEL 
-          className: 'toggle_switch' + ( if allow_change_perm_anon  then ''  else ' disabled' )
-          onClick: (ev) -> 
-            # Enforce disabled condition
-            if not allow_change_perm_anon
-              ev.stopPropagation()
-              ev.preventDefault()
-              return
-            # Receives click-events from both label and span, which should be deduplicated to prevent redundant confirmation-dialogs
-            # Deduplicate by time between confirm() finish and second event.
-            #   Deduplicating by time between events fails, because second event time is delayed until confirm() response.
-            #   Deduplicating by target is fragile, assumes specific target order.
-            #   Deduplicating by event X/Y coordinates would fail for accessibility cases like keyboard control.
-            # If user just ok'd to confirm change... this is a duplicate click event, do not re-prompt to confirm
-            now = new Date()
-            confirmed = @lastConfirmTime and ( now - @lastConfirmTime < 100 )
-            if confirmed
-              return confirmed
-            # Prompt user for confirmation, and stop click-events if user cancels change
-            confirmed = confirm( 'This makes anonymization of this forum permanent. You will not be able to revert. Are you certain?' )
-            if confirmed
-              @lastConfirmTime = new Date()
-            else
-              ev.stopPropagation()
-              ev.preventDefault()
-
-          INPUT 
-            id: 'anonymize_permanently'
-            type: 'checkbox'
-            name: 'anonymize_permanently'
-            defaultChecked: customization('anonymize_permanently')
-            disabled: not allow_change_perm_anon
-            onChange: (ev) -> 
-              subdomain.customizations ||= {}
-              if ev.target.checked
-                subdomain.customizations.anonymize_everything = true
-              subdomain.customizations.anonymize_permanently = ev.target.checked
-              save subdomain, ->
-                arest.serverFetch('/users') # anonymity may have changed, so force a refetch
-          
-          SPAN 
-            className: 'toggle_switch_circle'
-
-        LABEL 
-          className: 'indented'
-          htmlFor: 'anonymize_permanently'
-          B null,
-            'Anonymize permanently.'
-          
-          DIV 
-            className: 'explanation'
-            "Anonymization will become irreversible. You will never see the identities of participants. Data export will not reveal the real identity of authors."
 
 
-      ########################
-      # HIDE OPINIONS OF EVERYONE
-      DIV className: 'input_group checkbox',
 
-        LABEL 
-          className: 'toggle_switch'
-
-          INPUT 
-            id: 'hide_opinions'
-            type: 'checkbox'
-            name: 'hide_opinions'
-            defaultChecked: customization('hide_opinions')
-            onChange: (ev) -> 
-              subdomain.customizations ||= {}
-              subdomain.customizations.hide_opinions = ev.target.checked
-              save subdomain, ->
-                arest.serverFetch('/users') # anonymity may have changed, so force a refetch
-
-          SPAN 
-            className: 'toggle_switch_circle'
-        
-
-        LABEL 
-          className: 'indented'
-
-          htmlFor: 'hide_opinions'
-          B null, 
-            'Hide the opinions of others.'
-          DIV 
-            className: 'explanation'
-            ' The authors of proposals, points, and comments are still shown, but opinions of others are hidden. Hosts, like you, however, will be able to see the opinions of everyone.'
 
 
       ########################
@@ -526,7 +402,7 @@ window.ForumSettingsDash = ReactiveComponent
 
 
           
-
+      @drawAnonymitySettings()
 
 
 
@@ -614,7 +490,210 @@ window.ForumSettingsDash = ReactiveComponent
 
             onSubmit: => 
               confirm("Are you sure you want to rename this forum?")
-         
+  
+  drawAnonymitySettings : -> 
+    subdomain = fetch '/subdomain'
+    allow_change_anon = not subdomain.customizations.anonymize_permanently
+    allow_change_perm_anon = subdomain.customizations.anonymize_everything and (not subdomain.customizations.anonymize_permanently)
+
+
+    DIV 
+      className: 'FORUM_SETTINGS_section input_group'
+
+      H4 null, 
+
+        'Identity and Content Visibility'
+
+      DIV
+        className: 'explanation'
+
+        """
+        These settings control the level of anonymity and visibility of participant identities and opinions in the forum, 
+        ranging from hiding the opinions of others to complete anonymization of authors' identities.
+        """
+
+
+      DIV 
+        style: 
+          marginTop: 32
+
+        ########################
+        # HIDE OPINIONS OF EVERYONE
+        DIV className: 'input_group checkbox',
+
+          LABEL 
+            className: 'toggle_switch'
+
+            INPUT 
+              id: 'hide_opinions'
+              type: 'checkbox'
+              name: 'hide_opinions'
+              defaultChecked: customization('hide_opinions')
+              onChange: (ev) -> 
+                subdomain.customizations ||= {}
+                subdomain.customizations.hide_opinions = ev.target.checked
+                save subdomain, ->
+                  arest.serverFetch('/users') # anonymity may have changed, so force a refetch
+
+            SPAN 
+              className: 'toggle_switch_circle'
+          
+
+          LABEL 
+            className: 'indented'
+
+            htmlFor: 'hide_opinions'
+            B null, 
+              'Hide the opinions of others.'
+            DIV 
+              className: 'explanation'
+              ' The authors of proposals, points, and comments are still shown, but opinions of others are hidden. Hosts, like you, however, will be able to see the opinions of everyone.'
+
+
+        ########################
+        # ANONYMIZE EVERYTHING
+        DIV 
+          className: 'input_group checkbox'
+          
+          LABEL 
+            className: 'toggle_switch' + ( if allow_change_anon  then ''  else ' disabled' )
+
+            INPUT 
+              id: 'anonymize_everything'
+              type: 'checkbox'
+              name: 'anonymize_everything'
+              defaultChecked: customization('anonymize_everything')
+              disabled: not allow_change_anon
+              onChange: (ev) -> 
+                subdomain.customizations ||= {}
+                subdomain.customizations.anonymize_everything = ev.target.checked
+                save subdomain, ->
+                  arest.serverFetch('/users') # anonymity may have changed, so force a refetch
+            
+            SPAN 
+              className: 'toggle_switch_circle'
+
+
+          LABEL 
+            className: 'indented'
+            htmlFor: 'anonymize_everything'
+            B null,
+              'Anonymize everything.'
+            
+            DIV 
+              className: 'explanation'
+
+              "The authors of opinions, points, proposals, and comments will be hidden. Participants still need to be registered. The real identity of authors will still be accessible via the data export."
+
+        ########################
+        # Anonymize permanently
+
+        DIV 
+          className: 'input_group checkbox'
+          style: 
+            paddingLeft: 70
+          
+          LABEL 
+            className: 'toggle_switch' + ( if allow_change_perm_anon  then ''  else ' disabled' )
+            onClick: (ev) -> 
+              # Enforce disabled condition
+              if not allow_change_perm_anon
+                ev.stopPropagation()
+                ev.preventDefault()
+                return
+              # Receives click-events from both label and span, which should be deduplicated to prevent redundant confirmation-dialogs
+              # Deduplicate by time between confirm() finish and second event.
+              #   Deduplicating by time between events fails, because second event time is delayed until confirm() response.
+              #   Deduplicating by target is fragile, assumes specific target order.
+              #   Deduplicating by event X/Y coordinates would fail for accessibility cases like keyboard control.
+              # If user just ok'd to confirm change... this is a duplicate click event, do not re-prompt to confirm
+              now = new Date()
+              confirmed = @lastConfirmTime and ( now - @lastConfirmTime < 100 )
+              if confirmed
+                return confirmed
+              # Prompt user for confirmation, and stop click-events if user cancels change
+              confirmed = confirm( 'This makes anonymization of this forum permanent. You will not be able to revert. Are you certain?' )
+              if confirmed
+                @lastConfirmTime = new Date()
+              else
+                ev.stopPropagation()
+                ev.preventDefault()
+
+            INPUT 
+              id: 'anonymize_permanently'
+              type: 'checkbox'
+              name: 'anonymize_permanently'
+              defaultChecked: customization('anonymize_permanently')
+              disabled: not allow_change_perm_anon
+              onChange: (ev) -> 
+                subdomain.customizations ||= {}
+                if ev.target.checked
+                  subdomain.customizations.anonymize_everything = true
+                subdomain.customizations.anonymize_permanently = ev.target.checked
+                save subdomain, ->
+                  arest.serverFetch('/users') # anonymity may have changed, so force a refetch
+            
+            SPAN 
+              className: 'toggle_switch_circle'
+
+          LABEL 
+            className: 'indented'
+            htmlFor: 'anonymize_permanently'
+            B null,
+              'Anonymize permanently.'
+            
+            DIV 
+              className: 'explanation'
+              "Anonymization will become irreversible. You will never see the identities of participants. Data export will not reveal the real identity of authors."
+
+
+
+
+        ########################
+        # Anonymization theme
+        if customization('anonymize_everything')
+          DIV 
+            className: 'input_group'
+            style: 
+              paddingLeft: 70
+
+            DIV null,
+              LABEL 
+                htmlFor: 'anonymization_theme'
+                style: 
+                  marginRight: 18
+                'Anonymization theme'
+              
+
+              SELECT 
+                id: 'anonymization_theme'
+                defaultValue: customization('anonymization_theme')
+                style: 
+                  fontSize: 18
+                  # display: 'block'
+                  # marginTop: 4
+                onChange: (e) => 
+                  subdomain.customizations.anonymization_theme = e.target.value
+                  save subdomain, ->
+                    arest.serverFetch('/users') # anonymity may have changed, so force a refetch
+
+                for theme in [{value: null, label: 'Default'}, {value: 'playful', label: 'Playful'}]
+                  OPTION
+                    key: theme.value
+                    value: theme.value
+                    theme.label 
+
+
+            DIV 
+              className: 'explanation'
+              """Anonymous names and avatars will be assigned to participants, following a specific theme. These 
+                 themes help enhance the livliness of the forum. By default, generic gray avatars are used and each 
+                 participant is labeled 'Anonymous'."""
+
+
+
+
+
   drawContributionPhaseSettings : -> 
     subdomain = fetch '/subdomain'
 

@@ -316,7 +316,7 @@ window.avatar = (user, props) ->
   attrs = _.extend attrs,
     key: user.key
     className: "avatar #{props.className or ''}"
-    'data-user': if anonymous then -1 else user.key
+    'data-user': user.key
     'data-popover': if !props.hide_popover && !anonymous && !screencasting() then alt 
     'data-tooltip': if anonymous then alt
     'data-anon': anonymous  

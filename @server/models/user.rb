@@ -132,7 +132,8 @@ class User < ApplicationRecord
       end
 
       if current_user.key != u['key'] && anonymize_everything
-        u.merge! User.anonimized_info(u["id"], is_admin)  
+        id = key_id(u["key"])
+        u.merge! User.anonymized_info(id, is_admin)  
       end 
 
     end 
@@ -155,7 +156,7 @@ class User < ApplicationRecord
     end
 
     if anonymize_everything && self.id != current_user.id
-      data.merge User.anonimized_info(data["id"], is_admin)
+      data.merge User.anonymized_info(key_id(data["key"]), current_user.is_admin?)
     end 
 
     data['tags'] = tags_for_subdomain(current_user.is_admin?)
@@ -551,15 +552,42 @@ class User < ApplicationRecord
   end
 
 
-  def self.anonimized_id(id)
-    return -1
+  def self.anonymized_id(id)
+    if id < 0
+      return id
+    end 
+
+    anon_id = Rails.cache.fetch("anonymized-#{id}") do 
+      assigned_anon_ids = Rails.cache.fetch("anon_ids") do 
+        {}
+      end
+
+      my_anon_id = -100
+      while assigned_anon_ids.has_key?(my_anon_id)
+        my_anon_id = rand(-9999999999999..-2)
+      end
+      assigned_anon_ids[my_anon_id] = id
+
+      Rails.cache.write("anon_ids", assigned_anon_ids)
+      Rails.cache.write("deanonymized-#{my_anon_id}", id)
+
+      my_anon_id
+    end
+    anon_id
   end
 
-  def self.anonimized_info(id, include_email=false)
+  def self.deanonymized_id(anon_id)
+    if anon_id >= 0
+      return anon_id
+    end
+    Rails.cache.fetch("deanonymized-#{anon_id}")
+  end
+
+  def self.anonymized_info(id, include_email=false)
     info = {
-      "id" => -1,
-      "name" => Translations::Translation.get('anonymous', 'Anonymous'),
-      "avatar_file_name" => nil
+      "key" => "/user/#{User.anonymized_id(id)}",
+      "name" => Rails.cache.fetch("anonymized-name-#{id}"){ generate_anonymous_name },
+      "avatar_file_name" => "#{Rails.application.config.action_controller.asset_host}/images/anonymous_avatars/mask#{rand(1..27)}.png"
     }
 
     if include_email
@@ -567,6 +595,83 @@ class User < ApplicationRecord
     end
 
     info
+  end
+
+  def self.generate_anonymous_name
+    names = [
+      "Scholar",
+      "Professor",
+      "Scientist",
+      "Philosopher",
+      "Academic",
+      "Thinker",
+      "Intellectual",
+      "Mystic",
+      "Healer",
+      "Student",
+      "Sage",
+      "Savant",
+      "Researcher",
+      "Monastic",
+      "Critic",
+      "Pupil",
+      "Theorist",
+      "Faculty",
+      "Inventor",
+      "Polymath",
+      "Artist",
+      "Creator",
+      "Observer",
+      "Apprentice",
+      "Tutor",
+      "Scribe",
+      "Writer",
+      "Citizen",
+      "Human",
+      "Denizen",
+      "Civilian",
+      "Individual"
+    ]
+
+    adjectives = [
+      "Secretive",
+      "Sneaky",
+      "Anonymous",
+      "Masked",
+      "Invisible",
+      "Covert",
+      "Mysterious",
+      "Undercover",
+      "Private",
+      "Furtive",
+      "Disguised",
+      "Incognito",
+      "Hermetic",
+      "Reclusive",
+      "Hidden",
+      "Cloaked",
+      "Midnight",
+      "Shadowed",
+      "Shy",
+      "Inconspicuous",
+      "Obscured",
+      "Unnoticed",
+      "Clandestine",
+      "Surreptitious",
+      "Cryptic",
+      "Enigmatic",
+      "Unseen",
+      "Veiled",
+      "Elusive"
+    ]
+
+    adjective = adjectives.sample
+    adjective = Translations::Translation.get("anon-name-#{adjective}", adjective)
+
+    noun = names.sample
+    noun = Translations::Translation.get("anon-name-#{noun}", noun)
+
+    "#{adjective} #{noun}"
   end
 
 

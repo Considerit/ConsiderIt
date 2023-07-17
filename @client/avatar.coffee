@@ -264,6 +264,7 @@ props_to_strip = ['user', 'anonymous', 'set_bg_color', 'custom_bg_color', 'hide_
 window.avatar = (user, props) ->
   attrs = _.clone props
 
+
   if !user.key 
     if user == arest.cache['/current_user']?.user 
       user = fetch(user)
@@ -280,8 +281,8 @@ window.avatar = (user, props) ->
 
   # Setting avatar image
   #   Don't show one if it should be anonymous or the user doesn't have one
-  #   Default to small size if the width is small  
-  anonymous = attrs.anonymous || arest.key_id(user.key) < 0
+  #   Default to small size if the width is small 
+  anonymous = attrs.anonymous || (user && arest.key_id(user.key) < 0)
   src = null
 
   if !props.custom_bg_color && user.avatar_file_name   

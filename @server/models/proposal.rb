@@ -353,7 +353,7 @@ class Proposal < ApplicationRecord
 
         proposal['point_count'] = pnts_with_inclusions.length
 
-        Proposal.anonymize_json(proposal, anonymize_everything, current_user)
+        proposal = Proposal.anonymize_json(proposal, anonymize_everything)
 
         proposals.push proposal
       end
@@ -474,8 +474,6 @@ class Proposal < ApplicationRecord
     make_key(json, 'proposal')
     stubify_field(json, 'user')
 
-    Proposal.anonymize_json(json, anonymize_everything, current_user)
-
     if Permissions.permit('update proposal', self) > 0
       json['roles'] = self.user_roles
       json['invitations'] = nil
@@ -510,6 +508,8 @@ class Proposal < ApplicationRecord
       json['point_count'] = self.points.where("(published=1 AND #{moderation_status_check} AND json_length(includers) > 0) OR user_id=#{current_user.id}").count
     end 
 
+    json = Proposal.anonymize_json(json, anonymize_everything)
+
     json
   end
 
@@ -527,6 +527,10 @@ class Proposal < ApplicationRecord
       json['roles'].each do |role, users|
         anonymized_users = []
         users.each do |user|
+          if user[0] != '/'
+            anonymized_users.push user
+            next
+          end
           id = key_id(user)
           if (anonymize_everything || (json["hide_name"] && json["hide_name"] != 0)) && active_user.id != id
             anonymized_users.push "/user/#{User.anonymized_id(id)}"

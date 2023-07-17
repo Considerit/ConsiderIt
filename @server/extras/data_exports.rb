@@ -28,7 +28,7 @@ def get_identity(user, anonymize)
     user_name = user.name
     user_email = user.email.gsub('.ghost', '')
   else 
-    info = User.anonimized_info(user.id, true)
+    info = User.anonymized_info(user.id, true)
     user_name = info["name"]
     user_email = info["email"]      
   end

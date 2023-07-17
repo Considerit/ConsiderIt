@@ -5,6 +5,7 @@ class Comment < ApplicationRecord
   self.my_public_fields = [:id, :body, :user_id, :created_at, :point_id, :moderation_status, :subdomain_id, :hide_name ]
 
   scope :public_fields, -> {select(self.my_public_fields)}
+  scope :named, -> {where( :hide_name => false )}
   
   validates_presence_of :body
   validates_presence_of :user
@@ -27,8 +28,11 @@ class Comment < ApplicationRecord
     result = super(options)
     make_key(result, 'comment')
 
-    if (  result['hide_name'] && (current_user.nil? || current_user.id != result['user_id']))
-      result['user_id'] = User.anonimized_id(result['user_id'])
+    anonymize_everything = current_subdomain.customization_json['anonymize_everything']
+
+    # If anonymous, hide user id
+    if (anonymize_everything || self.hide_name) && (current_user.nil? || current_user.id != self.user_id)
+      result['user_id'] = User.anonymized_id(result['user_id'])
     end
 
     stubify_field(result, 'user')

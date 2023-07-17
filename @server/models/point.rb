@@ -17,9 +17,15 @@ class Point < ApplicationRecord
       self.nutshell = self.nutshell[0..179]
     end
 
-    if self.nutshell.length == 0 && !self.text.nil? && self.text.length > 0
-      self.text =  self.text[179..self.text.length]
+    if self.nutshell.length == 0 && self.text && self.text.length > 0
       self.nutshell = self.text[0..179]
+
+      if self.text.length > 179
+        self.text =  self.text[179..self.text.length]
+      else
+        self.text = ""
+      end
+
     end
 
   end
@@ -45,26 +51,46 @@ class Point < ApplicationRecord
   scope :cons, -> {where( :is_pro => false )}
   
 
+  def self.anonymize_json(json, anonymize_everything, active_user=nil)
+    if !active_user
+      active_user = current_user
+    end
+
+    id = key_id(json['user'])
+    if (anonymize_everything || (json["hide_name"] && json["hide_name"] != 0)) && active_user.id != id
+      json['user'] = "/user/#{User.anonymized_id(id)}"
+    end
+
+    if json['includers']
+      if json['includers'].length > 0
+        json['includers'].map! do |u|
+          id = u['id']
+          if (anonymize_everything || u['hide_name']) && (!active_user || active_user.id != id )
+            id = User.anonymized_id(id)
+          end
+          "/user/#{id}"
+        end
+      end
+    else 
+      json['includers'] = []
+    end
+
+    json
+  end
+
   def as_json(options={})
     options[:only] ||= Point.my_public_fields
     result = super(options)
 
-    # If anonymous, hide user id
-    if (  result['hide_name'] && (current_user.nil? || current_user.id != result['user_id']))
-      result['user_id'] = User.anonimized_id(result['user_id'])
-    end
-
-    result['includers'] = result['includers'] || []
-
-    result['includers'].map! {|u| hide_name && u == user_id ? -1 : u}
-    result['includers'].map! {|u| u.is_a?(Integer) ? "/user/#{u}" : u}
-        
     result["created_at"] = result["created_at"].to_time.utc
     result["updated_at"] = result["updated_at"].to_time.utc
 
     make_key(result, 'point')
     stubify_field(result, 'proposal')
     stubify_field(result, 'user')
+
+    anonymize_everything = current_subdomain.customization_json['anonymize_everything']
+    result = Point.anonymize_json(result, anonymize_everything)
 
     result
   end
@@ -113,27 +139,15 @@ class Point < ApplicationRecord
   def recache
     set_comment_count
 
-    # if we just look at self.inclusions, authors of unpublished opinions that
-    # included this point will be set as includers
-    opinions = Opinion.published \
-            .where(:proposal_id => self.proposal_id) \
-            .where("user_id IN (?)", self.inclusions.map {|i| i.user_id} ) \
-            .select(:stance, :user_id, :hide_name)
-
-    anonymize_everything = current_subdomain.customization_json['anonymize_everything']
-    updated_includers = opinions.map do |x|
-      if x.hide_name || anonymize_everything
-        User.anonimized_info(x.user_id)["id"]
-      else
-        x.user_id
-      end
+    self.includers = self.inclusions.map do |x|
+      {'id' => x.user_id, 'hide_name' => x.opinion.hide_name}
     end 
 
     # ###
     # # define cross-spectrum appeal
-    # if updated_includers.length == 0 # special cases
+    # if self.includers.length == 0 # special cases
     #   self.appeal = 0.001
-    # elsif updated_includers.length == 1
+    # elsif self.includers.length == 1
     #   self.appeal = 0.001
     # else
     #   # Compute the variance of the distribution of stances of users
@@ -147,11 +161,11 @@ class Point < ApplicationRecord
     #   standard_deviation = Math.sqrt(variance)
 
     #   self.appeal = standard_deviation
-    #   self.score = updated_includers.length + standard_deviation * updated_includers.length
+    #   self.score = self.includers.length + standard_deviation * self.includers.length
     # end
 
-    self.includers = updated_includers
-    self.last_inclusion = updated_includers.length > 0 ? self.inclusions.where("user_id IN (?)", updated_includers).order(:created_at).last.created_at.to_i : -1
+
+    self.last_inclusion = self.includers.length > 0 ? self.inclusions.order(:created_at).last.created_at.to_i : -1
 
     if changed?
       save(:validate => false) 
@@ -172,6 +186,14 @@ class Point < ApplicationRecord
       nutshell
     end
     
+  end
+
+
+  def self.recache_all
+    for p in Point.all
+      p.recache
+    end
+
   end
 
 end

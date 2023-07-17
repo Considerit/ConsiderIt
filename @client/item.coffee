@@ -608,7 +608,7 @@ ProposalBlock = ReactiveComponent
     proposal = fetch @props.proposal
     subdomain = fetch '/subdomain'
 
-    icons = customization('show_proposer_icon', proposal, subdomain) && !@props.hide_icons && !customization('anonymize_everything')
+    icons = customization('show_proposer_icon', proposal, subdomain)
 
   render: -> 
     proposal = fetch @props.proposal

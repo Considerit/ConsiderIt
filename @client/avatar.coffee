@@ -26,7 +26,7 @@ window.anonymous_label = ->
 
 user_name = (user, anon) -> 
   user = fetch user
-  if anon || !user.name || user.name.trim().length == 0 
+  if !user.name || user.name.trim().length == 0 
     anonymous_label() 
   else 
     user.name
@@ -39,8 +39,7 @@ window.AvatarPopover = ReactiveComponent
   render: -> 
     {user, anon, opinion} = @props
     user = fetch user
-
-    anonymous = customization('anonymize_everything') or anon
+    anonymous = arest.key_id(user.key) < 0 or anon
     opinion_views = fetch 'opinion_views'
 
 
@@ -69,16 +68,17 @@ window.AvatarPopover = ReactiveComponent
           display: 'flex'
           # alignItems: 'center'
 
-        if user.avatar_file_name and not anonymous
+        if user.avatar_file_name
           IMG 
-            alt: @props.alt or alt or "Image of #{user.name}"
+            alt: @props.alt or alt or "Image of #{if anonymous then 'Image of an anonymous user "#{user.name}"' else user.name}"
             style: 
               width: 120
               height: 120
               borderRadius: '50%'
               marginRight: 24
               display: 'inline-block' 
-            src: avatarUrl user, 'large'
+            src: if anonymous then user.avatar_file_name else avatarUrl user, 'large'
+
 
         DIV null,
           
@@ -231,7 +231,7 @@ window.AvatarPopover = ReactiveComponent
                     style: 
                       fontStyle: 'italic'
                       marginLeft: 12
-                    "~ #{if anonymous or point.hide_name then anonymous_label() else fetch(point.user).name}"
+                    "~ #{fetch(point.user).name}"
 
 
 
@@ -264,8 +264,6 @@ props_to_strip = ['user', 'anonymous', 'set_bg_color', 'custom_bg_color', 'hide_
 window.avatar = (user, props) ->
   attrs = _.clone props
 
-
-
   if !user.key 
     if user == arest.cache['/current_user']?.user 
       user = fetch(user)
@@ -275,36 +273,37 @@ window.avatar = (user, props) ->
       fetch user
       return SPAN null
 
-  attrs.style ?= {}
-  style = attrs.style
+  style = {}
+  if attrs.style
+    for k,v of attrs.style
+      style[k] = v
 
   # Setting avatar image
   #   Don't show one if it should be anonymous or the user doesn't have one
   #   Default to small size if the width is small  
-  anonymous = Boolean(attrs.anonymous)
+  anonymous = attrs.anonymous || arest.key_id(user.key) < 0
   src = null
 
-  if !anonymous && !props.custom_bg_color && user.avatar_file_name 
+  if !props.custom_bg_color && user.avatar_file_name   
     if style?.width >= 50
       img_size = 'large'
     else 
       img_size = attrs.img_size or 'small'
 
-    src = avatarUrl user, img_size
+    if anonymous
+      src = user.avatar_file_name
+    else  
+      src = avatarUrl user, img_size
 
     # Override the gray default avatar color if we're showing an image. 
     # In most cases the white will allow for a transparent look. It 
     # isn't set to transparent because a transparent icon in many cases
     # will reveal content behind it that is undesirable to show.  
     style.backgroundColor = 'white'
+
   else if props.set_bg_color && !props.custom_bg_color 
     user.bg_color ?= hsv2rgb(Math.random() / 5 + .6, Math.random() / 8 + .025, Math.random() / 4 + .4)
     style.backgroundColor = user.bg_color
-
-  id = if anonymous 
-         "avatar-hidden" 
-       else 
-         "avatar-#{user.key.split('/')[2]}"
 
   name = user_name user, anonymous
 
@@ -323,12 +322,11 @@ window.avatar = (user, props) ->
     tabIndex: if props.focusable then 0 else -1
     width: style?.width
     height: style?.width
+    style: style
 
   for prop_to_strip in props_to_strip
     if prop_to_strip of attrs
       delete attrs[prop_to_strip]
-
-
 
   if src
     # attrs.alt = if props.hide_popover then '' else popover 
@@ -401,7 +399,9 @@ loaded_images = {}
 users2images = {}
 
 window.getCanvasAvatar = (user) ->
-  cached_avatars[user.key or user] or cached_avatars.default
+  key = user.key or user
+
+  cached_avatars[key] or cached_avatars.default
 
 
 colors_used = {}
@@ -481,24 +481,24 @@ createFallbackIcon = (user) ->
   createUserIcon user.bg_color
 
 
+create_avatar = (img) -> 
+  canv = document.createElement('canvas')
+  canv.width = img.width
+  canv.height = img.height
+  ctx = canv.getContext('2d')
+
+  ctx.arc(img.width / 2, img.height / 2, img.height / 2, 0, Math.PI * 2)
+  ctx.clip()
+
+  ctx.drawImage img, 0, 0
+  canv
+
 window.LoadAvatars = ReactiveComponent
   displayName: "LoadAvatars" 
   render: ->
     users = fetch '/users'
     loading = fetch('avatar_loading')
     SPAN null
-
-  create_avatar: (img) -> 
-    canv = document.createElement('canvas')
-    canv.width = img.width
-    canv.height = img.height
-    ctx = canv.getContext('2d')
-
-    ctx.arc(img.width / 2, img.height / 2, img.height / 2, 0, Math.PI * 2)
-    ctx.clip()
-
-    ctx.drawImage img, 0, 0
-    canv
 
   load: -> 
     users = fetch '/users'
@@ -508,41 +508,49 @@ window.LoadAvatars = ReactiveComponent
     loading = fetch('avatar_loading')
     app = arest.cache['/application'] or fetch('/application')
 
-    if !cached_avatars.default
-      cached_avatars.default = createFallbackIcon({key: 'default'})
-
-    avatars_to_load = []
+    avatars_to_load = {}
     all_users = users.users.slice() or []
     if current_user.user not in all_users
       all_users.push current_user.user
 
+    if !cached_avatars.default
+      cached_avatars.default = createFallbackIcon({key: 'default'})
+
     for user in all_users
       user = fetch user # subscribe to changes to avatar
+      id = arest.key_id(user.key)
 
       if user.avatar_file_name
+        if id < 0
+          img_url = user.avatar_file_name
+        else
+          img_url = avatarUrl(user, 'large')
 
-        if (users2images[user.key] != user.avatar_file_name ||
-           user.avatar_file_name not of loaded_images) && \
-           user.avatar_file_name not of missing_images
-
-          avatars_to_load.push user 
-          users2images[user.key] = user.avatar_file_name
+        if (users2images[user.key] != img_url ||
+           img_url not of loaded_images) && \
+           img_url not of missing_images
+           
+          avatars_to_load[img_url] ?= []
+          avatars_to_load[img_url].push user 
+          users2images[user.key] = img_url
 
       cached_avatars[user.key] ?= createFallbackIcon(user)
-    
-    if avatars_to_load.length > 0 
+
+    if Object.keys(avatars_to_load).length > 0 
       if !loading.loading
         loading.loading = true 
         save loading 
 
         @loading_cnt = 0
 
-        for user in avatars_to_load
+        for img, users of avatars_to_load
           @loading_cnt += 1
 
           pic = new Image()
-          pic.onload = do(user, pic) => => 
-            loaded_images[user.avatar_file_name] = cached_avatars[user.key] = @create_avatar pic
+          pic.onload = do(img, users, pic) => => 
+            cached_avatar = create_avatar pic
+            for user in users
+              loaded_images[img] = cached_avatars[user.key] = cached_avatar
             @loading_cnt -= 1
             if @loading_cnt == 0
               loading.loading = false
@@ -552,12 +560,9 @@ window.LoadAvatars = ReactiveComponent
             @loading_cnt -= 1
             missing_images[user.avatar_file_name] = 1
 
-          # setTimeout do(user, pic) -> -> 
-          pic.src = avatarUrl user, 'large'
-
+          pic.src = img
       else 
         setTimeout @load, 10   
 
   componentDidMount: -> @load()
   componentDidUpdate: -> @load()
-

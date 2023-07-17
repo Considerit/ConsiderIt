@@ -417,7 +417,6 @@ ModerateItem = ReactiveComponent
                 BUBBLE_WRAP 
                   key: point.key
                   title: point.nutshell 
-                  anon: point.hide_name
                   user: point.user
                   body: point.text
                   width: 'min(100%, 700px)'
@@ -481,7 +480,6 @@ ModerateItem = ReactiveComponent
               BUBBLE_WRAP
                 title: header
                 body: moderatable.description
-                anon: !!moderatable.hide_name
                 user: moderatable.user
                 width: 'min(100%, 700px)'
                 avatar_style: if TABLET_SIZE() then {width: 32, height: 32, left: -44}
@@ -502,7 +500,7 @@ ModerateItem = ReactiveComponent
 
                 "View #{class_name}"
 
-              if !moderatable.hide_name && !@local.messaging
+              if author && arest.key_id(author.key) >= 0 && !@local.messaging
                 BUTTON
                   style: 
                     marginLeft: 8

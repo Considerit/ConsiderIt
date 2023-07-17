@@ -64,9 +64,6 @@ window.ForumSettingsDash = ReactiveComponent
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 
-    lang = @local.language or subdomain.lang or 'en'
-    not_english = lang? && lang != 'en'
-
     return SPAN null if !subdomain.name
 
 
@@ -101,6 +98,180 @@ window.ForumSettingsDash = ReactiveComponent
 
       # DIV style: marginTop: 64
 
+
+
+
+
+
+      ########################
+      # Participation with registration
+
+      # do =>
+      #   key = "#{subdomain.name}-participation-without-registration"
+
+      #   question_index = ->
+      #     for tag, idx in (subdomain.customizations.user_tags or [])
+      #       if tag.key == key
+      #         return idx
+      #     return null
+
+      #   DIV className: 'input_group checkbox',
+
+      #     LABEL 
+      #       className: 'toggle_switch'
+
+      #       INPUT 
+      #         id: 'enable_unregistered_participation'
+      #         type: 'checkbox'
+      #         name: 'enable_unregistered_participation'
+      #         defaultChecked: customization('unregistered_participation')
+      #         onChange: (ev) -> 
+      #           subdomain.customizations ||= {}
+      #           subdomain.customizations.unregistered_participation = ev.target.checked
+      #           save subdomain
+
+
+      #       SPAN 
+      #         className: 'toggle_switch_circle'
+          
+
+      #     LABEL 
+      #       className: 'indented'
+
+      #       htmlFor: 'enable_unregistered_participation'
+      #       B null, 
+      #         'Allow participation without registration.'
+      #       DIV 
+      #         className: 'explanation'
+
+      #         dangerouslySetInnerHTML: __html: """
+      #           People are allowed to participate without registering an email or password. 
+      #           Works best for small groups where most people know each other. 
+      #           If you are considering unregistered participation, recognize that:
+      #           <ul style="padding-left: 24px; list-style-position: outside"> 
+      #             <li>It will be much easier for someone to participate many times, distorting your results. Including on proposals they submit.</li>
+      #             <li>Unregistered participants won't be notified about new activity in the forum, even in response to their own comments.</li>
+      #             <li>You will not have access to their email addresses in the data export.</li>
+      #           </ul>
+      #           """
+
+
+
+          
+      @drawAnonymitySettings()
+
+
+
+
+      #####################
+      # CONTRIBUTION PHASE
+      @drawContributionPhaseSettings()
+
+
+
+      ########################
+      # MODERATION SETTINGS
+      @drawModerationSettings()
+
+
+      @drawMiscSettings()
+
+      ########################
+      # Plan
+      if current_user.is_super_admin
+        DIV 
+          className: 'FORUM_SETTINGS_section input_group'
+
+          H4 null, 
+
+            'Forum Plan Type'
+
+          FIELDSET null,
+
+            for option in [{label: 'Free Forum', value: 0}, {label: 'Premium Forum', value: 1}, {label: 'Enterprise Forum', value: 2}]
+              DIV 
+                key: option.label
+
+                DIV 
+                  className: 'radio_group'
+                  style: 
+                    cursor: 'pointer'
+
+                  onClick: do (option) => => 
+                    subdomain.plan = option.value
+                    save subdomain
+
+
+                  INPUT 
+                    style: 
+                      cursor: 'pointer'
+                    type: 'radio'
+                    name: "plan"
+                    id: "plan_#{option.value}"
+                    defaultChecked: subdomain.plan == option.value
+
+                  LABEL 
+                    style: 
+                      cursor: 'pointer'
+                      display: 'block'
+                    htmlFor: "plan_#{option.value}"
+                    
+                    option.label
+
+
+      if current_user.is_super_admin
+        FORM 
+          id: 'rename_forum'
+          action: '/rename_forum'
+          method: 'post'
+          style: 
+            marginTop: 40
+
+          LABEL
+            htmlFor: 'name'
+            'Rename forum to: '
+
+          INPUT 
+            id: 'name'
+            name: 'name'
+            type: 'text'
+            style: 
+              width: 300
+
+          INPUT 
+            type: 'hidden'
+            name: 'authenticity_token'
+            value: arest.csrf()
+
+
+          INPUT
+            type: 'submit' 
+
+            onSubmit: => 
+              confirm("Are you sure you want to rename this forum?")
+  
+
+  drawMiscSettings : -> 
+    subdomain = fetch '/subdomain'
+    current_user = fetch '/current_user'
+
+    lang = @local.language or subdomain.lang or 'en'
+    not_english = lang? && lang != 'en'
+
+    DIV 
+      className: 'FORUM_SETTINGS_section input_group'
+
+      H4 null, 
+
+        'Other Settings'
+
+      DIV
+        className: 'explanation'
+
+        # """
+        # These settings control the level of anonymity and visibility of participant identities and opinions in the forum, 
+        # ranging from hiding the opinions of others to complete anonymization of authors' identities.
+        # """
 
 
       ##################
@@ -345,152 +516,6 @@ window.ForumSettingsDash = ReactiveComponent
               'Plausible Analytics for this forum.'
 
 
-
-
-      ########################
-      # Participation with registration
-
-      # do =>
-      #   key = "#{subdomain.name}-participation-without-registration"
-
-      #   question_index = ->
-      #     for tag, idx in (subdomain.customizations.user_tags or [])
-      #       if tag.key == key
-      #         return idx
-      #     return null
-
-      #   DIV className: 'input_group checkbox',
-
-      #     LABEL 
-      #       className: 'toggle_switch'
-
-      #       INPUT 
-      #         id: 'enable_unregistered_participation'
-      #         type: 'checkbox'
-      #         name: 'enable_unregistered_participation'
-      #         defaultChecked: customization('unregistered_participation')
-      #         onChange: (ev) -> 
-      #           subdomain.customizations ||= {}
-      #           subdomain.customizations.unregistered_participation = ev.target.checked
-      #           save subdomain
-
-
-      #       SPAN 
-      #         className: 'toggle_switch_circle'
-          
-
-      #     LABEL 
-      #       className: 'indented'
-
-      #       htmlFor: 'enable_unregistered_participation'
-      #       B null, 
-      #         'Allow participation without registration.'
-      #       DIV 
-      #         className: 'explanation'
-
-      #         dangerouslySetInnerHTML: __html: """
-      #           People are allowed to participate without registering an email or password. 
-      #           Works best for small groups where most people know each other. 
-      #           If you are considering unregistered participation, recognize that:
-      #           <ul style="padding-left: 24px; list-style-position: outside"> 
-      #             <li>It will be much easier for someone to participate many times, distorting your results. Including on proposals they submit.</li>
-      #             <li>Unregistered participants won't be notified about new activity in the forum, even in response to their own comments.</li>
-      #             <li>You will not have access to their email addresses in the data export.</li>
-      #           </ul>
-      #           """
-
-
-
-          
-      @drawAnonymitySettings()
-
-
-
-
-      #####################
-      # CONTRIBUTION PHASE
-      @drawContributionPhaseSettings()
-
-
-
-      ########################
-      # MODERATION SETTINGS
-      @drawModerationSettings()
-
-      ########################
-      # Plan
-      if current_user.is_super_admin
-        DIV 
-          className: 'FORUM_SETTINGS_section input_group'
-
-          H4 null, 
-
-            'Forum Plan Type'
-
-          FIELDSET null,
-
-            for option in [{label: 'Free Forum', value: 0}, {label: 'Premium Forum', value: 1}, {label: 'Enterprise Forum', value: 2}]
-              DIV 
-                key: option.label
-
-                DIV 
-                  className: 'radio_group'
-                  style: 
-                    cursor: 'pointer'
-
-                  onClick: do (option) => => 
-                    subdomain.plan = option.value
-                    save subdomain
-
-
-                  INPUT 
-                    style: 
-                      cursor: 'pointer'
-                    type: 'radio'
-                    name: "plan"
-                    id: "plan_#{option.value}"
-                    defaultChecked: subdomain.plan == option.value
-
-                  LABEL 
-                    style: 
-                      cursor: 'pointer'
-                      display: 'block'
-                    htmlFor: "plan_#{option.value}"
-                    
-                    option.label
-
-
-      if current_user.is_super_admin
-        FORM 
-          id: 'rename_forum'
-          action: '/rename_forum'
-          method: 'post'
-          style: 
-            marginTop: 40
-
-          LABEL
-            htmlFor: 'name'
-            'Rename forum to: '
-
-          INPUT 
-            id: 'name'
-            name: 'name'
-            type: 'text'
-            style: 
-              width: 300
-
-          INPUT 
-            type: 'hidden'
-            name: 'authenticity_token'
-            value: arest.csrf()
-
-
-          INPUT
-            type: 'submit' 
-
-            onSubmit: => 
-              confirm("Are you sure you want to rename this forum?")
-  
   drawAnonymitySettings : -> 
     subdomain = fetch '/subdomain'
     allow_change_anon = not subdomain.customizations.anonymize_permanently
@@ -568,7 +593,7 @@ window.ForumSettingsDash = ReactiveComponent
                 subdomain.customizations ||= {}
                 subdomain.customizations.anonymize_everything = ev.target.checked
                 save subdomain, ->
-                  arest.serverFetch('/users') # anonymity may have changed, so force a refetch
+                  location.reload() # anonymity may have changed, so force a refresh
             
             SPAN 
               className: 'toggle_switch_circle'
@@ -675,7 +700,7 @@ window.ForumSettingsDash = ReactiveComponent
                 onChange: (e) => 
                   subdomain.customizations.anonymization_theme = e.target.value
                   save subdomain, ->
-                    arest.serverFetch('/users') # anonymity may have changed, so force a refetch
+                    location.reload()
 
                 for theme in [{value: null, label: 'Default'}, {value: 'playful', label: 'Playful'}]
                   OPTION
@@ -784,11 +809,6 @@ window.ForumSettingsDash = ReactiveComponent
               DIV 
                 className: 'explanation field_explanation'
                 option.explanation
-
-        
-
-
-
 
 
 

@@ -696,6 +696,21 @@ window.styles += """
   .AggregatedHistogram .sk-wave {
     margin: 0;
   }  
+
+
+  @keyframes histo-loading-appear {
+    0%   {opacity: 0;}
+    100% {opacity: 1;}
+  }
+
+  .histo-loading {
+    opacity: 0;
+    animation-name: histo-loading-appear;
+    animation-duration: 100ms; /* Adjust duration as needed */
+    animation-delay: 1s;    /* Adjust delay as needed */
+    animation-fill-mode: forwards;
+  }
+
 """
 
 
@@ -772,6 +787,7 @@ HistoAvatars = ReactiveComponent
 
       if !@ready_to_draw()
         DIV 
+          className: "histo-loading"
           style: {position: 'absolute', top: @props.height / 2 - 20, left: @props.width / 2 - 25}
           LOADING_INDICATOR
 
@@ -961,7 +977,7 @@ HistoAvatars = ReactiveComponent
 
 
       sprite = @sprites[user.key]      
-      sprite.img = getCanvasAvatar( if opinion.hide_name then 'default' else user )
+      sprite.img = getCanvasAvatar(user)
 
       if has_groups && @props.groups[user.key]?
         if @props.groups[user.key].length == 1
@@ -1206,7 +1222,6 @@ HistoAvatars = ReactiveComponent
         opts = 
           id: id
           user: user
-          anon: customization('anonymize_everything') or opinion?.hide_name
           opinion: opinionId
           coords: coords
 

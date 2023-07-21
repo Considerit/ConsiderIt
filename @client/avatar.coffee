@@ -285,13 +285,13 @@ window.avatar = (user, props) ->
   anonymous = attrs.anonymous || (user && arest.key_id(user.key) < 0)
   src = null
 
-  if !props.custom_bg_color && user.avatar_file_name   
+  if !attrs.custom_bg_color && user.avatar_file_name   
     if style?.width >= 50
       img_size = 'large'
     else 
       img_size = attrs.img_size or 'small'
 
-    if anonymous
+    if anonymous && user.avatar_file_name.indexOf('/') > -1
       src = user.avatar_file_name
     else  
       src = avatarUrl user, img_size
@@ -302,7 +302,7 @@ window.avatar = (user, props) ->
     # will reveal content behind it that is undesirable to show.  
     style.backgroundColor = 'white'
 
-  else if props.set_bg_color && !props.custom_bg_color 
+  else if attrs.set_bg_color && !attrs.custom_bg_color 
     user.bg_color ?= hsv2rgb(Math.random() / 5 + .6, Math.random() / 8 + .025, Math.random() / 4 + .4)
     style.backgroundColor = user.bg_color
 
@@ -313,9 +313,15 @@ window.avatar = (user, props) ->
   else 
     alt = name 
 
+  classes = "avatar #{attrs.className or ''}"
+  if anonymous 
+    if user.key == arest.cache['/current_user']?.user
+      classes += " pixelated-avatar"
+      style.filter = "blur(#{.025 * (style.width or 50)}px)"
+
   attrs = _.extend attrs,
     key: user.key
-    className: "avatar #{props.className or ''}"
+    className: classes
     'data-user': user.key
     'data-popover': if !props.hide_popover && !anonymous && !screencasting() then alt 
     'data-tooltip': if anonymous then alt
@@ -371,9 +377,7 @@ styles += """
   -webkit-user-select: none;
   -ms-user-select: none;
 }
-.avatar.avatar_anonymous {
-    cursor: default; 
-}
+
 /* for styling icon of broken images */
 img.avatar:after { 
   position: absolute;
@@ -387,6 +391,21 @@ img.avatar:after {
   content: "";
 }
 
+
+.avatar.pixelated-avatar::before {
+  content: "?";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: black;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.avatar.pixelated-avatar {
+  filter: blur(2px);
+}
 """
 
 
@@ -395,12 +414,21 @@ img.avatar:after {
 
 
 cached_avatars = {}
+cached_anonymous_avatars = {}
 missing_images = {}
 loaded_images = {}
 users2images = {}
 
-window.getCanvasAvatar = (user) ->
+window.getCanvasAvatar = (user, anonymous=false) ->
   key = user.key or user
+
+  if anonymous && key == arest.cache['/current_user']?.user
+    if key of cached_avatars
+      if key not of cached_anonymous_avatars
+        cached_anonymous_avatars[key] = create_pixelated_avatar(cached_avatars[key])
+      return cached_anonymous_avatars[key]
+    else
+      return cached_avatars.default
 
   cached_avatars[key] or cached_avatars.default
 
@@ -469,6 +497,8 @@ createCompositeGroupIcon = (groups, colors) ->
   canv
 
 
+
+
 createFallbackIcon = (user) ->
   if !user.bg_color?
     h = Math.random() / 5 + .6
@@ -481,7 +511,6 @@ createFallbackIcon = (user) ->
 
   createUserIcon user.bg_color
 
-
 create_avatar = (img) -> 
   canv = document.createElement('canvas')
   canv.width = img.width
@@ -493,6 +522,61 @@ create_avatar = (img) ->
 
   ctx.drawImage img, 0, 0
   canv
+
+
+create_pixelated_avatar = (canv, showQuestionMarkOverlay = false) ->
+  ctx = canv.getContext('2d')
+
+  # Apply anonymization technique: pixelate
+  pixelSize = canv.width / 10  # Adjust the pixel size as desired
+  tempCanvas = document.createElement('canvas')
+  tempCanvas.width = canv.width / pixelSize
+  tempCanvas.height = canv.height / pixelSize
+  tempCtx = tempCanvas.getContext('2d')
+
+  tempCtx.imageSmoothingEnabled = false
+  tempCtx.drawImage(canv, 0, 0, canv.width / pixelSize, canv.height / pixelSize)
+  ctx.drawImage(tempCanvas, 0, 0, canv.width / pixelSize, canv.height / pixelSize, 0, 0, canv.width, canv.height)
+
+  # Apply question_mark overlay if requested
+  if showQuestionMarkOverlay
+    size = canv.width / 2
+    ctx.drawImage(my_question_mark_icon, canv.width / 2 - size / 2, canv.height / 2 - size / 2, size, size)
+
+  canv
+
+
+question_mark_icon = () ->
+  # Set the desired size of the question_mark icon
+  iconWidth = 24
+  iconHeight = 24
+
+  qm_canv = document.createElement('canvas')
+  qm_canv.width = iconWidth
+  qm_canv.height = iconHeight
+  qm_ctx = qm_canv.getContext('2d')
+
+
+  # SVG path data for the question_mark icon
+  svgPath1 = "M9.11241 7.82201C9.44756 6.83666 10.5551 6 12 6C13.7865 6 15 7.24054 15 8.5C15 9.75946 13.7865 11 12 11C11.4477 11 11 11.4477 11 12L11 14C11 14.5523 11.4477 15 12 15C12.5523 15 13 14.5523 13 14L13 12.9082C15.203 12.5001 17 10.7706 17 8.5C17 5.89347 14.6319 4 12 4C9.82097 4 7.86728 5.27185 7.21894 7.17799C7.0411 7.70085 7.3208 8.26889 7.84366 8.44673C8.36653 8.62458 8.93457 8.34488 9.11241 7.82201ZM12 20C12.8285 20 13.5 19.3284 13.5 18.5C13.5 17.6716 12.8285 17 12 17C11.1716 17 10.5 17.6716 10.5 18.5C10.5 19.3284 11.1716 20 12 20Z"
+  # svgPath2 = "M13.2271 16.9535C13.2271 17.6313 12.6777 18.1807 11.9999 18.1807C11.3221 18.1807 10.7726 17.6313 10.7726 16.9535C10.7726 16.2757 11.3221 15.7262 11.9999 15.7262C12.6777 15.7262 13.2271 16.2757 13.2271 16.9535Z"
+
+  # Draw the question_mark icon onto the question_mark canvas
+  qm_ctx.fillStyle = 'black'
+  qm_ctx.strokeStyle = 'white'
+  qm_ctx.lineWidth = 1
+
+  path1 = new Path2D(svgPath1)
+
+  qm_ctx.fill(path1)
+  qm_ctx.stroke(path1)
+
+  qm_canv
+
+my_question_mark_icon = question_mark_icon()
+
+
+
 
 window.LoadAvatars = ReactiveComponent
   displayName: "LoadAvatars" 

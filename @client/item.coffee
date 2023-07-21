@@ -665,6 +665,7 @@ ProposalBlock = ReactiveComponent
     proposal = fetch @props.proposal
     current_user = fetch '/current_user'
 
+
     icons = @should_use_avatar()
 
     DIV 
@@ -672,9 +673,12 @@ ProposalBlock = ReactiveComponent
       style: 
         position: 'relative'
         top: if icons then 7
-
+    
       if icons
         editor = proposal_editor(proposal)
+
+        editor_opinion = _.findWhere proposal.opinions, {user: editor}    
+        anonymous = proposal.hide_name  or  editor_opinion?.hide_name
 
         if proposal.pic 
           IMG
@@ -688,9 +692,11 @@ ProposalBlock = ReactiveComponent
             key: editor
             user: editor
             img_size: 'large'
+            anonymous: anonymous
+
             style:
-              height: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
-              width: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
+              height: PROPOSAL_AUTHOR_AVATAR_SIZE
+              width: PROPOSAL_AUTHOR_AVATAR_SIZE
 
         else # no author specified
           SPAN 

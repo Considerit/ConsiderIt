@@ -56,6 +56,11 @@ window.AvatarPopover = ReactiveComponent
       else 
         alt = translator "engage.histogram.user_is_neutral", "is neutral"
 
+      anonymous ||= opinion.hide_name
+
+    pixelate_anon_current_user = user.key == fetch('/current_user').user && anonymous
+
+
     DIV 
       style: 
         padding: '8px 4px'
@@ -71,13 +76,16 @@ window.AvatarPopover = ReactiveComponent
         if user.avatar_file_name
           IMG 
             alt: @props.alt or alt or "Image of #{if anonymous then 'Image of an anonymous user "#{user.name}"' else user.name}"
+            className: if pixelate_anon_current_user then 'pixelated-avatar'
+
             style: 
               width: 120
               height: 120
               borderRadius: '50%'
               marginRight: 24
               display: 'inline-block' 
-            src: if anonymous then user.avatar_file_name else avatarUrl user, 'large'
+              filter: if pixelate_anon_current_user then "blur(#{.025 * (120)}px)"
+            src: if anonymous && !pixelate_anon_current_user then user.avatar_file_name else avatarUrl user, 'large'
 
 
         DIV null,
@@ -89,6 +97,10 @@ window.AvatarPopover = ReactiveComponent
               fontSize: 18  
               fontWeight: 'bold'       
             name
+          if pixelate_anon_current_user
+            I null,
+
+              your_opinion_i18n.anon_assurance()
 
 
           if get_participant_attributes? && !anonymous && !user_is_organization_account(user)
@@ -319,6 +331,7 @@ window.avatar = (user, props) ->
       classes += " pixelated-avatar"
       style.filter = "blur(#{.025 * (style.width or 50)}px)"
 
+
   attrs = _.extend attrs,
     key: user.key
     className: classes
@@ -392,7 +405,7 @@ img.avatar:after {
 }
 
 
-.avatar.pixelated-avatar::before {
+.pixelated-avatar::before {
   content: "?";
   position: absolute;
   top: 50%;
@@ -403,9 +416,6 @@ img.avatar:after {
   font-weight: bold;
 }
 
-.avatar.pixelated-avatar {
-  filter: blur(2px);
-}
 """
 
 

@@ -5,6 +5,17 @@ window.EditComment = ReactiveComponent
     proposal = fetch @props.proposal
     permitted = permit 'create comment', proposal
 
+    current_user = fetch('/current_user')
+
+    commentor_opinion = _.findWhere proposal.opinions, {user: current_user.user}    
+    anonymous = commentor_opinion?.hide_name or customization('anonymize_everything')
+    if !@props.fresh
+      anonymous ||= @data().hide_name
+
+    name = (current_user.name or 'You')
+    if commentor_opinion?.hide_name || customization('anonymize_permanently')
+      name += ' [anonymous]'
+
     DIV 
       className: 'comment_entry'
 
@@ -14,14 +25,12 @@ window.EditComment = ReactiveComponent
 
 
       # Comment author name
-      DIV
-        style:
-          fontWeight: 'bold'
-          color: '#666'
-        (fetch('/current_user').name or 'You') + ':'
+      DIV 
+        className: 'comment_entry_name'
+        name + ':'
 
       # Icon
-      Avatar
+      avatar current_user.user,
         style:
           position: 'absolute'
           width: 50
@@ -29,8 +38,9 @@ window.EditComment = ReactiveComponent
           backgroundColor: if permitted < 0 then 'transparent'
           border:          if permitted < 0 then '1px dashed grey'
 
-        key: fetch('/current_user').user
+        key: current_user.user
         hide_popover: true
+        anonymous: !!anonymous
 
       if permitted == Permission.DISABLED
         SPAN 
@@ -168,5 +178,5 @@ window.EditComment = ReactiveComponent
                 @local.new_comment = null
                 save @local
 
-          translator "engage.save_comment_button", 'Save comment'
+          translator "engage.save_comment_button", 'Post comment'
 

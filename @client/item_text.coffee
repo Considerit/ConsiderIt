@@ -673,9 +673,9 @@ window.ItemText = ReactiveComponent
 
 window.your_opinion_i18n = 
   anonymize_opinion_button: -> translator('engage.anonymize_opinion_button', 'Anonymize your opinion and comments about this proposal')
-  deanonymize_opinion_button: -> translator 'engage.deanonymize_opinion_button', 'Opinion is anonymous'
+  deanonymize_opinion_button: -> translator 'engage.deanonymize_opinion_button', 'Your opinion and comments are anonymized'
   remove_opinion_button: -> translator('engage.remove_opinion_button', 'Delete your opinion and comments about this proposal')
-
+  anon_assurance: -> translator('engage.anon_assurance', 'anonymized')
 
 
 window.toggle_anonymize_opinion = (your_opinion) ->

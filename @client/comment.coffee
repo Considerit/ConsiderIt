@@ -7,6 +7,10 @@ window.Comment = ReactiveComponent
     point = fetch( comment.point )
     proposal = fetch( point.proposal )
     commentor_name =  fetch(comment.user).name
+    anonymous = comment.hide_name
+
+    if (anonymous || customization('anonymize_permanently')) && current_user.user == comment.user
+      commentor_name += ' [identity hidden]'
 
     if comment.editing
       # Sharing keys, with some non-persisted client data getting saved...
@@ -30,6 +34,7 @@ window.Comment = ReactiveComponent
         # Comment author icon
         Avatar
           key: comment.user
+          anonymous: anonymous          
           hide_popover: true
           set_bg_color: true
           style: 
@@ -79,7 +84,9 @@ styles += """
 
 .comment_entry_name {
   font-weight: 600;
-  color: #666666; }
+  color: #666666; 
+  margin-bottom: 4px;
+}
 
 .comment_entry_body {
   margin-left: 60px;

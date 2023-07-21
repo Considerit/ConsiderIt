@@ -694,6 +694,32 @@ ModerateItem = ReactiveComponent
 
 
 
+styles += """
+.grid-table {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 1rem;
+}
+
+.grid-table-header {
+  background-color: #aaa;
+  padding: 1rem;
+  font-weight: bold;
+}
+
+.row {
+  background-color: #eee;
+  padding: 1rem;
+}
+
+.row.alt {
+  background-color: #ddd;
+}
+
+
+
+"""
+
 
 BanHammer = ReactiveComponent
   displayName: 'BanHammer'
@@ -704,13 +730,21 @@ BanHammer = ReactiveComponent
 
     bans = subdomain.customizations.shadow_bans or []
 
+    console.log bans
+    failed_content_by_user = {}
+    for model, categories of @props.all_items
+      for moderation_status, items of categories when moderation_status == 'failed'
+        for item in items.items
+          u = fetch(item.moderatable).user
+          failed_content_by_user[u] ?= []
+          failed_content_by_user[u].push item
+
+
     ban_user = (user) =>
       bans = (u.key or u for u in bans)
       bans.push user.key
       subdomain.customizations.shadow_bans = bans
       save subdomain
-
-
 
       # fail all posts by this account
       for model, categories of @props.all_items
@@ -720,10 +754,9 @@ BanHammer = ReactiveComponent
               item.status = 0
               save item, delayed_fetch_after_moderation_judgment
 
-    filtered_users = _.filter users.users, (u) =>  
-                        bans.indexOf(u.key) < 0 &&
-                         (!@local.filtered || 
-                          "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1)
+
+
+
 
     ban_explanation = """
        If you are having insurmountable difficulties with a particular registered account, you can shadow ban them.
@@ -735,102 +768,79 @@ BanHammer = ReactiveComponent
        escalating conflict. 
     """
 
-
+    alt_row = true
     DIV null,
 
 
       DIV 
         style: 
           position: 'relative'
-          padding: '18px 24px'
-          backgroundColor: '#f1f1f1'
+          padding: '18px 0px'
           marginTop: 24
 
 
-        LABEL 
-          style: {}
-          "Select an account to shadow ban: "
-
-          SPAN null, 
-
-            DropMenu
-              options: filtered_users
-              open_menu_on: 'activation'
-
-              selection_made_callback: (user) =>
-
-                if confirm("Are you sure you want to shadow ban '#{user.name}'? Their existing posts will be failed. This action is irrevocable.")
-                  ban_user(user)
-                  @local.filtered = null
-                  save @local
-
-              render_anchor: (menu_showing) =>
-                INPUT 
-                  id: 'filter'
-                  type: 'text'
-                  style: {fontSize: 18, width: 350, padding: '3px 6px'}
-                  autoComplete: 'off'
-                  placeholder: "Name or email..."
-                  
-                  onChange: => 
-                    @local.filtered = document.getElementById('filter').value
-                    save @local
-                  
-              render_option: (user) ->
-                [
-                  SPAN 
-                    key: 'user name'
-                    style: 
-                      fontWeight: 600
-                    user.name 
-
-                  SPAN
-                    key: 'user email'
-                    style: 
-                      opacity: .7
-                      paddingLeft: 8
-
-                    user.email  
-                ]
-     
-              wrapper_style: 
-                display: 'inline-block'
-              menu_style: 
-                backgroundColor: '#ddd'
-                border: '1px solid #ddd'
-
-              option_style: 
-                padding: '4px 12px'
-                fontSize: 18
-                cursor: 'pointer'
-                display: 'block'
-
-              active_option_style:
-                backgroundColor: '#eee'
-
-
-
-      if bans.length > 0
 
         DIV 
-          style:
-            marginTop: 24
-            marginLeft: 24
-
-          "Accounts already banned:"
+          className: 'grid-table'
 
           DIV 
-            style:
-              marginTop: 8
+            className: 'grid-table-header'
 
-            for user, idx in bans
+            'Accounts with failed posts'
 
-              Avatar 
-                key: user
-                style: 
-                  width: 35
-                  height: 35
-                  marginRight: 6
+          DIV 
+            className: 'grid-table-header'
+
+            '# Failed'
+
+          DIV 
+            className: 'grid-table-header'
+
+            'Ban hammer'
+
+          if Object.keys(failed_content_by_user).length == 0 
+            I null,
+              "No posts have been failed."
+          else 
+            for participant, failed of failed_content_by_user
+              alt_row = !alt_row
+              participant = fetch(participant)
+
+              [ DIV 
+                  className: "row #{if alt_row then 'alt'}"
+                  style: 
+                    display: 'flex'
+
+                  Avatar 
+                    key: participant.key
+                    style: 
+                      width: 35
+                      height: 35
+                      marginRight: 6
+
+                  participant.name
+
+
+
+                DIV 
+                  className: "row #{if alt_row then 'alt'}"
+
+                  failed.length
+
+                DIV 
+                  className: "row #{if alt_row then 'alt'}"
+
+                  if participant.key in bans
+                    'Banned'
+                  else 
+                    BUTTON 
+                      className: 'btn'
+                      onClick: do(participant) -> -> 
+                        if confirm("Are you sure you want to shadow ban this account? Banning is irreversable.")
+                          ban_user(participant)
+                      'Ban'
+              ]
+
 
 
 

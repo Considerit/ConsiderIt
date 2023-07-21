@@ -576,7 +576,7 @@ window.ItemText = ReactiveComponent
                 "{cnt, plural, one {# pro or con} other {# pros & cons}}"
 
 
-          if you_have_opinion && permit('update opinion', proposal, proposal.your_opinion) > 0
+          if (you_have_opinion && permit('update opinion', proposal, proposal.your_opinion) > 0) || permit('publish opinion', proposal) > 0
             SPAN
               key: 'yourOpinion'
               className: 'separated monospaced metadata-piece'

@@ -177,6 +177,7 @@ matchEmail = (permission_list) ->
   
   return true if '*' in permission_list
   return true if user.user in permission_list
+  return true if user.email in permission_list
 
   for email_or_key in permission_list
     if email_or_key.indexOf('*') > -1

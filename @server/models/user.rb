@@ -194,7 +194,7 @@ class User < ApplicationRecord
     else
       subdomain ||= current_subdomain
       roles = subdomain.roles ? subdomain.roles : {}
-      return roles.key?(role) && roles[role] && roles[role].include?("/user/#{id}")
+      return roles.key?(role) && roles[role] && (roles[role].include?("/user/#{id}") || roles[role].include?(self.email))
     end
   end
 

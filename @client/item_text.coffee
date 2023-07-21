@@ -630,7 +630,7 @@ window.ItemText = ReactiveComponent
                     onClick: -> toggle_anonymize_opinion(your_opinion)
 
                     iconAnonymousMask YOUR_OPINION_BUTTON_SIZE, \
-                      if your_opinion.hide_name then '#456ae4' else '#888888'
+                      if your_opinion.hide_name then focus_blue else '#888888'
 
                   # Remove
                   BUTTON
@@ -676,6 +676,7 @@ window.your_opinion_i18n =
   deanonymize_opinion_button: -> translator 'engage.deanonymize_opinion_button', 'Your opinion and comments are anonymized'
   remove_opinion_button: -> translator('engage.remove_opinion_button', 'Delete your opinion and comments about this proposal')
   anon_assurance: -> translator('engage.anon_assurance', 'anonymized')
+  anonymize: -> translator('engage.anonymize', 'anonymize')
 
 
 window.toggle_anonymize_opinion = (your_opinion) ->

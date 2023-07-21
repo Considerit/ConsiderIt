@@ -765,39 +765,66 @@ window.DecisionBoard = ReactiveComponent
         if your_opinion.key && permit('update opinion', proposal, your_opinion) > 0 && mode == 'crafting'
 
 
+          if your_opinion.hide_name
+            anonymize_button_tooltip = your_opinion_i18n.deanonymize_opinion_button()
+            anonymize_button_text = your_opinion_i18n.anon_assurance()
+          else 
+            anonymize_button_tooltip =  your_opinion_i18n.anonymize_opinion_button()
+            anonymize_button_text = your_opinion_i18n.anonymize()
 
 
           DIV 
             className: 'below_save'
+
+
+            DIV 
+              style: 
+                textAlign: 'center'
+                color: '#383838'
+                margin: "16px 0 4px 0"
+                fontSize: 14
+                fontWeight: 300
+              
+
+              translator 'engage.below_save_opinion_buttons', 'Your opinion and comments about this proposal:'
                       
-            [
+            
+            DIV null,
               BUTTON
                 key: 'anonymize opinion button'
                 className: 'btn'
-                style:  {  borderColor: (if your_opinion.hide_name then '#456ae4' else null), display: if customization('anonymize_permanently') then 'none'  }
+                style:  {  backgroundColor: (if your_opinion.hide_name then focus_blue else null), display: if customization('anonymize_permanently') then 'none'  }
+                "data-tooltip": anonymize_button_tooltip
+                "aria-label": anonymize_button_tooltip
                 onClick: -> toggle_anonymize_opinion(your_opinion)
 
                 SPAN
                   key: 'anonymize opinion label'
-                  if your_opinion.hide_name
-                    your_opinion_i18n.deanonymize_opinion_button()
-                  else
-                    your_opinion_i18n.anonymize_opinion_button()
+                  style: 
+                    textTransform: 'capitalize'
+                    color: if your_opinion.hide_name then 'white'
+                    fontWeight: if your_opinion.hide_name then 600
+                  anonymize_button_text
 
                 if not TABLET_SIZE()
                   SPAN
                     key: 'anonymize opinion icon'
                     style: {  height:'22px', display:'inline-block', verticalAlign:'bottom'  }
-                    iconAnonymousMask YOUR_OPINION_BUTTON_SIZE, if your_opinion.hide_name then '#456ae4' else '#888888'
+                    iconAnonymousMask YOUR_OPINION_BUTTON_SIZE, if your_opinion.hide_name then '#FFFFFF' else '#888888'
 
               BUTTON
                 key: 'remove opinion button'
                 className: 'btn'
+                "data-tooltip": your_opinion_i18n.remove_opinion_button()
+                "aria-label": your_opinion_i18n.remove_opinion_button()
+
                 onClick: -> remove_opinion(your_opinion)
 
                 SPAN
                   key: 'remove opinion label'
-                  your_opinion_i18n.remove_opinion_button()
+                  style: 
+                    textTransform: 'capitalize'
+                  translator('engage.delete_button', 'delete')
 
                 if not TABLET_SIZE()
                   SPAN
@@ -805,7 +832,6 @@ window.DecisionBoard = ReactiveComponent
                     style: {  height:'20px', display:'inline-block', verticalAlign:'bottom'  }
                     iconX YOUR_OPINION_BUTTON_SIZE, '#444444'
 
-            ]
 
 
   componentDidUpdate : ->

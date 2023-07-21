@@ -603,12 +603,12 @@ window.ForumSettingsDash = ReactiveComponent
             className: 'indented'
             htmlFor: 'anonymize_everything'
             B null,
-              'Anonymize everything.'
+              'Conceal identities.'
             
             DIV 
               className: 'explanation'
 
-              "The authors of opinions, points, proposals, and comments will be hidden. Participants still need to be registered. The real identity of authors will still be accessible via the data export."
+              "The authors of opinions, points, proposals, and comments will be hidden. Participants still need to be registered. The real identity of authors will still be accessible via the data export. This setting is reversible."
 
         ########################
         # Anonymize permanently
@@ -669,7 +669,7 @@ window.ForumSettingsDash = ReactiveComponent
             
             DIV 
               className: 'explanation'
-              "Anonymization will become irreversible. You will never see the identities of participants. Data export will not reveal the real identity of authors."
+              "Permanently hide the identities of participants. You will never see the identities of participants. Data export will not reveal the identity of participants. This is irreversible."
 
 
 

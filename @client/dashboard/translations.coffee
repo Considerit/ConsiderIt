@@ -46,7 +46,10 @@ window.TRANSLATE = (args, native_text) ->
     for part in parts 
       if part of matches && part of args 
         def = args[part]
-        if args.as_html
+
+        if def.render?
+          translation.push def.render()
+        else if args.as_html
           translation.push "<#{def.component} #{def.args}>#{matches[part]}</#{def.component}>"
         else 
           translation.push def.component(def.args, matches[part])

@@ -32,7 +32,6 @@ window.SU = ReactiveComponent
           width: '100%'
 
         for user in users.users
-          console.log user.name, user.key
           LI 
             key: user.key or user
             style: 

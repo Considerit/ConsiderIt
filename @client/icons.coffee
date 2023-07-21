@@ -15,8 +15,9 @@ window.iconX = (size, color) ->
     """
 
 
-window.iconAnonymousMask = (width, height, color) ->
+window.iconAnonymousMask = (height, color) ->
   color ?= 'black'
+  width = 1.4 * height
   SVG
     width: width
     height: height

@@ -623,20 +623,20 @@ window.ItemText = ReactiveComponent
                     key: 'anonymize_opinion'
                     role: 'checkbox'
                     "aria-checked": Boolean( your_opinion.hide_name )
-                    "aria-label": translator('engage.anonymize_opinion_button', 'Anonymize your opinion')
-                    "data-tooltip": translator('engage.anonymize_opinion_button', 'Anonymize your opinion')
+                    "aria-label": your_opinion_i18n.anonymize_opinion_button()
+                    "data-tooltip": your_opinion_i18n.anonymize_opinion_button()
                     className: 'metadata-piece'
                     style: {  border:'none', verticalAlign:'bottom', marginBottom:'-1px', marginLeft:'15px'  }
                     onClick: -> toggle_anonymize_opinion(your_opinion)
 
-                    iconAnonymousMask YOUR_OPINION_BUTTON_SIZE*1.4, YOUR_OPINION_BUTTON_SIZE, \
+                    iconAnonymousMask YOUR_OPINION_BUTTON_SIZE, \
                       if your_opinion.hide_name then '#456ae4' else '#888888'
 
                   # Remove
                   BUTTON
                     key: 'remove_opinion'
-                    "aria-label": translator('engage.remove_opinion_button', 'Remove your opinion')
-                    "data-tooltip": translator('engage.remove_opinion_button', 'Remove your opinion')
+                    "aria-label": your_opinion_i18n.remove_opinion_button()
+                    "data-tooltip": your_opinion_i18n.remove_opinion_button()
                     className: 'metadata-piece'
                     style: {  border:'none', verticalAlign:'bottom', marginBottom:'-3px', marginLeft:'15px'  }
                     onClick: -> remove_opinion(your_opinion)
@@ -670,8 +670,21 @@ window.ItemText = ReactiveComponent
             fill: 'rgb(158, 78, 35)'
 
 
+
+window.your_opinion_i18n = 
+  anonymize_opinion_button: -> translator('engage.anonymize_opinion_button', 'Anonymize your opinion and comments about this proposal')
+  deanonymize_opinion_button: -> translator 'engage.deanonymize_opinion_button', 'Opinion is anonymous'
+  remove_opinion_button: -> translator('engage.remove_opinion_button', 'Delete your opinion and comments about this proposal')
+
+
+
 window.toggle_anonymize_opinion = (your_opinion) ->
-  if your_opinion.hide_name or confirm( translator('This will anonymize your whole opinion about the proposal, including your icon in the histogram and all pros and cons you have written. Are you sure you wish to anonymize?') )
+  turn_on_anon = translator("""This will anonymize your whole opinion about the proposal, including your icon in 
+                              the histogram and all pros and cons you have written. Are you sure you wish to anonymize?""")
+  turn_off_anon = translator("""This will display your account name and avatar for your opinion, any pros and cons 
+                                you wrote, and any comments. Are you sure you wish to remove anonymization?""")
+
+  if (your_opinion.hide_name or confirm( turn_on_anon ))
     your_opinion.hide_name = not your_opinion.hide_name
     save your_opinion
 

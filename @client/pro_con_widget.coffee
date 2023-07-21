@@ -780,15 +780,15 @@ window.DecisionBoard = ReactiveComponent
                 SPAN
                   key: 'anonymize opinion label'
                   if your_opinion.hide_name
-                    translator 'engage.deanonymize_opinion_button', 'Opinion is anonymous'
+                    your_opinion_i18n.deanonymize_opinion_button()
                   else
-                    translator 'engage.anonymize_opinion_button', 'Anonymize your opinion'
+                    your_opinion_i18n.anonymize_opinion_button()
 
                 if not TABLET_SIZE()
                   SPAN
                     key: 'anonymize opinion icon'
                     style: {  height:'22px', display:'inline-block', verticalAlign:'bottom'  }
-                    iconAnonymousMask YOUR_OPINION_BUTTON_SIZE*1.4, YOUR_OPINION_BUTTON_SIZE, if your_opinion.hide_name then '#456ae4' else '#888888'
+                    iconAnonymousMask YOUR_OPINION_BUTTON_SIZE, if your_opinion.hide_name then '#456ae4' else '#888888'
 
               BUTTON
                 key: 'remove opinion button'
@@ -797,7 +797,7 @@ window.DecisionBoard = ReactiveComponent
 
                 SPAN
                   key: 'remove opinion label'
-                  translator "engage.remove_my_opinion", 'Remove your opinion'
+                  your_opinion_i18n.remove_opinion_button()
 
                 if not TABLET_SIZE()
                   SPAN

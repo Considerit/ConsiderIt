@@ -156,7 +156,7 @@ class User < ApplicationRecord
     end
 
     if anonymize_everything && self.id != current_user.id
-      data.merge User.anonymized_info(key_id(data["key"]), current_subdomain, current_user.is_admin?)
+      data.merge! User.anonymized_info(key_id(data["key"]), current_subdomain, current_user.is_admin?)
     end 
 
     data['tags'] = tags_for_subdomain(current_user.is_admin?)

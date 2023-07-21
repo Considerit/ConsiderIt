@@ -244,9 +244,10 @@ protected
           real_id = User.deanonymized_id(user_id)
           key = "/user/#{real_id}"
         end
-        data = User.find(key_id(key)).as_json
+        data = User.find(key_id(key)).as_json()
         if user_id < 0
-          data["key"] = "/user/#{masked_id}"
+          anon_data = User.anonymized_info(real_id, current_subdomain, current_user.is_admin?)
+          data.merge! anon_data
         end
         response.append data
         next

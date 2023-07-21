@@ -39,7 +39,7 @@ window.AvatarPopover = ReactiveComponent
   render: -> 
     {user, anon, opinion} = @props
     user = fetch user
-    anonymous = arest.key_id(user.key) < 0 or anon
+    anonymous = arest.key_id(user.key) < 0 or anon or customization('anonymize_permanently')
     opinion_views = fetch 'opinion_views'
 
 
@@ -294,7 +294,7 @@ window.avatar = (user, props) ->
   # Setting avatar image
   #   Don't show one if it should be anonymous or the user doesn't have one
   #   Default to small size if the width is small 
-  anonymous = attrs.anonymous || (user && arest.key_id(user.key) < 0)
+  anonymous = attrs.anonymous || (user && arest.key_id(user.key) < 0) || customization('anonymize_permanently')
   src = null
 
   if !attrs.custom_bg_color && user.avatar_file_name   

@@ -775,6 +775,9 @@ window.DecisionBoard = ReactiveComponent
 
           DIV 
             className: 'below_save'
+            style: 
+              display: if customization('anonymize_permanently') then 'flex'
+              justifyContent: if customization('anonymize_permanently') then 'center'
 
 
             DIV 
@@ -784,6 +787,7 @@ window.DecisionBoard = ReactiveComponent
                 margin: "16px 0 4px 0"
                 fontSize: 14
                 fontWeight: 300
+
               
 
               translator 'engage.below_save_opinion_buttons', 'Your opinion and comments about this proposal:'

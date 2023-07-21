@@ -942,7 +942,7 @@ HistoAvatars = ReactiveComponent
     if has_groups
       colors = get_color_for_groups groups 
 
-    anonymize_everything = customization('anonymize_everything')
+    anonymize_permanently = customization('anonymize_permanently')
 
 
     new_animation_needed = false 
@@ -977,7 +977,7 @@ HistoAvatars = ReactiveComponent
 
 
       sprite = @sprites[user.key]      
-      sprite.img = getCanvasAvatar(user, o.hide_name || anonymize_everything)
+      sprite.img = getCanvasAvatar(user, o.hide_name || arest.key_id(user.key) < 0 || anonymize_permanently)
 
       if has_groups && @props.groups[user.key]?
         if @props.groups[user.key].length == 1

@@ -511,37 +511,56 @@ createFallbackIcon = (user) ->
 
   createUserIcon user.bg_color
 
-create_avatar = (img) -> 
+create_avatar = (img, clip = true) -> 
   canv = document.createElement('canvas')
   canv.width = img.width
   canv.height = img.height
   ctx = canv.getContext('2d')
 
-  ctx.arc(img.width / 2, img.height / 2, img.height / 2, 0, Math.PI * 2)
-  ctx.clip()
+  if clip
+    ctx.arc(img.width / 2, img.height / 2, img.height / 2, 0, Math.PI * 2)
+    ctx.clip()
 
   ctx.drawImage img, 0, 0
+  canv.original_image = img
   canv
 
 
 create_pixelated_avatar = (canv, showQuestionMarkOverlay = false) ->
-  ctx = canv.getContext('2d')
+
+  anon_canv = create_avatar(canv.original_image, false)
+
+  w = anon_canv.width
+  h = anon_canv.height
+
+  ctx = anon_canv.getContext('2d')
 
   # Apply anonymization technique: pixelate
-  pixelSize = canv.width / 10  # Adjust the pixel size as desired
+  pixelSize = w / 10  # Adjust the pixel size as desired
   tempCanvas = document.createElement('canvas')
-  tempCanvas.width = canv.width / pixelSize
-  tempCanvas.height = canv.height / pixelSize
+  tempCanvas.width = w / pixelSize
+  tempCanvas.height = h / pixelSize
   tempCtx = tempCanvas.getContext('2d')
 
   tempCtx.imageSmoothingEnabled = false
-  tempCtx.drawImage(canv, 0, 0, canv.width / pixelSize, canv.height / pixelSize)
-  ctx.drawImage(tempCanvas, 0, 0, canv.width / pixelSize, canv.height / pixelSize, 0, 0, canv.width, canv.height)
+  tempCtx.drawImage(anon_canv, 0, 0, w / pixelSize, h / pixelSize)
+
+  ctx.drawImage(tempCanvas, 0, 0, w / pixelSize, h / pixelSize, 0, 0, w, h)
 
   # Apply question_mark overlay if requested
   if showQuestionMarkOverlay
-    size = canv.width / 2
-    ctx.drawImage(my_question_mark_icon, canv.width / 2 - size / 2, canv.height / 2 - size / 2, size, size)
+    size = w / 2
+    ctx.drawImage(my_question_mark_icon, w / 2 - size / 2, h / 2 - size / 2, size, size)
+
+  canv = document.createElement('canvas')
+  canv.width = w
+  canv.height = h
+  ctx = canv.getContext('2d')
+
+  ctx.arc(w / 2, h / 2, h / 2, 0, Math.PI * 2)
+  ctx.clip()
+
+  ctx.drawImage(anon_canv, 0, 0)
 
   canv
 

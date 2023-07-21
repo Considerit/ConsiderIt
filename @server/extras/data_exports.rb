@@ -23,6 +23,7 @@ end
 def get_identity(user, subdomain, anonymize)
   if !user
     return ['Unknown', 'Unknown']
+  end
 
   if !anonymize
     user_name = user.name

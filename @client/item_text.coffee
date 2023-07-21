@@ -626,7 +626,7 @@ window.ItemText = ReactiveComponent
                     "aria-label": your_opinion_i18n.anonymize_opinion_button()
                     "data-tooltip": your_opinion_i18n.anonymize_opinion_button()
                     className: 'metadata-piece'
-                    style: {  border:'none', verticalAlign:'bottom', marginBottom:'-1px', marginLeft:'15px'  }
+                    style: {  border:'none', verticalAlign:'bottom', marginBottom:'-1px', marginLeft:'15px', display: if customization('anonymize_permanently') then 'none'  }
                     onClick: -> toggle_anonymize_opinion(your_opinion)
 
                     iconAnonymousMask YOUR_OPINION_BUTTON_SIZE, \

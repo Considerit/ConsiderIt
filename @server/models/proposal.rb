@@ -23,7 +23,7 @@ class Proposal < ApplicationRecord
   include Moderatable, Notifier
   
   class_attribute :my_public_fields
-  self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :name, :description, :active, :hide_on_homepage, :published, :subdomain_id, :json]
+  self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :name, :description, :active, :hide_on_homepage, :published, :subdomain_id, :json, :hide_name]
 
   scope :active, -> {where( :active => true, :published => true )}
 
@@ -410,7 +410,8 @@ class Proposal < ApplicationRecord
       "active" => self.active, 
       "published" => self.published, 
       "subdomain_id" => self.subdomain_id, 
-      "json" => self.json
+      "json" => self.json,
+      "hide_name" => self.hide_name
     }
 
     anonymize_everything = subdomain.customization_json['anonymize_everything']

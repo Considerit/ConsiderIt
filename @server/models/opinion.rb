@@ -235,6 +235,11 @@ class Opinion < ApplicationRecord
       inc.point.recache
     end
 
+    if self.user_id == self.proposal.user_id
+      self.proposal.hide_name = anon
+      self.proposal.save
+    end
+
   end
 
   def recache

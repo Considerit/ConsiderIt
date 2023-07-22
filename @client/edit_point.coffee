@@ -168,10 +168,6 @@ window.EditPoint = ReactiveComponent
               
               LABEL 
                 htmlFor: "sign_name-#{@props.valence}"
-                title: translator 'engage.point_anonymous_toggle_explanation', """This won\'t make your point perfectly anonymous, but will make \
-                         it considerably harder for others to associate with you. \
-                         Note that signing your name lends your point more weight \
-                         with peers."""
                 your_opinion_i18n.anonymize_opinion_button()
 
 

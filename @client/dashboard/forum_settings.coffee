@@ -702,7 +702,7 @@ window.ForumSettingsDash = ReactiveComponent
                   save subdomain, ->
                     location.reload()
 
-                for theme in [{value: null, label: 'Default'}, {value: 'playful', label: 'Playful'}]
+                for theme in [{value: null, label: 'Default'}, {value: 'playful', label: 'Cat Masks'}, {value: 'wrestling_masks', label: 'Wrestling Masks'}, {value: 'sea_creatures', label: 'Sea Creatures'}]
                   OPTION
                     key: theme.value
                     value: theme.value

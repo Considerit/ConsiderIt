@@ -614,6 +614,10 @@ class User < ApplicationRecord
   def self.generate_anonymous_avatar(theme)
     if theme == 'playful' 
       "#{Rails.application.config.action_controller.asset_host}/images/anonymous_avatars/playful/mask#{rand(1..27)}.png"
+    elsif theme == 'wrestling_masks' 
+      "#{Rails.application.config.action_controller.asset_host}/images/anonymous_avatars/wrestling_masks/#{rand(0..6)}#{rand(0..6)}.png"
+    elsif theme == 'sea_creatures' 
+      "#{Rails.application.config.action_controller.asset_host}/images/anonymous_avatars/sea_creatures/#{rand(1..2)}#{rand(0..4)}#{rand(0..4)}.png"
     else 
       nil
     end
@@ -621,7 +625,7 @@ class User < ApplicationRecord
 
 
   def self.generate_anonymous_name(theme)
-    if theme == 'playful'
+    if theme == 'playful' || theme == 'mages'
       names = [
         "Scholar",
         "Professor",
@@ -660,7 +664,6 @@ class User < ApplicationRecord
       adjectives = [
         "Secretive",
         "Sneaky",
-        "Anonymous",
         "Masked",
         "Invisible",
         "Covert",
@@ -683,12 +686,127 @@ class User < ApplicationRecord
       ]
 
       adjective = adjectives.sample
-      adjective = Translations::Translation.get("anon-name-#{adjective}", adjective)
+      adjective = Translations::Translation.get("anonymous-theme-name.#{adjective}", adjective)
 
       noun = names.sample
-      noun = Translations::Translation.get("anon-name-#{noun}", noun)
+      noun = Translations::Translation.get("anonymous-theme-name.#{noun}", noun)
 
-      "#{adjective} #{noun}"
+      "#{Translations::Translation.get('anonymous', 'Anonymous')} #{adjective} #{noun}"
+
+    elsif theme == 'sea_creatures'
+      names = [
+        "Marinus",
+        "Aequor",
+        "Oceana",
+        "Coralina",
+        "Algaea",
+        "Aquatica",
+        "Vorticella",
+        "Medusa",
+        "Tritonis",
+        "Seashella",
+        "Mollusca",
+        "Anemona",
+        "Cephalopoda",
+        "Neptuna",
+        "Pelagia",
+        "Actinia",
+        "Nereida",
+        "Planktonia",
+        "Poseidonia",
+        "Veneris"
+      ]
+
+      adjectives = [
+        "Cryptusia",
+        "Incognita",
+        "Oscultatum",
+        "Silephemus",
+        "Secretusia",
+        "Disguisus",
+        "Incognitus",
+        "Latensia",
+        "Occultum",
+        "Opacusia",
+        "Obscurum",
+        "Clandestina",
+        "Mystusia",
+        "Ignotum",
+        "Abscondus",
+        "Furtivus",
+        "Seclutum",
+        "Occultus",
+        "Velatusia"
+      ]
+
+      adjective = adjectives.sample
+      adjective = Translations::Translation.get("anonymous-theme-name.#{adjective}", adjective)
+
+      noun = names.sample
+      noun = Translations::Translation.get("anonymous-theme-name.#{noun}", noun)
+
+      "#{Translations::Translation.get('anonymous', 'Anonymous')} #{adjective} #{noun}"
+
+    elsif theme == 'wrestling_masks'
+      names = [
+        "Warrior",
+        "Brawler",
+        "Champion",
+        "Titan",
+        "Falcon",
+        "Renegade",
+        "Vortex",
+        "Cobra",
+        "Raven",
+        "Gladiator",
+        "Phantom",
+        "Vendetta",
+        "Thunderbolt",
+        "Hurricane",
+        "Goliath",
+        "Juggernaut",
+        "Bolt",
+        "Sabre",
+        "Wraith",
+        "Blaze",
+        "Vengeance",
+        "Sentinel"
+      ]
+
+      adjectives = [
+        "Raging",
+        "Daring",
+        "Golden",
+        "Mighty",
+        "Steel",
+        "Vicious",
+        "Thunder",
+        "Radiant",
+        "Fury",
+        "Fierce",
+        "Brutal",
+        "Mysterious",
+        "Intrepid",
+        "Spectacular",
+        "Searing",
+        "Dynamic",
+        "Dominant",
+        "Outlaw",
+        "Unyielding",
+        "Dashing",
+        "Sizzling",
+        "Eagle",
+        "Fiery"
+      ]
+
+      adjective = adjectives.sample
+      adjective = Translations::Translation.get("anonymous-theme-name.#{adjective}", adjective)
+
+      noun = names.sample
+      noun = Translations::Translation.get("anonymous-theme-name.#{noun}", noun)
+
+      "#{Translations::Translation.get('anonymous', 'Anonymous')} #{adjective} #{noun}"
+
     else
       Translations::Translation.get('anonymous', 'Anonymous')
     end

@@ -617,7 +617,7 @@ class User < ApplicationRecord
     elsif theme == 'wrestling_masks' 
       "#{Rails.application.config.action_controller.asset_host}/images/anonymous_avatars/wrestling_masks/#{rand(0..6)}#{rand(0..6)}.png"
     elsif theme == 'sea_creatures' 
-      "#{Rails.application.config.action_controller.asset_host}/images/anonymous_avatars/sea_creatures/#{rand(1..2)}#{rand(0..4)}#{rand(0..4)}.png"
+      "#{Rails.application.config.action_controller.asset_host}/images/anonymous_avatars/sea_creatures/1 copy #{rand(1..64)}.png"
     else 
       nil
     end

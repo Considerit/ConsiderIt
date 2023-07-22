@@ -14,7 +14,7 @@ window.EditComment = ReactiveComponent
 
     name = (current_user.name or 'You')
     if commentor_opinion?.hide_name || customization('anonymize_permanently')
-      name += ' [anonymous]'
+      name += " [#{your_opinion_i18n.anon_assurance()}]"
 
     DIV 
       className: 'comment_entry'

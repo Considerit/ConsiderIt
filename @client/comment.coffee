@@ -7,10 +7,13 @@ window.Comment = ReactiveComponent
     point = fetch( comment.point )
     proposal = fetch( point.proposal )
     commentor_name =  fetch(comment.user).name
-    anonymous = comment.hide_name
+
+    commentor_opinion = _.findWhere proposal.opinions, {user: comment.user}    
+
+    anonymous = commentor_opinion?.hide_name || comment.hide_name
 
     if (anonymous || customization('anonymize_permanently')) && current_user.user == comment.user
-      commentor_name += ' [identity hidden]'
+      commentor_name += " [#{your_opinion_i18n.anon_assurance()}]"
 
     if comment.editing
       # Sharing keys, with some non-persisted client data getting saved...

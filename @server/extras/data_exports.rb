@@ -131,7 +131,7 @@ module DataExports
 
       s = stats opinions.map{|o| o.stance}
       
-      user_name, user_email = get_identity(proposal.user, subdomain, anonymize_permanently)
+      user_name, user_email = get_identity(proposal.user, subdomain, anonymize_permanently || proposal.hide_name)
 
       row = [proposal.slug, "https://#{subdomain.url}/#{proposal.slug}", proposal.created_at, user_name, user_email, proposal.name, (proposal.cluster || 'Proposals'), proposal.description, proposal.points.published.count, opinions.count, s[:total].round(2), s[:avg].round(2), s[:std_dev].round(2)]
       group_diffs = group_differences proposal 

@@ -30,8 +30,8 @@ def get_identity(user, subdomain, anonymize)
     user_email = user.email.gsub('.ghost', '')
   else 
     info = User.anonymized_info(user.id, subdomain, true)
-    user_name = info["name"]
-    user_email = info["email"]      
+    user_name = info["name"] 
+    user_email = info["email"] + "#{User.anonymized_id(user.id)}"      
   end
   [user_name, user_email]
 end

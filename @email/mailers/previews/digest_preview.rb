@@ -6,10 +6,10 @@ require 'ruby-prof'
 class DigestPreview < ActionMailer::Preview
 
   def digest 
-    subdomain = Subdomain.find(4307)
-    user = User.find(7198590)
+    subdomain = Subdomain.find(2079)
+    user = User.find(282168)
     since = user.created_at
-    since = 3.days.ago
+    since = 20.days.ago
 
 
 

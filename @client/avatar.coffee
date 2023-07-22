@@ -276,7 +276,6 @@ props_to_strip = ['user', 'anonymous', 'set_bg_color', 'custom_bg_color', 'hide_
 window.avatar = (user, props) ->
   attrs = _.clone props
 
-
   if !user.key 
     if user == arest.cache['/current_user']?.user 
       user = fetch(user)
@@ -325,12 +324,11 @@ window.avatar = (user, props) ->
   else 
     alt = name 
 
-  classes = "avatar #{attrs.className or ''}"
+  classes = "avatar#{if attrs.className then ' ' + attrs.className else ''}"
   if anonymous 
     if user.key == arest.cache['/current_user']?.user
       classes += " pixelated-avatar"
       style.filter = "blur(#{.025 * (style.width or 50)}px)"
-
 
   attrs = _.extend attrs,
     key: user.key
@@ -343,6 +341,7 @@ window.avatar = (user, props) ->
     width: style?.width
     height: style?.width
     style: style
+
 
   for prop_to_strip in props_to_strip
     if prop_to_strip of attrs

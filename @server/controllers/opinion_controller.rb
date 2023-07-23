@@ -95,6 +95,9 @@ class OpinionController < ApplicationController
     opinion.update updates
     opinion.save
 
+    if opinion.hide_name != params['hide_name']
+      opinion.change_visibility(params['hide_name'])
+    end
 
     # Update published
     if params['published'] && !opinion.published
@@ -117,10 +120,6 @@ class OpinionController < ApplicationController
         :where => proposal.slug
       })
 
-    end
-
-    if opinion.hide_name != params['hide_name']
-      opinion.change_visibility(params['hide_name'])
     end
 
     dirty_key "/proposal/#{proposal.id}"

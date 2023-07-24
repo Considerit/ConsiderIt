@@ -54,14 +54,9 @@ window.DataDash = ReactiveComponent
     query = ''
     user_tags = customization 'user_tags'
     if user_tags
-
       query = "?#{(v.key for v in user_tags).join('=1&')}" 
 
-
-                
-
-    DIV null,       
-
+    DIV null,
       if !paid
         UpgradeForumButton
           big: true
@@ -103,6 +98,7 @@ window.DataDash = ReactiveComponent
           value: 'Export'
 
 
+      AnonymizationCheckForSigninQuestions()
 
 
 

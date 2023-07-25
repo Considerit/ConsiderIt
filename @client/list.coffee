@@ -1191,7 +1191,7 @@ category_value = (list_key, fresh, subdomain) ->
 
 
 window.get_all_lists = ->
-  fetch('/lists').lists
+  fetch('/lists').lists or []
 
 window.get_all_lists_not_configured_for_a_page = ->
   lists = fetch('/lists').lists or []

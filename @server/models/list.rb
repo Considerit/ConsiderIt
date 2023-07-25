@@ -31,13 +31,15 @@ class List
       tabs.each do |tab|
         all_lists.concat(tab["lists"].select { |l| l != '*' && l != '*-' })
       end
-    elsif subdomain.customizations.has_key?('lists')
+    elsif subdomain.customizations && subdomain.customizations.has_key?('lists')
       all_lists = subdomain.customizations['lists'].select { |l| l != '*' && l != '*-' }
     end
 
     # Lists might also just be defined as a customization, without any proposals in them yet
-    subdomain.customizations.each do |k, v|
-      all_lists.push(k) if k.match(/list\//)
+    if subdomain.customizations
+      subdomain.customizations.each do |k, v|
+        all_lists.push(k) if k.match(/list\//)
+      end
     end
 
 

@@ -43,7 +43,7 @@ class Subdomain < ApplicationRecord
       # for anonymous forums, we go back to just email addresses 
       # for access control, lest we leak information about who 
       # is actually participating, vs just invited to. 
-      if self.customizations['anonymize_everything']
+      if self.customizations && self.customizations['anonymize_everything']
         json['roles'].each do |role, users|
 
           json['roles'][role] = json['roles'][role].map{|email_or_key|

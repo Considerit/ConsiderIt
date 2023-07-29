@@ -23,6 +23,8 @@ class Subdomain < ApplicationRecord
 
   scope :public_fields, -> { select(self.my_public_fields) }
 
+  before_validation :set_default_customizations
+
   def users(registered=true)
     qry = User
     if registered
@@ -123,6 +125,10 @@ class Subdomain < ApplicationRecord
 
     self.name = new_name
     self.save
+  end
+
+  def set_default_customizations
+    self.customizations ||= {}
   end
 
   def customization_json

@@ -254,7 +254,7 @@ class Proposal < ApplicationRecord
           SELECT id, concat('/proposal/', id) as \"key\", slug, cluster, concat('/user/', user_id) as user, created_at, 
                  updated_at, name, 
                  description, active, published, subdomain_id, json,
-                 moderation_status, pic_file_name, banner_file_name, roles
+                 moderation_status, pic_file_name, banner_file_name, roles, hide_name
               FROM proposals 
               WHERE subdomain_id=#{subdomain.id} AND
                     hide_on_homepage = false AND
@@ -519,9 +519,12 @@ class Proposal < ApplicationRecord
       active_user = current_user
     end
 
-    id = key_id(json['user'])
-    if (anonymize_everything || (json["hide_name"] && json["hide_name"] != 0)) && active_user.id != id
-      json['user'] = "/user/#{User.anonymized_id(id)}"
+    user_id = key_id(json['user'])
+
+    anonymize = (anonymize_everything || (json["hide_name"] && json["hide_name"] != 0)) 
+
+    if anonymize && active_user.id != user_id
+      json['user'] = "/user/#{User.anonymized_id(user_id)}"
     end
 
     if json['roles']
@@ -532,9 +535,9 @@ class Proposal < ApplicationRecord
             anonymized_users.push user
             next
           end
-          id = key_id(user)
-          if (anonymize_everything || (json["hide_name"] && json["hide_name"] != 0)) && active_user.id != id
-            anonymized_users.push "/user/#{User.anonymized_id(id)}"
+          role_user_id = key_id(user)
+          if anonymize && active_user.id != role_user_id
+            anonymized_users.push "/user/#{User.anonymized_id(role_user_id)}"
           else 
             anonymized_users.push user
           end

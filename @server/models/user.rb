@@ -562,8 +562,8 @@ class User < ApplicationRecord
         {}
       end
 
-      my_anon_id = -100
-      while assigned_anon_ids.has_key?(my_anon_id)
+      my_anon_id = nil
+      while my_anon_id == nil || assigned_anon_ids.has_key?(my_anon_id)
         my_anon_id = rand(-9999999999999..-2)
       end
       assigned_anon_ids[my_anon_id] = id

@@ -124,7 +124,8 @@ class Proposal < ApplicationRecord
         by_proposal = {}
 
         opinions.each(:as => :hash) do |o|
-          proposal_id = o["proposal_id"].to_i
+          o["hide_name"] = o["hide_name"] == 1
+          proposal_id = o["proposal_id"].to_i          
 
           o.delete("proposal_id")
 
@@ -155,6 +156,7 @@ class Proposal < ApplicationRecord
         your_opinions.each(:as => :hash) do |o|
           proposal_id = o["proposal_id"]
           o.delete("proposal_id")
+          o["hide_name"] = o["hide_name"] == 1
 
           if o["point_inclusions"] && o["point_inclusions"] != '[]'
             o["point_inclusions"] = Oj.load(o["point_inclusions"]).map! {|p| "/point/#{p}"}
@@ -272,6 +274,7 @@ class Proposal < ApplicationRecord
             p["json"] = {}
           end
 
+          p["hide_name"] = p["hide_name"] == 1
           if moderation_policy == 1 && !p["moderation_status"] 
             p["under_review"] = true
           end
@@ -456,6 +459,7 @@ class Proposal < ApplicationRecord
         """
 
       json['opinions'] = o.each(:as => :hash) do |op|
+        op['hide_name'] = op['hide_name'] == 1
         if op["point_inclusions"] && op["point_inclusions"] != '[]'
           op["point_inclusions"] = Oj.load(op["point_inclusions"]).map! {|p| "/point/#{p}"}
         else

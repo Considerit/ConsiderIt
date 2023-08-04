@@ -677,7 +677,7 @@ window.your_opinion_i18n =
   anonymize_opinion_button: -> translator('engage.anonymize_opinion_button', 'Anonymize your opinion and pro/con comments about this proposal.')
   deanonymize_opinion_button: -> translator 'engage.deanonymize_opinion_button', 'Your opinion and pro/con comments are anonymized'
   remove_opinion_button: -> translator('engage.remove_opinion_button', 'Delete your opinion and pro/con comments about this proposal')
-  anon_assurance: -> translator('engage.anon_assurance', 'anonymized')
+  anon_assurance: -> translator('engage.anon_assurance', 'anonymized to others')
   anonymize: -> translator('engage.anonymize', 'anonymize')
 
 

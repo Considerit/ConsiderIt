@@ -65,7 +65,7 @@ class Point < ApplicationRecord
       if json['includers'].length > 0
         json['includers'].map! do |u|
           id = u['id']
-          if (anonymize_everything || u['hide_name']) && (!active_user || active_user.id != id )
+          if (anonymize_everything || u['hide_name'] && json["hide_name"] != 0) && (!active_user || active_user.id != id )
             id = User.anonymized_id(id)
           end
           "/user/#{id}"
@@ -133,7 +133,9 @@ class Point < ApplicationRecord
         self.comment_count += 1
       end
     end
-    self.save
+    if changed?
+      self.save
+    end
   end
 
   def recache
@@ -141,7 +143,7 @@ class Point < ApplicationRecord
 
     self.includers = self.inclusions.map do |x|
       {'id' => x.user_id, 'hide_name' => x.opinion.hide_name}
-    end 
+    end
 
     # ###
     # # define cross-spectrum appeal
@@ -189,11 +191,25 @@ class Point < ApplicationRecord
   end
 
 
-  def self.recache_all
-    for p in Point.all
-      p.recache
-    end
-
+  def self.update_inclusions_all
+    sql = """
+      UPDATE points p
+      SET includers = COALESCE(
+        (
+          SELECT JSON_ARRAYAGG(
+              JSON_OBJECT(
+                'id', i.user_id,
+                'hide_name', o.hide_name
+              )
+            )
+          FROM inclusions i
+          JOIN opinions o ON i.proposal_id=o.proposal_id AND i.user_id=o.user_id
+          WHERE i.point_id = p.id
+        ), 
+        '[]'
+      );
+    """    
+    ActiveRecord::Base.connection.execute(sql)
   end
 
 end

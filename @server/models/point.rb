@@ -129,7 +129,7 @@ class Point < ApplicationRecord
   def set_comment_count 
     self.comment_count = 0 
     self.comments.each do |c|
-      if c.okay_to_email_notification
+      if c.okay_to_show_on_forum
         self.comment_count += 1
       end
     end

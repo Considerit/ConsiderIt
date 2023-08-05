@@ -116,30 +116,63 @@ class User < ApplicationRecord
     end
     users = ActiveRecord::Base.connection.exec_query( "SELECT #{fields} FROM users WHERE registered=1 AND active_in like '%\"#{current_subdomain.id}\"%'")
 
-    anonymize_everything = current_subdomain.customization_json['anonymize_everything']
-
-    tags_config = current_subdomain.customization_json.fetch('user_tags', [])
+    customizations = current_subdomain.customization_json
+    anonymize_everything = customizations['anonymize_everything']
+    tags_config = customizations.fetch('user_tags', [])
+    
+    whitelist = User.tag_whitelist(current_subdomain)
 
 
     users.each do |u| 
       u_tags = Oj.load(u['tags']||'{}')
-      u['tags'] = {}
-      tags_config.each do |vals|
-        tag = vals["key"]
-        if u_tags.has_key?(tag) && (is_admin || vals.fetch('visibility', 'host-only') == 'open')
-          u['tags'][tag] = u_tags[tag]
-        end
-      end
+      u['tags'] = User.filter_tags(tags_config, u_tags, is_admin, whitelist)
 
       if current_user.key != u['key'] && anonymize_everything
-        id = key_id(u["key"])
-        u.merge! User.anonymized_info(id, current_subdomain, is_admin)  
+        u = User.anonymize_user(current_subdomain, u, is_admin)
       end 
-
     end 
     
     {key: '/users', users: users.as_json}
   end
+
+  def self.anonymize_user(subdomain, json, is_admin)
+    json.merge! User.anonymized_info(key_id(json["key"]), subdomain, is_admin)
+    json 
+  end
+
+
+  def self.tag_whitelist(subdomain)
+    anonymize_permanently = subdomain.customizations['anonymize_permanently']
+    whitelist = nil
+    if anonymize_permanently
+      anonymization_safe_opinion_filters = subdomain.customizations['anonymization_safe_opinion_filters']
+      if anonymization_safe_opinion_filters
+        if anonymization_safe_opinion_filters.respond_to?('each')
+          whitelist = anonymization_safe_opinion_filters
+        else
+          whitelist = nil
+        end
+      else
+        whitelist = []
+      end      
+    end
+    return whitelist
+  end
+
+
+  def self.filter_tags(tags_config, user_tags, ignore_visibility, whitelist)
+
+    tag_subset = {}
+    tags_config.each do |vals|
+      tag = vals["key"]
+      if user_tags.has_key?(tag) && (ignore_visibility || vals.fetch('visibility', 'host-only') == 'open') && \
+         (!whitelist || whitelist.include?(tag))
+        tag_subset[tag] = user_tags[tag]
+      end
+    end
+    tag_subset
+  end
+
 
   def as_json(options={})
     data = {  
@@ -156,8 +189,9 @@ class User < ApplicationRecord
     end
 
     if anonymize_everything && self.id != current_user.id
-      data.merge! User.anonymized_info(key_id(data["key"]), current_subdomain, current_user.is_admin?)
+      data = User.anonymize_user(current_subdomain, data, current_user.is_admin?)
     end 
+
 
     data['tags'] = tags_for_subdomain(current_user.is_admin?)
     data
@@ -168,17 +202,11 @@ class User < ApplicationRecord
     customizations = current_subdomain.customization_json
 
     tags_config = customizations.fetch('user_tags', [])
+    whitelist = User.tag_whitelist(current_subdomain)
 
     my_tags = self.tags || {}
-    tag_subset = {}
-    tags_config.each do |vals|
 
-      tag = vals["key"]
-      if my_tags.has_key?(tag) && (ignore_visibility || vals.fetch('visibility', 'host-only') == 'open')
-        tag_subset[tag] = my_tags[tag]
-      end
-    end
-    tag_subset
+    User.filter_tags(tags_config, my_tags, ignore_visibility, whitelist)
   end
 
   def is_admin?(subdomain = nil)

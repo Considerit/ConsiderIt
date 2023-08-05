@@ -127,6 +127,14 @@ window.get_participant_attributes = ->
                   # (value == 'true') == view.pass(u)
 
     if user_tags
+      anonymization_safe_opinion_filters = customization('anonymization_safe_opinion_filters')
+      if anonymization_safe_opinion_filters && Array.isArray(anonymization_safe_opinion_filters)
+        new_user_tags = []
+        for tag in user_tags 
+          if tag.key in anonymization_safe_opinion_filters
+            new_user_tags.push tag
+        user_tags = new_user_tags
+
       for tag in user_tags 
         name = tag.key
         if (tag.visibility == 'open' || is_admin) && \

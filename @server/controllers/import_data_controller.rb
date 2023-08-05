@@ -489,6 +489,10 @@ class ImportDataController < ApplicationController
     subdomain = current_subdomain
 
     tag_whitelist = request.query_parameters.keys()
+    anonymization_safe_opinion_filters = subdomain.customizations['anonymization_safe_opinion_filters']
+    if anonymization_safe_opinion_filters && anonymization_safe_opinion_filters.respond_to?('each')
+      tag_whitelist = tag_whitelist.intersection(anonymization_safe_opinion_filters)
+    end
 
     exports = [
       {fname: "#{subdomain.name}-opinions.csv",  rows: DataExports.opinions(subdomain)},

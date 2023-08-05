@@ -238,13 +238,16 @@ protected
       processed[key] = 1
 
       if key.match "/user/"
-        user_id = key_id(key)
+        real_id = user_id = key_id(key)
+
+
         if user_id < 0
-          masked_id = user_id
           real_id = User.deanonymized_id(user_id)
           key = "/user/#{real_id}"
         end
-        data = User.find(key_id(key)).as_json()
+
+        data = User.find( real_id  ).as_json()
+
         if user_id < 0
           anon_data = User.anonymized_info(real_id, current_subdomain, current_user.is_admin?)
           data.merge! anon_data

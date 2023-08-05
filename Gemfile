@@ -39,7 +39,6 @@ gem 'rubyzip'
 
 #####################
 # For topic modeling
-gem "tomoto"
 gem "lemmatizer"
 
 #############

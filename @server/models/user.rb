@@ -342,7 +342,14 @@ class User < ApplicationRecord
   end
 
 
+  def self.unsubscribe(email, subdomain_name)
+    user = User.find_by_email(email)
+    subdomain = Subdomain.find_by_name(subdomain_name)
+    user.update_subscription_key('send_emails', false, {:subdomain => subdomain, :force => true})
+  end
+
   def update_subscription_key(key, value, hash={})
+
     if hash.has_key?(:subdomain)
       subdomain = hash[:subdomain]
     else 
@@ -353,7 +360,7 @@ class User < ApplicationRecord
     return if !hash[:force] && sub_settings.key?(key)
 
     sub_settings[key] = value
-    self.subscriptions = update_subscriptions(sub_settings)
+    self.subscriptions = update_subscriptions(sub_settings, subdomain)
     save
   end
 
@@ -650,7 +657,6 @@ class User < ApplicationRecord
       nil
     end
   end
-
 
   def self.generate_anonymous_name(theme)
     if theme == 'playful' || theme == 'mages'

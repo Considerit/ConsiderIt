@@ -28,6 +28,12 @@ task :create_forum, [:forum_name] => :environment do |t, args|
   pp "You may need to set a DNS A record for #{forum_name} for your domain that points to this server's ip (one of #{ip}) (e.g. at https://cloud.linode.com/domains)"
 end
 
+task :unsubscribe, [:email, :subdomain] => :environment do |t, args|
+  email = args[:email]
+  subdomain = args[:subdomain]
+  User.unsubscribe(email, subdomain)
+end
+
 task :create_super_admin, [:email, :name, :password] => :environment do |t, args|
   user = User.find_by_email args[:email]
   if user 

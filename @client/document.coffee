@@ -105,6 +105,18 @@ styles += """
 
 
 doc_groups = {
+  data: {
+    name: ''
+    groups: [
+      {
+        label: ''
+        docs: [
+          {name: 'Data Export Documentation', path: 'data_export'}
+        ]
+      }
+
+    ]
+  },
   legal: {
     name: ''
     groups: [
@@ -155,17 +167,19 @@ window.DocumentationGroup = ReactiveComponent
         DIV 
           className: 'doc_menu'
 
-          UL 
-            style: {}
+          if group_config.groups[0].docs.length > 1
 
-            for item in group_config.groups[0].docs
-              fetch "/docs/#{item.path}" # just to preload
-              LI 
-                className: if item.path == doc then 'active'
+            UL 
+              style: {}
 
-                A 
-                  href: "/docs/#{group}/#{item.path}"
-                  item.name
+              for item in group_config.groups[0].docs
+                fetch "/docs/#{item.path}" # just to preload
+                LI 
+                  className: if item.path == doc then 'active'
+
+                  A 
+                    href: "/docs/#{group}/#{item.path}"
+                    item.name
 
       else 
         DIV 

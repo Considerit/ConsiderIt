@@ -66,7 +66,7 @@ module DataExports
 
   def DataExports.points(subdomain)
     fname = "#{subdomain.name}-points"
-    heading = ['proposal', 'type', 'created', "username", "author", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
+    heading = ['proposal_slug', 'proposal_name', 'type', 'created', "username", "email", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
     rows = []
     rows.append heading 
     anonymize_permanently = subdomain.customization_json['anonymize_permanently']
@@ -79,7 +79,7 @@ module DataExports
 
           pnt_user_name, pnt_user_email = get_identity(pnt.user, subdomain, anonymize_point)
 
-          rows.append [pnt.proposal.slug, 'POINT', pnt.created_at, pnt_user_name, pnt_user_email, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance : '-', pnt.inclusions.count, pnt.comments.count]
+          rows.append [pnt.proposal.slug, pnt.proposal.name, 'POINT', pnt.created_at, pnt_user_name, pnt_user_email, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance : '-', pnt.inclusions.count, pnt.comments.count]
 
           pnt.comments.each do |comment|
             opinion = comment.user.opinions.find_by_proposal_id(pnt.proposal.id)
@@ -87,7 +87,7 @@ module DataExports
             anonymize_comment = anonymize_permanently || comment.hide_name            
             comment_user_name, comment_user_email = get_identity(comment.user, subdomain, anonymize_comment)
 
-            rows.append [pnt.proposal.slug, 'COMMENT', comment.created_at, comment_user_name, comment_user_email, "", comment.body, '', opinion ? opinion.stance : '-', '', '']
+            rows.append [pnt.proposal.slug, pnt.proposal.name, 'COMMENT', comment.created_at, comment_user_name, comment_user_email, "", comment.body, '', opinion ? opinion.stance : '-', '', '']
           end
         rescue 
         end 
@@ -100,7 +100,7 @@ module DataExports
   def DataExports.proposals(subdomain)
     fname = "#{subdomain.name}-proposals"
     rows = []
-    heading = ['slug', 'url', 'created', "username", "author", 'name', 'category', 'description', '#points', '#opinions', 'total score', 'avg score', 'std deviation']
+    heading = ['proposal_slug', 'url', 'created', "username", "email", 'name', 'category', 'description', '#points', '#opinions', 'total score', 'avg score', 'std deviation']
     anonymize_permanently = subdomain.customization_json['anonymize_permanently']
     
 
@@ -149,7 +149,7 @@ module DataExports
   def DataExports.users(subdomain, tag_whitelist)
     fname = "#{subdomain.name}-users"
 
-    heading = ['email', 'name', 'date joined'] 
+    heading = ['email', 'username', 'date joined'] 
     anonymize_permanently = subdomain.customization_json['anonymize_permanently']
     anonymization_safe_opinion_filters = subdomain.customization_json['anonymization_safe_opinion_filters']
     export_tags = !anonymize_permanently || anonymization_safe_opinion_filters

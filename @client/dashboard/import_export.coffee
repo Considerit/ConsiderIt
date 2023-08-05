@@ -1,4 +1,4 @@
-
+  
 styles += """
   .dangerzone button {
     background-color: #c31d1d;
@@ -84,6 +84,19 @@ window.DataDash = ReactiveComponent
         DIV 
           className: 'explanation'
           "A download will begin in a couple seconds after hitting export. The zip file contains four spreadsheets: opinions, points, proposals, and users."
+
+          DIV 
+            style: 
+              backgroundColor: '#f2f2f2'
+              padding: "8px 12px"
+              marginTop: 24
+
+            "Learn more about the export in the "
+            A 
+              href: '/docs/data/data_export'
+
+              'data export documentation'
+            '.'
 
         INPUT
           type: 'submit'

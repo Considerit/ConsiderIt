@@ -119,7 +119,7 @@ window.NewProposal = ReactiveComponent
         display: 'block'
 
       w = ITEM_TEXT_WIDTH()
-      showing_proposer = customization('show_proposer_icon', list_key) && !customization('anonymize_everything')
+      showing_proposer = customization('show_proposer_icon', list_key) #&& !customization('anonymize_everything')
       proposal_fields = customization('new_proposal_fields', list_key)()
 
       
@@ -144,13 +144,14 @@ window.NewProposal = ReactiveComponent
           if showing_proposer && adding 
             editor = current_user.user
             # Person's icon
-            Avatar
+            Avatar 
               key: editor
               user: editor
               img_size: 'large'
+              anonymous: @local.hide_name
               style:
-                height: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
-                width: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
+                height: PROPOSAL_AUTHOR_AVATAR_SIZE
+                width: PROPOSAL_AUTHOR_AVATAR_SIZE
                 marginRight: "var(--PROPOSAL_AUTHOR_AVATAR_GUTTER)"
                 borderRadius: 0
                 backgroundColor: '#ddd'
@@ -300,6 +301,31 @@ window.NewProposal = ReactiveComponent
                     get_list_title(list_key, true)
 
 
+          DIV 
+            style: 
+              position: 'relative'
+
+            DIV 
+              style: 
+                display: 'flex'
+              INPUT
+                type:      'checkbox'
+                id:        "anonymize_proposal"
+                name:      "anonymize_proposal"
+                checked:   !!@local.hide_name
+                style: 
+                  verticalAlign: 'middle'
+                  marginRight: 8
+                onChange: =>
+                  @local.hide_name = !@local.hide_name
+                  save(@local)
+              
+              LABEL 
+                htmlFor: "anonymize_proposal"
+                your_opinion_i18n.anonymize_proposal_button()
+
+
+
           if @local.errors?.length > 0
             
             DIV
@@ -317,6 +343,8 @@ window.NewProposal = ReactiveComponent
                     style: {paddingRight: 9}
 
                   SPAN null, error
+
+
 
           DIV 
             style: 
@@ -352,6 +380,7 @@ window.NewProposal = ReactiveComponent
                   description : description
                   cluster : category
                   active: active
+                  hide_name: @local.hide_name
 
                 InitializeProposalRoles(proposal)
                 
@@ -381,6 +410,8 @@ window.NewProposal = ReactiveComponent
 
                   @local.submitting = false
                   save @local
+                  delete proposal.hide_name
+                  delete arest.cache[proposal.key].hide_name
 
               translator 'engage.done_button', 'Done'
 

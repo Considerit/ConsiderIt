@@ -6,6 +6,14 @@ module Moderatable
             :class_name => 'Moderation', :dependent => :destroy    
   end
 
+  def okay_to_show_on_forum
+    mod_setting = self.subdomain.moderation_policy
+
+    [nil, 0, 2, 3].include?(mod_setting) || \
+      (self.moderation && self.moderation.status == 1)
+
+  end
+
   def okay_to_email_notification
     mod_setting = self.subdomain.moderation_policy
 

@@ -65,6 +65,10 @@ class PointController < ApplicationController
 
       point.save
 
+      if point.hide_name != opinion.hide_name
+        opinion.change_visibility(point.hide_name)
+      end 
+
       opinion.include(point)
       # Include into the user's opinion
       if !opinion.published
@@ -72,6 +76,7 @@ class PointController < ApplicationController
       end
 
       point.publish
+
 
       original_id = key_id(params[:key])
       result = point.as_json
@@ -118,6 +123,11 @@ class PointController < ApplicationController
       if errors.length == 0
 
         point.update! updates
+
+        opinion = Opinion.get_or_make(point.proposal)
+        if point.hide_name != opinion.hide_name
+          opinion.change_visibility(point.hide_name)
+        end 
 
         if point.published
           write_to_log({

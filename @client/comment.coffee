@@ -4,6 +4,16 @@ window.Comment = ReactiveComponent
   render: -> 
     comment = fetch @props.comment
     current_user = fetch '/current_user'
+    point = fetch( comment.point )
+    proposal = fetch( point.proposal )
+    commentor_name =  fetch(comment.user).name
+
+    commentor_opinion = _.findWhere proposal.opinions, {user: comment.user}    
+
+    anonymous = commentor_opinion?.hide_name || comment.hide_name
+
+    if (anonymous || customization('anonymize_permanently')) && current_user.user == comment.user
+      commentor_name += " [#{your_opinion_i18n.anon_assurance()}]"
 
     if comment.editing
       # Sharing keys, with some non-persisted client data getting saved...
@@ -11,7 +21,7 @@ window.Comment = ReactiveComponent
         fresh: false
         point: comment.point
         key: comment.key
-        proposal: fetch(comment.point).proposal
+        proposal: proposal
 
     else
 
@@ -22,11 +32,12 @@ window.Comment = ReactiveComponent
 
         # Comment author name
         DIV className: 'comment_entry_name',
-          fetch(comment.user).name + ':'
+          commentor_name + ':'
 
         # Comment author icon
         Avatar
           key: comment.user
+          anonymous: anonymous          
           hide_popover: true
           set_bg_color: true
           style: 
@@ -76,7 +87,9 @@ styles += """
 
 .comment_entry_name {
   font-weight: 600;
-  color: #666666; }
+  color: #666666; 
+  margin-bottom: 4px;
+}
 
 .comment_entry_body {
   margin-left: 60px;

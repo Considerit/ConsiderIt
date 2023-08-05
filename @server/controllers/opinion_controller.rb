@@ -15,7 +15,7 @@ class OpinionController < ApplicationController
     proposal = Proposal.find(key_id(params['proposal']))
     authorize! 'publish opinion', proposal
 
-    fields = ['proposal', 'stance', 'point_inclusions']
+    fields = ['proposal', 'stance', 'point_inclusions', 'hide_name']
     updates = params.select{|k,v| fields.include? k}.to_h
 
     # Convert proposal key to id
@@ -57,6 +57,9 @@ class OpinionController < ApplicationController
 
     Proposal.clear_cache
 
+    if opinion.hide_name
+      opinion.change_visibility(true)
+    end
 
     original_id = key_id(params[:key])
     result = opinion.as_json
@@ -87,11 +90,14 @@ class OpinionController < ApplicationController
 
     # Grab the proposal
     proposal = Proposal.find(updates['proposal_id'])
-    
+
     # Update the normal fields
     opinion.update updates
     opinion.save
 
+    if opinion.hide_name != params['hide_name']
+      opinion.change_visibility(params['hide_name'])
+    end
 
     # Update published
     if params['published'] && !opinion.published

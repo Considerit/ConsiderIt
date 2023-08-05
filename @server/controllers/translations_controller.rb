@@ -86,6 +86,8 @@ class TranslationsController < ApplicationController
       EventMailer.translations_proposed(subdomain || current_subdomain, other_updates).deliver_later
     end 
 
+    Rails.cache.delete_matched "TRANSLATION: "
+
     # propagate translation updates to other servers
     if for_peers.length > 0 
       query = {

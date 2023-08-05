@@ -191,8 +191,8 @@ module Notifier
     end
 
     if !subscription_settings[key]
-      pp "missing event prefs for #{key}", subscription_settings
-      raise "missing event prefs for #{key}"
+      pp "missing event prefs for #{user.name} for #{key}", subscription_settings
+      return false
     end
 
     subscription_settings[key] && subscription_settings[key]['email_trigger']

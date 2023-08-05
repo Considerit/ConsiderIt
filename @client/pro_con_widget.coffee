@@ -506,6 +506,18 @@ styles += """
     display: none;
   }
 
+  .below_save {  text-align:center;  }
+  .below_save .btn {
+    margin: 10px;
+    border: solid 1px #ddd;
+    border-radius: 15px;
+    font-weight: lighter;
+    font-size: 0.9em;
+    background-color: #eee;
+    color: black;
+  }
+  .below_save .btn svg {  margin-left:20px;  }
+
 
   .decision_board_body {
     border-radius: 16px;
@@ -543,6 +555,8 @@ styles += """
 """
 
 
+
+
 ##
 # DecisionBoard
 # Handles the user's list of important points in crafting page. 
@@ -558,6 +572,8 @@ window.DecisionBoard = ReactiveComponent
     your_opinion = proposal.your_opinion
     if your_opinion.key
       fetch your_opinion
+
+    YOUR_OPINION_BUTTON_SIZE = 18
 
     can_opine = canUserOpine proposal
 
@@ -747,22 +763,78 @@ window.DecisionBoard = ReactiveComponent
               
 
         if your_opinion.key && permit('update opinion', proposal, your_opinion) > 0 && mode == 'crafting'
-          remove_opinion = -> 
-            your_opinion.stance = 0
-            your_opinion.point_inclusions = []                   
-            your_opinion.published = false 
-            save your_opinion
+
+
+          if your_opinion.hide_name
+            anonymize_button_tooltip = your_opinion_i18n.deanonymize_opinion_button()
+            anonymize_button_text = your_opinion_i18n.anon_assurance()
+          else 
+            anonymize_button_tooltip =  your_opinion_i18n.anonymize_opinion_button()
+            anonymize_button_text = your_opinion_i18n.anonymize()
+
 
           DIV 
             className: 'below_save'
-                      
-            BUTTON 
-              style: 
-                textDecoration: 'underline'
-              className:'cancel_opinion_button primary_cancel_button'
-              onClick: remove_opinion
+            style: 
+              display: if customization('anonymize_permanently') then 'flex'
+              justifyContent: if customization('anonymize_permanently') then 'center'
 
-              translator "engage.remove_my_opinion", 'Remove your opinion'
+
+            DIV 
+              style: 
+                textAlign: 'center'
+                color: '#383838'
+                margin: "16px 0 4px 0"
+                fontSize: 14
+                fontWeight: 300
+
+              
+
+              translator 'engage.below_save_opinion_buttons', 'Your opinion and comments about this proposal:'
+                      
+            
+            DIV null,
+              BUTTON
+                key: 'anonymize opinion button'
+                className: 'btn'
+                style:  {  backgroundColor: (if your_opinion.hide_name then focus_blue else null), display: if customization('anonymize_permanently') then 'none'  }
+                "data-tooltip": anonymize_button_tooltip
+                "aria-label": anonymize_button_tooltip
+                onClick: -> toggle_anonymize_opinion(your_opinion)
+
+                SPAN
+                  key: 'anonymize opinion label'
+                  style: 
+                    textTransform: 'capitalize'
+                    color: if your_opinion.hide_name then 'white'
+                    fontWeight: if your_opinion.hide_name then 600
+                  anonymize_button_text
+
+                if not TABLET_SIZE()
+                  SPAN
+                    key: 'anonymize opinion icon'
+                    style: {  height:'22px', display:'inline-block', verticalAlign:'bottom'  }
+                    iconAnonymousMask YOUR_OPINION_BUTTON_SIZE, if your_opinion.hide_name then '#FFFFFF' else '#888888'
+
+              BUTTON
+                key: 'remove opinion button'
+                className: 'btn'
+                "data-tooltip": your_opinion_i18n.remove_opinion_button()
+                "aria-label": your_opinion_i18n.remove_opinion_button()
+
+                onClick: -> remove_opinion(your_opinion)
+
+                SPAN
+                  key: 'remove opinion label'
+                  style: 
+                    textTransform: 'capitalize'
+                  translator('engage.delete_button', 'delete')
+
+                if not TABLET_SIZE()
+                  SPAN
+                    key: 'remove opinion icon'
+                    style: {  height:'20px', display:'inline-block', verticalAlign:'bottom'  }
+                    iconX YOUR_OPINION_BUTTON_SIZE, '#444444'
 
 
 

@@ -116,28 +116,63 @@ class User < ApplicationRecord
     end
     users = ActiveRecord::Base.connection.exec_query( "SELECT #{fields} FROM users WHERE registered=1 AND active_in like '%\"#{current_subdomain.id}\"%'")
 
-    anonymize_everything = current_subdomain.customization_json['anonymize_everything']
+    customizations = current_subdomain.customization_json
+    anonymize_everything = customizations['anonymize_everything']
+    tags_config = customizations.fetch('user_tags', [])
+    
+    whitelist = User.tag_whitelist(current_subdomain)
 
-    tags_config = current_subdomain.customization_json.fetch('user_tags', [])
+
     users.each do |u| 
       u_tags = Oj.load(u['tags']||'{}')
-      u['tags'] = {}
-      tags_config.each do |vals|
-        tag = vals["key"]
-        if u_tags.has_key?(tag) && (is_admin || vals.fetch('visibility', 'host-only') == 'open')
-          u['tags'][tag] = u_tags[tag]
-        end
-      end
+      u['tags'] = User.filter_tags(tags_config, u_tags, is_admin, whitelist)
 
       if current_user.key != u['key'] && anonymize_everything
-        u['name'] = Translations::Translation.get('anonymous', 'Anonymous')
-        u['avatar_file_name'] = nil
+        u = User.anonymize_user(current_subdomain, u, is_admin)
       end 
-
     end 
     
     {key: '/users', users: users.as_json}
   end
+
+  def self.anonymize_user(subdomain, json, is_admin)
+    json.merge! User.anonymized_info(key_id(json["key"]), subdomain, is_admin)
+    json 
+  end
+
+
+  def self.tag_whitelist(subdomain)
+    anonymize_permanently = subdomain.customizations['anonymize_permanently']
+    whitelist = nil
+    if anonymize_permanently
+      anonymization_safe_opinion_filters = subdomain.customizations['anonymization_safe_opinion_filters']
+      if anonymization_safe_opinion_filters
+        if anonymization_safe_opinion_filters.respond_to?('each')
+          whitelist = anonymization_safe_opinion_filters
+        else
+          whitelist = nil
+        end
+      else
+        whitelist = []
+      end      
+    end
+    return whitelist
+  end
+
+
+  def self.filter_tags(tags_config, user_tags, ignore_visibility, whitelist)
+
+    tag_subset = {}
+    tags_config.each do |vals|
+      tag = vals["key"]
+      if user_tags.has_key?(tag) && (ignore_visibility || vals.fetch('visibility', 'host-only') == 'open') && \
+         (!whitelist || whitelist.include?(tag))
+        tag_subset[tag] = user_tags[tag]
+      end
+    end
+    tag_subset
+  end
+
 
   def as_json(options={})
     data = {  
@@ -148,14 +183,15 @@ class User < ApplicationRecord
 
     customizations = current_subdomain.customization_json
     anonymize_everything = customizations['anonymize_everything']
-    if anonymize_everything && self.id != current_user.id
-      data['name'] = 'Anonymous'
-      data['avatar_file_name'] = nil
-    end 
-
+    
     if current_user.is_admin?
       data['email'] = email
     end
+
+    if anonymize_everything && self.id != current_user.id
+      data = User.anonymize_user(current_subdomain, data, current_user.is_admin?)
+    end 
+
 
     data['tags'] = tags_for_subdomain(current_user.is_admin?)
     data
@@ -166,17 +202,11 @@ class User < ApplicationRecord
     customizations = current_subdomain.customization_json
 
     tags_config = customizations.fetch('user_tags', [])
+    whitelist = User.tag_whitelist(current_subdomain)
 
     my_tags = self.tags || {}
-    tag_subset = {}
-    tags_config.each do |vals|
 
-      tag = vals["key"]
-      if my_tags.has_key?(tag) && (ignore_visibility || vals.fetch('visibility', 'host-only') == 'open')
-        tag_subset[tag] = my_tags[tag]
-      end
-    end
-    tag_subset
+    User.filter_tags(tags_config, my_tags, ignore_visibility, whitelist)
   end
 
   def is_admin?(subdomain = nil)
@@ -192,7 +222,7 @@ class User < ApplicationRecord
     else
       subdomain ||= current_subdomain
       roles = subdomain.roles ? subdomain.roles : {}
-      return roles.key?(role) && roles[role] && roles[role].include?("/user/#{id}")
+      return roles.key?(role) && roles[role] && (roles[role].include?("/user/#{id}") || roles[role].include?(self.email))
     end
   end
 
@@ -312,7 +342,14 @@ class User < ApplicationRecord
   end
 
 
+  def self.unsubscribe(email, subdomain_name)
+    user = User.find_by_email(email)
+    subdomain = Subdomain.find_by_name(subdomain_name)
+    user.update_subscription_key('send_emails', false, {:subdomain => subdomain, :force => true})
+  end
+
   def update_subscription_key(key, value, hash={})
+
     if hash.has_key?(:subdomain)
       subdomain = hash[:subdomain]
     else 
@@ -323,7 +360,7 @@ class User < ApplicationRecord
     return if !hash[:force] && sub_settings.key?(key)
 
     sub_settings[key] = value
-    self.subscriptions = update_subscriptions(sub_settings)
+    self.subscriptions = update_subscriptions(sub_settings, subdomain)
     save
   end
 
@@ -547,6 +584,266 @@ class User < ApplicationRecord
 
 
     results
+  end
+
+
+  def self.anonymized_id(id)
+    if id < 0
+      return id
+    end 
+
+    anon_id = Rails.cache.fetch("anonymized-#{id}") do 
+      assigned_anon_ids = Rails.cache.fetch("anon_ids") do 
+        {}
+      end
+
+      my_anon_id = nil
+      while my_anon_id == nil || assigned_anon_ids.has_key?(my_anon_id)
+        my_anon_id = rand(-9999999999999..-2)
+      end
+      assigned_anon_ids[my_anon_id] = id
+
+      Rails.cache.write("anon_ids", assigned_anon_ids)
+      Rails.cache.write("deanonymized-#{my_anon_id}", id)
+
+      my_anon_id
+    end
+    anon_id
+  end
+
+  def self.deanonymized_id(anon_id)
+    if anon_id >= 0
+      return anon_id
+    end
+    Rails.cache.fetch("deanonymized-#{anon_id}")
+  end
+
+  def self.anonymized_info(id, subdomain, include_email=false)
+    theme = subdomain.customizations.fetch('anonymization_theme', nil)
+
+    info = {
+      "key" => "/user/#{User.anonymized_id(id)}",
+      "name" => Rails.cache.fetch("anonymized-name-#{id}-#{theme}"){ generate_anonymous_name(theme) },
+      "avatar_file_name" => Rails.cache.fetch("anonymized-avatar-#{id}-#{theme}"){ generate_anonymous_avatar(theme) }
+    }
+
+    if include_email
+      info["email"] = Translations::Translation.get('withheld', 'withheld')
+    end
+
+    info
+  end
+
+  def self.anonymized_name_for(object, recipient = nil)
+    subdomain = object.subdomain
+    anonymize_everything = subdomain.customization_json['anonymize_everything']
+
+    if ((object.respond_to?(:hide_name) && object.hide_name) || anonymize_everything) && (!recipient || recipient.id != object.user_id)
+      return User.anonymized_info(object.user_id, subdomain)["name"]
+    else
+      return object.user.name
+    end 
+
+  end
+
+  def self.generate_anonymous_avatar(theme)
+    if theme == 'playful' 
+      "#{Rails.application.config.action_controller.asset_host}/images/anonymous_avatars/playful/mask#{rand(1..27)}.png"
+    elsif theme == 'wrestling_masks' 
+      "#{Rails.application.config.action_controller.asset_host}/images/anonymous_avatars/wrestling_masks/#{rand(0..6)}#{rand(0..6)}.png"
+    elsif theme == 'sea_creatures' 
+      "#{Rails.application.config.action_controller.asset_host}/images/anonymous_avatars/sea_creatures/1 copy #{rand(1..64)}.png"
+    else 
+      nil
+    end
+  end
+
+  def self.generate_anonymous_name(theme)
+    if theme == 'playful' || theme == 'mages'
+      names = [
+        "Scholar",
+        "Professor",
+        "Scientist",
+        "Philosopher",
+        "Academic",
+        "Thinker",
+        "Intellectual",
+        "Mystic",
+        "Healer",
+        "Student",
+        "Sage",
+        "Savant",
+        "Researcher",
+        "Monastic",
+        "Critic",
+        "Pupil",
+        "Theorist",
+        "Faculty",
+        "Inventor",
+        "Polymath",
+        "Artist",
+        "Creator",
+        "Observer",
+        "Apprentice",
+        "Tutor",
+        "Scribe",
+        "Writer",
+        "Citizen",
+        "Human",
+        "Denizen",
+        "Civilian",
+        "Individual"
+      ]
+
+      adjectives = [
+        "Secretive",
+        "Sneaky",
+        "Masked",
+        "Invisible",
+        "Covert",
+        "Mysterious",
+        "Undercover",
+        "Furtive",
+        "Disguised",
+        "Incognito",
+        "Hermetic",
+        "Reclusive",
+        "Hidden",
+        "Cloaked",
+        "Shadowed",
+        "Obscured",
+        "Clandestine",
+        "Surreptitious",
+        "Cryptic",
+        "Unseen",
+        "Veiled"
+      ]
+
+      adjective = adjectives.sample
+      adjective = Translations::Translation.get("anonymous-theme-name.#{adjective}", adjective)
+
+      noun = names.sample
+      noun = Translations::Translation.get("anonymous-theme-name.#{noun}", noun)
+
+      "#{Translations::Translation.get('anonymous', 'Anonymous')} #{adjective} #{noun}"
+
+    elsif theme == 'sea_creatures'
+      names = [
+        "Marinus",
+        "Aequor",
+        "Oceana",
+        "Coralina",
+        "Algaea",
+        "Aquatica",
+        "Vorticella",
+        "Medusa",
+        "Tritonis",
+        "Seashella",
+        "Mollusca",
+        "Anemona",
+        "Cephalopoda",
+        "Neptuna",
+        "Pelagia",
+        "Actinia",
+        "Nereida",
+        "Planktonia",
+        "Poseidonia",
+        "Veneris"
+      ]
+
+      adjectives = [
+        "Cryptusia",
+        "Incognita",
+        "Oscultatum",
+        "Silephemus",
+        "Secretusia",
+        "Disguisus",
+        "Incognitus",
+        "Latensia",
+        "Occultum",
+        "Opacusia",
+        "Obscurum",
+        "Clandestina",
+        "Mystusia",
+        "Ignotum",
+        "Abscondus",
+        "Furtivus",
+        "Seclutum",
+        "Occultus",
+        "Velatusia"
+      ]
+
+      adjective = adjectives.sample
+      adjective = Translations::Translation.get("anonymous-theme-name.#{adjective}", adjective)
+
+      noun = names.sample
+      noun = Translations::Translation.get("anonymous-theme-name.#{noun}", noun)
+
+      "#{Translations::Translation.get('anonymous', 'Anonymous')} #{adjective} #{noun}"
+
+    elsif theme == 'wrestling_masks'
+      names = [
+        "Warrior",
+        "Brawler",
+        "Champion",
+        "Titan",
+        "Falcon",
+        "Renegade",
+        "Vortex",
+        "Cobra",
+        "Raven",
+        "Gladiator",
+        "Phantom",
+        "Vendetta",
+        "Thunderbolt",
+        "Hurricane",
+        "Goliath",
+        "Juggernaut",
+        "Bolt",
+        "Sabre",
+        "Wraith",
+        "Blaze",
+        "Vengeance",
+        "Sentinel"
+      ]
+
+      adjectives = [
+        "Raging",
+        "Daring",
+        "Golden",
+        "Mighty",
+        "Steel",
+        "Vicious",
+        "Thunder",
+        "Radiant",
+        "Fury",
+        "Fierce",
+        "Brutal",
+        "Mysterious",
+        "Intrepid",
+        "Spectacular",
+        "Searing",
+        "Dynamic",
+        "Dominant",
+        "Outlaw",
+        "Unyielding",
+        "Dashing",
+        "Sizzling",
+        "Eagle",
+        "Fiery"
+      ]
+
+      adjective = adjectives.sample
+      adjective = Translations::Translation.get("anonymous-theme-name.#{adjective}", adjective)
+
+      noun = names.sample
+      noun = Translations::Translation.get("anonymous-theme-name.#{noun}", noun)
+
+      "#{Translations::Translation.get('anonymous', 'Anonymous')} #{adjective} #{noun}"
+
+    else
+      Translations::Translation.get('anonymous', 'Anonymous')
+    end
   end
 
 

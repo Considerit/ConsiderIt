@@ -48,15 +48,6 @@ class Translations::Translation < ApplicationRecord
     use_subdomain = translations_key_prefix.split('/').length == 4
 
 
-    translations_native = Translations::Translation.translations_for(DEVELOPMENT_LANGUAGE, use_subdomain ? subdomain : nil) 
-
-
-    # make sure default message is in database
-    if !translations_native[id] || translations_native[id] != native_text
-      self.create_or_update_native_translation id, native_text, use_subdomain ? subdomain : nil
-    end 
-
-
     # which language should we use? ordered by preference. 
     user = args[:user] || @translator_user || current_user
     begin 
@@ -70,35 +61,48 @@ class Translations::Translation < ApplicationRecord
     rescue
       raise "Could not get langs for translating for email: user #{user} subdomain #{subdomain} args #{args}"
     end 
-    # find the best language translation we have
-    lang_used = nil 
-    message = nil 
-    langs.each do |lang| 
-      next if !lang 
 
-      lang_trans = self.translations_for(lang, use_subdomain ? subdomain : nil) 
+    key = "TRANSLATION: #{args}, #{native_text}"
+    message = Rails.cache.fetch(key) do 
 
+      translations_native = self.translations_for(DEVELOPMENT_LANGUAGE, use_subdomain ? subdomain : nil) 
 
-      if lang_trans[id]
-        message = lang_trans[id]
-        lang_used = lang
-        break 
+      # make sure default message is in database
+      if !translations_native[id] || translations_native[id] != native_text
+        self.create_or_update_native_translation id, native_text, use_subdomain ? subdomain : nil
       end 
-    end
+
+      # find the best language translation we have
+      lang_used = nil 
+      message = nil 
+      langs.each do |lang| 
+        next if !lang 
+
+        lang_trans = self.translations_for(lang, use_subdomain ? subdomain : nil) 
 
 
-    if message 
-      begin
-        mf = MessageFormat.new(message, lang_used)
-        message = mf.format(args)
-      rescue => e
-        pp 'translator', e
-        ExceptionNotifier.notify_exception(e)
+        if lang_trans[id]
+          message = lang_trans[id]
+          lang_used = lang
+          break 
+        end 
+      end
+
+
+      if message 
+        begin
+          mf = MessageFormat.new(message, lang_used)
+          message = mf.format(args)
+        rescue => e
+          pp 'translator', e
+          ExceptionNotifier.notify_exception(e)
+          message = native_text
+        end
+        
+      else 
         message = native_text
       end
-      
-    else 
-      message = native_text
+      message
     end
 
     log_translation_count [id]

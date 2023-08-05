@@ -16,11 +16,14 @@ def send_digest(subdomain, user, subscription_settings, deliver = true, since = 
 
   triggered_at = subdomain.digest_triggered_for["#{user.id}"]
 
-  return if !send_emails || \
-            (!force && !due_for_notification(user, subdomain)) || \
-            (!triggered_at || Time.current - Time.iso8601(triggered_at) < NOTIFICATION_LAG) || \
-            (subdomain.customization_json['email_notifications_disabled'] && (!user.super_admin || subdomain.name != 'galacticfederation'))
-
+  if !force 
+     
+    return if !send_emails || \
+              (!due_for_notification(user, subdomain)) || \
+              (!triggered_at || Time.current - Time.iso8601(triggered_at) < NOTIFICATION_LAG) || \
+              (subdomain.customization_json['email_notifications_disabled'] && (!user.super_admin || subdomain.name != 'galacticfederation'))
+  end
+  
   last_digest_sent_at = last_sent_at(user, subdomain)
   if !since 
     if last_digest_sent_at
@@ -38,6 +41,7 @@ def send_digest(subdomain, user, subscription_settings, deliver = true, since = 
     break if has_activity_to_report
   end 
 
+
   return if !has_activity_to_report && !force
 
   mail = DigestMailer.digest(subdomain, user, new_activity, last_digest_sent_at, send_emails)
@@ -45,7 +49,6 @@ def send_digest(subdomain, user, subscription_settings, deliver = true, since = 
   subdomain.digest_triggered_for["#{user.id}"] = false
   subdomain.save
 
-  pp "delivering to #{user.name}"  
   begin
     mail.deliver_now if deliver
   rescue => e
@@ -82,7 +85,7 @@ def get_new_activity(subdomain, user, since)
     end 
   end 
 
-  new_points   = subdomain.points.published.named.where("created_at > '#{start_period}' AND created_at < '#{end_period}' AND user_id != #{user.id} AND last_inclusion != -1").to_a
+  new_points   = subdomain.points.published.where("created_at > '#{start_period}' AND created_at < '#{end_period}' AND user_id != #{user.id} AND last_inclusion != -1").to_a
   new_opinions = subdomain.opinions.published.where("created_at > '#{start_period}' AND created_at < '#{end_period}' AND user_id != #{user.id}").to_a
   new_comments = subdomain.comments.where("created_at > '#{start_period}' AND created_at < '#{end_period}' AND user_id != #{user.id}").to_a
 
@@ -131,7 +134,7 @@ def get_new_activity(subdomain, user, since)
     proposal_dict[proposal.id][:events][key] = {
       :obj => pnt,
       :type => 'new_point',
-      :users => [pnt.user]
+      :users => [User.anonymized_name_for(pnt)]
     }
   end 
 
@@ -161,11 +164,11 @@ def get_new_activity(subdomain, user, since)
       proposal_dict[proposal.id][:events][key] = {
         :obj => pnt,
         :type => 'new_comment',
-        :users => [comment.user],
+        :users => [User.anonymized_name_for(comment)],
         :relationship => relationship
       }
     else 
-      proposal_dict[proposal.id][:events][key][:users].append comment.user
+      proposal_dict[proposal.id][:events][key][:users].append User.anonymized_name_for(comment)
     end 
 
   end 
@@ -187,10 +190,10 @@ def get_new_activity(subdomain, user, since)
     if !proposal_dict[proposal.id][:events].has_key? 'new_opinion' 
       proposal_dict[proposal.id][:events]['new_opinion'] = {
         :type => 'new_opinion',
-        :users => [opinion.user]
+        :users => [User.anonymized_name_for(opinion)]
       }
     else 
-      proposal_dict[proposal.id][:events]['new_opinion'][:users].append opinion.user
+      proposal_dict[proposal.id][:events]['new_opinion'][:users].append User.anonymized_name_for(opinion)
     end 
   end 
 
@@ -223,11 +226,11 @@ def get_new_activity(subdomain, user, since)
         proposal_dict[proposal.id][:events][key] = {
           :obj => pnt,
           :type => 'new_inclusion',
-          :users => [inclusion.user],
+          :users => [User.anonymized_name_for(inclusion.opinion)],
           :relationship => relationship
         }
       else 
-        proposal_dict[proposal.id][:events][key][:users].append inclusion.user
+        proposal_dict[proposal.id][:events][key][:users].append User.anonymized_name_for(inclusion.opinion)
       end 
 
     end 

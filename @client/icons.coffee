@@ -1,4 +1,37 @@
 
+window.iconX = (size, color) ->
+  size ?= 30
+  SVG
+    width: size
+    height: size
+    viewBox: "-50 -50 200 200"
+    stroke: color
+    fill: 'none'
+
+    dangerouslySetInnerHTML: __html: """
+       <g>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="15" d="M 0 0 L 100 100 M 0 100 L 100 0 Z"/>
+       </g>
+    """
+
+
+window.iconAnonymousMask = (height, color) ->
+  color ?= 'black'
+  width = 1.4 * height
+  SVG
+    width: width
+    height: height
+    viewBox: "-350 0 700 200"
+    stroke: color
+    dangerouslySetInnerHTML: __html: """
+
+    <g style="">
+      <path fill="#{color}" style="" d="M -7.3 130.8 L 75 150.1 C 69.8 117.1 190.9 87.7 217.7 105 C 252.3 147.9 119.5 270.8 73.8 150 L -2.4 119.5 C -5.6 140.7 -10.6 159.4 0.9 195.4 C 59.3 197.1 67.4 258.4 108.2 280.2 S 193.8 295.9 225.6 294.9 C 263 290.8 284.4 271.3 301 230.8 C 315 187.8 317 154.8 314.3 107.8 C 309.2 73.3 291.1 41.9 264.8 27.6 c -54.7 -31.2 -216.8 15.1 -266.7 15.9 Z"></path>
+      <path fill="#{color}" style="" d="M -7.3 130.8 L 75 150.1 C 69.8 117.1 190.9 87.7 217.7 105 C 252.3 147.9 119.5 270.8 73.8 150 L -2.4 119.5 C -5.6 140.7 -10.6 159.4 0.9 195.4 C 59.3 197.1 67.4 258.4 108.2 280.2 S 193.8 295.9 225.6 294.9 C 263 290.8 284.4 271.3 301 230.8 C 315 187.8 317 154.8 314.3 107.8 C 309.2 73.3 291.1 41.9 264.8 27.6 c -54.7 -31.2 -216.8 15.1 -266.7 15.9 Z"
+        transform="scale(-1, 1)"></path>
+    </g>
+    """
+
 window.closedIcon = ({size, fill}) ->
   fill ?= 'black'
   SVG 

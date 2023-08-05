@@ -215,7 +215,6 @@ class SubdomainController < ApplicationController
       raise Permissions::Denied.new Permissions::Status::DISABLED
     end
 
-    update_roles    
 
     fields = ['roles', 'customizations', 'lang', 'moderation_policy', 'about_page_url', 'external_project_url']
     attrs = params.select{|k,v| fields.include? k}.to_h
@@ -237,6 +236,8 @@ class SubdomainController < ApplicationController
         attrs[field] = sanitize_json(attrs[field], subdomain[field])
       end      
     end
+
+    update_roles    
 
 
     if params[:copy_from]

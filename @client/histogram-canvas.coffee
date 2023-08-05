@@ -696,6 +696,21 @@ window.styles += """
   .AggregatedHistogram .sk-wave {
     margin: 0;
   }  
+
+
+  @keyframes histo-loading-appear {
+    0%   {opacity: 0;}
+    100% {opacity: 1;}
+  }
+
+  .histo-loading {
+    opacity: 0;
+    animation-name: histo-loading-appear;
+    animation-duration: 100ms; /* Adjust duration as needed */
+    animation-delay: 1s;    /* Adjust delay as needed */
+    animation-fill-mode: forwards;
+  }
+
 """
 
 
@@ -772,6 +787,7 @@ HistoAvatars = ReactiveComponent
 
       if !@ready_to_draw()
         DIV 
+          className: "histo-loading"
           style: {position: 'absolute', top: @props.height / 2 - 20, left: @props.width / 2 - 25}
           LOADING_INDICATOR
 
@@ -926,7 +942,7 @@ HistoAvatars = ReactiveComponent
     if has_groups
       colors = get_color_for_groups groups 
 
-
+    anonymize_permanently = customization('anonymize_permanently')
 
 
     new_animation_needed = false 
@@ -961,7 +977,7 @@ HistoAvatars = ReactiveComponent
 
 
       sprite = @sprites[user.key]      
-      sprite.img = getCanvasAvatar(user)
+      sprite.img = getCanvasAvatar(user, o.hide_name || arest.key_id(user.key) < 0 || anonymize_permanently)
 
       if has_groups && @props.groups[user.key]?
         if @props.groups[user.key].length == 1
@@ -1201,11 +1217,12 @@ HistoAvatars = ReactiveComponent
           height: 2 * pos[2] / @resolution
           width: 2 * pos[2] / @resolution
 
+        opinionId = @user_to_opinion_map[user]
+        opinion = fetch( opinionId )
         opts = 
           id: id
           user: user
-          anon: customization('anonymize_everything')
-          opinion: @user_to_opinion_map[user]
+          opinion: opinionId
           coords: coords
 
       else 
@@ -1233,7 +1250,7 @@ HistoAvatars = ReactiveComponent
 
 
   histocache_key: -> # based on variables that could alter the layout
-    key = """#{JSON.stringify( (fetch(o.key).stance for o in @props.opinions) )} #{JSON.stringify(@props.weights)} #{JSON.stringify(@props.groups)} #{JSON.stringify(@props.salience)} (#{@props.width}, #{@props.height})"""
+    key = """#{JSON.stringify( (fetch(o.key).stance + (if arest.cache[o.key].hide_name then 'hide' else '') for o in @props.opinions) )} #{JSON.stringify(@props.weights)} #{JSON.stringify(@props.groups)} #{JSON.stringify(@props.salience)} (#{@props.width}, #{@props.height})"""
     murmurhash key, 0
       
 

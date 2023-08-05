@@ -40,6 +40,13 @@ class CommentController < ApplicationController
     
     authorize! 'create comment', comment
 
+    existing_opinion = Opinion.where(:user_id => comment['user_id'], :proposal_id => point.proposal_id)
+    if existing_opinion.count > 0
+      if existing_opinion.first.hide_name
+        comment.hide_name = true
+      end
+    end
+
     if comment.save
 
       Notifier.notify_parties('new', comment)

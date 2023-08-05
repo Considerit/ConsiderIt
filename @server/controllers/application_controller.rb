@@ -237,8 +237,23 @@ protected
       next if processed.has_key?(key)
       processed[key] = 1
 
-      # Grab dirtied points, opinions, and users
-      for type in [Point, Opinion, User, Comment, Moderation]
+      if key.match "/user/"
+        user_id = key_id(key)
+        if user_id < 0
+          masked_id = user_id
+          real_id = User.deanonymized_id(user_id)
+          key = "/user/#{real_id}"
+        end
+        data = User.find(key_id(key)).as_json()
+        if user_id < 0
+          anon_data = User.anonymized_info(real_id, current_subdomain, current_user.is_admin?)
+          data.merge! anon_data
+        end
+        response.append data
+        next
+      end
+
+      for type in [Point, Opinion, Comment, Moderation]
         if key.match "/#{type.name.downcase}/"
           begin 
             response.append type.find(key_id(key)).as_json

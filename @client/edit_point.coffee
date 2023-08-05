@@ -9,9 +9,14 @@ window.EditPoint = ReactiveComponent
     proposal = fetch @props.proposal
     point = fetch @props.point 
 
+    opinion = proposal.your_opinion
+
+    if typeof opinion == 'string' || opinion.key
+      opinion = fetch opinion
+
     if !@local.sign_name?
       _.defaults @local, 
-        sign_name : if @props.fresh then true else !point.hide_name
+        sign_name : !opinion.hide_name
         add_details : false
 
     textarea_style = 
@@ -137,26 +142,33 @@ window.EditPoint = ReactiveComponent
           style: 
             position: 'relative'
 
-          INPUT
-            className: 'newpoint-anonymous'
-            type:      'checkbox'
-            id:        "sign_name-#{@props.valence}"
-            name:      "sign_name-#{@props.valence}"
-            checked:   @local.sign_name
-            style: 
-              verticalAlign: 'middle'
-              marginRight: 8
-            onChange: =>
-              @local.sign_name = !@local.sign_name
-              save(@local)
-          
-          LABEL 
-            htmlFor: "sign_name-#{@props.valence}"
-            title: translator 'engage.point_anonymous_toggle_explanation', """This won\'t make your point perfectly anonymous, but will make \
-                     it considerably harder for others to associate with you. \
-                     Note that signing your name lends your point more weight \
-                     with peers."""
-            translator 'engage.point_anonymous_toggle', 'Sign your name'
+          if opinion.hide_name || customization('anonymize_permanently')
+            DIV 
+              style: 
+                color: focus_color()
+
+              translator 'engage.post_anonymously', 'Posting anonymously'
+          else 
+            DIV 
+              style: 
+                display: 'flex'
+              INPUT
+                className: 'newpoint-anonymous'
+                type:      'checkbox'
+                id:        "sign_name-#{@props.valence}"
+                name:      "sign_name-#{@props.valence}"
+                checked:   !@local.sign_name
+                style: 
+                  verticalAlign: 'middle'
+                  marginRight: 8
+                onChange: =>
+                  if not @local.sign_name  or  confirm( translator('This will anonymize your whole opinion about this proposal, including your icon in the histogram and all pros and cons you have written. Are you sure you wish to anonymize?') )
+                    @local.sign_name = !@local.sign_name
+                    save(@local)
+              
+              LABEL 
+                htmlFor: "sign_name-#{@props.valence}"
+                your_opinion_i18n.anonymize_opinion_button()
 
 
   componentDidMount : ->
@@ -259,7 +271,6 @@ window.EditPoint = ReactiveComponent
       point = fetch @props.point
       point.nutshell = nutshell
       point.text = text
-      point.hide_name = hide_name
     else
       current_user = fetch('/current_user').user
       point =
@@ -271,13 +282,20 @@ window.EditPoint = ReactiveComponent
         proposal : proposal.key
         nutshell : nutshell
         text : text
-        hide_name : hide_name
 
     point.errors = []
     save point, => 
       if point.errors?.length == 0
         @done()
         show_flash(translator('engage.flashes.point_saved', "Your point has been saved"))
+
+        # Save opinion anonymity
+        proposal = fetch @props.proposal
+        opinion = fetch proposal.your_opinion
+        if opinion.hide_name != hide_name
+          opinion.hide_name = hide_name
+          save opinion
+
       else
         @local.errors = point.errors
         save @local

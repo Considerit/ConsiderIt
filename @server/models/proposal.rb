@@ -23,7 +23,7 @@ class Proposal < ApplicationRecord
   include Moderatable, Notifier
   
   class_attribute :my_public_fields
-  self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :name, :description, :active, :hide_on_homepage, :published, :subdomain_id, :json]
+  self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :name, :description, :active, :hide_on_homepage, :published, :subdomain_id, :json, :hide_name]
 
   scope :active, -> {where( :active => true, :published => true )}
 
@@ -97,6 +97,8 @@ class Proposal < ApplicationRecord
     start_time = Time.now
 
     subdomain ||= current_subdomain
+
+    anonymize_everything = subdomain.customization_json['anonymize_everything']
     
     # Impose access control restrictions for current user
     read_proposals = Permissions.permit('read proposal')
@@ -115,14 +117,15 @@ class Proposal < ApplicationRecord
       opinions_by_proposal = Rails.cache.fetch(opinions_key, {expires_in: 29.minutes} ) do 
         opinions = ActiveRecord::Base.connection.execute """\
           SELECT CONCAT('/opinion/', id) as \"key\", point_inclusions, proposal_id, 
-          stance, CONCAT('/user/', user_id) as user, updated_at
+          stance, CONCAT('/user/', user_id) as user, hide_name, updated_at
               FROM opinions 
               WHERE subdomain_id=#{subdomain.id};
           """
         by_proposal = {}
 
         opinions.each(:as => :hash) do |o|
-          proposal_id = o["proposal_id"].to_i
+          o["hide_name"] = o["hide_name"] == 1
+          proposal_id = o["proposal_id"].to_i          
 
           o.delete("proposal_id")
 
@@ -145,7 +148,7 @@ class Proposal < ApplicationRecord
       if current_user.registered
         your_opinions = ActiveRecord::Base.connection.execute """\
           SELECT CONCAT('/opinion/', id) as \"key\", point_inclusions, proposal_id, 
-          stance, CONCAT('/user/', user_id) as user, updated_at
+          stance, CONCAT('/user/', user_id) as user, hide_name, updated_at
               FROM opinions 
               WHERE subdomain_id=#{subdomain.id} AND user_id=#{current_user.id};
           """
@@ -153,6 +156,7 @@ class Proposal < ApplicationRecord
         your_opinions.each(:as => :hash) do |o|
           proposal_id = o["proposal_id"]
           o.delete("proposal_id")
+          o["hide_name"] = o["hide_name"] == 1
 
           if o["point_inclusions"] && o["point_inclusions"] != '[]'
             o["point_inclusions"] = Oj.load(o["point_inclusions"]).map! {|p| "/point/#{p}"}
@@ -197,7 +201,7 @@ class Proposal < ApplicationRecord
             "created_at" => pnt["created_at"], 
             "updated_at" => pnt["updated_at"], 
             "key" => "/point/#{pnt["id"]}",
-            "includers" => pnt["includers"],
+            "includers" => JSON.parse(pnt["includers"]),
             "is_pro" => pnt["is_pro"] == 1, 
             "nutshell" => pnt["nutshell"],
             "proposal" => "/proposal/#{pnt["proposal_id"]}",
@@ -209,13 +213,6 @@ class Proposal < ApplicationRecord
             "subdomain_id" => pnt["subdomain_id"],
             "moderation_status" => pnt["moderation_status"]
           }
-
-
-          if ppnt["includers"]
-            ppnt["includers"] = JSON.load(ppnt["includers"]).map! {|u| u.is_a?(Integer) ? "/user/#{u}" : u}
-          else 
-            ppnt["includers"] = []
-          end 
 
           by_proposal[proposal_id] ||= []
           by_proposal[proposal_id].push ppnt
@@ -242,14 +239,8 @@ class Proposal < ApplicationRecord
           pnt = ppnt.deep_dup
           pnt.delete("moderation_status")
 
-          # If anonymous, hide user id
-          if pnt["hide_name"]
-            pnt["includers"].map! {|u| u == pnt["user"] ? "/user/-1" : u }
+          pnt = Point.anonymize_json(pnt, anonymize_everything, current_user)
 
-            if current_user.nil? || current_user.id != pnt[10]
-              pnt["user"] = "/user/-1"
-            end 
-          end
           points_by_proposal[proposal_id].push pnt
         end
       end
@@ -261,15 +252,11 @@ class Proposal < ApplicationRecord
       moderation_status_check = "(moderation_status is NULL OR moderation_status != 0)"      
       
       json_proposals = Rails.cache.fetch(proposals_key, expires_in: 93.minutes ) do 
-        pp "CACHING PROPOSALS"
-
-        
-
         qry = """\
           SELECT id, concat('/proposal/', id) as \"key\", slug, cluster, concat('/user/', user_id) as user, created_at, 
                  updated_at, name, 
                  description, active, published, subdomain_id, json,
-                 moderation_status, pic_file_name, banner_file_name, roles
+                 moderation_status, pic_file_name, banner_file_name, roles, hide_name
               FROM proposals 
               WHERE subdomain_id=#{subdomain.id} AND
                     hide_on_homepage = false AND
@@ -287,6 +274,7 @@ class Proposal < ApplicationRecord
             p["json"] = {}
           end
 
+          p["hide_name"] = p["hide_name"] == 1
           if moderation_policy == 1 && !p["moderation_status"] 
             p["under_review"] = true
           end
@@ -339,7 +327,7 @@ class Proposal < ApplicationRecord
         end
 
         opinions = opinions_by_proposal["#{proposal["id"]}"] || []
-        proposal['opinions'] = opinions
+        proposal['opinions'] = Opinion.anonymize_json_opinions(opinions, anonymize_everything, current_user_key)
 
         # Find an existing opinion for this user
         your_opinion = your_opinions_by_proposal.fetch(proposal["id"], nil)
@@ -367,6 +355,8 @@ class Proposal < ApplicationRecord
 
 
         proposal['point_count'] = pnts_with_inclusions.length
+
+        proposal = Proposal.anonymize_json(proposal, anonymize_everything)
 
         proposals.push proposal
       end
@@ -423,10 +413,11 @@ class Proposal < ApplicationRecord
       "active" => self.active, 
       "published" => self.published, 
       "subdomain_id" => self.subdomain_id, 
-      "json" => self.json
+      "json" => self.json,
+      "hide_name" => self.hide_name
     }
 
-
+    anonymize_everything = subdomain.customization_json['anonymize_everything']
 
     # Find an existing opinion for this user
     if !options.has_key?(:opinions)
@@ -458,43 +449,32 @@ class Proposal < ApplicationRecord
     end
 
     if !options.has_key?(:opinions)
-
       o = ActiveRecord::Base.connection.execute """\
-        SELECT created_at, id, point_inclusions, proposal_id, 
-        stance, user_id, updated_at, explanation
+        SELECT CONCAT('/opinion/', id) as \"key\", point_inclusions, 
+          stance, CONCAT('/user/', user_id) as user, hide_name, updated_at
             FROM opinions 
             WHERE subdomain_id=#{self.subdomain_id} AND
                   proposal_id=#{self.id} AND 
                   published=1;
         """
 
-      json['opinions'] = o.map do |op|
-        r = {
-          key: "/opinion/#{op[1]}",
-          # created_at: op[0],
-          updated_at: op[6],
-          # proposal: "/proposal/#{op[3]}",
-          user: "/user/#{op[5]}",
-          # published: true,
-          stance: op[4].to_f
-
-        }
-        # if op[7]
-        #   r['explanation'] = op[7]
-        # end
-
-        if op[2] && op[2] != '[]'
-          r[:point_inclusions] = Oj.load(op[2]).map! {|p| "/point/#{p}"}
+      json['opinions'] = o.each(:as => :hash) do |op|
+        op['hide_name'] = op['hide_name'] == 1
+        if op["point_inclusions"] && op["point_inclusions"] != '[]'
+          op["point_inclusions"] = Oj.load(op["point_inclusions"]).map! {|p| "/point/#{p}"}
+        else
+          op.delete "point_inclusions"
         end 
-
-        r 
       end 
     else
       json['opinions'] = options[:opinions]
     end
 
+    json['opinions'] = Opinion.anonymize_json_opinions(json['opinions'], anonymize_everything, "/user/#{current_user.id}")
+
 
     json['json'] = json['json'] || {}
+
 
     make_key(json, 'proposal')
     stubify_field(json, 'user')
@@ -532,6 +512,43 @@ class Proposal < ApplicationRecord
       
       json['point_count'] = self.points.where("(published=1 AND #{moderation_status_check} AND json_length(includers) > 0) OR user_id=#{current_user.id}").count
     end 
+
+    json = Proposal.anonymize_json(json, anonymize_everything)
+
+    json
+  end
+
+  def self.anonymize_json(json, anonymize_everything, active_user=nil)
+    if !active_user
+      active_user = current_user
+    end
+
+    user_id = key_id(json['user'])
+
+    anonymize = (anonymize_everything || (json["hide_name"] && json["hide_name"] != 0)) 
+
+    if anonymize && active_user.id != user_id
+      json['user'] = "/user/#{User.anonymized_id(user_id)}"
+    end
+
+    if json['roles']
+      json['roles'].each do |role, users|
+        anonymized_users = []
+        users.each do |user|
+          if user[0] != '/'
+            anonymized_users.push user
+            next
+          end
+          role_user_id = key_id(user)
+          if anonymize && active_user.id != role_user_id
+            anonymized_users.push "/user/#{User.anonymized_id(role_user_id)}"
+          else 
+            anonymized_users.push user
+          end
+        end
+        json['roles'][role] = anonymized_users
+      end 
+    end
 
     json
   end

@@ -84,6 +84,43 @@ move_question = (from, to) ->
   save subdomain
 
 
+window.AnonymizationCheckForSigninQuestions = -> 
+  subdomain = fetch '/subdomain'
+  if subdomain.customizations.anonymize_permanently && !subdomain.customizations.anonymization_safe_opinion_filters
+    questions = (q for q in subdomain.customizations.user_tags when q.self_report && q.key.indexOf('pledge_taken') == -1)
+
+    if questions.length > 0
+      message = 
+        style: {backgroundColor: '#d1d08d', color: 'black'}
+        img: 'venetian-mask.png' 
+        label: "You have permanently set participation to anonymous. The answers to any sign-in questions you ask will not be available to you. If the questions you are asking are not personally revealing for participants, please contact help@consider.it to whitelist your questions."
+      return DIV 
+        key: message
+        style: _.defaults {}, (message.style or {}),
+          backgroundColor: "rgb(184 226 187)"
+          borderRadius: 12
+          padding: '4px 24px'
+          maxWidth: 700
+          margin: "0 auto 16px auto"
+          fontSize: 14
+          display: 'flex'
+          alignItems: 'center'
+          minHeight: 44
+          # textAlign: 'center'
+
+        if message.img 
+          DIV 
+            style:
+              minWidth: 40
+              paddingRight: 24
+            IMG 
+              style: 
+                maxWidth: 34
+
+              src: "#{fetch('/application').asset_host}/images/#{message.img}"
+        message.label
+  return SPAN null
+
 window.IntakeQuestions = ReactiveComponent
   displayName: 'IntakeQuestions'
 
@@ -102,37 +139,8 @@ window.IntakeQuestions = ReactiveComponent
       className: 'INTAKE_QUESTIONS'
 
 
+      AnonymizationCheckForSigninQuestions()
 
-      if subdomain.customizations.anonymize_permanently && !subdomain.customizations.anonymization_safe_opinion_filters
-        message = 
-          style: {backgroundColor: '#d1d08d', color: 'black'}
-          img: 'venetian-mask.png' 
-          label: "You have permanently set participation to anonymous. The answers to any questions you ask here will not be available to you. If the questions you are asking are not personally revealing for participants, please contact help@consider.it to whitelist your questions."
-        DIV 
-          key: message
-          style: _.defaults {}, (message.style or {}),
-            backgroundColor: "rgb(184 226 187)"
-            borderRadius: 12
-            padding: '4px 24px'
-            maxWidth: 700
-            margin: "0 auto 16px auto"
-            fontSize: 14
-            display: 'flex'
-            alignItems: 'center'
-            minHeight: 44
-            # textAlign: 'center'
-
-          if message.img 
-            DIV 
-              style:
-                minWidth: 40
-                paddingRight: 24
-              IMG 
-                style: 
-                  maxWidth: 34
-
-                src: "#{fetch('/application').asset_host}/images/#{message.img}"
-          message.label
 
 
       P null,

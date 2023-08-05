@@ -126,7 +126,7 @@ window.Homepage = ReactiveComponent
             component: B 
 
           """
-          <b>The forum host has permanently set participation to anonymous.</b> The forum host will never have access to the 
+          <b>The host has permanently anonymized this forum</b>. The forum host will never have access to the 
           identity of participants. Identity information will continue to be stored on the Consider.it server, but as always, 
           will <privacy_link>never be provided to third-parties</privacy_link>. You can delete your identity information at 
           any time in your account settings.
@@ -135,10 +135,22 @@ window.Homepage = ReactiveComponent
 
         messages.push {style: {backgroundColor: '#d1d08d', color: 'black'}, img: 'venetian-mask.png', label: strong_privacy}
       else 
-        messages.push {style: {backgroundColor: '#b88dd1', color: 'black'}, img: 'venetian-mask.png', label: translator("engage.anonymize_message", "The forum host has set participation to anonymous. You won't be able to see the identity of others at this time. However, the host may reveal identity later.")}
+        weak_privacy = TRANSLATE
+          id: "engage.anonymize_message"
+          italic:
+            component: I
+
+          mask: 
+            render: -> iconAnonymousMask(16)
+
+          """
+          The forum host has concealed the identities of others. No one except the hosts can currently see who 
+          is saying what <italic>at this time</italic>. To ensure your identity is never revealed, anonymize your opinion on each proposal using 
+          the <mask> </mask> button."""
+        messages.push {style: {backgroundColor: '#b88dd1', color: 'black'}, img: 'venetian-mask.png', label: weak_privacy}
 
     if customization('hide_opinions')
-      messages.push {style: {backgroundColor: '#faa199', color: 'black'}, img: 'hiding.png', label: translator("engage.hide_opinions_message", "The forum host has hidden the opinions of other participants.")}
+      messages.push {style: {backgroundColor: '#faa199', color: 'black'}, img: 'hiding.png', label: translator("engage.hide_opinions_message", "The forum host has hidden the opinions of other participants for the time being.")}
 
     DIV 
       key: "homepage_#{subdomain.name}"      

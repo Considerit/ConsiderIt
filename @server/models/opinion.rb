@@ -7,15 +7,25 @@ class Opinion < ApplicationRecord
   acts_as_tenant :subdomain
 
   scope :published, -> {where( :published => true )}
-  scope :public_fields, -> {select( [:created_at, :updated_at, :id, :proposal_id, :stance, :user_id, :point_inclusions, :published, :subdomain_id] )}
+  scope :public_fields, -> {select( [:created_at, :updated_at, :id, :proposal_id, :stance, :user_id, :hide_name, :point_inclusions, :published, :subdomain_id] )}
+
+  scope :named, -> {where( :hide_name => false )}
+
 
   def as_json(options={})
     pubs = ['created_at', 'updated_at', 'id', 'point_inclusions',
-            'proposal_id', 'stance', 'user_id',
+            'proposal_id', 'stance', 'user_id', 'hide_name',
             'published']
 
     result = super(options)
     result = result.select{|k,v| pubs.include? k}
+
+    anonymize_everything = current_subdomain.customization_json['anonymize_everything']
+
+    # If anonymous, hide user id
+    if (anonymize_everything || self.hide_name) && (current_user.nil? || current_user.id != self.user_id)
+      result['user_id'] = User.anonymized_id(result['user_id'])
+    end
 
     make_key(result, 'opinion')
     stubify_field(result, 'user')
@@ -23,10 +33,20 @@ class Opinion < ApplicationRecord
     result['point_inclusions'] = result['point_inclusions'] || []
     result['point_inclusions'].map! {|p| "/point/#{p}"}
 
+
     # if self.explanation
     #   result['explanation'] = self.explanation 
     # end
     result
+  end
+
+  def self.anonymize_json_opinions(opinions, anonymize_everything, current_user_key)
+    opinions.each do |o|
+      if (anonymize_everything || (o["hide_name"] && o["hide_name"] != 0)) && o["user"] != current_user_key
+        o["user"] = "/user/#{User.anonymized_id(key_id(o["user"]))}"
+      end
+    end
+    opinions
   end
 
   def self.get_all
@@ -190,6 +210,38 @@ class Opinion < ApplicationRecord
     self.recache
   end
 
+  def change_visibility(anon)
+    self.hide_name = anon
+    self.save
+
+    points = Point.where(proposal_id: proposal_id, user_id: user_id)
+
+    user.comments.each do |comment|
+      if comment.point.proposal_id == self.proposal_id
+        if comment.hide_name != self.hide_name
+          comment.hide_name = self.hide_name
+          comment.save
+        end
+      end
+    end
+    
+    points.each do |pnt|
+      pnt.hide_name = hide_name
+      pnt.save
+      pnt.recache
+    end
+
+    inclusions.each do |inc|
+      inc.point.recache
+    end
+
+    if self.user_id == self.proposal.user_id
+      self.proposal.hide_name = anon
+      self.proposal.save
+    end
+
+  end
+
   def recache
     self.point_inclusions = inclusions.select(:point_id).map {|x| x.point_id }.uniq.compact
     self.save
@@ -239,34 +291,27 @@ class Opinion < ApplicationRecord
     'done'
   end
 
-  def self.purge
-    #Opinion.where('user_id IS NULL').destroy_all
-    
-    User.where('registered=true').each do |u|
-      proposals = u.opinions.map {|p| p.proposal_id}.uniq
-      proposals.each do |prop|
-        pos = u.opinions.where(:proposal_id => prop)
-        if pos.where(:published => true).count > 1
-          last = pos.order(:updated_at).last
-          pos.where('id != (?)', last.id).each do |p|
-            p.published = false
-            p.save
-            pp 'FOUND DUPLICATE OPINION', prop.subdomain.name, prop.name, p.user.email
-          end
-        end
+
+  def self.find_all_dupes(purge = false)
+    dupe_groups = Opinion.group(:user_id, :proposal_id).having('count(id) > 1').count
+
+    dupe_groups.each do |keys, count|
+      user_id, proposal_id = keys
+
+      # find duplicates for this user_id and point_id
+      duplicates = Opinion.where(user_id: user_id, proposal_id: proposal_id).order(:updated_at).reverse_order
+
+      pp "**********"
+      pp "Duplicates for #{user_id} #{proposal_id}"
+      duplicates.each do |o|
+        pp o.updated_at, o.published, o.stance
+      end
+      if purge
+        duplicates.drop(1).each(&:destroy)
       end
     end
   end
 
-  def self.fix_inclusions
-    i = 0 
-    to_fix = Opinion.where("JSON_LENGTH(point_inclusions) > 0")
-    cnt = to_fix.count
-    to_fix.each_with_index do |o,i| 
-      o.update_inclusions(o.point_inclusions, allow_excluding=false)
-      print "\r#{i.to_f / cnt * 100}%"
-    end
-  end
 
 end
 

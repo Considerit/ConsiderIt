@@ -23,6 +23,8 @@ class Subdomain < ApplicationRecord
 
   scope :public_fields, -> { select(self.my_public_fields) }
 
+  before_validation :set_default_customizations
+
   def users(registered=true)
     qry = User
     if registered
@@ -39,8 +41,26 @@ class Subdomain < ApplicationRecord
     if current_user.is_admin?
       json['roles'] = self.user_roles
       json['invitations'] = nil
+
+      # for anonymous forums, we go back to just email addresses 
+      # for access control, lest we leak information about who 
+      # is actually participating, vs just invited to. 
+      if self.customizations && self.customizations['anonymize_everything']
+        json['roles'].each do |role, users|
+
+          json['roles'][role] = json['roles'][role].map{|email_or_key|
+            begin
+              email_or_key.match("/user/") ? User.find(key_id(email_or_key)).email : email_or_key
+            rescue
+              email_or_key
+            end
+          }
+        end
+      end
+
     else
       json['roles'] = self.user_roles(filter = true)
+
     end
 
 
@@ -105,6 +125,10 @@ class Subdomain < ApplicationRecord
 
     self.name = new_name
     self.save
+  end
+
+  def set_default_customizations
+    self.customizations ||= {}
   end
 
   def customization_json

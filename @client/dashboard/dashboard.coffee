@@ -329,6 +329,7 @@ if !browser.is_mobile
       border-radius: 50%;
       position: absolute;
       left: -36px;
+      margin-top: 0;
     }
     .radio_group input[type='radio']:checked{
       border: 10px solid #{focus_blue};

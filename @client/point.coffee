@@ -21,6 +21,7 @@ window.Point = ReactiveComponent
     current_user = fetch('/current_user')
 
 
+
     renderIncluders = (draw_all_includers) =>
 
       if point.includers
@@ -56,19 +57,18 @@ window.Point = ReactiveComponent
 
             style[left_right] = side_offset
 
-            # Finally draw the guys
-            # Avatar
-            #   key: includer
-            #   className: "point_includer_avatar"
-            #   style: style
-            #   set_bg_color: true
-            #   anonymous: point.user == includer && point.hide_name
+            includer_opinion = _.findWhere proposal.opinions, {user: includer}
+            anonymous = includer_opinion?.hide_name || (point.hide_name && point.user == includer)
+
             avatar includer, 
               key: includer
               className: "point_includer_avatar"
               style: style
               set_bg_color: true
-              anonymous: point.user == includer && point.hide_name
+              anonymous: anonymous
+    
+
+
     point_content_style = {}
 
     if is_selected
@@ -651,7 +651,6 @@ window.Point = ReactiveComponent
     {weights, salience, groups} = compose_opinion_views null, proposal, ignore_views
 
     includers = (i for i in includers when salience[i] == 1 && weights[i] > 0)
-
     includers = _.without includers, point.user
     includers.push point.user
 

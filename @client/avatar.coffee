@@ -26,7 +26,7 @@ window.anonymous_label = ->
 
 user_name = (user, anon) -> 
   user = fetch user
-  if anon || !user.name || user.name.trim().length == 0 
+  if !user.name || user.name.trim().length == 0 
     anonymous_label() 
   else 
     user.name
@@ -39,8 +39,7 @@ window.AvatarPopover = ReactiveComponent
   render: -> 
     {user, anon, opinion} = @props
     user = fetch user
-
-    anonymous = user.key != fetch('/current_user').user && (customization('anonymize_everything') || anon)      
+    anonymous = arest.key_id(user.key) < 0 or anon or customization('anonymize_permanently')
     opinion_views = fetch 'opinion_views'
 
 
@@ -57,6 +56,11 @@ window.AvatarPopover = ReactiveComponent
       else 
         alt = translator "engage.histogram.user_is_neutral", "is neutral"
 
+      anonymous ||= opinion.hide_name
+
+    pixelate_anon_current_user = user.key == fetch('/current_user').user && anonymous
+
+
     DIV 
       style: 
         padding: '8px 4px'
@@ -71,14 +75,18 @@ window.AvatarPopover = ReactiveComponent
 
         if user.avatar_file_name
           IMG 
-            alt: @props.alt or alt or "Image of #{user.name}"
+            alt: @props.alt or alt or "Image of #{if anonymous then 'Image of an anonymous user "#{user.name}"' else user.name}"
+            className: if pixelate_anon_current_user then 'pixelated-avatar'
+
             style: 
               width: 120
               height: 120
               borderRadius: '50%'
               marginRight: 24
               display: 'inline-block' 
-            src: avatarUrl user, 'large'
+              filter: if pixelate_anon_current_user then "blur(#{.025 * (120)}px)"
+            src: if anonymous && !pixelate_anon_current_user then user.avatar_file_name else avatarUrl user, 'large'
+
 
         DIV null,
           
@@ -89,6 +97,10 @@ window.AvatarPopover = ReactiveComponent
               fontSize: 18  
               fontWeight: 'bold'       
             name
+          if pixelate_anon_current_user
+            I null,
+
+              your_opinion_i18n.anon_assurance()
 
 
           if get_participant_attributes? && !anonymous && !user_is_organization_account(user)
@@ -231,7 +243,7 @@ window.AvatarPopover = ReactiveComponent
                     style: 
                       fontStyle: 'italic'
                       marginLeft: 12
-                    "~ #{if point.hide_name then anonymous_label() else fetch(point.user).name}"
+                    "~ #{fetch(point.user).name}"
 
 
 
@@ -264,8 +276,6 @@ props_to_strip = ['user', 'anonymous', 'set_bg_color', 'custom_bg_color', 'hide_
 window.avatar = (user, props) ->
   attrs = _.clone props
 
-
-
   if !user.key 
     if user == arest.cache['/current_user']?.user 
       user = fetch(user)
@@ -275,36 +285,37 @@ window.avatar = (user, props) ->
       fetch user
       return SPAN null
 
-  attrs.style ?= {}
-  style = attrs.style
+  style = {}
+  if attrs.style
+    for k,v of attrs.style
+      style[k] = v
 
   # Setting avatar image
   #   Don't show one if it should be anonymous or the user doesn't have one
-  #   Default to small size if the width is small  
-  anonymous = (user.key != arest.cache['/current_user']?.user) && (attrs.anonymous? && attrs.anonymous) 
+  #   Default to small size if the width is small 
+  anonymous = attrs.anonymous || (user && arest.key_id(user.key) < 0) || customization('anonymize_permanently')
   src = null
 
-  if !anonymous && !props.custom_bg_color && user.avatar_file_name 
+  if !attrs.custom_bg_color && user.avatar_file_name   
     if style?.width >= 50
       img_size = 'large'
     else 
       img_size = attrs.img_size or 'small'
 
-    src = avatarUrl user, img_size
+    if anonymous && user.avatar_file_name.indexOf('/') > -1
+      src = user.avatar_file_name
+    else  
+      src = avatarUrl user, img_size
 
     # Override the gray default avatar color if we're showing an image. 
     # In most cases the white will allow for a transparent look. It 
     # isn't set to transparent because a transparent icon in many cases
     # will reveal content behind it that is undesirable to show.  
     style.backgroundColor = 'white'
-  else if props.set_bg_color && !props.custom_bg_color 
+
+  else if attrs.set_bg_color && !attrs.custom_bg_color 
     user.bg_color ?= hsv2rgb(Math.random() / 5 + .6, Math.random() / 8 + .025, Math.random() / 4 + .4)
     style.backgroundColor = user.bg_color
-
-  id = if anonymous 
-         "avatar-hidden" 
-       else 
-         "avatar-#{user.key.split('/')[2]}"
 
   name = user_name user, anonymous
 
@@ -313,22 +324,28 @@ window.avatar = (user, props) ->
   else 
     alt = name 
 
+  classes = "avatar#{if attrs.className then ' ' + attrs.className else ''}"
+  if anonymous 
+    if user.key == arest.cache['/current_user']?.user
+      classes += " pixelated-avatar"
+      style.filter = "blur(#{.025 * (style.width or 50)}px)"
+
   attrs = _.extend attrs,
     key: user.key
-    className: "avatar #{props.className or ''}"
-    'data-user': if anonymous then -1 else user.key
+    className: classes
+    'data-user': user.key
     'data-popover': if !props.hide_popover && !anonymous && !screencasting() then alt 
     'data-tooltip': if anonymous then alt
     'data-anon': anonymous  
     tabIndex: if props.focusable then 0 else -1
     width: style?.width
     height: style?.width
+    style: style
+
 
   for prop_to_strip in props_to_strip
     if prop_to_strip of attrs
       delete attrs[prop_to_strip]
-
-
 
   if src
     # attrs.alt = if props.hide_popover then '' else popover 
@@ -372,9 +389,7 @@ styles += """
   -webkit-user-select: none;
   -ms-user-select: none;
 }
-.avatar.avatar_anonymous {
-    cursor: default; 
-}
+
 /* for styling icon of broken images */
 img.avatar:after { 
   position: absolute;
@@ -388,6 +403,18 @@ img.avatar:after {
   content: "";
 }
 
+
+.pixelated-avatar::before {
+  content: "?";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: black;
+  font-size: 24px;
+  font-weight: bold;
+}
+
 """
 
 
@@ -396,12 +423,23 @@ img.avatar:after {
 
 
 cached_avatars = {}
+cached_anonymous_avatars = {}
 missing_images = {}
 loaded_images = {}
 users2images = {}
 
-window.getCanvasAvatar = (user) ->
-  cached_avatars[user.key or user] or cached_avatars.default
+window.getCanvasAvatar = (user, anonymous=false) ->
+  key = user.key or user
+
+  if anonymous && key == arest.cache['/current_user']?.user
+    if key of cached_avatars
+      if key not of cached_anonymous_avatars
+        cached_anonymous_avatars[key] = create_pixelated_avatar(cached_avatars[key])
+      return cached_anonymous_avatars[key]
+    else
+      return cached_avatars.default
+
+  cached_avatars[key] or cached_avatars.default
 
 
 colors_used = {}
@@ -468,6 +506,8 @@ createCompositeGroupIcon = (groups, colors) ->
   canv
 
 
+
+
 createFallbackIcon = (user) ->
   if !user.bg_color?
     h = Math.random() / 5 + .6
@@ -480,6 +520,91 @@ createFallbackIcon = (user) ->
 
   createUserIcon user.bg_color
 
+create_avatar = (img, clip = true) -> 
+  canv = document.createElement('canvas')
+  canv.width = img.width
+  canv.height = img.height
+  ctx = canv.getContext('2d')
+
+  if clip
+    ctx.arc(img.width / 2, img.height / 2, img.height / 2, 0, Math.PI * 2)
+    ctx.clip()
+
+  ctx.drawImage img, 0, 0
+  canv.original_image = img
+  canv
+
+
+create_pixelated_avatar = (canv, showQuestionMarkOverlay = false) ->
+
+  anon_canv = create_avatar(canv.original_image, false)
+
+  w = anon_canv.width
+  h = anon_canv.height
+
+  ctx = anon_canv.getContext('2d')
+
+  # Apply anonymization technique: pixelate
+  pixelSize = w / 10  # Adjust the pixel size as desired
+  tempCanvas = document.createElement('canvas')
+  tempCanvas.width = w / pixelSize
+  tempCanvas.height = h / pixelSize
+  tempCtx = tempCanvas.getContext('2d')
+
+  tempCtx.imageSmoothingEnabled = false
+  tempCtx.drawImage(anon_canv, 0, 0, w / pixelSize, h / pixelSize)
+
+  ctx.drawImage(tempCanvas, 0, 0, w / pixelSize, h / pixelSize, 0, 0, w, h)
+
+  # Apply question_mark overlay if requested
+  if showQuestionMarkOverlay
+    size = w / 2
+    ctx.drawImage(my_question_mark_icon, w / 2 - size / 2, h / 2 - size / 2, size, size)
+
+  canv = document.createElement('canvas')
+  canv.width = w
+  canv.height = h
+  ctx = canv.getContext('2d')
+
+  ctx.arc(w / 2, h / 2, h / 2, 0, Math.PI * 2)
+  ctx.clip()
+
+  ctx.drawImage(anon_canv, 0, 0)
+
+  canv
+
+
+question_mark_icon = () ->
+  # Set the desired size of the question_mark icon
+  iconWidth = 24
+  iconHeight = 24
+
+  qm_canv = document.createElement('canvas')
+  qm_canv.width = iconWidth
+  qm_canv.height = iconHeight
+  qm_ctx = qm_canv.getContext('2d')
+
+
+  # SVG path data for the question_mark icon
+  svgPath1 = "M9.11241 7.82201C9.44756 6.83666 10.5551 6 12 6C13.7865 6 15 7.24054 15 8.5C15 9.75946 13.7865 11 12 11C11.4477 11 11 11.4477 11 12L11 14C11 14.5523 11.4477 15 12 15C12.5523 15 13 14.5523 13 14L13 12.9082C15.203 12.5001 17 10.7706 17 8.5C17 5.89347 14.6319 4 12 4C9.82097 4 7.86728 5.27185 7.21894 7.17799C7.0411 7.70085 7.3208 8.26889 7.84366 8.44673C8.36653 8.62458 8.93457 8.34488 9.11241 7.82201ZM12 20C12.8285 20 13.5 19.3284 13.5 18.5C13.5 17.6716 12.8285 17 12 17C11.1716 17 10.5 17.6716 10.5 18.5C10.5 19.3284 11.1716 20 12 20Z"
+  # svgPath2 = "M13.2271 16.9535C13.2271 17.6313 12.6777 18.1807 11.9999 18.1807C11.3221 18.1807 10.7726 17.6313 10.7726 16.9535C10.7726 16.2757 11.3221 15.7262 11.9999 15.7262C12.6777 15.7262 13.2271 16.2757 13.2271 16.9535Z"
+
+  # Draw the question_mark icon onto the question_mark canvas
+  qm_ctx.fillStyle = 'black'
+  qm_ctx.strokeStyle = 'white'
+  qm_ctx.lineWidth = 1
+
+  path1 = new Path2D(svgPath1)
+
+  qm_ctx.fill(path1)
+  qm_ctx.stroke(path1)
+
+  qm_canv
+
+my_question_mark_icon = question_mark_icon()
+
+
+
 
 window.LoadAvatars = ReactiveComponent
   displayName: "LoadAvatars" 
@@ -487,18 +612,6 @@ window.LoadAvatars = ReactiveComponent
     users = fetch '/users'
     loading = fetch('avatar_loading')
     SPAN null
-
-  create_avatar: (img) -> 
-    canv = document.createElement('canvas')
-    canv.width = img.width
-    canv.height = img.height
-    ctx = canv.getContext('2d')
-
-    ctx.arc(img.width / 2, img.height / 2, img.height / 2, 0, Math.PI * 2)
-    ctx.clip()
-
-    ctx.drawImage img, 0, 0
-    canv
 
   load: -> 
     users = fetch '/users'
@@ -508,41 +621,49 @@ window.LoadAvatars = ReactiveComponent
     loading = fetch('avatar_loading')
     app = arest.cache['/application'] or fetch('/application')
 
-    if !cached_avatars.default
-      cached_avatars.default = createFallbackIcon({key: 'default'})
-
-    avatars_to_load = []
+    avatars_to_load = {}
     all_users = users.users.slice() or []
     if current_user.user not in all_users
       all_users.push current_user.user
 
+    if !cached_avatars.default
+      cached_avatars.default = createFallbackIcon({key: 'default'})
+
     for user in all_users
       user = fetch user # subscribe to changes to avatar
+      id = arest.key_id(user.key)
 
       if user.avatar_file_name
+        if id < 0
+          img_url = user.avatar_file_name
+        else
+          img_url = avatarUrl(user, 'large')
 
-        if (users2images[user.key] != user.avatar_file_name ||
-           user.avatar_file_name not of loaded_images) && \
-           user.avatar_file_name not of missing_images
-
-          avatars_to_load.push user 
-          users2images[user.key] = user.avatar_file_name
+        if (users2images[user.key] != img_url ||
+           img_url not of loaded_images) && \
+           img_url not of missing_images
+           
+          avatars_to_load[img_url] ?= []
+          avatars_to_load[img_url].push user 
+          users2images[user.key] = img_url
 
       cached_avatars[user.key] ?= createFallbackIcon(user)
-    
-    if avatars_to_load.length > 0 
+
+    if Object.keys(avatars_to_load).length > 0 
       if !loading.loading
         loading.loading = true 
         save loading 
 
         @loading_cnt = 0
 
-        for user in avatars_to_load
+        for img, users of avatars_to_load
           @loading_cnt += 1
 
           pic = new Image()
-          pic.onload = do(user, pic) => => 
-            loaded_images[user.avatar_file_name] = cached_avatars[user.key] = @create_avatar pic
+          pic.onload = do(img, users, pic) => => 
+            cached_avatar = create_avatar pic
+            for user in users
+              loaded_images[img] = cached_avatars[user.key] = cached_avatar
             @loading_cnt -= 1
             if @loading_cnt == 0
               loading.loading = false
@@ -552,12 +673,9 @@ window.LoadAvatars = ReactiveComponent
             @loading_cnt -= 1
             missing_images[user.avatar_file_name] = 1
 
-          # setTimeout do(user, pic) -> -> 
-          pic.src = avatarUrl user, 'large'
-
+          pic.src = img
       else 
         setTimeout @load, 10   
 
   componentDidMount: -> @load()
   componentDidUpdate: -> @load()
-

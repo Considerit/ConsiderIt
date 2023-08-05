@@ -12,6 +12,13 @@ class Ahoy::Visit < ApplicationRecord
   def as_json(options={})
     options[:only] ||= Ahoy::Visit.my_public_fields
     result = super(options)
+
+    anonymize_everything = current_subdomain.customizations['anonymize_everything']
+
+    if anonymize_everything
+      result['user_id'] = User.anonymized_id(result['user_id'])
+    end
+
     stubify_field(result, 'user')
     result
   end

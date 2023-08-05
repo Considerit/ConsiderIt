@@ -10,6 +10,8 @@ window.SU = ReactiveComponent
 
     users = fetch '/users'
 
+
+
     DIV 
       style: 
         position: 'absolute'
@@ -31,6 +33,7 @@ window.SU = ReactiveComponent
 
         for user in users.users
           LI 
+            key: user.key or user
             style: 
               backgroundColor: 'black'
               listStyle: 'none'
@@ -47,9 +50,11 @@ window.SU = ReactiveComponent
               su.enabled = false
               save su
 
+
+
             Avatar 
-              key: user
-              user: user
+              key: user.key or user
+              user: user.key or user
               hide_popover: true
               style: 
                 width: 50

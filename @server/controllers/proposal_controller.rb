@@ -52,6 +52,11 @@ class ProposalController < ApplicationController
 
       proposal.save
 
+      if params['hide_name'] && params['hide_name'] == true
+        opinion = Opinion.get_or_make(proposal)
+        opinion.change_visibility(params['hide_name'])
+      end
+
       # need to save the proposal before potentially sending out
       # email invitations via role.
       update_roles proposal
@@ -61,6 +66,9 @@ class ProposalController < ApplicationController
       original_id = key_id(params[:key])
       result = proposal.as_json
       result['key'] = "/proposal/#{proposal.id}?original_id=#{original_id}"
+
+
+
 
       dirty_key '/proposals'
       dirty_key "/list/#{proposal.get_cluster}"

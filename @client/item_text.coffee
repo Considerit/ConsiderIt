@@ -474,10 +474,19 @@ window.ItemText = ReactiveComponent
     proposal = fetch @props.proposal
 
     subdomain = fetch '/subdomain'
-    icons = customization('show_proposer_icon', proposal, subdomain) && !@props.hide_icons && !customization('anonymize_everything')
+    icons = customization('show_proposer_icon', proposal, subdomain)
     opinion_publish_permission = permit('publish opinion', proposal, subdomain)
 
     opinion_prompt = getOpinionPrompt {proposal}
+    you_have_opinion = Boolean( proposal?.your_opinion?.key )
+
+    toggleExpandPreferPersonal = ( ) ->
+      toggle_expand
+        proposal: proposal
+        prefer_personal_view: true
+
+    YOUR_OPINION_BUTTON_SIZE = 18
+    YOUR_OPINION_BUTTON_COLOR = '#444'
 
     DIV
       className: 'proposal-metadata'   
@@ -566,38 +575,74 @@ window.ItemText = ReactiveComponent
 
                 "{cnt, plural, one {# pro or con} other {# pros & cons}}"
 
-          if opinion_prompt && !TABLET_SIZE()
-            BUTTON 
-              key: 'give-opinion'
-              className: 'small-give-your-opinion metadata-piece separated like_link monospaced'
-              onClick: => 
-                toggle_expand
-                  proposal: proposal 
-                  prefer_personal_view: true                   
-                
-              onKeyPress: (e) => 
-                if e.which == 32 || e.which == 13
-                  toggle_expand
-                    proposal: proposal
-                    prefer_personal_view: true                   
 
-              opinion_prompt
+          if (you_have_opinion && permit('update opinion', proposal, proposal.your_opinion) > 0) || permit('publish opinion', proposal) > 0
+            SPAN
+              key: 'yourOpinion'
+              className: 'separated monospaced metadata-piece'
+              style:  {  border:'solid 1px #dddddd', borderRadius:'8px', padding:'3px 10px', backgroundColor:'#f8f8f8'  }
 
-          if (your_opinion = proposal.your_opinion) && your_opinion.key && permit('update opinion', proposal, your_opinion) > 0
-            remove_opinion = -> 
-              your_opinion.stance = 0
-              your_opinion.point_inclusions = []                   
-              your_opinion.published = false 
-              save your_opinion
-                        
-            BUTTON 
-              key: 'remove_opinion'
-              className: 'small-give-your-opinion metadata-piece separated like_link monospaced'
-              onClick: remove_opinion
+              # Edit
+              if opinion_prompt
+                [
+                  BUTTON
+                    key: 'edit-opinion-text'
+                    className: 'monospaced'
+                    style: {  border:'none', backgroundColor:'rgba(0,0,0,0)', padding:0  }
+                    onClick: toggleExpandPreferPersonal
+                    onKeyPress: (e) =>
+                      if e.which == 32 or e.which == 13
+                        toggleExpandPreferPersonal()
 
-              translator "engage.remove_my_opinion", 'Remove your opinion'
+                    if you_have_opinion
+                      translator('engage.your_opinion_section_label', 'Your opinion')
+                    else
+                      opinion_prompt
 
+                  if you_have_opinion and not TABLET_SIZE()
+                    BUTTON
+                      key: 'edit-opinion-button'
+                      id: "edit-opinion-#{proposal.key}"
+                      "aria-label": translator('engage.edit_opinion_button', 'Edit your opinion')
+                      "data-tooltip": translator('engage.edit_opinion_button', 'Edit your opinion')
+                      className: 'metadata-piece'
+                      style: {  border:'none', verticalAlign:'bottom', marginBottom:'-3px', marginLeft:'10px'  }
+                      onClick: toggleExpandPreferPersonal
+                      onKeyPress: (e) =>
+                        if e.which == 32 || e.which == 13
+                          toggleExpandPreferPersonal()
 
+                      edit_icon YOUR_OPINION_BUTTON_SIZE, YOUR_OPINION_BUTTON_SIZE, YOUR_OPINION_BUTTON_COLOR
+                 ]
+
+              if (your_opinion = proposal.your_opinion) && your_opinion.key && permit('update opinion', proposal, your_opinion) > 0
+
+                [
+                  # Anonymize
+                  BUTTON
+                    key: 'anonymize_opinion'
+                    role: 'checkbox'
+                    "aria-checked": Boolean( your_opinion.hide_name )
+                    "aria-label": your_opinion_i18n.anonymize_opinion_button()
+                    "data-tooltip": your_opinion_i18n.anonymize_opinion_button()
+                    className: 'metadata-piece'
+                    style: {  border:'none', verticalAlign:'bottom', marginBottom:'-1px', marginLeft:'15px', display: if customization('anonymize_permanently') then 'none'  }
+                    onClick: -> toggle_anonymize_opinion(your_opinion)
+
+                    iconAnonymousMask YOUR_OPINION_BUTTON_SIZE, \
+                      if your_opinion.hide_name then focus_blue else '#888888'
+
+                  # Remove
+                  BUTTON
+                    key: 'remove_opinion'
+                    "aria-label": your_opinion_i18n.remove_opinion_button()
+                    "data-tooltip": your_opinion_i18n.remove_opinion_button()
+                    className: 'metadata-piece'
+                    style: {  border:'none', verticalAlign:'bottom', marginBottom:'-3px', marginLeft:'15px'  }
+                    onClick: -> remove_opinion(your_opinion)
+
+                    iconX YOUR_OPINION_BUTTON_SIZE, YOUR_OPINION_BUTTON_COLOR
+                ]
 
         ]
 
@@ -624,6 +669,34 @@ window.ItemText = ReactiveComponent
             size: 12
             fill: 'rgb(158, 78, 35)'
 
+
+
+window.your_opinion_i18n = 
+  anonymize_proposal_button: -> translator('engage.anonymize_proposal_button', 'Anonymize your proposal and opinion')
+  deanonymize_proposal_button: -> translator 'engage.deanonymize_proposal_button', 'Your proposal and opinion is anonymized'
+  anonymize_opinion_button: -> translator('engage.anonymize_opinion_button', 'Anonymize your opinion and pro/con comments about this proposal.')
+  deanonymize_opinion_button: -> translator 'engage.deanonymize_opinion_button', 'Your opinion and pro/con comments are anonymized'
+  remove_opinion_button: -> translator('engage.remove_opinion_button', 'Delete your opinion and pro/con comments about this proposal')
+  anon_assurance: -> translator('engage.anon_assurance', 'anonymized to others')
+  anonymize: -> translator('engage.anonymize', 'anonymize')
+
+
+window.toggle_anonymize_opinion = (your_opinion) ->
+  turn_on_anon = translator("""This will anonymize your whole opinion about the proposal, including your icon in 
+                              the histogram and all pros and cons you have written. Are you sure you wish to anonymize?""")
+  turn_off_anon = translator("""This will display your account name and avatar for your opinion, any pros and cons 
+                                you wrote, and any comments. Are you sure you wish to remove anonymization?""")
+
+  if (your_opinion.hide_name or confirm( turn_on_anon ))
+    your_opinion.hide_name = not your_opinion.hide_name
+    save your_opinion
+
+window.remove_opinion = (your_opinion) -> 
+  if confirm( translator('This will remove your opinion about the proposal, including your icon in the histogram, and all the pros and cons and comments that you have written for this proposal. Are you sure you wish to remove?') )
+    your_opinion.stance = 0
+    your_opinion.point_inclusions = []
+    your_opinion.published = false
+    save your_opinion
 
 window.getOpinionPrompt = ({proposal, prefer_drag_prompt}) ->
   proposal = fetch proposal

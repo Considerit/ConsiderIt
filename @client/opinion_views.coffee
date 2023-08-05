@@ -1322,7 +1322,7 @@ InteractiveOpinionViews = ReactiveComponent
 
                           SPAN 
                             className: 'attribute_value_value'
-                            val_name
+                            dangerouslySetInnerHTML: __html: val_name
 
             BUTTON
               className: 'attribute_close'

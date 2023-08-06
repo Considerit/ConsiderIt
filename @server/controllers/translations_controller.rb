@@ -86,7 +86,17 @@ class TranslationsController < ApplicationController
       EventMailer.translations_proposed(subdomain || current_subdomain, other_updates).deliver_later
     end 
 
-    Rails.cache.delete_matched "TRANSLATION: "
+
+    ##################
+    # Rails.cache.delete_matched "TRANSLATION: "   <--- not supported in MemCacheStore
+    # So, instead do this:
+    pattern = "TRANSLATION:"
+    cache_keys = Rails.cache.instance_variable_get(:@data).try(:keys) || []
+    keys_to_delete = cache_keys.select { |key| key.start_with?(pattern) }
+    keys_to_delete.each do |key|
+      Rails.cache.delete(key)
+    end
+    ##########
 
     # propagate translation updates to other servers
     if for_peers.length > 0 

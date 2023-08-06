@@ -4,16 +4,46 @@ Consider.it Data Exports
 Hosts of Premium Consider.it forums can export forum data via the "Data Import & Export" dashboard. There, you are able to download a zip file containing four CSV files (users, opinions, proposals, points). CSVs can be opened in Excel or Google Sheets etc. 
 
 
-Each of these files contains unique keys that can be used to link data together via a pivot table to answer most questions you might have, using the analysis software of your choice. 
+Before Diving into the Data
+---------------------------
+
+You may first wish to do some exploratory data analysis using the Consider.it interface itself. Beyond the basic Consider.it interface showing pros and cons, here are some features to explore:
+
+#### Proposal Sorting
+You can sort the proposals by various metrics to see what rises to the surface. Some favorites are *total score* and *most polarizing first*. 
+
+#### Data Analytics Dashboard
+
+Consider.it Premium Forums have a [data analytics dashboard](/dashboard/analytics). This dashboard plots basic visitation, participant, opinion, and comment data on timelines, and allows you to slice and dice the data by sign-in questions. It also just gives some useful raw data counts. 
+
+
+
+<video preload="true" loop autoplay controls title="Consider.it data analytics dashboard" style="position: relative; width: 100%; aspect-ratio: 1920 / 1080; box-shadow: rgba(0, 0, 0, 0.25) 0px 1px 4px; transition: box-shadow 500ms ease 0s; display: block;" data-initialized playsinline data-controls><source src="//f.consider.it/participation_dashboard.mp4
+" type="video/mp4">Consider.it data analytics dashboard.</video>
+
+
+
+#### Opinion Analytics
+
+
+If you've asked sign-in questions, you may wish to use the [opinion analytics](https://traviskriplean.com/exploratory-data-analysis-in-c-1cm7y6) functionality for slicing, dicing, and comparing opinions of subgroups.
+
+Furthermore, opinion analytics weights can help you identify influential participants in the dialogue (those who wrote pros and cons and/or proposals that other people found important). 
+
+<video loading="lazy" preload="true" loop="true" autoplay="true" controls="" title="In Consider.it, you can examine similarities and differences of opinions between subgroups." style="position: relative; width: 100%; aspect-ratio: 1920 / 1080; box-shadow: rgba(0, 0, 0, 0.25) 0px 1px 4px; transition: box-shadow 500ms ease 0s; display: block;" data-initialized="" playsinline="" class="" data-controls=""><source src="//d2rtgkroh5y135.cloudfront.net/images/product_page/screencasts/trimmed-opinion_analytics-small-x264.mp4" type="video/mp4">In Consider.it, you can examine similarities and differences of opinions between subgroups.</video>
+
+
+The Data Export
+---------------
+
+As mentioned earlier, the forum data export contains four CSV files (users, opinions, proposals, points). 
+
+Each of these files contains unique keys that can be used to link data together via a pivot table to answer most questions you might have, using the analysis software of your choice (e.g. Excel, Google Sheets, Tableau).
 
 Specifically, the keys are:
  * The Users file contains an "email" column representing a participants' unique email address. The proposal, opinion, and points files also contains an "email" column representing the corresponding user that carried out that action.
  * The Proposals file contains a "proposal_slug" column identifying the proposal. The opinion and points files also have a proposal_slug column representing the proposal associated with the opinion or point.
 
-
-Note that for exploratory data analysis, you might want to start by using the Consider.it interface itself. In particular, if you've asked sign-in questions, you may wish to use the [opinion analytics](https://traviskriplean.com/exploratory-data-analysis-in-c-1cm7y6) functionality for slicing, dicing, and comparing opinions of subgroups.
-
-<video loading="lazy" preload="true" loop="" autoplay="" controls="" title="In Consider.it, you can examine similarities and differences of opinions between subgroups." style="position: relative; width: 100%; aspect-ratio: 1920 / 1080; box-shadow: rgba(0, 0, 0, 0.25) 0px 1px 4px; transition: box-shadow 500ms ease 0s; display: block;" data-initialized="" playsinline="" class="" data-controls=""><source src="//d2rtgkroh5y135.cloudfront.net/images/product_page/screencasts/trimmed-opinion_analytics-small-x264.mp4" type="video/mp4">In Consider.it, you can examine similarities and differences of opinions between subgroups.</video>
 
 Below is specific documentation for each file in the export.  
 

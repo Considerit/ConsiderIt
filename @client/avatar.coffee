@@ -536,7 +536,8 @@ create_avatar = (img, clip = true) ->
 
 
 create_pixelated_avatar = (canv, showQuestionMarkOverlay = false) ->
-
+  return cached_avatars.default if !canv.original_image
+  
   anon_canv = create_avatar(canv.original_image, false)
 
   w = anon_canv.width

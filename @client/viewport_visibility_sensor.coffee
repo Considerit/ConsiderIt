@@ -88,7 +88,11 @@ window.schedule_viewport_position_check = ->
   if !update_scheduled
     update_scheduled = true 
     to_timer = setTimeout ->
-      requestAnimationFrame sense_viewport_visibility_changes
+      try
+        requestAnimationFrame sense_viewport_visibility_changes
+      catch e
+        console.log("Got error running schedule_viewport_position_check")
+        console.error(e)
       clearTimeout to_timer
     , RATE_LIMIT
 

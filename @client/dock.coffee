@@ -274,17 +274,21 @@ dockingStation =
   #######
   # onScroll
   onScroll : -> 
-    ccnt += 1
+    try 
+      ccnt += 1
 
-    dockingStation.updateViewport()
+      dockingStation.updateViewport()
 
-    # At most we will shift the docked components by the distance scrolled
-    max_change = if dockingStation.viewport.last.top?
-                   Math.abs(dockingStation.viewport.top - dockingStation.viewport.last.top)
-                 else
-                   Infinity
+      # At most we will shift the docked components by the distance scrolled
+      max_change = if dockingStation.viewport.last.top?
+                     Math.abs(dockingStation.viewport.top - dockingStation.viewport.last.top)
+                   else
+                     Infinity
 
-    dockingStation.layout max_change
+      dockingStation.layout max_change
+    catch e
+      console.log("Problem with docking station onScroll")
+      console.error(e)
 
   #######
   # onResize

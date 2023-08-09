@@ -8,12 +8,17 @@ window.$$ =
   add_delegated_listener: (el, eventName, selector, callback) ->
 
     el.addEventListener eventName, (e) ->
-      target = e.target
-      while target && target != el
-        if target.matches selector
-          callback.call target, e
-          break
-        target = target.parentNode
+      try 
+        target = e.target
+        while target && target != el
+          if target.matches selector
+            callback.call target, e
+            break
+          target = target.parentNode
+      catch e
+        console.log('Got error in add_delegated_listener')
+        console.error(e)
+
     , false
 
   closest: (el, selector) -> 
@@ -64,73 +69,79 @@ window.$$ =
 
 
   ensureInView: (el, options = {}) ->
+
     if !el
       options.callback()
       return
 
-    _.defaults options,
-      fill_threshold: 0
-      offset_buffer: 36
-      scroll: true
-      position: 'top' 
-      speed: null
-      speed_mult: 1
-      callback: ->
 
-    el_height = $$.height(el) + (options.extra_height or 0)
+    try 
+      _.defaults options,
+        fill_threshold: 0
+        offset_buffer: 36
+        scroll: true
+        position: 'top' 
+        speed: null
+        speed_mult: 1
+        callback: ->
 
-    el_top = $$.offset(el).top
-    el_bottom = el_top + el_height
+      el_height = $$.height(el) + (options.extra_height or 0)
 
-    doc_height = $$.height(document.body)
-    doc_top = $$.scrollTop()
+      el_top = $$.offset(el).top
+      el_bottom = el_top + el_height
 
-    doc_bottom = doc_top + doc_height
-    is_onscreen = el_top > doc_top && el_bottom < doc_bottom
+      doc_height = $$.height(document.body)
+      doc_top = $$.scrollTop()
 
-    #if less than 50% of the viewport is taken up by the el...
-    bottom_inside = el_bottom < doc_bottom && (el_bottom - doc_top) > options.fill_threshold * el_height
-    top_inside = el_top > doc_top && (doc_bottom - el_top) > options.fill_threshold * el_height    
-    no_adjustment_needed = !options.force && is_onscreen && top_inside && bottom_inside  
+      doc_bottom = doc_top + doc_height
+      is_onscreen = el_top > doc_top && el_bottom < doc_bottom
 
-    if !no_adjustment_needed
+      #if less than 50% of the viewport is taken up by the el...
+      bottom_inside = el_bottom < doc_bottom && (el_bottom - doc_top) > options.fill_threshold * el_height
+      top_inside = el_top > doc_top && (doc_bottom - el_top) > options.fill_threshold * el_height    
+      no_adjustment_needed = !options.force && is_onscreen && top_inside && bottom_inside  
 
-      switch options.position 
+      if !no_adjustment_needed
 
-        when 'top'
-          target = el_top - options.offset_buffer
-        when 'bottom'
-          target = el_bottom - doc_height + options.offset_buffer
-        else
-          throw 'bad position for ensureInView'
+        switch options.position 
 
-      if options.scroll
+          when 'top'
+            target = el_top - options.offset_buffer
+          when 'bottom'
+            target = el_bottom - doc_height + options.offset_buffer
+          else
+            throw 'bad position for ensureInView'
 
-        distance_to_travel = options.speed || Math.abs( doc_top - (el_top - options.offset_buffer) )
+        if options.scroll
 
-        if options.dom_possibly_shifting
+          distance_to_travel = options.speed || Math.abs( doc_top - (el_top - options.offset_buffer) )
 
-          if options.position != 'top'
-            console.error "smoothScrollToTargetWithChangingElement doesn't support position targets except 'top'"
+          if options.dom_possibly_shifting
 
-          $$.smoothScrollToTargetWithChangingElements
-            el: el
-            offset_buffer: options.offset_buffer
-            duration: options.speed_mult * Math.min(distance_to_travel, 1500)
-            callback: options.callback
+            if options.position != 'top'
+              console.error "smoothScrollToTargetWithChangingElement doesn't support position targets except 'top'"
+
+            $$.smoothScrollToTargetWithChangingElements
+              el: el
+              offset_buffer: options.offset_buffer
+              duration: options.speed_mult * Math.min(distance_to_travel, 1500)
+              callback: options.callback
+
+          else 
+            $$.smoothScrollToTarget 
+              target: el_top - options.offset_buffer
+              duration: options.speed_mult * Math.min(distance_to_travel, 1500)
+              callback: options.callback
+
 
         else 
-          $$.smoothScrollToTarget 
-            target: el_top - options.offset_buffer
-            duration: options.speed_mult * Math.min(distance_to_travel, 1500)
-            callback: options.callback
-
-
-      else 
-        window.scrollTo 0, target
+          window.scrollTo 0, target
+          options.callback()
+      else
         options.callback()
-    else
-      options.callback()
+    catch e
+      console.log("Error in ensureInView")
+      console.error(e)
 
   ensure_in_viewport_when_appears: (selector) -> 
     viewport_ensurer = setInterval ->
@@ -150,26 +161,31 @@ window.$$ =
 
     iter = (current_time) ->
 
-      top = el.getBoundingClientRect().top
-      if diff < 0 
-        done = top + dist_per_frame > offset_buffer
-      else 
-        done = top - dist_per_frame < offset_buffer
+      try 
 
-      done ||= document.documentElement.scrollHeight - document.documentElement.scrollTop - document.documentElement.clientHeight <= 0
+        top = el.getBoundingClientRect().top
+        if diff < 0 
+          done = top + dist_per_frame > offset_buffer
+        else 
+          done = top - dist_per_frame < offset_buffer
+
+        done ||= document.documentElement.scrollHeight - document.documentElement.scrollTop - document.documentElement.clientHeight <= 0
 
 
-      if done 
-        dist_per_frame = top - offset_buffer
+        if done 
+          dist_per_frame = top - offset_buffer
 
-      scroll_to = window.pageYOffset + dist_per_frame
+        scroll_to = window.pageYOffset + dist_per_frame
 
-      window.scrollTo 0, scroll_to
+        window.scrollTo 0, scroll_to
 
-      if !done
-        requestAnimationFrame(iter)
-      else 
-        callback?()
+        if !done
+          requestAnimationFrame(iter)
+        else 
+          callback?()
+      catch e
+        console.log("Error in smoothScrollToTargetWithChangingElements")
+        console.error(e)
 
     requestAnimationFrame(iter)
 
@@ -180,19 +196,23 @@ window.$$ =
     start_time = null
 
     iter = (current_time) ->
-      if !start_time
-        start_time = current_time
+      try 
+        if !start_time
+          start_time = current_time
 
-      time = current_time - start_time
+        time = current_time - start_time
 
-      percent = Math.min time / duration, 1
-      window.scrollTo 0, start_pos + diff * percent
+        percent = Math.min time / duration, 1
+        window.scrollTo 0, start_pos + diff * percent
 
-      if time < duration
-        requestId = window.requestAnimationFrame(iter)
-      else
-        window.cancelAnimationFrame requestId
-        callback?()
+        if time < duration
+          requestId = window.requestAnimationFrame(iter)
+        else
+          window.cancelAnimationFrame requestId
+          callback?()
+      catch e 
+        console.log("Got error in smoothScrollToTarget")
+        console.error(e)
 
     requestId = window.requestAnimationFrame(iter)
 

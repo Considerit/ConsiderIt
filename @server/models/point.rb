@@ -142,8 +142,11 @@ class Point < ApplicationRecord
     set_comment_count
 
     self.includers = self.inclusions.map do |x|
-      {'id' => x.user_id, 'hide_name' => x.opinion.hide_name}
-    end
+      o = x.opinion
+      if o
+        {'id' => x.user_id, 'hide_name' => o.hide_name}
+      end
+    end.compact
 
     # ###
     # # define cross-spectrum appeal

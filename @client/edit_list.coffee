@@ -303,7 +303,10 @@ window.EditNewList = ReactiveComponent
 
 
       if @props.fresh
-        new_name = "#{slugify(list_config.list_title or list_config.list_category or 'Proposals')}-#{Math.round(Math.random() * 100)}"
+        name = slugify(list_config.list_title or list_config.list_category or 'Proposals')
+        if name.length > 140
+          name = name.substring(0,140)
+        new_name = "#{name}-#{Math.round(Math.random() * 100)}"
         new_key = "list/#{new_name}"
         customizations[new_key] = customizations[list_key]
         _.defaults customizations[new_key], 

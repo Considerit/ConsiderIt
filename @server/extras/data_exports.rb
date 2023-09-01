@@ -74,20 +74,24 @@ module DataExports
     subdomain.proposals.each do |proposal|
       proposal.points.published.each do |pnt|
         begin 
-          opinion = pnt.user.opinions.find_by_proposal_id(pnt.proposal.id)
-          anonymize_point = anonymize_permanently || opinion.hide_name || pnt.hide_name
+          if [nil, 1].include?(pnt.moderation_status)
+            opinion = pnt.user.opinions.find_by_proposal_id(pnt.proposal.id)
+            anonymize_point = anonymize_permanently || opinion.hide_name || pnt.hide_name
 
-          pnt_user_name, pnt_user_email = get_identity(pnt.user, subdomain, anonymize_point)
+            pnt_user_name, pnt_user_email = get_identity(pnt.user, subdomain, anonymize_point)
 
-          rows.append [pnt.proposal.slug, pnt.proposal.name, 'POINT', pnt.created_at, pnt_user_name, pnt_user_email, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance : '-', pnt.inclusions.count, pnt.comments.count]
+            rows.append [pnt.proposal.slug, pnt.proposal.name, 'POINT', pnt.created_at, pnt_user_name, pnt_user_email, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance : '-', pnt.inclusions.count, pnt.comments.count]
 
-          pnt.comments.each do |comment|
-            opinion = comment.user.opinions.find_by_proposal_id(pnt.proposal.id)
+            pnt.comments.each do |comment|
+              if [nil, 1].include?(comment.moderation_status)
+                opinion = comment.user.opinions.find_by_proposal_id(pnt.proposal.id)
 
-            anonymize_comment = anonymize_permanently || comment.hide_name            
-            comment_user_name, comment_user_email = get_identity(comment.user, subdomain, anonymize_comment)
+                anonymize_comment = anonymize_permanently || comment.hide_name            
+                comment_user_name, comment_user_email = get_identity(comment.user, subdomain, anonymize_comment)
 
-            rows.append [pnt.proposal.slug, pnt.proposal.name, 'COMMENT', comment.created_at, comment_user_name, comment_user_email, "", comment.body, '', opinion ? opinion.stance : '-', '', '']
+                rows.append [pnt.proposal.slug, pnt.proposal.name, 'COMMENT', comment.created_at, comment_user_name, comment_user_email, "", comment.body, '', opinion ? opinion.stance : '-', '', '']
+              end
+            end
           end
         rescue 
         end 
@@ -127,20 +131,23 @@ module DataExports
     rows.append heading 
 
     subdomain.proposals.each do |proposal|
-      opinions = proposal.opinions.published
+      if [nil, 1].include?(proposal.moderation_status)
 
-      s = stats opinions.map{|o| o.stance}
-      
-      user_name, user_email = get_identity(proposal.user, subdomain, anonymize_permanently || proposal.hide_name)
+        opinions = proposal.opinions.published
 
-      row = [proposal.slug, "https://#{subdomain.url}/#{proposal.slug}", proposal.created_at, user_name, user_email, proposal.name, (proposal.cluster || 'Proposals'), proposal.description, proposal.points.published.count, opinions.count, s[:total].round(2), s[:avg].round(2), s[:std_dev].round(2)]
-      group_diffs = group_differences proposal 
-      group_diffs.each do |diff|
-        row.append diff[:ingroup][:count]
-        row.append diff[:ingroup][:avg].round(2)
-        row.append diff[:diff].round(2)
+        s = stats opinions.map{|o| o.stance}
+        
+        user_name, user_email = get_identity(proposal.user, subdomain, anonymize_permanently || proposal.hide_name)
+
+        row = [proposal.slug, "https://#{subdomain.url}/#{proposal.slug}", proposal.created_at, user_name, user_email, proposal.name, (proposal.cluster || 'Proposals'), proposal.description, proposal.points.published.count, opinions.count, s[:total].round(2), s[:avg].round(2), s[:std_dev].round(2)]
+        group_diffs = group_differences proposal 
+        group_diffs.each do |diff|
+          row.append diff[:ingroup][:count]
+          row.append diff[:ingroup][:avg].round(2)
+          row.append diff[:diff].round(2)
+        end
+        rows.append row
       end
-      rows.append row
     end
 
     rows

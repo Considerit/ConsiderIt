@@ -173,6 +173,7 @@ permit = (action) ->
   return Permission.PERMITTED
 
 matchEmail = (permission_list) -> 
+  permission_list = (p.toLowerCase() for p in permission_list)
   user = fetch '/current_user'
   
   return true if '*' in permission_list
@@ -191,6 +192,9 @@ matchSomeRole = (roles, accepted_roles) ->
     return true if matchEmail(roles[role])
   return false
 
+
+
+sent_verification_token = false
 window.recourse = (permission, goal) ->
   loc = fetch 'location'
   auth = fetch 'auth'
@@ -214,9 +218,13 @@ window.recourse = (permission, goal) ->
           form: 'verify email'
           goal: "#{goal} please demonstrate you control this email."
 
-        current_user = fetch '/current_user'
-        current_user.trying_to = 'send_verification_token'
-        save current_user
+
+        if !sent_verification_token
+          current_user = fetch '/current_user'
+          current_user.trying_to = 'send_verification_token'
+
+          save current_user
+          sent_verification_token = true
 
 
 ####

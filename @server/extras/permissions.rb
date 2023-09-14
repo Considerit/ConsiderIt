@@ -27,6 +27,8 @@ module Permissions
   end 
 
   def self.matchEmail(permission_list, user=nil)
+    permission_list.map! { |p| p.downcase }
+
     user ||= current_user
     return true if permission_list.index('*')
     return true if permission_list.index(user.key)

@@ -210,8 +210,11 @@ window.Homepage = ReactiveComponent
 
               if preamble = get_page_preamble()
                 DIV
+                  className: 'wysiwyg_text'
                   style: 
                     marginBottom: 24
+                    maxWidth: 720
+                    margin: "0 auto 24px auto"
                   dangerouslySetInnerHTML: __html: preamble
 
 

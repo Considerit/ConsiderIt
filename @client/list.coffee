@@ -1066,7 +1066,8 @@ EditableDescription = ReactiveComponent
       else 
         DIV 
           style:
-            marginBottom: 10
+            margin: "10px auto 0 auto"
+            maxWidth: 850
           dangerouslySetInnerHTML: {__html: description}
 
 

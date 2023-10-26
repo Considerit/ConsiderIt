@@ -26,20 +26,20 @@ class ImportDataController < ApplicationController
         directly_extractable: ['name', 'email', 'tags']
       },
       'proposals' => {
-        required_fields: ['title'],
-        directly_extractable: ['description', 'cluster', 'seo_title', 'seo_description', 'seo_keywords', 'json']
+        required_fields: ['title|name'],
+        directly_extractable: ['description', 'cluster', 'seo_title', 'seo_description', 'seo_keywords', 'json', 'created_at'],
       },
       'opinions' => {
         required_fields: ['user', 'proposal', 'stance'],
-        directly_extractable: ['stance']
+        directly_extractable: ['stance', 'created_at']
       },
       'points' => {
         required_fields: ['user', 'proposal', 'is_pro'],
-        directly_extractable: ['nutshell', 'text']
+        directly_extractable: ['nutshell', 'text', 'created_at']
       },      
       'comments' => {
         required_fields: ['user', 'point', 'body'],
-        directly_extractable: ['body']
+        directly_extractable: ['body', 'created_at']
       }
     }
 
@@ -473,6 +473,9 @@ class ImportDataController < ApplicationController
 
       end
     end
+
+
+    Proposal.clear_cache
 
     if errors.length > 0
       render :json => [{'errors' => errors.uniq}]

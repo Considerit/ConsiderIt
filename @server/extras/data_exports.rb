@@ -40,7 +40,7 @@ module DataExports
 
   def DataExports.opinions(subdomain)
     fname = "#{subdomain.name}-opinions"
-    heading = ["proposal_slug","proposal_name", 'created', "username", "email", "opinion", "#points"]
+    heading = ["proposal_slug","proposal_name", 'created_at', "username", "email", "opinion", "#points"]
     rows = []
     rows.append heading 
     anonymize_permanently = subdomain.customization_json['anonymize_permanently']
@@ -66,7 +66,7 @@ module DataExports
 
   def DataExports.points(subdomain)
     fname = "#{subdomain.name}-points"
-    heading = ['proposal_slug', 'proposal_name', 'type', 'created', "username", "email", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
+    heading = ['proposal_slug', 'proposal_name', 'type', 'created_at', "username", "email", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
     rows = []
     rows.append heading 
     anonymize_permanently = subdomain.customization_json['anonymize_permanently']
@@ -104,7 +104,7 @@ module DataExports
   def DataExports.proposals(subdomain)
     fname = "#{subdomain.name}-proposals"
     rows = []
-    heading = ['proposal_slug', 'url', 'created', "username", "email", 'name', 'category', 'description', '#points', '#opinions', 'total score', 'avg score', 'std deviation']
+    heading = ['proposal_slug', 'forum_url', 'created_at', "username", "email", 'title', 'category', 'description', '#points', '#opinions', 'total score', 'avg score', 'std deviation']
     anonymize_permanently = subdomain.customization_json['anonymize_permanently']
     
 

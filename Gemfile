@@ -5,8 +5,8 @@ source 'http://rubygems.org'
 gem 'rails', '~> 6.1'
 gem 'activerecord-session_store'  # Because CookieStore has race conditions w/ concurrent ajax requests
 
-#############
-# AUTHENTICATION
+# #############
+# # AUTHENTICATION
 gem "bcrypt"
 gem 'ruby-saml', '~> 1.11'
 gem 'omniauth-oauth2'
@@ -62,11 +62,11 @@ gem 'oj'
 gem 'oj_mimic_json' # we need this for Rails 4.1.x
 gem 'bootsnap', require: false
 
-# for importing from google sheets
+# # for importing from google sheets
 gem 'google-api-client'
 
-# for visitation metrics (and other analytics data)
-gem "ahoy_matey"
+# # for visitation metrics (and other analytics data)
+gem "ahoy_matey", '~>4.2.1'
 
 
 require 'yaml'
@@ -81,12 +81,12 @@ if local_config["default"]["product_page"]
   gem 'mailgun-ruby'
 
   # for markdown parsing
-  gem 'commonmarker',  "~>1.0.0.pre7"
+  gem 'commonmarker',  "~>1.0.0.pre11"
 end 
 
-# Bundle gems for the local environment. Make sure to
-# put test-only gems in this group so their generators
-# and rake tasks are available in development mode:
+# # Bundle gems for the local environment. Make sure to
+# # put test-only gems in this group so their generators
+# # and rake tasks are available in development mode:
 group :development, :test do
   gem 'thin'
   gem 'ruby-prof' #, '~> 1.0.0'

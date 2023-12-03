@@ -414,7 +414,7 @@ DEPENDENCIES
   aws-sdk-ses
   bcrypt
   bootsnap
-  commonmarker (~> 1.0.0.pre11)
+  commonmarker (~> 1.0.0.pre7)
   css_parser
   daemons
   dalli

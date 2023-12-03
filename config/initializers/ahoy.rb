@@ -27,6 +27,8 @@ end
 Ahoy.mask_ips = true
 Ahoy.cookies = false
 
+# Ahoy.cookies = :none  # comment this in when upgrading to Ahoy 5
+
 # client side only
 Ahoy.server_side_visits = :when_needed
 Ahoy.api = true

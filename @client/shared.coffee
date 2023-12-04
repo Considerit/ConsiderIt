@@ -119,6 +119,8 @@ window.get_region_name = ->
     reg = "Canada"
   else if region == 'EU'
     reg = "the European Union"
+  else if region == 'AU'
+    reg = "Australia"
   else 
     throw "Unknown region #{region}"
 

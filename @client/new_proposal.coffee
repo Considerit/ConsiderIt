@@ -497,12 +497,9 @@ window.NewProposal = ReactiveComponent
             marginLeft: 16
             marginTop: 5
 
-          do ->
-            tips = customization('new_proposal_tips')
-
-            for tip in tips
-              LI 
-                style: 
-                  paddingBottom: 3
-                tip  
+          for tip in tips
+            LI 
+              style: 
+                paddingBottom: 3
+              tip  
 

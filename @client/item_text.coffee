@@ -163,15 +163,17 @@ window.ItemText = ReactiveComponent
     proposal = fetch @props.proposal
     subdomain = fetch '/subdomain'
 
+    list_key = get_list_for_proposal(proposal)
+
     @is_expanded = @props.is_expanded
 
-    has_description = proposal.description || customization('proposal_description')
+    has_description = proposal.description || customization('proposal_description', list_key)
 
     if !@is_expanded && @local.description_fully_expanded
       @local.description_fully_expanded = false
 
     if @props.show_list_title
-      list_title = get_list_title(get_list_for_proposal(proposal), true)
+      list_title = get_list_title(list_key, true)
       list_title_width = widthWhenRendered(list_title, {fontSize: "12px", fontWeight: "500", fontStyle: "italic"})
       tw = ITEM_TEXT_WIDTH()
       if list_title_width > tw
@@ -400,8 +402,11 @@ window.ItemText = ReactiveComponent
 
 
   draw_description: ->  
+
     proposal = fetch @props.proposal
-    cust_desc = customization('proposal_description')
+    list_key = get_list_for_proposal(proposal)
+
+    cust_desc = customization('proposal_description', list_key)
 
     return DIV null if !proposal.description && !cust_desc
 

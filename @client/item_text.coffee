@@ -408,9 +408,11 @@ window.ItemText = ReactiveComponent
 
     cust_desc = customization('proposal_description', list_key)
 
+
     return DIV null if !proposal.description && !cust_desc
 
     if cust_desc
+
       if typeof(cust_desc) == 'function'
         result = cust_desc(proposal)
       else if cust_desc[proposal.cluster] # is associative, indexed by list name
@@ -423,11 +425,12 @@ window.ItemText = ReactiveComponent
                          # because of customizations backwards compatibility. Hopefully 
                          # cleanup after refactoring.
           result = cust_desc[proposal.cluster]() {proposal: proposal}
-        else 
+        else
+
           result
 
       else 
-        result = DIV dangerouslySetInnerHTML:{__html: proposal.description}
+        result = DIV dangerouslySetInnerHTML:{__html: cust_desc}
 
     else 
       result = DIV dangerouslySetInnerHTML:{__html: proposal.description.replace(/<p><br><\/p>/g, '')}

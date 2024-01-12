@@ -1008,9 +1008,11 @@ window.PointsList = ReactiveComponent
     get_heading = (valence) => 
       point_labels = customization("point_labels", proposal)
 
-
-      heading = point_labels["#{header_prefix}_header"]
-
+      valence_heading = "#{header_prefix}_#{valence}_header"
+      if valence_heading in point_labels
+        heading = point_labels[valence_heading]
+      else 
+        heading = point_labels["#{header_prefix}_header"]
 
       plural_point = get_point_label valence, proposal
 

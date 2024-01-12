@@ -981,6 +981,58 @@ styles += """
 window.PointsList = ReactiveComponent
   displayName: 'PointsList'
 
+  get_header_prefix: ->
+    proposal = fetch @props.proposal
+    mode = getProposalMode(proposal)
+    if @props.rendered_as == 'community_point'
+      header_prefix = if mode == 'results' then 'top' else "other"
+    else
+      header_prefix = 'your' 
+    return header_prefix
+
+  get_heading: (valence) -> 
+    header_prefix = @get_header_prefix()
+    proposal = fetch @props.proposal
+    point_labels = customization("point_labels", proposal)
+    valence_heading = "#{header_prefix}_#{valence}_header"
+    if valence_heading of point_labels
+      heading = point_labels[valence_heading]
+    else 
+      heading = point_labels["#{header_prefix}_header"]
+
+    plural_point = get_point_label valence, proposal
+
+    heading_t = translator
+                  id: "point_labels.header_#{header_prefix}.#{heading}"
+                  local: !point_labels.translate
+                  arguments: capitalize(plural_point)
+                  heading
+
+    heading_t
+
+
+  set_header_height: ->
+    return # I don't like how this works at the moment
+    setTimeout =>
+
+      reasons_container = @refs.header.closest('.slow-thought')
+      max_height = 0
+      for header in reasons_container.querySelectorAll('.points_heading_label')
+        real_height = header.clientHeight
+        if real_height > max_height
+          max_height = real_height
+
+      if @local.header_height != max_height && max_height != @refs.header.clientHeight
+        @local.header_height = max_height
+        save @local
+      
+    , 1000
+
+  componentDidUpdate: -> 
+    @set_header_height()
+  componentDidMount: ->
+    @set_header_height()
+
   render: -> 
     points = (fetch(pnt) for pnt in @props.points)
 
@@ -998,43 +1050,14 @@ window.PointsList = ReactiveComponent
       save your_points
 
     if @props.rendered_as == 'community_point'
-      header_prefix = if mode == 'results' then 'top' else "other"
       wrapper = @drawCommunityPoints
     else
-      header_prefix = 'your' 
       wrapper = @drawYourPoints
 
 
-    get_heading = (valence) => 
-      point_labels = customization("point_labels", proposal)
-
-      valence_heading = "#{header_prefix}_#{valence}_header"
-      if valence_heading in point_labels
-        heading = point_labels[valence_heading]
-      else 
-        heading = point_labels["#{header_prefix}_header"]
-
-      plural_point = get_point_label valence, proposal
-
-      heading_t = translator
-                    id: "point_labels.header_#{header_prefix}.#{heading}"
-                    local: !point_labels.translate
-                    arguments: capitalize(plural_point)
-                    heading
-
-      heading_t
-
-    heading = get_heading(@props.valence)
-    other_heading = get_heading(if @props.valence == 'pros' then 'cons' else 'pros')
-    # Calculate the other header height so that if they break differently,
-    # at least they'll have same height
-    wrap = (headd) =>
-      "<div class='#{if @props.rendered_as == 'community_point' then 'points_by_community' else 'DecisionBoard'}'> <div class='points_heading_label'>#{headd}</div> </div>"
-    header_height = Math.max heightWhenRendered(wrap(heading)), \
-                             heightWhenRendered(wrap(other_heading))
-
-    if @props.rendered_as == 'community_point' 
-      header_height -= 38 # for padding-top on .community_point
+    heading = @get_heading(@props.valence)
+    other_heading = @get_heading(if @props.valence == 'pros' then 'cons' else 'pros')
+    
     HEADING = if @props.rendered_as == 'community_point' then H3 else H4 
 
     wrapper [
@@ -1042,10 +1065,11 @@ window.PointsList = ReactiveComponent
 
       HEADING 
         key: 'point_list_heading'
+        ref: 'header'
         id: @local.key.replace(/\//g,'-')
         className: 'points_heading_label'
         style:
-          height: header_height
+          height: if @local.header_height then @local.header_height
         heading
 
 

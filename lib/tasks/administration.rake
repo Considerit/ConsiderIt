@@ -56,7 +56,7 @@ task :freeze_inactive_forums => :environment do
 
   Subdomain.all.each do |subdomain|
     last_proposal = subdomain.proposals.last
-    next if !last_proposal || subdomain.name == 'galacticfederation'
+    next if !last_proposal || subdomain.name == 'galacticfederation' || subdomain.name == 'taskratchet'
     last_date = last_proposal.created_at 
 
     customizations = subdomain.customizations || {}

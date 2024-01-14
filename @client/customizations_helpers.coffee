@@ -34,8 +34,6 @@ window.point_labels =
     your_header: "Give your {arguments}" 
     other_header: "Others' {arguments}" 
     top_header: "Top {arguments}" 
-    your_cons_header: null
-    your_pros_header: null
 
   strengths_weaknesses: 
     translate: true    

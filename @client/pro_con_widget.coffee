@@ -995,7 +995,7 @@ window.PointsList = ReactiveComponent
     proposal = fetch @props.proposal
     point_labels = customization("point_labels", proposal)
     valence_heading = "#{header_prefix}_#{valence}_header"
-    if valence_heading of point_labels
+    if valence_heading of point_labels and !!point_labels[valence_heading]
       heading = point_labels[valence_heading]
     else 
       heading = point_labels["#{header_prefix}_header"]

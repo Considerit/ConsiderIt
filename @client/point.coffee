@@ -305,6 +305,8 @@ window.Point = ReactiveComponent
 
         included = @included()
         includePoint = (e) => 
+
+
           e.stopPropagation()
           e.preventDefault()
 
@@ -313,7 +315,10 @@ window.Point = ReactiveComponent
           if !included
             @include()
           else 
-            @remove()
+
+            validate_first = point.user == fetch('/current_user').user && point.includers.length < 2
+            if !validate_first || confirm('Are you sure you want to mark your point as unimportant? It will be gone forever.')
+              @remove()
 
         if !TABLET_SIZE() && @props.enable_dragging
           right = (included && point.is_pro) || (!included && !point.is_pro)

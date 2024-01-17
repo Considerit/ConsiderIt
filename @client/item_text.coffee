@@ -565,6 +565,18 @@ window.ItemText = ReactiveComponent
 
 
           if show_discussion_info
+            point_count = translator
+              id: "engage.point_count"
+              cnt: proposal.point_count
+
+              "{cnt, plural, one {# pro or con} other {# pros & cons}}"
+
+            pros_label = get_point_label('pros', proposal)
+            cons_label = get_point_label('cons', proposal)
+            if pros_label != 'pros' || cons_label != 'cons'
+              point_count = point_count.replace('pros', pros_label).replace('cons', cons_label)
+
+
             BUTTON
               key: 'proposal-link'
               className: 'pros_cons_count metadata-piece separated like_link monospaced'
@@ -577,11 +589,8 @@ window.ItemText = ReactiveComponent
                   toggle_expand
                     proposal: proposal
 
-              TRANSLATE
-                id: "engage.point_count"
-                cnt: proposal.point_count
+              point_count
 
-                "{cnt, plural, one {# pro or con} other {# pros & cons}}"
 
 
           if (you_have_opinion && permit('update opinion', proposal, proposal.your_opinion) > 0) || permit('publish opinion', proposal) > 0

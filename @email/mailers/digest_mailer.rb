@@ -22,6 +22,16 @@ class DigestMailer < Mailer
 
     subject = subject_line subject, @subdomain
 
+            
+    u = user.email
+    t = user.auth_token(subdomain)
+
+    unsubscribe_link = "https://#{subdomain.considerit_host}/dashboard/email_notifications?unsubscribe=true&u=#{u}&t=#{t}"
+    headers({
+      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click", 
+      "List-Unsubscribe": "<#{unsubscribe_link}>"
+    })
+
     send_mail from: from_field(@subdomain), to: to_field(user), subject: subject
     
     Translations::Translation.ClearTranslationContext()

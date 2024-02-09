@@ -32,6 +32,11 @@ Rails.application.routes.draw do
     get '/rails/mailers/*path'   => "rails/mailers#preview"
   end
 
+
+
+
+
+
   ######
   ## Development dashboard
   get '/change_subdomain/:name' => 'developer#change_subdomain'
@@ -83,6 +88,10 @@ Rails.application.routes.draw do
   get 'saml/sso/:sso_idp/:subdomain' => 'saml#sso', :constraints => IsSAMLRoute.new 
   post 'saml/acs' => 'saml#acs', :constraints => IsSAMLRoute.new 
   get 'saml/metadata' => 'saml#metadata', :constraints => IsSAMLRoute.new 
+
+
+
+  post "/dashboard/email_notifications" => 'current_user#unsubscribe'
 
   # All user-visible URLs go to the html controller, which serves an
   # html page, and then the required data will be fetched afterward in JSON
@@ -177,6 +186,8 @@ Rails.application.routes.draw do
 
   post "/dashboard/data_import_argdown" => 'import_data#import_argdown'
   post "/dashboard/export_argdown" => 'import_data#export_argdown'
+
+
 
   get '/your_forums' => 'current_user#all_forums'
 

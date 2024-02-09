@@ -24,18 +24,16 @@ window.Notifications = ReactiveComponent
     prefs = current_user.subscriptions
 
     loc = fetch('location')
-
     if loc.query_params?.unsubscribe
-      if current_user.subscriptions['send_emails']
-        current_user.subscriptions['send_emails'] = null 
-        save current_user
-        @local.watched_proposals = true 
-        save @local 
-      delete loc.query_params.unsubscribe
-      save loc
+      @local.via_unsubscribe_link = true
+
+    if loc.query_params?.unsubscribed
+      @local.via_unsubscribe_post = true 
+
 
     DIV 
       id: 'NOTIFICATIONS'
+
 
       if @local.watched_proposals && !current_user.subscriptions['send_emails']
         DIV 
@@ -60,35 +58,69 @@ window.Notifications = ReactiveComponent
 
       DIV 
         className: 'input_group checkbox'
-        
-        LABEL 
-          className: 'toggle_switch'
-
-          INPUT 
-            id: 'enable_email'
-            type: 'checkbox'
-            name: 'enable_email'
-            defaultChecked: !!prefs['send_emails']
-            onChange: (e) => 
-
-              if current_user.subscriptions['send_emails']
-                current_user.subscriptions['send_emails'] = false
-              else
-                current_user.subscriptions['send_emails'] = settings['default_subscription']
-              save current_user
-              e.stopPropagation()
-          
-          SPAN 
-            className: 'toggle_switch_circle'
 
 
-        LABEL 
-          className: 'indented'
-          htmlFor: 'enable_email'
-          style: 
-            fontSize: 18
-          B null,
-            TRANSLATE "email_notifications.send_digests", 'Send me email summaries of relevant forum activity'
+        DIV 
+          style:
+            backgroundColor: if @local.via_unsubscribe_link then '#f7f7f7'
+            padding: if @local.via_unsubscribe_link then '12px 18px'
+            border: if @local.via_unsubscribe_link then '1px solid #DA4570'
+
+          LABEL 
+            className: 'toggle_switch'
+
+            INPUT 
+              id: 'enable_email'
+              type: 'checkbox'
+              name: 'enable_email'
+              defaultChecked: !!prefs['send_emails']
+              onChange: (e) => 
+
+                if current_user.subscriptions['send_emails']
+                  current_user.subscriptions['send_emails'] = false
+                else
+                  current_user.subscriptions['send_emails'] = settings['default_subscription']
+                save current_user
+                e.stopPropagation()
+            
+            SPAN 
+              className: 'toggle_switch_circle'
+
+
+          LABEL 
+            className: 'indented'
+            htmlFor: 'enable_email'
+            style: 
+              fontSize: 18
+            B null,
+              TRANSLATE "email_notifications.send_digests", 'Send me email summaries of relevant forum activity'
+
+            if @local.via_unsubscribe_link && !!prefs['send_emails']
+              SPAN 
+                style:
+                  backgroundColor: "#DA4570"
+                  color: 'white'
+                  textTransform: 'uppercase'
+                  fontSize: '80%'
+                  fontWeight: 'bold'
+                  marginLeft: 20
+                  padding: '2px 8px'
+                translator('email_notifications.unsubscribe_helper', 'turn off to unsubscribe')
+
+        if @local.via_unsubscribe_post && !prefs['send_emails']
+          DIV 
+            style: 
+              margin: '24px 48px'
+
+            SPAN
+              style:
+                backgroundColor: "#DA4570"
+                padding: '12px 18px'
+                color: 'white'
+
+              TRANSLATE
+                id: "email_notifications.watched_proposals_ack"
+                "You are unsubscribed from summary emails from this forum"
 
 
 

@@ -3,7 +3,10 @@ require 'securerandom'
 
 
 class CurrentUserController < ApplicationController
+  skip_before_action :verify_authenticity_token, :only => [:unsubscribe]
 
+
+  
   # minimum password length
   MIN_PASS = 4
 
@@ -418,6 +421,24 @@ class CurrentUserController < ApplicationController
         end
       end
     end
+  end
+
+  def unsubscribe
+    target_email = params['u']
+    auth_token = params['t']
+
+    target_user = User.find_by_email(target_email)
+    if auth_token == target_user.auth_token(current_subdomain)
+      User.unsubscribe(target_email, current_subdomain.name)
+
+      new_params = {
+        :unsubscribed => "true",
+        :u => request.parameters[:u],
+        :t => request.parameters[:t]        
+      }
+      redirect_to "#{request.path}?#{new_params.to_query}"
+    end
+
   end
 
   def log (what)

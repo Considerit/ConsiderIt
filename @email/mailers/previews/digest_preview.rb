@@ -7,7 +7,7 @@ class DigestPreview < ActionMailer::Preview
 
   def digest 
     subdomain = Subdomain.find(2079)
-    user = User.find(282168)
+    user = User.find(1701)
     since = user.created_at
     since = 20.days.ago
 

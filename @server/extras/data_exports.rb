@@ -161,12 +161,15 @@ module DataExports
     anonymization_safe_opinion_filters = subdomain.customization_json['anonymization_safe_opinion_filters']
     export_tags = !anonymize_permanently || anonymization_safe_opinion_filters
 
+    heading.append '#_opinions_given'
+
     if export_tags && tag_whitelist
       tag_whitelist.each do |tag|
         heading.append tag
       end
 
     end
+
 
     groups = SPECIAL_GROUPS[subdomain.name.downcase]
     if groups 
@@ -184,7 +187,8 @@ module DataExports
       
       user_name, user_email = get_identity(user, subdomain, anonymize_permanently)
 
-      row = [user_email, user_name, user.created_at]
+      num_opinions = user.opinions.where(:subdomain_id => subdomain.id, :hide_name => false).count
+      row = [user_email, user_name, user.created_at, num_opinions]
 
       if export_tags && tag_whitelist
         user_tags = user.tags || {}

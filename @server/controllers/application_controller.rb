@@ -471,7 +471,7 @@ protected
 
   
   def allow_iframe_requests
-    enable_iframing = ['allsides', 'enviroissues', 'debate', 'galacticfederation']
+    enable_iframing = ['allsides', 'enviroissues', 'debate', 'galacticfederation', 'monroe2044']
 
     if current_tenant && (enable_iframing.include?(current_tenant.name) || @oembed_request)
       response.headers.delete('X-Frame-Options')

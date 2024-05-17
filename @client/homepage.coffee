@@ -242,7 +242,7 @@ window.Homepage = ReactiveComponent
                     textAlign: 'center'
                     color: selected_color
                     fontWeight: 600
-                  translator 'tabs.footer_label', "Find more proposals on a different page:"
+                  translator 'tabs.footer_label', "More to explore on these other pages:"
                   
                 HomepageTabs
                   go_to_hash: 'active_tab'

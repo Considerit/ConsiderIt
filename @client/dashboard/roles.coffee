@@ -425,7 +425,7 @@ ResendInvitations = ReactiveComponent
               if !target.invitations
                 target.invitations = []
 
-              invitation = {role: role, keys_or_emails: @local.added}
+              invitation = {role: role.name, keys_or_emails: @local.added}
               invitation.message = ReactDOM.findDOMNode(@refs.custom_email_message).value
               target.invitations.push invitation
               

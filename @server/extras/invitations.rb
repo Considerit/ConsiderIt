@@ -37,8 +37,12 @@ module Invitations
 
         end
 
-        if invitee.complete_profile
+        if invitee.complete_profile || !invitee.is_active_in(current_subdomain)
           # only send if this user hasn't already created a profile in this forum
+          # BUG: a user that already has participated in a different forum will
+          #      not receive any RESENDS of invitations to this current forum
+          #      because they're already "active_in" it from the original invite
+          #      and have a complete_profile from the prior forum.
           invitee.add_to_active_in        
           UserMailer.invitation(current_user, invitee, target, invite['role'], current_subdomain, message).deliver_later
         end

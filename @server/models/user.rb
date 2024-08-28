@@ -586,6 +586,9 @@ class User < ApplicationRecord
     results
   end
 
+  def is_active_in(subdomain)
+    return !!self.active_in && self.active_in.include?("#{subdomain.id}")
+  end 
 
   def self.anonymized_id(id)
     if id < 0

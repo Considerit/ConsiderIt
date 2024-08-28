@@ -265,6 +265,8 @@ AddRolesAndInvite = ReactiveComponent
   mixins: [Modal]
 
   render: ->
+    target = @props.target
+    role = @props.role
 
     DIV 
       style: 
@@ -274,25 +276,181 @@ AddRolesAndInvite = ReactiveComponent
 
 
       if !@local.expanded 
-        BUTTON 
-          className: 'btn'
-          onClick: (e) => 
-            @local.expanded = true 
-            save @local
-            e.preventDefault()
-            e.stopPropagation()
+        DIV null,
 
-          @props.add_button
+          BUTTON 
+            className: 'btn'
+            onClick: (e) => 
+              @local.expanded = true 
+              @local.add_new = true
+              save @local
+              e.preventDefault()
+              e.stopPropagation()
+
+            @props.add_button
+
+
+          if GetUsersWithRole(target, role).length > 0
+
+            BUTTON 
+              className: 'like_link'
+              style: 
+                color: '#666'
+                marginLeft: 20
+                fontSize: 14
+                textDecoration: 'none'
+
+              onClick: (e) => 
+                @local.expanded = true 
+                @local.add_new = false
+                save @local
+                e.preventDefault()
+                e.stopPropagation()
+
+              "resend email invitations"
 
       else
-        ModalAddRolesAndInvite
-          target: @props.target 
-          role: @props.role
-          add_button: @props.add_button
-          done_callback: =>
-            console.log "done callback"
-            @local.expanded = false
-            save @local
+        if @local.add_new
+          ModalAddRolesAndInvite
+            target: @props.target 
+            role: @props.role
+            add_button: @props.add_button
+            done_callback: =>
+              @local.expanded = false
+              save @local
+        else
+          ResendInvitations          
+            target: @props.target 
+            role: @props.role
+            done_callback: =>
+              @local.expanded = false
+              save @local
+
+GetUsersWithRole = (target, role) ->
+  with_role = []
+
+  # get users with this role
+  if target.roles[role.name]
+    for user_key in target.roles[role.name]
+      if user_key != '*'
+        user = fetch(user_key)
+        with_role.push user
+
+  return with_role
+
+
+
+ResendInvitations = ReactiveComponent
+  displayName: 'Invite'
+
+  mixins: [Modal]
+
+  render: ->
+    target = fetch @props.target
+    role = @props.role
+
+    users = fetch '/users'
+
+    return SPAN null if !users.users
+
+    if !@local.added?
+      @local.added = []
+
+      users_with_role = GetUsersWithRole(target, role)
+      # get users with this role that haven't completed registration
+      for user in users_with_role
+        if !user.email or !user.name
+          @local.added.push user.email or user.key
+
+      save @local
+
+
+    wrap_in_modal null, @props.done_callback, DIV null,
+
+      H1
+        style: 
+          marginBottom: 24
+          fontSize: 24
+
+        "Resend email invitations"
+
+      DIV null,
+        "Folks who have been invited but haven't yet followed email invite:"
+
+
+      # Show everyone queued for being added/invited to a role
+      if @local.added.length > 0
+        DIV 
+          style:
+            marginTop: 18
+
+          for user_key, idx in @local.added
+
+            UserWithRole user_key, (user_key) => 
+              @local.added = _.without @local.added, user_key
+              save @local
+
+
+      # Email invite area
+      DIV 
+        style: 
+          marginTop: 20
+
+        DIV style: {marginTop: 10},
+          AutoGrowTextArea 
+            id: 'custom_email_message'
+            name: 'custom_email_message'
+            ref: 'custom_email_message'
+            placeholder: '(optional) custom message'
+            style: {width: '100%', fontSize: 16, padding: '8px 14px'}
+
+      # Submit button
+      DIV 
+        style: 
+          marginTop: 36
+          
+
+        BUTTON
+          className: 'btn'
+          disabled: @local.added.length == 0
+          style: 
+            backgroundColor: focus_color()
+            cursor: if @local.added.length == 0 then 'default'
+            opacity: if @local.added.length == 0 then 0.5
+
+          onClick: (e) => 
+
+            if @local.added.length > 0
+
+              if !target.invitations
+                target.invitations = []
+
+              invitation = {role: role, keys_or_emails: @local.added}
+              invitation.message = ReactDOM.findDOMNode(@refs.custom_email_message).value
+              target.invitations.push invitation
+              
+              @local.added = []
+              save target
+              save @local
+
+            @props.done_callback()
+
+          "Resend invitations"
+
+
+        BUTTON 
+          className: 'like_link'
+          style: 
+            color: '#333'
+            marginLeft: 24
+            position: 'relative'
+            top: 2
+
+          onClick: @props.done_callback
+          'cancel'
+
+
+
 
 
 
@@ -307,6 +465,8 @@ ModalAddRolesAndInvite = ReactiveComponent
     users = fetch '/users'
 
     @local.added ?= []
+
+    @local.send_email_invite ?= true
 
     processNewFolks = =>
       $filter = document.getElementById('filter')
@@ -335,6 +495,7 @@ ModalAddRolesAndInvite = ReactiveComponent
         style: 
           marginBottom: 24
           fontSize: 24
+
         @props.add_button
 
       SPAN null, 
@@ -438,6 +599,7 @@ ModalAddRolesAndInvite = ReactiveComponent
 
             name: 'send_email_invite'
             className: 'bigger'
+            defaultChecked: true
             style: 
               position: 'relative'
               top: 1
@@ -445,6 +607,7 @@ ModalAddRolesAndInvite = ReactiveComponent
             onClick: =>
               @local.send_email_invite = !@local.send_email_invite
               save @local
+
 
 
           'Send email invitation'
@@ -519,7 +682,7 @@ UsersWithRole = ReactiveComponent
       style: 
         marginLeft: -4
         marginBottom: 12
-      
+
       if target.roles[role.name]
         for user_key in target.roles[role.name]
           if user_key != '*'

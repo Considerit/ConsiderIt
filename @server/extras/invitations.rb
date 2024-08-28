@@ -36,8 +36,12 @@ module Invitations
           end
 
         end
-        invitee.add_to_active_in        
-        UserMailer.invitation(current_user, invitee, target, invite['role'], current_subdomain, message).deliver_later
+
+        if invitee.complete_profile
+          # only send if this user hasn't already created a profile in this forum
+          invitee.add_to_active_in        
+          UserMailer.invitation(current_user, invitee, target, invite['role'], current_subdomain, message).deliver_later
+        end
 
       end
     end

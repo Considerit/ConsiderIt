@@ -368,10 +368,9 @@ window.CompletionWidget = ReactiveComponent
         dangerouslySetInnerHTML: __html: txt
 
   showConfetti: ->
-    if !@complete
+    if !@complete or !is_a_dialogue_page()
       return
 
-    console.log("CONFETTI!")
     confetti
       particleCount: 100
       spread: 70

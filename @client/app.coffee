@@ -391,6 +391,8 @@ Root = ReactiveComponent
       Tooltip()
       Popover()
       Flash()
+      CompletionWidget()
+
 
       do -> 
         app = fetch('/application')   

@@ -4,13 +4,14 @@ require './customizations'
 window.Footer = ReactiveComponent
   displayName: 'Footer'
 
-  render : ->
+  render : ->    
     return SPAN null if embedded_demo()
     
     FOOTER 
       style: 
         position: 'relative'
         zIndex: 0
+
       (customization('SiteFooter') or DefaultFooter)()
 
 
@@ -323,6 +324,102 @@ window.TechnologyByConsiderit = ReactiveComponent
           line_color: color
           i_dot_x: if @local.hover then 252 else 142
           transition: true
+
+
+
+window.CompletionWidget = ReactiveComponent
+  displayName: "CompletionWidget"
+  render: ->
+    completion_config = customization('completion_widget')
+
+    return SPAN null if not completion_config or !is_a_dialogue_page() or fetch('auth').form
+
+    [complete, num_proposals_done, total_proposals, messages] = user_has_met_completion_criteria()
+    if complete 
+      txt = completion_config.when_complete 
+    else 
+      txt = completion_config.when_incomplete
+
+    if typeof(txt) == 'function'
+      txt = txt()
+
+    @complete = complete
+
+    DIV 
+      style:
+        backgroundColor: if complete then "#a41995" else "black",
+        color: 'white',
+        padding: "12px 0 8px 0"
+        position: 'fixed'
+        bottom: 0
+        width: "100%"
+        zIndex: 999999999999999999
+        textAlign: "center"
+        alignItems: "center"
+
+
+      DIV 
+        style:
+          fontSize: 24
+          fontWeight: 700
+        "#{num_proposals_done} / #{total_proposals}"
+
+      DIV
+        dangerouslySetInnerHTML: __html: txt
+
+  showConfetti: ->
+    if !@complete
+      return
+
+    console.log("CONFETTI!")
+    confetti
+      particleCount: 100
+      spread: 70
+      origin: 
+        y: 1
+
+
+  componentDidMount: -> @showConfetti()
+  componentDidUpdate: -> @showConfetti()
+      
+
+
+user_has_met_completion_criteria = ->
+  completion_config = customization('completion_widget')
+  completion_criteria = completion_config.completion_criteria
+  completion_criteria ?= {}
+  _.defaults completion_criteria,
+      "reasons_on_all": false,
+      "opinions_on_all": true,
+      "proposals_authored": 0,  # note: logic and UI isn't implemented for this option yet
+      "pros_and_cons_on_all": false
+
+  proposals = fetch('/proposals').proposals
+  current_user = fetch('/current_user')
+
+  my_opinions = (p.your_opinion for p in proposals when p.your_opinion && p.your_opinion.key)
+  passing_opinions = []
+  for o in my_opinions
+    o = fetch(o) # subscribe to changes
+    if completion_criteria.reasons_on_all 
+      if !o.point_inclusions or o.point_inclusions.length == 0
+        continue
+    if completion_criteria.pros_and_cons_on_all
+      if !o.point_inclusions or o.point_inclusions.length < 2
+        continue
+      has_pro = false
+      has_con = false 
+      for pnt in o.point_inclusions
+        p = fetch(pnt)
+        has_pro ||= p.is_pro
+        has_con ||= !p.is_pro
+      if !has_pro or !has_con
+        continue
+    passing_opinions.push(o)
+  
+  return [passing_opinions.length == proposals.length, passing_opinions.length, proposals.length, []]
+
+
 
 
 

@@ -368,8 +368,10 @@ window.CompletionWidget = ReactiveComponent
         dangerouslySetInnerHTML: __html: txt
 
   showConfetti: ->
-    if !@complete or !is_a_dialogue_page()
+    if !@complete or !is_a_dialogue_page() or window.already_showed_confetti?
       return
+
+    window.already_showed_confetti = true
 
     confetti
       particleCount: 100

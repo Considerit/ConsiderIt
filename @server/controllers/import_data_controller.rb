@@ -502,6 +502,7 @@ class ImportDataController < ApplicationController
       {fname: "#{subdomain.name}-points.csv",    rows: DataExports.points(subdomain)},
       {fname: "#{subdomain.name}-users.csv",     rows: DataExports.users(subdomain, tag_whitelist)},
       {fname: "#{subdomain.name}-proposals.csv", rows: DataExports.proposals(subdomain)},
+      {fname: "#{subdomain.name}-inclusions.csv", rows: DataExports.inclusions(subdomain)},
     ]
 
     zip_path = "#{EXPORT_PATH}#{subdomain.name}.zip"

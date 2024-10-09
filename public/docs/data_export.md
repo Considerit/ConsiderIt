@@ -1,7 +1,7 @@
 Consider.it Data Exports
 ========================
 
-Hosts of Premium Consider.it forums can export forum data via the "Data Import & Export" dashboard. There, you are able to download a zip file containing four CSV files (users, opinions, proposals, points). CSVs can be opened in Excel or Google Sheets etc. 
+Hosts of Premium Consider.it forums can export forum data via the "Data Import & Export" dashboard. There, you are able to download a zip file containing five CSV files (users, opinions, proposals, points, and inclusions). CSVs can be opened in Excel or Google Sheets etc. 
 
 
 Before Diving into the Data
@@ -36,13 +36,13 @@ Furthermore, opinion analytics weights can help you identify influential partici
 The Data Export
 ---------------
 
-As mentioned earlier, the forum data export contains four CSV files (users, opinions, proposals, points). 
+As mentioned earlier, the forum data export contains five CSV files (users, opinions, proposals, points, and inclusions). 
 
 Each of these files contains unique keys that can be used to link data together via a pivot table to answer most questions you might have, using the analysis software of your choice (e.g. Excel, Google Sheets, Tableau).
 
 Specifically, the keys are:
  * The Users file contains an "email" column representing a participants' unique email address. The proposal, opinion, and points files also contains an "email" column representing the corresponding user that carried out that action.
- * The Proposals file contains a "proposal_slug" column identifying the proposal. The opinion and points files also have a proposal_slug column representing the proposal associated with the opinion or point.
+ * The Proposals file contains a "proposal_slug" column identifying the proposal. The opinion, points, and inclusions files also have a proposal_slug column representing the proposal associated with the opinion or point.
 
 
 Below is specific documentation for each file in the export.  
@@ -115,7 +115,7 @@ The participant columns are:
  * *username*: The user name of the user giving this opinion.
 
 The basic columns are:
- * *created*: The date this opinion was first created.
+ * *created_at*: The date this opinion was first created.
  * *opinion*: The opinion score the participant gave the proposal. The score is a continuous value from -1.0 to 1.0, where -1.0 is fully negative, 0 is neutral, and 1.0 is fully positive.
  
 The statistical columns are:
@@ -148,4 +148,26 @@ Columns for Pros and Cons (blank for comments):
  * *#inclusions*: The number of times people included this point into their pro/con list. You can think of an inclusion like a vote for its importance. 
  * *#comments*: The number of comments a pro or con point received.
 
+
+Inclusions
+----------
+
+An inclusion happens when a user incorporates a pro or a con point into their opinion about a proposal. This can happen either by the user authoring a new pro or con point, or by dragging a pro or con point someone else wrote into their pro/con list. 
+
+The proposal columns are:
+ * *proposal_slug*: The unique identifier for the proposal being evaluated.
+ * *proposal_name*: The headline text of the proposal being evaluated.
+
+The participant columns are:
+ * *email*: The unique identifier of the user giving this opinion.
+ * *username*: The user name of the user giving this opinion.
+
+The opinion columns are:
+ * *created_at*: The date the opinion was first created.
+ * *opinion_on_proposal*: The opinion score the participant gave the proposal. The score is a continuous value from -1.0 to 1.0, where -1.0 is fully negative, 0 is neutral, and 1.0 is fully positive.
+ 
+The inclusion columns are:
+ * *valence*: Whether the included point is a Pro or Con. 
+ * *point*: The summary text of the pro or con point.
+ * *is_author*: Whether this user wrote the point themselves (will be false if they dragged the point into their list)
 

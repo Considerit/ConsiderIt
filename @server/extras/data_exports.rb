@@ -64,6 +64,35 @@ module DataExports
     rows
   end
 
+  def DataExports.inclusions(subdomain)
+    fname = "#{subdomain.name}-inclusions"
+    heading = ["proposal_slug","proposal_name", 'created_at', "username", "email", "opinion_on_proposal", "valence", "point",  "is_author"]
+    rows = []
+    rows.append heading 
+    anonymize_permanently = subdomain.customization_json['anonymize_permanently']
+
+    subdomain.proposals.each do |proposal|
+
+      proposal.opinions.published.each do |opinion|
+        user = opinion.user
+        anonymize_opinion = anonymize_permanently || opinion.hide_name
+
+        user_name, user_email = get_identity(user, subdomain, anonymize_opinion)
+
+        (opinion.point_inclusions or []).each do |point_id|
+          pnt = Point.find(point_id)
+          begin 
+            rows.append [proposal.slug, proposal.name, opinion.created_at, user_name, user_email, opinion.stance, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, opinion.user_id==pnt.user_id ]
+          rescue 
+          end 
+        end
+      end
+
+    end
+
+    rows
+  end
+
   def DataExports.points(subdomain)
     fname = "#{subdomain.name}-points"
     heading = ['proposal_slug', 'proposal_name', 'type', 'created_at', "username", "email", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']

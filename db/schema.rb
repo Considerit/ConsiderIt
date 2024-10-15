@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_07_29_022044) do
+ActiveRecord::Schema.define(version: 2024_10_09_021408) do
 
   create_table "ahoy_events", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "subdomain_id"
@@ -55,6 +55,7 @@ ActiveRecord::Schema.define(version: 2023_07_29_022044) do
     t.index ["subdomain_id"], name: "index_ahoy_visits_on_subdomain_id"
     t.index ["user_id"], name: "index_ahoy_visits_on_user_id"
     t.index ["visit_token"], name: "index_ahoy_visits_on_visit_token", unique: true
+    t.index ["visitor_token", "started_at"], name: "index_ahoy_visits_on_visitor_token_and_started_at"
   end
 
   create_table "comments", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
@@ -296,6 +297,7 @@ ActiveRecord::Schema.define(version: 2023_07_29_022044) do
     t.boolean "complete_profile", default: false
     t.string "lang"
     t.integer "paid_forums", default: 0
+    t.boolean "trusted", default: false
     t.index ["email"], name: "index_users_on_email"
     t.index ["registered"], name: "index_users_on_registered"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", length: 3

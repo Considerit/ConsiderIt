@@ -67,7 +67,7 @@ def _sanitize_str(str, old)
 
   if old && old.index(adjusted_str) != nil # no change, or previously checked as safe elsewhere
     return str 
-  elsif current_user && current_user.super_admin
+  elsif current_user && (current_user.super_admin or current_user.trusted)
     return str
   elsif str.start_with?("#javascript")
     pp '********sanitizing unsafe javascript', str

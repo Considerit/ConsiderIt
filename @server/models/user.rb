@@ -66,6 +66,7 @@ class User < ApplicationRecord
       tags: tags_for_subdomain(true) || {},
       is_super_admin: self.super_admin,
       is_admin: is_admin?,
+      trusted: self.trusted,
       is_moderator: Permissions.permit('moderate content', nil) > 0,
       trying_to: nil,
       subscriptions: subscription_settings(current_subdomain),

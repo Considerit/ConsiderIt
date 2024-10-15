@@ -94,7 +94,6 @@ window.positive_scale = (value, proposal) ->
 
 
 window.fully_firmly_slightly_scale = (value, proposal) ->
-
   if Math.abs(value) < 0.02
     translator
       id: "sliders.feedback.neutral"
@@ -124,14 +123,14 @@ window.slider_labels =
     support: 'Agree'
     oppose: 'Disagree'
 
-    slider_feedback: fully_firmly_slightly_scale
+    slider_feedback: "fully_firmly_slightly_scale"
 
   support_oppose:
     translate: true    
     support: 'Support'
     oppose: 'Oppose'
 
-    slider_feedback: fully_firmly_slightly_scale
+    slider_feedback: "fully_firmly_slightly_scale"
 
   priority:
     translate: true    

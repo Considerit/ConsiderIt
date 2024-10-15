@@ -231,13 +231,12 @@ window.OpinionSlider = ReactiveComponent
   drawFeedback: -> 
     proposal = fetch @props.proposal
     slider = fetch @props.slider_key
-    default_feedback = (value) -> 
-      if Math.abs(value) < 0.02
-        translator "sliders.feedback.neutral", "You are neutral"
-      else 
-        "#{Math.round(value * 100)}%"
+
+
 
     labels = customization 'slider_pole_labels', proposal
+
+
     slider_feedback = 
 
       if !slider.has_moved 
@@ -250,6 +249,8 @@ window.OpinionSlider = ReactiveComponent
         translator "sliders.slide_feedback_short", "Your opinion"
       else 
         ''
+
+
 
     return SPAN null if slider_feedback == '' 
 
@@ -338,6 +339,37 @@ window.OpinionSlider = ReactiveComponent
         form: 'create account'
         goal: 'To participate, please introduce yourself.'
         after: finish_mouseup
+
+
+window.default_feedback = (value) -> 
+  if Math.abs(value) < 0.02
+    translator "sliders.feedback.neutral", "You are neutral"
+  else 
+    "#{Math.round(value * 100)}%"
+
+window.fully_firmly_slightly_scale = (value, proposal) ->
+  if Math.abs(value) < 0.02
+    translator
+      id: "sliders.feedback.neutral"
+      "You are neutral"
+  else 
+    valence = get_slider_label (if value > 0 then 'support' else 'oppose'), proposal
+
+    degree = Math.abs value
+    strength_of_opinion = if degree > .999
+                            "Fully"
+                          else if degree > .5
+                            "Firmly"
+                          else
+                            "Slightly" 
+    
+    translator
+      id: "sliders.feedback.#{strength_of_opinion}"
+      strength_of_opinion: strength_of_opinion
+      valence: valence
+      "You #{strength_of_opinion} {valence}"
+
+
 
 
 

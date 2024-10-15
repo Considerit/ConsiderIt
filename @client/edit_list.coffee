@@ -864,7 +864,7 @@ window.EditNewList = ReactiveComponent
             LABEL null,
               INPUT 
                 type: 'checkbox'
-                defaultChecked: edit_list.show_first_n_proposals != SHOW_FIRST_N_PROPOSALS
+                defaultChecked: edit_list.show_first_n_proposals && edit_list.show_first_n_proposals != SHOW_FIRST_N_PROPOSALS
                 name: 'show_first_n_proposals'
                 onChange: (e) =>
                   if edit_list.show_first_n_proposals != SHOW_FIRST_N_PROPOSALS

@@ -724,10 +724,10 @@ class User < ApplicationRecord
       ]
 
       adjective = adjectives.sample
-      adjective = Translations::Translation.get("anonymous-theme-name.#{adjective}", adjective)
+      #adjective = Translations::Translation.get("anonymous-theme-name.#{adjective}", adjective)
 
       noun = names.sample
-      noun = Translations::Translation.get("anonymous-theme-name.#{noun}", noun)
+      #noun = Translations::Translation.get("anonymous-theme-name.#{noun}", noun)
 
       "#{Translations::Translation.get('anonymous', 'Anonymous')} #{adjective} #{noun}"
 
@@ -778,10 +778,10 @@ class User < ApplicationRecord
       ]
 
       adjective = adjectives.sample
-      adjective = Translations::Translation.get("anonymous-theme-name.#{adjective}", adjective)
+      # adjective = Translations::Translation.get("anonymous-theme-name.#{adjective}", adjective)
 
       noun = names.sample
-      noun = Translations::Translation.get("anonymous-theme-name.#{noun}", noun)
+      # noun = Translations::Translation.get("anonymous-theme-name.#{noun}", noun)
 
       "#{Translations::Translation.get('anonymous', 'Anonymous')} #{adjective} #{noun}"
 
@@ -838,10 +838,10 @@ class User < ApplicationRecord
       ]
 
       adjective = adjectives.sample
-      adjective = Translations::Translation.get("anonymous-theme-name.#{adjective}", adjective)
+      #adjective = Translations::Translation.get("anonymous-theme-name.#{adjective}", adjective)
 
       noun = names.sample
-      noun = Translations::Translation.get("anonymous-theme-name.#{noun}", noun)
+      #noun = Translations::Translation.get("anonymous-theme-name.#{noun}", noun)
 
       "#{Translations::Translation.get('anonymous', 'Anonymous')} #{adjective} #{noun}"
 

@@ -217,7 +217,7 @@ class TranslationsController < ApplicationController
 
 
       rescue => err
-        ExceptionNotifier.notify_exception err
+        ExceptionNotifier.notify_exception err, data: {peer: peer}
       end
     end    
   end

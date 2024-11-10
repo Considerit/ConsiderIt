@@ -25,7 +25,7 @@ class TranslationsLanguagesController < ApplicationController
 
     if added_new
       query = {
-          "available_languages" => params["available_languages"] 
+          "available_languages" => JSON.dump(params["available_languages"])
       }
       push_to_peers("supported_languages.json", query, 'PUT')  
     end

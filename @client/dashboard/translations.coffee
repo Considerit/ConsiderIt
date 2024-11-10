@@ -28,7 +28,7 @@ window.TRANSLATE = (args, native_text) ->
   args.return_lang_used = true
   if args.key
     console.trace()
-    console.warn("args.key is no longer accepted for translator. use local=true instead")
+    # console.warn("args.key is no longer accepted for translator. use local=true instead")
   {message, lang_used, target_lang} = translator args, native_text 
 
   return native_text if !message
@@ -200,7 +200,7 @@ window.translator = (args, native_text) ->
 
   if args.key
     console.trace()
-    console.warn("Deprecated: do not pass args.key to translator. Pass in local: true instead")
+    # console.warn("Deprecated: do not pass args.key to translator. Pass in local: true instead")
 
   subdomain = fetch '/subdomain'
   if args.local && !subdomain.name 

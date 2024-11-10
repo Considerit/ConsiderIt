@@ -6,7 +6,7 @@ class TranslationsLanguagesController < ApplicationController
   end
 
   def update
-    return if Permissions.permit('update all translations') <= 0
+    return if !params['considerit_API_key'] && Permissions.permit('update all translations') <= 0
 
     currently_supported = Translations::SupportedLanguage.get_all[:available_languages]
 

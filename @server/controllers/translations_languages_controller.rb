@@ -12,6 +12,10 @@ class TranslationsLanguagesController < ApplicationController
 
     added_new = false
     available = params["available_languages"]
+    if available.is_a? String
+      available = JSON.parse(available)
+    end
+
     available.each do |lang, name|
       if !currently_supported.has_key?(lang)
         attrs = {
@@ -25,7 +29,7 @@ class TranslationsLanguagesController < ApplicationController
 
     if added_new
       query = {
-          "available_languages" => JSON.dump(params["available_languages"])
+          "available_languages" => params["available_languages"].to_json
       }
       push_to_peers("supported_languages.json", query, 'PUT')  
     end

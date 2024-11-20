@@ -50,11 +50,17 @@ window.Header = ReactiveComponent
       #   "Consider.it server upgrade scheduled for 5:30pm - 6:00pm UTC"
       
       if header_bonus?
-        if typeof header_bonus == "function"
-          header_bonus()
-        else 
-          DIV 
-            dangerouslySetInnerHTML: __html: header_bonus
+        DIV 
+          className: 'header_bonus'
+          style:
+            maxWidth: '100%'
+            overflow: 'hidden'
+
+          if typeof header_bonus == "function"
+            header_bonus()
+          else 
+            DIV 
+              dangerouslySetInnerHTML: __html: header_bonus
 
       DIV 
         style: 

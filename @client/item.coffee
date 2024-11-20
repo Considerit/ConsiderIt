@@ -302,16 +302,30 @@ styles += """
     opacity: 0;        
   }
 
-  :not(.expanding).is_expanded .bottom_closer {
+  :not(.expanding).is_expanded .bottom_closer, :not(.expanding).is_expanded .top_closer {
     transition: opacity #{2 * ANIMATION_SPEED_ITEM_EXPANSION}s;    
     opacity: 1;
     display: inline-block;    
   }
-  .is_collapsed .bottom_closer {
+  .is_collapsed .bottom_closer, .is_collapsed .top_closer {
     pointer-events: none;
   }
 
 
+  /* The x on the top right that will collapse the proposal */
+
+  .top_closer {
+    position: absolute;
+    left: calc(100% - 107px);
+    top: 3px;
+    cursor: pointer;
+    background-color: #e5e7ed;
+    border: none;
+    opacity: 0;     
+    padding: 7px 13px 95px 96px;   
+    border-radius: 23%;
+    z-index: -1;
+  }
 
 
 
@@ -502,7 +516,19 @@ ProposalItemWrapper = ReactiveComponent
 
             double_up_icon(40)
 
-      
+
+          BUTTON 
+            className: 'top_closer'
+            onClick: => 
+              toggle_expand
+                proposal: fetch @props.proposal
+            onKeyPress: (e) => 
+              if e.which == 32 || e.which == 13
+                toggle_expand
+                  proposal: fetch @props.proposal
+
+            iconX(22, '#888888')
+
 
 
 

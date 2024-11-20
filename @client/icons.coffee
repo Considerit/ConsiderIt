@@ -1,6 +1,7 @@
 
 window.iconX = (size, color) ->
   size ?= 30
+  color ?= 'black'
   SVG
     width: size
     height: size

@@ -20,6 +20,18 @@ window.getProposalMode = (proposal) ->
   local_state.mode
 
 
+window.clearStateNewPointInput = -> setStateNewPointInput(null)
+
+window.setStateNewPointInput = ( new_point_input ) ->
+  state_of_new_point_input = fetch('new_point_input')
+  state_of_new_point_input['words'] = new_point_input
+  save state_of_new_point_input
+
+window.getStateNewPointInput = ( new_point_input ) ->
+  state_of_new_point_input = fetch('new_point_input')
+  return if state_of_new_point_input  then state_of_new_point_input['words']  else null
+
+
 window.update_proposal_mode = (proposal, proposal_mode, triggered_by) ->
   can_opine = canUserOpine proposal
   proposal = fetch proposal
@@ -31,6 +43,8 @@ window.update_proposal_mode = (proposal, proposal_mode, triggered_by) ->
        (can_opine == Permission.DISABLED && your_opinion.key))
 
     proposal_mode = 'results' 
+  else
+    clearStateNewPointInput()
 
   local_state = fetch shared_local_key proposal
   if local_state.mode != proposal_mode 
@@ -326,6 +340,28 @@ window.Reasons = ReactiveComponent
       local_proposal.has_focus = has_focus
       save local_proposal
 
+    # Collect point lists, and check whether any existing point matches the new point being written.
+    points_community_cons = buildPointsList \
+              proposal, 'cons', \
+              (if mode == 'results' then 'score' else 'last_inclusion'), \ 
+              mode == 'crafting' && !TABLET_SIZE(), \
+              mode == 'crafting' || TABLET_SIZE() || (just_you && mode == 'results')
+    points_community_pros = buildPointsList \
+              proposal, 'pros', \
+              (if mode == 'results' then 'score' else 'last_inclusion'), \ 
+              mode == 'crafting' && !TABLET_SIZE(), \
+              mode == 'crafting' || TABLET_SIZE() || (just_you && mode == 'results')
+    points_my_pros = (p for p in your_opinion.point_inclusions or [] \
+                              when fetch(p).is_pro)
+    points_my_cons = (p for p in your_opinion.point_inclusions or [] \
+                              when !fetch(p).is_pro)
+    new_point_words = getStateNewPointInput()
+    any_point_matches_new_input = false
+    if new_point_words
+      all_points = [].concat( points_community_cons, points_community_pros, points_my_pros, points_my_cons )
+      all_points_data = (fetch(point) for point in all_points)
+      any_point_matches_new_input =  Boolean(  all_points_data.some( (point) => containsAnyWord(point.nutshell, new_point_words) )  )
+
     DIV 
       className: "slow-thought #{if mode == 'crafting' then 'crafting' else 'summary'}"
       style: 
@@ -393,6 +429,9 @@ window.Reasons = ReactiveComponent
             DecisionBoard
               key: 'decisionboard'
               proposal: proposal.key
+              points_my_cons: points_my_cons
+              points_my_pros: points_my_pros
+              any_point_matches_new_input: any_point_matches_new_input
 
         DIV 
           style: 
@@ -407,15 +446,11 @@ window.Reasons = ReactiveComponent
             valence: 'cons'
             points_draggable: mode == 'crafting'
             drop_target: false
-            points: buildPointsList \
-              proposal, 'cons', \
-              (if mode == 'results' then 'score' else 'last_inclusion'), \ 
-              mode == 'crafting' && !TABLET_SIZE(), \
-              mode == 'crafting' || TABLET_SIZE() || (just_you && mode == 'results')
+            points: points_community_cons
             style: 
               visibility: if !TABLET_SIZE() && mode == 'crafting' && !has_community_points then 'hidden'
             in_viewport: @local.in_viewport
-
+            any_point_matches_new_input: any_point_matches_new_input
 
           #community pros
           PointsList 
@@ -427,14 +462,11 @@ window.Reasons = ReactiveComponent
             valence: 'pros'
             points_draggable: mode == 'crafting'
             drop_target: false
-            points: buildPointsList \
-              proposal, 'pros', \
-              (if mode == 'results' then 'score' else 'last_inclusion'), \ 
-              mode == 'crafting' && !TABLET_SIZE(), \
-              mode == 'crafting' || TABLET_SIZE() || (just_you && mode == 'results')
+            points: points_community_pros
             style: 
               visibility: if !TABLET_SIZE() && mode == 'crafting' && !has_community_points then 'hidden'
             in_viewport: @local.in_viewport
+            any_point_matches_new_input: any_point_matches_new_input
 
       if !show_all_points
         BUTTON 
@@ -697,8 +729,8 @@ window.DecisionBoard = ReactiveComponent
                 points_editable: true
                 points_draggable: true
                 drop_target: are_points_in_wings
-                points: (p for p in your_opinion.point_inclusions or [] \
-                              when fetch(p).is_pro)
+                points: @props.points_my_pros
+                any_point_matches_new_input: @props.any_point_matches_new_input
 
               PointsList 
                 key: 'your_con_points'
@@ -709,9 +741,8 @@ window.DecisionBoard = ReactiveComponent
                 points_editable: true
                 points_draggable: true
                 drop_target: are_points_in_wings
-                points: (p for p in your_opinion.point_inclusions or [] \
-                              when !fetch(p).is_pro)
-
+                points: @props.points_my_cons
+                any_point_matches_new_input: @props.any_point_matches_new_input
 
               DIV style: {clear: 'both'}
 
@@ -1098,6 +1129,7 @@ window.PointsList = ReactiveComponent
                 your_points_key: @props.reasons_key
                 enable_dragging: @props.points_draggable
                 in_viewport: @props.in_viewport
+                any_point_matches_new_input: @props.any_point_matches_new_input
 
         else if points.length == 0 && @props.rendered_as == 'community_point' && mode == "results"
           opinion_views = fetch 'opinion_views'

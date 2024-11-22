@@ -316,7 +316,6 @@ styles += """
 
   .top_closer {
     position: absolute;
-    left: calc(100% - 107px);
     top: 3px;
     cursor: pointer;
     background-color: #e5e7ed;
@@ -325,6 +324,19 @@ styles += """
     padding: 7px 13px 95px 96px;   
     border-radius: 23%;
     z-index: -1;
+  }
+
+  @media #{LAPTOP_MEDIA} {
+    :not(.expanding).is_expanded .top_closer {
+      --container_width: calc(var(--HOMEPAGE_WIDTH) + var(--LIST_PADDING_RIGHT) + var(--LIST_PADDING_LEFT) );
+      left: calc( ( var(--container_width) + var(--OPINION_BLOCK_WRAPPER_WIDTH) ) / 2 - 139px)
+    }
+  }
+
+  @media #{NOT_LAPTOP_MEDIA} {
+    :not(.expanding).is_expanded .top_closer {
+      display: none;
+    }
   }
 
 

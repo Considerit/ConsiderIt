@@ -25,7 +25,10 @@ def get_identity(user, subdomain, anonymize)
     return ['Unknown', 'Unknown']
   end
 
-  if !anonymize
+  if subdomain.name.start_with?('smart-home-dialogue-')
+    tags = user.tags || {}
+    user_name = user_email = tags.fetch("#{subdomain.name}-what-is-your-prolific-id", "no-id-given")
+  elsif !anonymize
     user_name = user.name
     user_email = user.email.gsub('.ghost', '')
   else 
@@ -80,8 +83,8 @@ module DataExports
         user_name, user_email = get_identity(user, subdomain, anonymize_opinion)
 
         (opinion.point_inclusions or []).each do |point_id|
-          pnt = Point.find(point_id)
           begin 
+            pnt = Point.find(point_id)
             rows.append [proposal.slug, proposal.name, opinion.created_at, user_name, user_email, opinion.stance, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, opinion.user_id==pnt.user_id ]
           rescue 
           end 
@@ -216,7 +219,12 @@ module DataExports
       
       user_name, user_email = get_identity(user, subdomain, anonymize_permanently)
 
-      num_opinions = user.opinions.where(:subdomain_id => subdomain.id, :hide_name => false).count
+      if subdomain.name.start_with?("smart-home-dialogue-")
+        num_opinions = user.opinions.where(:subdomain_id => subdomain.id).count
+      else
+        num_opinions = user.opinions.where(:subdomain_id => subdomain.id, :hide_name => false).count
+      end
+
       row = [user_email, user_name, user.created_at, num_opinions]
 
       if export_tags && tag_whitelist

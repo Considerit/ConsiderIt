@@ -16,6 +16,7 @@ window.PROPOSAL_DESCRIPTION_MAX_HEIGHT_ON_EXPAND = 500
 require './item_text'
 require './item_opinion'
 require './histogram_scores'
+htmlToImage = require 'html-to-image'
 
 
 
@@ -628,8 +629,52 @@ styles += """
   }
 
 
-"""
+  .ProposalItem .screenshot-menu-button {
+    display: none;
+  }
+  .ProposalItem.is_expanded .screenshot-menu-button {
+    display: block;
+  }
+  .ProposalItem .screenshot-menu {
+    display: none;
+    min-width: 400px;
+  }
+  .ProposalItem.is_expanded .screenshot-menu {
+    display: block;
+  }
+  .ProposalBlock .screenshot-menu {
+    border: solid 1px black;
+    border-radius: 8px;
+    background-color: #eeeeee;
+    padding: 20px;
+    position: absolute;
+    z-index: 100;
+    box-shadow: 5px 5px 20px #888888;
+  }
+  .ProposalBlock .screenshot-menu-close {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+  }
+  .ProposalBlock .screenshot-image {
+    border: solid 1px #888888;
+  }
+  .ProposalBlock .screenshot-include {
+    margin: 5px;
+  }
+  .ProposalBlock .screenshot-button {
+    opacity: 1.0;
+    margin: 10px;
+    border-radius: 8px;
+    border: none;
+    padding: 5px;
+    background-color: #456ae4;
+    color: white;
+    font-weight: bold;
+  }
 
+"""
 
 
 
@@ -800,6 +845,176 @@ ProposalBlock = ReactiveComponent
 
 
           trash_icon 18, 18, '#444'
+
+
+
+      BUTTON
+        className: 'like_link screenshot-menu-button'
+        onClick: @toggleScreenshotMenu
+        import_icon 20, 20, '#222'
+      DIV
+        className: 'screenshot-menu'
+        style:
+          display: 'none'
+        DIV
+          className: 'screenshot-menu-close'
+          onClick: @toggleScreenshotMenu
+          'X'
+        DIV
+          className: 'screenshot-image'
+          'Screenshot not available'
+        DIV
+          className: 'screenshot-include'
+          LABEL
+            htmlFor: 'includeTitle'
+            'Include title'
+          INPUT
+            type: 'checkbox'
+            id: 'includeTitle'
+            defaultChecked: true
+            onChange: @updateScreenshot
+        DIV
+          className: 'screenshot-include'
+          LABEL
+            htmlFor: 'includeMetadata'
+            'Include time & counts'
+          INPUT
+            type: 'checkbox'
+            id: 'includeMetadata'
+            defaultChecked: false
+            onChange: @updateScreenshot
+        DIV
+          className: 'screenshot-include'
+          LABEL
+            htmlFor: 'includeOpinions'
+            'Include opinions'
+          INPUT
+            type: 'checkbox'
+            id: 'includeOpinions'
+            defaultChecked: true
+            onChange: @updateScreenshot
+        DIV
+          className: 'screenshot-include'
+          LABEL
+            htmlFor: 'includeReasons'
+            'Include pros & cons'
+          INPUT
+            type: 'checkbox'
+            id: 'includeReasons'
+            defaultChecked: true
+            onChange: @updateScreenshot
+
+        BUTTON
+          className: 'screenshot-button'
+          onClick: (e) ->
+            proposalDiv = e.target.closest( '.proposal-block-container' )
+            dataUrlState = fetch 'screenshot'
+            dataUrl = if dataUrlState  then dataUrlState['data']  else null
+            console.info( 'dataUrl=', dataUrl )
+            if dataUrl and navigator.clipboard
+              navigator.clipboard.write(  [ new ClipboardItem({'image/png': dataUrl}) ]  )
+              alert( 'Copied screenshot to clipboard' )
+            else
+              alert( 'Screenshot copy failed for dataUrl=' + dataUrl )
+          'Copy screenshot'
+        BUTTON
+          className: 'screenshot-button'
+          onClick: (e) ->
+            proposalItem = e.target.closest( '.ProposalItem' )
+            console.info( 'proposalItem=', proposalItem )
+            proposalId = proposalItem.id.substring(1).replace('_', '-')
+            console.info( 'proposalId=', proposalId )
+            pageUrl = new URL( document.location )
+            proposalUrl = pageUrl.protocol + '//' + pageUrl.host + '/' + proposalId
+            console.info( 'proposalUrl=', proposalUrl )
+            if proposalUrl and navigator.clipboard
+              navigator.clipboard.writeText( proposalUrl )
+              alert( 'Copied URL to clipboard: ' + proposalUrl )
+            else
+              alert( 'Link copy failed for proposalUrl=' + proposalUrl )
+          'Copy link'
+
+
+  toggleScreenshotMenu: (e) ->
+    proposalDiv = e.target.closest( '.proposal-block-container' )
+    console.info( 'toggleScreenshotMenu() proposalDiv=', proposalDiv )
+    screenshotMenu = proposalDiv.querySelector('.screenshot-menu')
+    console.info( 'toggleScreenshotMenu() screenshotMenu=', screenshotMenu )
+    screenshotMenu.style.display =  if screenshotMenu.style.display  then null  else 'none'
+    if screenshotMenu.style.display != 'none'
+      @updateScreenshot(e)
+
+
+  updateScreenshot: (e) ->
+    # Use CSS to hide some elements during screenshot, removing their space as well.
+    # Directly access proposal-element class because we do not want to save screenshot-state to proposal on server,
+    # we and cannot push it up to proposal-display through @local.
+    proposalDiv = e.target.closest( '.proposal-block-container' )
+    proposalDiv.classList.add( 'screenshot_in_progress' )
+
+    reasonsDiv = proposalDiv.querySelector('section.reasons_region')
+    includeTitleCheckbox = proposalDiv.querySelector('#includeTitle')
+    includeMetadataCheckbox = proposalDiv.querySelector('#includeMetadata')
+    includeOpinionsCheckbox = proposalDiv.querySelector('#includeOpinions')
+    includeReasonsCheckbox = proposalDiv.querySelector('#includeReasons')
+
+    # Use javascript to hide elements based on selected checkboxes.
+    # Could screenshot each part with toCanvas(), then merge canvases -- but parts would be poorly aligned.
+    opinionsDiv = proposalDiv.querySelector('.Slidergram')
+    opinionsDiv.style.display = if includeOpinionsCheckbox.checked  then null  else 'none'
+    reasonsDiv = proposalDiv.querySelector('.slow-thought')
+    reasonsDiv.style.display = if includeReasonsCheckbox.checked  then null  else 'none'
+    titleDiv = proposalDiv.querySelector('.proposal-title-text')
+    titleDiv.style.display = if includeTitleCheckbox.checked  then null  else 'none'
+    metadataDiv = proposalDiv.querySelector('.proposal-metadata')
+    metadataDiv.style.display = if includeMetadataCheckbox.checked  then null  else 'none'
+    targetDiv = proposalDiv
+
+    # Use htmlToImage filter-callback to exclude some elements, but keep their space.
+    excludeClasses = [ 'avatar', 'proposal-avatar-wrapper', 'opinion-views-container', 'opinion-heading', 'DecisionBoard', \
+      'proposal-description-wrapper', 'bottom_closer', 'edit_and_delete_block' ]
+    if not includeOpinionsCheckbox.checked
+      excludeClasses.push( 'Slidergram' )
+    if not includeReasonsCheckbox.checked
+      excludeClasses.push( 'slow-thought' )
+    if not includeTitleCheckbox.checked
+      excludeClasses.push( 'proposal-title-text' )
+    if not includeMetadataCheckbox.checked
+      excludeClasses.push( 'proposal-metadata' )
+    filter = ( htmlElement ) ->
+      elementHasClass = ( className ) -> htmlElement?.classList?.contains( className )
+      not excludeClasses.some( elementHasClass )
+
+    htmlToImage.toPng( targetDiv, {backgroundColor:'#ffffff', filter:filter} ).then( (dataUrl) =>
+      proposalDiv.classList.remove( 'screenshot_in_progress' )
+      opinionsDiv.style.display = null
+      reasonsDiv.style.display = null
+      titleDiv.style.display = null
+      metadataDiv.style.display = null
+
+      targetBounds = targetDiv.getBoundingClientRect()
+      image = new Image( targetBounds.width, targetBounds.height )
+      image.src = dataUrl
+      image.style.width = '500px'
+      image.style.height = 'auto'
+
+      previewDiv = proposalDiv.querySelector('.screenshot-image')
+      previewDiv.replaceChild( image, previewDiv.firstChild )
+
+      dataUrlState = fetch 'screenshot'
+      dataUrlState['data'] = dataUrl
+      save dataUrlState
+
+    ).catch( (err) =>
+      console.warn('htmlToImage.toPng() err=', err)
+      proposalDiv.classList.remove( 'screenshot_in_progress' )
+      opinionsDiv.style.display = null
+      reasonsDiv.style.display = null
+      titleDiv.style.display = null
+      metadataDiv.style.display = null
+    )
+
+
 
 
 

@@ -8,7 +8,7 @@ class OAuthHandler
 
     @callback = callback
 
-    @popup = @openPopupWindow "#{location.protocol}//#{fetch('/subdomain').host}/auth/#{provider}"  
+    @popup = @openPopupWindow "#{location.protocol}//#{bus_fetch('/subdomain').host}/auth/#{provider}"  
 
   openPopupWindow : (url) ->
     openidpopup = window.open(url, 'openid_popup', 'width=450,height=500,location=1,status=1,resizable=yes')
@@ -92,7 +92,7 @@ styles += """
 window.OAuthLogin =
 
   startThirdPartyAuth : (provider) ->
-    root = fetch('root')
+    root = bus_fetch('root')
     new OAuthHandler
       provider : provider
       callback : (new_data) =>
@@ -114,9 +114,9 @@ window.OAuthLogin =
         # using the single use code to authenticate. See also references to 
         # oauth_single_use_code in current_user_controller#update. 
 
-        subdomain = fetch('/subdomain')
+        subdomain = bus_fetch('/subdomain')
         if subdomain.custom_url
-          current_user = fetch '/current_user'
+          current_user = bus_fetch '/current_user'
           current_user.trying_to = 'login'
           save current_user
 
@@ -126,8 +126,8 @@ window.OAuthLogin =
         # poll the server until we have an avatar
         poll_until_avatar_arrives()
 
-        if forum_has_host_questions() && fetch('/current_user').first_visit_to_forum
-          auth = fetch 'auth'
+        if forum_has_host_questions() && bus_fetch('/current_user').first_visit_to_forum
+          auth = bus_fetch 'auth'
           auth.show_user_questions_after_account_creation = true 
           save auth
 
@@ -149,8 +149,8 @@ window.OAuthLogin =
 
 
   RenderOAuthProviders: (form) -> 
-    current_user = fetch '/current_user'
-    root = fetch 'root'
+    current_user = bus_fetch '/current_user'
+    root = bus_fetch 'root'
 
 
     third_party_authenticated = current_user.facebook_uid || current_user.twitter_uid || current_user.google_uid

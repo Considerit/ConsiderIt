@@ -154,8 +154,8 @@ window.ProposalItem = ReactiveComponent
   adjustExpansionBasedOnLocAndBackForwardButtons: ->
     # Toggle expand / collapse when the forward and back browser buttons are used, 
     # or for if an item is opened to directly
-    loc = fetch('location')
-    proposal = fetch @props.proposal
+    loc = bus_fetch('location')
+    proposal = bus_fetch @props.proposal
 
     already_toggling = @refs.proposal_item.classList.contains 'will-expand-toggle'
 
@@ -174,8 +174,8 @@ window.ProposalItem = ReactiveComponent
 
 
   render : ->
-    proposal = fetch @props.proposal
-    loc = fetch('location') # subscribe to changes
+    proposal = bus_fetch @props.proposal
+    loc = bus_fetch('location') # subscribe to changes
 
 
     return if !proposal.name
@@ -188,7 +188,7 @@ window.ProposalItem = ReactiveComponent
     @last_expansion = @is_expanded
     @last_list_order = @props.list_order
 
-    local_state = fetch shared_local_key proposal
+    local_state = bus_fetch shared_local_key proposal
 
     FLIPPED 
       key: proposal.key
@@ -439,8 +439,8 @@ ProposalItemWrapper = ReactiveComponent
   displayName: 'ProposalItemWrapper'
 
   render: ->
-    proposal = fetch @props.proposal
-    subdomain = fetch '/subdomain'
+    proposal = bus_fetch @props.proposal
+    subdomain = bus_fetch '/subdomain'
     # show_proposal_scores = !@props.hide_scores && customization('show_proposal_scores', proposal, subdomain) && WINDOW_WIDTH() > 955
 
     DIV 
@@ -519,11 +519,11 @@ ProposalItemWrapper = ReactiveComponent
             className: 'bottom_closer'
             onClick: => 
               toggle_expand
-                proposal: fetch @props.proposal
+                proposal: bus_fetch @props.proposal
             onKeyPress: (e) => 
               if e.which == 32 || e.which == 13
                 toggle_expand
-                  proposal: fetch @props.proposal
+                  proposal: bus_fetch @props.proposal
 
 
             double_up_icon(40)
@@ -533,11 +533,11 @@ ProposalItemWrapper = ReactiveComponent
             className: 'top_closer'
             onClick: => 
               toggle_expand
-                proposal: fetch @props.proposal
+                proposal: bus_fetch @props.proposal
             onKeyPress: (e) => 
               if e.which == 32 || e.which == 13
                 toggle_expand
-                  proposal: fetch @props.proposal
+                  proposal: bus_fetch @props.proposal
 
             iconX(22, '#888888')
 
@@ -643,13 +643,13 @@ ProposalBlock = ReactiveComponent
   displayName: 'ProposalBlock'
 
   should_use_avatar: ->   # icon or bullet
-    proposal = fetch @props.proposal
-    subdomain = fetch '/subdomain'
+    proposal = bus_fetch @props.proposal
+    subdomain = bus_fetch '/subdomain'
 
     icons = customization('show_proposer_icon', proposal, subdomain)
 
   render: -> 
-    proposal = fetch @props.proposal
+    proposal = bus_fetch @props.proposal
 
     @is_expanded = @props.is_expanded
 
@@ -700,8 +700,8 @@ ProposalBlock = ReactiveComponent
           expansion_state_changed: @props.expansion_state_changed
 
   draw_avatar_or_bullet: ->
-    proposal = fetch @props.proposal
-    current_user = fetch '/current_user'
+    proposal = bus_fetch @props.proposal
+    current_user = bus_fetch '/current_user'
 
 
     icons = @should_use_avatar()
@@ -754,8 +754,8 @@ ProposalBlock = ReactiveComponent
 
 
   draw_edit_and_delete: ->
-    proposal = fetch @props.proposal
-    subdomain = fetch '/subdomain'
+    proposal = bus_fetch @props.proposal
+    subdomain = bus_fetch '/subdomain'
     can_edit = permit('update proposal', proposal, subdomain) > 0
 
     return SPAN null if !can_edit
@@ -772,7 +772,7 @@ ProposalBlock = ReactiveComponent
           marginRight: 4
 
         onClick: (e) => 
-          proposal_editing = fetch('proposal_editing')
+          proposal_editing = bus_fetch('proposal_editing')
           proposal_editing.editing = proposal.key
 
           proposal_editing.callback = =>
@@ -868,26 +868,26 @@ styles += """
 
 
 proposal_url = (proposal) ->
-  proposal = fetch proposal
+  proposal = bus_fetch proposal
   return "/#{proposal.slug}"
 
 window.personal_view_available = (proposal) ->
-  proposal = fetch proposal  
+  proposal = bus_fetch proposal  
   !TABLET_SIZE() && proposal.active && customization('discussion_enabled', proposal) 
 
 window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
-  proposal = fetch proposal
+  proposal = bus_fetch proposal
 
   el = document.querySelector(".proposal-title[data-proposal='#{proposal.key}']")
   list_key = el.closest('.List').getAttribute('data-key')
 
 
-  expanded_state = fetch "proposal_expansions-#{list_key}"
+  expanded_state = bus_fetch "proposal_expansions-#{list_key}"
 
   return if ensure_open && expanded_state[proposal.key]
 
-  current_user = fetch '/current_user'
-  opinion_views = fetch 'opinion_views'
+  current_user = bus_fetch '/current_user'
+  opinion_views = bus_fetch 'opinion_views'
   just_you = opinion_views.active_views['just_you']
 
   personal_view_preferred = prefer_personal_view || (just_you && current_user.logged_in)
@@ -903,7 +903,7 @@ window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
     force: mode == 'crafting'
     speed_mult: .5
     callback: =>
-      loc = fetch 'location'
+      loc = bus_fetch 'location'
       expanded_state[proposal.key] = !expanded_state[proposal.key]
       parent.classList.remove 'will-expand-toggle'
 

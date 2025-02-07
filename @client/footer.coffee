@@ -114,7 +114,7 @@ big_button = ->
 window.DefaultFooter = ReactiveComponent
   displayName: 'Footer'
   render: ->
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
 
     separator = SPAN 
       style: 
@@ -164,7 +164,7 @@ window.DefaultFooter = ReactiveComponent
             }
 
             .custom-shape-divider-top-1651729272 .shape-fill {
-                fill: #{if fetch('location').url.indexOf('/dashboard') > -1 || TABLET_SIZE() then 'white' else main_background_color};
+                fill: #{if bus_fetch('location').url.indexOf('/dashboard') > -1 || TABLET_SIZE() then 'white' else main_background_color};
             }
             </style>
             <div class="custom-shape-divider-top-1651729272">
@@ -214,7 +214,7 @@ window.DefaultFooter = ReactiveComponent
               A 
                 className: 'create-forum'
                 key: 'create-forum'
-                href: "https://#{fetch('/application').base_domain}"
+                href: "https://#{bus_fetch('/application').base_domain}"
 
                 translator 
                   id: "footer.created_your_own_forum"
@@ -280,7 +280,7 @@ window.DefaultFooter = ReactiveComponent
               " "
               get_region_name()
 
-          if !customization('google_translate_style') || fetch('location').url != '/'
+          if !customization('google_translate_style') || bus_fetch('location').url != '/'
             DIV 
               className: 'google-translate-candidate-container'
 
@@ -307,7 +307,7 @@ window.TechnologyByConsiderit = ReactiveComponent
         onMouseLeave: => 
           @local.hover = false
           save @local
-        href: "https://#{fetch('/application').base_domain}"
+        href: "https://#{bus_fetch('/application').base_domain}"
         target: '_blank'
         title: 'Consider.it\'s homepage'
         style: 
@@ -332,7 +332,7 @@ window.CompletionWidget = ReactiveComponent
   render: ->
     completion_config = customization('completion_widget')
 
-    return SPAN null if not completion_config or !is_a_dialogue_page() or fetch('auth').form
+    return SPAN null if not completion_config or !is_a_dialogue_page() or bus_fetch('auth').form
 
     [complete, num_proposals_done, total_proposals, messages] = user_has_met_completion_criteria()
     if complete 
@@ -395,13 +395,13 @@ user_has_met_completion_criteria = ->
       "proposals_authored": 0,  # note: logic and UI isn't implemented for this option yet
       "pros_and_cons_on_all": false
 
-  proposals = fetch('/proposals').proposals
-  current_user = fetch('/current_user')
+  proposals = bus_fetch('/proposals').proposals
+  current_user = bus_fetch('/current_user')
 
   my_opinions = (p.your_opinion for p in proposals when p.your_opinion && p.your_opinion.key)
   passing_opinions = []
   for o in my_opinions
-    o = fetch(o) # subscribe to changes
+    o = bus_fetch(o) # subscribe to changes
     if completion_criteria.reasons_on_all 
       if !o.point_inclusions or o.point_inclusions.length == 0
         continue
@@ -411,7 +411,7 @@ user_has_met_completion_criteria = ->
       has_pro = false
       has_con = false 
       for pnt in o.point_inclusions
-        p = fetch(pnt)
+        p = bus_fetch(pnt)
         has_pro ||= p.is_pro
         has_con ||= !p.is_pro
       if !has_pro or !has_con

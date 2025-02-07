@@ -7,22 +7,22 @@ require "./list"
 window.CRAFTING_TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
 
 
-fetch 'decisionboard',
+bus_fetch 'decisionboard',
   docked : false
 
 
 
 window.get_selected_point = -> 
-  fetch('location').query_params.selected
+  bus_fetch('location').query_params.selected
 
 window.getProposalMode = (proposal) -> 
-  local_state = fetch shared_local_key proposal
+  local_state = bus_fetch shared_local_key proposal
   local_state.mode
 
 
 window.update_proposal_mode = (proposal, proposal_mode, triggered_by) ->
   can_opine = canUserOpine proposal
-  proposal = fetch proposal
+  proposal = bus_fetch proposal
 
   # permission not granted for crafting
   if proposal_mode == 'crafting' && 
@@ -32,7 +32,7 @@ window.update_proposal_mode = (proposal, proposal_mode, triggered_by) ->
 
     proposal_mode = 'results' 
 
-  local_state = fetch shared_local_key proposal
+  local_state = bus_fetch shared_local_key proposal
   if local_state.mode != proposal_mode 
     local_state.mode = proposal_mode 
     save local_state
@@ -255,14 +255,14 @@ window.Reasons = ReactiveComponent
   render: -> 
 
 
-    current_user = fetch '/current_user'
-    proposal = fetch @props.proposal
+    current_user = bus_fetch '/current_user'
+    proposal = bus_fetch @props.proposal
 
     your_opinion = proposal.your_opinion
     if your_opinion.key
-      fetch your_opinion
+      bus_fetch your_opinion
 
-    opinion_views = fetch 'opinion_views'
+    opinion_views = bus_fetch 'opinion_views'
     just_you = opinion_views?.active_views['just_you']
 
 
@@ -271,7 +271,7 @@ window.Reasons = ReactiveComponent
     # positioned within the reasons region (e.g. discussions, decision
     # board, new point). We need to set a minheight that is large enough to 
     # encompass these elements. 
-    adjustments = fetch('reasons_height_adjustment')
+    adjustments = bus_fetch('reasons_height_adjustment')
 
     minheight = 100 + (adjustments.opinion_region_height || 0)
     if get_selected_point()
@@ -290,7 +290,7 @@ window.Reasons = ReactiveComponent
     mode = getProposalMode(proposal)
 
     # if there aren't community_points, then we won't bother showing them
-    community_points = (pnt for pnt in fetch("/page/#{proposal.slug}").points or [] when pnt.includers?.length > 0)
+    community_points = (pnt for pnt in bus_fetch("/page/#{proposal.slug}").points or [] when pnt.includers?.length > 0)
     if mode == 'crafting'
       included_points = your_opinion.point_inclusions or []
       community_points = (pnt for pnt in community_points when !_.contains(included_points, pnt.key) )
@@ -307,12 +307,12 @@ window.Reasons = ReactiveComponent
     point_cols = ['your_con_points', 'your_pro_points', 'community_cons', 'community_pros']
     edit_mode = false
     for pc in point_cols
-      col = fetch(pc)
+      col = bus_fetch(pc)
       if col.adding_new_point || col.editing_points?.length > 0
         edit_mode = pc
         break
 
-    local_proposal = fetch shared_local_key(proposal)
+    local_proposal = bus_fetch shared_local_key(proposal)
 
     has_focus = \
       if get_selected_point()
@@ -564,20 +564,20 @@ window.DecisionBoard = ReactiveComponent
   displayName: 'DecisionBoard'
 
   render : ->
-    current_user = fetch('/current_user')
-    subdomain = fetch('/subdomain')
+    current_user = bus_fetch('/current_user')
+    subdomain = bus_fetch('/subdomain')
 
-    proposal = fetch @props.proposal
+    proposal = bus_fetch @props.proposal
     
     your_opinion = proposal.your_opinion
     if your_opinion.key
-      fetch your_opinion
+      bus_fetch your_opinion
 
     YOUR_OPINION_BUTTON_SIZE = 18
 
     can_opine = canUserOpine proposal
 
-    opinion_views = fetch 'opinion_views'
+    opinion_views = bus_fetch 'opinion_views'
     has_selection = opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
 
     enable_opining = can_opine != Permission.INSUFFICIENT_PRIVILEGES && 
@@ -587,12 +587,12 @@ window.DecisionBoard = ReactiveComponent
 
     return DIV null if !enable_opining
 
-    register_dependency = fetch(namespaced_key('slider', proposal)).value 
+    register_dependency = bus_fetch(namespaced_key('slider', proposal)).value 
                              # to keep bubble mouth in sync with slider
 
     # if there aren't points in the wings, then we won't bother showing 
     # the drop target
-    wing_points = fetch("/page/#{proposal.slug}").points or [] 
+    wing_points = bus_fetch("/page/#{proposal.slug}").points or [] 
     included_points = your_opinion.point_inclusions or []
     wing_points = (pnt for pnt in wing_points when !_.contains(included_points, pnt.key) )
     are_points_in_wings = wing_points.length > 0 
@@ -610,7 +610,7 @@ window.DecisionBoard = ReactiveComponent
 
     if mode == 'results'
       give_opinion_button_width = 232
-      slider = fetch namespaced_key('slider', proposal)
+      slider = bus_fetch namespaced_key('slider', proposal)
 
       opinion_region_x = get_opinion_x_pos_projection
         slider_val: slider.value
@@ -698,7 +698,7 @@ window.DecisionBoard = ReactiveComponent
                 points_draggable: true
                 drop_target: are_points_in_wings
                 points: (p for p in your_opinion.point_inclusions or [] \
-                              when fetch(p).is_pro)
+                              when bus_fetch(p).is_pro)
 
               PointsList 
                 key: 'your_con_points'
@@ -710,7 +710,7 @@ window.DecisionBoard = ReactiveComponent
                 points_draggable: true
                 drop_target: are_points_in_wings
                 points: (p for p in your_opinion.point_inclusions or [] \
-                              when !fetch(p).is_pro)
+                              when !bus_fetch(p).is_pro)
 
 
               DIV style: {clear: 'both'}
@@ -849,7 +849,7 @@ window.DecisionBoard = ReactiveComponent
 
 
   update_reasons_height: -> 
-    s = fetch('reasons_height_adjustment')
+    s = bus_fetch('reasons_height_adjustment')
     h = $$.height(ReactDOM.findDOMNode(@))
     if h != s.opinion_region_height
       s.opinion_region_height = h
@@ -885,14 +885,14 @@ window.DecisionBoard = ReactiveComponent
 
 
 points_for_proposal = (proposal) ->
-  fetch("/page/#{proposal.slug}").points or []
+  bus_fetch("/page/#{proposal.slug}").points or []
 
 stored_points_order = {}
 buildPointsList = (proposal, valence, sort_field, filter_included, show_all_points) ->
   return [] if !proposal.slug
   sort_field = sort_field or 'score'
   points = points_for_proposal(proposal)
-  opinions = fetch(proposal).opinions
+  opinions = bus_fetch(proposal).opinions
 
 
   if !show_all_points
@@ -913,14 +913,14 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
     points = (pnt for pnt in points when !_.contains(included_points, pnt.key) )
   else 
     for pnt in included_points
-      point = fetch pnt 
+      point = bus_fetch pnt 
       continue if pnt.is_pro != (valence == 'pros')
       if points.indexOf(point) == -1
         points.push point 
 
 
   # Filter down to the points included in the selected opinions, if set. 
-  opinion_views = fetch('opinion_views')
+  opinion_views = bus_fetch('opinion_views')
   if opinion_views.active_views.single_opinion_selected
     opinions = [opinion_views.active_views.single_opinion_selected.opinion] 
     filtered = true
@@ -933,7 +933,7 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
   # order points by resonance to users in view.    
   point_inclusions_per_point = {} # map of points to including users
   _.each opinions, (opinion_key) =>
-    opinion = fetch(opinion_key)
+    opinion = bus_fetch(opinion_key)
     if opinion.point_inclusions
       for point in opinion.point_inclusions
         point_inclusions_per_point[point] ||= 0
@@ -942,7 +942,7 @@ buildPointsList = (proposal, valence, sort_field, filter_included, show_all_poin
   # try enforce k=2-anonymity for hidden points
   # if opinions.length < 2
   #   for point,inclusions of point_inclusions_per_point
-  #     if fetch(point).hide_name
+  #     if bus_fetch(point).hide_name
   #       delete point_inclusions_per_point[point]
 
   # really ugly, but if we're hovering over point includers, turning on the point includer filter, 
@@ -982,7 +982,7 @@ window.PointsList = ReactiveComponent
   displayName: 'PointsList'
 
   get_header_prefix: ->
-    proposal = fetch @props.proposal
+    proposal = bus_fetch @props.proposal
     mode = getProposalMode(proposal)
     if @props.rendered_as == 'community_point'
       header_prefix = if mode == 'results' then 'top' else "other"
@@ -992,7 +992,7 @@ window.PointsList = ReactiveComponent
 
   get_heading: (valence) -> 
     header_prefix = @get_header_prefix()
-    proposal = fetch @props.proposal
+    proposal = bus_fetch @props.proposal
     point_labels = customization("point_labels", proposal)
     valence_heading = "#{header_prefix}_#{valence}_header"
     if valence_heading of point_labels and !!point_labels[valence_heading]
@@ -1034,11 +1034,11 @@ window.PointsList = ReactiveComponent
     @set_header_height()
 
   render: -> 
-    points = (fetch(pnt) for pnt in @props.points)
+    points = (bus_fetch(pnt) for pnt in @props.points)
 
-    your_points = fetch @props.reasons_key
+    your_points = bus_fetch @props.reasons_key
 
-    proposal = fetch @props.proposal
+    proposal = bus_fetch @props.proposal
 
     mode = getProposalMode(proposal)
 
@@ -1100,7 +1100,7 @@ window.PointsList = ReactiveComponent
                 in_viewport: @props.in_viewport
 
         else if points.length == 0 && @props.rendered_as == 'community_point' && mode == "results"
-          opinion_views = fetch 'opinion_views'
+          opinion_views = bus_fetch 'opinion_views'
           none_given = opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected  
 
           DIV 
@@ -1133,10 +1133,10 @@ window.PointsList = ReactiveComponent
 
 
   columnStandsOut: -> 
-    your_points = fetch @props.reasons_key
+    your_points = bus_fetch @props.reasons_key
 
     contains_selection = get_selected_point() && \
-                         fetch(get_selected_point()).is_pro == (@props.valence == 'pros')
+                         bus_fetch(get_selected_point()).is_pro == (@props.valence == 'pros')
     is_editing = @props.points_editable && \
                  (your_points.editing_points.length > 0 || your_points.adding_new_point)
 
@@ -1144,7 +1144,7 @@ window.PointsList = ReactiveComponent
 
 
   drawCommunityPoints: (children) -> 
-    proposal = fetch @props.proposal 
+    proposal = bus_fetch @props.proposal 
 
     mode = getProposalMode(proposal)
 
@@ -1207,11 +1207,11 @@ window.PointsList = ReactiveComponent
       children
 
   drawAddNewPoint: -> 
-    proposal = fetch @props.proposal
-    your_points = fetch @props.reasons_key
+    proposal = bus_fetch @props.proposal
+    your_points = bus_fetch @props.reasons_key
     can_add_new_point = permit 'create point', proposal
 
-    opinion_views = fetch 'opinion_views'
+    opinion_views = bus_fetch 'opinion_views'
     hist_selection = opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
 
 
@@ -1276,7 +1276,7 @@ window.PointsList = ReactiveComponent
           your_points_key: @props.reasons_key
 
   drawAddNewPointInCommunityCol: ->
-    proposal = fetch @props.proposal
+    proposal = bus_fetch @props.proposal
     if @props.valence == 'pros' 
       point_label = get_point_label 'pro', proposal 
     else 
@@ -1306,8 +1306,8 @@ window.PointsList = ReactiveComponent
 
 
   drawAddNewPointInDecisionBoard: -> 
-    proposal = fetch @props.proposal
-    your_points = fetch @props.reasons_key
+    proposal = bus_fetch @props.proposal
+    your_points = bus_fetch @props.reasons_key
 
     if @props.valence == 'pros' 
       point_label = get_point_label 'pro', proposal 
@@ -1346,7 +1346,7 @@ window.PointsList = ReactiveComponent
           marginLeft: 8
           backgroundColor: focus_color()
           position: 'relative'
-          opacity: if fetch(shared_local_key(proposal)).has_focus == 'edit point' then .1
+          opacity: if bus_fetch(shared_local_key(proposal)).has_focus == 'edit point' then .1
 
 
         TRANSLATE 
@@ -1355,7 +1355,7 @@ window.PointsList = ReactiveComponent
           "Add a new {pro_or_con}" 
 
   drawDropTarget: -> 
-    proposal = fetch @props.proposal
+    proposal = bus_fetch @props.proposal
     left_or_right = if @props.valence == 'pros' then 'right' else 'left'
 
     if @props.valence == 'pros' 
@@ -1370,7 +1370,7 @@ window.PointsList = ReactiveComponent
                          "Drag a {pro_or_con} from the #{left_or_right}"
 
 
-    local_proposal = fetch shared_local_key(proposal)
+    local_proposal = bus_fetch shared_local_key(proposal)
 
     DIV 
       key: 'drop-target'
@@ -1391,7 +1391,7 @@ window.PointsList = ReactiveComponent
 
 
   drawGhostedPoint: (props) ->   
-    proposal = fetch @props.proposal  
+    proposal = bus_fetch @props.proposal  
     text_style = props.text_style or {}
     style = props.style or {}
 
@@ -1420,7 +1420,7 @@ window.PointsList = ReactiveComponent
       mouth_style['transform'] = 'rotate(90deg)'
       mouth_style['right'] = -POINT_MOUTH_WIDTH  + stroke_width + 2
 
-    local_proposal = fetch shared_local_key(proposal)
+    local_proposal = bus_fetch shared_local_key(proposal)
 
     DIV
       style: _.defaults style, 
@@ -1519,7 +1519,7 @@ GroupSelectionRegion = ReactiveComponent
 
   render : -> 
 
-    opinion_views = fetch 'opinion_views'
+    opinion_views = bus_fetch 'opinion_views'
     single_opinion_selected = opinion_views.active_views.single_opinion_selected
     region_selected = opinion_views.active_views.region_selected
     has_histogram_focus = single_opinion_selected || region_selected
@@ -1587,7 +1587,7 @@ GroupSelectionRegion = ReactiveComponent
           fontWeight: 600
           whiteSpace: 'nowrap'
 
-        user = fetch(fetch(single_opinion_selected.opinion).user)
+        user = bus_fetch(bus_fetch(single_opinion_selected.opinion).user)
         name = user.name or anonymous_label()
         title = "#{name}'#{if name[name.length - 1] != 's' then 's' else ''} Opinion"
         name_width = widthWhenRendered(title, name_style)

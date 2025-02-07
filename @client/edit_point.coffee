@@ -6,13 +6,13 @@ window.EditPoint = ReactiveComponent
   displayName: 'EditPoint'
 
   render : ->
-    proposal = fetch @props.proposal
-    point = fetch @props.point 
+    proposal = bus_fetch @props.proposal
+    point = bus_fetch @props.point 
 
     opinion = proposal.your_opinion
 
     if typeof opinion == 'string' || opinion.key
-      opinion = fetch opinion
+      opinion = bus_fetch opinion
 
     if !@local.sign_name?
       _.defaults @local, 
@@ -80,7 +80,7 @@ window.EditPoint = ReactiveComponent
           defaultValue: if @props.fresh then null else point.text
           style: textarea_style
           onHeightChange: => 
-            s = fetch('reasons_height_adjustment')
+            s = bus_fetch('reasons_height_adjustment')
             s.edit_point_height = $$.height ReactDOM.findDOMNode(@)
             save s
 
@@ -172,7 +172,7 @@ window.EditPoint = ReactiveComponent
 
 
   componentDidMount : ->
-    proposal = fetch @props.proposal
+    proposal = bus_fetch @props.proposal
 
     if proposal.active 
 
@@ -182,18 +182,18 @@ window.EditPoint = ReactiveComponent
         scroll: false
         position: 'bottom'
 
-      s = fetch('reasons_height_adjustment')
+      s = bus_fetch('reasons_height_adjustment')
       s.edit_point_height = $$.height ReactDOM.findDOMNode(@)
       save s
 
   componentWillUnmount : -> 
-    s = fetch('reasons_height_adjustment')
+    s = bus_fetch('reasons_height_adjustment')
     s.edit_point_height = 0       
     save s    
 
   # guidelines/tips for good points
   drawTips : -> 
-    proposal = fetch @props.proposal
+    proposal = bus_fetch @props.proposal
 
     singular =  if @props.valence == 'pros' 
                   get_point_label 'pro', proposal
@@ -247,7 +247,7 @@ window.EditPoint = ReactiveComponent
                 tip  
 
   done : ->
-    your_points = fetch @props.your_points_key
+    your_points = bus_fetch @props.your_points_key
     if @props.fresh
       your_points.adding_new_point = false
     else
@@ -257,7 +257,7 @@ window.EditPoint = ReactiveComponent
 
   savePoint : (ev) ->
 
-    proposal = fetch @props.proposal
+    proposal = bus_fetch @props.proposal
   
     form = ReactDOM.findDOMNode(@)
 
@@ -268,11 +268,11 @@ window.EditPoint = ReactiveComponent
     if !@props.fresh
       # If we're updating an existing point, we just have to update
       # some of the fields from the form
-      point = fetch @props.point
+      point = bus_fetch @props.point
       point.nutshell = nutshell
       point.text = text
     else
-      current_user = fetch('/current_user').user
+      current_user = bus_fetch('/current_user').user
       point =
         key : '/new/point'
         is_pro : @props.valence == 'pros'
@@ -290,8 +290,8 @@ window.EditPoint = ReactiveComponent
         show_flash(translator('engage.flashes.point_saved', "Your point has been saved"))
 
         # Save opinion anonymity
-        proposal = fetch @props.proposal
-        opinion = fetch proposal.your_opinion
+        proposal = bus_fetch @props.proposal
+        opinion = bus_fetch proposal.your_opinion
         if opinion.hide_name != hide_name
           opinion.hide_name = hide_name
           save opinion

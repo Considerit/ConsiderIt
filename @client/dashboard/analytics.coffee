@@ -29,8 +29,8 @@ window.DataAnalytics = ReactiveComponent
   render: -> 
     return ResponsiveAnalyticsDataset() unless @local.loaded 
 
-    analytics_state = fetch 'analytics'
-    analytics_data_loaded = fetch('analytics_data_loaded')
+    analytics_state = bus_fetch 'analytics'
+    analytics_data_loaded = bus_fetch('analytics_data_loaded')
 
     if !analytics_state.expanded
       analytics_state.expanded = 'VisitAnalytics'
@@ -145,11 +145,11 @@ AnalyticsTabs = ReactiveComponent
   displayName: 'AnalyticsTabs'
 
   render: -> 
-    analytics_state = fetch 'analytics'
+    analytics_state = bus_fetch 'analytics'
 
     analytics_pages = [ 'VisitAnalytics', 'ParticipantAnalytics', 'OpinionGraphAnalytics', 'CommentsAnalytics' ]
 
-    is_premium_forum = (fetch('/subdomain').plan > 0) || fetch('/current_user').is_super_admin
+    is_premium_forum = (bus_fetch('/subdomain').plan > 0) || bus_fetch('/current_user').is_super_admin
 
     DIV 
       className: "AnalyticsTabs #{if !is_premium_forum then 'free-forum'}"
@@ -232,7 +232,7 @@ AnalyticsTabs = ReactiveComponent
 get_analytics_tab_data = (name) ->
   switch name
     when 'VisitAnalytics'
-      return null if !fetch('visitation_data').dummy
+      return null if !bus_fetch('visitation_data').dummy
       {visitors, visits_per_day, segments, total_visits} = visitation_data
       args = 
         heading: "Unique Visitors"
@@ -241,7 +241,7 @@ get_analytics_tab_data = (name) ->
           ["Total visits", "#{total_visits}"]   #(#{(registered / Object.keys(visitors).length * 100).toFixed(1)}%)"]          
         ]
     when 'ParticipantAnalytics'
-      return null if !fetch('visitation_data').dummy || !fetch('participation_data').dummy
+      return null if !bus_fetch('visitation_data').dummy || !bus_fetch('participation_data').dummy
 
       {visitors, visits_per_day, segments, total_visits} = visitation_data
       {per_day, participants, segments} = participation_data
@@ -252,9 +252,9 @@ get_analytics_tab_data = (name) ->
           ["Conversion rate", "#{(participants.length / Object.keys(visitors).length * 100).toFixed(1)}%"]
         ] 
     when 'OpinionGraphAnalytics'
-      return null if !fetch('opinion_data').dummy
+      return null if !bus_fetch('opinion_data').dummy
 
-      opinions = fetch('/opinions').opinions
+      opinions = bus_fetch('/opinions').opinions
       {per_day, participants, segments} = opinions_data
       args =
         heading: "Opinions"
@@ -263,7 +263,7 @@ get_analytics_tab_data = (name) ->
           ["Avg. per participant", (opinions.length / participants.length).toFixed(1)]
         ]
     when 'CommentsAnalytics'
-      return null if !fetch('comment_data').dummy
+      return null if !bus_fetch('comment_data').dummy
 
       {per_day, participants, segments, all_comments} = comments_data
       args = 
@@ -393,7 +393,7 @@ styles += """
 
 GraphSection =    
   review_state: (segments) -> 
-    analytics_state = fetch 'analytics_state'
+    analytics_state = bus_fetch 'analytics_state'
     if analytics_state.segment_by not of segments
       analytics_state.segment_by = null
 
@@ -405,7 +405,7 @@ GraphSection =
   drawSegments: ({segment_by, current_segment, color, notice, labels, total}) ->
     return SPAN {key: 'segments'} if segment_by.length == 0 
 
-    analytics_state = fetch 'analytics_state'
+    analytics_state = bus_fetch 'analytics_state'
 
     DIV 
       className: 'segments graph_padding'
@@ -549,8 +549,8 @@ window.VisitAnalytics = ReactiveComponent
 
   render : -> 
 
-    return SPAN null if !fetch('visitation_data').dummy
-    analytics_state = fetch 'analytics_state'
+    return SPAN null if !bus_fetch('visitation_data').dummy
+    analytics_state = bus_fetch 'analytics_state'
 
 
     {visitors, visits_per_day, segments, total_visits} = visitation_data
@@ -608,11 +608,11 @@ window.ParticipantAnalytics = ReactiveComponent
   defaultZ: 'First Opinion Given'
 
   render : -> 
-    return SPAN null if !fetch('participation_data').dummy
+    return SPAN null if !bus_fetch('participation_data').dummy
 
     {per_day, participants, segments} = participation_data
     @review_state(segments)
-    analytics_state = fetch 'analytics_state'
+    analytics_state = bus_fetch 'analytics_state'
 
     if analytics_state.segment_by
       {multi_valued_segment, zDomain, segment_data} = segments[analytics_state.segment_by] 
@@ -665,9 +665,9 @@ window.OpinionGraphAnalytics = ReactiveComponent
 
 
   render : -> 
-    opinions = fetch('/opinions').opinions
-    return SPAN null if !fetch('opinion_data').dummy
-    analytics_state = fetch 'analytics_state'
+    opinions = bus_fetch('/opinions').opinions
+    return SPAN null if !bus_fetch('opinion_data').dummy
+    analytics_state = bus_fetch 'analytics_state'
 
     {per_day, participants, segments} = opinions_data
     @review_state(segments)
@@ -725,12 +725,12 @@ window.CommentsAnalytics = ReactiveComponent
 
 
   render : -> 
-    return SPAN null if !fetch('comment_data').dummy
+    return SPAN null if !bus_fetch('comment_data').dummy
 
     {per_day, participants, segments, all_comments} = comments_data
     @review_state(segments)
 
-    analytics_state = fetch 'analytics_state'
+    analytics_state = bus_fetch 'analytics_state'
 
     if analytics_state.segment_by
       {multi_valued_segment, zDomain, segment_data} = segments[analytics_state.segment_by] 
@@ -1239,7 +1239,7 @@ _PieChart = (data, container, args = {}) ->
 
 
 get_forum_time_domain = -> 
-  fetch 'forum_time_domain'
+  bus_fetch 'forum_time_domain'
 
 
 
@@ -1255,13 +1255,13 @@ ResponsiveAnalyticsDataset = ReactiveComponent
 
     requirements_loaded = true
 
-    fetch('/proposals?all_points=true')
+    bus_fetch('/proposals?all_points=true')
     
-    requirements = [ fetch('/subdomain').name, \
-                     fetch('/visits').visits, \
-                     fetch('/opinions').opinions, \
-                     fetch('/all_comments').comments, \
-                     fetch('/users').users, \
+    requirements = [ bus_fetch('/subdomain').name, \
+                     bus_fetch('/visits').visits, \
+                     bus_fetch('/opinions').opinions, \
+                     bus_fetch('/all_comments').comments, \
+                     bus_fetch('/users').users, \
                      arest.cache['/proposals'].proposals \
                    ]
 
@@ -1283,7 +1283,7 @@ ResponsiveAnalyticsDataset = ReactiveComponent
     @setCommentsData()
     # @last_key = data_key
 
-    analytics_data_loaded = fetch('analytics_data_loaded')
+    analytics_data_loaded = bus_fetch('analytics_data_loaded')
     if !analytics_data_loaded.data_loaded 
       analytics_data_loaded.data_loaded = true
       save analytics_data_loaded
@@ -1294,10 +1294,10 @@ ResponsiveAnalyticsDataset = ReactiveComponent
   setForumTimeDomain: ->
     if !arest.cache['forum_time_domain'] 
 
-      opinions = fetch '/opinions'
-      visits = fetch '/visits'
-      proposals = fetch '/proposals'
-      subdomain = fetch '/subdomain'
+      opinions = bus_fetch '/opinions'
+      visits = bus_fetch '/visits'
+      proposals = bus_fetch '/proposals'
+      subdomain = bus_fetch '/subdomain'
 
       earliest_visit = 0
       latest_visit = Infinity
@@ -1313,7 +1313,7 @@ ResponsiveAnalyticsDataset = ReactiveComponent
       earliest_opinion = 0
       latest_opinion = Infinity
       for o in opinions.opinions
-        u = fetch o.user
+        u = bus_fetch o.user
         continue if u.key in subdomain.roles.admin || u.key in (customization('organizational_account') or [])
 
         days_ago = Math.round (now - new Date(o.created_at).getTime()) / 1000 / 60 / 60 / 24
@@ -1337,10 +1337,10 @@ ResponsiveAnalyticsDataset = ReactiveComponent
 
 
   setVisitationData : -> 
-    subdomain = fetch '/subdomain'
-    current_user = fetch '/current_user'
-    visits = fetch('/visits')
-    users = fetch '/users'
+    subdomain = bus_fetch '/subdomain'
+    current_user = bus_fetch '/current_user'
+    visits = bus_fetch('/visits')
+    users = bus_fetch '/users'
 
     segment_by = Object.keys visitor_segment_labels
     segments = {}
@@ -1351,7 +1351,7 @@ ResponsiveAnalyticsDataset = ReactiveComponent
 
     time_series = []
 
-    is_premium_forum = (subdomain.plan > 0) || fetch('/current_user').is_super_admin
+    is_premium_forum = (subdomain.plan > 0) || bus_fetch('/current_user').is_super_admin
 
     if !is_premium_forum && 'registered_vs_unregistered' of visitor_segment_labels
       delete visitor_segment_labels.registered_vs_unregistered
@@ -1418,8 +1418,8 @@ ResponsiveAnalyticsDataset = ReactiveComponent
     save data_state
 
   setParticipationData: -> 
-    subdomain = fetch '/subdomain'
-    current_user = fetch '/current_user'
+    subdomain = bus_fetch '/subdomain'
+    current_user = bus_fetch '/current_user'
 
     opinions_by_user = get_opinions_by_users()
 
@@ -1514,8 +1514,8 @@ ResponsiveAnalyticsDataset = ReactiveComponent
     save data_state
 
   setOpinionsData: ->
-    subdomain = fetch '/subdomain'
-    current_user = fetch '/current_user'
+    subdomain = bus_fetch '/subdomain'
+    current_user = bus_fetch '/current_user'
 
     by_user = {}
     for user, opinions of get_opinions_by_users()
@@ -1533,10 +1533,10 @@ ResponsiveAnalyticsDataset = ReactiveComponent
 
 
   setCommentsData: -> 
-    subdomain = fetch '/subdomain'
-    current_user = fetch '/current_user'
+    subdomain = bus_fetch '/subdomain'
+    current_user = bus_fetch '/current_user'
       
-    proposals = fetch '/proposals'
+    proposals = bus_fetch '/proposals'
 
     # should_include =
     #   comment: @local.include_comments
@@ -1561,15 +1561,15 @@ ResponsiveAnalyticsDataset = ReactiveComponent
 
     all_comments = []
     for proposal in (proposals.proposals or [])
-      proposal = fetch proposal
+      proposal = bus_fetch proposal
       include_item proposal, 'proposal', 'Proposals'
 
       for point in (proposal.points or [])
-        point = fetch(point)
+        point = bus_fetch(point)
         include_item point, 'point', 'Pro or Con Points'
 
-    for comment in (fetch("/all_comments")?.comments or [])
-      comment = fetch comment
+    for comment in (bus_fetch("/all_comments")?.comments or [])
+      comment = bus_fetch comment
       include_item comment, 'comment', 'Replies to a Point'
 
     

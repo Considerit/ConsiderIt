@@ -137,18 +137,18 @@ window.show_histogram_layout = false
 DEVICE_PIXEL_RATIO = window.devicePixelRatio
 
 get_originating_histogram = -> 
-  opinion_views = fetch 'opinion_views'
+  opinion_views = bus_fetch 'opinion_views'
   active = opinion_views.active_views
   originating_histogram = active.region_selected?.created_by
   
   originating_histogram
 
 is_histogram_controlling_region_selection = (key) -> 
-  opinion_views = fetch 'opinion_views'
+  opinion_views = bus_fetch 'opinion_views'
   get_originating_histogram() == key
 
 window.clear_histogram_managed_opinion_views = (opinion_views, field) ->
-  opinion_views ?= fetch 'opinion_views'
+  opinion_views ?= bus_fetch 'opinion_views'
   if field 
     delete opinion_views.active_views[field]
   else 
@@ -160,7 +160,7 @@ window.clear_histogram_managed_opinion_views = (opinion_views, field) ->
 
 
 window.select_single_opinion = (user_opinion, created_by) ->
-  opinion_views = fetch 'opinion_views'
+  opinion_views = bus_fetch 'opinion_views'
 
   is_deselection = opinion_views.active_views.single_opinion_selected?.opinion == user_opinion.key
   if is_deselection
@@ -205,15 +205,15 @@ window.Histogram = ReactiveComponent
 
 
   render: -> 
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
 
-    # loc = fetch 'location'
+    # loc = bus_fetch 'location'
     # if loc.query_params.show_histogram_layout
     #   window.show_histogram_layout = true
 
-    proposal = fetch @props.proposal
+    proposal = bus_fetch @props.proposal
 
-    opinion_views = fetch 'opinion_views'
+    opinion_views = bus_fetch 'opinion_views'
 
     opinions = @props.opinions
 
@@ -436,7 +436,7 @@ window.Histogram = ReactiveComponent
 
   drawHistogramLabels: (subdomain, proposal) -> 
 
-    subdomain ?= fetch '/subdomain'
+    subdomain ?= bus_fetch '/subdomain'
     label_style = @props.label_style or {
       fontSize: 12
       fontWeight: 400
@@ -485,7 +485,7 @@ window.Histogram = ReactiveComponent
 
   drawSelectionArea: -> 
 
-    opinion_views = fetch 'opinion_views'
+    opinion_views = bus_fetch 'opinion_views'
 
     anchor = opinion_views.active_views.single_opinion_selected or opinion_views.active_views?.region_selected?.opinion_value or @local.mouse_opinion_value
     left = ((anchor + 1) / 2 - REGION_SELECTION_WIDTH / 2) * @props.width
@@ -496,7 +496,7 @@ window.Histogram = ReactiveComponent
     selection_left = Math.max 0, left
 
 
-    return DIV {key: 'selection_label'} if (!is_histogram_controlling_region_selection(@props.histo_key) && get_originating_histogram()) || fetch('popover').element_in_focus
+    return DIV {key: 'selection_label'} if (!is_histogram_controlling_region_selection(@props.histo_key) && get_originating_histogram()) || bus_fetch('popover').element_in_focus
     DIV 
       key: 'selection_label'
       'aria-hidden': true
@@ -531,7 +531,7 @@ window.Histogram = ReactiveComponent
 
     ev.stopPropagation()
 
-    opinion_views = fetch 'opinion_views'
+    opinion_views = bus_fetch 'opinion_views'
 
     if @props.backgrounded
       if @props.on_click_when_backgrounded
@@ -617,7 +617,7 @@ window.Histogram = ReactiveComponent
 
   onMouseMove: (ev) ->     
 
-    return if fetch(namespaced_key('slider', @props.proposal)).is_moving  || \
+    return if bus_fetch(namespaced_key('slider', @props.proposal)).is_moving  || \
               @props.backgrounded || !@enable_range_selection || \
               (!is_histogram_controlling_region_selection(@props.histo_key) && get_originating_histogram())
 
@@ -635,7 +635,7 @@ window.Histogram = ReactiveComponent
       at_pole = true
     
     # dynamic selection on drag
-    opinion_views = fetch 'opinion_views'
+    opinion_views = bus_fetch 'opinion_views'
     region_selected = opinion_views.active_views.region_selected    
     if region_selected && @local.mouse_opinion_value
                          # this last conditional is only for touch
@@ -651,7 +651,7 @@ window.Histogram = ReactiveComponent
     save @local
 
   onMouseDown: (ev) -> 
-    return if fetch(namespaced_key('slider', @props.proposal)).is_moving
+    return if bus_fetch(namespaced_key('slider', @props.proposal)).is_moving
     ev.stopPropagation()
     return false 
       # The return false prevents text selections
@@ -660,12 +660,12 @@ window.Histogram = ReactiveComponent
 
 
   onMouseLeave: (ev) ->     
-    return if fetch(namespaced_key('slider', @props.proposal)).is_moving
+    return if bus_fetch(namespaced_key('slider', @props.proposal)).is_moving
 
     @local.mouse_opinion_value = null    
     save @local
 
-    # opinion_views = fetch 'opinion_views'
+    # opinion_views = bus_fetch 'opinion_views'
     # if opinion_views.active_views.region_selected
     #   clear_histogram_managed_opinion_views opinion_views
 
@@ -717,7 +717,7 @@ window.styles += """
 
 $$.add_delegated_listener document.body, 'keydown', '.avatar[data-opinion]', (e) ->
   if e.which == 13 || e.which == 32 # ENTER or SPACE 
-    user_opinion = fetch e.target.getAttribute 'data-opinion'
+    user_opinion = bus_fetch e.target.getAttribute 'data-opinion'
     select_single_opinion user_opinion, 'keydown'
 
 
@@ -764,7 +764,7 @@ HistoAvatars = ReactiveComponent
     @adjusted_height = Math.round @props.height +     @cut_off_buffer 
     @adjusted_width  = Math.round @props.width  + 2 * @cut_off_buffer
 
-    proposal = fetch @props.histo_key
+    proposal = bus_fetch @props.histo_key
     DIV 
       className: 'HistoAvatars'
       id: histocache_key
@@ -811,7 +811,7 @@ HistoAvatars = ReactiveComponent
     @updateAvatars()
 
   ready_to_draw: ->
-    users = fetch '/users'    
+    users = bus_fetch '/users'    
     users.users && @getAvatarPositions()
 
   getAvatarPositions: -> 
@@ -821,7 +821,7 @@ HistoAvatars = ReactiveComponent
 
     if !!histocache && !histocache.ordered_users?
       users = Object.keys(histocache.positions or {})
-      current_user = fetch '/current_user'
+      current_user = bus_fetch '/current_user'
       if current_user.key && (idx = users.indexOf(current_user.user)) > -1
         users.splice idx, 1
         users.push current_user.user
@@ -906,12 +906,12 @@ HistoAvatars = ReactiveComponent
       return
 
     # re-render when avatars available
-    avatars_loaded = fetch('avatar_loading') 
+    avatars_loaded = bus_fetch('avatar_loading') 
     if avatars_loaded.loaded && @avatars_loaded != avatars_loaded.loaded
       @dirty_canvas = true
     @avatars_loaded = avatars_loaded.loaded
 
-    users = fetch '/users'
+    users = bus_fetch '/users'
 
     histocache = @getAvatarPositions()
 
@@ -935,7 +935,7 @@ HistoAvatars = ReactiveComponent
       canvas_resize_needed = true      
 
     
-    opinion_views = fetch 'opinion_views'
+    opinion_views = bus_fetch 'opinion_views'
 
     groups = get_user_groups_from_views @props.groups 
     has_groups = !!groups
@@ -956,8 +956,8 @@ HistoAvatars = ReactiveComponent
     for opinion, idx in @props.opinions
     
 
-      user = fetch opinion.user
-      o = fetch(opinion) # subscribe to changes so physics sim will get rerun...
+      user = bus_fetch opinion.user
+      o = bus_fetch(opinion) # subscribe to changes so physics sim will get rerun...
 
       @user_to_opinion_map[user.key] = o.key
 
@@ -1101,7 +1101,7 @@ HistoAvatars = ReactiveComponent
     for key in histocache?.ordered_users or []
       sprite = @sprites[key]
       if key not of hit_region_avatars
-        user = fetch(key)
+        user = bus_fetch(key)
         hit_region_avatars[key] = createHitRegionAvatar user
         hit_region_color_to_user_map[user.hit_region_color] = key
 
@@ -1178,7 +1178,7 @@ HistoAvatars = ReactiveComponent
 
   handleMouseMove: (e) ->
     # don't show popover if the slider is being moved or we've already selected a user
-    return if fetch(namespaced_key('slider', @props.histo_key)).is_moving || fetch('opinion_views').active_views.single_opinion_selected
+    return if bus_fetch(namespaced_key('slider', @props.histo_key)).is_moving || bus_fetch('opinion_views').active_views.single_opinion_selected
 
     user = @userAtPosition(e)
     id = null
@@ -1205,7 +1205,7 @@ HistoAvatars = ReactiveComponent
       @refs.canvas.style.cursor = cursor
 
 
-    if fetch('popover').element_in_focus != id
+    if bus_fetch('popover').element_in_focus != id
 
       if user && !backgrounded
 
@@ -1219,7 +1219,7 @@ HistoAvatars = ReactiveComponent
           width: 2 * pos[2] / @resolution
 
         opinionId = @user_to_opinion_map[user]
-        opinion = fetch( opinionId )
+        opinion = bus_fetch( opinionId )
         opts = 
           id: id
           user: user
@@ -1251,7 +1251,7 @@ HistoAvatars = ReactiveComponent
 
 
   histocache_key: -> # based on variables that could alter the layout
-    key = """#{JSON.stringify( (fetch(o.key).stance + (if arest.cache[o.key].hide_name then 'hide' else '') for o in @props.opinions) )} #{JSON.stringify(@props.weights)} #{JSON.stringify(@props.groups)} #{JSON.stringify(@props.salience)} (#{@props.width}, #{@props.height})"""
+    key = """#{JSON.stringify( (bus_fetch(o.key).stance + (if arest.cache[o.key].hide_name then 'hide' else '') for o in @props.opinions) )} #{JSON.stringify(@props.weights)} #{JSON.stringify(@props.groups)} #{JSON.stringify(@props.salience)} (#{@props.width}, #{@props.height})"""
     murmurhash key, 0
       
 
@@ -1276,7 +1276,7 @@ HistoAvatars = ReactiveComponent
     multi_weighed
 
   PhysicsSimulation: ->
-    proposal = fetch @props.proposal
+    proposal = bus_fetch @props.proposal
 
     # We only need to rerun the sim if the distribution of stances has changed, 
     # or the width/height of the histogram has changed. We round the stance to two 
@@ -1338,7 +1338,7 @@ num_layout_tasks_delegated = 0
 get_histo_positions = (e) ->
   if e.data?.opts
     {opts, positions} = e.data 
-    local = fetch opts.histo
+    local = bus_fetch opts.histo
     histocache_key = opts.k 
     
     local.histocache ?= {} 

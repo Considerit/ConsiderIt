@@ -22,7 +22,7 @@ styles += """
 
 TOOLTIP_DELAY = 500
 window.clear_tooltip = ->
-  tooltip = fetch('tooltip')
+  tooltip = bus_fetch('tooltip')
   tooltip.coords = tooltip.tip = tooltip.top = tooltip.positioned = null
   tooltip.offsetY = tooltip.offsetX = null 
   tooltip.rendered_size = false 
@@ -31,7 +31,7 @@ window.clear_tooltip = ->
 toggle_tooltip = (e) ->
   tooltip_el = $$.closest(e.target, '[data-tooltip]')
   if tooltip_el?
-    tooltip = fetch('tooltip')
+    tooltip = bus_fetch('tooltip')
     if tooltip.coords
       clear_tooltip()
     else 
@@ -42,7 +42,7 @@ show_tooltip = (e) ->
   tooltip_el = $$.closest(e.target, '[data-tooltip]')
   return if !tooltip_el? || tooltip_el.style.opacity == 0
 
-  tooltip = fetch 'tooltip'
+  tooltip = bus_fetch 'tooltip'
   name = tooltip_el.getAttribute('data-tooltip')
   if tooltip.tip != name 
     tooltip.tip = name
@@ -56,7 +56,7 @@ show_tooltip = (e) ->
     e.preventDefault()
     e.stopPropagation()
 
-tooltip = fetch 'tooltip'
+tooltip = bus_fetch 'tooltip'
 hide_tooltip = (e) ->
   if e.target.getAttribute('data-tooltip')
     clear_tooltip()
@@ -78,7 +78,7 @@ window.Tooltip = ReactiveComponent
   render : -> 
 
 
-    tooltip = fetch('tooltip')
+    tooltip = bus_fetch('tooltip')
     return SPAN(null) if !tooltip.coords
 
     coords = tooltip.coords
@@ -133,7 +133,7 @@ window.Tooltip = ReactiveComponent
 
 
   componentDidUpdate: ->
-    tooltip = fetch('tooltip')
+    tooltip = bus_fetch('tooltip')
     if !tooltip.rendered_size && tooltip.coords 
 
       tooltip.rendered_size = 

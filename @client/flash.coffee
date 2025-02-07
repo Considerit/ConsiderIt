@@ -56,7 +56,7 @@ styles += """
 
 
 clear_flash = ->
-  flash = fetch('flash')
+  flash = bus_fetch('flash')
   flash.message = flash.time = flash.args = null 
   save flash
 
@@ -70,7 +70,7 @@ current_flash_message = null
 window.show_flash = (message, time_in_ms, args) ->
   time_in_ms ?= 3000
 
-  flash = fetch('flash')
+  flash = bus_fetch('flash')
   flash.message = message
   flash.time = time_in_ms
   flash.args = args
@@ -88,7 +88,7 @@ window.Flash = ReactiveComponent
   displayName: 'Flash'
 
   render : -> 
-    flash = fetch('flash')
+    flash = bus_fetch('flash')
   
     is_error = flash.args?.error 
 

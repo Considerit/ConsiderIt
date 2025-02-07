@@ -82,8 +82,8 @@ positionAvatarsWithJustLayout = (opts) ->
     positions[n.user] = [ Math.round((n.x - r) * 10) / 10, Math.round((n.y - r) * 10) / 10, r]
 
   if layout_params.verbose 
-    global_running_state = fetch 'histo-timing'
-    running_state = fetch opts.histo_key
+    global_running_state = bus_fetch 'histo-timing'
+    running_state = bus_fetch opts.histo_key
 
     global_running_state[layout_params.param_hash] ?=
       tick_time: 0 
@@ -194,8 +194,8 @@ Placer = (opts, bodies) ->
 
   cleanup_overlap = layout_params.cleanup_overlap or 2
   if layout_params.verbose 
-    running_state = fetch opts.histo_key
-    # histo_layout_explorer_options = fetch('histo_layout_explorer_options')
+    running_state = bus_fetch opts.histo_key
+    # histo_layout_explorer_options = bus_fetch('histo_layout_explorer_options')
 
   save_snapshots = layout_params.verbose && layout_params.save_snapshots #histo_layout_explorer_options.show_explorer
 
@@ -388,7 +388,7 @@ Placer = (opts, bodies) ->
 
     if save_snapshots
       current_cleanup = []
-      running_state = fetch opts.histo_key
+      running_state = bus_fetch opts.histo_key
 
     if !layout_params.show_histogram_layout
       for o,idx in opinions 
@@ -706,11 +706,11 @@ EvaluateLayout = (opts, bodies, placer) ->
   cleanup_overlap = layout_params.cleanup_overlap or 2
 
   if layout_params.verbose 
-    global_running_state = fetch 'histo-timing'
-    running_state = fetch opts.histo_key
+    global_running_state = bus_fetch 'histo-timing'
+    running_state = bus_fetch opts.histo_key
 
-  #   running_state = fetch opts.running_state
-  #   histo_layout_explorer_options = fetch('histo_layout_explorer_options')
+  #   running_state = bus_fetch opts.running_state
+  #   histo_layout_explorer_options = bus_fetch('histo_layout_explorer_options')
 
   # save_snapshots = layout_params.verbose && layout_params.save_snapshots #histo_layout_explorer_options.show_explorer
 

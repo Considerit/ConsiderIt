@@ -17,13 +17,13 @@ window.Notifications = ReactiveComponent
 
 
     settings = {}
-    current_user = fetch('/current_user')
+    current_user = bus_fetch('/current_user')
 
-    subdomain = fetch('/subdomain')
+    subdomain = bus_fetch('/subdomain')
 
     prefs = current_user.subscriptions
 
-    loc = fetch('location')
+    loc = bus_fetch('location')
     if loc.query_params?.unsubscribe
       @local.via_unsubscribe_link = true
 
@@ -134,7 +134,7 @@ window.Notifications = ReactiveComponent
 
 
   drawEmailSettings : () -> 
-    current_user = fetch('/current_user')
+    current_user = bus_fetch('/current_user')
 
     # make sure events for each trigger are kept up to date with notifier.config
     email_triggers = [
@@ -255,12 +255,12 @@ window.Notifications = ReactiveComponent
                   TRANSLATE "email_notifications.event.#{trigger.name}", trigger.label
 
   drawWatched: ->
-    current_user = fetch('/current_user')
+    current_user = bus_fetch('/current_user')
     watched_proposals = []
 
     for k,v of current_user.subscriptions
       if v == 'watched' && k.match(/\/proposal\//)
-        proposal = fetch(k)
+        proposal = bus_fetch(k)
         if proposal.name
           watched_proposals.push proposal
 

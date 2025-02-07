@@ -150,16 +150,16 @@ window.WysiwygEditor = ReactiveComponent
   displayName: 'WysiwygEditor'
 
   render : ->
-    my_data = fetch @props.editor_key
-    subdomain = fetch '/subdomain'
-    wysiwyg_editor = fetch 'wysiwyg_editor'
+    my_data = bus_fetch @props.editor_key
+    subdomain = bus_fetch '/subdomain'
+    wysiwyg_editor = bus_fetch 'wysiwyg_editor'
 
     @supports_Quill = !!Quill #&& new Quill()
 
     if !@local.initialized
       # We store the current value of the HTML at
       # this component's key. This allows the  
-      # parent component to fetch the value outside 
+      # parent component to bus_fetch the value outside 
       # of this generic wysiwyg component. 
       # However, we "dangerously" set the html of the 
       # editor to the original @props.html. This is 
@@ -205,13 +205,13 @@ window.WysiwygEditor = ReactiveComponent
     close_if_nothing_in_menu_focused = =>
       setTimeout => 
         if !$$.closest(document.activeElement, "##{id}")
-          wysiwyg_editor = fetch 'wysiwyg_editor'
+          wysiwyg_editor = bus_fetch 'wysiwyg_editor'
           wysiwyg_editor.showing = false
           save wysiwyg_editor
       , 0
 
 
-    if fetch('/current_user').is_admin || @props.allow_html
+    if bus_fetch('/current_user').is_admin || @props.allow_html
       toolbar_items.push 
         className: 'fa fa-code'
         title: 'Directly edit HTML'
@@ -238,7 +238,7 @@ window.WysiwygEditor = ReactiveComponent
             fontSize: 18
           defaultValue: my_data.html
           onChange: (e) => 
-            my_data = fetch(@props.editor_key)
+            my_data = bus_fetch(@props.editor_key)
             my_data.html = e.target.value
             save my_data
 
@@ -321,7 +321,7 @@ window.WysiwygEditor = ReactiveComponent
 
           DIV 
             style: _.defaults {}, @props.container_style
-            className: "wysiwyg_text #{if fetch('wysiwyg_editor').showing == @props.editor_key then 'focused' else ''}" # for formatting like proposals 
+            className: "wysiwyg_text #{if bus_fetch('wysiwyg_editor').showing == @props.editor_key then 'focused' else ''}" # for formatting like proposals 
           
             DIV 
               className: 'skiptranslate'
@@ -335,7 +335,7 @@ window.WysiwygEditor = ReactiveComponent
                 # editor area. This is handled at the root level
                 # in the same way that clicking outside a point closes it. 
                 # See Root.resetSelection.
-                wysiwyg_editor = fetch 'wysiwyg_editor'
+                wysiwyg_editor = bus_fetch 'wysiwyg_editor'
                 wysiwyg_editor.showing = @props.editor_key
                 save wysiwyg_editor
 
@@ -363,7 +363,7 @@ window.WysiwygEditor = ReactiveComponent
     delete keyboard.bindings[9]    # 9 is the key code for tab; restore tabbing for accessibility
 
     @editor.on 'text-change', (delta, old_contents, source) =>
-      my_data = fetch @props.editor_key
+      my_data = bus_fetch @props.editor_key
       my_data.html = getHTML()
 
       if source == 'user' && my_data.html.indexOf(' style') > -1

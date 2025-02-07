@@ -53,7 +53,7 @@ sense_viewport_visibility_changes = ->
       start_here = Math.floor(len / 2)
       found_visible = false
       for el, idx in els 
-        state = fetch el.getAttribute 'data-component'
+        state = bus_fetch el.getAttribute 'data-component'
         if state.in_viewport
           visibility[idx] = is_el_visible els[idx], scrollY, innerHeight, slop
           if visibility[idx]
@@ -73,7 +73,7 @@ sense_viewport_visibility_changes = ->
       # set visibility of elements
       for el, idx in els 
         visible = !!visibility[idx]
-        state = fetch el.getAttribute 'data-component'
+        state = bus_fetch el.getAttribute 'data-component'
         el.setAttribute 'data-in-viewport', visible
         if !state.in_viewport? || state.in_viewport != visible 
           state.in_viewport = visible 

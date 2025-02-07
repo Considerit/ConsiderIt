@@ -4,11 +4,11 @@ window.SU = ReactiveComponent
   displayName: 'SU'
 
   render : -> 
-    su = fetch 'su'
+    su = bus_fetch 'su'
 
     return SPAN null if !su.enabled
 
-    users = fetch '/users'
+    users = bus_fetch '/users'
 
 
 
@@ -41,7 +41,7 @@ window.SU = ReactiveComponent
               margin: 10
               cursor: 'pointer'
             onClick: do(user) => => 
-              current_user = fetch '/current_user'
+              current_user = bus_fetch '/current_user'
               current_user.trying_to = 'switch_users'
               current_user.switch_to = user
               save current_user, -> 
@@ -66,7 +66,7 @@ window.SU = ReactiveComponent
                 paddingLeft: 5
                 display: 'inline-block'
 
-              fetch(user).name
+              bus_fetch(user).name
 
 
   componentDidMount : ->
@@ -74,6 +74,6 @@ window.SU = ReactiveComponent
 
       key = (e and e.keyCode) or e.keyCode
       if key==85 && e.ctrlKey # cntrl-U       
-        su = fetch 'su'
+        su = bus_fetch 'su'
         su.enabled = !su.enabled
         save su 

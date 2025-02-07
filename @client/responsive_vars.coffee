@@ -9,7 +9,7 @@ require './browser_hacks'
 # Publishes via StateBus "responsive_vars" that has all the variables. 
 #
 # A convenience method for accessing those variables is provided. Say you want to do 
-# fetch('responsive_vars').CONTENT_WIDTH. Instead you can just write CONTENT_WIDTH().  
+# bus_fetch('responsive_vars').CONTENT_WIDTH. Instead you can just write CONTENT_WIDTH().  
 #
 #
 
@@ -41,7 +41,7 @@ window.NOT_PHONE_MEDIA =  "(min-width: #{PHONE_BREAKPOINT}px)   and (min-height:
 
 
 setResponsive = -> 
-  responsive = fetch('responsive_vars')
+  responsive = bus_fetch('responsive_vars')
 
   # 320 is portrait on iPhone SE
   w = Math.max 320, document.documentElement.clientWidth
@@ -81,7 +81,7 @@ setResponsive = ->
   for k,v of new_vals
 
     # Convenience method for programmers to access responsive variables.
-    window[k] ?= do(k) -> -> fetch('responsive_vars')[k]
+    window[k] ?= do(k) -> -> bus_fetch('responsive_vars')[k]
 
     needs_save ||= responsive[k] != v
 

@@ -11,9 +11,9 @@ window.CustomizationsDash = ReactiveComponent
 
   render : -> 
 
-    subdomain = fetch '/subdomain'
-    current_user = fetch '/current_user'
-    subdomains = fetch '/subdomains'
+    subdomain = bus_fetch '/subdomain'
+    current_user = bus_fetch '/current_user'
+    subdomains = bus_fetch '/subdomains'
 
     if !@local.compare_to?
       @local.compare_to = ''
@@ -281,7 +281,7 @@ window.CustomizationsDash = ReactiveComponent
 
 
   submit_change : (property, value, is_javascript) -> 
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
     if is_javascript 
       value = "#{FUNCTION_IDENTIFIER}#{value}"
 
@@ -290,12 +290,12 @@ window.CustomizationsDash = ReactiveComponent
 
 
   submit : -> 
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
     subdomain.customizations = JSON.parse @local.stringified_current_value
     @_save_changes()
 
   _save_changes : ->
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
 
     @local.save_complete = false
     save @local

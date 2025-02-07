@@ -49,7 +49,7 @@ styles += """
 
 
 question_index = (question) -> 
-  subdomain = fetch '/subdomain'
+  subdomain = bus_fetch '/subdomain'
   qidx = null
   for q, idx in (subdomain.customizations.user_tags or [])
     if q.self_report?.question == question.self_report?.question
@@ -59,7 +59,7 @@ question_index = (question) ->
 
 delete_question = (question) -> 
   if confirm("Are you sure you want to delete this question?")
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
 
     delete_idx = question_index question 
 
@@ -69,7 +69,7 @@ delete_question = (question) ->
 
 
 move_question = (from, to) -> 
-  subdomain = fetch '/subdomain'
+  subdomain = bus_fetch '/subdomain'
 
   uneditable_tags = (q for q in subdomain.customizations.user_tags when !q.self_report)
   questions = (q for q in subdomain.customizations.user_tags when q.self_report)
@@ -85,7 +85,7 @@ move_question = (from, to) ->
 
 
 window.AnonymizationCheckForSigninQuestions = -> 
-  subdomain = fetch '/subdomain'
+  subdomain = bus_fetch '/subdomain'
   if subdomain.customizations.anonymize_permanently && !subdomain.customizations.anonymization_safe_opinion_filters
     questions = (q for q in subdomain.customizations.user_tags when q.self_report && q.key.indexOf('pledge_taken') == -1)
 
@@ -117,7 +117,7 @@ window.AnonymizationCheckForSigninQuestions = ->
               style: 
                 maxWidth: 34
 
-              src: "#{fetch('/application').asset_host}/images/#{message.img}"
+              src: "#{bus_fetch('/application').asset_host}/images/#{message.img}"
         message.label
   return SPAN null
 
@@ -126,10 +126,10 @@ window.IntakeQuestions = ReactiveComponent
 
   render : -> 
 
-    subdomain = fetch '/subdomain'
-    current_user = fetch '/current_user'
+    subdomain = bus_fetch '/subdomain'
+    current_user = bus_fetch '/current_user'
 
-    intake_q_state = fetch 'intake-questions'
+    intake_q_state = bus_fetch 'intake-questions'
 
     subdomain.customizations.user_tags ?= []
 
@@ -357,8 +357,8 @@ window.EditIntakeQuestion = ReactiveComponent
   mixins: [Modal]
 
   render: -> 
-    subdomain = fetch '/subdomain'
-    intake_q_state = fetch 'intake-questions'
+    subdomain = bus_fetch '/subdomain'
+    intake_q_state = bus_fetch 'intake-questions'
 
     question = intake_q_state.editing
 

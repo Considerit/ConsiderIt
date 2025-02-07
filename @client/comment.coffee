@@ -2,11 +2,11 @@ window.Comment = ReactiveComponent
   displayName: 'Comment'
 
   render: -> 
-    comment = fetch @props.comment
-    current_user = fetch '/current_user'
-    point = fetch( comment.point )
-    proposal = fetch( point.proposal )
-    commentor_name =  fetch(comment.user).name
+    comment = bus_fetch @props.comment
+    current_user = bus_fetch '/current_user'
+    point = bus_fetch( comment.point )
+    proposal = bus_fetch( point.proposal )
+    commentor_name =  bus_fetch(comment.user).name
 
     commentor_opinion = _.findWhere proposal.opinions, {user: comment.user}    
 
@@ -111,18 +111,18 @@ window.Discussion = ReactiveComponent
 
   render : -> 
 
-    point = fetch @props.point
-    proposal = fetch point.proposal
+    point = bus_fetch @props.point
+    proposal = bus_fetch point.proposal
     is_pro = point.is_pro
 
     your_opinion = proposal.your_opinion
     if your_opinion.key 
-      fetch your_opinion
+      bus_fetch your_opinion
     your_opinion.point_inclusions ?= []
     point_included = _.contains(your_opinion.point_inclusions, point.key)
     in_wings = getProposalMode(proposal) == 'crafting' && !point_included
 
-    comments = fetch(@props.comments).comments
+    comments = bus_fetch(@props.comments).comments
     
     comments.sort (a,b) -> a.created_at > b.created_at
 
@@ -173,7 +173,7 @@ window.Discussion = ReactiveComponent
 
 
     close_point = (e) ->
-      loc = fetch('location')
+      loc = bus_fetch('location')
       delete loc.query_params.selected
       save loc
       e.preventDefault()
@@ -276,7 +276,7 @@ window.Discussion = ReactiveComponent
     @setHeight()
 
   setHeight : -> 
-    s = fetch('reasons_height_adjustment')
+    s = bus_fetch('reasons_height_adjustment')
 
     el = ReactDOM.findDOMNode(@)
 

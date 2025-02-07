@@ -96,8 +96,8 @@ window.ModerationDash = ReactiveComponent
 
   render : -> 
     moderations = @data().moderations
-    subdomain = fetch '/subdomain'
-    dash = fetch 'moderation_dash'
+    subdomain = bus_fetch '/subdomain'
+    dash = bus_fetch 'moderation_dash'
 
 
     default_quarantine_message ?= subdomain.customizations.moderation_default_quarantine_message
@@ -137,12 +137,12 @@ window.ModerationDash = ReactiveComponent
       moderations[model] ||= []
 
       moderations[model].sort (a,b) -> 
-        new Date(fetch(b.moderatable).created_at) - new Date(fetch(a.moderatable).created_at)
+        new Date(bus_fetch(b.moderatable).created_at) - new Date(bus_fetch(a.moderatable).created_at)
 
 
       for i in moderations[model]
         # register a data dependency, else resort doesn't happen when an item changes
-        fetch i.key
+        bus_fetch i.key
 
         if !i.status? || i.updated_since_last_evaluation
           reviewable.push i
@@ -329,7 +329,7 @@ window.ModerationDash = ReactiveComponent
 # When the moderator makes a judgment, /proposals and /lists/* are dirty. 
 # However, returning them with each judgment is unnecessarily problematic 
 # for performance. So we'll try to wait until after the moderator is back 
-# on a dialogue page to finally fetch the dirty objects. 
+# on a dialogue page to finally bus_fetch the dirty objects. 
 delayed_fetch_timer = null
 delayed_fetch_after_moderation_judgment = -> 
   if !delayed_fetch_timer
@@ -344,24 +344,24 @@ ModerateItem = ReactiveComponent
   displayName: 'ModerateItem'
 
   render : ->
-    item = fetch @props.item
+    item = bus_fetch @props.item
 
     class_name = item.moderatable_type
-    moderatable = fetch(item.moderatable)
-    author = if moderatable.user then fetch(moderatable.user) else null
+    moderatable = bus_fetch(item.moderatable)
+    author = if moderatable.user then bus_fetch(moderatable.user) else null
 
 
     if class_name == 'Point'
       point = moderatable
-      proposal = fetch(moderatable.proposal)
+      proposal = bus_fetch(moderatable.proposal)
       tease = "#{moderatable.nutshell.substring(0, 120)}..."
       header = moderatable.nutshell
       details = moderatable.text 
       href = "/#{proposal.slug}?selected=#{point.key}"
     else if class_name == 'Comment'
-      point = fetch(moderatable.point)
-      proposal = fetch(point.proposal)
-      comments = fetch("/comments/#{point.id}")
+      point = bus_fetch(moderatable.point)
+      proposal = bus_fetch(point.proposal)
+      comments = bus_fetch("/comments/#{point.id}")
       tease = "#{moderatable.body.substring(0, 120)}..."
       header = moderatable.body
       details = ''
@@ -374,7 +374,7 @@ ModerateItem = ReactiveComponent
       href = "/#{proposal.slug}"
 
 
-    current_user = fetch('/current_user')
+    current_user = bus_fetch('/current_user')
     
     judge = (e, immediate_with_message) => 
       if parseInt(e.target.value) == 1
@@ -426,8 +426,8 @@ ModerateItem = ReactiveComponent
                 for comment in _.uniq( _.map(comments.comments, (c) -> c.key).concat(moderatable.key)) when comment != moderatable.key
                   BUBBLE_WRAP 
                     key: comment
-                    title: fetch(comment).body
-                    user: fetch(comment).user
+                    title: bus_fetch(comment).body
+                    user: bus_fetch(comment).user
                     width: 'min(100%, 700px)'
                     avatar_style: if TABLET_SIZE() then {width: 32, height: 32, left: -44}
 
@@ -540,7 +540,7 @@ ModerateItem = ReactiveComponent
                   if message
                     is_quarantine = judgment == 2
                     is_failure = judgment == 0
-                    subdomain = fetch '/subdomain'
+                    subdomain = bus_fetch '/subdomain'
 
                     if is_failure && !subdomain.customizations.moderation_default_fail_message
                       default_fail_message = 
@@ -641,7 +641,7 @@ ModerateItem = ReactiveComponent
 
               'Fail'
 
-          if fetch('/subdomain').customizations.moderation_default_fail_message
+          if bus_fetch('/subdomain').customizations.moderation_default_fail_message
             SPAN 
               style: 
                 position: 'relative'
@@ -685,11 +685,11 @@ ModerateItem = ReactiveComponent
           if item.updated_since_last_evaluation
             SPAN style: {}, "Updated since last moderation"
           else if item.status == 1
-            SPAN style: {}, "Passed by #{if item.user then fetch(item.user).name else 'Unknown'} on #{new Date(item.updated_at).toDateString()}"
+            SPAN style: {}, "Passed by #{if item.user then bus_fetch(item.user).name else 'Unknown'} on #{new Date(item.updated_at).toDateString()}"
           else if item.status == 2
-            SPAN style: {}, "Quarantined by #{if item.user then fetch(item.user).name else 'Unknown'} on #{new Date(item.updated_at).toDateString()}"
+            SPAN style: {}, "Quarantined by #{if item.user then bus_fetch(item.user).name else 'Unknown'} on #{new Date(item.updated_at).toDateString()}"
           else if item.status == 0
-            SPAN style: {}, "Failed by #{if item.user then fetch(item.user).name else 'Unknown'} on #{new Date(item.updated_at).toDateString()}"
+            SPAN style: {}, "Failed by #{if item.user then bus_fetch(item.user).name else 'Unknown'} on #{new Date(item.updated_at).toDateString()}"
 
 
 
@@ -725,8 +725,8 @@ BanHammer = ReactiveComponent
   displayName: 'BanHammer'
 
   render: ->
-    users = fetch '/users'
-    subdomain = fetch '/subdomain'
+    users = bus_fetch '/users'
+    subdomain = bus_fetch '/subdomain'
 
     bans = subdomain.customizations.shadow_bans or []
 
@@ -735,7 +735,7 @@ BanHammer = ReactiveComponent
     for model, categories of @props.all_items
       for moderation_status, items of categories when moderation_status == 'failed'
         for item in items.items
-          u = fetch(item.moderatable).user
+          u = bus_fetch(item.moderatable).user
           failed_content_by_user[u] ?= []
           failed_content_by_user[u].push item
 
@@ -750,7 +750,7 @@ BanHammer = ReactiveComponent
       for model, categories of @props.all_items
         for moderation_status, items of categories when moderation_status != 'failed'
           for item in items.items
-            if fetch(item.moderatable).user == user.key
+            if bus_fetch(item.moderatable).user == user.key
               item.status = 0
               save item, delayed_fetch_after_moderation_judgment
 
@@ -804,7 +804,7 @@ BanHammer = ReactiveComponent
           else 
             for participant, failed of failed_content_by_user
               alt_row = !alt_row
-              participant = fetch(participant)
+              participant = bus_fetch(participant)
 
               [ DIV 
                   className: "row #{if alt_row then 'alt'}"
@@ -866,7 +866,7 @@ DirectMessage = ReactiveComponent
     
     return SPAN null if !@props.to 
 
-    user = fetch(@props.to)
+    user = bus_fetch(@props.to)
 
 
     if @props.default_message
@@ -951,7 +951,7 @@ DirectMessage = ReactiveComponent
       recipient: @props.to
       subject: el.querySelector('#message_subject').value
       body: el.querySelector('#message_body').value 
-      sender_mask: @props.sender_mask or fetch('/current_user').name
+      sender_mask: @props.sender_mask or bus_fetch('/current_user').name
       # authenticity_token: arest.csrf()
 
     save new_message, =>

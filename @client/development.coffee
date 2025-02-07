@@ -17,7 +17,7 @@ Development = ReactiveComponent
 
 
     if location.hostname == 'localhost' && @local.hover_top
-      subdomains = fetch('/subdomains').subs
+      subdomains = bus_fetch('/subdomains').subs
       return SPAN null if @is_waiting()
 
       subdomains = (s for s in subdomains when (!@local.only_with_activity || s.activity) && (!@local.highlight_customized || s.customizations))
@@ -108,8 +108,8 @@ Development = ReactiveComponent
 
       if key==14 # cntrl-N        
 
-        subdomains = fetch '/subdomains'
-        subdomain = fetch '/subdomain'
+        subdomains = bus_fetch '/subdomains'
+        subdomain = bus_fetch '/subdomain'
 
         cur_idx = -1
         for sub, idx in subdomains.subs

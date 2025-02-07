@@ -40,7 +40,7 @@ window.BrowserHacks = ReactiveComponent
   displayName: 'BrowserHacks'
 
   render : ->
-    browser = fetch 'browser'
+    browser = bus_fetch 'browser'
     if  browser.is_opera_mini #|| browser.is_android_browser
       DIV 
         style: 

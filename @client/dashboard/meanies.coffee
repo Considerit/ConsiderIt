@@ -39,9 +39,9 @@ window.Meanies = ReactiveComponent
   componentDidUpdate: -> @loadScripts()
 
   render : -> 
-    users = fetch('/users').users
-    visits = fetch('/visits').visits
-    opinions = fetch('/opinions').opinions
+    users = bus_fetch('/users').users
+    visits = bus_fetch('/visits').visits
+    opinions = bus_fetch('/opinions').opinions
 
     return ProposalsLoading() if !users || !visits  || !opinions
 
@@ -183,7 +183,7 @@ window.Meanies = ReactiveComponent
         for user in users            
           similarities = cluster[user] 
 
-          user = fetch(user)
+          user = bus_fetch(user)
           cells = cells.concat [
             DIV 
               className: "meanie-cell"

@@ -41,10 +41,10 @@ window.NewProposal = ReactiveComponent
     list_key = @props.list_key
     list_name = list_key.substring(5)
 
-    list_state = fetch list_key
-    loc = fetch 'location'
+    list_state = bus_fetch list_key
+    loc = bus_fetch 'location'
 
-    current_user = fetch '/current_user'
+    current_user = bus_fetch '/current_user'
 
     # if list_state.adding_new_proposal != list_key && \
     #    loc.query_params.new_proposal == list_key
@@ -360,10 +360,10 @@ window.NewProposal = ReactiveComponent
                 name = document.getElementById("#{list_name}-name").value
 
                 fields = 
-                  description: fetch("description-new-proposal-#{list_name}").html
+                  description: bus_fetch("description-new-proposal-#{list_name}").html
 
                 for field in proposal_fields.additional_fields
-                  fields[field] = fetch("#{field}-new-proposal-#{list_name}").html
+                  fields[field] = bus_fetch("#{field}-new-proposal-#{list_name}").html
 
                 description = proposal_fields.create_description(fields)
                 active = true 

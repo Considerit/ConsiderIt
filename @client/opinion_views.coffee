@@ -15,12 +15,12 @@ save
 
 
 window.compose_opinion_views = (opinions, proposal, opinion_views, ignore) -> 
-  opinion_views ?= fetch('opinion_views')
+  opinion_views ?= bus_fetch('opinion_views')
   opinion_views.active_views ?= {}
   ignore ?= {}
   active_views = opinion_views.active_views
 
-  proposal = fetch proposal
+  proposal = bus_fetch proposal
 
   if !opinions
     opinions = opinionsForProposal(proposal)
@@ -69,7 +69,7 @@ window.compose_opinion_views = (opinions, proposal, opinion_views, ignore) ->
   {weights, salience, groups}
   
 window.get_opinions_by_users = ->
-  opinions = fetch('/opinions')
+  opinions = bus_fetch('/opinions')
   opinions_by_user = {}
   for o in (opinions.opinions or [])
     opinions_by_user[o.user] ?= []
@@ -91,7 +91,7 @@ window.get_opinions_for_proposal = (opinions, proposal, weights) ->
 # qualifying user_tags
 window.get_participant_attributes = -> 
   attributes = [] 
-  is_admin = fetch('/current_user').is_admin
+  is_admin = bus_fetch('/current_user').is_admin
   show_others = (!customization('hide_opinions') || is_admin) && (!customization('anonymize_everything') || customization('anonymization_safe_opinion_filters'))
   custom_views = customization 'opinion_views'
   user_tags = customization 'user_tags'
@@ -145,7 +145,7 @@ window.get_participant_attributes = ->
             key: name
             name: tag.view_name or tag.name or tag.self_report?.question or name
             pass: if (tag.self_report?.input or tag.input) != 'checklist' then do(name, tag) -> (u, value) -> 
-              result = tag.compute?(u) or fetch(u)?.tags?[name]
+              result = tag.compute?(u) or bus_fetch(u)?.tags?[name]
               if value?
                 if (tag.self_report?.input or tag.input) == 'boolean' && value in [true, false, "true", "false"] && result in [true, false, "true", "false"]
                   result = "#{result}"
@@ -177,7 +177,7 @@ window.get_user_groups_from_views = (groups) ->
 
 window.group_colors = {}
 window.get_color_for_groups = (group_array) ->
-  opinion_views = fetch 'opinion_views'  
+  opinion_views = bus_fetch 'opinion_views'  
   return group_colors if !opinion_views.active_views.group_by
   group_array ||= []
 
@@ -233,8 +233,8 @@ add_influence = (influenced, influencer, amount) ->
   influence_network[influenced].influenced_by[influencer] += amount
 
 build_influencer_network = ->
-  proposals = fetch '/proposals'
-  points = fetch '/points'
+  proposals = bus_fetch '/proposals'
+  points = bus_fetch '/points'
 
   if !points.points || !proposals.proposals 
     return
@@ -278,8 +278,8 @@ just_you_filter =
   key: 'just_you'
   name: 'Just you'
   pass: (u) -> 
-    user = fetch(u)
-    user.key == fetch('/current_user').user
+    user = bus_fetch(u)
+    user.key == bus_fetch('/current_user').user
 
 
 default_weights = -> 
@@ -313,13 +313,13 @@ default_weights = ->
       name: translator 'opinion_views.weights_tradeoffs', 'Tradeoffs recognized'
       label: translator 'opinion_views.weights_tradeoffs_label', 'Add weight to opinions that acknowledge both pro and con tradeoffs.'
       ready: (opinions, proposal) -> 
-        !!fetch("/points").points
+        !!bus_fetch("/points").points
       weight: (u, opinion, proposal) ->
         point_inclusions = opinion.point_inclusions or []
         pros = 0 
         cons = 0  
         for inc in point_inclusions
-          pnt = fetch(inc)
+          pnt = bus_fetch(inc)
           if pnt.is_pro 
             pros += 1
           else 
@@ -347,7 +347,7 @@ default_weights = ->
       name: translator 'opinion_views.weights_influence', 'Influence'
       label: translator 'opinion_views.weights_influence_label', 'Add weight to the opinions of people who have contributed proposals and pro/con reasons that other people have found valuable.'
       ready: ->
-        !!fetch('/proposals').proposals && !!fetch('/points').points
+        !!bus_fetch('/proposals').proposals && !!bus_fetch('/points').points
 
       weight: (u, opinion, proposal) ->
         if !influencer_scores_initialized
@@ -379,7 +379,7 @@ default_weights = ->
 
 get_weights = ->
   custom_views = customization 'opinion_views'
-  is_admin = fetch('/current_user').is_admin
+  is_admin = bus_fetch('/current_user').is_admin
   show_others = (!customization('hide_opinions') || is_admin) && (!customization('anonymize_everything') || customization('anonymization_safe_opinion_filters'))
 
   weights = default_weights()
@@ -410,7 +410,7 @@ activate_opinion_date_filter = (view) ->
 
 
 _activate_opinion_view = (view, view_type, replace_existing) ->  
-  opinion_views = fetch('opinion_views')
+  opinion_views = bus_fetch('opinion_views')
   opinion_views.active_views ?= {}
   active_views = opinion_views.active_views
 
@@ -467,7 +467,7 @@ _activate_opinion_view = (view, view_type, replace_existing) ->
 
 
 window.date_option_changed = (activated) ->
-  date_toggle_state = fetch 'opinion-date-filter'
+  date_toggle_state = bus_fetch 'opinion-date-filter'
   tz_offset = new Date().getTimezoneOffset() * 60 * 1000
 
   pass = (u, opinion, proposal) -> 
@@ -511,7 +511,7 @@ default_date_options = ->
       key: 'all'
       label: translator('opinion_views.date_all', 'All')
       callback: ->
-        opinion_views = fetch 'opinion_views'
+        opinion_views = bus_fetch 'opinion_views'
         clear_custom_date()
         if opinion_views.active_views['date']
           delete opinion_views.active_views['date']
@@ -523,17 +523,17 @@ default_date_options = ->
   ]
 
 clear_custom_date = ->
-  date_toggle_state = fetch 'opinion-date-filter'
+  date_toggle_state = bus_fetch 'opinion-date-filter'
   date_toggle_state.start = null
   date_toggle_state.end = null
   save date_toggle_state
 
 
 DateFilters = ->
-  opinion_views = fetch 'opinion_views'
+  opinion_views = bus_fetch 'opinion_views'
   tz_offset = new Date().getTimezoneOffset() * 60 * 1000
 
-  date_toggle_state = fetch 'opinion-date-filter'
+  date_toggle_state = bus_fetch 'opinion-date-filter'
   date_options = default_date_options()
   DIV 
     className: 'grays' # for toggle buttons
@@ -595,9 +595,9 @@ to_date_str = (ms) ->
 
 
 # RegistrationFilter = ->
-#   opinion_views = fetch 'opinion_views'
+#   opinion_views = bus_fetch 'opinion_views'
 
-#   date_toggle_state = fetch 'opinion-date-filter'
+#   date_toggle_state = bus_fetch 'opinion-date-filter'
 #   date_options = default_date_options()
 #   DIV 
 #     className: 'grays' # for toggle buttons
@@ -650,8 +650,8 @@ to_date_str = (ms) ->
 
 
 clear_all = (local_state) ->
-  opinion_views = fetch 'opinion_views'
-  opinion_views_ui = fetch 'opinion_views_ui'
+  opinion_views = bus_fetch 'opinion_views'
+  opinion_views_ui = bus_fetch 'opinion_views_ui'
 
   opinion_views_ui.last_interacted_with = local_state.key or local_state
   save opinion_views_ui
@@ -670,15 +670,15 @@ clear_all = (local_state) ->
       opinion_views_ui[attr] = {}
   save opinion_views_ui
 
-  date_state = fetch 'opinion-date-filter'
+  date_state = bus_fetch 'opinion-date-filter'
   date_state.start = date_state.end = date_state.active = null 
   save date_state
 
 reset_to_all = (local_state) ->
   clear_all(local_state)
-  is_admin = fetch('/current_user').is_admin  
+  is_admin = bus_fetch('/current_user').is_admin  
   show_others = !customization('hide_opinions') || is_admin
-  opinion_views_ui = fetch 'opinion_views_ui'  
+  opinion_views_ui = bus_fetch 'opinion_views_ui'  
   if show_others
     opinion_views_ui.active = 'all'
   else 
@@ -686,12 +686,12 @@ reset_to_all = (local_state) ->
   save opinion_views_ui
 
 user_has_set_a_view = ->
-  opinion_views = fetch 'opinion_views'
+  opinion_views = bus_fetch 'opinion_views'
   view_is_set = false 
   for k,v of opinion_views.active_views
     if v.view_type == 'filter' && v.options
       # user hasn't set a view if they've selected all the attribute values, as that essentially means "all"
-      opinion_views_ui = fetch 'opinion_views_ui'
+      opinion_views_ui = bus_fetch 'opinion_views_ui'
       checked = 0
       for val in v.options
         if !!opinion_views_ui.visible_attribute_values[v.key][val]
@@ -722,18 +722,18 @@ OpinionViews = ReactiveComponent
   render : -> 
 
 
-    return SPAN null if !fetch('/subdomain').name
-    local_state = fetch @props.ui_key or @local.key
+    return SPAN null if !bus_fetch('/subdomain').name
+    local_state = bus_fetch @props.ui_key or @local.key
 
     local_state.minimized ?= true 
 
     has_other_filters = get_participant_attributes().length > 0
-    opinion_views = fetch 'opinion_views'
-    opinion_views_ui = fetch 'opinion_views_ui'
+    opinion_views = bus_fetch 'opinion_views'
+    opinion_views_ui = bus_fetch 'opinion_views_ui'
 
 
 
-    is_admin = fetch('/current_user').is_admin
+    is_admin = bus_fetch('/current_user').is_admin
     show_others = (!customization('hide_opinions') || is_admin) # && !@props.disable_switching
 
     show_all_not_available = !show_others
@@ -874,9 +874,9 @@ OpinionViews = ReactiveComponent
 
 
   MinimizeExpandButton: ->
-    opinion_views_ui = fetch('opinion_views_ui')
+    opinion_views_ui = bus_fetch('opinion_views_ui')
     return SPAN(null) if !user_has_set_a_view() || opinion_views_ui.active != 'custom'
-    local_state = fetch @props.ui_key or @local.key
+    local_state = bus_fetch @props.ui_key or @local.key
 
     toggle_expanded = (e) =>
       opinion_views_ui.last_interacted_with = local_state.key or local_state
@@ -914,8 +914,8 @@ get_participant_attributes_with_defaults = ->
 
 # manages opinion_view_ui state around which attributes the user is interacting with
 toggle_attribute_visibility = (attribute) ->
-  opinion_views = fetch 'opinion_views'
-  opinion_views_ui = fetch 'opinion_views_ui'
+  opinion_views = bus_fetch 'opinion_views'
+  opinion_views_ui = bus_fetch 'opinion_views_ui'
   opinion_views_ui.activated_attributes[attribute.key] = !opinion_views_ui.activated_attributes[attribute.key]
   if !opinion_views_ui.activated_attributes[attribute.key] && opinion_views_ui.group_by == attribute.key
     toggle_group opinion_views.active_views.group_by
@@ -925,7 +925,7 @@ toggle_attribute_visibility = (attribute) ->
   save opinion_views_ui
 
   if attribute.key == 'date'
-    date_toggle_state = fetch 'opinion-date-filter'
+    date_toggle_state = bus_fetch 'opinion-date-filter'
     date_toggle_state.active = null 
     save date_toggle_state
 
@@ -935,7 +935,7 @@ toggle_attribute_visibility = (attribute) ->
 
 
 window.attribute_passes = (u, attribute, passing_vals) -> 
-  user = fetch(u)
+  user = bus_fetch(u)
 
   return false if !user.tags
 
@@ -967,7 +967,7 @@ window.attribute_passes = (u, attribute, passing_vals) ->
 
 # Creates a view function on the fly given the values selected for an attribute by a user
 construct_view_for_attribute = (attribute) ->
-  opinion_views_ui = fetch 'opinion_views_ui'
+  opinion_views_ui = bus_fetch 'opinion_views_ui'
   attr_key = attribute.key
   # having no selections for an attribute paradoxically means that all values are valid.
   has_one_enabled = false 
@@ -994,7 +994,7 @@ construct_view_for_attribute = (attribute) ->
 
 # manages opinion_view_ui state and the view for grouping by an attribute
 set_group_by_attribute = (attribute) ->
-  opinion_views_ui = fetch 'opinion_views_ui'
+  opinion_views_ui = bus_fetch 'opinion_views_ui'
   opinion_views_ui.group_by = attribute.key 
   save opinion_views_ui
 
@@ -1003,7 +1003,7 @@ set_group_by_attribute = (attribute) ->
     name: attribute.name
     continuous_value: attribute.continuous_value
     group: (u, opinion, proposal) -> 
-      group_val = (if attribute.pass then attribute.pass(u) else fetch(u).tags[opinion_views_ui.group_by]) or i18n().unreported
+      group_val = (if attribute.pass then attribute.pass(u) else bus_fetch(u).tags[opinion_views_ui.group_by]) or i18n().unreported
       if attribute.input_type == 'checklist'
         vals = group_val.split(CHECKLIST_SEPARATOR).filter (i) -> i.length > 0
       else 
@@ -1029,8 +1029,8 @@ window.OpinionViewInteractionWrapper = ReactiveComponent
   displayName: 'OpinionViewInteractionWrapper'
 
   render: ->
-    opinion_views_ui = fetch 'opinion_views_ui'
-    local_state = fetch @props.ui_key or @local
+    opinion_views_ui = bus_fetch 'opinion_views_ui'
+    local_state = bus_fetch @props.ui_key or @local
 
 
     DIV 
@@ -1083,8 +1083,8 @@ InteractiveOpinionViews = ReactiveComponent
   displayName: 'InteractiveOpinionViews'
   render: -> 
 
-    opinion_views = fetch 'opinion_views'
-    opinion_views_ui = fetch 'opinion_views_ui'
+    opinion_views = bus_fetch 'opinion_views'
+    opinion_views_ui = bus_fetch 'opinion_views_ui'
 
     attributes = get_participant_attributes_with_defaults()
 
@@ -1380,7 +1380,7 @@ InteractiveOpinionViews = ReactiveComponent
 
 # returns a list of the active opinion weights
 get_activated_weights = ->
-  opinion_views = fetch 'opinion_views'
+  opinion_views = bus_fetch 'opinion_views'
 
   activated_weights = {}
   for k,v of opinion_views.active_views
@@ -1394,8 +1394,8 @@ NonInteractiveOpinionViews = ReactiveComponent
   render: -> 
 
     minimized_views = []
-    opinion_views = fetch 'opinion_views'
-    opinion_views_ui = fetch 'opinion_views_ui'
+    opinion_views = bus_fetch 'opinion_views'
+    opinion_views_ui = bus_fetch 'opinion_views_ui'
 
     attributes = get_participant_attributes_with_defaults()
 
@@ -1408,7 +1408,7 @@ NonInteractiveOpinionViews = ReactiveComponent
       unchecked = []
 
       if attribute.key == 'date'
-        date_toggle_state = fetch 'opinion-date-filter'
+        date_toggle_state = bus_fetch 'opinion-date-filter'
 
         continue if !opinion_views.active_views['date'] || date_toggle_state.active == 'all' || (date_toggle_state.active == 'custom' && !date_toggle_state.start && !date_toggle_state.end)
 
@@ -1554,7 +1554,7 @@ NonInteractiveOpinionViews = ReactiveComponent
               BUTTON 
                 className: "minimized_view_close" 
                 onClick: =>
-                  local_state = fetch @props.ui_key or @local
+                  local_state = bus_fetch @props.ui_key or @local
 
                   mini.toggle()
                   if !user_has_set_a_view()
@@ -1566,7 +1566,7 @@ NonInteractiveOpinionViews = ReactiveComponent
 VerificationProcessExplanation = ReactiveComponent
   displayName: 'VerificationProcessExplanation'
   render: -> 
-    users = fetch '/users'
+    users = bus_fetch '/users'
     callout = "about verification"
     DIV 
       style: 
@@ -1695,7 +1695,7 @@ VerificationProcessExplanation = ReactiveComponent
               'Verification status'
 
             for user in users.users 
-              user = fetch user 
+              user = bus_fetch user 
               if user.tags.verified && user.tags.verified.toLowerCase() not in ['no', 'false']
                 DIV 
                   style:
@@ -1953,7 +1953,7 @@ styles += """
 """
 
 window.ToggleButtons = (items, view_state, style) ->
-  toggle_state = fetch view_state 
+  toggle_state = bus_fetch view_state 
   toggle_state.active ?= items[0]?.key or items[0]?.label
 
   toggled = (e, item) ->
@@ -1998,11 +1998,11 @@ window.passes_running_timelapse_simulation = (dt) ->
   !window.running_timelapse_simulation? || (new Date(dt).getTime() < window.running_timelapse_simulation)
 
 window.participation_timelapse = (step, interval) -> 
-  filter_out = fetch 'filtered'
+  filter_out = bus_fetch 'filtered'
   interval ?= 500
   step ?= 1 * 60 * 60 * 1000
   
-  proposals = fetch '/proposals'
+  proposals = bus_fetch '/proposals'
 
   if !proposals.proposals 
     setTimeout ->
@@ -2015,7 +2015,7 @@ window.participation_timelapse = (step, interval) ->
   first = Infinity
 
   for prop in proposals.proposals
-    prop = fetch(prop)
+    prop = bus_fetch(prop)
     for o in prop.opinions
       t = new Date(o.created_at or o.updated_at).getTime()
       if t > last 
@@ -2024,7 +2024,7 @@ window.participation_timelapse = (step, interval) ->
         first = t
 
   date_options = default_date_options()
-  date_toggle_state = fetch 'opinion-date-filter'
+  date_toggle_state = bus_fetch 'opinion-date-filter'
   change_date = (end) -> 
     date_toggle_state.end = end
     save date_toggle_state

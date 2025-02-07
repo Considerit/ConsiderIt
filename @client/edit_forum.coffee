@@ -1,6 +1,6 @@
 
 window.stop_editing_forum = ->
-  edit_forum = fetch 'edit_forum'  
+  edit_forum = bus_fetch 'edit_forum'  
   for key in Object.keys(edit_forum) when key != 'key'
     delete edit_forum[key]
   save edit_forum
@@ -25,9 +25,9 @@ window.EditForum = ReactiveComponent
 
   render: ->
 
-    subdomain = fetch '/subdomain'
-    current_user = fetch '/current_user'
-    edit_forum = fetch 'edit_forum'
+    subdomain = bus_fetch '/subdomain'
+    current_user = bus_fetch '/current_user'
+    edit_forum = bus_fetch 'edit_forum'
 
     if !current_user.is_admin
       return DIV null 
@@ -39,7 +39,7 @@ window.EditForum = ReactiveComponent
 
     is_light = is_light_background()
 
-    show_dash_modal = fetch 'show_dash_modal'
+    show_dash_modal = bus_fetch 'show_dash_modal'
     return SPAN null if show_dash_modal.showing
 
     if !edit_forum.editing

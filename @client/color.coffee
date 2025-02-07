@@ -144,7 +144,7 @@ window.getColors = (num, continuous) ->
 
 
 window.is_light_background = (color) ->
-  color ||= fetch('edit_banner').background_css or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
+  color ||= bus_fetch('edit_banner').background_css or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
   if color of named_colors
     color = named_colors[color]
 

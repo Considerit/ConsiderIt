@@ -82,7 +82,7 @@ window.Dock = ReactiveComponent
   displayName: 'Dock'
 
   render : -> 
-    dock = fetch @key
+    dock = bus_fetch @key
 
     if dock.docked
       [x, y] = [dock.x, dock.y]
@@ -118,7 +118,7 @@ window.Dock = ReactiveComponent
   UNSAFE_componentWillMount : ->
 
     @key = if @props.dock_key? then @props.dock_key else @local.key
-    dock = fetch @key,
+    dock = bus_fetch @key,
       docked: false
       y: undefined
       x: undefined
@@ -305,7 +305,7 @@ dockingStation =
     
 
     for own k,v of dockingStation.registry
-      dock = fetch k
+      dock = bus_fetch k
 
       if dock.docked && v().height != dockingStation.component_history[k].previous.height
         height_change = v().height - dockingStation.component_history[k].previous.height
@@ -346,7 +346,7 @@ dockingStation =
 
     # undock components that were docked
     for k in undocked
-      if fetch(k).docked
+      if bus_fetch(k).docked
         dockingStation.toggleDocked k, docks[k]
 
     if docked.length > 0
@@ -355,7 +355,7 @@ dockingStation =
       return if !y_pos?
 
       for k in docked
-        dock = fetch k
+        dock = bus_fetch k
         dockingStation.component_history[k].previous = _.extend docks[k], 
                                                     calculated_y: y_pos[k].value
 
@@ -369,7 +369,7 @@ dockingStation =
           
           save dock
 
-      docks = fetch('docking_station')
+      docks = bus_fetch('docking_station')
       if docks.y_stack != y_stack
         docks.y_stack = y_stack
         save docks
@@ -396,7 +396,7 @@ dockingStation =
       if v.skip_docking || (!v.dock_on_zoom && zoomed_or_small)
         is_docked = false 
       else
-        dimensions =  if fetch(v.key).docked
+        dimensions =  if bus_fetch(v.key).docked
                         dockingStation.component_history[v.key].on_dock
                       else 
                         {height: v.height, jut_above: v.jut_above}
@@ -418,7 +418,7 @@ dockingStation =
   # docked state. Manage external docked state if a component 
   # has defined one. 
   toggleDocked : (k, v) ->
-    dock = fetch k
+    dock = bus_fetch k
     is_docked = !dock.docked
     dock.docked = is_docked
     if !is_docked
@@ -430,7 +430,7 @@ dockingStation =
     save dock
 
     if v.docked_key?
-      external_docked = fetch(v.docked_key)
+      external_docked = bus_fetch(v.docked_key)
       external_docked.docked = is_docked
       save external_docked
 
@@ -535,7 +535,7 @@ dockingStation =
 
     for v, i in sorted
       console.log "**#{v.key} constraints**" if debug
-      k = v.key; dock = fetch k
+      k = v.key; dock = bus_fetch k
       previous_calculated_y = dockingStation.component_history[k].previous.calculated_y
 
       # START

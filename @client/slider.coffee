@@ -112,7 +112,7 @@ window.Slider = ReactiveComponent
 
     # initialize
     if draw_handle
-      slider = fetch props.slider_key
+      slider = bus_fetch props.slider_key
       if !slider.value?
         _.defaults slider,
           value: if props.polarized then -1.0 else 0
@@ -147,7 +147,7 @@ window.Slider = ReactiveComponent
       backgroundColor: props.base_color
       position: 'absolute'
 
-    slider = fetch props.slider_key
+    slider = bus_fetch props.slider_key
 
     if typeof(props.base_endpoint) == 'string'
       endpoints = [props.base_endpoint, props.base_endpoint]
@@ -238,7 +238,7 @@ window.Slider = ReactiveComponent
 
     handle_width = handle_height = props.handle_height
 
-    slider = fetch props.slider_key
+    slider = bus_fetch props.slider_key
 
     sliderHandle = props.handle or slider_handle.flat
 
@@ -360,7 +360,7 @@ window.Slider = ReactiveComponent
     e.preventDefault()
 
     # # Initiate dragging
-    slider = fetch props.slider_key
+    slider = bus_fetch props.slider_key
     slider.is_moving = true
     save slider
 
@@ -382,7 +382,7 @@ window.Slider = ReactiveComponent
     e.preventDefault() # prevents text selection of surrounding elements
     e.stopPropagation()
 
-    slider = fetch props.slider_key
+    slider = bus_fetch props.slider_key
 
     clientX = e.clientX or e.touches[0].clientX
 
@@ -415,7 +415,7 @@ window.Slider = ReactiveComponent
 
     # Don't do anything if we're not actually dragging. We only hit this logic
     # if there is some delay in removing the event handlers.
-    slider = fetch props.slider_key
+    slider = bus_fetch props.slider_key
 
     props.onMouseUpCallback?(e)
 
@@ -446,7 +446,7 @@ window.Slider = ReactiveComponent
       if props.polarized
         val = val * 2 - 1
 
-      slider = fetch props.slider_key
+      slider = bus_fetch props.slider_key
       slider.has_moved = true
 
       slider.value = Math.round(val * 10000) / 10000
@@ -694,7 +694,7 @@ slider_handle.flat = (props) ->
 
     if props.use_face
       do =>
-        user = fetch(fetch('/current_user').user)
+        user = bus_fetch(bus_fetch('/current_user').user)
 
         if user.avatar_file_name
           IMAGE

@@ -82,8 +82,8 @@ styles += """
 window.Homepage = ReactiveComponent
   displayName: 'Homepage'
   render: ->
-    doc = fetch 'document'
-    subdomain = fetch '/subdomain'
+    doc = bus_fetch 'document'
+    subdomain = bus_fetch '/subdomain'
 
     return SPAN null if !subdomain.name
 
@@ -161,7 +161,7 @@ window.Homepage = ReactiveComponent
         role: if get_tabs() then "tabpanel"
 
 
-        if fetch('edit_forum').editing
+        if bus_fetch('edit_forum').editing
           for page in get_tabs() or [{name: null}]
             EditPage
               key: "#{page?.name}-#{!!get_tabs()}"
@@ -203,7 +203,7 @@ window.Homepage = ReactiveComponent
                         style: 
                           maxWidth: 34
 
-                        src: "#{fetch('/application').asset_host}/images/#{message.img}"
+                        src: "#{bus_fetch('/application').asset_host}/images/#{message.img}"
 
                   SPAN null,
                     message.label
@@ -218,7 +218,7 @@ window.Homepage = ReactiveComponent
                   dangerouslySetInnerHTML: __html: preamble
 
 
-            if (proposal_editing = fetch('proposal_editing')).editing
+            if (proposal_editing = bus_fetch('proposal_editing')).editing
               EditProposal 
                 proposal: proposal_editing.editing
                 done_callback: (e) =>
@@ -257,7 +257,7 @@ window.Homepage = ReactiveComponent
 
 
   typeset : -> 
-    subdomain = fetch('/subdomain')
+    subdomain = bus_fetch('/subdomain')
     if subdomain.name == 'RANDOM2015' && !document.querySelector('.MathJax')
       MathJax.Hub.Queue(["Typeset", MathJax.Hub, ".proposal_homepage_name"])
 
@@ -278,10 +278,10 @@ window.TagHomepage = ReactiveComponent
   displayName: 'TagHomepage'
 
   render: -> 
-    current_user = fetch('/current_user')
+    current_user = bus_fetch('/current_user')
 
     aggregate_list_key = "list/#{get_current_tab_name()}"
-    proposals = fetch('/proposals').proposals
+    proposals = bus_fetch('/proposals').proposals
 
     DIV null,
 
@@ -291,7 +291,7 @@ window.TagHomepage = ReactiveComponent
         list: 
           key: aggregate_list_key
           name: aggregate_list_key
-          proposals: if proposals then (fetch(p) for p in proposals)
+          proposals: if proposals then (bus_fetch(p) for p in proposals)
 
 
 #############
@@ -304,7 +304,7 @@ window.SimpleHomepage = ReactiveComponent
   displayName: 'SimpleHomepage'
 
   render : ->
-    current_user = fetch('/current_user')
+    current_user = bus_fetch('/current_user')
     current_tab = get_current_tab_name()
     
     lists = get_lists_for_page(current_tab)

@@ -102,10 +102,10 @@ window.NewForumOnBoarding = ReactiveComponent
   displayName: 'NewForumOnBoarding'
 
   render : -> 
-    current_user = fetch '/current_user'
+    current_user = bus_fetch '/current_user'
     return SPAN null if !current_user.is_admin || screencasting()
 
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
     return SPAN null if subdomain.customizations.onboarding_complete
 
     has_initial_list = subdomain.customizations['list/initial']
@@ -186,7 +186,7 @@ window.NewForumOnBoarding = ReactiveComponent
         'Learn more about the '
 
         A
-          href: "https://#{fetch('/application').base_domain}/tour#basics"
+          href: "https://#{bus_fetch('/application').base_domain}/tour#basics"
           target: '_blank'
           style:
             fontWeight: 400

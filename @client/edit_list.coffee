@@ -30,9 +30,9 @@ window.EditList = ReactiveComponent
 
     list_key = list.key
 
-    current_user = fetch '/current_user'
-    edit_list = fetch "edit-#{list_key}"
-    subdomain = fetch '/subdomain'
+    current_user = bus_fetch '/current_user'
+    edit_list = bus_fetch "edit-#{list_key}"
+    subdomain = bus_fetch '/subdomain'
 
     return SPAN null if !current_user.is_admin
 
@@ -80,7 +80,7 @@ window.EditList = ReactiveComponent
               save edit_list
 
             else if option.action == 'list_order'
-              ef = fetch 'edit_forum'
+              ef = bus_fetch 'edit_forum'
               ef.editing = true 
               save ef 
 
@@ -267,9 +267,9 @@ window.EditNewList = ReactiveComponent
 
     list_key = @get_list_key()
 
-    current_user = fetch '/current_user'
-    edit_list = fetch "edit-#{list_key}"
-    subdomain = fetch '/subdomain'
+    current_user = bus_fetch '/current_user'
+    edit_list = bus_fetch "edit-#{list_key}"
+    subdomain = bus_fetch '/subdomain'
 
 
     return SPAN null if !current_user.is_admin
@@ -295,7 +295,7 @@ window.EditNewList = ReactiveComponent
         if val?
           list_config[f] = val
 
-      description = fetch("#{list_key}-description").html
+      description = bus_fetch("#{list_key}-description").html
       if description == "<p><br></p>"
         description = ""
 
@@ -474,8 +474,8 @@ window.EditNewList = ReactiveComponent
 
   drawNameAnItem: -> 
     list_key = @get_list_key()
-    edit_list = fetch "edit-#{list_key}"
-    subdomain = fetch '/subdomain'
+    edit_list = bus_fetch "edit-#{list_key}"
+    subdomain = bus_fetch '/subdomain'
 
     DIV 
       style:
@@ -508,8 +508,8 @@ window.EditNewList = ReactiveComponent
     return SPAN null if @props.combines_these_lists
 
     list_key = @get_list_key()
-    subdomain = fetch '/subdomain'
-    edit_list = fetch "edit-#{list_key}"
+    subdomain = bus_fetch '/subdomain'
+    edit_list = bus_fetch "edit-#{list_key}"
 
     permit_new_items = customization('list_permit_new_items', list_key, subdomain)
 
@@ -584,8 +584,8 @@ window.EditNewList = ReactiveComponent
   drawDefineSpectrum: -> 
     return SPAN null if @props.combines_these_lists
     list_key = @get_list_key()
-    subdomain = fetch '/subdomain'
-    edit_list = fetch "edit-#{list_key}"
+    subdomain = bus_fetch '/subdomain'
+    edit_list = bus_fetch "edit-#{list_key}"
 
 
     DIV null,
@@ -799,8 +799,8 @@ window.EditNewList = ReactiveComponent
   drawAdditionalOptions: -> 
     return SPAN null if @props.combines_these_lists
     list_key = @get_list_key()
-    subdomain = fetch '/subdomain'
-    edit_list = fetch "edit-#{list_key}"
+    subdomain = bus_fetch '/subdomain'
+    edit_list = bus_fetch "edit-#{list_key}"
 
     DIV 
       className: 'LIST_additional_options'
@@ -900,7 +900,7 @@ window.EditNewList = ReactiveComponent
 
     list_key = @get_list_key()
 
-    edit_list = fetch "edit-#{list_key}"
+    edit_list = bus_fetch "edit-#{list_key}"
 
     description = edit_list.description or customization('list_description', list_key)
     if Array.isArray(description)
@@ -910,7 +910,7 @@ window.EditNewList = ReactiveComponent
 
   setAlignmentOnDescription: ->
     list_key = @get_list_key()    
-    description = fetch("#{list_key}-description").html or @getDescription()
+    description = bus_fetch("#{list_key}-description").html or @getDescription()
     is_func = typeof description == 'function'
 
     if !is_func

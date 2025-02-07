@@ -46,9 +46,9 @@ window.EditProposal = ReactiveComponent
   mixins: [Modal]
 
   render : ->
-    current_user = fetch('/current_user')
-    proposal = fetch @props.proposal
-    subdomain = fetch '/subdomain'
+    current_user = bus_fetch('/current_user')
+    proposal = bus_fetch @props.proposal
+    subdomain = bus_fetch '/subdomain'
     
     # check permissions
     permitted = if @props.fresh  
@@ -88,7 +88,7 @@ window.EditProposal = ReactiveComponent
 
 
     if @props.fresh 
-      loc = fetch 'location'
+      loc = bus_fetch 'location'
       category = loc.query_params.category or ''
     else 
       category = proposal.cluster 
@@ -328,11 +328,11 @@ window.EditProposal = ReactiveComponent
 
 
   saveProposal : -> 
-    current_user = fetch '/current_user'
-    proposal = fetch @props.proposal
+    current_user = bus_fetch '/current_user'
+    proposal = bus_fetch @props.proposal
     
     name = document.getElementById("name").value 
-    description = fetch("description-#{proposal.key}").html
+    description = bus_fetch("description-#{proposal.key}").html
 
     category = @refs.category.value
     if current_user.is_admin && category == 'new category'

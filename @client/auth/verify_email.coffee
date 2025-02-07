@@ -10,7 +10,7 @@ window.VerifyEmail = ReactiveComponent
 
   render: -> 
     i18n = @i18n()
-    auth = fetch 'auth'
+    auth = bus_fetch 'auth'
 
     on_submit = (ev) =>
       @Submit ev,

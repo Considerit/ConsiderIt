@@ -136,7 +136,7 @@ window.EditPage = ReactiveComponent
   mixins: [SubdomainSaveRateLimiter]
 
   drawAboutPage: -> 
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
 
     return DIV null if @props.page_name != get_current_tab_name()
 
@@ -150,7 +150,7 @@ window.EditPage = ReactiveComponent
 
 
   drawShowAllPage: -> 
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
 
     return DIV null if @props.page_name != get_current_tab_name()
 
@@ -167,11 +167,11 @@ window.EditPage = ReactiveComponent
 
 
   drawDefaultPage: -> 
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
 
     is_a_tab = !!get_tabs()
 
-    edit_forum = fetch "edit_forum"
+    edit_forum = bus_fetch "edit_forum"
 
     if is_a_tab
       @ordered_lists = get_tab(@props.page_name)?.lists
@@ -566,7 +566,7 @@ window.EditPage = ReactiveComponent
 
   renderPreamble: -> 
     current_preamble = get_page_preamble(@props.page_name)
-    preamble_text = fetch "#{@props.page_name}-preamble"
+    preamble_text = bus_fetch "#{@props.page_name}-preamble"
 
     if preamble_text.html? && preamble_text.html != @local.page_preamble
       @local.page_preamble = preamble_text.html
@@ -660,7 +660,7 @@ window.EditPage = ReactiveComponent
             fontSize: 18
             display: 'block'
           onChange: (e) => 
-            subdomain = fetch '/subdomain'
+            subdomain = bus_fetch '/subdomain'
             subdomain.customizations.homepage_default_tab = e.target.value
             save subdomain
 
@@ -691,7 +691,7 @@ window.EditPage = ReactiveComponent
 
 
   saveIfChanged: ->
-    customizations = fetch('/subdomain').customizations
+    customizations = bus_fetch('/subdomain').customizations
 
     fields = ['list_sort_method', 'page_preamble']
 
@@ -737,17 +737,17 @@ window.EditPage = ReactiveComponent
     last_mouse_over_target = null
 
     reorder_list_position = (from, to) => 
-      edit_forum = fetch('edit_forum')
+      edit_forum = bus_fetch('edit_forum')
       moving = @ordered_lists[from]
 
       @ordered_lists.splice from, 1
       @ordered_lists.splice to, 0, moving
 
       save edit_forum
-      save fetch('/subdomain') # required to get the new order saved via @ordered_lists
+      save bus_fetch('/subdomain') # required to get the new order saved via @ordered_lists
 
     reassign_list_to_page = (source, target, dragging) =>
-      subdomain = fetch '/subdomain'
+      subdomain = bus_fetch '/subdomain'
 
 
       dragging = parseInt(dragging)

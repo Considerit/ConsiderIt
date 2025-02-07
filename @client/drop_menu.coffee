@@ -185,7 +185,7 @@ window.DropMenu = ReactiveComponent
           save @local 
 
         onClick: if open_menu_on != 'focus' || browser.touch then (e) => 
-          if fetch('tooltip').tip
+          if bus_fetch('tooltip').tip
             clear_tooltip()     
           @local.show_menu = !@local.show_menu
           set_active(-1) if @local.show_menu

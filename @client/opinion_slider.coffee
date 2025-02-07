@@ -60,14 +60,14 @@ window.OpinionSlider = ReactiveComponent
   displayName: 'OpinionSlider'
 
   render : ->
-    proposal = fetch @props.proposal
-    slider = fetch @props.slider_key
-    current_user = fetch '/current_user'
+    proposal = bus_fetch @props.proposal
+    slider = bus_fetch @props.slider_key
+    current_user = bus_fetch '/current_user'
 
     your_opinion = @props.your_opinion
 
     if @props.your_opinion.key
-      your_opinion = fetch @props.your_opinion
+      your_opinion = bus_fetch @props.your_opinion
 
     show_handle = @props.draw_handle
 
@@ -189,13 +189,13 @@ window.OpinionSlider = ReactiveComponent
     your_opinion = @props.your_opinion
     proposal = @props.proposal
 
-    slide_prompt = !fetch('/current_user').logged_in || !your_opinion.key
+    slide_prompt = !bus_fetch('/current_user').logged_in || !your_opinion.key
 
     opinion_prompt = getOpinionPrompt
                        proposal: proposal
                        prefer_drag_prompt: true 
 
-    slider = fetch(namespaced_key('slider', proposal))
+    slider = bus_fetch(namespaced_key('slider', proposal))
 
 
     return SPAN null if !opinion_prompt
@@ -229,8 +229,8 @@ window.OpinionSlider = ReactiveComponent
 
 
   drawFeedback: -> 
-    proposal = fetch @props.proposal
-    slider = fetch @props.slider_key
+    proposal = bus_fetch @props.proposal
+    slider = bus_fetch @props.slider_key
 
 
 
@@ -286,10 +286,10 @@ window.OpinionSlider = ReactiveComponent
       slider_feedback
 
   handleMouseUp: (e) ->
-    slider = fetch @props.slider_key
+    slider = bus_fetch @props.slider_key
     your_opinion = @props.your_opinion
     mode = getProposalMode(@props.proposal)
-    proposal = fetch @props.proposal
+    proposal = bus_fetch @props.proposal
     
     e.stopPropagation()
 
@@ -311,7 +311,7 @@ window.OpinionSlider = ReactiveComponent
           save your_opinion, -> 
             show_flash(translator('engage.flashes.opinion_saved', "Your opinion has been saved"))
           
-            update = fetch('homepage_you_updated_proposal')
+            update = bus_fetch('homepage_you_updated_proposal')
             update.dummy = !update.dummy
             save update
 
@@ -405,8 +405,8 @@ window.SliderBubblemouth = ReactiveComponent
   displayName: 'SliderBubblemouth'
 
   render : -> 
-    proposal = fetch @props.proposal
-    slider = fetch(namespaced_key('slider', proposal))
+    proposal = bus_fetch @props.proposal
+    slider = bus_fetch(namespaced_key('slider', proposal))
 
     w = @props.width
     h = @props.height

@@ -18,12 +18,12 @@ window.focus_color = -> focus_blue
 # opens up more interactive possibilities. 
 window.iFrameResizer =
   messageCallback: (message) -> 
-    contact = fetch('contact')
+    contact = bus_fetch('contact')
     contact.contact = true 
     save contact
 
 window.namespaced_key = (base_key, base_object) ->
-  namespace_key = fetch(base_object).key 
+  namespace_key = bus_fetch(base_object).key 
 
   # don't store this on the server
   if namespace_key[0] == '/'
@@ -36,7 +36,7 @@ proposal_link = (proposal) ->
 
 
 window.opinionsForProposal = (proposal) ->       
-  opinions = fetch(proposal).opinions || []
+  opinions = bus_fetch(proposal).opinions || []
   opinions
 
 
@@ -44,7 +44,7 @@ ProposalDescription = ReactiveComponent
   displayName: 'ProposalDescription'
 
   render : ->    
-    @proposal ||= fetch @props.proposal
+    @proposal ||= bus_fetch @props.proposal
 
     if !@local.description_collapsed?
       @local.description_collapsed = true
@@ -57,7 +57,7 @@ ProposalDescription = ReactiveComponent
       div.innerHTML = @proposal.description
       len = div.innerText.trim().length
 
-    loc = fetch 'location'
+    loc = bus_fetch 'location'
     DIV           
       style: 
         width: @props.width - 50
@@ -96,10 +96,10 @@ ProposalDescription = ReactiveComponent
             SPAN 
               style: {}
 
-              " by #{fetch(editor)?.name}"
+              " by #{bus_fetch(editor)?.name}"
         
       if @local.description_collapsed && @proposal.description?.length > 100
-        contact = !!fetch('contact').contact
+        contact = !!bus_fetch('contact').contact
 
         if contact 
 
@@ -153,9 +153,9 @@ Proposal = ReactiveComponent
   displayName: 'Root'
 
   render : -> 
-    @proposal = fetch @props.proposal
+    @proposal = bus_fetch @props.proposal
 
-    users = fetch '/users'
+    users = bus_fetch '/users'
 
     return DIV(null, LOADING_INDICATOR) if !@proposal.name
 
@@ -274,7 +274,7 @@ TechnologyByConsiderit = ReactiveComponent
         onMouseLeave: => 
           @local.hover = false
           save @local
-        href: "https://#{fetch('/application').base_domain}"
+        href: "https://#{bus_fetch('/application').base_domain}"
         target: '_blank'
         style: 
           position: 'relative'

@@ -151,7 +151,7 @@ window.DocumentationGroup = ReactiveComponent
   displayName: 'DocumentationGroup'
 
   render: -> 
-    parts = fetch('location').url.split('/')
+    parts = bus_fetch('location').url.split('/')
     group = parts[parts.length - 2]
     doc = parts[parts.length - 1]
 
@@ -173,7 +173,7 @@ window.DocumentationGroup = ReactiveComponent
               style: {}
 
               for item in group_config.groups[0].docs
-                fetch "/docs/#{item.path}" # just to preload
+                bus_fetch "/docs/#{item.path}" # just to preload
                 LI 
                   className: if item.path == doc then 'active'
 
@@ -201,7 +201,7 @@ window.DocumentationGroup = ReactiveComponent
 
                 UL null,
                   for item in ggroup.docs
-                    fetch "/docs/#{item.path}" # just to preload
+                    bus_fetch "/docs/#{item.path}" # just to preload
                     LI 
                       className: if item.path == doc then 'active'
 
@@ -278,7 +278,7 @@ window.Documentation = ReactiveComponent
   displayName: 'Documentation'
 
   render: ->
-    html = fetch("/docs/#{@props.doc}").html
+    html = bus_fetch("/docs/#{@props.doc}").html
     return SPAN(null) if !html
         
     DIV 

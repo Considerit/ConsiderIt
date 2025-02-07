@@ -30,20 +30,20 @@ CustomizeGoogleTranslate = ReactiveComponent
 
     @save_customization_with_rate_limit
       fields: ['google_translate_style']
-      config: fetch('/subdomain').customizations
+      config: bus_fetch('/subdomain').customizations
 
   render: -> 
     return SPAN null if customization('disable_google_translate')
     
     is_light = is_light_background()
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
 
     if subdomain.customizations.google_translate_style
       @local.google_translate_style ?= JSON.parse JSON.stringify subdomain.customizations.google_translate_style
 
 
-    edit_forum = fetch 'edit_forum'
-    is_admin = fetch('/current_user').is_admin
+    edit_forum = bus_fetch 'edit_forum'
+    is_admin = bus_fetch('/current_user').is_admin
 
     trns = subdomain.customizations.google_translate_style
 
@@ -97,7 +97,7 @@ CustomizeGoogleTranslate = ReactiveComponent
               "Helps support multi-lingual forums."
 
 
-      if trns?.prominent # && fetch('location').url == '/'
+      if trns?.prominent # && bus_fetch('location').url == '/'
         DIV
           className: "translator"
           
@@ -156,18 +156,18 @@ CustomizeTitle = ReactiveComponent
   componentDidUpdate: ->
     @save_customization_with_rate_limit
       fields: ['title']
-      config: fetch('/subdomain').customizations.banner
+      config: bus_fetch('/subdomain').customizations.banner
 
   render : ->
-    subdomain = fetch '/subdomain'
-    edit_forum = fetch 'edit_forum'
+    subdomain = bus_fetch '/subdomain'
+    edit_forum = bus_fetch 'edit_forum'
 
     subdomain.customizations.banner ?= {}
     banner_config = subdomain.customizations.banner
 
     title = banner_config.title or @props.title
 
-    is_admin = fetch('/current_user').is_admin
+    is_admin = bus_fetch('/current_user').is_admin
 
 
     DIV 
@@ -237,17 +237,17 @@ CustomizeDescription = ReactiveComponent
     @setAlignment()
 
   componentDidUpdate: ->
-    @local.description = fetch("forum-description").html
+    @local.description = bus_fetch("forum-description").html
     @save_customization_with_rate_limit
       fields: ['description']
-      config: fetch('/subdomain').customizations.banner
+      config: bus_fetch('/subdomain').customizations.banner
     @setAlignment()
 
   setAlignment: ->
     return if !@refs.description
     
-    edit_forum = fetch 'edit_forum'
-    is_admin = fetch('/current_user').is_admin
+    edit_forum = bus_fetch 'edit_forum'
+    is_admin = bus_fetch('/current_user').is_admin
 
     height = @refs.description.clientHeight
     single_line = height < (if edit_forum.editing && is_admin then 65 else 50)
@@ -258,9 +258,9 @@ CustomizeDescription = ReactiveComponent
 
 
   render : ->
-    edit_forum = fetch 'edit_forum'
+    edit_forum = bus_fetch 'edit_forum'
 
-    is_admin = fetch('/current_user').is_admin
+    is_admin = bus_fetch('/current_user').is_admin
 
     description = customization('banner')?.description
     has_description = description?.trim().length > 0 && description.trim() != '<p><br></p>'
@@ -319,7 +319,7 @@ UploadFileSVG = (opts) ->
       enableBackground: "new 0 0 100 100" 
 
 UploadableLogo = (opts) ->
-  edit_forum = fetch 'edit_forum'
+  edit_forum = bus_fetch 'edit_forum'
   editing = edit_forum.editing
 
   has_logo = customization('banner')?.logo?.url
@@ -431,19 +431,19 @@ CustomizeLogo = ReactiveComponent
   componentDidUpdate: ->
     @save_customization_with_rate_limit
       fields: ['height', 'left', 'top']
-      config: fetch('/subdomain').customizations.banner.logo
+      config: bus_fetch('/subdomain').customizations.banner.logo
 
 
 
   render : ->
-    edit_forum = fetch 'edit_forum'
-    edit_banner = fetch 'edit_banner'
+    edit_forum = bus_fetch 'edit_forum'
+    edit_banner = bus_fetch 'edit_banner'
 
     has_logo = edit_banner.logo_preview != '*delete*' && (edit_banner.logo_preview || customization('banner')?.logo?.url)
     has_masthead = edit_banner.masthead_preview != '*delete*' && (edit_banner.masthead_preview or customization('banner')?.background_image_url)
 
     return SPAN null if !has_logo && !edit_forum.editing
-    return SPAN null if !fetch('/subdomain').name
+    return SPAN null if !bus_fetch('/subdomain').name
 
     src = edit_banner.logo_preview or customization('banner')?.logo?.url
 
@@ -632,11 +632,11 @@ CustomizeTextBlock = ReactiveComponent
   componentDidUpdate: ->
     @save_customization_with_rate_limit
       fields: ['text_background_css', 'text_background_css_opacity']
-      config: fetch('/subdomain').customizations.banner
+      config: bus_fetch('/subdomain').customizations.banner
 
 
   render : ->
-    edit_forum = fetch 'edit_forum'
+    edit_forum = bus_fetch 'edit_forum'
     has_masthead = customization('banner')?.background_image_url
     return SPAN null if !edit_forum.editing || !has_masthead
 
@@ -692,13 +692,13 @@ CustomizeBackground = ReactiveComponent
   componentDidUpdate: ->
     @save_customization_with_rate_limit
       fields: ['background_css']
-      config: fetch('/subdomain').customizations.banner
+      config: bus_fetch('/subdomain').customizations.banner
       wait_for: 10
 
 
   render : ->
-    edit_forum = fetch 'edit_forum'
-    edit_banner = fetch 'edit_banner'
+    edit_forum = bus_fetch 'edit_forum'
+    edit_banner = bus_fetch 'edit_banner'
 
     src = edit_banner.masthead_preview or customization('banner')?.background_image_url
     has_masthead = edit_banner.masthead_preview != '*delete*' && src
@@ -873,10 +873,10 @@ window.EditBanner = ReactiveComponent
   displayName: 'EditBanner'
 
   render : ->
-    subdomain = fetch '/subdomain'
-    current_user = fetch '/current_user'
-    edit_banner = fetch 'edit_banner'
-    edit_forum = fetch 'edit_forum'
+    subdomain = bus_fetch '/subdomain'
+    current_user = bus_fetch '/current_user'
+    edit_banner = bus_fetch 'edit_banner'
+    edit_forum = bus_fetch 'edit_forum'
 
     if !current_user.is_admin
       return DIV null 
@@ -978,13 +978,13 @@ window.EditBanner = ReactiveComponent
             display: 'none'
 
   exit_edit: ->
-    edit_banner = fetch 'edit_banner'
+    edit_banner = bus_fetch 'edit_banner'
 
     for k,v of edit_banner
       if k != 'key'
         delete edit_banner[k]
     
-    wysiwyg_description = fetch("forum-description")
+    wysiwyg_description = bus_fetch("forum-description")
     wysiwyg_description.html = null 
 
     save wysiwyg_description
@@ -999,7 +999,7 @@ window.EditBanner = ReactiveComponent
       @submit_files()
 
   submit_files: (cb) ->
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
 
     data = 
       authenticity_token: arest.csrf()
@@ -1047,9 +1047,9 @@ window.PhotoBanner = (opts) ->
   opts ?= {}
   
   homepage = is_a_dialogue_page()
-  subdomain = fetch '/subdomain'
-  edit_banner = fetch 'edit_banner'
-  edit_forum = fetch 'edit_forum'
+  subdomain = bus_fetch '/subdomain'
+  edit_banner = bus_fetch 'edit_banner'
+  edit_forum = bus_fetch 'edit_forum'
 
   return SPAN null if !subdomain.name 
 
@@ -1079,7 +1079,7 @@ window.PhotoBanner = (opts) ->
 
   banner_config = subdomain.customizations.banner
 
-  description = fetch("forum-description").html or banner_config?.description or opts.supporting_text
+  description = bus_fetch("forum-description").html or banner_config?.description or opts.supporting_text
   has_description = opts.supporting_text || (description?.trim().length > 0 && description.trim() != '<p><br></p>')
 
   has_title = (banner_config.title or opts.title or subdomain.name)?.length > 0 
@@ -1270,8 +1270,8 @@ window.PhotoBanner = (opts) ->
 
 window.MediaBanner = -> 
   homepage = is_a_dialogue_page()
-  subdomain = fetch '/subdomain'
-  edit_banner = fetch 'edit_banner'
+  subdomain = bus_fetch '/subdomain'
+  edit_banner = bus_fetch 'edit_banner'
 
   return SPAN null if !subdomain.name 
 
@@ -1395,8 +1395,8 @@ window.MediaBanner = ->
 
 
 window.ImageHeader = (opts) ->
-  subdomain = fetch '/subdomain'   
-  loc = fetch 'location'    
+  subdomain = bus_fetch '/subdomain'   
+  loc = bus_fetch 'location'    
 
   return SPAN null if !subdomain.name
 
@@ -1431,8 +1431,8 @@ window.ImageHeader = (opts) ->
 
 # A small header with text and optionally a logo
 window.ShortHeader = (opts) ->
-  subdomain = fetch '/subdomain'   
-  loc = fetch 'location'
+  subdomain = bus_fetch '/subdomain'   
+  loc = bus_fetch 'location'
 
   return SPAN null if !subdomain.name
 
@@ -1528,7 +1528,7 @@ window.ShortHeader = (opts) ->
 window.HawaiiHeader = (opts) ->
 
   homepage = is_a_dialogue_page()
-  subdomain = fetch '/subdomain'
+  subdomain = bus_fetch '/subdomain'
 
   return SPAN null if !subdomain.name 
 
@@ -1573,7 +1573,7 @@ window.HawaiiHeader = (opts) ->
     fontWeight: 400
     paddingLeft: 25 # Make the clickable target bigger
     paddingRight: 25 # Make the clickable target bigger
-    cursor: if fetch('location').url != '/' then 'pointer'
+    cursor: if bus_fetch('location').url != '/' then 'pointer'
 
 
   DIV
@@ -1653,7 +1653,7 @@ window.HawaiiHeader = (opts) ->
 window.SeattleHeader = (opts) -> 
 
   homepage = is_a_dialogue_page()
-  subdomain = fetch '/subdomain'
+  subdomain = bus_fetch '/subdomain'
 
   return SPAN null if !subdomain.name 
 

@@ -61,8 +61,8 @@ window.ForumSettingsDash = ReactiveComponent
 
   render : -> 
 
-    subdomain = fetch '/subdomain'
-    current_user = fetch '/current_user'
+    subdomain = bus_fetch '/subdomain'
+    current_user = bus_fetch '/current_user'
 
     return SPAN null if !subdomain.name
 
@@ -252,8 +252,8 @@ window.ForumSettingsDash = ReactiveComponent
   
 
   drawMiscSettings : -> 
-    subdomain = fetch '/subdomain'
-    current_user = fetch '/current_user'
+    subdomain = bus_fetch '/subdomain'
+    current_user = bus_fetch '/current_user'
 
     lang = @local.language or subdomain.lang or 'en'
     not_english = lang? && lang != 'en'
@@ -295,7 +295,7 @@ window.ForumSettingsDash = ReactiveComponent
 
 
           do => 
-            available_languages = Object.assign({}, fetch('/supported_languages').available_languages or {})
+            available_languages = Object.assign({}, bus_fetch('/supported_languages').available_languages or {})
             if current_user.is_super_admin
               available_languages['pseudo-en'] = "Pseudo English (for testing)"
               
@@ -312,7 +312,7 @@ window.ForumSettingsDash = ReactiveComponent
             TRANSLATE
               id: "translations.link"
               percent_complete: Math.round(translation_progress(lang) * 100)
-              language: (fetch('/supported_languages').available_languages or {})[lang]
+              language: (bus_fetch('/supported_languages').available_languages or {})[lang]
               link: 
                 component: A 
                 args: 
@@ -517,7 +517,7 @@ window.ForumSettingsDash = ReactiveComponent
 
 
   drawAnonymitySettings : -> 
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
     allow_change_anon = not subdomain.customizations.anonymize_permanently
     allow_change_perm_anon = subdomain.customizations.anonymize_everything and (not subdomain.customizations.anonymize_permanently)
 
@@ -720,7 +720,7 @@ window.ForumSettingsDash = ReactiveComponent
 
 
   drawContributionPhaseSettings : -> 
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
 
     phases = [
         {
@@ -818,7 +818,7 @@ window.ForumSettingsDash = ReactiveComponent
 
 
   drawModerationSettings : -> 
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
     moderatable_models = ['points', 'comments', 'proposals']
 
     DIV 

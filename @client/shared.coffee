@@ -21,11 +21,11 @@ window.styles = ""
 
 
 window.screencasting = ->
-  window.__screencasting ?= fetch('location').query_params?.screencasting == 'true'
+  window.__screencasting ?= bus_fetch('location').query_params?.screencasting == 'true'
   window.__screencasting
 
 window.embedded_demo = ->
-  window.__embedded_demo ?= fetch('location').query_params?.embedded_demo == 'true' || location.search.indexOf('embedded_demo') > -1
+  window.__embedded_demo ?= bus_fetch('location').query_params?.embedded_demo == 'true' || location.search.indexOf('embedded_demo') > -1
   window.__embedded_demo
 
 
@@ -80,7 +80,7 @@ window.pad = (num, len) ->
 
 
 window.back_to_homepage_button = (style, text) -> 
-  loc = fetch 'location'
+  loc = bus_fetch 'location'
   hash = loc.url.split('/')[1].replace('-', '_')
 
   NAV 
@@ -110,7 +110,7 @@ window.back_to_homepage_button = (style, text) ->
 
 
 window.get_region_name = ->
-  region = fetch('/application').region
+  region = bus_fetch('/application').region
   return "" if !region
 
   if region == 'US'
@@ -191,7 +191,7 @@ window.POINT_MOUTH_WIDTH = 17
 #   displayName: 'heartbeat'
 
 #   render: ->   
-#     beat = fetch(@props.public_key or 'pulse')
+#     beat = bus_fetch(@props.public_key or 'pulse')
 #     if !beat.beat?
 #       setInterval ->   
 #         beat.beat = (beat.beat or 0) + 1
@@ -226,7 +226,7 @@ window.getCoords = (el) ->
 
 # stored in public/images
 window.asset = (name) -> 
-  app = fetch('/application')
+  app = bus_fetch('/application')
 
   if app.asset_host?
     a = "#{app.asset_host or ''}/images/#{name}"
@@ -262,7 +262,7 @@ window.LoadScripts =
       for req in (@js_dependencies or [])
         do (req) => 
           if !@scripts_loaded[req]
-            @scripts_loaded[req] = lazyLoadJavascript "#{fetch('/application').asset_host}/vendor/#{req}", 
+            @scripts_loaded[req] = lazyLoadJavascript "#{bus_fetch('/application').asset_host}/vendor/#{req}", 
               onload: => 
                 @scripts_loaded[req] = true 
                 @local.loaded = done_loading() 
@@ -284,7 +284,7 @@ window.LoadScripts =
 #####
 # data 
 window.opinionsForProposal = (proposal) ->       
-  opinions = fetch(proposal).opinions || []
+  opinions = bus_fetch(proposal).opinions || []
   opinions
 
 
@@ -295,7 +295,7 @@ window.opinionsForProposal = (proposal) ->
 # Expands a key like 'slider' to one that is namespaced to a parent object, 
 # like the current proposal. Will return a local key like 'proposal/345/slider' 
 window.namespaced_key = (base_key, base_object) ->
-  namespace_key = fetch(base_object).key 
+  namespace_key = bus_fetch(base_object).key 
 
   # don't store this on the server
   if namespace_key[0] == '/'
@@ -309,7 +309,7 @@ window.namespaced_key = (base_key, base_object) ->
 # logging
 
 window.on_ajax_error = () ->
-  root = fetch('root')
+  root = bus_fetch('root')
   root.server_error = true
   save(root)
 
@@ -333,7 +333,7 @@ log_writer = null
 
 window.writeToLog = (entry) ->
   return 
-  entry.where = fetch('location').url
+  entry.where = bus_fetch('location').url
   logs_to_write.push entry 
   if !log_writer 
     setTimeout -> 
@@ -354,7 +354,7 @@ window.writeToLog = (entry) ->
 # long ago the date represents.
 # from: http://stackoverflow.com/questions/7641791
 window.prettyDate = (time) ->
-  subdomain = fetch('/subdomain')
+  subdomain = bus_fetch('/subdomain')
 
   date = new Date(time) #new Date((time || "").replace(/-/g, "/").replace(/[TZ]/g, " "))
   
@@ -469,7 +469,7 @@ window.reset_key = (obj_or_key, updates) ->
 
   updates = updates or {}
   if !obj_or_key.key
-    obj_or_key = fetch obj_or_key
+    obj_or_key = bus_fetch obj_or_key
 
   updates.key = obj_or_key.key
 

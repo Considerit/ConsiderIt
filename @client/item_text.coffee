@@ -160,8 +160,8 @@ window.ItemText = ReactiveComponent
       proposal: @props.proposal
 
   render: -> 
-    proposal = fetch @props.proposal
-    subdomain = fetch '/subdomain'
+    proposal = bus_fetch @props.proposal
+    subdomain = bus_fetch '/subdomain'
 
     list_key = get_list_for_proposal(proposal)
 
@@ -324,7 +324,7 @@ window.ItemText = ReactiveComponent
     if !@waitForFonts(=> @setCollapsedSizes()) || (@local.collapsed_title_height? && @sized_at_window_width == WINDOW_WIDTH() && (!@description_has_media || @local.media_is_loaded))
       return
 
-    proposal = fetch @props.proposal
+    proposal = bus_fetch @props.proposal
 
     title_el = @refs.proposal_title_text
 
@@ -392,18 +392,18 @@ window.ItemText = ReactiveComponent
 
   componentDidMount: ->
     requestAnimationFrame =>
-      loc = fetch 'location'
+      loc = bus_fetch 'location'
       @setCollapsedSizes()
 
   componentDidUpdate: ->
     requestAnimationFrame =>
-      loc = fetch 'location'
+      loc = bus_fetch 'location'
       @setCollapsedSizes()
 
 
   draw_description: ->  
 
-    proposal = fetch @props.proposal
+    proposal = bus_fetch @props.proposal
     list_key = get_list_for_proposal(proposal)
 
     cust_desc = customization('proposal_description', list_key)
@@ -479,9 +479,9 @@ window.ItemText = ReactiveComponent
 
 
   draw_metadata: -> 
-    proposal = fetch @props.proposal
+    proposal = bus_fetch @props.proposal
 
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
     icons = customization('show_proposer_icon', proposal, subdomain)
     opinion_publish_permission = permit('publish opinion', proposal, subdomain)
 
@@ -540,7 +540,7 @@ window.ItemText = ReactiveComponent
 
               TRANSLATE
                 id: 'engage.proposal_author'
-                name: fetch(editor)?.name 
+                name: bus_fetch(editor)?.name 
                 " by {name}"
 
 
@@ -716,16 +716,16 @@ window.remove_opinion = (your_opinion) ->
     save your_opinion
 
 window.getOpinionPrompt = ({proposal, prefer_drag_prompt}) ->
-  proposal = fetch proposal
+  proposal = bus_fetch proposal
 
   perhaps_can_opinine = canUserOpine proposal
 
   return null unless (perhaps_can_opinine == Permission.NOT_LOGGED_IN || perhaps_can_opinine > 0)
 
   your_opinion = proposal.your_opinion
-  no_opinion = !fetch('/current_user').logged_in || !your_opinion.key
+  no_opinion = !bus_fetch('/current_user').logged_in || !your_opinion.key
 
-  discussion_enabled = customization('discussion_enabled', proposal, fetch('/subdomain'))
+  discussion_enabled = customization('discussion_enabled', proposal, bus_fetch('/subdomain'))
 
   if no_opinion || !discussion_enabled
     # translator 

@@ -23,9 +23,9 @@ window.ProfileMenu = ReactiveComponent
   displayName: 'ProfileMenu'
 
   render : -> 
-    current_user = fetch '/current_user'
-    subdomain = fetch '/subdomain'
-    loc = fetch 'location'
+    current_user = bus_fetch '/current_user'
+    subdomain = bus_fetch '/subdomain'
+    loc = bus_fetch 'location'
 
     is_admin = current_user.is_admin
     is_moderator = current_user.is_moderator
@@ -49,7 +49,7 @@ window.ProfileMenu = ReactiveComponent
     light_background = !is_a_dialogue_page() || is_light_background() 
 
 
-    edit_forum = fetch 'edit_forum'
+    edit_forum = bus_fetch 'edit_forum'
 
 
 
@@ -151,7 +151,7 @@ window.ProfileMenu = ReactiveComponent
           if is_admin
             settings.push {name: 'Sign-up Questions', url: '/dashboard/intake_questions', paid: true}
 
-          show_dash_modal = fetch 'show_dash_modal'
+          show_dash_modal = bus_fetch 'show_dash_modal'
 
           DIV 
             style: 
@@ -204,7 +204,7 @@ window.ProfileMenu = ReactiveComponent
       else
 
 
-        if fetch('/subdomain').SSO_domain
+        if bus_fetch('/subdomain').SSO_domain
           A
             href: '/login_via_saml'
             treat_as_external_link: true
@@ -252,8 +252,8 @@ window.ProfileMenu = ReactiveComponent
 
 
   bitcoinVerification: -> 
-    current_user = fetch('/current_user')
-    subdomain = fetch('/subdomain')
+    current_user = bus_fetch('/current_user')
+    subdomain = bus_fetch('/subdomain')
 
     DIV 
       style: 

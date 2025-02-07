@@ -1,7 +1,7 @@
 window.passes_tags = (user, tags) -> 
   if typeof(tags) == 'string'
     tags = [tags]
-  user = fetch(user)
+  user = bus_fetch(user)
 
   passes = true 
   for tag in tags 
@@ -10,7 +10,7 @@ window.passes_tags = (user, tags) ->
   passes 
 
 window.passes_tag_filter = (user, tag, regex) -> 
-  user = fetch(user)
+  user = bus_fetch(user)
   return !!user?.tags?[tag]?.match(regex) 
   
 
@@ -89,7 +89,7 @@ window.get_slider_label = (id, proposal, subdomain) ->
 
 window.positive_scale = (value, proposal) ->  
   value = (value + 1) / 2
-  conf = customization('slider_pole_labels', proposal, fetch('/subdomain'))
+  conf = customization('slider_pole_labels', proposal, bus_fetch('/subdomain'))
   "#{Math.round(value * 100)}% #{conf.support}"
 
 

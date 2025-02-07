@@ -3,7 +3,7 @@
     // ****************
     // Public API
     var cache = {}
-    function fetch(url, defaults) {
+    function bus_fetch(url, defaults) {
         //if (window.watch && watch(url)) console.trace()
 
         if (!url) return null
@@ -302,7 +302,7 @@
     function ReactiveComponent(component) {
 
         // STEP 1: Define get() and save()
-        component.fetch = component.data = component.get = function (key, defaults) {
+        component.bus_fetch = component.data = component.get = function (key, defaults) {
             if (!this.isMounted)
                 throw Error('Component ' + this.name + ' (' + this.local_key
                             + ') is tryin to get data(' + key + ') after it died.')
@@ -312,7 +312,7 @@
             // if (!key)    throw TypeError('Component mounted onto a null key. '
             //                              + this.name + ' ' + this.local_key)
             if (key.key) key = key.key   // If user passes key as object
-            return fetch(key, defaults)  // Call into main activerest
+            return bus_fetch(key, defaults)  // Call into main activerest
         }
         component.save = save                  // Call into main activerest
         
@@ -618,12 +618,12 @@
 
     // Export the public API
     window.ReactiveComponent = ReactiveComponent
-    window.fetch = fetch
+    window.bus_fetch = bus_fetch
     window.save = save
     window.destroy = destroy
 
     // Make the private methods accessible under "window.arest"
-    vars = [['cache', cache], ['fetch',fetch], ['save',save], ['server_fetch', server_fetch], ['serverFetch', serverFetch], ['server_save', server_save], ['serverSave',serverSave], ['update_cache',update_cache], ['updateCache',updateCache], ['csrf',csrf], ['keys_4_component',keys_4_component], ['components_4_key', components_4_key], ['components',components], ['execution_context',execution_context], ['One_To_Many',One_To_Many], ['clone',clone], ['dirty_components', dirty_components], ['affected_keys',affected_keys], ['clear_matching_objects',clear_matching_objects], ['deep_map', deep_map], ['key_id', key_id], ['pending_saves', pending_saves], ['outstanding_fetches', outstanding_fetches]]
+    vars = [['cache', cache], ['bus_fetch',bus_fetch], ['save',save], ['server_fetch', server_fetch], ['serverFetch', serverFetch], ['server_save', server_save], ['serverSave',serverSave], ['update_cache',update_cache], ['updateCache',updateCache], ['csrf',csrf], ['keys_4_component',keys_4_component], ['components_4_key', components_4_key], ['components',components], ['execution_context',execution_context], ['One_To_Many',One_To_Many], ['clone',clone], ['dirty_components', dirty_components], ['affected_keys',affected_keys], ['clear_matching_objects',clear_matching_objects], ['deep_map', deep_map], ['key_id', key_id], ['pending_saves', pending_saves], ['outstanding_fetches', outstanding_fetches]]
     window.arest = {}
     for (var i=0; i<vars.length; i++)
         window.arest[vars[i][0]] = vars[i][1]

@@ -65,7 +65,7 @@ window.load_customization = (subdomain) ->
     if customizations_file_used
       console.log "#{subdomain_name} config for import: \n", JSON.stringify(convert_customization(customizations_by_file[subdomain_name]), null, 2)
 
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
 
     customizations[subdomain_name] = _.extend {}, (customizations_by_file[subdomain_name] or {}), convert_customization(subdomain.customizations)
 
@@ -76,7 +76,7 @@ window.load_customization = (subdomain) ->
 window.customization = (field, object_or_key, subdomain) -> 
   
   if !!object_or_key && !object_or_key.key?
-    obj = fetch object_or_key
+    obj = bus_fetch object_or_key
   else 
     obj = object_or_key
 
@@ -84,9 +84,9 @@ window.customization = (field, object_or_key, subdomain) ->
     if object_or_key?.key?.match('/subdomain/')
       subdomain = object_or_key
     else 
-      subdomain = fetch('/subdomain')
+      subdomain = bus_fetch('/subdomain')
       if obj?.subdomain_id? && obj.subdomain_id != subdomain.id 
-        subdomain = fetch "/subdomain/#{obj.subdomain_id}" 
+        subdomain = bus_fetch "/subdomain/#{obj.subdomain_id}" 
 
   subdomain_name = subdomain.name?.toLowerCase()
   
@@ -145,8 +145,8 @@ window.CustomizationTransition = ReactiveComponent
   # field of subdomain has changed and marks it dirty.
 
   render: -> 
-    subdomain = fetch('/subdomain')
-    customizations_signature = fetch('customizations_signature')
+    subdomain = bus_fetch('/subdomain')
+    customizations_signature = bus_fetch('customizations_signature')
 
     check_update_customizations_object = -> 
       signature = JSON.stringify(subdomain.customizations)

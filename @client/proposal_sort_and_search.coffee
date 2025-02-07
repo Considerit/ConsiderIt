@@ -6,7 +6,7 @@ require './drop_menu'
 
 
 # get_all_tags = -> 
-#   proposals = fetch '/proposals'
+#   proposals = bus_fetch '/proposals'
 #   all_tags = {}
 #   for proposal in proposals.proposals 
 #     text = "#{proposal.name} #{proposal.description}"
@@ -29,11 +29,11 @@ ApplyFilters = ReactiveComponent
   displayName: 'ApplyFilters'
 
   render: ->
-    filters = fetch 'filters'
-    filter_out = fetch 'filtered'
+    filters = bus_fetch 'filters'
+    filter_out = bus_fetch 'filtered'
     filter_out.proposals ||= {}
 
-    proposals = fetch '/proposals'
+    proposals = bus_fetch '/proposals'
 
     new_filter_out = {}
 
@@ -42,10 +42,10 @@ ApplyFilters = ReactiveComponent
         regexes[filter] = new RegExp filter, 'i'
 
     for proposal in proposals.proposals
-      proposal = fetch proposal
+      proposal = bus_fetch proposal
       editor = proposal_editor(proposal)
       if editor 
-        editor = fetch(editor).name 
+        editor = bus_fetch(editor).name 
       else 
         editor = ""
       text = "#{editor} #{proposal.name} #{proposal.description} #{prettyDate(proposal.created_at)}"
@@ -64,11 +64,11 @@ ApplyFilters = ReactiveComponent
 
 proposal_sort_keys = {}
 window.stale_sort_order = (sort_key) ->
-  fetch(sort_key).stale
+  bus_fetch(sort_key).stale
 
 window.invalidate_proposal_sorts = -> 
   for sort_key, __ of proposal_sort_keys 
-    v = fetch sort_key
+    v = bus_fetch sort_key
     v.force_resort = true
     save v
 
@@ -79,14 +79,14 @@ window.sorted_proposals = (proposals, sort_key, require_force) ->
   if sort_key not of proposal_sort_keys 
     proposal_sort_keys[sort_key] = true
 
-  sort = fetch 'sort_and_filter_proposals'
+  sort = bus_fetch 'sort_and_filter_proposals'
   set_default_sort() if !sort.name? 
 
   proposals = (proposals or []).slice()
 
 
   # filter out filtered proposals
-  filter_out = fetch 'filtered'
+  filter_out = bus_fetch 'filtered'
   if filter_out.proposals
     filtered = []
     for proposal in proposals
@@ -110,7 +110,7 @@ window.sorted_proposals = (proposals, sort_key, require_force) ->
     keys = (p.key for p in (proposals or []))
     order = JSON.stringify keys
 
-    sorted = fetch sort_key
+    sorted = bus_fetch sort_key
     if !sorted.cache
       cached_order = null 
       _.extend sorted, 
@@ -160,11 +160,11 @@ sort_options = [
     description: "Each proposal is scored by the sum of all opinions, where each opinion expresses a score on a spectrum from -1 to 1. "    
     order: (proposals) -> 
       cache = {}
-      opinion_views = fetch 'opinion_views'
+      opinion_views = bus_fetch 'opinion_views'
 
       val = (proposal) ->
         if proposal.key not of cache 
-          opinions = fetch(proposal).opinions or []   
+          opinions = bus_fetch(proposal).opinions or []   
           {weights, salience, groups} = compose_opinion_views opinions, proposal, opinion_views
           sum = 0
           for opinion in opinions
@@ -187,14 +187,14 @@ sort_options = [
         ot = new Date(o.updated_at).getTime()
         o.stance / (1 + Math.pow((n - ot) / 100000, 2))
 
-      opinion_views = fetch 'opinion_views'
+      opinion_views = bus_fetch 'opinion_views'
 
       filters_for_proposals = {}
 
       # get last opinion to use as our "trending" stopper
       last_activity = "0"
       for prop in proposals
-        opinions = prop.opinions or fetch(prop).opinions or [] 
+        opinions = prop.opinions or bus_fetch(prop).opinions or [] 
 
         filters_for_proposals[prop.key] = 
           opinions: opinions
@@ -209,7 +209,7 @@ sort_options = [
           last_activity = prop.created_at
 
       latest_timestamp = new Date(last_activity).getTime()
-      date_filter = fetch('opinion-date-filter')
+      date_filter = bus_fetch('opinion-date-filter')
       if date_filter.end
         latest_timestamp = Math.min(date_filter.end, latest_timestamp)
 
@@ -262,7 +262,7 @@ sort_options = [
           more_than_one = []
           less_than_one = []
           for proposal in sorted 
-            opinions = fetch(proposal).opinions or []  
+            opinions = bus_fetch(proposal).opinions or []  
             if opinions.length > 1
               more_than_one.push proposal
             else 
@@ -277,11 +277,11 @@ sort_options = [
     description: "The proposals on which participants are most split are shown highest."
     order: (proposals) -> 
       cache = {}
-      opinion_views = fetch 'opinion_views'
+      opinion_views = bus_fetch 'opinion_views'
 
       val = (proposal) ->
         if proposal.key not of cache 
-          opinions = fetch(proposal).opinions or []   
+          opinions = bus_fetch(proposal).opinions or []   
           {weights, salience, groups} = compose_opinion_views opinions, proposal, opinion_views
           sum = 0
           weight = 0 
@@ -319,10 +319,10 @@ sort_options = [
     description: "Each proposal is scored by the average opinion, where each opinion expresses a score on a spectrum from -1 to 1. "
     order: (proposals) -> 
       cache = {}
-      opinion_views = fetch 'opinion_views'
+      opinion_views = bus_fetch 'opinion_views'
       val = (proposal) ->
         if proposal.key not of cache 
-          opinions = fetch(proposal).opinions or []   
+          opinions = bus_fetch(proposal).opinions or []   
           {weights, salience, groups} = compose_opinion_views opinions, proposal, opinion_views
           sum = 0
           weight = 0 
@@ -343,11 +343,11 @@ sort_options = [
 
   #   order: (proposals) -> 
   #     cache = {}
-  #     opinion_views = fetch 'opinion_views'
+  #     opinion_views = bus_fetch 'opinion_views'
 
   #     val = (proposal) ->
   #       if proposal.key not of cache 
-  #         opinions = fetch(proposal).opinions or []   
+  #         opinions = bus_fetch(proposal).opinions or []   
   #         {weights, salience, groups} = compose_opinion_views opinions, proposal, opinion_views
   #         sum = 0
   #         weight = 0 
@@ -384,7 +384,7 @@ sort_options = [
 ]
 
 window.set_sort_order = (name) ->
-  sort = fetch 'sort_and_filter_proposals'
+  sort = bus_fetch 'sort_and_filter_proposals'
   for s in sort_options
     if s.name == name
       _.extend sort, s or sort_options[1]
@@ -392,10 +392,10 @@ window.set_sort_order = (name) ->
       return 
 
 set_default_sort = -> 
-  sort = fetch 'sort_and_filter_proposals'
+  sort = bus_fetch 'sort_and_filter_proposals'
   if !sort.name?
     found = false 
-    loc = fetch('location')
+    loc = bus_fetch('location')
     if loc.query_params?.sort_by
       for s in sort_options
         if loc.query_params.sort_by.replace('_', ' ') in [s.name, s.key] 
@@ -427,7 +427,7 @@ ProposalSort = ReactiveComponent
 
   render : -> 
 
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
 
     return SPAN null if !subdomain.name
 
@@ -555,7 +555,7 @@ FilterProposalsMenu = ReactiveComponent
   displayName: 'FilterProposalsMenu'
   render: -> 
 
-    sort_and_filter_state = fetch 'sort_and_filter_proposals'
+    sort_and_filter_state = bus_fetch 'sort_and_filter_proposals'
     sort_and_filter_state.filter ?= _.extend {}, filter_options[0]
 
     DIV 
@@ -629,7 +629,7 @@ SortProposalsMenu = ReactiveComponent
   displayName: 'SortProposalsMenu'
   render: -> 
 
-    sort = fetch 'sort_and_filter_proposals'
+    sort = bus_fetch 'sort_and_filter_proposals'
     set_default_sort() if !sort.name?       
 
     DIV 
@@ -702,7 +702,7 @@ ManualProposalResort = ReactiveComponent
   displayName: 'ManualProposalResort'
 
   render: -> 
-    sort = fetch 'sort_and_filter_proposals'
+    sort = bus_fetch 'sort_and_filter_proposals'
 
     if !stale_sort_order(@props.sort_key) || TABLET_SIZE()
       return SPAN null 

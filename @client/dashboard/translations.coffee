@@ -3,9 +3,9 @@ require '../customizations'
 
 window.translation_progress = (lang, key_prefix) -> 
   key_prefix ||= '/translations'
-  proposed_translations = fetch "/proposed_translations/#{lang}#{key_prefix.replace('/translations', '')}"
-  dev_language = fetch "#{key_prefix}/en"
-  target_lang = fetch "#{key_prefix}/#{lang}"
+  proposed_translations = bus_fetch "/proposed_translations/#{lang}#{key_prefix.replace('/translations', '')}"
+  dev_language = bus_fetch "#{key_prefix}/en"
+  target_lang = bus_fetch "#{key_prefix}/#{lang}"
 
   translated = (k for k,v of dev_language when target_lang[k] or proposed_translations[k])
 
@@ -23,7 +23,7 @@ window.TRANSLATE = (args, native_text) ->
       native_text = args 
       args = {}
 
-  tr = fetch 'translations'
+  tr = bus_fetch 'translations'
 
   args.return_lang_used = true
   if args.key
@@ -63,7 +63,7 @@ window.TRANSLATE = (args, native_text) ->
   if !tr.in_situ_translations
     translation 
   else 
-    translations = fetch "/translations/#{target_lang}"
+    translations = bus_fetch "/translations/#{target_lang}"
 
     props = _.extend({lang_used, target_lang, message, native_text}, args)
     props.translation_key = props.key
@@ -92,16 +92,16 @@ IN_SITU_TRANSLATOR = ReactiveComponent
       @props.children
 
       if @local.show_translator
-        available_languages = fetch('/supported_languages').available_languages
+        available_languages = bus_fetch('/supported_languages').available_languages
 
         if @props.local 
-          subdomain = fetch('/subdomain')
-          updated_translations = fetch "local_translations/#{target_lang}/#{subdomain.name}"
-          proposed_translations = fetch "/proposed_translations/#{target_lang}/#{subdomain.name}"
+          subdomain = bus_fetch('/subdomain')
+          updated_translations = bus_fetch "local_translations/#{target_lang}/#{subdomain.name}"
+          proposed_translations = bus_fetch "/proposed_translations/#{target_lang}/#{subdomain.name}"
           subdomain_id = subdomain.id
         else 
-          updated_translations = fetch "local_translations/#{target_lang}"
-          proposed_translations = fetch "/proposed_translations/#{target_lang}"
+          updated_translations = bus_fetch "local_translations/#{target_lang}"
+          proposed_translations = bus_fetch "/proposed_translations/#{target_lang}"
           subdomain_id = null
 
         message_style = 
@@ -202,7 +202,7 @@ window.translator = (args, native_text) ->
     console.trace()
     # console.warn("Deprecated: do not pass args.key to translator. Pass in local: true instead")
 
-  subdomain = fetch '/subdomain'
+  subdomain = bus_fetch '/subdomain'
   if args.local && !subdomain.name 
     return '...'
 
@@ -211,7 +211,7 @@ window.translator = (args, native_text) ->
   else 
     translations_key_prefix = "/translations"
 
-  translations_native = fetch "#{translations_key_prefix}/#{DEVELOPMENT_LANGUAGE}"
+  translations_native = bus_fetch "#{translations_key_prefix}/#{DEVELOPMENT_LANGUAGE}"
   return '...' if waiting_for(translations_native)
 
   translations_loaded ||= true
@@ -243,7 +243,7 @@ window.translator = (args, native_text) ->
     , 1000
 
   # which language should we use? ordered by preference. 
-  # user = fetch '/current_user'
+  # user = bus_fetch '/current_user'
   user = {}
   langs = [user.lang, subdomain.lang, DEVELOPMENT_LANGUAGE].filter((l) -> l?)
   langs = Array.from(new Set(langs)) if langs.length > 1
@@ -252,13 +252,13 @@ window.translator = (args, native_text) ->
   lang_used = null 
   message = null 
   for lang in langs
-    translations = fetch "#{translations_key_prefix}/#{lang}"
+    translations = bus_fetch "#{translations_key_prefix}/#{lang}"
     if translations[id]?
       message = translations[id]
       # if this user has proposed one, use that
       # TODO!!!!! Update this
       # if translations[id].proposals?.length > 0
-      #   u = fetch('/current_user').user
+      #   u = bus_fetch('/current_user').user
       #   for proposal in translations[id].proposals
       #     if proposal.u == u 
       #       message = proposal.txt 
@@ -276,7 +276,7 @@ window.translator = (args, native_text) ->
     message = translations_native[id]
 
   if args.return_lang_used # useful for a T wrapper that enables in situ translations
-    translation_cache[cache_key] = {message, lang_used, target_lang: fetch('translations').translating_lang or langs[0]}
+    translation_cache[cache_key] = {message, lang_used, target_lang: bus_fetch('translations').translating_lang or langs[0]}
   else 
     translation_cache[cache_key] = message
 
@@ -364,13 +364,13 @@ TranslationsDash = ReactiveComponent
 
   render : ->
 
-    subdomain = fetch '/subdomain'
-    current_user = fetch '/current_user'
-    translations = fetch '/supported_languages'
+    subdomain = bus_fetch '/subdomain'
+    current_user = bus_fetch '/current_user'
+    translations = bus_fetch '/supported_languages'
 
     return DIV() if !translations.available_languages
 
-    local = fetch 'translations'
+    local = bus_fetch 'translations'
     local.filters ?= []
 
     all_langs = ( [k,v] for k,v of translations.available_languages when k != DEVELOPMENT_LANGUAGE)
@@ -429,11 +429,11 @@ TranslationsDash = ReactiveComponent
           INPUT 
             id: 'insitutranslations'
             type: 'checkbox' 
-            checked: fetch('translations').in_situ_translations
+            checked: bus_fetch('translations').in_situ_translations
             style: 
               fontSize: 36
             onChange: => 
-              tr = fetch 'translations'
+              tr = bus_fetch 'translations'
               tr.in_situ_translations = !tr.in_situ_translations
               save tr 
 
@@ -540,7 +540,7 @@ TranslationsDash = ReactiveComponent
               
               "Save Changes"
 
-            if fetch('translations_interface').saved_successfully
+            if bus_fetch('translations_interface').saved_successfully
               DIV
                 style: 
                   color: 'green'
@@ -557,23 +557,23 @@ TranslationsForLang = ReactiveComponent
   render: ->
 
     lang = @props.lang 
-    subdomain = fetch('/subdomain')
+    subdomain = bus_fetch('/subdomain')
 
     if @props.forum_specific
       translation_key_prefix = "/translations/#{subdomain.name}"
-      proposed_translations = fetch "/proposed_translations/#{lang}/#{subdomain.name}"
+      proposed_translations = bus_fetch "/proposed_translations/#{lang}/#{subdomain.name}"
       subdomain_id = subdomain.id
-      updated_translations = fetch "local_translations/#{lang}/#{subdomain.name}"
+      updated_translations = bus_fetch "local_translations/#{lang}/#{subdomain.name}"
 
     else 
       translation_key_prefix = "/translations"
-      proposed_translations = fetch "/proposed_translations/#{lang}"
+      proposed_translations = bus_fetch "/proposed_translations/#{lang}"
       subdomain_id = null
-      updated_translations = fetch "local_translations/#{lang}"
+      updated_translations = bus_fetch "local_translations/#{lang}"
 
-    available_languages = fetch("/supported_languages").available_languages
-    native_messages = fetch "#{translation_key_prefix}/#{DEVELOPMENT_LANGUAGE}"
-    native_messages_with_count = fetch "/proposed_translations/#{DEVELOPMENT_LANGUAGE}"
+    available_languages = bus_fetch("/supported_languages").available_languages
+    native_messages = bus_fetch "#{translation_key_prefix}/#{DEVELOPMENT_LANGUAGE}"
+    native_messages_with_count = bus_fetch "/proposed_translations/#{DEVELOPMENT_LANGUAGE}"
 
 
     return DIV() if waiting_for(native_messages) || waiting_for(proposed_translations) || waiting_for(native_messages_with_count)
@@ -621,7 +621,7 @@ TranslationsForLang = ReactiveComponent
 
 
 
-    local = fetch 'translations'
+    local = bus_fetch 'translations'
     for name in to_translate
       if local.filters?.length > 0 
         translation = proposed_translations.proposals[name]
@@ -655,7 +655,7 @@ TranslationsForLang = ReactiveComponent
         sections.misc ||= []
         sections.misc.push name
 
-    current_user = fetch '/current_user'
+    current_user = bus_fetch '/current_user'
 
     if @props.forum_specific
       cols = ['Message', "Translation. Leave blank if Message already #{available_languages[lang]}"]
@@ -917,9 +917,9 @@ TranslationsForLang = ReactiveComponent
 
 draw_translation_metadata = (proposal) -> 
   if proposal.user_id
-    proposer = fetch("/user/#{proposal.user_id}")
+    proposer = bus_fetch("/user/#{proposal.user_id}")
   else 
-    proposer = fetch('/current_user') 
+    proposer = bus_fetch('/current_user') 
   
   SPAN 
     style: 
@@ -990,7 +990,7 @@ deleteTranslationString = (string_id) ->
 
 
 editable_translation = (id, lang_code, subdomain_id, updated_translations, proposed_translations, style) -> 
-  current_user = fetch '/current_user'
+  current_user = bus_fetch '/current_user'
 
 
   accepted = proposed = val = proposal = null 
@@ -1052,7 +1052,7 @@ editable_translation = (id, lang_code, subdomain_id, updated_translations, propo
 
 promote_temporary_translations = (key) ->
 
-  updated_translations = fetch key
+  updated_translations = bus_fetch key
 
   proposals = []
   for k,v of updated_translations
@@ -1067,7 +1067,7 @@ promote_temporary_translations = (key) ->
         delete updated_translations[k]
     save updated_translations
 
-    trans_UI = fetch('translations_interface')
+    trans_UI = bus_fetch('translations_interface')
     trans_UI.saved_successfully = true 
     save trans_UI 
     _.delay ->

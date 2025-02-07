@@ -13,7 +13,7 @@ window.disallow_cancel = ->
   permit('access forum') < 0
 
 toggle_modes = ->
-  auth = fetch 'auth'
+  auth = bus_fetch 'auth'
 
   if auth.form == 'create account'
     toggle_to = translator "auth.log_in", 'Log in'
@@ -44,7 +44,7 @@ toggle_modes = ->
       BUTTON
         className: 'toggle_auth like_link'
         onClick: (e) =>
-          current_user = fetch('/current_user')
+          current_user = bus_fetch('/current_user')
           auth.form = if auth.form == 'create account' then 'login' else 'create account'
           save auth
           setTimeout =>
@@ -62,7 +62,7 @@ window.Login = ReactiveComponent
 
   render: -> 
     i18n = @i18n()
-    auth = fetch 'auth'
+    auth = bus_fetch 'auth'
 
     on_submit = (ev) =>
       @Submit ev,
@@ -100,7 +100,7 @@ window.Login = ReactiveComponent
             @ShowErrors()
 
             if customization('login_footer')
-              auth = fetch('auth')
+              auth = bus_fetch('auth')
               if auth.form == 'login'
                 DIV 
                   style:
@@ -117,7 +117,7 @@ window.Login = ReactiveComponent
   resetPasswordLink : -> 
     reset = (e) => 
       # Tell the server to email us a token
-      current_user = fetch('/current_user')
+      current_user = bus_fetch('/current_user')
       current_user.trying_to = 'send_password_reset_token'
       if @local.updates?.email?.length > 0 
         current_user.email = @local.updates.email 
@@ -155,8 +155,8 @@ window.CreateAccount = ReactiveComponent
 
   render: ->     
     i18n = @i18n()
-    current_user = fetch '/current_user'
-    auth = fetch 'auth'
+    current_user = bus_fetch '/current_user'
+    auth = bus_fetch 'auth'
     form_name = if @props.by_invitation
                   'create account via invitation'
                 else 
@@ -255,7 +255,7 @@ window.CreateAccount = ReactiveComponent
             dangerouslySetInnerHTML: {__html: customization('auth_footer')}
 
         if customization('login_footer')
-          auth = fetch('auth')
+          auth = bus_fetch('auth')
           if auth.form == 'login'
             DIV 
               style:
@@ -266,7 +266,7 @@ window.CreateAccount = ReactiveComponent
 
 
   ConsideritTerms: -> 
-    current_user = fetch '/current_user'
+    current_user = bus_fetch '/current_user'
 
     default_terms = TRANSLATE
       id: 'auth.create.agree_to_terms'

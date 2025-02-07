@@ -18,7 +18,7 @@ require './browser_hacks'
 # Public API
 
 window.is_a_dialogue_page = ->
-  url = fetch('location').url
+  url = bus_fetch('location').url
   url.indexOf('/dashboard') == -1 && url.indexOf('/docs/') == -1
 
 parseURL = (url) ->
@@ -60,7 +60,7 @@ parseURL = (url) ->
 #            about what triggered this page load 
 
 window.loadPage = (url, query_params, triggered_by) ->
-  loc = fetch('location')
+  loc = bus_fetch('location')
   loc.query_params = query_params or {}
 
   url_parts = parseURL "#{location_origin()}#{url}" 
@@ -171,8 +171,8 @@ window.BrowserLocation = ReactiveComponent
   displayName: 'BrowserLocation'
 
   render : -> 
-    loc = fetch 'location'
-    doc = fetch 'document'
+    loc = bus_fetch 'location'
+    doc = bus_fetch 'document'
 
     # Update the window title if it has changed
     title = doc.title or document.title
@@ -198,7 +198,7 @@ window.BrowserLocation = ReactiveComponent
 
   componentDidUpdate : -> 
 
-    loc = fetch 'location'
+    loc = bus_fetch 'location'
     if loc.seek_to_hash 
       
       loc.seek_to_hash = false
@@ -224,7 +224,7 @@ window.BrowserLocation = ReactiveComponent
           # If there are docked elements, we want to scroll a bit 
           # before the element so that the docked elements don't 
           # obscure the section headings
-          docks = fetch('docking_station')
+          docks = bus_fetch('docking_station')
           seek_below = docks.y_stack or 50
           
           window.scrollTo 0, getCoords(el).top - seek_below
@@ -244,7 +244,7 @@ relativeURLFromLocation = ->
   "#{loc}#{search}#{location.hash}"
 
 relativeURLFromStatebus = ->  
-  loc = fetch 'location'
+  loc = bus_fetch 'location'
 
   relative_url = loc.url 
   if _.keys(loc.query_params).length > 0

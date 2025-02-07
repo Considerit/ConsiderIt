@@ -134,14 +134,14 @@
 
 
 # is_histogram_controlling_region_selection = (key) -> 
-#   opinion_views = fetch 'opinion_views'
+#   opinion_views = bus_fetch 'opinion_views'
 #   active = opinion_views.active_views
 #   originating_histogram = opinion_views.active_views.region_selected?.created_by
   
 #   !originating_histogram? || originating_histogram == key
 
 # window.clear_histogram_managed_opinion_views = (opinion_views, field) ->
-#   opinion_views ?= fetch 'opinion_views'
+#   opinion_views ?= bus_fetch 'opinion_views'
 #   if field 
 #     delete opinion_views.active_views[field]
 #   else 
@@ -152,7 +152,7 @@
 
 
 # window.select_single_opinion = (user_opinion, created_by) ->
-#   opinion_views = fetch 'opinion_views'
+#   opinion_views = bus_fetch 'opinion_views'
 
 #   is_deselection = opinion_views.active_views.single_opinion_selected?.opinion == user_opinion.key
 #   if is_deselection
@@ -194,15 +194,15 @@
 #   displayName : 'Histogram'
 
 #   render: -> 
-#     subdomain = fetch '/subdomain'
+#     subdomain = bus_fetch '/subdomain'
 
-#     loc = fetch 'location'
+#     loc = bus_fetch 'location'
 #     if loc.query_params.show_histogram_layout
 #       window.show_histogram_layout = true
 
-#     proposal = fetch @props.proposal
+#     proposal = bus_fetch @props.proposal
 
-#     opinion_views = fetch 'opinion_views'
+#     opinion_views = bus_fetch 'opinion_views'
 
 #     opinions = @props.opinions
 
@@ -448,7 +448,7 @@
 
 #   drawHistogramLabels: (subdomain, proposal) -> 
 
-#     subdomain ?= fetch '/subdomain'
+#     subdomain ?= bus_fetch '/subdomain'
 #     label_style = @props.label_style or {
 #       fontSize: 12
 #       fontWeight: 400
@@ -495,7 +495,7 @@
 
 #   drawSelectionArea: -> 
 
-#     opinion_views = fetch 'opinion_views'
+#     opinion_views = bus_fetch 'opinion_views'
 
 #     anchor = opinion_views.active_views.single_opinion_selected or @local.mouse_opinion_value
 #     left = ((anchor + 1)/2 - REGION_SELECTION_WIDTH/2) * @props.width
@@ -540,7 +540,7 @@
 
 #     ev.stopPropagation()
 
-#     opinion_views = fetch 'opinion_views'
+#     opinion_views = bus_fetch 'opinion_views'
 
 #     single_selection = opinion_views.active_views.single_opinion_selected
 #     region_selected = opinion_views.active_views.region_selected
@@ -615,7 +615,7 @@
 
 #   onMouseMove: (ev) ->     
 
-#     return if fetch(namespaced_key('slider', @props.proposal)).is_moving  || \
+#     return if bus_fetch(namespaced_key('slider', @props.proposal)).is_moving  || \
 #               @props.backgrounded || !@enable_range_selection || \
 #               !is_histogram_controlling_region_selection(@props.histo_key)
 
@@ -633,7 +633,7 @@
 #       at_pole = true
     
 #     # dynamic selection on drag
-#     opinion_views = fetch 'opinion_views'
+#     opinion_views = bus_fetch 'opinion_views'
 #     region_selected = opinion_views.active_views.region_selected    
 #     if region_selected && @local.mouse_opinion_value
 #                          # this last conditional is only for touch
@@ -649,7 +649,7 @@
 #     save @local
 
 #   onMouseDown: (ev) -> 
-#     return if fetch(namespaced_key('slider', @props.proposal)).is_moving
+#     return if bus_fetch(namespaced_key('slider', @props.proposal)).is_moving
 #     ev.stopPropagation()
 #     return false 
 #       # The return false prevents text selections
@@ -658,9 +658,9 @@
 
 
 #   onMouseLeave: (ev) ->     
-#     return if fetch(namespaced_key('slider', @props.proposal)).is_moving
+#     return if bus_fetch(namespaced_key('slider', @props.proposal)).is_moving
 
-#     opinion_views = fetch 'opinion_views'
+#     opinion_views = bus_fetch 'opinion_views'
 #     active = opinion_views.active_views
 #     originating_histogram = (active.single_opinion_selected or active.region_selected)?.created_by == @props.histo_key
 
@@ -694,7 +694,7 @@
 
 # $$.add_delegated_listener document.body, 'keydown', '.avatar[data-opinion]', (e) ->
 #   if e.which == 13 || e.which == 32 # ENTER or SPACE 
-#     user_opinion = fetch e.target.getAttribute 'data-opinion'
+#     user_opinion = bus_fetch e.target.getAttribute 'data-opinion'
 #     select_single_opinion user_opinion, 'keydown'
 
 
@@ -703,7 +703,7 @@
 #   displayName: 'HistoAvatars'
 
 #   histocache_key: -> # based on variables that could alter the layout
-#     key = """#{JSON.stringify( (Math.round(fetch(o.key).stance * 100) for o in @props.opinions) )} #{JSON.stringify(@props.weights)} #{JSON.stringify(@props.groups)} (#{@props.width}, #{@props.height})"""
+#     key = """#{JSON.stringify( (Math.round(bus_fetch(o.key).stance * 100) for o in @props.opinions) )} #{JSON.stringify(@props.weights)} #{JSON.stringify(@props.groups)} (#{@props.width}, #{@props.height})"""
 #     md5 key
 
 #   getFillRatio: -> 
@@ -727,7 +727,7 @@
 #     multi_weighed
 
 #   render: ->
-#     users = fetch '/users'
+#     users = bus_fetch '/users'
 
 #     histocache_key = @histocache_key()
 #     if !@local.avatar_sizes?[histocache_key]
@@ -775,7 +775,7 @@
 #           if !@props.enable_individual_selection
 #             regular_avatar_style.cursor = 'auto'
 
-#           opinion_views = fetch 'opinion_views'  
+#           opinion_views = bus_fetch 'opinion_views'  
 
 #           groups = get_user_groups_from_views @props.groups 
 #           has_groups = !!groups
@@ -789,10 +789,10 @@
 #           for opinion, idx in @props.opinions
           
 
-#             user = fetch opinion.user
-#             o = fetch(opinion) # subscribe to changes so physics sim will get rerun...
+#             user = bus_fetch opinion.user
+#             o = bus_fetch(opinion) # subscribe to changes so physics sim will get rerun...
 
-#             # sub_creation = new Date(fetch('/subdomain').created_at).getTime()
+#             # sub_creation = new Date(bus_fetch('/subdomain').created_at).getTime()
 #             # creation = new Date(o.created_at).getTime()
 #             # opacity = .05 + .95 * (creation - sub_creation) / (Date.now() - sub_creation)
 
@@ -852,7 +852,7 @@
 #               custom_bg_color: avatar_style.background || avatar_style.backgroundColor
 
 #   PhysicsSimulation: ->
-#     proposal = fetch @props.proposal
+#     proposal = bus_fetch @props.proposal
 
 #     # We only need to rerun the sim if the distribution of stances has changed, 
 #     # or the width/height of the histogram has changed. We round the stance to two 
@@ -942,7 +942,7 @@
 #     onmessage = (e) ->
 #       {opts, positions} = e.data 
 
-#       local = fetch opts.histo
+#       local = bus_fetch opts.histo
 #       histocache_key = opts.k 
       
 #       local.histocache ?= {} 

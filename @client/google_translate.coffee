@@ -81,7 +81,7 @@ window.GoogleTranslate = ReactiveComponent
 
 
   insertTranslationWidget: -> 
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
 
     new google.translate.TranslateElement {
         pageLanguage: subdomain.lang

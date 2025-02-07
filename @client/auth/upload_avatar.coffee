@@ -13,8 +13,8 @@ window.AvatarInput = ReactiveComponent
     # hack for submitting file data in ActiveREST for now
     # we'll just submit the file form after user is signed in
 
-    current_user = fetch '/current_user'
-    user = fetch(fetch('/current_user').user)
+    current_user = bus_fetch '/current_user'
+    user = bus_fetch(bus_fetch('/current_user').user)
     @local.preview ?= user.avatar_file_name || current_user.avatar_remote_url
 
     img_preview_src =  if @local.newly_uploaded
@@ -107,8 +107,8 @@ window.poll_until_avatar_arrives = ->
 
   time_between = 500
   update_user = -> 
-    current_user = fetch '/current_user'
-    user = fetch (current_user.user or '/current_user')
+    current_user = bus_fetch '/current_user'
+    user = bus_fetch (current_user.user or '/current_user')
 
     if !user.avatar_file_name
       arest.serverFetch '/current_user'
@@ -116,7 +116,7 @@ window.poll_until_avatar_arrives = ->
       if time_between < 100000
         setTimeout update_user, time_between 
     else 
-      loading = fetch('avatar_loading')
+      loading = bus_fetch('avatar_loading')
       loading.dummy ?= 0
       loading.dummy += 1
       save loading

@@ -61,7 +61,7 @@ styles += """
 ## ########################
 ## Initialize defaults for client data
 
-fetch 'root'
+bus_fetch 'root'
 
 
 AccessibilitySupport = ReactiveComponent 
@@ -140,10 +140,10 @@ About = ReactiveComponent
 
 
   render : -> 
-    subdomain = fetch('/subdomain') 
+    subdomain = bus_fetch('/subdomain') 
 
     if @local.embed_html_directly && !@local.html && subdomain.about_page_url
-      # fetch the about page HTML directly
+      # bus_fetch the about page HTML directly
       $.get subdomain.about_page_url, \
             (response) => @local.html = response; save @local
 
@@ -165,10 +165,10 @@ About = ReactiveComponent
 LocationTransition = ReactiveComponent
   displayName: 'locationTransition'
   render : -> 
-    loc = fetch 'location'
+    loc = bus_fetch 'location'
 
     if is_a_dialogue_page() && loc.query_params.edit_forum
-      edit_forum = fetch 'edit_forum'
+      edit_forum = bus_fetch 'edit_forum'
       edit_forum.editing = true
       save edit_forum      
       delete loc.query_params.edit_forum
@@ -182,13 +182,13 @@ LocationTransition = ReactiveComponent
     if @last_location != loc.url 
 
       # resetting root state when switching routes
-      auth = fetch('auth')
+      auth = bus_fetch('auth')
 
       if auth.form
         reset_key auth
 
 
-      edit_forum = fetch 'edit_forum'
+      edit_forum = bus_fetch 'edit_forum'
       if edit_forum.editing && !is_a_dialogue_page()
         stop_editing_forum()
         
@@ -211,10 +211,10 @@ Page = ReactiveComponent
   mixins: [AccessControlled]
 
   render: ->
-    subdomain = fetch('/subdomain')
-    loc = fetch('location')
-    auth = fetch('auth')
-    page = fetch @props.page
+    subdomain = bus_fetch('/subdomain')
+    loc = bus_fetch('location')
+    auth = bus_fetch('auth')
+    page = bus_fetch @props.page
 
     access_granted = @accessGranted()
 
@@ -294,17 +294,17 @@ Root = ReactiveComponent
 
   render : -> 
 
-    loc = fetch('location')
-    app = fetch('/application')
-    subdomain = fetch '/subdomain'
-    current_user = fetch('/current_user')    
-    page = fetch("/page#{loc.url}")
+    loc = bus_fetch('location')
+    app = bus_fetch('/application')
+    subdomain = bus_fetch '/subdomain'
+    current_user = bus_fetch('/current_user')    
+    page = bus_fetch("/page#{loc.url}")
 
     setTimeout ->
-      fetch '/users'
+      bus_fetch '/users'
 
 
-    if !fetch('customizations_signature').signature || !app.web_worker
+    if !bus_fetch('customizations_signature').signature || !app.web_worker
       return  DIV 
                 className: 'full_height'
 
@@ -379,7 +379,7 @@ Root = ReactiveComponent
           className: 'full_height'
           
 
-          if fetch('auth').form
+          if bus_fetch('auth').form
             Auth()
           
           BrowserHacks()
@@ -395,7 +395,7 @@ Root = ReactiveComponent
 
 
       do -> 
-        app = fetch('/application')   
+        app = bus_fetch('/application')   
 
         DIV null, 
           if app.dev
@@ -409,13 +409,13 @@ Root = ReactiveComponent
     #       register a callback when a click bubbles all the way to the
     #       top. There are global interdependencies to unwind as well.
 
-    loc = fetch('location')
+    loc = bus_fetch('location')
     page = get_page()
 
 
-    if !fetch('auth').form && page.proposal
+    if !bus_fetch('auth').form && page.proposal
 
-      opinion_views = fetch 'opinion_views'
+      opinion_views = bus_fetch 'opinion_views'
 
       if get_selected_point()
         delete loc.query_params.selected
@@ -424,13 +424,13 @@ Root = ReactiveComponent
       else if opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
         clear_histogram_managed_opinion_views opinion_views
 
-    if !fetch('auth').form && loc.url == '/'
-      opinion_views = fetch 'opinion_views'
+    if !bus_fetch('auth').form && loc.url == '/'
+      opinion_views = bus_fetch 'opinion_views'
 
       if opinion_views.active_views.single_opinion_selected || opinion_views.active_views.region_selected
         clear_histogram_managed_opinion_views opinion_views
 
-    wysiwyg_editor = fetch 'wysiwyg_editor'
+    wysiwyg_editor = bus_fetch 'wysiwyg_editor'
     if wysiwyg_editor.showing
       # We don't want to close the editor if there was a selection event whose click event
       # bubbled all the way up here.
@@ -447,7 +447,7 @@ Root = ReactiveComponent
 # exports...
 window.Franklin = Root
 
-window.get_page = -> fetch("/page#{fetch('location').url}")
+window.get_page = -> bus_fetch("/page#{bus_fetch('location').url}")
 
 require './app_loader'
 

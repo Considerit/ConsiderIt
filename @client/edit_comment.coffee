@@ -2,10 +2,10 @@ window.EditComment = ReactiveComponent
   displayName: 'EditComment'
 
   render : -> 
-    proposal = fetch @props.proposal
+    proposal = bus_fetch @props.proposal
     permitted = permit 'create comment', proposal
 
-    current_user = fetch('/current_user')
+    current_user = bus_fetch('/current_user')
 
     commentor_opinion = _.findWhere proposal.opinions, {user: current_user.user}    
     anonymous = commentor_opinion?.hide_name or customization('anonymize_everything')
@@ -156,7 +156,7 @@ window.EditComment = ReactiveComponent
               comment =
                 key: '/new/comment'
                 body: @local.new_comment
-                user: fetch('/current_user').user
+                user: bus_fetch('/current_user').user
                 point: "/point/#{@props.point}"
             else
               comment = @data()

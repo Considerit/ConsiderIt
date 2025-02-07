@@ -7,21 +7,21 @@ window.Header = ReactiveComponent
   displayName: 'Header'
 
   render : ->
-    current_user = fetch('/current_user')
-    subdomain = fetch('/subdomain')
+    current_user = bus_fetch('/current_user')
+    subdomain = bus_fetch('/subdomain')
 
 
-    root = fetch('root')
+    root = bus_fetch('root')
 
 
-    # auth = fetch('auth')
+    # auth = bus_fetch('auth')
     # return SPAN null if auth.form && auth.form not in ['edit profile']
 
     return SPAN null if !subdomain.name # || embedded_demo()
 
 
     
-    loc = fetch('location')
+    loc = bus_fetch('location')
     homepage = is_a_dialogue_page()
     
     light_bg = is_light_background() 
@@ -31,7 +31,7 @@ window.Header = ReactiveComponent
     HEADER 
       style: 
         position: 'relative'
-        zIndex: if fetch('edit_forum').editing then 1 # necessary b/c of payment modal
+        zIndex: if bus_fetch('edit_forum').editing then 1 # necessary b/c of payment modal
       className: if !light_bg then 'dark'
 
       if current_user.is_admin
@@ -117,8 +117,8 @@ window.HostHeader = ReactiveComponent
   displayName: 'HostHeader'
 
   render: ->
-    loc = fetch('location')
-    edit_forum = fetch('edit_forum')
+    loc = bus_fetch('location')
+    edit_forum = bus_fetch('edit_forum')
 
     free_forum = permit('configure paid feature') < 0
 

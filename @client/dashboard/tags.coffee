@@ -4,16 +4,16 @@ UserTags = ReactiveComponent
   displayName: 'UserTags'
 
   render : -> 
-    subdomain = fetch '/subdomain'
-    users = fetch '/users'
+    subdomain = bus_fetch '/subdomain'
+    users = bus_fetch '/users'
 
-    selected_user = if @local.selected_user then fetch(@local.selected_user)
+    selected_user = if @local.selected_user then bus_fetch(@local.selected_user)
 
     change_selected_user = (new_user) => 
       @local.new_tags = {}
       @local.selected_user = new_user
 
-      selected_user = if @local.selected_user then fetch(@local.selected_user)
+      selected_user = if @local.selected_user then bus_fetch(@local.selected_user)
       if selected_user
         for k,v of all_tags when k != 'no tags'
           if !selected_user.tags[k]?
@@ -40,7 +40,7 @@ UserTags = ReactiveComponent
             all_tags[tag][false] = []
 
     for user in users.users 
-      user = fetch(user.key or user) # subscribe to changes
+      user = bus_fetch(user.key or user) # subscribe to changes
       for vals in tags_config 
         tag = vals.key
         if tag not of user.tags || user.tags[tag] == "" || user.tags[tag] == 'undefined'
@@ -357,7 +357,7 @@ UserTags = ReactiveComponent
                     onDrop: (e) =>
                       if @local.control_depressed
                         e.preventDefault()
-                        user = fetch e.dataTransfer.getData("text/plain")
+                        user = bus_fetch e.dataTransfer.getData("text/plain")
                         user.tags[tag] = v 
                         save user                      
 

@@ -32,10 +32,10 @@ window.EditProfile = ReactiveComponent
   mixins: [AuthForm]
 
   render: -> 
-    current_user = fetch '/current_user'
+    current_user = bus_fetch '/current_user'
     i18n = @i18n()
 
-    is_SSO = fetch('/subdomain').SSO_domain  
+    is_SSO = bus_fetch('/subdomain').SSO_domain  
 
     if @local.saved_successfully && is_SSO
       loadPage '/'

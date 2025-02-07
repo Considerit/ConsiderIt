@@ -157,7 +157,7 @@ window.List = ReactiveComponent
 
   # list of proposals
   render: -> 
-    current_user = fetch '/current_user'
+    current_user = bus_fetch '/current_user'
     
     list = get_list(@props.list)
 
@@ -165,17 +165,17 @@ window.List = ReactiveComponent
     list_key = list.key
 
     # subscribe to a key that will alert us to when sort order has changed
-    fetch('homepage_you_updated_proposal')
+    bus_fetch('homepage_you_updated_proposal')
 
     proposals = list.proposals or []
 
-    list_state = fetch list_key
+    list_state = bus_fetch list_key
     list_state.show_first_num_items ?= @props.show_first_num_items or customization('show_first_n_proposals', list_key) or SHOW_FIRST_N_PROPOSALS
     list_state.collapsed ?= customization('list_is_archived', list_key)
 
     is_collapsed = list_state.collapsed
 
-    edit_list = fetch "edit-#{list_key}"
+    edit_list = bus_fetch "edit-#{list_key}"
 
     if edit_list.editing
       return  EditNewList
@@ -290,7 +290,7 @@ ListItems = ReactiveComponent
 
         BUTTON
           onClick: => 
-            list_state = fetch list_key
+            list_state = bus_fetch list_key
             list_state.show_all_proposals = true
             save list_state
 
@@ -323,7 +323,7 @@ ListItems = ReactiveComponent
           list_key: list_key
           combines_these_lists: @props.combines_these_lists  
 
-    loc = fetch 'location'
+    loc = bus_fetch 'location'
     proposals_to_render = []
     for p, idx in proposals
       passes_idx_test = idx < @props.show_first_num_items && passes_running_timelapse_simulation(p.created_at)
@@ -347,11 +347,11 @@ ListItems = ReactiveComponent
 
     @last_expansion_key = expansion_key
 
-    expanded_state = fetch "proposal_expansions-#{list.key}"
+    expanded_state = bus_fetch "proposal_expansions-#{list.key}"
 
     len = proposals_to_render.length
 
-    url = fetch('location').url
+    url = bus_fetch('location').url
 
     # This flipper tracks list order and proposal expansion. 
     # Be wary of a bug in react-flip-toolkit that interferes 
@@ -429,13 +429,13 @@ ListItems = ReactiveComponent
 
   get_expansion_key: ->
 
-    expanded_state = fetch "proposal_expansions-#{@props.list.key}"
+    expanded_state = bus_fetch "proposal_expansions-#{@props.list.key}"
     expansion_key = ("#{key}-#{state}" for key, state of expanded_state when key != 'key').join('###')
     expansion_key    
 
 
 __remove_this_list = (list_key, page) ->
-  subdomain = fetch '/subdomain'
+  subdomain = bus_fetch '/subdomain'
   list_key = list_key.key or list_key
   tabs = get_tabs()
 
@@ -469,7 +469,7 @@ __remove_this_list = (list_key, page) ->
 
 
 window.delete_list = (list_key, page, suppress_confirmation) ->
-  subdomain = fetch '/subdomain'
+  subdomain = bus_fetch '/subdomain'
 
   list_key = list_key.key or list_key
 
@@ -578,11 +578,11 @@ window.ListHeader = ReactiveComponent
   render: -> 
     list = @props.list 
     list_key = list.key
-    list_state = fetch list_key
+    list_state = bus_fetch list_key
 
     is_collapsed = list_state.collapsed
 
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
 
     description = customization('list_description', list_key, subdomain)
 
@@ -708,7 +708,7 @@ window.NewList = ReactiveComponent
   displayName: 'NewList'
 
   render: -> 
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
 
     wide_layout = WINDOW_WIDTH() > 1090 
 
@@ -749,6 +749,7 @@ window.NewList = ReactiveComponent
 window.list_i18n = ->
   button: translator('engage.create_new_list_button', "Create a new call for ideas or feedback")
   explanation: translator 'engage.create_new_list_explanation', 'Ask an open-ended question like "What are your ideas?" or establish a category like "Recommendations."'
+  
   new_response_label: (list_key) ->
     item_name = customization('list_item_name', list_key)
     if item_name
@@ -756,11 +757,12 @@ window.list_i18n = ->
     if item_name == 'proposal' or !item_name
       translator "engage.add_new_proposal_to_list", 'Add new proposal'
     else 
-      subdomain = fetch('/subdomain')
+      subdomain = bus_fetch('/subdomain')
       translator 
         id: "engage.add_new_#{item_name}_to_list"
         local: true
       , "Add a new #{item_name}"
+
   opinion_header: (list_key) ->
     item_name = customization('list_item_name', list_key)
     if item_name
@@ -768,7 +770,7 @@ window.list_i18n = ->
     if !item_name || item_name.toLowerCase() == 'proposal' 
       translator "engage.opinion_header_results", 'Opinions about this proposal'
     else 
-      subdomain = fetch('/subdomain')
+      subdomain = bus_fetch('/subdomain')
       translator 
         id: "engage.opinion_header_results_#{item_name}"
         local: true
@@ -816,7 +818,7 @@ EditableTitle = ReactiveComponent
     list = @props.list 
     list_key = list.key
 
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
 
     title = get_list_title list_key, true, subdomain
 
@@ -909,12 +911,12 @@ styles += """
 
 
 CollapseList = (list_key) -> 
-  subdomain = fetch '/subdomain'
+  subdomain = bus_fetch '/subdomain'
 
   list_uncollapseable = customization 'list_uncollapseable', list_key, subdomain
   return SPAN null if list_uncollapseable
 
-  list_state = fetch list_key
+  list_state = bus_fetch list_key
   is_collapsed = list_state.collapsed
 
   toggle_list = (collapse_button) ->
@@ -1041,7 +1043,7 @@ EditableDescription = ReactiveComponent
   componentDidUpdate: -> @setAlignment()
 
   render: -> 
-    current_user = fetch '/current_user'
+    current_user = bus_fetch '/current_user'
 
     list = @props.list 
     list_key = list.key
@@ -1169,7 +1171,7 @@ window.ListActions = (props) ->
 
 
 window.get_list_title = (list_key, include_category_value, subdomain) -> 
-  subdomain ?= fetch('/subdomain')
+  subdomain ?= bus_fetch('/subdomain')
   title = customization('list_title', list_key, subdomain)
   if include_category_value
     title ?= category_value list_key, null, subdomain
@@ -1192,10 +1194,10 @@ category_value = (list_key, fresh, subdomain) ->
 
 
 window.get_all_lists = ->
-  fetch('/lists').lists or []
+  bus_fetch('/lists').lists or []
 
 window.get_all_lists_not_configured_for_a_page = ->
-  lists = fetch('/lists').lists or []
+  lists = bus_fetch('/lists').lists or []
 
   if get_tabs()
     all_configured_lists = {}
@@ -1224,14 +1226,14 @@ window.get_list_sort_method = (tab) ->
 
 window.get_list_for_proposal = (proposal) ->
   if !proposal.key
-    proposal = fetch proposal
+    proposal = bus_fetch proposal
   "list/#{(proposal.cluster or 'Proposals').trim()}"  
 
 lists_ordered_by_most_recent_update = {}
 lists_ordered_by_randomized = {}
 
 window.get_lists_for_page = (tab) -> 
-  homepage_tabs = fetch 'homepage_tabs'
+  homepage_tabs = bus_fetch 'homepage_tabs'
   tab ?= get_current_tab_name()
   tabs_config = get_tabs()
   lists = get_all_lists()
@@ -1297,7 +1299,7 @@ window.get_lists_for_page = (tab) ->
     for lst in lists_in_tab
       server_lst = '/' + lst
       if !arest.cache[server_lst]?.proposals
-        fetch(server_lst).proposals or []
+        bus_fetch(server_lst).proposals or []
         ready = false
 
     return lists_in_tab if !ready || lists_in_tab.length == 0 
@@ -1305,7 +1307,7 @@ window.get_lists_for_page = (tab) ->
 
     if Object.keys(by_recency).length != lists_in_tab.length
       for lst in lists_in_tab
-        proposals = fetch('/' + lst).proposals or []
+        proposals = bus_fetch('/' + lst).proposals or []
         by_recency[lst] = -1 # in case there aren't any proposals in it
         for proposal in proposals
           time = (new Date(proposal.created_at).getTime())
@@ -1328,7 +1330,7 @@ window.get_lists_for_page = (tab) ->
 
 
 window.get_proposals_in_list = (list_key) -> 
-  list = fetch "/#{list_key}"
+  list = bus_fetch "/#{list_key}"
   list.proposals
 
 

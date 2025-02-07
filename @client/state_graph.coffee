@@ -17,7 +17,7 @@
 ##########
 # Initialize
 
-fetch 'state_graph',
+bus_fetch 'state_graph',
   on: false
   show_component_parent_child_relations: false
   show_unused_data: false
@@ -29,7 +29,7 @@ document.addEventListener "keypress", (e) ->
   key = (e and e.keyCode) or e.keyCode
 
   if key==7 # cntrl-G
-    graph = fetch('state_graph')
+    graph = bus_fetch('state_graph')
     graph.on = !graph.on
     save graph
 
@@ -49,7 +49,7 @@ window.StateGraph = ReactiveComponent
   displayName: 'State Graph'
 
   render: ->
-    graph = fetch 'state_graph'
+    graph = bus_fetch 'state_graph'
 
     if !@local.nodes?
       @local.nodes = {}
@@ -232,7 +232,7 @@ window.StateGraph = ReactiveComponent
                 overflow: 'hidden'
                 zIndex: 1
 
-              for own k,v of arest.cache[focus.name] #don't call fetch b/c we don't want dependency
+              for own k,v of arest.cache[focus.name] #don't call bus_fetch b/c we don't want dependency
                 text = pretty_print v
                 DIV
                   style: 
@@ -285,7 +285,7 @@ window.StateGraph = ReactiveComponent
         '''
 
   componentDidUpdate : -> 
-    graph = fetch 'state_graph'
+    graph = bus_fetch 'state_graph'
 
     if graph.on
       @drawGraph()
@@ -306,7 +306,7 @@ window.StateGraph = ReactiveComponent
     #       - prevent collisons
     #       - keep in bounds
 
-    graph = fetch 'state_graph'
+    graph = bus_fetch 'state_graph'
 
     # Build our network
     [new_nodes, new_links, stale_nodes, stale_links] = refresh_data @local.nodes, @local.links
@@ -512,7 +512,7 @@ window.StateGraph = ReactiveComponent
 
   compute_hash : -> 
     props = {}
-    for obj in [@local, fetch('state_graph')]
+    for obj in [@local, bus_fetch('state_graph')]
       for own k,v of obj
         if k != 'links' && k != 'nodes' && k != 'key'
           props[k] = v
@@ -622,7 +622,7 @@ refresh_data = (nodes, links) ->
 # data, while also accommodating the current state graph visualization
 # configuration. 
 transform_to_d3 = (nodes, links) -> 
-  graph = fetch 'state_graph'
+  graph = bus_fetch 'state_graph'
 
   show_data = graph.show_data_dependencies
   show_component = graph.show_component_parent_child_relations

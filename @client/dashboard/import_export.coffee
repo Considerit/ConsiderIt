@@ -41,8 +41,8 @@ window.DataDash = ReactiveComponent
 
   render : ->
 
-    subdomain = fetch '/subdomain'
-    current_user = fetch '/current_user'
+    subdomain = bus_fetch '/subdomain'
+    current_user = bus_fetch '/current_user'
 
     if current_user.is_super_admin 
       tables = ['Users', 'Proposals', 'Opinions', 'Points', 'Comments']

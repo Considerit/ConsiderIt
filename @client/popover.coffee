@@ -2,7 +2,7 @@ require './shared'
 
 
 zero_popover = -> 
-  popover = fetch('popover')
+  popover = bus_fetch('popover')
   popover.coords = popover.tip = popover.render = popover.top = popover.positioned = null
   popover.offsetY = popover.offsetX = null 
   popover.rendered_size = false 
@@ -12,7 +12,7 @@ zero_popover = ->
   save popover
 
 clear_popover = (immediate, cb) ->
-  popover = fetch('popover')
+  popover = bus_fetch('popover')
   return if !popover.id
 
   if immediate
@@ -34,7 +34,7 @@ hide_popover = (e) ->
     if e.target.getAttribute('data-title')
       e.target.setAttribute('title', e.target.getAttribute('data-title'))
       e.target.removeAttribute('data-title')
-    popover = fetch('popover')
+    popover = bus_fetch('popover')
     popover.element_in_focus = false 
     if popover.coords
       clear_popover false, ->
@@ -45,7 +45,7 @@ hide_popover = (e) ->
 
 toggle_popover = (e) ->
   if e.target.getAttribute('data-popover')
-    popover = fetch('popover')
+    popover = bus_fetch('popover')
     if popover.element_in_focus
       hide_popover(e)
     else 
@@ -57,7 +57,7 @@ DELAY_TO_SHOW_POPOVER = 1000
 
 
 window.update_avatar_popover_from_canvas_histo = (opts) -> 
-  popover = fetch 'popover'
+  popover = bus_fetch 'popover'
 
   already_hovering_on_avatar = !!popover.id
 
@@ -86,7 +86,7 @@ window.update_avatar_popover_from_canvas_histo = (opts) ->
 
 show_popover_from_dom = (e) ->
   if e.target.getAttribute('data-popover')
-    popover = fetch 'popover'
+    popover = bus_fetch 'popover'
 
     popover.element_in_focus = e.target.getAttribute('data-popover')
 
@@ -249,7 +249,7 @@ window.Popover = ReactiveComponent
   displayName: 'Popover'
 
   render : -> 
-    popover = fetch('popover')
+    popover = bus_fetch('popover')
     return SPAN(null) if !popover.coords || !popover.render
 
     arrow_size = 
@@ -328,7 +328,7 @@ window.Popover = ReactiveComponent
 
 
   componentDidUpdate: ->
-    popover = fetch('popover')
+    popover = bus_fetch('popover')
 
     if popover.coords 
       rendered_size = 

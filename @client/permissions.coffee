@@ -52,7 +52,7 @@ permit = (action) ->
       subdomain = arg 
       break 
 
-  current_user = fetch '/current_user'
+  current_user = bus_fetch '/current_user'
   phase = customization('contribution_phase', null, subdomain)
 
 
@@ -62,7 +62,7 @@ permit = (action) ->
   switch action
 
     when 'read proposal', 'access forum'
-      subdomain ?= fetch '/subdomain'      
+      subdomain ?= bus_fetch '/subdomain'      
       if !current_user.is_admin && !matchSomeRole(subdomain.roles, ['visitor']) 
         if !current_user.logged_in
           return Permission.NOT_LOGGED_IN 
@@ -73,7 +73,7 @@ permit = (action) ->
         return Permission.UNVERIFIED_EMAIL
 
     when 'create proposal'
-      subdomain ?= fetch '/subdomain'
+      subdomain ?= bus_fetch '/subdomain'
       if arguments[1]
         list_key = arguments[1]
         list_key = list_key.key or list_key
@@ -93,12 +93,12 @@ permit = (action) ->
     when 'update proposal', 'delete proposal'
       return Permission.NOT_LOGGED_IN if !current_user.logged_in
 
-      proposal = fetch arguments[1]
+      proposal = bus_fetch arguments[1]
       if !current_user.is_admin && (proposal.key == 'new_proposal' || !matchEmail(proposal.roles.editor) )
         return Permission.INSUFFICIENT_PRIVILEGES
 
     when 'publish opinion'
-      proposal = fetch arguments[1]
+      proposal = bus_fetch arguments[1]
 
       return Permission.DISABLED if phase == 'ideas-only'
 
@@ -112,17 +112,17 @@ permit = (action) ->
         return Permission.INSUFFICIENT_INFORMATION
 
     when 'update opinion'
-      proposal = fetch arguments[1]
+      proposal = bus_fetch arguments[1]
       if !arguments[2]
         return Permission.INSUFFICIENT_PRIVILEGES
       # console.log arguments[2]
-      opinion = fetch arguments[2]
+      opinion = bus_fetch arguments[2]
 
-      return Permission.INSUFFICIENT_PRIVILEGES if opinion.user != fetch('/current_user').user
+      return Permission.INSUFFICIENT_PRIVILEGES if opinion.user != bus_fetch('/current_user').user
         
 
     when 'create point'
-      proposal = fetch arguments[1]
+      proposal = bus_fetch arguments[1]
 
       return Permission.DISABLED if phase == 'ideas-only' || !proposal.active
       return Permission.NOT_LOGGED_IN if !current_user.logged_in
@@ -131,14 +131,14 @@ permit = (action) ->
           
     when 'update point'
       # Is an author allowed to edit a point after someone else has included it?
-      point = fetch arguments[1]
-      if !current_user.is_admin && point.user != fetch('/current_user').user
+      point = bus_fetch arguments[1]
+      if !current_user.is_admin && point.user != bus_fetch('/current_user').user
         return Permission.INSUFFICIENT_PRIVILEGES
 
     when 'delete point'
-      point = fetch arguments[1]
+      point = bus_fetch arguments[1]
       if !current_user.is_admin
-        if point.user != fetch('/current_user').user
+        if point.user != bus_fetch('/current_user').user
           return Permission.INSUFFICIENT_PRIVILEGES
 
         # Allow the point author to delete this point before it is published.
@@ -148,7 +148,7 @@ permit = (action) ->
           return Permission.DISABLED
 
     when 'create comment'
-      proposal = fetch arguments[1]
+      proposal = bus_fetch arguments[1]
 
       return Permission.DISABLED if phase == 'ideas-only'      
       return Permission.DISABLED if !proposal.active
@@ -158,12 +158,12 @@ permit = (action) ->
         return Permission.INSUFFICIENT_PRIVILEGES 
 
     when 'update comment'
-      comment = fetch arguments[1]
-      if !current_user.is_admin && comment.user != fetch('/current_user').user
+      comment = bus_fetch arguments[1]
+      if !current_user.is_admin && comment.user != bus_fetch('/current_user').user
         return Permission.INSUFFICIENT_PRIVILEGES
 
     when 'configure paid feature'
-      subdomain ?= fetch '/subdomain'
+      subdomain ?= bus_fetch '/subdomain'
 
       if !(   (current_user.is_admin && subdomain.plan) || current_user.is_super_admin   )
         return Permission.INSUFFICIENT_PRIVILEGES
@@ -174,7 +174,7 @@ permit = (action) ->
 
 matchEmail = (permission_list) -> 
   permission_list = (p.toLowerCase() for p in permission_list)
-  user = fetch '/current_user'
+  user = bus_fetch '/current_user'
   
   return true if '*' in permission_list
   return true if user.user in permission_list
@@ -196,8 +196,8 @@ matchSomeRole = (roles, accepted_roles) ->
 
 sent_verification_token = false
 window.recourse = (permission, goal) ->
-  loc = fetch 'location'
-  auth = fetch 'auth'
+  loc = bus_fetch 'location'
+  auth = bus_fetch 'auth'
 
   goal ?= "To access this #{if is_a_dialogue_page() then 'forum' else 'page'},"
   
@@ -220,7 +220,7 @@ window.recourse = (permission, goal) ->
 
 
         if !sent_verification_token
-          current_user = fetch '/current_user'
+          current_user = bus_fetch '/current_user'
           current_user.trying_to = 'send_verification_token'
 
           save current_user
@@ -244,12 +244,12 @@ window.recourse = (permission, goal) ->
 # Currently this mixin only works for Page components b/c of the state management
 AccessControlled = 
   accessGranted: -> 
-    current_user = fetch '/current_user'
+    current_user = bus_fetch '/current_user'
 
     ####
     # HACK: Clear out statebus if current_user changed. See comment below.
     page = get_page()
-    local_but_not_component_unique = fetch "local-#{page.key}"
+    local_but_not_component_unique = bus_fetch "local-#{page.key}"
     access_attrs = ['verified', 'logged_in', 'email']
 
     permission_denied = page.permission_denied
@@ -278,7 +278,7 @@ AccessControlled =
     # My solution here is to store relevant values of /current_user the last time
     # an access denied error was registered. Then everytime one of those attributes
     # changes (i.e. when the user might be able to access), we'll issue a server
-    # fetch on the page.
+    # bus_fetch on the page.
     #
     if @_relevant_current_user_values_have_changed(access_attrs)
       local_but_not_component_unique._last_current_user = _.map access_attrs, (attr) -> current_user[attr] 
@@ -293,8 +293,8 @@ AccessControlled =
     return !permission_denied || permission_denied > 0
   
   _relevant_current_user_values_have_changed: (access_attrs) ->
-    current_user = fetch '/current_user' 
-    last_values = fetch "local-#{get_page().key}"
+    current_user = bus_fetch '/current_user' 
+    last_values = bus_fetch "local-#{get_page().key}"
 
     reduced_user = _.map access_attrs, (attr) -> current_user[attr] 
     for el,idx in reduced_user
@@ -303,7 +303,7 @@ AccessControlled =
     return false
 
 AccessDenied = -> 
-  user = fetch '/current_user'
+  user = bus_fetch '/current_user'
 
   DIV 
     style: 

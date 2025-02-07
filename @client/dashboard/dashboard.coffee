@@ -176,12 +176,12 @@ window.Dashboard = ReactiveComponent
   render: -> 
 
 
-    current_user = fetch '/current_user'
+    current_user = bus_fetch '/current_user'
     is_admin = current_user.is_admin
     is_moderator = current_user.is_moderator
     is_super = current_user.is_super_admin
 
-    loc = fetch 'location'
+    loc = bus_fetch 'location'
 
     title = get_dash_title loc.url
         

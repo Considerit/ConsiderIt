@@ -10,15 +10,15 @@ window.Point = ReactiveComponent
   displayName: 'Point'
 
   render : ->
-    point = fetch @props.point
+    point = bus_fetch @props.point
 
     return SPAN null if !point.proposal
 
-    proposal = fetch point.proposal
+    proposal = bus_fetch point.proposal
 
     is_selected = get_selected_point() == @props.point
 
-    current_user = fetch('/current_user')
+    current_user = bus_fetch('/current_user')
 
 
 
@@ -188,7 +188,7 @@ window.Point = ReactiveComponent
 
             translator
               id: "engage.point_explanation"
-              author: if point.hide_name then anonymous_label() else fetch(point.user).name
+              author: if point.hide_name then anonymous_label() else bus_fetch(point.user).name
               num_inclusions: point.includers.length
               comment_count: point.comment_count
               """By {author}. 
@@ -215,7 +215,7 @@ window.Point = ReactiveComponent
                 fontSize: 12
                 color: '#666'
 
-              if !PHONE_SIZE() && !screencasting() && !embedded_demo() && fetch('/subdomain').name != 'galacticfederation'
+              if !PHONE_SIZE() && !screencasting() && !embedded_demo() && bus_fetch('/subdomain').name != 'galacticfederation'
                 [
                   prettyDate(point.created_at)
                   SPAN key: 'padding', style: paddingLeft: 8
@@ -261,7 +261,7 @@ window.Point = ReactiveComponent
                 onTouchEnd: (e) -> e.stopPropagation()
                 onClick: ((e) =>
                   e.stopPropagation()
-                  points = fetch(@props.your_points_key)
+                  points = bus_fetch(@props.your_points_key)
                   points.editing_points.push(@props.point)
                   save(points))
                 translator 'engage.edit_button', 'edit'
@@ -298,7 +298,7 @@ window.Point = ReactiveComponent
       if TABLET_SIZE() || (!TABLET_SIZE() && @props.enable_dragging)
         your_opinion = proposal.your_opinion
         if your_opinion.key 
-          fetch your_opinion
+          bus_fetch your_opinion
 
 
         can_opine = canUserOpine proposal          
@@ -316,7 +316,7 @@ window.Point = ReactiveComponent
             @include()
           else 
 
-            validate_first = point.user == fetch('/current_user').user && point.includers.length < 2
+            validate_first = point.user == bus_fetch('/current_user').user && point.includers.length < 2
             if !validate_first || confirm('Are you sure you want to mark your point as unimportant? It will be gone forever.')
               @remove()
 
@@ -464,8 +464,8 @@ window.Point = ReactiveComponent
           point_root.closest(".ProposalItem").classList.remove 'community-point-is-being-dragged'
 
           if db = last_mouse_over_target?.closest('.DecisionBoard')
-            point = fetch @props.point
-            proposal = fetch point.proposal
+            point = bus_fetch @props.point
+            proposal = bus_fetch point.proposal
             your_opinion = proposal.your_opinion
 
             if !your_opinion.point_inclusions || point.key not in your_opinion.point_inclusions
@@ -482,11 +482,11 @@ window.Point = ReactiveComponent
 
         else # removing decision_board_point by dragging outside
           if last_mouse_over_target?.closest('.points_by_community')
-            point = fetch @props.point
-            proposal = fetch point.proposal
+            point = bus_fetch @props.point
+            proposal = bus_fetch point.proposal
             your_opinion = proposal.your_opinion
 
-            validate_first = point.user == fetch('/current_user').user && point.includers.length < 2
+            validate_first = point.user == bus_fetch('/current_user').user && point.includers.length < 2
             if !validate_first || confirm('Are you sure you want to remove your point? It will be gone forever.')
               your_opinion = proposal.your_opinion
 
@@ -537,15 +537,15 @@ window.Point = ReactiveComponent
 
 
   included: -> 
-    point = fetch @props.point
-    proposal = fetch point.proposal
+    point = bus_fetch @props.point
+    proposal = bus_fetch point.proposal
     your_opinion = proposal.your_opinion
     your_opinion.point_inclusions ?= []
     your_opinion.point_inclusions.indexOf(@props.point) > -1
     
   include: -> 
-    point = fetch @props.point 
-    proposal = fetch point.proposal
+    point = bus_fetch @props.point 
+    proposal = bus_fetch point.proposal
 
     your_opinion = proposal.your_opinion
     your_opinion.key ?= "/new/opinion"
@@ -561,8 +561,8 @@ window.Point = ReactiveComponent
         point: @props.point
 
   remove: -> 
-    point = fetch @props.point 
-    proposal = fetch point.proposal
+    point = bus_fetch @props.point 
+    proposal = bus_fetch point.proposal
 
     your_opinion = proposal.your_opinion
     your_opinion.key ?= "/new/opinion"
@@ -576,7 +576,7 @@ window.Point = ReactiveComponent
 
   selectPoint: (e) ->
     e.stopPropagation()
-    point = fetch @props.point
+    point = bus_fetch @props.point
 
     return if !point.text && customization('disable_comments')
 
@@ -587,7 +587,7 @@ window.Point = ReactiveComponent
     #               (!browser.is_mobile && e.type == 'click') || \
     #               e.type == 'keydown'
 
-    loc = fetch('location')
+    loc = bus_fetch('location')
     if get_selected_point() == @props.point # deselect
       delete loc.query_params.selected
       what = 'deselected a point'
@@ -609,7 +609,7 @@ window.Point = ReactiveComponent
   # On hovering over a point, highlight the people who included this 
   # point in the Histogram.
   highlightIncluders : -> 
-    point = fetch @props.point
+    point = bus_fetch @props.point
     includers = point.includers
 
     # For point authors who chose not to sign their points, remove them from 
@@ -619,7 +619,7 @@ window.Point = ReactiveComponent
     if point.hide_name
       includers = _.without includers, point.user
 
-    opinion_views = fetch 'opinion_views'
+    opinion_views = bus_fetch 'opinion_views'
     opinion_views.active_views.point_includers =
       created_by: @props.point 
       point: point.key 
@@ -632,18 +632,18 @@ window.Point = ReactiveComponent
 
 
   unHighlightIncluders : -> 
-    opinion_views = fetch 'opinion_views'
+    opinion_views = bus_fetch 'opinion_views'
     if opinion_views.active_views.point_includers
       delete opinion_views.active_views.point_includers
       save opinion_views
 
   buildIncluders : -> 
-    point = fetch @props.point 
-    proposal = fetch point.proposal
+    point = bus_fetch @props.point 
+    proposal = bus_fetch point.proposal
 
     includers = point.includers
 
-    opinion_views = fetch 'opinion_views'
+    opinion_views = bus_fetch 'opinion_views'
 
     # Don't filter point_includers unless we're in single opinion or region select mode. If we didn't 
     # do that, when you hover over includers in a point, all the other points includers change, which 

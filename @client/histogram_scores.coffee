@@ -22,10 +22,10 @@ window.AggregatedHistogram =  ReactiveComponent
   displayName: 'AggregatedHistogram'
 
   render: ->
-    opinion_views = fetch 'opinion_views'
+    opinion_views = bus_fetch 'opinion_views'
     return SPAN null if !opinion_views.active_views.group_by
 
-    proposal = fetch @props.proposal 
+    proposal = bus_fetch @props.proposal 
 
     {weights, salience, groups} = compose_opinion_views(null, proposal)
     opinions = get_opinions_for_proposal opinions, proposal, weights
@@ -47,7 +47,7 @@ window.AggregatedHistogram =  ReactiveComponent
     group_opinions = []
     group_weights = {}
 
-    opinion_views = fetch('opinion_views')
+    opinion_views = bus_fetch('opinion_views')
     is_weighted = false 
     for v,view of opinion_views.active_views
       is_weighted ||= view.view_type == 'weight'
@@ -208,9 +208,9 @@ window.AggregatedGroupPopover = ReactiveComponent
 
   render: -> 
     {proposal, attribute, group, attribute, stance, num_opinions} = @props
-    proposal = fetch proposal
+    proposal = bus_fetch proposal
 
-    opinion_views = fetch 'opinion_views'
+    opinion_views = bus_fetch 'opinion_views'
 
     DIV 
       style: 

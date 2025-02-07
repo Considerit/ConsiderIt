@@ -7,8 +7,8 @@ window.HostQuestions = ReactiveComponent
 
   render: -> 
     i18n = @i18n()
-    auth = fetch 'auth'
-    current_user = fetch '/current_user'
+    auth = bus_fetch 'auth'
+    current_user = bus_fetch '/current_user'
 
     @Draw
       task: translator 'auth.additional_info.heading', 'Questions from your host'
@@ -50,7 +50,7 @@ window.HostQuestions = ReactiveComponent
       DIV null,
 
 
-        if embedded_demo() && fetch('/subdomain').name == 'galacticfederation' && fetch('local_tags').tags?.federation_allegiance
+        if embedded_demo() && bus_fetch('/subdomain').name == 'galacticfederation' && bus_fetch('local_tags').tags?.federation_allegiance
           switch current_user.tags.federation_allegiance
             when 'Dark'
               avatar_url = "https://d2rtgkroh5y135.cloudfront.net/system/avatars/287330/large/stormtrooper1.png"
@@ -230,11 +230,11 @@ window.ShowHostQuestions = ReactiveComponent
 
 
   HostQuestionInputs : -> 
-    subdomain = fetch('/subdomain')
-    current_user = fetch('/current_user')
-    auth = fetch('auth')
+    subdomain = bus_fetch('/subdomain')
+    current_user = bus_fetch('/current_user')
+    auth = bus_fetch('auth')
 
-    local = fetch('local_tags')
+    local = bus_fetch('local_tags')
 
     return DIV() if !current_user.tags
 

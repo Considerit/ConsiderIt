@@ -42,8 +42,8 @@ proposal_roles = ->
 
 
 window.InitializeProposalRoles = (proposal) -> 
-  current_user = fetch '/current_user'
-  subdomain = fetch '/subdomain'
+  current_user = bus_fetch '/current_user'
+  subdomain = bus_fetch '/subdomain'
 
   proposal.roles =
     editor: proposal.roles?.editor or ["/user/#{current_user.id}"]
@@ -80,7 +80,7 @@ SubdomainRoles = ReactiveComponent
   displayName: 'SubdomainRoles'
 
   render : -> 
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
 
     roles =  
       admin:
@@ -197,7 +197,7 @@ window.styles += """
 
 RadioWildcardRolesSection = (opts) ->
   role = opts.role
-  subdomain = fetch '/subdomain'
+  subdomain = bus_fetch '/subdomain'
 
   DIV 
     className: 'ROLES_section'
@@ -333,7 +333,7 @@ GetUsersWithRole = (target, role) ->
   if target.roles[role.name]
     for user_key in target.roles[role.name]
       if user_key != '*'
-        user = fetch(user_key)
+        user = bus_fetch(user_key)
         with_role.push user
 
   return with_role
@@ -346,10 +346,10 @@ ResendInvitations = ReactiveComponent
   mixins: [Modal]
 
   render: ->
-    target = fetch @props.target
+    target = bus_fetch @props.target
     role = @props.role
 
-    users = fetch '/users'
+    users = bus_fetch '/users'
 
     return SPAN null if !users.users
 
@@ -460,9 +460,9 @@ ModalAddRolesAndInvite = ReactiveComponent
   mixins: [Modal]
 
   render: ->
-    target = fetch @props.target
+    target = bus_fetch @props.target
 
-    users = fetch '/users'
+    users = bus_fetch '/users'
 
     @local.added ?= []
 
@@ -675,7 +675,7 @@ UsersWithRole = ReactiveComponent
   displayName: 'UsersWithRole'
 
   render : -> 
-    target = fetch @props.target
+    target = bus_fetch @props.target
     role = @props.role
 
     DIV 
@@ -713,7 +713,7 @@ UserWithRole = (user_key, on_remove_from_role) ->
       style: 
         display: 'inline-block'
       if user_key && user_key[0] == '/'
-        user = fetch user_key
+        user = bus_fetch user_key
         SPAN null,
           if user.avatar_file_name
             Avatar 

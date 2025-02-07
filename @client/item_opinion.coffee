@@ -126,9 +126,9 @@ window.OpinionBlock = ReactiveComponent
 
 
   render: ->
-    proposal = fetch @props.proposal 
-    subdomain = fetch '/subdomain'
-    current_user = fetch '/current_user'
+    proposal = bus_fetch @props.proposal 
+    subdomain = bus_fetch '/subdomain'
+    current_user = bus_fetch '/current_user'
 
     @is_expanded = @props.is_expanded
 
@@ -136,7 +136,7 @@ window.OpinionBlock = ReactiveComponent
 
     show_proposal_scores = (!@is_expanded || mode != 'crafting') && !@props.hide_scores && customization('show_proposal_scores', proposal, subdomain) && WINDOW_WIDTH() > 955
 
-    opinion_views = fetch 'opinion_views'
+    opinion_views = bus_fetch 'opinion_views'
     just_you = opinion_views.active_views['just_you']
 
 
@@ -250,16 +250,16 @@ window.Slidergram = ReactiveComponent
 
     @is_expanded = @props.is_expanded
 
-    proposal = fetch @props.proposal 
-    subdomain = fetch '/subdomain'
-    current_user = fetch '/current_user'
+    proposal = bus_fetch @props.proposal 
+    subdomain = bus_fetch '/subdomain'
+    current_user = bus_fetch '/current_user'
 
     # watching = current_user.subscriptions[proposal.key] == 'watched'
-    # return if !watching && fetch('homepage_filter').watched
+    # return if !watching && bus_fetch('homepage_filter').watched
 
     your_opinion = proposal.your_opinion
     if your_opinion.key 
-      fetch your_opinion.key 
+      bus_fetch your_opinion.key 
 
     permitted_to_opine = -> canUserOpine proposal
 
@@ -276,12 +276,12 @@ window.Slidergram = ReactiveComponent
     backgrounded = @is_expanded && mode == 'crafting'
 
     if draw_slider
-      slider = fetch "homepage_slider#{proposal.key}"
+      slider = bus_fetch "homepage_slider#{proposal.key}"
     else 
       slider = null 
 
 
-    opinion_views = fetch 'opinion_views'
+    opinion_views = bus_fetch 'opinion_views'
     just_you = opinion_views.active_views['just_you']
 
     width = ITEM_OPINION_WIDTH() * (if @is_expanded && !TABLET_SIZE() then 2 else 1)
@@ -306,7 +306,7 @@ window.Slidergram = ReactiveComponent
           proposal_name: proposal.name
           "Evaluations on spectrum from {negative_pole} to {positive_pole} of the proposal {proposal_name}"
 
-      if opinion_views.active_views.group_by && fetch('opinion_views_ui').aggregate_into_groups
+      if opinion_views.active_views.group_by && bus_fetch('opinion_views_ui').aggregate_into_groups
         AggregatedHistogram 
           proposal: proposal.key
           width: width
@@ -439,7 +439,7 @@ ParticipationStatus = ReactiveComponent
 
 
 window.canUserOpine = (proposal) ->
-  proposal = fetch proposal
+  proposal = bus_fetch proposal
   your_opinion = proposal.your_opinion
 
   if your_opinion.key

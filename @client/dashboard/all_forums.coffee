@@ -174,11 +174,11 @@ window.AllYourForums = ReactiveComponent
 
   render : ->
 
-    subdomain = fetch '/subdomain'
-    current_user = fetch '/current_user'
+    subdomain = bus_fetch '/subdomain'
+    current_user = bus_fetch '/current_user'
 
 
-    forums = fetch '/your_forums'
+    forums = bus_fetch '/your_forums'
 
     hosted = forums.hosted
     participated_in = forums.participated_in
@@ -199,7 +199,7 @@ window.AllYourForums = ReactiveComponent
         DIV null,
           "You have not yet hosted a forum. "
           A 
-            href: "https://#{fetch('/application').base_domain}/create_forum"
+            href: "https://#{bus_fetch('/application').base_domain}/create_forum"
             'Create your own'
           " if you wish."
 

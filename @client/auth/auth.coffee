@@ -21,8 +21,8 @@ window.AuthCallout = ReactiveComponent
   displayName: 'AuthCallout'
 
   render: ->
-    current_user = fetch '/current_user'
-    subdomain = fetch '/subdomain'
+    current_user = bus_fetch '/current_user'
+    subdomain = bus_fetch '/subdomain'
 
     return SPAN null if current_user.logged_in || customization('contribution_phase') == 'frozen'
 
@@ -62,7 +62,7 @@ window.AUTH_CALLOUT_BUTTONS = (button_style) ->
       display: 'block'
       margin: 'auto'
 
-  subdomain = fetch '/subdomain'
+  subdomain = bus_fetch '/subdomain'
   if subdomain.SSO_domain
 
     TRANSLATE
@@ -111,8 +111,8 @@ window.AUTH_CALLOUT_BUTTONS = (button_style) ->
 window.AuthTransition = ReactiveComponent
   displayName: 'AuthTransition'
   render : ->
-    current_user = fetch('/current_user')
-    auth = fetch('auth')
+    current_user = bus_fetch('/current_user')
+    auth = bus_fetch('auth')
 
     @local.logged_in_last_render ?= current_user.logged_in
 
@@ -140,7 +140,7 @@ window.AuthTransition = ReactiveComponent
     # users following an email invitation need to complete 
     # registration (name + password)
     if current_user.needs_to_complete_profile && auth.form not in ['edit profile', 'create account via invitation']
-      subdomain = fetch('/subdomain')
+      subdomain = bus_fetch('/subdomain')
 
       reset_key 'auth',
         key: 'auth'
@@ -172,7 +172,7 @@ window.AuthTransition = ReactiveComponent
     @local.logged_in_last_render = current_user.logged_in
 
 
-    if embedded_demo() && fetch('/subdomain').name == 'galacticfederation'
+    if embedded_demo() && bus_fetch('/subdomain').name == 'galacticfederation'
       if auth.form == 'create account' 
         id = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 15)
         _.extend current_user, 
@@ -230,8 +230,8 @@ window.Auth = ReactiveComponent
   displayName: 'Auth'
 
   render: ->
-    current_user = fetch('/current_user')
-    auth = fetch('auth')
+    current_user = bus_fetch('/current_user')
+    auth = bus_fetch('auth')
 
     if auth.form == 'reset password'
       ResetPassword @props
@@ -253,12 +253,12 @@ window.Auth = ReactiveComponent
 
 
 window.logout = -> 
-  current_user = fetch('/current_user')
+  current_user = bus_fetch('/current_user')
   current_user.logged_in = false
   current_user.trying_to = 'logout'
 
-  auth = fetch 'auth'
-  loc = fetch 'location'
+  auth = bus_fetch 'auth'
+  loc = bus_fetch 'location'
   if loc.url.match('/dashboard')
     loadPage '/'
 
@@ -487,7 +487,7 @@ window.AuthForm =
 
 
   RenderInput: (opts) -> 
-    current_user = fetch '/current_user'
+    current_user = bus_fetch '/current_user'
     type = opts.type or 'text'
     name = opts.name
 
@@ -534,7 +534,7 @@ window.AuthForm =
               opts.on_submit(event)
 
   Submit: (ev, opts) -> 
-    current_user = fetch '/current_user'
+    current_user = bus_fetch '/current_user'
     ev.preventDefault()
     opts ?= {}
 
@@ -565,7 +565,7 @@ window.AuthForm =
     save @local
 
   ShowErrors: (errors) ->  
-    current_user = fetch '/current_user'
+    current_user = bus_fetch '/current_user'
     errors = (current_user.errors or []).concat(@local.errors or [])
     return SPAN null if !errors || errors.length == 0
 

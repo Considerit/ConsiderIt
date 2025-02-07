@@ -10,7 +10,7 @@ window.HistogramTester = ReactiveComponent
 
     common_layout_params = 
       show_histogram_layout: false  
-      save_snapshots: false # !!fetch('histo_layout_explorer_options').show_explorer
+      save_snapshots: false # !!bus_fetch('histo_layout_explorer_options').show_explorer
       use_global_window: true 
       verbose: true
       fill_ratio: 1
@@ -63,7 +63,7 @@ window.HistogramTester = ReactiveComponent
       for size in sizes 
         histos.push _.extend {}, size, {layout_params: layout}
 
-    proposals = fetch('/proposals').proposals
+    proposals = bus_fetch('/proposals').proposals
     proposals.sort (a,b) -> opinionsForProposal(b).length - opinionsForProposal(a).length
 
     # proposals.sort (b,a) -> opinionsForProposal(b).length - opinionsForProposal(a).length
@@ -137,7 +137,7 @@ window.HistogramTester = ReactiveComponent
                   #   hist: params 
 
 
-histo_layout_explorer_options = fetch('histo_layout_explorer_options')
+histo_layout_explorer_options = bus_fetch('histo_layout_explorer_options')
 _.defaults histo_layout_explorer_options, 
   show_explorer: true
   ms_between_plays: 99999
@@ -156,7 +156,7 @@ LayoutExplorerOptions = ReactiveComponent
   displayName: 'LayoutExplorerOptions'
 
   render: ->  
-    opts = fetch('histo_layout_explorer_options')
+    opts = bus_fetch('histo_layout_explorer_options')
 
     DIV 
       style: 
@@ -204,8 +204,8 @@ LayoutExplorer = ReactiveComponent
   render: ->  
 
 
-    fetch @props.running_state
-    running_state = fetch @props.running_state
+    bus_fetch @props.running_state
+    running_state = bus_fetch @props.running_state
     cleanup = running_state.cleanup
     has_cleanup = cleanup?.length > 0
 
@@ -218,7 +218,7 @@ LayoutExplorer = ReactiveComponent
       x = tick_data.from.x; y = tick_data.from.y
       x2 = tick_data.to.x; y2 = tick_data.to.y
 
-    opts = fetch('histo_layout_explorer_options')
+    opts = bus_fetch('histo_layout_explorer_options')
 
     DIV 
       style: 
@@ -294,9 +294,9 @@ LayoutExplorer = ReactiveComponent
 
 
   update: -> 
-    running_state = fetch @props.running_state
+    running_state = bus_fetch @props.running_state
     cleanup = running_state.cleanup
-    opts = fetch('histo_layout_explorer_options')
+    opts = bus_fetch('histo_layout_explorer_options')
 
     return if !opts.show_explorer || !running_state.cleanup
 
@@ -494,7 +494,7 @@ LayoutExplorer = ReactiveComponent
 HistoDetails = ReactiveComponent 
   displayName: 'HistoDetails'
   render: -> 
-    running_state = fetch(@props.running_state)
+    running_state = bus_fetch(@props.running_state)
     hist = @props.hist
 
     param_sets = @props.param_sets
@@ -552,7 +552,7 @@ GlobalHistTiming = ReactiveComponent
   displayName: 'GlobalHistTiming'
 
   render: -> 
-    global_running_state = fetch 'histo-timing'
+    global_running_state = bus_fetch 'histo-timing'
     param_sets = @props.param_sets
 
     params_with_multiple_vals = {}

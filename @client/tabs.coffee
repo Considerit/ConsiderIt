@@ -2,7 +2,7 @@
 window.SubdomainSaveRateLimiter =  
 
   save_customization_with_rate_limit: ({fields, config, force_save, on_save_callback, wait_for}) ->
-    subdomain = fetch '/subdomain'
+    subdomain = bus_fetch '/subdomain'
 
     config ?= subdomain.customizations
     fields ?= []
@@ -41,8 +41,8 @@ window.HomepageTabTransition = ReactiveComponent
 
   render: -> 
     if get_tabs()
-      loc = fetch 'location'
-      tab_state = fetch 'homepage_tabs'
+      loc = bus_fetch 'location'
+      tab_state = bus_fetch 'homepage_tabs'
       default_tab = customization('homepage_default_tab') or get_tabs()[0]?.name or 'Show all'
 
       tab_state_changing = (loc.query_params.tab && loc.query_params.tab != tab_state.active_tab)
@@ -63,7 +63,7 @@ window.HomepageTabTransition = ReactiveComponent
 
             if page?.proposal
 
-              proposal = fetch(page.proposal)
+              proposal = bus_fetch(page.proposal)
               if proposal.name
                 list = get_list_for_proposal proposal
                 tab = get_page_for_list list
@@ -113,8 +113,8 @@ window.HomepageTabTransition = ReactiveComponent
 
 
 window.get_tabs = -> 
-  if fetch('/subdomain').customizations?.homepage_tabs?.length > 0 
-    tabs = fetch('/subdomain').customizations.homepage_tabs
+  if bus_fetch('/subdomain').customizations?.homepage_tabs?.length > 0 
+    tabs = bus_fetch('/subdomain').customizations.homepage_tabs
     
     # hack to fix a bug I haven't found where a tab can have a null name
     idx = tabs.length - 1
@@ -134,7 +134,7 @@ window.get_tab = (name) ->
       return tab
   return null
 
-window.get_current_tab_name = -> fetch('homepage_tabs').active_tab or null
+window.get_current_tab_name = -> bus_fetch('homepage_tabs').active_tab or null
 window.get_current_tab_view = (args) ->
   tabs = customization('homepage_tabs') 
   if !tabs
@@ -165,7 +165,7 @@ window.get_page_preamble = (tab_name) ->
 
 
 window.create_new_tab = (tab_name) ->
-  subdomain = fetch('/subdomain')
+  subdomain = bus_fetch('/subdomain')
 
   tabs = get_tabs()
 
@@ -191,13 +191,13 @@ window.create_new_tab = (tab_name) ->
   tabs.push new_tab 
   save subdomain, ->
     setTimeout ->
-      loc = fetch 'location'
+      loc = bus_fetch 'location'
       loc.query_params.tab = new_tab_name
       save loc 
 
 
 window.delete_tab = (tab_name, skip_confirmation) ->
-  subdomain = fetch('/subdomain')
+  subdomain = bus_fetch('/subdomain')
 
   if skip_confirmation || \
      (get_tab(tab_name).type in [null, undefined, PAGE_TYPES.DEFAULT] && get_lists_for_page(tab_name)?.length == 0) || \
@@ -209,7 +209,7 @@ window.delete_tab = (tab_name, skip_confirmation) ->
         break
 
     if get_current_tab_name() == tab_name
-      tab_state = fetch 'homepage_tabs'
+      tab_state = bus_fetch 'homepage_tabs'
       tab_state.active_tab = null 
       save tab_state
 
@@ -258,16 +258,16 @@ window.HomepageTabs = ReactiveComponent
   displayName: 'HomepageTabs'
 
   render: -> 
-    homepage_tabs = fetch 'homepage_tabs'
+    homepage_tabs = bus_fetch 'homepage_tabs'
 
-    edit_forum = fetch 'edit_forum'
-    subdomain = fetch '/subdomain'
+    edit_forum = bus_fetch 'edit_forum'
+    subdomain = bus_fetch '/subdomain'
 
     tabs = get_tabs()?.slice()
 
     return DIV null if !edit_forum.editing && !tabs
 
-    #return DIV style:{paddingBottom:36} if edit_forum.editing && !fetch('/current_user').is_super_admin && permit('configure paid feature') < 0
+    #return DIV style:{paddingBottom:36} if edit_forum.editing && !bus_fetch('/current_user').is_super_admin && permit('configure paid feature') < 0
 
     is_light = is_light_background()
 
@@ -312,7 +312,7 @@ window.HomepageTabs = ReactiveComponent
               checked: !!get_tabs()
               onChange: (ev) -> 
                 if ev.target.checked
-                  loc = fetch 'location'
+                  loc = bus_fetch 'location'
                   new_tab_name = prompt("What is the name of the first tab? You'll be able to add more later.")
                   if new_tab_name
                     create_new_tab new_tab_name
@@ -375,7 +375,7 @@ window.HomepageTabs = ReactiveComponent
 
 
   isDraggable: ->
-    edit_forum = fetch 'edit_forum'
+    edit_forum = bus_fetch 'edit_forum'
     edit_forum.editing
 
   componentDidMount : ->    
@@ -402,7 +402,7 @@ window.HomepageTabs = ReactiveComponent
         from = data.oldIndex
         to = data.newIndex
 
-        subdomain = fetch '/subdomain'
+        subdomain = bus_fetch '/subdomain'
 
         tabs = subdomain.customizations.homepage_tabs
         tabs.splice(to, 0, tabs.splice(from, 1)[0])
@@ -489,8 +489,8 @@ window.Tab = ReactiveComponent
 
 
   render: -> 
-    subdomain = fetch('/subdomain')
-    edit_forum = fetch 'edit_forum'
+    subdomain = bus_fetch('/subdomain')
+    edit_forum = bus_fetch 'edit_forum'
 
     tab = @props.tab
     tab_name = tab.name
@@ -524,7 +524,7 @@ window.Tab = ReactiveComponent
       onClick: =>
         return if tab.demo && !tab.add_new
 
-        loc = fetch 'location'
+        loc = bus_fetch 'location'
 
         if tab.add_new
           tab_name = new_tab_name = prompt("What is the name of the tab?")
@@ -604,7 +604,7 @@ window.Tab = ReactiveComponent
                   force_save: true
                   wait_for: 10
                   on_save_callback: => 
-                    loc = fetch 'location'
+                    loc = bus_fetch 'location'
                     loc.query_params.tab = tab.name 
                     save loc
 

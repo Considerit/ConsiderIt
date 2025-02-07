@@ -5,12 +5,12 @@ require './murmurhash'
 
 # globally accessible method for getting the URL of a user's avatar
 window.avatarUrl = (user, img_size) -> 
-  user = fetch(user)
+  user = bus_fetch(user)
   if user.avatar_file_name.endsWith('svg') 
     img_size = 'original' # paperclip mangles svg files
 
   if !!user.avatar_file_name
-    app = arest.cache['/application'] or fetch('/application')
+    app = arest.cache['/application'] or bus_fetch('/application')
     (app.asset_host or '') + \
           "/system/avatars/" + \
           "#{user.key.split('/')[2]}/#{img_size}/#{user.avatar_file_name}"  
@@ -25,7 +25,7 @@ window.anonymous_label = ->
   translator 'anonymous', 'Anonymous'
 
 user_name = (user, anon) -> 
-  user = fetch user
+  user = bus_fetch user
   if !user.name || user.name.trim().length == 0 
     anonymous_label() 
   else 
@@ -38,16 +38,16 @@ window.AvatarPopover = ReactiveComponent
 
   render: -> 
     {user, anon, opinion} = @props
-    user = fetch user
+    user = bus_fetch user
     anonymous = arest.key_id(user.key) < 0 or anon or customization('anonymize_permanently')
-    opinion_views = fetch 'opinion_views'
+    opinion_views = bus_fetch 'opinion_views'
 
 
     name = user_name user, anonymous
 
     has_opinion = opinion?
     if has_opinion
-      opinion = fetch(opinion)    
+      opinion = bus_fetch(opinion)    
       stance = opinion.stance 
       if stance > .01
         alt = "#{(stance * 100).toFixed(0)}%"
@@ -58,7 +58,7 @@ window.AvatarPopover = ReactiveComponent
 
       anonymous ||= opinion.hide_name
 
-    pixelate_anon_current_user = user.key == fetch('/current_user').user && anonymous
+    pixelate_anon_current_user = user.key == bus_fetch('/current_user').user && anonymous
 
 
     DIV 
@@ -173,7 +173,7 @@ window.AvatarPopover = ReactiveComponent
         toggle_reasons = (e) =>
           @local.show_reasons = !@local.show_reasons
           save @local
-          popover = fetch 'popover'
+          popover = bus_fetch 'popover'
           popover.hide_triangle = @local.show_reasons
           save popover
           e.stopPropagation()
@@ -212,7 +212,7 @@ window.AvatarPopover = ReactiveComponent
                 listStyle: 'none'
                 margin: '12px auto'
               for reason in inclusions
-                point = fetch reason 
+                point = bus_fetch reason 
 
                 LI 
                   style: 
@@ -243,7 +243,7 @@ window.AvatarPopover = ReactiveComponent
                     style: 
                       fontStyle: 'italic'
                       marginLeft: 12
-                    "~ #{fetch(point.user).name}"
+                    "~ #{bus_fetch(point.user).name}"
 
 
 
@@ -278,11 +278,11 @@ window.avatar = (user, props) ->
 
   if !user.key 
     if user == arest.cache['/current_user']?.user 
-      user = fetch(user)
+      user = bus_fetch(user)
     else if arest.cache[user]
       user = arest.cache[user]
     else 
-      fetch user
+      bus_fetch user
       return SPAN null
 
   style = {}
@@ -610,17 +610,17 @@ my_question_mark_icon = question_mark_icon()
 window.LoadAvatars = ReactiveComponent
   displayName: "LoadAvatars" 
   render: ->
-    users = fetch '/users'
-    loading = fetch('avatar_loading')
+    users = bus_fetch '/users'
+    loading = bus_fetch('avatar_loading')
     SPAN null
 
   load: -> 
-    users = fetch '/users'
-    current_user = fetch '/current_user'  # subscribe for changes to login status & avatar
-    return if !users.users || fetch('location').url.match('/dashboard')
+    users = bus_fetch '/users'
+    current_user = bus_fetch '/current_user'  # subscribe for changes to login status & avatar
+    return if !users.users || bus_fetch('location').url.match('/dashboard')
 
-    loading = fetch('avatar_loading')
-    app = arest.cache['/application'] or fetch('/application')
+    loading = bus_fetch('avatar_loading')
+    app = arest.cache['/application'] or bus_fetch('/application')
 
     avatars_to_load = {}
     all_users = users.users.slice() or []
@@ -631,7 +631,7 @@ window.LoadAvatars = ReactiveComponent
       cached_avatars.default = createFallbackIcon({key: 'default'})
 
     for user in all_users
-      user = fetch user # subscribe to changes to avatar
+      user = bus_fetch user # subscribe to changes to avatar
       id = arest.key_id(user.key)
 
       if user.avatar_file_name

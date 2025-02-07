@@ -1091,7 +1091,8 @@ HistoAvatars = ReactiveComponent
     return if @last_hit_region_key == hit_key
 
     @hit_region_buffer ?= document.createElement 'canvas'
-    @hit_ctx ?= @hit_region_buffer.getContext '2d'          
+    @hit_ctx ?= @hit_region_buffer.getContext '2d', {willReadFrequently: true}
+
     @hit_region_buffer.width = (@resizing_canvas?.width or @refs.canvas.width) * DEVICE_PIXEL_RATIO
     @hit_region_buffer.height = (@resizing_canvas?.height or @refs.canvas.height) * DEVICE_PIXEL_RATIO
     @hit_ctx.clearRect(0, 0, @buffer.width, @buffer.height)

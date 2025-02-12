@@ -532,13 +532,32 @@ class CurrentUserController < ApplicationController
         
       end
 
-      current_user.update! attrs
+      begin 
+        current_user.update! attrs
+      rescue
+        if attrs.has_key?('avatar_url')
+          # There is a rare error where an avatar URL is too long to be stored in AWS.
+          # So in that case, we'll just ignore the avatar.
+          current_user.avatar_url = nil
+          current_user.avatar = nil
+          current_user.save
+          attrs.delete('avatar_url')
+          current_user.update! attrs
+        end
+      end
+      
       user = current_user
       created = true
 
     elsif !user.avatar_file_name
-      user.avatar_url = avatar_url
-      user.save
+      begin
+        user.avatar_url = avatar_url
+        user.save
+      rescue
+        user.avatar_url = nil
+        user.avatar = nil
+        user.save
+      end
     end
 
 

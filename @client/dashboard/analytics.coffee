@@ -26,7 +26,11 @@ window.DataAnalytics = ReactiveComponent
 
 
 
-  render: -> 
+  render: ->
+    users = bus_fetch('/users')
+    if !users.users
+      return SPAN null
+
     return ResponsiveAnalyticsDataset() unless @local.loaded 
 
     analytics_state = bus_fetch 'analytics'
@@ -40,6 +44,7 @@ window.DataAnalytics = ReactiveComponent
       name: analytics_state.expanded
       width: @local.width
       cumulative: @local.cumulative
+
 
     DIV 
       className: "DataAnalytics" 
@@ -144,7 +149,7 @@ styles += """
 AnalyticsTabs = ReactiveComponent
   displayName: 'AnalyticsTabs'
 
-  render: -> 
+  render: ->
     analytics_state = bus_fetch 'analytics'
 
     analytics_pages = [ 'VisitAnalytics', 'ParticipantAnalytics', 'OpinionGraphAnalytics', 'CommentsAnalytics' ]
@@ -1252,7 +1257,6 @@ ResponsiveAnalyticsDataset = ReactiveComponent
   displayName: 'ResponsiveAnalyticsDataset'
 
   render: -> 
-
     requirements_loaded = true
 
     bus_fetch('/proposals?all_points=true')
@@ -1298,6 +1302,7 @@ ResponsiveAnalyticsDataset = ReactiveComponent
       visits = bus_fetch '/visits'
       proposals = bus_fetch '/proposals'
       subdomain = bus_fetch '/subdomain'
+      users = bus_fetch '/users'
 
       earliest_visit = 0
       latest_visit = Infinity
@@ -1313,7 +1318,10 @@ ResponsiveAnalyticsDataset = ReactiveComponent
       earliest_opinion = 0
       latest_opinion = Infinity
       for o in opinions.opinions
-        u = bus_fetch o.user
+        u = arest.cache[o.user]
+        if not u
+          u = bus_fetch o.user
+
         continue if u.key in subdomain.roles.admin || u.key in (customization('organizational_account') or [])
 
         days_ago = Math.round (now - new Date(o.created_at).getTime()) / 1000 / 60 / 60 / 24
@@ -1420,10 +1428,13 @@ ResponsiveAnalyticsDataset = ReactiveComponent
   setParticipationData: -> 
     subdomain = bus_fetch '/subdomain'
     current_user = bus_fetch '/current_user'
+    users = bus_fetch('/users').users
 
     opinions_by_user = get_opinions_by_users()
 
+
     participants = getForumParticipants()
+
 
     # segments: 
     #   - each sign-up question
@@ -1434,7 +1445,6 @@ ResponsiveAnalyticsDataset = ReactiveComponent
     # divide participants into segments
     attributes = get_participant_attributes()
     segments = {}
-
 
     for attr in attributes
       name = attr.name or attr.key     
@@ -1448,13 +1458,12 @@ ResponsiveAnalyticsDataset = ReactiveComponent
                               # We want them to count toward both. So we replicate them as phantoms to count
                               # toward each attribute.
 
-
       for u in participants
         vals = []
         if u.key != '/user/-1' # skip for anonymity
           for option in attr.options
             current_segment.zDomain[option] = 1
-            if (attr.pass? && attr.pass(u.u, option)) || (!attr.pass && attribute_passes(u.u, attr, [option]) )
+            if u.u of arest.cache and ((attr.pass? && attr.pass(arest.cache[u.u], option)) || (!attr.pass && attribute_passes(arest.cache[u.u], attr, [option])))
               vals.push option
               current_segment.segment_data[option] ?= []
               current_segment.segment_data[option].push u
@@ -1483,6 +1492,7 @@ ResponsiveAnalyticsDataset = ReactiveComponent
         # participants = participants.concat checklist_phantoms
         current_segment.multi_valued_segment = true
 
+
     time_series = {}
 
     time_domain = get_forum_time_domain()
@@ -1508,6 +1518,9 @@ ResponsiveAnalyticsDataset = ReactiveComponent
       per_day.push [days_ago, date_str, time_series[days_ago] or [] ]
 
     per_day.reverse()
+
+
+     
 
     data_state = {key: 'participation_data', dummy: Math.random()}    
     participation_data = {per_day, participants, segments}

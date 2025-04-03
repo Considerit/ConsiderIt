@@ -127,6 +127,44 @@ task :migrate_opinion_filters => :environment do
 end
 
 
+task :migrate_to_bus_fetch => :environment do 
+  Subdomain.all.each do |subdomain|
+    next if !subdomain.customizations
+
+    customizations = subdomain.customizations
+
+    def process_object(parent, k, v)
+      if v.respond_to?(:key)
+        v.each do |kk,vv|
+          process_object(v, kk, vv)
+        end
+
+      elsif v.is_a?(Array)
+
+        v.each do |vv|
+          process_object(v, nil, vv)
+        end
+
+      elsif v.is_a?(String) && v.include?(" fetch")
+        if !k
+          pp("fetch found in array!", v, parent)
+        else
+          pp("updating from", v)
+          parent[k].gsub!(" fetch", " bus_fetch")
+          pp("\t\tto", parent[k])
+
+        end
+      end
+    end
+
+    customizations.each do |k,v|
+      process_object(customizations,k,v)
+    end
+    
+
+    subdomain.save
+  end
+end
 
 
 task :migrate_user_tags_to_list => :environment do 

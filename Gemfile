@@ -75,7 +75,7 @@ local_config = YAML.load_file "./config/local_environment.yml"
 
 if local_config["default"]["product_page"]
   # for payments
-  gem 'stripe'
+  gem 'stripe', "~>12.5.0"
 
   # for contact
   gem 'mailgun-ruby'

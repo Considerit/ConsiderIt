@@ -2006,7 +2006,7 @@ window.participation_timelapse = (step, interval) ->
 
   if !proposals.proposals 
     setTimeout ->
-      simulate_participation()
+      participation_timelapse()
     , 100
     return 
 

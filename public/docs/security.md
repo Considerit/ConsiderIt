@@ -33,10 +33,9 @@ The information below gives more details about our technical and organizational 
   </tr>
   <tr>
     <td>Measures for ensuring ongoing confidentiality, integrity, availability and resilience of processing systems and services</td>
-    <td>On our Linode servers, Consider.it uses vulnerability assessment, automatic security patching, threat protection technologies, and routine monitoring procedures designed to identify, assess, mitigate and protect against identified security threats, viruses, and other malicious code.
+    <td>On our Linode servers, Consider.it uses vulnerability assessment, automatic security patching, and threat protection technologies, along with a defense-in-depth approach to harden systems and detect malicious activity. All unnecessary incoming ports are blocked by default, and authentication ports are configured off standard defaults. Suspicious traffic patterns are automatically identified and blocked, with IP banning and alerting based on both anomaly detection and request analysis. Real-time virus and rootkit detection tools are active at all times, and periodic self-audits help maintain configuration integrity and surface potential weaknesses before they become exploitable.
     <p style="margin-top: 12px">Consider.it also uses <a href="https://betteruptime.com/">Better Uptime</a> to track service uptime and alert us if a particular system fails. We also employ Better Uptime’s heartbeat monitors for making sure offline processing services continue to function, like email notification runners and database backups. Anyone can see the current status of Consider.it servers at any time by visiting <a href="https://status.consider.it">status.consider.it</a>. In addition, consider.it generates email alerts for application errors (e.g. if the database connection is dropped).</p>
     </td></tr>
-
   <tr>    
     <td>Measures for ensuring the ability to restore the availability and access to Personal Data in a timely manner in the event of a physical or technical incident</td>
     <td>

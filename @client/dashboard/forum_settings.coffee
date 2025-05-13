@@ -475,10 +475,8 @@ window.ForumSettingsDash = ReactiveComponent
           DIV 
             className: 'explanation'
             """
-              The Google Translate widget allows participants to select a different language. The entire 
-              forum, including other participants\' comments, will then be translated to that target language.
-              If you are running a private forum or a forum in the EU, you should disable this functionality because
-              all text to be translated is sent to Google's servers and retained there to train the language model.
+            Allows participants to view the forum in their preferred language. Forum content is sent to Google’s servers and may be retained to improve translation services.
+            For private forums or those under strict data laws (e.g. EU), consider disabling this feature unless user consent is managed.
             """
 
             

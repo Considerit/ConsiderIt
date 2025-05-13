@@ -1,6 +1,6 @@
 Consider.it Privacy Policy
 ================================
-Updated: February 2023
+Updated: May 2025
 
 
 This privacy policy outlines how we handle the data you entrust to us. We want you to understand how and why Consider.it LLC (“Consider.it”, “we”, or “us”) collects, uses and shares information about you when you access and use Consider.it’s site and services (collectively, the “Services”) or when you otherwise interact with us.
@@ -59,6 +59,14 @@ We may use [CAPTCHA](https://en.wikipedia.org/wiki/CAPTCHA) services to reduce t
 A cookie is a piece of text stored by your browser to help it remember your login information, site preferences, and more. **In Consider.it, we only use persistent first-party cookies for storing session data** (i.e. a logged-in account so you don't have to login each time you visit the Site or refresh the page). All other cookies are strictly opt-in.
 
 You can adjust cookie retention settings in your own browser. To learn more about cookies, including how to view which cookies have been set and how to manage and delete them, please visit: [www.allaboutcookies.org](https://www.allaboutcookies.org).
+
+### Third-Party Translation Services
+
+Some forums may allow users to view content in different languages using the Google Translate widget. When enabled, this feature allows participants to translate the forum interface and user-submitted content (including comments) into their preferred language.
+
+If the widget is used, the translated content is sent to Google’s servers, where it may be retained to improve Google’s translation services. Google processes this data under its own privacy policy, and not on behalf of Consider.it.
+
+Forum Hosts control whether the translation feature is enabled. It is disabled by default for EU-hosted forums. When enabled, the widget only loads after the participant has provided consent.
 
 ### Voluntary correspondence
 

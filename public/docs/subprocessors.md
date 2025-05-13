@@ -1,3 +1,4 @@
+
 # Consider.it Processors
 
 Updated: May 2025
@@ -5,27 +6,27 @@ Updated: May 2025
 ## Hosting Regions and Data Residency
 
 * **US Server:** AWS and Linode services are hosted in the United States.
-* **EU Server:** AWS and Linode services are hosted in the EU. Plausible and Mailgun EU region are used.
+* **EU Server:** AWS and Linode services are hosted in the EU.
 * **CA Server:** AWS and Linode services are hosted in Canada.
-* **AU Server:** No dedicated AU infrastructure at present.
+* **AU Server:** AWS and Linode services are hosted in Australia.
 
 We aim to minimize cross-border data transfer. For our EU server, data stays within the EU unless optional features (namely Google Translate) are explicitly enabled by the forum host.
 
-In the below subprocessor table, the jurisdiction of the subprocessor is shown for each of our respective regional servers. For example, Consider.it’s EU server is served by a Linode cloud provider residing in the EU.&#x20;
+In the below subprocessor table, the jurisdiction of the subprocessor is shown for each of our respective regional servers. For example, Consider.it’s EU server is served by a Linode cloud provider residing in the EU.
 
 ## Subprocessors
 
-We use third-party subprocessors, such as cloud computing providers and customer support software, to run Consider.it (the service). We have minimized the number of these subprocessors where possible. When we do use a subprocessor, we ensure each has a GDPR-compliant data processing agreement.&#x20;
+We use third-party subprocessors, such as cloud computing providers and customer support software, to run Consider.it (the service). We have minimized the number of these subprocessors where possible. When we do use a subprocessor, we ensure each has a GDPR-compliant data processing agreement.
 
 ### Personal Data Subprocessors (Core Forum Service)
 
-| Name                                                                                                              | Purpose             |   | US Server | EU Server | CA Server | AU Server |   |   |   |
-| ----------------------------------------------------------------------------------------------------------------- | ------------------- | - | --------- | --------- | --------- | --------- | - | - | - |
-| [Linode](https://www.linode.com/legal/)                                                                           | Cloud hosting       |   | US        | EU        | CA        | AU        |   |   |   |
-| [AWS CloudFront](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/data-protection-summary.html) | CDN / Cloud hosting |   | US        | EU        | CA        | AU        |   |   |   |
-| [AWS S3](https://d1.awsstatic.com/legal/aws-dpa/aws-dpa.pdf)                                                      | File storage        |   | US        | EU        | CA        | AU        |   |   |   |
-| [AWS SES](https://docs.aws.amazon.com/ses/latest/dg/data-protection.html)                                         | Transactional email |   | US        | EU        | CA        | AU        |   |   |   |
-| [Plausible](https://plausible.io/data-policy)                                                                     | Analytics           |   | EU        | EU        | EU        | EU        |   |   |   |
+| Name                                                                                                              | Purpose             | US Server | EU Server | CA Server | AU Server |
+| ----------------------------------------------------------------------------------------------------------------- | ------------------- | --------- | --------- | --------- | --------- |
+| [Linode](https://www.linode.com/legal/)                                                                           | Cloud hosting       | US        | EU        | CA        | AU        |
+| [AWS CloudFront](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/data-protection-summary.html) | CDN / Cloud hosting | US        | EU        | CA        | AU        |
+| [AWS S3](https://d1.awsstatic.com/legal/aws-dpa/aws-dpa.pdf)                                                      | File storage        | US        | EU        | CA        | AU        |
+| [AWS SES](https://docs.aws.amazon.com/ses/latest/dg/data-protection.html)                                         | Transactional email | US        | EU        | CA        | AU        |
+| [Plausible](https://plausible.io/data-policy)                                                                     | Analytics           | EU        | EU        | EU        | EU        |
 
 ### Third-Party Services Activated by Forum Hosts (Not Subprocessors)
 
@@ -35,16 +36,16 @@ These optional services process data under their own terms and are not subproces
 | ------------------ | ------------------------- | ---------------------------------- | ------------------ | ------------------- | ------------------ | ------------------ |
 | Google Translate\* | Multi-lingual translation | Forum Host (User Consent Required) | Enabled by default | Disabled by default | Enabled by default | Enabled by default |
 
-* Note that Google does not provide information about which jurisdictions the servers are in that will process the data sent through the Google Translate Widget.
+\* Google does not provide information about which jurisdictions the servers are that will process the data sent through the Google Translate Widget.
 
-### Personal Data Subprocessors (Host / Customer)
+### Personal Data Subprocessors (Customer Payment and Forum Creation)
 
 These subprocessors are only involved when a customer creates or purchases a forum via our product page.
 
-| Name                                     | Purpose             |   | US Server | EU Server | CA Server | AU Server |
-| ---------------------------------------- | ------------------- | - | --------- | --------- | --------- | --------- |
-| [Stripe](https://stripe.com/legal/dpa)   | Billing             |   | US        | EU        | CA        | AU        |
-| [Mailgun](https://www.mailgun.com/gdpr/) | Transactional email |   | US        | EU        | CA        | AU        |
+| Name                                     | Purpose             | US Server | EU Server | CA Server | AU Server |
+| ---------------------------------------- | ------------------- | --------- | --------- | --------- | --------- |
+| [Stripe](https://stripe.com/legal/dpa)   | Billing             | US        | EU        | CA        | AU        |
+| [Mailgun](https://www.mailgun.com/gdpr/) | Transactional email | US        | -         | CA        | AU        |
 
 ---
 

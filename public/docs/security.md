@@ -1,6 +1,6 @@
 Security Practices at Consider.it
 ===================================
-Updated: February 2023
+Updated: May 2025
 
 * We will never (and have never) sold customer data to third parties. We have a straightforward relationship with Forum Hosts where they may pay us to host a Consider.it forum on their behalf. This allows us to be stringent on minimizing the data we collect from you. 
 * We don't run ads, and only use cookie-less privacy-first analytics. This means that intrusive tracking of you is absent in Consider.it. 

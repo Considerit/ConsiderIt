@@ -989,8 +989,13 @@ blockquote {
 # some basic styles
 window.styles += """
 
-body, h1, h2, h3, h4, h5, h6 {
-  color: black; }
+body {
+  color: black;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  /* color: black */; 
+}
 
 html[lang='cs'] body, html[lang='cs'] input, html[lang='cs'] button, html[lang='cs'] textarea {
   font-family: Helvetica, Verdana, Arial, 'Lucida Grande', 'Lucida Sans Unicode', sans-serif; }

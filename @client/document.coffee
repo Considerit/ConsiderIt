@@ -140,7 +140,9 @@ doc_groups = {
         label: 'Background'
         docs: [
           {name: 'Security Practices', path: 'security'}                    
-          {name: 'Subprocessors', path: 'subprocessors'}          
+          {name: 'Subprocessors', path: 'subprocessors'}   
+          {name: 'Accessibility', path: 'accessibility'}          
+
         ]
       }          
     ]

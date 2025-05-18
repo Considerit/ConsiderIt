@@ -5,10 +5,10 @@ Updated: May 2025
 
 ## Hosting Regions and Data Residency
 
-* **US Server:** AWS and Linode services are hosted in the United States.
+* **US Server:** AWS and Linode services are hosted in the United States, except for database backups, which are in the EU.
 * **EU Server:** AWS and Linode services are hosted in the EU.
-* **CA Server:** AWS and Linode services are hosted in Canada.
-* **AU Server:** AWS and Linode services are hosted in Australia.
+* **CA Server:** AWS and Linode services are hosted in Canada, except for database backups, which are in the EU.
+* **AU Server:** AWS and Linode services are hosted in Australia, except for database backups, which are in the EU.
 
 We aim to minimize cross-border data transfer. For our EU server, data stays within the EU unless optional features (namely Google Translate) are explicitly enabled by the forum host.
 
@@ -24,7 +24,8 @@ We use third-party subprocessors, such as cloud computing providers and customer
 | ----------------------------------------------------------------------------------------------------------------- | ------------------- | --------- | --------- | --------- | --------- |
 | [Linode](https://www.linode.com/legal/)                                                                           | Cloud hosting       | US        | EU        | CA        | AU        |
 | [AWS CloudFront](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/data-protection-summary.html) | CDN / Cloud hosting | US        | EU        | CA        | AU        |
-| [AWS S3](https://d1.awsstatic.com/legal/aws-dpa/aws-dpa.pdf)                                                      | File storage        | US        | EU        | CA        | AU        |
+| [AWS S3](https://d1.awsstatic.com/legal/aws-dpa/aws-dpa.pdf)                                                      | File storage of assets for Cloudfront        | US        | EU        | CA        | AU        |
+| [AWS S3](https://d1.awsstatic.com/legal/aws-dpa/aws-dpa.pdf)                                                      | Database backup storage        | EU        | EU        | EU        | EU        |
 | [AWS SES](https://docs.aws.amazon.com/ses/latest/dg/data-protection.html)                                         | Transactional email | US        | EU        | CA        | AU        |
 | [Plausible](https://plausible.io/data-policy)                                                                     | Analytics           | EU        | EU        | EU        | EU        |
 

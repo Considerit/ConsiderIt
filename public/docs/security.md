@@ -27,7 +27,7 @@ The information below gives more details about our technical and organizational 
         <li>HTTPS encryption on every web interface, using industry standard algorithms and certificates.</li>
         <li>Secure transmission of all traffic, internal and external, using by default TLS 1.2 or better.</li>
         <li>Access to operational environments via SSH enabled only with public-private RSA keys.</li>
-        <li>Database backups that reside in Amazon Web Services (AWS) S3 is encrypted at rest as stated in AWS' documentation and whitepapers.</li>
+        <li>Database backups are stored in AWS S3 and encrypted using AES-256 via SSE-S3 (server-side encryption with Amazon S3-managed keys).</li>
       </ul>
     </td>
   </tr>

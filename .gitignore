@@ -68,3 +68,5 @@ lib/screencasts
 
 package-lock.json
 *_scrap.*
+
+.python-version

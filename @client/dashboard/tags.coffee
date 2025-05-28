@@ -21,6 +21,7 @@ UserTags = ReactiveComponent
       save @local
 
     tags_config = customization('user_tags')
+    tag_conf_by_name = {}
     all_tags = {}
     tag_names = {}
 
@@ -30,6 +31,7 @@ UserTags = ReactiveComponent
         not_answered: []
       }
       tag_names[tag] = vals.view_name or vals.self_report?.question or tag
+      tag_conf_by_name[tag] = vals
 
       if vals.self_report
         if vals.self_report.options
@@ -47,7 +49,7 @@ UserTags = ReactiveComponent
           all_tags[tag].not_answered.push user
 
       for tag, val of user.tags 
-        console.log tag, val, user
+        # console.log tag, val, user
 
         if val?.self_report?.input == 'checklist'
           my_vals = val.split(',')
@@ -330,7 +332,7 @@ UserTags = ReactiveComponent
                             height: 40
                             cursor: 'pointer'
                           alt: "<user>: #{v}"
-                          onClick: => change_selected_user user.key      
+                          onClick: => change_selected_user user.key
 
             else 
               for v,users of vals 
@@ -396,11 +398,19 @@ UserTags = ReactiveComponent
                                 height: 40
                               alt: "<user>: #{v}"
                               hide_popover: @local.control_depressed
+
                               onClick: (e) => 
                                 if !@local.control_depressed
-                                  change_selected_user user.key
-                                  e.stopPropagation()
-                                  e.preventDefault()
+                                  if e.detail == 1
+                                    setTimeout -> 
+                                      change_selected_user user.key
+                                    , 500
+                                    e.stopPropagation()
+                                    e.preventDefault()
+                                  else if e.detail == 2
+                                    if tag_conf_by_name[tag].self_report?.input == 'boolean' || tag_conf_by_name[tag].input == 'boolean'
+                                      user.tags[tag] = !user.tags[tag]
+                                      save user     
 
 
 

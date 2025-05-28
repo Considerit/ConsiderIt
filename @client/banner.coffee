@@ -124,7 +124,10 @@ CustomizeGoogleTranslate = ReactiveComponent
                     @local.google_translate_style.callout = e.target.value
                     save @local
               else 
-                trns.callout
+                SPAN 
+                  style: 
+                    whiteSpace: 'pre-wrap' # preserve line breaks
+                  trns.callout
 
           DIV 
             className: 'google-translate-candidate-container'

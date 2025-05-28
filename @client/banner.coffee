@@ -1214,10 +1214,11 @@ window.PhotoBanner = (opts) ->
         }
         .PhotoBanner #tabs > ul > li {
           margin: 2px 6px 0px 6px;
-          background-color: #{tab_background_color};          
+          background-color: #{tab_background_color}AA;          
         }          
         .PhotoBanner #tabs > ul > li.selected {
           background-color: #{main_background_color};
+          color: black;
         }
         .PhotoBanner #tabs > ul > li > h4 {
           //text-transform: uppercase;
@@ -1225,6 +1226,7 @@ window.PhotoBanner = (opts) ->
           font-weight: 600;
           font-size: 17px;
           padding: 10px 16px 4px;
+          color: #{text_color};
         }
         .dark .PhotoBanner #tabs > ul > li > h4 {
         }
@@ -1232,6 +1234,7 @@ window.PhotoBanner = (opts) ->
           // color: black;        
         }
         """
+
 
     DIV 
       className: "wrapper #{if has_image_background then 'with-image' else 'no-image'} #{if has_translation_callout then 'with-translation-callout' else 'no-translation-callout'}"
@@ -1845,6 +1848,7 @@ window.SeattleHeader = (opts) ->
           opacity: 1,
           borderColor: named_colors.teal,
           backgroundColor: 'white'
+
         DIV
           style: 
             borderBottom: if get_tabs() then "1px solid " + active_style.borderColor

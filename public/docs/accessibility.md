@@ -29,7 +29,7 @@ Contact: Travis Kriplean, travis@consider.it
 
 ## 
 
-## **WCAG 2.0 Level A**
+## **WCAG Level A**
 
 ### Guideline 1.1 Text Alternatives
 
@@ -76,6 +76,7 @@ Contact: Travis Kriplean, travis@consider.it
 | :---- | :---- | :---- |
 | **2.1.1 Keyboard** All functionality of the content is operable through a keyboard interface without requiring specific timings for individual keystrokes, except where the underlying function requires input that depends on the path of the user's movement and not just the endpoints.  | Supports with exceptions | All core functionality is keyboard accessible. A few tertiary features are not accessible by keyboard. See a description of these features [here](#outstanding-accessibility-issues). |
 | **2.1.2 No Keyboard Trap** If keyboard focus can be moved to a component of the page using a keyboard interface, then focus can be moved away from that component using only a keyboard interface, and, if it requires more than unmodified arrow or tab keys or other standard exit methods, the user is advised of the method for moving focus away.  | Supports | There are no keyboard traps in Considerit. |
+| **2.1.4 Character Key Shortcuts** If a keyboard shortcut is implemented in content using only letter (including upper- and lower-case letters), punctuation, number, or symbol characters, then at least one of the following is true: <br>Turn off: A mechanism is available to turn the shortcut off;<br>Remap: A mechanism is available to remap the shortcut to include one or more non-printable keyboard keys (e.g., Ctrl, Alt);<br>Active only on focus: The keyboard shortcut for a user interface component is only active when that component has focus.  | Supports | There are no character key shortcuts in Considerit. |
 
 ### Guideline 2.2 Enough Time
 
@@ -99,6 +100,16 @@ Contact: Travis Kriplean, travis@consider.it
 | **2.4.3 Focus Order** If a Web page can be navigated sequentially and the navigation sequences affect meaning or operation, focusable components receive focus in an order that preserves meaning and operability.  | Supports | All focus order within Considerit makes sense and visual focus order mostly matches programmatic focus order. |
 | **2.4.4 Link Purpose in context** The purpose of each link can be determined from the link text alone or from the link text together with its programmatically determined link context, except where the purpose of the link would be ambiguous to users in general.  | Supports | All Considerit links make sense within context. |
 
+### Guideline 2.5 Input Modalities
+
+| Success Criteria | Supporting features | Remarks and Explanations |
+| :---- | :---- | :---- |
+| **2.5.1 Pointer Gestures** All functionality that uses multipoint or path-based gestures for operation can be operated with a single pointer without a path-based gesture, unless a multipoint or path-based gesture is essential. | | |
+| **2.5.2 Pointer Cancellation** For functionality that can be operated using a single pointer, at least one of the following is true:<br>No Down-Event: The down-event of the pointer is not used to execute any part of the function;<br>Abort or Undo: Completion of the function is on the up-event, and a mechanism is available to abort the function before completion or to undo the function after completion;<br>Up Reversal: The up-event reverses any outcome of the preceding down-event;<br>Essential: Completing the function on the down-event is essential. | | |
+| **2.5.3 Label in Name** For user interface components with labels that include text or images of text, the name contains the text that is presented visually. | | |
+| **2.5.4 Motion Actuation** Functionality that can be operated by device motion or user motion can also be operated by user interface components and responding to the motion can be disabled to prevent accidental actuation, except when: <br>Supported Interface: The motion is used to operate functionality through an accessibility supported interface;<br>Essential: The motion is essential for the function and doing so would invalidate the activity. | | |
+
+
 ### Guideline 3.1 Readable
 
 | Success Criteria | Supporting features | Remarks and Explanations |
@@ -111,6 +122,11 @@ Contact: Travis Kriplean, travis@consider.it
 | :---- | :---- | :---- |
 | **3.2.1 On Focus** When any component receives focus, it does not initiate a change of context.  | Supports | Considerit does not change context when an item gets focus |
 | **3.2.2 On Input** Changing the setting of any user interface component does not automatically cause a change of context unless the user has been advised of the behavior before using the component.  | Supports | Considerit does not change context when the settings of a control has changed. |
+| **3.2.6 Consistent Help** If a Web page contains any of the following help mechanisms, and those mechanisms are repeated on multiple Web pages within a set of Web pages, they occur in the same order relative to other page content, unless a change is initiated by the user: <br>Human contact details;<br>Human contact mechanism;<br>Self-help option;<br>A fully automated contact mechanism.<br>Note 1: A fully automated contact mechanism.<br>Note 2: For this Success Criterion, “the same order relative to other page content” can be thought of as how the content is ordered when the page is serialized. The visual position of a help mechanism is likely to be consistent across pages for the same page variation (e.g., CSS break-point). The user can initiate a change, such as changing the page’s zoom or orientation, which may trigger a different page variation. This criterion is concerned with relative order across pages displayed in the same page variation (e.g., same zoom level and orientation). | | | 
+
+
+
+
 
 ### 
 
@@ -120,23 +136,18 @@ Contact: Travis Kriplean, travis@consider.it
 | :---- | :---- | :---- |
 | **3.3.1 Error Identification** If an input error is automatically detected, the item that is in error is identified and the error is described to the user in text.  | Supports | Considerit’s error handling approach identifies each error and discloses the nature of the error in an accessible field. |
 | **3.3.2 Labels or Instructions** Labels or instructions are provided when content requires user input.  | Supports | All form fields are labelled properly and clearly. |
+| **3.3.7 Redundant Entry** Information previously entered by or provided to the user that is required to be entered again in the same process is either: <br>auto-populated, or<br>available for the user to select.<br>Except when:<br>re-entering the information is essential,<br>the information is required to ensure the security of the content, or<br>previously entered information is no longer valid. | | |
+
 
 ### Guideline 4.1 Compatible
 
 | Success Criteria | Supporting features | Remarks and Explanations |
 | :---- | :---- | :---- |
-| **4.1.1 Parsing** In content implemented using markup languages, elements have complete start and end tags, elements are nested according to their specifications, elements do not contain duplicate attributes, and any IDs are unique, except where the specifications allow these features.  | Supports | Considerit markup is well formed and fully conforms to the requirements of this success criteria. |
 | **4.1.2 Name, Role, Value** For all user interface components (including but not limited to: form elements, links and components generated by scripts), the name and role can be programmatically determined; states, properties, and values that can be set by the user can be programmatically set; and notification of changes to these items is available to user agents, including assistive technologies.  | Supports | All custom controls utilize relevant ARIA roles, states, and properties as needed for that type of control. |
 
-## 
 
-## 
 
-## 
-
-## 
-
-## **WCAG 2.0 Level AA**
+## **WCAG Level AA**
 
 ### Guideline 1.2 Time-based Media
 
@@ -149,6 +160,19 @@ Contact: Travis Kriplean, travis@consider.it
 
 ### 
 
+### Guideline 1.3 Adaptable
+
+### 
+
+| Success Criteria | Supporting features | Remarks and Explanations |
+| :---- | :---- | :---- |
+| **1.3.4 Orientation** Content does not restrict its view and operation to a single display orientation, such as portrait or landscape, unless a specific display orientation is essential. |  |  |
+| **1.3.5 Identify Input Purpose** The purpose of each input field collecting information about the user can be programmatically determined when: <br>- The input field serves a purpose identified in the Input Purposes for User Interface Components section; and<br>- The content is implemented using technologies with support for identifying the expected meaning for form input data.<br><br> |  |  |
+
+### 
+
+
+
 ### Guideline 1.4 Distinguishable
 
 ### 
@@ -157,7 +181,14 @@ Contact: Travis Kriplean, travis@consider.it
 | :---- | :---- | :---- |
 | **1.4.3 Color Contrast (Minimum)** The visual presentation of text and images of text has a contrast ratio of at least 4.5:1, except for the following:  **Large Text:** Large-scale text and images of large-scale text have a contrast ratio of at least 3:1; **Incidental:** Text or images of text that are part of an inactive user interface component, that are pure decoration, that are not visible to anyone, or that are part of a picture that contains significant other visual content, have no contrast requirement. **Logotypes:** Text that is part of a logo or brand name has no minimum contrast requirement. | Does not support | There are numerous low contrast text elements. Considerit may provide a high contrast mode in the future.  |
 | **1.4.4 Resize Text** Except for captions and images of text, text can be resized without assistive technology up to 200 percent without loss of content or functionality.  | Supports | Considerit responds well to text-only resize up to 200%. However, horizontal scrolling is required. |
-| **1.4.5 Images of Text** If the technologies being used can achieve the visual presentation, text is used to convey information rather than images of text except for the following:  **Customizable:** The image of text can be visually customized to the user's requirements; **Essential:** A particular presentation of text is essential to the information being conveyed. | Supports | No images on Considerit contain text. However, some Considerit clients upload banners for the homepage containing text. We offer homepage customization services that could replace those graphics with text. It is the client’s responsibility as to whether to use those services.  |
+| **1.4.5 Images of Text** If the technologies being used can achieve the visual presentation, text is used to convey information rather than images of text except for the following:  <br>**Customizable:** The image of text can be visually customized to the user's requirements; <br>**Essential:** A particular presentation of text is essential to the information being conveyed. | Supports | No images on Considerit contain text. However, some Considerit clients upload banners for the homepage containing text. We offer homepage customization services that could replace those graphics with text. It is the client’s responsibility as to whether to use those services.  |
+| **1.4.10 Reflow** Content can be presented without loss of information or functionality, and without requiring scrolling in two dimensions for: <br>- Vertical scrolling content at a width equivalent to 320 CSS pixels;<br>- Horizontal scrolling content at a height equivalent to 256 CSS pixels;<br><br>Except for parts of the content which require two-dimensional layout for usage or meaning. |  |  |
+| **1.4.11 Non-text Contrast** The visual presentation of the following have a contrast ratio of at least 3:1 against adjacent color(s): <br>- User Interface Components: Visual information required to identify user interface components and states, except for inactive components or where the appearance of the component is determined by the user agent and not modified by the author;<br>- Graphical Objects: Parts of graphics required to understand the content, except when a particular presentation of graphics is essential to the information being conveyed. | | |
+| **1.4.12 Text Spacing** In content implemented using markup languages that support the following text style properties, no loss of content or functionality occurs by setting all of the following and by changing no other style property:<br>- Line height (line spacing) to at least 1.5 times the font size;<br>- Spacing following paragraphs to at least 2 times the font size;<br>- Letter spacing (tracking) to at least 0.12 times the font size;<br>- Word spacing to at least 0.16 times the font size.<br><br>Exception: Human languages and scripts that do not make use of one or more of these text style properties in written text can conform using only the properties that exist for that combination of language and script. | | |
+| **1.4.13 Content on Hover or Focus** Where receiving and then removing pointer hover or keyboard focus triggers additional content to become visible and then hidden, the following are true: <br>- Dismissible: A mechanism is available to dismiss the additional content without moving pointer hover or keyboard focus, unless the additional content communicates an input error or does not obscure or replace other content;<br>- Hoverable: If pointer hover can trigger the additional content, then the pointer can be moved over the additional content without the additional content disappearing;<br>- Persistent: The additional content remains visible until the hover or focus trigger is removed, the user dismisses it, or its information is no longer valid.<br><br>Exception: The visual presentation of the additional content is controlled by the user agent and is not modified by the author. | | |
+
+
+
 
 ### 
 
@@ -170,6 +201,17 @@ Contact: Travis Kriplean, travis@consider.it
 | **2.4.5 Multiple Ways** More than one way is available to locate a Web page within a set of Web pages except where the Web Page is the result of, or a step in, a process.  | Not applicable | Considerit is a web-based application with a very small number of core areas of interaction. |
 | **2.4.6 Headings and Labels** Headings and labels describe topic or purpose.  | Supports | All of Considerit’s content and user interface elements are well structured and utilize effective and clear labels and headings. |
 | **2.4.7 Focus Visible** Any keyboard operable user interface has a mode of operation where the keyboard focus indicator is visible.  | Supports | All items that get focus are given a clear on-screen indication. All items that get focus are indicated as having focus in a programmatic way. |
+| **2.4.11 Focus Not Obscured (Minimum)** When a user interface component receives keyboard focus, the component is not entirely hidden due to author-created content.<br><br>Note 1: Where content in a configurable interface can be repositioned by the user, then only the initial positions of user-movable content are considered for testing and conformance of this Success Criterion.<br>Note 2: Content opened by the user may obscure the component receiving focus. If the user can reveal the focused component without advancing the keyboard focus, the component with focus is not considered hidden due to author-created content. | | |
+
+###
+
+### Guideline 2.5 Input Modalities
+
+| Success Criteria | Supporting features | Remarks and Explanations |
+| :---- | :---- | :---- |
+| **2.5.7 Dragging Movements** All functionality that uses a dragging movement for operation can be achieved by a single pointer without dragging, unless dragging is essential or the functionality is determined by the user agent and not modified by the author.<br><br>Note: This requirement applies to web content that interprets pointer actions (i.e. this does not apply to actions that are required to operate the user agent or assistive technology). | | |
+| **2.5.8 Target Size (Minimum)** The size of the target for pointer inputs is at least 24 by 24 CSS pixels, except where: <br> Spacing: Undersized targets (those less than 24 by 24 CSS pixels) are positioned so that if a 24 CSS pixel diameter circle is centered on the bounding box of each, the circles do not intersect another target or the circle for another undersized target;<br>Equivalent: The function can be achieved through a different control on the same page that meets this criterion;<br>Inline: The target is in a sentence or its size is otherwise constrained by the line-height of non-target text;<br>User agent control: The size of the target is determined by the user agent and is not modified by the author;<br>Essential: A particular presentation of the target is essential or is legally required for the information being conveyed.<br>Note 1: Targets that allow for values to be selected spatially based on position within the target are considered one target for the purpose of the success criterion. Examples include sliders, color pickers displaying a gradient of colors, or editable areas where you position the cursor.<br>Note 2: For inline targets the line-height should be interpreted as perpendicular to the flow of text. For example, in a language displayed vertically, the line-height would be horizontal. | | |
+
 
 ### 
 
@@ -202,10 +244,21 @@ Contact: Travis Kriplean, travis@consider.it
 | :---- | :---- | :---- |
 | **3.3.3 Error Suggestion** If an input error is automatically detected and suggestions for correction are known, then the suggestions are provided to the user, unless it would jeopardize the security or purpose of the content.  | Supports | Considerit’s error handling approach identifies each error and discloses the nature of the error in an accessible field. |
 | **3.3.4 Error Prevention – legal, financial, data** For Web pages that cause legal commitments or financial transactions for the user to occur, that modify or delete user-controllable data in data storage systems, or that submit user test responses, at least one of the following is true:  Submissions are reversible. Data entered by the user is checked for input errors and the user is provided an opportunity to correct them. A mechanism is available for reviewing, confirming, and correcting information before finalizing the submission. | Supports | Considerit’s error handling approach identifies each error and discloses the nature of the error in an accessible field. For deleting user content, the user is prompted first with an “are you sure?” dialog. |
+| **3.3.8 Accessible Authentication (Minimum)** A cognitive function test (such as remembering a password or solving a puzzle) is not required for any step in an authentication process unless that step provides at least one of the following: <br>Alternative: Another authentication method that does not rely on a cognitive function test.<br>Mechanism: A mechanism is available to assist the user in completing the cognitive function test.<br>Object Recognition: The cognitive function test is to recognize objects.<br>Personal Content: The cognitive function test is to identify non-text content the user provided to the Web site.<br>Note 1: What is perceived as the user interface component or sub-component (to determine enclosure or size) depends on its visual presentation. The visual presentation includes the component's visible content, border, and component-specific background. It does not include shadow and glow effects outside the component's content, background, or border.<br>Note 2: Examples of mechanisms that satisfy this criterion include:<br>support for password entry by password managers to reduce memory need, and<br>copy and paste to reduce the cognitive burden of re-typing. | | |
+
+### 
+
+### Guideline 4.1 Compatible
+
+| Success Criteria | Supporting features | Remarks and Explanations |
+| :---- | :---- | :---- |
+| **4.1.3 Status Messages** In content implemented using markup languages, status messages can be programmatically determined through role or properties such that they can be presented to the user by assistive technologies without receiving focus.  | | |
 
 ### 
 
 ## **WCAG 2.0 Level AAA**
+
+Note: Does not include AAA criteria added in WCAG 2.1 or 2.2.
 
 ### Guideline 1.2 Time-based Media
 

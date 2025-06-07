@@ -99,7 +99,7 @@ AccessibilitySupport = ReactiveComponent
               style: 
                 textDecoration: 'underline'
 
-          "If you are having difficulty using Considerit to give feedback, contact us at <link>accessibility@consider.it</link>. We will help you personally."
+          "If you are having difficulty using Considerit, please contact us at <link>accessibility@consider.it</link>. We will personally help you."
 
 
 

@@ -37,9 +37,9 @@ gem "daemons" # for the daemonize method used in bin/delayed_job
 gem 'rubyzip'
 
 
-#####################
-# For topic modeling
-gem "lemmatizer"
+# #####################
+# # For topic modeling
+# gem "lemmatizer"
 
 #############
 # API calls
@@ -47,7 +47,8 @@ gem 'excon'
 
 #############
 # Generative AI
-gem "ruby-openai"
+# gem "ruby-openai"
+gem 'ruby_llm'
 
 
 

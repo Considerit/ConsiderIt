@@ -49,7 +49,7 @@ gem 'excon'
 # Generative AI
 # gem "ruby-openai"
 gem 'ruby_llm'
-
+gem 'json-schema'
 
 
 #############

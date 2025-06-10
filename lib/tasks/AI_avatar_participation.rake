@@ -9,19 +9,40 @@ require 'ruby_llm'
 
 # open-ai compatible endpoint. 
 # Locally I'm using LM Studio / Qwen3 14b
-llm_endpoint = "http://localhost:1234/v1"
-llm_api_key = "local-not-used" #ENV.fetch('OPENAI_API_KEY', nil)
-$llm_model = "qwen:qwen3-14b"
-$llm_provider = :ollama # :openai
+use_GWDG = false
 
+if use_GWDG
+  llm_api_key = APP_CONFIG[:GWDG][:access]
+  llm_endpoint = "https://llm.hrz.uni-giessen.de/api/"
+  $llm_model = "deepseek-r1-distill-llama-70b"
+  $json_extraction_model = 'qwq-32b' 
+  $llm_provider = :openai
+  RubyLLM.configure do |config|
+    config.openai_api_key = llm_api_key
+    config.openai_api_base = llm_endpoint
+    config.request_timeout = 560  
+  end
 
+else
+  llm_endpoint = "http://localhost:1234/v1"
+  llm_api_key = "local-not-used" #ENV.fetch('OPENAI_API_KEY', nil)
 
-RubyLLM.configure do |config|
-  # config.openai_api_key = llm_api_key
-  # config.openai_api_base = llm_endpoint
-  config.ollama_api_base = llm_endpoint
-  config.request_timeout = 560  
+  $llm_model = "qwen:qwen3-14b"
+  $json_extraction_model = 'deepseek:deepseek-r1-0528-qwen3-8b' # "qwen:qwen3-14b"
+  $llm_provider = :ollama # :open("path/or/url/or/pipe", "w") { |io|  }nai
+
+  RubyLLM.configure do |config|
+    # config.openai_api_key = llm_api_key
+    # config.openai_api_base = llm_endpoint
+    config.ollama_api_base = llm_endpoint
+    config.request_timeout = 560  
+  end
+
 end
+
+
+
+
 
 
 task :animate_avatars => :environment do
@@ -34,7 +55,7 @@ task :animate_avatars => :environment do
   # response = chat.ask(proposal_gen)
   # pp response.content
   # pp "" 
-  # extractor = ResponseExtractor.new(llm_model, llm_provider)
+  # extractor = ResponseExtractor.new($json_extraction_model, $llm_provider)
   # proposal_list = extractor.extract_structure_from_response(proposal_gen, response, proposal_list_json)
 
   # pp ""
@@ -72,9 +93,9 @@ def facilitate_dialogue(forum)
     assume_model_exists: true
   )
 
-  chat.with_instructions(
-    "You are helping to facilitate a Consider.it deliberative forum. #{ai_config["forum_prompt"]}"
-  )
+  # chat.with_instructions(
+  #   "You are helping to facilitate a Consider.it deliberative forum. #{ai_config["forum_prompt"]}"
+  # )
 
   prompts = get_all_considerit_prompts(forum)
 
@@ -115,7 +136,7 @@ def propose(forum, considerit_prompt, avatar)
     assume_model_exists: true
   )
 
-  chat.with_instructions(get_embodiment_instructions(forum, avatar))
+  # chat.with_instructions(get_embodiment_instructions(forum, avatar))
 
   prompt_id = considerit_prompt[:key].split('/')[-1]
 
@@ -146,9 +167,9 @@ def propose(forum, considerit_prompt, avatar)
   propose_prompt = "Please give one answer to this prompt: \"#{considerit_prompt[:data]["list_title"]}  #{considerit_prompt[:data].fetch("list_description", "")}\"   Your answer should give a name (possibly in the form of a question) and a description. Strive for a novel proposal that has not already been contributed. Don't make the name academic or sweeping (e.g. do not use colonic titles!)."
   pp propose_prompt
 
-  response = chat.ask(propose_prompt + " Proposals that have already been added are: #{JSON.dump(existing)}")
+  response = chat.ask(get_embodiment_instructions(forum, avatar) + " " + propose_prompt + " Proposals that have already been added are: #{JSON.dump(existing)}")
 
-  extractor = ResponseExtractor.new($llm_model, $llm_provider)  
+  extractor = ResponseExtractor.new($json_extraction_model, $llm_provider)  
   proposal = extractor.extract_structure_from_response(propose_prompt, response, propose_json_schema)
 
   pp "***** GOT PROPOSAL", proposal
@@ -172,12 +193,7 @@ def propose(forum, considerit_prompt, avatar)
 end
 
 
-
-
 def opine(forum, avatar, existing_pros_and_cons)
-
-
-
 
 end
 
@@ -239,7 +255,7 @@ def generate_avatars(ai_config)
   response = chat.ask(avatars_gen)
 
 
-  extractor = ResponseExtractor.new($llm_model, $llm_provider)  
+  extractor = ResponseExtractor.new($json_extraction_model, $llm_provider)  
   nominated_avatars = extractor.extract_structure_from_response(avatars_gen, response, avatar_nominations_json)
 
   pp nominated_avatars
@@ -346,8 +362,9 @@ class ResponseExtractor
       assume_model_exists: true
     )
 
+    @instructions = "You extract data given in natural language (and sometimes structured data) and formulate it according to a JSON schema the prompter gives to you, maintaining as much of the original phrasing as possible."
     @json_parser.with_instructions(
-      "You extract data given in natural language (and sometimes structured data) and formulate it according to a JSON schema the prompter gives to you, maintaining as much of the original phrasing as possible."
+      @instructions
     )
   end
 
@@ -355,12 +372,12 @@ class ResponseExtractor
     nl = preprocess_natural_language_response(response)
 
     parse_proposals_query = <<~PROMPT
-      Here is a response to the prompt <prompt>#{original_prompt}<end prompt>: <begin response>#{nl}<end response> While maintaining as much of the original response text as possible, I would like you to extract data from this response into JSON that follows this schema: #{JSON.dump(schema)}.
+      Here is a response to the prompt <prompt>#{original_prompt}<end prompt>: <begin response>#{nl}<end response> While maintaining as much of the original response text as possible, I would like you to extract data from this response into JSON that follows this schema: #{JSON.dump(schema)}. Your response should only include the JSON. Don't include any markup (like astericks). 
     PROMPT
 
     attempt = 0
     while attempt <= MAX_RETRIES
-      llm_response = @json_parser.ask(parse_proposals_query)
+      llm_response = @json_parser.ask(@instructions + " " + parse_proposals_query)
       parsed = try_parse_json(llm_response.content)
 
       if parsed && valid_against_schema?(parsed, schema)
@@ -463,13 +480,19 @@ end
 
 
 #### 
-# Utility function for removing the <think> blocks that some LLMs produce
+# Utility function for removing the <think> blocks that some LLMs produce. And other
+# artifacts
 def remove_reasoning_block(input)
   # Remove <think>...</think> section if present (including multiline content)
   cleaned = input.sub(/<think>.*?<\/think>/m, '').strip
-  return cleaned
-end
 
+  # Extract substring from first { to last }, inclusive
+  if cleaned =~ /{.*}/m
+    cleaned = cleaned[/\{.*\}/m]
+  end
+
+  cleaned
+end
 
 
 

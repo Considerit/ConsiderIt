@@ -121,6 +121,12 @@ def facilitate_dialogue(forum)
   current_prompt = prompts[-1]
   current_prompt_id = current_prompt[:key].split('/')[-1]
 
+
+  ai_config["avatars"].each do |k,v|
+    pp v["name"]
+    user = get_and_create_avatar_user(forum, v, generate_avatar_pic=true)
+  end
+
   while Proposal.where(cluster: current_prompt_id).length < 12
     # nominate new proposer
     avatar = ai_config["avatars"].values.sample
@@ -137,7 +143,7 @@ def facilitate_dialogue(forum)
 
     avatar_count = ai_config["avatars"].values.length
 
-    while proposal.opinions.published.count < avatar_count
+    while proposal.opinions.published.count < avatar_count / 2
 
       avatar = ai_config["avatars"].values.sample
 
@@ -207,7 +213,7 @@ def propose(forum, considerit_prompt, avatar)
 
   pp "***** GOT PROPOSAL", proposal
 
-  user = get_and_create_avatar_user(forum, avatar)
+  user = get_and_create_avatar_user(forum, avatar, generate_avatar_pic=true)
 
   params = {
       'subdomain_id': forum.id,
@@ -329,7 +335,7 @@ def opine(forum, considerit_prompt, proposal, avatar)
   opinion = extractor.extract_structure_from_response(prompt, response, opinion_schema)
   pp opinion
 
-  user = get_and_create_avatar_user(forum, avatar, generate_avatar_pic=false)
+  user = get_and_create_avatar_user(forum, avatar, generate_avatar_pic=true)
 
   o = Opinion.get_or_make(proposal, user)
   o.stance = opinion["score"].to_f
@@ -342,18 +348,21 @@ def opine(forum, considerit_prompt, proposal, avatar)
   begin 
     new_points = opinion.fetch("new_pro_con_points", [])
     new_points.each do |new_pt|
-      point = Point.create!({
-        subdomain_id: forum.id,
-        nutshell: new_pt["point"],
-        text: new_pt.fetch("description", nil),
-        is_pro: new_pt["type"] == 'pro',
-        proposal_id: proposal.id,
-        user_id: user.id,
-        comment_count: 0,
-        published: true
-      })
-      point.publish
-      pp "  ** Creating point #{point.nutshell}"
+      point = proposal.points.where(:nutshell => new_pt["point"]).first
+      if !point
+        point = Point.create!({
+          subdomain_id: forum.id,
+          nutshell: new_pt["point"],
+          text: new_pt.fetch("description", nil),
+          is_pro: new_pt["type"] == 'pro',
+          proposal_id: proposal.id,
+          user_id: user.id,
+          comment_count: 0,
+          published: true
+        })
+        point.publish
+        pp "  ** Creating point #{point.nutshell}"
+      end
       o.include(point, forum)    
     end
   rescue => err
@@ -364,7 +373,7 @@ def opine(forum, considerit_prompt, proposal, avatar)
     included_points = opinion.fetch("included_pro_con_points", [])
     included_points.each do |pt|
       pp pt
-      point = Point.where(:id => pt['id']).first
+      point = proposal.points.where(:id => pt['id']).first
       if point
         pp "  ** Including point #{point.id}"
         o.include(point, forum)    
@@ -451,7 +460,7 @@ def generate_avatars(ai_config)
       "nomination": candidate["nomination_reason"]
     }
 
-    get_and_create_avatar_user(forum, avatars_config[candidate["name"]])
+    get_and_create_avatar_user(forum, avatars_config[candidate["name"]], generate_avatar_pic=true)
   end
 
   pp avatars_config
@@ -620,20 +629,60 @@ end
 
 # not fully implemented
 def generate_image(forum, avatar)
-  ai_config = forum.customizations["ai_participation"]
-  prompt = "You're generating an avatar image to be used in forum software. The image is for an AI-backed participant named \"#{avatar["name"]}\" in a deliberative forum where the AI is role-playing the following perspective: #{avatar['embodiment_prompt']} #{avatar['nomination']}."
+  # ai_config = forum.customizations["ai_participation"]
+  # prompt = "You're generating an avatar image to be used in forum software. The image is for an AI-backed participant named \"#{avatar["name"]}\" in a deliberative forum where the AI is role-playing the following perspective: #{avatar['embodiment_prompt']} #{avatar['nomination']}."
   # client = get_client()
   # begin 
   #   response = client.images.generate(parameters: { prompt: prompt, size: "256x256" })
   # rescue
   #   return generate_image(prompt)
   # end
-  img_url = response.dig("data", 0, "url")
+  # img_url = response.dig("data", 0, "url")
+
+  img_url = first_squareish_avatar(avatar["name"])
   pp img_url
   img_url
 end
 
-def get_and_create_avatar_user(forum, avatar, generate_avatar_pic=false)
+require 'faraday'
+
+def first_squareish_avatar(query, tolerance: 0.2, min_size: 500)
+  # Step 1: Get vqd token from DuckDuckGo homepage
+
+  headers = { "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" }
+
+  home_resp = Faraday.get("https://duckduckgo.com/", { q: query }) do |req|
+    req.headers.update(headers)
+  end
+
+  vqd = home_resp.body.match(/vqd=['"]?([\d-]+)['"]?/) { |m| m[1] }
+
+  raise "Failed to extract vqd token on #{query}" unless vqd
+
+  # Step 2: Fetch image search results
+  image_resp = Faraday.get("https://duckduckgo.com/i.js", { q: query, vqd: vqd, o: "json" }) do |req|
+    req.headers.update(headers)
+  end
+
+
+  raise "Image search failed: #{image_resp.status}" unless image_resp.status == 200
+
+  images = JSON.parse(image_resp.body)["results"]
+
+  # Step 3: Filter for square-ish images
+  images.find do |img|
+    width  = img["width"].to_f
+    height = img["height"].to_f
+    next false if width < min_size || height < min_size
+
+    aspect_ratio = width / height
+    (1 - tolerance..1 + tolerance).include?(aspect_ratio)
+  end&.dig("image") # return just the image URL
+end
+
+
+
+def get_and_create_avatar_user(forum, avatar, generate_avatar_pic=true)
   # returns the user associated with this avatar. If it doesn't yet exist, create it
   ai_config = forum.customizations["ai_participation"]
 

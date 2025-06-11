@@ -97,15 +97,25 @@ def facilitate_dialogue(forum)
   #   "You are helping to facilitate a Consider.it deliberative forum. #{ai_config["forum_prompt"]}"
   # )
 
-  prompts = get_all_considerit_prompts(forum)
+  prompts = get_all_considerit_prompts(forum, include_archived=false)
 
   if prompts.length == 0
     # create a meta-prompt by the facilitating avatar (TODO)
     user = User.where(:super_admin=>1).first
     to_import = []
-    to_import.push "[What should we focus on next?]{\"list_description\": \"Each answer should be an open-ended question that we could pose to the rest of the group for ideation.\", \"list_item_name\": \"Focus\", \"slider_pole_labels\": {\"oppose\": \"lower priority\", \"support\": \"higher priority\"}}"
+
+    if get_all_considerit_prompts(forum, include_archived=true).length > 0
+      to_import.push "[What should we focus on next?]{\"list_description\": \"Each answer should be an open-ended question that we could pose to the rest of the group for ideation.\", \"list_item_name\": \"Focus\", \"slider_pole_labels\": {\"oppose\": \"lower priority\", \"support\": \"higher priority\"}}"
+    
+    else # first prompt
+      first_prompt = ai_config.fetch("ai_facilitation", {}).fetch("seed_initial_focus", "What open-ended question should we focus on first?")
+      to_import.push "[#{first_prompt}]{\"list_description\": \"\", \"list_item_name\": \"Focus\", \"slider_pole_labels\": {\"oppose\": \"lower priority\", \"support\": \"higher priority\"}}"
+    end 
+
+
     forum.import_from_argdown to_import, user
-    prompts = get_all_considerit_prompts(forum)
+    prompts = get_all_considerit_prompts(forum, include_archived=false)
+
   end 
 
   current_prompt = prompts[-1]
@@ -114,9 +124,32 @@ def facilitate_dialogue(forum)
   while Proposal.where(cluster: current_prompt_id).length < 12
     # nominate new proposer
     avatar = ai_config["avatars"].values.sample
-    propose(forum, current_prompt, avatar)
+    begin
+      propose(forum, current_prompt, avatar)
+    rescue
+      pp "failed to create proposal"
+    end
   end 
 
+  while true # TODO: stopping condition
+
+    proposal = Proposal.where(cluster: current_prompt_id).sample
+
+    avatar_count = ai_config["avatars"].values.length
+
+    while proposal.opinions.published.count < avatar_count
+
+      avatar = ai_config["avatars"].values.sample
+
+      if !avatar["user_id"] || proposal.opinions.published.where(:user_id => avatar["user_id"]).count == 0
+        begin 
+          opine(forum, current_prompt[:data], proposal, avatar)
+        rescue
+          pp "failed to create opinion"
+        end 
+      end
+    end
+  end 
 
 end
 
@@ -164,7 +197,7 @@ def propose(forum, considerit_prompt, avatar)
     "additionalProperties": false
   }
 
-  propose_prompt = "Please give one answer to this prompt: \"#{considerit_prompt[:data]["list_title"]}  #{considerit_prompt[:data].fetch("list_description", "")}\"   Your answer should give a name (possibly in the form of a question) and a description. Strive for a novel proposal that has not already been contributed. Don't make the name academic or sweeping (e.g. do not use colonic titles!)."
+  propose_prompt = "Please give one answer to this prompt: \"#{considerit_prompt[:data]["list_title"]}  #{considerit_prompt[:data].fetch("list_description", "")}\"   Your answer should give a name and a description. Strive for a novel proposal that has not already been contributed. The name should be direct and simple;  Don't make the name clever, academic, or sweeping (e.g. do not use colonic titles!)."
   pp propose_prompt
 
   response = chat.ask(get_embodiment_instructions(forum, avatar) + " " + propose_prompt + " Proposals that have already been added are: #{JSON.dump(existing)}")
@@ -186,14 +219,164 @@ def propose(forum, considerit_prompt, avatar)
     }
   proposal = Proposal.create!(params)
 
+  # proposer should add first opinion
+  opine(forum, considerit_prompt, proposal, avatar)
+
   Proposal.clear_cache(forum)
+
+
 
   return proposal
 
 end
 
 
-def opine(forum, avatar, existing_pros_and_cons)
+def opine(forum, considerit_prompt, proposal, avatar)
+
+  ai_config = forum.customizations['ai_participation']
+
+  chat = RubyLLM.chat(
+    model: $llm_model, 
+    provider:  $llm_provider,
+    assume_model_exists: true
+  )
+
+  # chat.with_instructions(get_embodiment_instructions(forum, avatar))
+
+
+  existing = []
+  existing_pros_and_cons = proposal.points.published.each do |p|
+    existing.push({
+      id: p.id, 
+      type: p.is_pro ? "Pro" : "Con",
+      point: p.nutshell
+    })
+  end
+
+  embodiment_instructions = get_embodiment_instructions(forum, avatar)
+  proposal_desc = "You are evaluating the following proposal: <proposal>#{proposal.name}: #{proposal.description}</proposal>. This proposal was made in response to the following prompt: <prompt>\"#{considerit_prompt["list_title"]}  #{considerit_prompt.fetch("list_description", "")}\"</prompt>"
+
+  interests = "First, formulate your specific interests with respect to this proposal. "
+  pros_and_cons = "Then assess the pros and cons of this proposal. The pros and cons that other participants have already identified are listed below (if any). You are to identify up to four pros and/or cons representing the most important factors for you as you consider this proposal. Each pro or con point can be either (1) a new pro or con point that you author yourself or (2) a pro or con point that some other participant already added (listed below). Don't author a pro or con point if someone else has already contributed a very similar point; instead, mark down the pro or con point with its ID. But also, don't be afraid to add a new one if there's something important to your interests about this proposal that has not yet been addressed! You do not need to balance out your pros and cons."
+  spectrum = "Finally, you will rate the proposal on a continuous spectrum of support ([-1,1]), with the -1 pole labeled #{} and the +1 pole labeled #{}. The center of the spectrum around 0 signals either (1) apathy about the proposal or (2) there are strong tradeoffs that roughly balance out. "
+  wrap_up = "Please make sure to output a spectrum and the pro/con tradeoffs that are most salient to you as you make a decision. "
+
+  prompt = "#{embodiment_instructions} #{proposal_desc} #{interests} #{pros_and_cons} #{spectrum} #{wrap_up}"
+
+  pp prompt
+  response = chat.ask(prompt + " Existing pros and cons: #{JSON.dump(existing)}")
+  pp response.content
+
+
+  opinion_schema = {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "EvaluationResult",
+    "type": "object",
+    "properties": {
+      "score": {
+        "type": "number",
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "description": "A continuous value in the range [-1, 1]"
+      },
+      "new_pro_con_points": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "Either 'pro' or 'con'"
+            },
+            "point": {
+              "type": "string",
+              "description": "A summary of the pro or con"
+            },
+            "description": {
+              "type": "string",
+              "description": "Additional description (optional)"
+            }
+          },
+          "required": ["type", "point"],
+          "additionalProperties": false
+        }
+      },
+      "included_pro_con_points": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "description": "The ID of the included pro/con point"
+            }
+          },
+          "required": ["id"],
+          "additionalProperties": false
+        }
+      },
+      "interests": {
+        "type": "string",
+        "description": "The identified interests"
+      }
+    },
+    "required": ["score"],
+    "additionalProperties": false
+  }
+
+
+  extractor = ResponseExtractor.new($json_extraction_model, $llm_provider)  
+  opinion = extractor.extract_structure_from_response(prompt, response, opinion_schema)
+  pp opinion
+
+  user = get_and_create_avatar_user(forum, avatar, generate_avatar_pic=false)
+
+  o = Opinion.get_or_make(proposal, user)
+  o.stance = opinion["score"].to_f
+  o.explanation = opinion.fetch("interests")
+  pp "  ** Took stance #{o.stance}"
+
+  o.save
+
+
+  begin 
+    new_points = opinion.fetch("new_pro_con_points", [])
+    new_points.each do |new_pt|
+      point = Point.create!({
+        subdomain_id: forum.id,
+        nutshell: new_pt["point"],
+        text: new_pt.fetch("description", nil),
+        is_pro: new_pt["type"] == 'pro',
+        proposal_id: proposal.id,
+        user_id: user.id,
+        comment_count: 0,
+        published: true
+      })
+      point.publish
+      pp "  ** Creating point #{point.nutshell}"
+      o.include(point, forum)    
+    end
+  rescue => err
+    pp "Failed to create new points", err
+  end
+
+  begin
+    included_points = opinion.fetch("included_pro_con_points", [])
+    included_points.each do |pt|
+      pp pt
+      point = Point.where(:id => pt['id']).first
+      if point
+        pp "  ** Including point #{point.id}"
+        o.include(point, forum)    
+      end
+    end
+  rescue => err
+    pp "Failed to include points", err
+
+  end
+
+
+
 
 end
 
@@ -267,6 +450,8 @@ def generate_avatars(ai_config)
       "embodiment_prompt": candidate["embodiment_prompt"],
       "nomination": candidate["nomination_reason"]
     }
+
+    get_and_create_avatar_user(forum, avatars_config[candidate["name"]])
   end
 
   pp avatars_config
@@ -303,7 +488,7 @@ def create_test_avatar_forum(force=false)
         "forum_prompt": "In this forum, avatars personifying important figures and texts from the history of the United States deliberate about contemporary issues facing the United States.",
         "avatars_prompt": "Generate approximately #{rough_count} representative avatars for this forum. While most avatars should be historical figures, some may also be important texts or key American concepts.",
         "ai_facilitation": {
-          "seed_initial_focus": true,
+          "seed_initial_focus": "What are the biggest problems facing the United States today?",
           "deliberation_phases": [
             {
               "name": "Novel Ideation",
@@ -450,6 +635,7 @@ end
 
 def get_and_create_avatar_user(forum, avatar, generate_avatar_pic=false)
   # returns the user associated with this avatar. If it doesn't yet exist, create it
+  ai_config = forum.customizations["ai_participation"]
 
   if avatar["user_id"]
     user = User.find(avatar["user_id"])
@@ -469,7 +655,7 @@ def get_and_create_avatar_user(forum, avatar, generate_avatar_pic=false)
     user = User.create! attrs
     user.add_to_active_in(forum)
 
-    avatar["user_id"] = user.id
+    ai_config["avatars"][avatar["name"]]["user_id"] = user.id
     forum.save
   end
 

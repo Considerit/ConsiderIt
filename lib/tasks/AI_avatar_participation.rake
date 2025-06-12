@@ -63,8 +63,30 @@ end
 
 task :animate_avatars => :environment do
 
-  create_test_avatar_forum()
+  Subdomain.all.each do |forum|
+    next if !forum.customizations
+    next if !forum.customizations["ai_participation"]
 
+    animate_avatars_for_forum(forum)
+
+  end
+end
+
+
+
+test_forum = "willamette-river-valley"  #'united_states3'
+test_template = "willamette river valley" # 'united-states'
+task :test_animate_avatars => :environment do
+  
+  create_test_avatar_forum(test_forum, test_template)
+  forum = Subdomain.find_by_name(test_forum)
+  animate_avatars_for_forum(forum)
+end
+
+
+
+
+def animate_avatars_for_forum(forum)
   ai_runner_success_file = Rails.root.join('tmp', 'ai_participation_runner_success')
 
   success_times = if File.exist?(ai_runner_success_file)
@@ -73,32 +95,25 @@ task :animate_avatars => :environment do
                     {}
                   end
 
+  customizations = forum.customizations
+  avatar_conf = customizations["ai_participation"]
 
-  Subdomain.all.each do |forum|
-    next if !forum.customizations
-    next if forum.name != 'united-states2'
+  begin 
+    last_success_time = if success_times.has_key?(forum.name)
+                          Time.parse(success_times[forum.name])
+                        else
+                          1.week.ago
+                        end
 
-    customizations = forum.customizations
-    avatar_conf = customizations["ai_participation"]
+    facilitate_dialogue(forum, last_successful_run=last_success_time)
 
-    next if !avatar_conf
-
-    begin 
-      last_success_time = if success_times.has_key?(forum.name)
-                            Time.parse(success_times[forum.name])
-                          else
-                            1.week.ago
-                          end
-
-      facilitate_dialogue(forum, last_successful_run=last_success_time)
-
-      success_times[forum.name] = Time.now.utc.iso8601
-      File.write(ai_runner_success_file, JSON.pretty_generate(success_times))
-    rescue => err
-      LLMLogger.error "**** Error occurred running facilator for #{forum.name}: #{err.message}"
-      LLMLogger.debug err.backtrace.join("\n")
-    end
+    success_times[forum.name] = Time.now.utc.iso8601
+    File.write(ai_runner_success_file, JSON.pretty_generate(success_times))
+  rescue => err
+    LLMLogger.error "**** Error occurred running facilitator for #{forum.name}: #{err.message}"
+    LLMLogger.debug err.backtrace.join("\n")
   end
+
 end
 
 
@@ -129,8 +144,9 @@ def facilitate_dialogue(forum, last_successful_run)
     if get_all_considerit_prompts(forum, include_archived=true).length > 0
       to_import.push "[What should we focus on next?]{\"list_description\": \"Each answer should be an open-ended question that we could pose to the rest of the group for ideation.\", \"list_item_name\": \"Focus\", \"slider_pole_labels\": {\"oppose\": \"lower priority\", \"support\": \"higher priority\"}}"
     else # first prompt
-      first_prompt = ai_config.fetch("ai_facilitation", {}).fetch("seed_initial_focus", "What open-ended question should we focus on first?")
-      to_import.push "[#{first_prompt}]{\"list_description\": \"\", \"list_item_name\": \"Focus\", \"slider_pole_labels\": {\"oppose\": \"lower priority\", \"support\": \"higher priority\"}}"
+      first_prompt = ai_config.fetch("ai_facilitation", {}).fetch("seed_initial_focus", {"title": "What open-ended question should we focus on first?", "description": ""})
+
+      to_import.push "[#{first_prompt["title"]}]{\"list_description\": \"#{first_prompt.fetch("description","")}\", \"list_item_name\": \"Focus\", \"slider_pole_labels\": {\"oppose\": \"lower priority\", \"support\": \"higher priority\"}}"
     end 
 
 
@@ -144,19 +160,41 @@ def facilitate_dialogue(forum, last_successful_run)
 
 
   ai_config["avatars"].each do |k,v|
-    pp v["name"]
     user = get_and_create_avatar_user(forum, v, generate_avatar_pic=true)
   end
 
-  while forum.proposals.where(cluster: current_prompt_id).length < 12
+
+  while forum.proposals.where(cluster: current_prompt_id).length < 20
     # nominate new proposer
-    avatar = ai_config["avatars"].values.sample
+    #avatar = ai_config["avatars"].values.sample
+
+    avatar = nominate_based_on_most_unique_perspective(forum, current_prompt)
+
     begin
       propose(forum, current_prompt, avatar)
     rescue
       pp "failed to create proposal"
     end
   end 
+
+
+  proposal_count = forum.proposals.where(cluster: current_prompt_id).count
+  ai_config["avatars"].each do |name, avatar| #while rand >= 0.05 # TODO: stopping condition   
+
+    opinions = 0
+    forum.proposals.where(cluster: current_prompt_id).each do |p|
+
+      if p.opinions.where(:user_id=>avatar["user_id"]).count > 0
+        opinions += 1
+      end
+    end
+
+    if opinions < proposal_count
+      prioritize_proposals(forum, current_prompt, avatar)
+    end
+  end
+
+
 
   while rand >= 0.25 # TODO: stopping condition
 
@@ -178,24 +216,85 @@ def facilitate_dialogue(forum, last_successful_run)
     end
   end
 
+end
 
-  proposal_count = forum.proposals.where(cluster: current_prompt_id).count
-  ai_config["avatars"].each do |avatar| #while rand >= 0.05 # TODO: stopping condition   
 
-    opinions = 0
-    forum.proposals.where(cluster: current_prompt_id).each do |p|
+def nominate_based_on_most_unique_perspective(forum, considerit_prompt)
 
-      if p.opinions.where(:user_id=>avatar["user_id"]).count > 0
-        opinions += 1
-      end
-    end
+  ai_config = forum.customizations['ai_participation']
+  prompt_id = considerit_prompt[:key].split('/')[-1]
 
-    if opinions < proposal_count
-      prioritize_proposals(forum, current_prompt, avatar)
+  proposals = forum.proposals.where(cluster: prompt_id)
+
+
+  if proposals.count == 0
+    return ai_config["avatars"].values.sample
+  end
+
+  chat = RubyLLM.chat(
+    model: $llm_model, 
+    provider:  $llm_provider,
+    assume_model_exists: true
+  )
+
+  existing_proposals = []
+  authors = {}
+  proposals.each do |p|
+    author = p.user.name
+    authors[author] = true
+    existing_proposals.push({"name": p.name, "description": p.description, "author": author})
+  end
+
+  avatars_available = []
+  ai_config["avatars"].each do |k, v|
+    if !authors.has_key?(v["name"])
+      avatars_available << {"name": v["name"], "description": v["nomination"]}
     end
   end
 
+  prompt = <<~PROMPT 
+    You are helping to facilitate a Consider.it deliberative forum. #{ai_config["forum_prompt"]}
+    You are seeking radically novel answers to the prompt: "#{considerit_prompt[:data]["list_title"]} #{considerit_prompt[:data].fetch("list_description", "")}"
 
+    There are #{ai_config["avatars"].values.length} avatars participating in the forum.
+
+    We already have a set of proposals. Your task is to identify **which participant is most likely to propose something 
+    that adds a completely new perspective** — not an improvement, variation, or extension of an existing proposal, 
+    but something that comes from **a different angle altogether.**
+
+    Think of:
+    - Someone who would challenge the premises behind existing ideas
+    - Someone who would bring in an unusual domain of knowledge or lived experience
+    - Someone whose perspective would likely *surprise* the others
+
+    **What do we mean by "novel"?** A novel proposal isn't just different — it brings up a 
+    **new framing, problem, or solution pathway** that the existing proposals have not touched at all. 
+    It might come from another discipline, from a historically overlooked voice, or 
+    from an unexpected moral or practical concern.
+
+    Avoid nominating avatars who would simply echo or refine what's already been proposed.
+
+    Here are the existing proposals: <existing proposals>#{JSON.dump(existing_proposals)}</existing proposals>
+
+    Here are the avatars available for nomination: <participants>#{JSON.dump(avatars_available)}</participants>
+
+    Return only the name of the most likely avatar to generate a novel proposal, in this JSON format:
+    {"name": "avatar name"}
+
+    You may want to start by thematizing the current proposals and use that to evaluate whether a given 
+    participant might contribute something thematically novel. 
+  PROMPT
+
+
+
+
+
+  llm_response = chat.ask(prompt)
+  pp llm_response.content
+  parsed = try_parse_json(llm_response.content)
+  pp parsed
+
+  return ai_config["avatars"][parsed["name"]]
 end
 
 
@@ -220,7 +319,7 @@ def propose(forum, considerit_prompt, avatar)
 
   existing = []
   existing_proposals = Proposal.where(cluster: prompt_id).each do |p|
-    existing.push(p.name)
+    existing.push({"name": p.name, "description": p.description})
   end
 
 
@@ -236,38 +335,67 @@ def propose(forum, considerit_prompt, avatar)
       "description": {
         "type": "string",
         "description": "A more extended description of this proposal"
+      },
+      "unique": {
+        "type": "boolean",
+        "description": "Is this proposal substantially unique compared to the other proposals?"
       }
     },
-    "required": ["name", "description"],
+    "required": ["name", "description", "unique"],
     "additionalProperties": false
   }
 
-  propose_prompt = "Please give one answer to this prompt: \"#{considerit_prompt[:data]["list_title"]}  #{considerit_prompt[:data].fetch("list_description", "")}\"   Your answer should give a name and a description. Strive for a novel proposal that has not already been contributed. The name should be direct and simple;  Don't make the name clever, academic, or sweeping (e.g. do not use colonic titles!)."
-  pp propose_prompt
+  propose_prompt = <<~PROMPT
+    Please give one answer to this prompt: \"#{considerit_prompt[:data]["list_title"]}  #{considerit_prompt[:data].fetch("list_description", "")}\"   
 
-  response = chat.ask(get_embodiment_instructions(forum, avatar) + " " + propose_prompt + " Proposals that have already been added are: #{JSON.dump(existing)}")
+    Your answer should give a name and a description. The name should be direct and simple;  
+    Don't make the name clever, academic, or sweeping (e.g. do not use colonic titles!).
+  PROMPT
 
-  proposal = extract_structure_from_response($json_extraction_model, $llm_provider, propose_prompt, response, propose_json_schema)
+
+  response = chat.ask(get_embodiment_instructions(forum, avatar) + " " + propose_prompt)
+
+  additional_instructions = <<~PROMPT 
+    Please also compare the new proposal to the existing proposals and determine if it is substantially different 
+    from all of them. **What do we mean by "substantially different"? 
+    ** A novel proposal isn't just different — it brings up a **new framing, problem, or solution pathway** 
+    that the existing proposals have not touched at all. It might come from another discipline, 
+    from a historically overlooked voice, or from an unexpected moral or practical concern.
+
+    Proposals that have already been added are: #{JSON.dump(existing)}"
+  PROMPT
+
+  proposal = extract_structure_from_response($json_extraction_model, $llm_provider, propose_prompt, response, propose_json_schema, additional_instructions)
 
   pp "***** GOT PROPOSAL", proposal
 
-  user = get_and_create_avatar_user(forum, avatar, generate_avatar_pic=true)
+  if proposal["unique"]
 
-  params = {
-      'subdomain_id': forum.id,
-      'user_id': user.id,
-      'name': proposal["name"].split(": ")[-1],
-      'description': proposal["description"],
-      'cluster': prompt_id,
-      'published': true
-    }
-  proposal = Proposal.create!(params)
+    user = get_and_create_avatar_user(forum, avatar, generate_avatar_pic=true)
 
-  # proposer should add first opinion
-  opine(forum, considerit_prompt, proposal, avatar)
+    pp "*** created user"
+    params = {
+        'subdomain_id': forum.id,
+        'user_id': user.id,
+        'name': proposal["name"].split(": ")[-1],
+        'description': proposal["description"],
+        'cluster': prompt_id,
+        'published': true
+      }
 
-  Proposal.clear_cache(forum)
+    pp params
+    proposal = Proposal.create!(params)
+    pp "created proposal"
 
+
+    pp "opining"
+    # proposer should add first opinion
+    opine(forum, considerit_prompt, proposal, avatar)
+
+    Proposal.clear_cache(forum)
+  else
+    pp "This proposal isn't unique enough"
+  end
 
 
   return proposal
@@ -454,31 +582,54 @@ def opine(forum, considerit_prompt, proposal, avatar)
   poles = get_slider_poles(forum, considerit_prompt)
 
   embodiment_instructions = get_embodiment_instructions(forum, avatar)
-  proposal_desc = "You are evaluating the following proposal: <proposal>#{proposal.name}: #{proposal.description}</proposal>. This proposal was made in response to the following prompt: <prompt>\"#{considerit_prompt["list_title"]}  #{considerit_prompt.fetch("list_description", "")}\"</prompt>"
 
-  interests = "First, formulate your specific interests with respect to this proposal. "
-  pros_and_cons = "Then assess the pros and cons of this proposal. You are to identify up to four pros and/or cons representing the most important factors for you as you consider this proposal. You do not need to balance your pros and cons: you can have 4 pros if you want, for example. Or just one con and no pros."
-  wrap_up = "Please make sure to output up to four pro/con tradeoffs that are most salient to you as you make a decision. "
+  prompt = <<~PROMPT 
+    #{embodiment_instructions}
 
-  prompt = "#{embodiment_instructions} #{proposal_desc} #{interests} #{pros_and_cons} #{wrap_up}"
+    You are evaluating the following proposal: <proposal>#{proposal.name}: #{proposal.description}</proposal>. 
+    This proposal was made in response to the following prompt: 
+         <prompt>\"#{considerit_prompt["list_title"]}  #{considerit_prompt.fetch("list_description", "")}\"</prompt>
+
+    First, formulate your specific interests with respect to this proposal.
+    Then assess the pros and cons of this proposal. You are to identify up to four pros and/or cons representing 
+    the most important factors for you as you consider this proposal. You do not need to balance your pros and cons: 
+    you can have 4 pros if you want, for example. Or just one con and no pros.
+
+    Please make sure to output up to four pro/con tradeoffs that are most salient to you as you make a decision.
+  PROMPT
 
   response = chat.ask(prompt)
   intermediate = response.content.sub(/<think>.*?<\/think>/m, '').strip
 
 
-  embodiment_instructions = get_embodiment_instructions(forum, avatar)
-  proposal_desc = "You are evaluating the following proposal: <proposal>#{proposal.name}: #{proposal.description}</proposal>. This proposal was made in response to the following prompt: <prompt>\"#{considerit_prompt["list_title"]}  #{considerit_prompt.fetch("list_description", "")}\"</prompt>"
+  prompt = <<~PROMPT 
+    #{embodiment_instructions}
 
-  existing_deliberation = "You have already articulated your interests and authored some pro and con statements: <interests and authored pros+cons>#{intermediate}</interests and authored pros+cons>. First, restate your interests. "
+    You are evaluating the following proposal: <proposal>#{proposal.name}: #{proposal.description}</proposal>. 
+    This proposal was made in response to the following prompt: 
+         <prompt>\"#{considerit_prompt["list_title"]}  #{considerit_prompt.fetch("list_description", "")}\"</prompt>
 
-  pros_and_cons = "Next, I'm going to show you the pros and/or cons that *other participants* have already contributed. We do not want duplicate pros and cons. So I want you to (1) compare each of the pros and/or cons you authored already and restate only the ones that do not significantly overlap with a pro or con point that someone else contributed; (2) identify up to four pro and/or con points other people have contributed that best represent to your interests (for each of these, note the point's ID)."
+    You have already articulated your interests and authored some pro and con statements: 
+      <interests and authored pros+cons>#{intermediate}</interests and authored pros+cons>. 
 
-  # interests = "First, formulate your specific interests with respect to this proposal. "
-  # pros_and_cons = "Then assess the pros and cons of this proposal. The pros and cons that other participants have already identified are listed below (if any). You are to identify up to four pros and/or cons representing the most important factors for you as you consider this proposal. Each pro or con point can be either (1) a new pro or con point that you author yourself or (2) a pro or con point that some other participant already added (listed below). Don't author a pro or con point if someone else has already contributed a very similar point; instead, mark down the pro or con point with its ID. But also, don't be afraid to add a new one if there's something important to your interests about this proposal that has not yet been addressed! You do not need to balance out your pros and cons."
-  spectrum = "Finally, you will rate the proposal on a continuous spectrum of support ([-1,1]), with the -1 pole labeled #{poles['oppose']} and the +1 pole labeled #{poles['support']}. The center of the spectrum around 0 signals either (1) apathy about the proposal or (2) there are strong tradeoffs that roughly balance out. "
-  wrap_up = "To summarize, please make sure to output an evaluation of this proposal that includes your interests, a score on the spectrum of support, your original pro and/or con points (if any), and the pro and/or con points that others have contributed that speak for you. "
+    First, restate your interests. 
 
-  prompt = "#{embodiment_instructions} #{proposal_desc} #{existing_deliberation} #{pros_and_cons} #{spectrum} #{wrap_up}"
+    Second, I'm going to show you the pros and/or cons that *other participants* have already contributed. 
+    We do not want duplicate or substantially overlapping pros and cons. So I want you to 
+      (1) compare each of the pros and/or cons you authored already and restate only the ones that do 
+          not significantly overlap with a pro or con point that someone else contributed; 
+      (2) identify up to four pro and/or con points other people have contributed that best represent 
+          to your interests (for each of these, note the point's ID).
+
+    Third, you will rate the proposal on a continuous spectrum of support ([-1,1]), 
+    with the -1 pole labeled #{poles['oppose']} and the +1 pole labeled #{poles['support']}. 
+    The center of the spectrum around 0 signals either (1) apathy about the proposal or 
+    (2) there are strong tradeoffs that roughly balance out.
+
+    To summarize, please make sure to output an evaluation of this proposal that includes your interests, 
+    a score on the spectrum of support, your original pro and/or con points (if any), and the pro 
+    and/or con points that others have contributed that speak for you. 
+  PROMPT
 
   response = chat.ask(prompt + " Existing pros and cons: <points contributed by others>#{JSON.dump(existing)}</points contributed by others>")
 
@@ -641,12 +792,28 @@ def prioritize_proposals(forum, considerit_prompt, avatar)
 
 
   embodiment_instructions = get_embodiment_instructions(forum, avatar)
-  proposal_desc = "The forum host has asked the group to propose answers to the following prompt: <prompt>\"#{considerit_prompt["list_title"]}  #{considerit_prompt.fetch("list_description", "")}\"</prompt>. Your task is to evaluate all of the proposals that have responded to this prompt thus far. The proposals will be listed below."
 
-  interests = "Your process is the following: First, formulate your specific interests in the context of the prompt and the set of proposals."
-  spectrum = "Second, you will prioritize each proposal on a continuous spectrum of support ([-1,1]), with the -1 pole labeled #{poles['oppose']} and the +1 pole labeled #{poles['support']}. The center of the spectrum around 0 signals either (1) apathy about the proposal or (2) there are strong tradeoffs that roughly balance out. Please make sure that your rating is paired with identifying information about the proposal (in particular its ID). You do not need to explain your reasoning."
+  prompt = <<~PROMPT 
+    #{embodiment_instructions}
 
-  prompt = "#{embodiment_instructions} #{proposal_desc} #{interests} #{spectrum}"
+    The forum host has asked the group to propose answers to the following prompt: 
+      <prompt>\"#{considerit_prompt["list_title"]}  #{considerit_prompt.fetch("list_description", "")}\"</prompt>. 
+
+    Your task is to evaluate all of the proposals that have responded to this prompt thus far. 
+    The proposals will be listed below.    
+
+    Your process is the following: 
+
+    First, formulate your specific interests in the context of the prompt and the set of proposals.
+
+    Second, you will prioritize each proposal on a continuous spectrum of support ([-1,1]), with 
+    the -1 pole labeled #{poles['oppose']} and the +1 pole labeled #{poles['support']}. 
+    The center of the spectrum around 0 signals either (1) apathy about the proposal or 
+    (2) there are strong tradeoffs that roughly balance out. Please make sure that your rating is 
+    paired with identifying information about the proposal (in particular its ID). 
+    You do not need to explain your reasoning.
+
+  PROMPT
 
   pp prompt
   response = chat.ask(prompt + " The proposals to evaluate: #{JSON.dump(existing)}")
@@ -696,12 +863,17 @@ def prioritize_proposals(forum, considerit_prompt, avatar)
 
 
   opinions["scores"].each do |opinion|
-    proposal = forum.proposals.find(opinion["id"])
-    o = Opinion.get_or_make(proposal, user)
-    o.stance = opinion["score"].to_f
-    o.explanation = opinions.fetch("interests")
-    pp "  ** Took stance #{o.stance} on #{proposal.name}"
-    o.save
+    begin
+      proposal_id = opinion["id"].to_i.abs
+      proposal = forum.proposals.find(proposal_id)
+      o = Opinion.get_or_make(proposal, user)
+      o.stance = opinion["score"].to_f
+      o.explanation = opinions.fetch("interests")
+      pp "  ** Took stance #{o.stance} on #{proposal.name}"
+      o.save
+    rescue => err
+      pp "Couldn't create opinion", opinion
+    end
   end
 
 
@@ -718,7 +890,28 @@ end
 def get_embodiment_instructions(forum, avatar)
   ai_config = forum.customizations["ai_participation"]
 
-  prompt = "You are participating in a deliberative forum. #{ai_config["forum_prompt"]}. You are speaking as \"#{avatar["name"]}\", in first person voice. #{avatar["embodiment_prompt"]}. Speak in the first person. You've been included in this forum because: #{avatar["nomination"]}"
+  prompt = <<~PROMPT 
+    You are participating in a deliberative forum. #{ai_config["forum_prompt"]}
+
+    You are speaking as "#{avatar["name"]}" — respond **in the first person**, expressing 
+    your distinctive perspective, history, and symbolic voice.
+
+    #{avatar["embodiment_prompt"]}
+
+    You were invited to this forum because: #{avatar["nomination"]}
+
+    Stay in character at all times. Your statements and opinions should:
+    - Reflect your values, commitments, and rhetorical or symbolic force
+    - Draw on your historical role, influence, and the contexts in which you emerged
+    - Speak in a tone and style that fits your nature — whether fiery, legalistic, poetic, ecological, ancestral, or institutional
+    - Offer insights that **could only come from your vantage point**
+
+    Avoid modern ideas, terms, or framings that would misrepresent your character or era. 
+    Speak from the authority of your **position in the world** — as a movement, document, law, organism, or person.
+
+    **Do not break character.** Speak only as "#{avatar["name"]}" might have, if given voice in this moment.  
+  PROMPT
+
   return prompt
 end
 
@@ -768,7 +961,36 @@ def generate_avatars(forum, ai_config)
     assume_model_exists: true
   )
 
-  avatars_gen = "We're creating a Consider.it deliberative forum that involves some AI participants. #{ai_config["forum_prompt"]}. #{ai_config["avatars_prompt"]}. Do not repeat any avatar. After thinking about it, please give each unique proposed avatar (1) a name, (2) a reason why it has been nominated, and (3) a prompt that can be used to instruct an LLM to personify this avatar (include the name, some background, an orientation to the topic, and suggestions for tone and attitude)."
+  avatars_gen = <<~PROMPT 
+    We're creating a Consider.it deliberative forum that involves some AI participants. #{ai_config["forum_prompt"]}. 
+
+    Your task is to generate a full, enumerated list of **distinctive and meaningful avatars** that would contribute usefully to deliberation on this topic. 
+    These can be individuals (real or fictional), texts, organizations, movements, species, places, symbolic entities, or conceptual forces — 
+    as long as they can **plausibly express a coherent point of view**. Some more specific instructions are:
+    
+    #{ai_config["avatars_prompt"]}. 
+
+
+    Each avatar must be:
+    - Unique — do not repeat names or roles.
+    - Representative — of a perspective, relationship, experience, or influence that is **different** from others in the list.
+
+    For each avatar, provide:
+    1. **Name** — of the person, entity, text, or concept.
+    2. **Nomination** — a brief explanation of why this avatar is relevant and worth including in the forum.
+    3. **Embodiment prompt** — a compact but vivid instruction to help an AI language model speak *as if it were* this avatar. It should include:
+       - A framing of the avatar's **identity or role**
+       - Relevant **background or context**
+       - Its **stance or orientation** toward the forum’s topic
+       - A suggested **tone and rhetorical attitude** to adopt
+
+    Under no circumstances should the same avatar be repeated. Absolutely no repeats. All avatars must be unique.
+
+    You may want to begin by imagining the broad categories of participant that are called for and relevant for this forum, and then move
+    onto identifying unique and representative avatars.
+
+  PROMPT
+
   response = chat.ask(avatars_gen)
 
   nominated_avatars = extract_structure_from_response($json_extraction_model, $llm_provider, avatars_gen, response, avatar_nominations_json)
@@ -790,10 +1012,64 @@ end
 
 
 ###################################
-# A test forum for development
+# Some test forums for development
+$forum_templates = {}
 
-def create_test_avatar_forum(force=false)
-  forum_name = "united-states2"
+$forum_templates["united-states"] = {
+  "forum_prompt": <<~TEXT,
+    In this forum, avatars personifying important figures and texts from the history of the United States
+    deliberate about contemporary issues facing the United States.
+  TEXT
+
+  "avatars_prompt": <<~TEXT,
+    Generate 100 representative avatars for this forum. These figures should have made their
+    impact primarily before 1990. Impacts can include politics, movement organizing, cultural icons, business
+    leaders, scientists, and military leaders. Do not be narrow, try to sample broadly. About 90 of these
+    should be historical persons, and about 10 of them should be important texts and/or key American concepts.
+  TEXT
+
+  "seed_initial_focus": {
+    "title": "What are the biggest problems facing the United States today?",
+    "description": <<~TEXT, 
+      A good proposed problem describes a specific, actionable problem. 
+      It does not have to propose mechanisms to solve the problem. At a later point, we will
+      ideate about how to address some of the more salient problems.
+    TEXT
+  }
+}
+
+$forum_templates["willamette river valley"] = {
+  "forum_prompt": <<~TEXT,
+    In this forum, avatars personifying important aspects of the Willamette River Valley bioregion of Oregon
+    deliberate about the issues facing the bioregion and how humans can help.
+  TEXT
+
+  "avatars_prompt": <<~TEXT,
+    Generate:
+       - an avatar representing the entirety of the Willamette River Valley bioregion
+       - an avatar representing the Willamette River
+       - 3 avatars representing important landforms in the broad area
+       - 5 natural dynamic processes and/or relationships for the bioregion that are positive 
+         and important to restore and/or maintain
+       - 50 living species that are essential to the Willamette River Valley, its 
+         landforms, and dynamic processes and relationships
+  TEXT
+
+  "seed_initial_focus": {
+    "title": "What are the biggest problems facing the Willamette River Valley bioregion today?",
+    "description": <<~TEXT, 
+      A good proposed problem describes a specific, actionable problem. 
+      It does not have to propose mechanisms to solve the problem. At a later point, we will
+      ideate about how to address some of the more salient problems. Priority is given to 
+      problems that can be addressed by the people living in the bioregion, rather than 
+      those that require global action.
+    TEXT
+  }
+}
+
+pp $forum_templates
+
+def create_test_avatar_forum(forum_name, template, force=false)
   user = User.where(:super_admin=>1).first
 
   subdomain = Subdomain.find_by_name(forum_name)
@@ -810,32 +1086,13 @@ def create_test_avatar_forum(force=false)
 
   if !subdomain.customizations || !subdomain.customizations['ai_participation'] || force
     # initial customizations
+
     customizations = {
       "ai_participation": {
-        "forum_prompt": "In this forum, avatars personifying important figures and texts from the history of the United States deliberate about contemporary issues facing the United States.",
-        "avatars_prompt": "Generate approximately 50 representative avatars for this forum. About 40 of these should be historical figures that span the political and cultural gamut, and about 10 of them should be important texts or key American concepts.",
+        "forum_prompt": $forum_templates[template][:forum_prompt],
+        "avatars_prompt": $forum_templates[template][:avatars_prompt],
         "ai_facilitation": {
-          "seed_initial_focus": "What are the biggest problems facing the United States today? A good proposed problem describes a specific, actionable problem. It does not have to propose mechanisms to solve the problem. At a later point, we will ideate about how to address some of the more salient problems.",
-          "deliberation_phases": [
-            {
-              "name": "Novel Ideation",
-              "generate_proposals": true,
-              "generate_opinions": false,
-              "proposal_prompt": "Generate proposals that are novel and conceptually distinct from existing ones. Avoid repetition or consensus-building in this phase.",
-              "transition_criteria": {
-                "max_duration_minutes": 30
-              }
-            },
-            {
-              "name": "Consensus Seeking",
-              "generate_proposals": true,
-              "generate_opinions": true,
-              "proposal_prompt": "Synthesize earlier ideas and propose refinements likely to attract wider support. Consider tradeoffs identified in previous opinions.",
-              "transition_criteria": {
-                "max_duration_minutes": 30
-              }
-            }
-          ] 
+          "seed_initial_focus": $forum_templates[template][:seed_initial_focus]
         }
       }
     }
@@ -872,16 +1129,23 @@ require 'json-schema'
 
 
 
-def extract_structure_from_response(model, provider, original_prompt, response, schema)
+def extract_structure_from_response(model, provider, original_prompt, response, schema, additional_instructions=nil)
   max_retries = 3
 
   nl = preprocess_natural_language_response(response)
 
   instructions = "You extract data given in natural language (and sometimes structured data) and formulate it according to a JSON schema the prompter gives to you, maintaining as much of the original phrasing as possible."
 
-  parse_proposals_query = <<~PROMPT
-    Here is a response to the prompt <prompt>#{original_prompt}<end prompt>: <begin response>#{nl}<end response> While maintaining as much of the original response text as possible, I would like you to extract data from this response into JSON that follows this JSON schema: #{JSON.dump(schema)}. Your response should only include the JSON. Don't include any markup (like astericks). Note that the provided JSON is a schema that *describes* the desired JSON output, but is not the output format itself.   
+  extract_prompt = <<~PROMPT
+    Here is a response to the prompt <prompt>#{original_prompt}<end prompt>: <begin response>#{nl}<end response> While maintaining as much of the original 
+    response text as possible, I would like you to extract data from this response into JSON that follows this JSON schema: #{JSON.dump(schema)}. 
+    Your response should only include the JSON. Don't include any markup (like astericks). Note that the provided JSON is a schema that *describes* 
+    the desired JSON output, but is not the output format itself. 
   PROMPT
+
+  if additional_instructions
+    extract_prompt += "You have one additional instruction to carry out beyond structuring the data: #{additional_instructions}"
+  end
 
   attempt = 0
   begin 
@@ -891,7 +1155,7 @@ def extract_structure_from_response(model, provider, original_prompt, response, 
       assume_model_exists: true
     )
 
-    llm_response = json_parser.ask(instructions + " " + parse_proposals_query)
+    llm_response = json_parser.ask(instructions + " " + extract_prompt)
     parsed = try_parse_json(llm_response.content)
 
     if parsed && valid_against_schema?(parsed, schema)
@@ -967,9 +1231,10 @@ def generate_image(forum, avatar, result = 0)
 
   attempts = 0
   begin
-    img_url = first_squareish_avatar(avatar["name"], idx=result)
+    img_url = first_squareish_avatar(avatar["name"], result)
     pp img_url
-  rescue
+  rescue => err 
+    pp "Error generating image:", err.message, err.backtrace
     attempts += 1
     if attempts < 5
       retry
@@ -982,9 +1247,8 @@ end
 
 require 'faraday'
 
-def first_squareish_avatar(query, idx:0, tolerance: 0.2, min_size: 500)
+def first_squareish_avatar(query, idx=0, tolerance: 0.2, min_size: 400)
   # Step 1: Get vqd token from DuckDuckGo homepage
-
   headers = { "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" }
 
   home_resp = Faraday.get("https://duckduckgo.com/", { q: query }) do |req|
@@ -1010,7 +1274,10 @@ def first_squareish_avatar(query, idx:0, tolerance: 0.2, min_size: 500)
   images.find do |img|
     width  = img["width"].to_f
     height = img["height"].to_f
-    next false if width < min_size || height < min_size || found += 1 > idx
+
+    next false if width < min_size || height < min_size 
+
+    next if (found += 1) < idx
 
     aspect_ratio = width / height
     (1 - tolerance..1 + tolerance).include?(aspect_ratio)
@@ -1025,6 +1292,20 @@ def get_and_create_avatar_user(forum, avatar, generate_avatar_pic=true)
 
   if avatar["user_id"]
     user = User.find(avatar["user_id"])
+    if generate_avatar_pic && !user.avatar_file_name
+      attempts = 0
+      begin
+        user.avatar_url = generate_image(forum, avatar, result = attempts)
+        user.save
+      rescue => err
+        attempts += 1
+        if attempts <= 3
+          retry
+        else
+          pp "Failed to generate an avatar for #{avatar["name"]}", err.message
+        end
+      end
+    end 
 
   else
     attempts = 0
@@ -1064,8 +1345,12 @@ end
 # Utility function for removing the <think> blocks that some LLMs produce. And other
 # artifacts
 def remove_reasoning_block(input)
-  # Remove <think>...</think> section if present (including multiline content)
-  cleaned = input.sub(/<think>.*?<\/think>/m, '').strip
+  # Remove everything up to and including the last </think>
+  if input.include?("</think>")
+    input = input.partition(/<\/think>(?!.*<\/think>)/m).last
+  end
+
+  cleaned = input.strip
 
   # Extract substring from first { to last }, inclusive
   if cleaned =~ /{.*}/m
@@ -1074,7 +1359,6 @@ def remove_reasoning_block(input)
 
   cleaned
 end
-
 
 
 # proposal_list_json = {

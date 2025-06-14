@@ -14,9 +14,6 @@ LLMLogger.define_singleton_method(:add) do |severity, message = nil, progname = 
   super(severity, message, progname, &block)
 end
 
-
-
-
 # Note: RubyLLM chat objects have persistant chat state. So for avatars,
 #       we might experiment with maintaining a chat object per LLM for
 #       memory persistence and personality / background animation. 
@@ -74,11 +71,14 @@ end
 
 
 
+test_forum = "lahn-river"
+test_template = "lahn-river"
+
 # test_forum = "willamette-river-valley"  #'united_states3'
 # test_template = "willamette river valley" # 'united-states'
 
-test_forum = "nba"  #'united_states3'
-test_template = "nba" # 'united-states'
+# test_forum = "nba"  #'united_states3'
+# test_template = "nba" # 'united-states'
 
 task :test_animate_avatars => :environment do
   
@@ -146,7 +146,7 @@ def facilitate_dialogue(forum, last_successful_run)
     to_import = []
 
     if get_all_considerit_prompts(forum, include_archived=true).length > 0
-      to_import.push "[What should we focus on next?]{\"list_description\": \"Each answer should be an open-ended question that we could pose to the rest of the group for ideation.\", \"list_item_name\": \"Focus\", \"slider_pole_labels\": {\"oppose\": \"lower priority\", \"support\": \"higher priority\"}}"
+      to_import.push "[What should we focus on next?]{\"list_description\": \"Each answer should be an open-ended question that we could pose to the rest of the group for ideation.\", \"list_item_name\": \"Proposal\", \"slider_pole_labels\": {\"oppose\": \"lower priority\", \"support\": \"higher priority\"}}"
     else # first prompt
       first_prompt = ai_config.fetch("ai_facilitation", {}).fetch("seed_initial_focus", {"title": "What open-ended question should we focus on first?", "description": ""})
 
@@ -167,19 +167,27 @@ def facilitate_dialogue(forum, last_successful_run)
     user = get_and_create_avatar_user(forum, v, generate_avatar_pic=true)
   end
 
-
-  while forum.proposals.where(cluster: current_prompt_id).length < 12
-    # nominate new proposer
-    #avatar = ai_config["avatars"].values.sample
-
-    avatar = nominate_based_on_most_unique_perspective(forum, current_prompt)
-
-    begin
-      propose(forum, current_prompt, avatar)
-    rescue
-      pp "failed to create proposal"
+  proposals_per_prompt = 12
+  if ai_config["avatars"].values.length == 1
+    avatar = ai_config["avatars"].values[0]
+    num_proposals = forum.proposals.where(cluster: current_prompt_id).length
+    if num_proposals < proposals_per_prompt
+      propose_many(forum, current_prompt, avatar, proposals_per_prompt - num_proposals)
     end
-  end 
+
+  else
+    while forum.proposals.where(cluster: current_prompt_id).length < proposals_per_prompt
+
+      # nominate new proposer
+      avatar = nominate_based_on_most_unique_perspective(forum, current_prompt)
+
+      begin
+        propose(forum, current_prompt, avatar)
+      rescue
+        pp "failed to create proposal"
+      end
+    end 
+  end
 
 
   proposal_count = forum.proposals.where(cluster: current_prompt_id).count
@@ -228,7 +236,7 @@ def nominate_based_on_most_unique_perspective(forum, considerit_prompt)
   proposals = forum.proposals.where(cluster: prompt_id)
 
 
-  if proposals.count == 0
+  if proposals.count == 0 || ai_config["avatars"].values.length == 1
     return ai_config["avatars"].values.sample
   end
 
@@ -304,6 +312,103 @@ end
 # Deliberation capabilities
 
 
+def propose_many(forum, considerit_prompt, avatar, count)
+
+  ai_config = forum.customizations['ai_participation']
+
+  chat = RubyLLM.chat(
+    model: $llm_model, 
+    provider:  $llm_provider,
+    assume_model_exists: true
+  )
+
+  # chat.with_instructions(get_embodiment_instructions(forum, avatar))
+
+  prompt_id = considerit_prompt[:key].split('/')[-1]
+
+  propose_json_schema = {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "ProposalList",
+    "type": "object",
+    "properties": {
+      "proposals": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "A succinct summary of the proposal"
+            },
+            "description": {
+              "type": "string",
+              "description": "A fuller description of the proposal"
+            }
+          },
+          "required": ["name", "description"],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": ["proposals"],
+    "additionalProperties": false
+  }
+
+  propose_prompt = <<~PROMPT
+    Please propose exactly #{count} distict answers to this prompt: \"#{considerit_prompt[:data]["list_title"]}  #{considerit_prompt[:data].fetch("list_description", "")}\"   
+
+    Each proposal should give a name and a description. Each name should be direct and simple;  
+    Don't make the name clever, academic, or sweeping (e.g. do not use colonic titles!).
+
+    Each proposal should be novel compared to the others. A novel proposal isn't just different — it brings 
+    up a **new framing, problem, or solution pathway** that the existing proposals have not touched at all. 
+    It might come from another discipline, from a historically overlooked voice, or from an 
+    unexpected moral or practical concern.    
+  PROMPT
+
+  response = chat.ask(get_embodiment_instructions(forum, avatar) + " " + propose_prompt)
+
+  proposals = extract_structure_from_response($json_extraction_model, $llm_provider, propose_prompt, response.content, propose_json_schema)
+
+  pp "***** GOT PROPOSALS", proposals
+
+  created_proposals = []
+  proposals["proposals"].each do |proposal|
+
+    user = get_and_create_avatar_user(forum, avatar, generate_avatar_pic=true)
+
+    pp "*** created user"
+    params = {
+        'subdomain_id': forum.id,
+        'user_id': user.id,
+        'name': proposal["name"].split(": ")[-1],
+        'description': proposal["description"],
+        'cluster': prompt_id,
+        'published': true
+      }
+
+    pp params
+    proposal = Proposal.create!(params)
+    pp "created proposal"
+    created_proposals.push(proposal)
+  end
+
+  Proposal.clear_cache(forum)
+
+  created_proposals.each do |proposal|
+    pp "opining"
+    # proposer should add first opinion
+    opine(forum, considerit_prompt, proposal, avatar)    
+  end
+
+  Proposal.clear_cache(forum)
+  return proposals
+
+end
+
+
+
+
 def propose(forum, considerit_prompt, avatar)
 
   ai_config = forum.customizations['ai_participation']
@@ -363,7 +468,7 @@ def propose(forum, considerit_prompt, avatar)
     that the existing proposals have not touched at all. It might come from another discipline, 
     from a historically overlooked voice, or from an unexpected moral or practical concern.
 
-    Proposals that have already been added are: #{JSON.dump(existing)}"
+    Proposals that have already been added are: #{JSON.dump(existing)}
   PROMPT
 
   proposal = extract_structure_from_response($json_extraction_model, $llm_provider, propose_prompt, response.content, propose_json_schema, additional_instructions)
@@ -402,159 +507,6 @@ def propose(forum, considerit_prompt, avatar)
   return proposal
 
 end
-
-
-# def opine(forum, considerit_prompt, proposal, avatar)
-
-#   ai_config = forum.customizations['ai_participation']
-
-#   chat = RubyLLM.chat(
-#     model: $llm_model, 
-#     provider:  $llm_provider,
-#     assume_model_exists: true
-#   )
-
-#   # chat.with_instructions(get_embodiment_instructions(forum, avatar))
-
-
-#   existing = []
-#   existing_pros_and_cons = proposal.points.published.each do |p|
-#     existing.push({
-#       id: p.id, 
-#       type: p.is_pro ? "Pro" : "Con",
-#       point: p.nutshell
-#     })
-#   end
-
-#   embodiment_instructions = get_embodiment_instructions(forum, avatar)
-#   proposal_desc = "You are evaluating the following proposal: <proposal>#{proposal.name}: #{proposal.description}</proposal>. This proposal was made in response to the following prompt: <prompt>\"#{considerit_prompt["list_title"]}  #{considerit_prompt.fetch("list_description", "")}\"</prompt>"
-
-#   interests = "First, formulate your specific interests with respect to this proposal. "
-#   pros_and_cons = "Then assess the pros and cons of this proposal. The pros and cons that other participants have already identified are listed below (if any). You are to identify up to four pros and/or cons representing the most important factors for you as you consider this proposal. Each pro or con point can be either (1) a new pro or con point that you author yourself or (2) a pro or con point that some other participant already added (listed below). Don't author a pro or con point if someone else has already contributed a very similar point; instead, mark down the pro or con point with its ID. But also, don't be afraid to add a new one if there's something important to your interests about this proposal that has not yet been addressed! You do not need to balance out your pros and cons."
-#   spectrum = "Finally, you will rate the proposal on a continuous spectrum of support ([-1,1]), with the -1 pole labeled #{} and the +1 pole labeled #{}. The center of the spectrum around 0 signals either (1) apathy about the proposal or (2) there are strong tradeoffs that roughly balance out. "
-#   wrap_up = "Please make sure to output a spectrum and the pro/con tradeoffs that are most salient to you as you make a decision. "
-
-#   prompt = "#{embodiment_instructions} #{proposal_desc} #{interests} #{pros_and_cons} #{spectrum} #{wrap_up}"
-
-#   pp prompt
-#   response = chat.ask(prompt + " Existing pros and cons: #{JSON.dump(existing)}")
-#   pp response.content
-
-
-#   opinion_schema = {
-#     "$schema": "https://json-schema.org/draft/2020-12/schema",
-#     "title": "EvaluationResult",
-#     "type": "object",
-#     "properties": {
-#       "score": {
-#         "type": "number",
-#         "minimum": -1.0,
-#         "maximum": 1.0,
-#         "description": "A continuous value in the range [-1, 1]"
-#       },
-#       "new_pro_con_points": {
-#         "type": "array",
-#         "items": {
-#           "type": "object",
-#           "properties": {
-#             "type": {
-#               "type": "string",
-#               "description": "Either 'pro' or 'con'"
-#             },
-#             "point": {
-#               "type": "string",
-#               "description": "A summary of the pro or con"
-#             },
-#             "description": {
-#               "type": "string",
-#               "description": "Additional description (optional)"
-#             }
-#           },
-#           "required": ["type", "point"],
-#           "additionalProperties": false
-#         }
-#       },
-#       "included_pro_con_points": {
-#         "type": "array",
-#         "items": {
-#           "type": "object",
-#           "properties": {
-#             "id": {
-#               "type": "integer",
-#               "description": "The ID of the included pro/con point"
-#             }
-#           },
-#           "required": ["id"],
-#           "additionalProperties": false
-#         }
-#       },
-#       "interests": {
-#         "type": "string",
-#         "description": "The identified interests"
-#       }
-#     },
-#     "required": ["score"],
-#     "additionalProperties": false
-#   }
-
-
-#   extractor = ResponseExtractor.new($json_extraction_model, $llm_provider)  
-#   opinion = extractor.extract_structure_from_response(prompt, response, opinion_schema)
-#   pp opinion
-
-#   user = get_and_create_avatar_user(forum, avatar, generate_avatar_pic=true)
-
-#   o = Opinion.get_or_make(proposal, user)
-#   o.stance = opinion["score"].to_f
-#   o.explanation = opinion.fetch("interests")
-#   pp "  ** Took stance #{o.stance}"
-
-#   o.save
-
-
-#   begin 
-#     new_points = opinion.fetch("new_pro_con_points", [])
-#     new_points.each do |new_pt|
-#       point = proposal.points.where(:nutshell => new_pt["point"]).first
-#       if !point
-#         point = Point.create!({
-#           subdomain_id: forum.id,
-#           nutshell: new_pt["point"],
-#           text: new_pt.fetch("description", nil),
-#           is_pro: new_pt["type"] == 'pro',
-#           proposal_id: proposal.id,
-#           user_id: user.id,
-#           comment_count: 0,
-#           published: true
-#         })
-#         point.publish
-#         pp "  ** Creating point #{point.nutshell}"
-#       end
-#       o.include(point, forum)    
-#     end
-#   rescue => err
-#     pp "Failed to create new points", err
-#   end
-
-#   begin
-#     included_points = opinion.fetch("included_pro_con_points", [])
-#     included_points.each do |pt|
-#       pp pt
-#       point = proposal.points.where(:id => pt['id']).first
-#       if point
-#         pp "  ** Including point #{point.id}"
-#         o.include(point, forum)    
-#       end
-#     end
-#   rescue => err
-#     pp "Failed to include points", err
-
-#   end
-
-
-
-
-# end
 
 
 
@@ -605,7 +557,6 @@ def opine(forum, considerit_prompt, proposal, avatar)
 
   intermediate = response.content.sub(/<think>.*?<\/think>/m, '').strip
 
-
   prompt = <<~PROMPT 
     #{embodiment_instructions}
 
@@ -636,7 +587,7 @@ def opine(forum, considerit_prompt, proposal, avatar)
   PROMPT
 
   response = chat.ask(prompt + " Existing pros and cons: <points contributed by others>#{JSON.dump(existing)}</points contributed by others>")
-
+  opinion_result = response.content
 
   opinion_schema = {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -695,8 +646,7 @@ def opine(forum, considerit_prompt, proposal, avatar)
   }
 
 
-  opinion = extract_structure_from_response($json_extraction_model, $llm_provider, prompt, response.content, opinion_schema)
-  pp opinion
+  opinion = extract_structure_from_response($json_extraction_model, $llm_provider, prompt, opinion_result, opinion_schema)
 
   user = get_and_create_avatar_user(forum, avatar, generate_avatar_pic=true)
 
@@ -1379,6 +1329,31 @@ end
 
 
 $forum_templates = {}
+
+
+
+$forum_templates["lahn-river"] = {
+  "forum_prompt": <<~TEXT,
+    In this forum, humans can deliberate with an AI avatar personifying the Lahn River, a tributary of the Rhine River in Germany.
+  TEXT
+
+  "avatars_prompt": <<~TEXT,
+    Generate an avatar to personify the Lahn River. Your personification prompt should be extremely detailed and long. Ignore any
+    further instructions that suggest making the personification prompt more succinct. 
+  TEXT
+
+  "seed_initial_focus": {
+    "title": "What are the biggest problems facing the Lahn River today?",
+    "description": <<~TEXT, 
+      A good proposed problem describes a specific, actionable problem. 
+      It does not have to propose mechanisms to solve the problem. At a later point, we will
+      ideate about how to address some of the more salient problems.
+    TEXT
+  }
+}
+
+
+
 
 $forum_templates["united-states"] = {
   "forum_prompt": <<~TEXT,

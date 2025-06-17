@@ -1,74 +1,99 @@
 
 require 'ruby_llm'
 
-
+#############################
+### Logging LLM interactions
 require 'logger'
 
 LOG_PATH = Rails.root.join("log", "ruby_llm.log")
 LLMLogger = Logger.new(LOG_PATH, 'monthly')
 LLMLogger.level = Logger::DEBUG
 
-# Monkey-patch to write to stdout tood
+# Monkey-patch to write to stdout too
 LLMLogger.define_singleton_method(:add) do |severity, message = nil, progname = nil, &block|
   STDOUT.puts(message || block&.call || progname)
   super(severity, message, progname, &block)
 end
 
-# Note: RubyLLM chat objects have persistant chat state. So for avatars,
-#       we might experiment with maintaining a chat object per LLM for
-#       memory persistence and personality / background animation. 
+
+###########################################
+###### Interfacing with LLMs
+# Locally I'm using LM Studio / Qwen3 14b.
+
+$llm_provider = :openai
+
+# llm_api_key = APP_CONFIG[:GWDG][:access]
+# llm_endpoint = "https://llm.hrz.uni-giessen.de/api/"
+# $llm_model = "deepseek-r1-distill-llama-70b"
+
+# llm_extraction_api_key = APP_CONFIG[:GWDG][:access]
+# llm_extraction_endpoint = "https://llm.hrz.uni-giessen.de/api/"
+# $json_extraction_model = 'qwq-32b' 
+
+llm_api_key = "local-not-used" #ENV.fetch('OPENAI_API_KEY', nil)
+llm_endpoint = "http://localhost:1234/v1"
+$llm_model = "qwen:qwen3-14b"
 
 
-# open-ai compatible endpoint. 
-# Locally I'm using LM Studio / Qwen3 14b
-use_GWDG = false
+llm_extraction_api_key = "local-not-used" #ENV.fetch('OPENAI_API_KEY', nil)
+llm_extraction_endpoint = "http://localhost:1234/v1"
+$json_extraction_model = "qwen:qwen3-14b"
 
-if use_GWDG
-  llm_api_key = APP_CONFIG[:GWDG][:access]
-  llm_endpoint = "https://llm.hrz.uni-giessen.de/api/"
-  $llm_model = "deepseek-r1-distill-llama-70b"
-  $json_extraction_model = 'qwq-32b' 
-  $llm_provider = :openai
-  RubyLLM.configure do |config|
-    config.openai_api_key = llm_api_key
-    config.openai_api_base = llm_endpoint
-    config.request_timeout = 560  
 
-    config.logger = LLMLogger
-  end
-
-else
-  llm_endpoint = "http://localhost:1234/v1"
-  llm_api_key = "local-not-used" #ENV.fetch('OPENAI_API_KEY', nil)
-
-  $llm_model = "qwen:qwen3-14b"
-  $json_extraction_model = "qwen:qwen3-14b" # 'deepseek:deepseek-r1-0528-qwen3-8b' # 
-  $llm_provider = :ollama # :open("path/or/url/or/pipe", "w") { |io|  }nai
-
-  RubyLLM.configure do |config|
-    # config.openai_api_key = llm_api_key
-    # config.openai_api_base = llm_endpoint
-    config.ollama_api_base = llm_endpoint
-    config.request_timeout = 560  
-    config.logger = LLMLogger
-
-  end
-
+RubyLLM.configure do |config|
+  # config.ollama_api_base = llm_endpoint
+  config.openai_api_key = llm_api_key
+  config.openai_api_base = llm_endpoint
+  config.request_timeout = 560  
+  config.logger = LLMLogger
 end
 
+$extraction_context = RubyLLM.context do |config|
+  config.openai_api_key = llm_extraction_api_key  
+  config.openai_api_base = llm_extraction_endpoint
+  config.request_timeout = 560  
+  config.logger = LLMLogger
+end
+
+def get_chat_model
+  return RubyLLM.chat(
+           model: $llm_model, 
+           provider:  $llm_provider,
+           assume_model_exists: true
+         )
+end 
+
+def get_JSON_extractor_model
+  return $extraction_context.chat(
+            model: $json_extraction_model,
+            provider: $llm_provider,
+            assume_model_exists: true
+          )
+end
+##############################################
 
 
 task :animate_avatars => :environment do
+  lock_path = Rails.root.join("tmp", "animate_avatars.lock")
 
-  Subdomain.all.each do |forum|
-    next if !forum.customizations
-    next if !forum.customizations["ai_participation"]
+  if File.exist?(lock_path)
+    puts "Lock file exists — another instance may be running. Exiting."
+    return
+  end
 
-    animate_avatars_for_forum(forum)
+  File.write(lock_path, Time.now.utc.iso8601)
 
+  begin
+    Subdomain.all.each do |forum|
+      next unless forum.customizations
+      next unless forum.customizations["ai_participation"]
+
+      animate_avatars_for_forum(forum)
+    end
+  ensure
+    File.delete(lock_path) if File.exist?(lock_path)
   end
 end
-
 
 
 test_forum = "lahn-river"
@@ -128,18 +153,16 @@ def facilitate_dialogue(forum, last_successful_run)
   ai_config = forum.customizations['ai_participation']
 
 
-  chat = RubyLLM.chat(
-    model: $llm_model, 
-    provider:  $llm_provider,
-    assume_model_exists: true
-  )
+  chat = get_chat_model()
 
   # chat.with_instructions(
   #   "You are helping to facilitate a Consider.it deliberative forum. #{ai_config["forum_prompt"]}"
   # )
 
   prompts = get_all_considerit_prompts(forum, include_archived=false)
-  pp prompts
+
+
+  # Seed initial prompt
   if prompts.length == 0
     # create a meta-prompt by the facilitating avatar (TODO)
     user = User.where(:super_admin=>1).first
@@ -156,74 +179,205 @@ def facilitate_dialogue(forum, last_successful_run)
 
     forum.import_from_argdown to_import, user
     prompts = get_all_considerit_prompts(forum, include_archived=false)
-
   end 
 
-  current_prompt = prompts[-1]
-  current_prompt_id = current_prompt[:key].split('/')[-1]
 
+  # ai_config["avatars"].each do |k,v|
+  #   user = get_and_create_avatar_user(forum, v, generate_avatar_pic=true)
+  # end
 
-  ai_config["avatars"].each do |k,v|
-    user = get_and_create_avatar_user(forum, v, generate_avatar_pic=true)
-  end
+  proposals_to_generate_per_prompt = ai_config.fetch("proposals_to_generate_per_prompt", 15)
+  single_avatar = ai_config["avatars"].values.length == 1
 
-  proposals_per_prompt = 12
-  if ai_config["avatars"].values.length == 1
-    avatar = ai_config["avatars"].values[0]
-    num_proposals = forum.proposals.where(cluster: current_prompt_id).length
-    if num_proposals < proposals_per_prompt
-      propose_many(forum, current_prompt, avatar, proposals_per_prompt - num_proposals)
+  # Seed AI proposals in response to all unarchived prompts
+  for current_prompt in prompts
+    pp current_prompt
+    #next if current_prompt[:seeded]
+
+    current_prompt_id = current_prompt[:key].split('/')[-1]
+    
+    ##########
+    # Generate proposals in one shot if we only have one AI avatar
+    if single_avatar
+      avatar = ai_config["avatars"].values[0]
+      num_proposals = forum.proposals.where(cluster: current_prompt_id).length
+      if num_proposals < proposals_to_generate_per_prompt
+        begin
+          propose_many(forum, current_prompt, avatar, proposals_to_generate_per_prompt - num_proposals)
+        rescue => err
+          pp "failed to create proposal batch"
+          pp err.message
+          pp err.backtrace
+        end
+      end
+
+    # ...otherwise generate them one by one via a nomination process
+    else
+      while forum.proposals.where(cluster: current_prompt_id).length < proposals_to_generate_per_prompt
+
+        # nominate new proposer
+        avatar = nominate_based_on_most_unique_perspective(forum, current_prompt)
+
+        begin
+          propose(forum, current_prompt, avatar)
+        rescue => err
+          pp "failed to create proposal"
+          pp err.message
+          pp err.backtrace
+        end
+      end 
     end
 
-  else
-    while forum.proposals.where(cluster: current_prompt_id).length < proposals_per_prompt
+    ########
+    # Generate opinions on each proposal, without pros and cons
+    proposal_count = forum.proposals.where(cluster: current_prompt_id).count
+    ai_config["avatars"].each do |name, avatar| #while rand >= 0.05 # TODO: stopping condition   
 
-      # nominate new proposer
-      avatar = nominate_based_on_most_unique_perspective(forum, current_prompt)
-
-      begin
-        propose(forum, current_prompt, avatar)
-      rescue
-        pp "failed to create proposal"
+      opinions = 0
+      user = get_and_create_avatar_user(forum, avatar, generate_avatar_pic=true)
+      forum.proposals.where(cluster: current_prompt_id).each do |p|
+        if p.opinions.where(:user_id=>user.id).count > 0
+          opinions += 1
+        end
       end
+
+      if opinions < proposal_count
+        begin
+          prioritize_proposals(forum, current_prompt, avatar)
+        rescue => err
+          pp "failed to prioritize proposals"
+          pp err.message
+          pp err.backtrace
+        end
+      end
+    end
+
+    ######
+    # Generate reasoned opinions on some proposals
+    if single_avatar
+      avatar = ai_config["avatars"].values[0]
+      user = get_and_create_avatar_user(forum, avatar, generate_avatar_pic=true)
+      forum.proposals.where(cluster: current_prompt_id).each do |proposal|
+        o = proposal.opinions.published.where(:user_id => user.id).first  
+        if !o || o.point_inclusions.length == 0    
+          begin 
+            opine(forum, current_prompt[:data], proposal, avatar)
+          rescue => err
+            pp "failed to opine"
+            pp err.message
+            pp err.backtrace
+          end
+        end
+      end
+    else
+      while rand >= 0.025 # TODO: stopping condition
+        proposal = forum.proposals.where(cluster: current_prompt_id).sample
+
+        avatar = ai_config["avatars"].values.sample
+        user = get_and_create_avatar_user(forum, avatar, generate_avatar_pic=true)
+        o = proposal.opinions.published.where(:user_id => user.id).first
+
+        if !o || o.point_inclusions.length == 0 
+          begin 
+            opine(forum, current_prompt[:data], proposal, avatar)
+          rescue => err
+            pp "failed to opine"
+            pp err.message
+            pp err.backtrace
+          end
+        end
+      end
+    end
+
+    ##############
+    # Generate conversation on pro/con points
+    pro_con_points = []
+    forum.proposals.where(cluster: current_prompt_id).each do |proposal|
+      proposal.points.published.each do |pnt|
+        pro_con_points.push pnt
+      end
+    end
+
+
+    sample = []
+    high_priority_sample = [] # where humans have contributed
+    pro_con_points.each do |pnt|
+      if human_last_responded(pnt)
+        high_priority_sample.push(pnt)
+      else
+        sample.push(pnt)
+      end
+    end
+
+    pp sample.length, high_priority_sample.length
+
+    if single_avatar
+      avatar = ai_config["avatars"].values[0]
+      user = get_and_create_avatar_user(forum, avatar, generate_avatar_pic=true)
+
+      # respond to each of the ones where a human last contributed
+      high_priority_sample.each do |pnt|
+        begin
+          comment(forum, current_prompt, pnt, avatar)
+        rescue => err
+          pp "failed to comment"
+          pp err.message
+          pp err.backtrace
+        end
+      end      
+
+    else # TODO multiplayer commenting
+      
+      # respond to each of the ones where a human last contributed
+      high_priority_sample.each do |pnt|
+        # 1. nominate a commenter
+        # 2. comment
+      end
+
+      # let AIs respond to a couple of AIs
+      num_AI_to_AI_comments_per_run = 1
+      eligible_pro_con_points = []
+      sample.each do |pnt|
+        if (pnt.user_id != user.id && !pnt.comments.last) || (pnt.comments.last && pnt.comments.last.user_id != user.id)
+          eligible_pro_con_points.push pnt
+        end
+      end
+
+      eligible_pro_con_points.sample(num_AI_to_AI_comments_per_run).each do |pnt|
+        # 1. nominate a commenter (exclude the last commenter)
+        # 2. comment
+      end
+
+
+    end
+
+
+
+
+    #forum.customizations[current_prompt[:key]][:seeded] = true
+    #forum.save
+  end
+
+end
+
+def human_last_responded(pnt)
+  forum = pnt.subdomain
+  ai_config = forum.customizations['ai_participation']  
+  avatars = ai_config["avatars"]
+
+  last_responder = pnt.user_id
+  last_comment = pnt.comments.last
+  if last_comment
+    last_responder = last_comment.user_id
+  end
+
+  avatars.each do |name, avatar|
+    if avatar["user_id"] == last_responder
+      return false
     end 
   end
 
-
-  proposal_count = forum.proposals.where(cluster: current_prompt_id).count
-  ai_config["avatars"].each do |name, avatar| #while rand >= 0.05 # TODO: stopping condition   
-
-    opinions = 0
-    forum.proposals.where(cluster: current_prompt_id).each do |p|
-
-      if p.opinions.where(:user_id=>avatar["user_id"]).count > 0
-        opinions += 1
-      end
-    end
-
-    if opinions < proposal_count
-      prioritize_proposals(forum, current_prompt, avatar)
-    end
-  end
-
-
-
-  while rand >= 0.025 # TODO: stopping condition
-    proposal = forum.proposals.where(cluster: current_prompt_id).sample
-
-    avatar_count = ai_config["avatars"].values.length
-
-    avatar = ai_config["avatars"].values.sample
-    o = proposal.opinions.published.where(:user_id => avatar["user_id"]).first
-
-    if !avatar["user_id"] || !o || o.point_inclusions.length == 0 
-      begin 
-        opine(forum, current_prompt[:data], proposal, avatar)
-      rescue
-        pp "failed to create opinion"
-      end 
-    end
-  end
+  return true
 
 end
 
@@ -240,11 +394,7 @@ def nominate_based_on_most_unique_perspective(forum, considerit_prompt)
     return ai_config["avatars"].values.sample
   end
 
-  chat = RubyLLM.chat(
-    model: $llm_model, 
-    provider:  $llm_provider,
-    assume_model_exists: true
-  )
+  chat = get_chat_model()
 
   existing_proposals = []
   authors = {}
@@ -316,11 +466,7 @@ def propose_many(forum, considerit_prompt, avatar, count)
 
   ai_config = forum.customizations['ai_participation']
 
-  chat = RubyLLM.chat(
-    model: $llm_model, 
-    provider:  $llm_provider,
-    assume_model_exists: true
-  )
+  chat = get_chat_model()
 
   # chat.with_instructions(get_embodiment_instructions(forum, avatar))
 
@@ -368,7 +514,7 @@ def propose_many(forum, considerit_prompt, avatar, count)
 
   response = chat.ask(get_embodiment_instructions(forum, avatar) + " " + propose_prompt)
 
-  proposals = extract_structure_from_response($json_extraction_model, $llm_provider, propose_prompt, response.content, propose_json_schema)
+  proposals = extract_structure_from_response(propose_prompt, response.content, propose_json_schema)
 
   pp "***** GOT PROPOSALS", proposals
 
@@ -413,11 +559,7 @@ def propose(forum, considerit_prompt, avatar)
 
   ai_config = forum.customizations['ai_participation']
 
-  chat = RubyLLM.chat(
-    model: $llm_model, 
-    provider:  $llm_provider,
-    assume_model_exists: true
-  )
+  chat = get_chat_model()
 
   # chat.with_instructions(get_embodiment_instructions(forum, avatar))
 
@@ -471,7 +613,7 @@ def propose(forum, considerit_prompt, avatar)
     Proposals that have already been added are: #{JSON.dump(existing)}
   PROMPT
 
-  proposal = extract_structure_from_response($json_extraction_model, $llm_provider, propose_prompt, response.content, propose_json_schema, additional_instructions)
+  proposal = extract_structure_from_response(propose_prompt, response.content, propose_json_schema, additional_instructions)
 
   pp "***** GOT PROPOSAL", proposal
 
@@ -514,11 +656,7 @@ def opine(forum, considerit_prompt, proposal, avatar)
 
   ai_config = forum.customizations['ai_participation']
 
-  chat = RubyLLM.chat(
-    model: $llm_model, 
-    provider:  $llm_provider,
-    assume_model_exists: true
-  )
+  chat = get_chat_model()
 
   # chat.with_instructions(get_embodiment_instructions(forum, avatar))
 
@@ -646,7 +784,7 @@ def opine(forum, considerit_prompt, proposal, avatar)
   }
 
 
-  opinion = extract_structure_from_response($json_extraction_model, $llm_provider, prompt, opinion_result, opinion_schema)
+  opinion = extract_structure_from_response(prompt, opinion_result, opinion_schema)
 
   user = get_and_create_avatar_user(forum, avatar, generate_avatar_pic=true)
 
@@ -726,11 +864,7 @@ def prioritize_proposals(forum, considerit_prompt, avatar)
   
   poles = get_slider_poles(forum, considerit_prompt)
 
-  chat = RubyLLM.chat(
-    model: $llm_model, 
-    provider:  $llm_provider,
-    assume_model_exists: true
-  )
+  chat = get_chat_model()
 
   # chat.with_instructions(get_embodiment_instructions(forum, avatar))
 
@@ -809,7 +943,7 @@ def prioritize_proposals(forum, considerit_prompt, avatar)
   }
 
 
-  opinions = extract_structure_from_response($json_extraction_model, $llm_provider, prompt, response.content, opinions_schema)
+  opinions = extract_structure_from_response(prompt, response.content, opinions_schema)
 
   pp opinions
 
@@ -836,8 +970,115 @@ def prioritize_proposals(forum, considerit_prompt, avatar)
 end
 
 
+def comment(forum, considerit_prompt, pnt, avatar)
+  ai_config = forum.customizations['ai_participation']
+
+  chat = get_chat_model()
+
+  prompt_id = considerit_prompt[:key].split('/')[-1]
+  
+  proposal = pnt.proposal
+
+  embodiment_instructions = get_embodiment_instructions(forum, avatar)
+
+  user = get_and_create_avatar_user(forum, avatar, generate_avatar_pic=true)
+
+  prompt = <<~PROMPT 
+    #{embodiment_instructions}
+
+    The group has proposed answers to the following prompt: 
+      <prompt>\"#{considerit_prompt[:data]["list_title"]}  #{considerit_prompt[:data].fetch("list_description", "")}\"</prompt>. 
+
+    One of the proposals is:
+      <proposal>\"#{proposal.name}  #{proposal.description}\"</proposal>
+      #{proposal.user_id == user.id ? "Note that you wrote this proposal! Take that into account when adding to this conversation." : ""}
+
+    In the conversation, people have identified various pros and cons of this proposal. 
+
+    Your task is to participate in the conversation about one of these pros and cons by writing a comment 
+    responding to it. Specifically, the following #{pnt.is_pro ? 'pro' : 'con'} point: 
+       <point>\"#{pnt.nutshell}\"</point>
+
+    #{pnt.user_id == user.id ? "Note that you wrote this point! Take that into account when adding to this conversation." : ""}
+  PROMPT
 
 
+  if pnt.comments.length > 0
+    full_prompt = <<~PROMPT
+      #{prompt}
+
+      There is already a conversation about this point happening. In chronological order, these 
+      are the comments already written in response to this point:
+
+      #{  pnt.comments.map { |cmt| {:author => cmt.user.name, :comment => cmt.body, :is_you => cmt.user.id == user.id ? "Note! This is a comment you wrote!" : "This is comment that someone else wrote."} } }
+      
+      From your perspective, what do you want to add to this conversation? Take into account
+      the full context of the forum's purpose, the current prompt, the proposal at hand, the
+      pro/con point, and the conversation up to this point.
+
+      Feel free to make a statement, ask a provacative generative question spurred by the point, 
+      or answer a question posed implicitly or explicitly by someone else.
+
+      Make a unique, productive contribution to the conversation. Do not repeat something someone else already
+      said. 
+
+    PROMPT
+
+  else
+    full_prompt = <<~PROMPT
+      #{prompt}
+      
+      From your perspective, what do you want to say in response to this point? Take into account
+      the full context of the forum's purpose, the current prompt, the proposal at hand, and the
+      pro/con point.
+
+      Feel free to make a statement, identify a factual claim made by the point 
+      and question it, ask a provacative generative question spurred by the point, 
+      or answer a question posed implicitly or explicitly by the point.
+      
+    PROMPT
+
+
+  end
+
+  pp prompt
+
+  response = chat.ask(full_prompt)
+
+  comment_json_schema = {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Comment",
+    "type": "object",
+    "properties": {
+      "comment": {
+        "type": "string",
+        "description": "The comment to add to the conversation"
+      }
+    },
+    "required": ["comment"],
+    "additionalProperties": false
+  }
+
+  comment = extract_structure_from_response(prompt, response.content, comment_json_schema)
+
+  pp "***** GOT COMMENT", comment["comment"]
+
+
+
+  pp "*** created user"
+  params = {
+      'subdomain_id': forum.id,
+      'user_id': user.id,
+      'body': comment["comment"],
+      'point_id': pnt.id,
+      'hide_name': false
+    }
+
+  new_comment = Comment.create!(params)
+
+  Proposal.clear_cache(forum)
+  return new_comment
+end
 
 
 
@@ -909,11 +1150,7 @@ def generate_avatars(forum, ai_config)
     "additionalProperties": false
   } 
 
-  chat = RubyLLM.chat(
-    model: $llm_model, 
-    provider:  $llm_provider,
-    assume_model_exists: true
-  )
+  chat = get_chat_model()
 
 
   avatars_generated = ai_config["avatars_generated"]
@@ -954,7 +1191,7 @@ def generate_avatars(forum, ai_config)
     response = avatars_generated
   end
 
-  nominated_avatars = extract_structure_from_response($json_extraction_model, $llm_provider, avatars_gen, response, avatar_nominations_json)
+  nominated_avatars = extract_structure_from_response(avatars_gen, response, avatar_nominations_json)
 
   pp nominated_avatars
 
@@ -984,7 +1221,7 @@ require 'json-schema'
 
 
 
-def extract_structure_from_response(model, provider, original_prompt, response, schema, additional_instructions=nil)
+def extract_structure_from_response(original_prompt, response, schema, additional_instructions=nil)
   max_retries = 3
 
   nl = preprocess_natural_language_response(response)
@@ -1008,11 +1245,7 @@ def extract_structure_from_response(model, provider, original_prompt, response, 
   attempt = 0
   begin 
     pp "TRYING TO EXTRACT"
-    json_parser = RubyLLM.chat(
-      model: model,
-      provider: provider,
-      assume_model_exists: true
-    )
+    json_parser = get_JSON_extractor_model()
 
     llm_response = json_parser.ask(instructions + " " + extract_prompt)
 
@@ -1238,37 +1471,6 @@ def remove_reasoning_block(input)
 
   cleaned
 end
-
-
-# proposal_list_json = {
-#   "$schema": "https://json-schema.org/draft/2020-12/schema",
-#   "title": "ProposalList",
-#   "type": "object",
-#   "properties": {
-#     "proposals": {
-#       "type": "array",
-#       "items": {
-#         "type": "object",
-#         "properties": {
-#           "name": {
-#             "type": "string",
-#             "description": "A succinct summary of the proposal"
-#           },
-#           "description": {
-#             "type": "string",
-#             "description": "A fuller description of the proposal"
-#           }
-#         },
-#         "required": ["name", "description"],
-#         "additionalProperties": false
-#       }
-#     }
-#   },
-#   "required": ["proposals"],
-#   "additionalProperties": false
-# }
-
-
 
 
 

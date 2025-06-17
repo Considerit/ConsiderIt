@@ -22,11 +22,11 @@ end
 
 $llm_provider = :openai
 
-llm_api_key = APP_CONFIG[:GWDG][:access]
+llm_api_key = APP_CONFIG[:GWDG]
 llm_endpoint = "https://llm.hrz.uni-giessen.de/api/"
 $llm_model = "gemma-3-27b-it"
 
-llm_extraction_api_key = APP_CONFIG[:GWDG][:access]
+llm_extraction_api_key = APP_CONFIG[:GWDG]
 llm_extraction_endpoint = "https://llm.hrz.uni-giessen.de/api/"
 $json_extraction_model = 'gemma-3-27b-it' 
 
@@ -98,7 +98,7 @@ end
 
 
 
-test_forum = "lahn-river3"
+test_forum = "lahn-river4"
 test_template = "lahn-river"
 
 # test_forum = "willamette-river-valley"  #'united_states3'

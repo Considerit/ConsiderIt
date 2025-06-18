@@ -307,14 +307,12 @@ def facilitate_dialogue(forum, last_successful_run)
     sample = []
     high_priority_sample = [] # where humans have contributed
     pro_con_points.each do |pnt|
-      if human_last_responded(pnt)
+      if human_last_responded(pnt, last_successful_run)
         high_priority_sample.push(pnt)
       else
         sample.push(pnt)
       end
     end
-
-    pp sample.length, high_priority_sample.length
 
     if single_avatar
       avatar = ai_config["avatars"].values[0]
@@ -365,7 +363,7 @@ def facilitate_dialogue(forum, last_successful_run)
 
 end
 
-def human_last_responded(pnt)
+def human_last_responded(pnt, last_successful_run)
   forum = pnt.subdomain
   ai_config = forum.customizations['ai_participation']  
   avatars = ai_config["avatars"]
@@ -374,6 +372,10 @@ def human_last_responded(pnt)
   last_comment = pnt.comments.last
   if last_comment
     last_responder = last_comment.user_id
+  end
+
+  if (last_comment || pnt).updated_at < last_successful_run
+    return false
   end
 
   avatars.each do |name, avatar|
@@ -1115,7 +1117,7 @@ def comment(forum, considerit_prompt, pnt, avatar)
 
   pp "***** GOT COMMENT", comment["comment"]
 
-  if comment.downcase == 'NO COMMENT'
+  if comment.fetch("comment", "NO COMMENT") == 'NO COMMENT'
     return nil
   end
 

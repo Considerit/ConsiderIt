@@ -1064,6 +1064,11 @@ def comment(forum, considerit_prompt, pnt, avatar)
       Make a unique, productive contribution to the conversation. Do not repeat something someone else already
       said. 
 
+      Be attuned to the flow of the conversation. Sense when the exchange has reached a natural pause—when ideas have settled, 
+      when the human’s responses signal reflection, closure, or diminishing engagement. Do not rush to conclude, but 
+      recognize when continued elaboration may no longer serve. When the moment feels complete, you may bring the dialogue to a 
+      close in a manner appropriate to your persona. 
+
     PROMPT
 
   else

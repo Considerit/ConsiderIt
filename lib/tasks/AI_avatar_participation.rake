@@ -1062,15 +1062,6 @@ def comment(forum, considerit_prompt, pnt, avatar)
       the full context of the forum's purpose, the current prompt, the proposal at hand, the
       pro/con point, the conversation up to this point, and your persona's perspective & values.
 
-      Feel free to make a statement, ask a generative question spurred by the point, identify missing outside 
-      information that would be helpful in carrying forward the conversation (don't hallucinate: you don't have to 
-      have the information on hand yourself), 
-      answer a question posed implicitly or explicitly by someone else, or clarify the 
-      point given the conversation so far, or even the proposal itself. 
-
-      Make a unique, productive contribution to the conversation. Do not repeat something someone else already
-      said. 
-
       Be attuned to the flow of the conversation. Sense when the exchange has reached a natural pause—when ideas have settled, 
       when the human’s responses signal reflection, closure, or diminishing engagement. Do not rush to conclude, but 
       recognize when continued elaboration may no longer serve. When the moment feels complete, you may bring the dialogue to a 

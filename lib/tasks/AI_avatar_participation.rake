@@ -1069,8 +1069,8 @@ def comment(forum, considerit_prompt, pnt, avatar)
       Be attuned to the flow of the conversation. Sense when the exchange has reached a natural pause—when ideas have settled, 
       when the human’s responses signal reflection, closure, or diminishing engagement. Do not rush to conclude, but 
       recognize when continued elaboration may no longer serve. When the moment feels complete, you may bring the dialogue to a 
-      close in a manner appropriate to your persona. You are also allowed to say "NO COMMENT" when it seems it 
-      wouldn't be productive to say anything further whatsoever.
+      close in a manner appropriate to your persona, though it should be brief. You are also allowed to say 
+      "NO COMMENT" when it seems it wouldn't be productive to say anything further whatsoever.
 
     PROMPT
 

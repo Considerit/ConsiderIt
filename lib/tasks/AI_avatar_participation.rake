@@ -714,9 +714,11 @@ def opine(forum, considerit_prompt, proposal, avatar)
 
     First, formulate your specific interests with respect to this #{item_name(considerit_prompt)}.
 
+    Then give an initial rating: are you broadly positive, negative, or neutral? 
+
     Then assess the pros and cons of this #{item_name(considerit_prompt)}. 
 
-    Note that pros and cons are with respect to  the relevance and quality of the #{item_name(considerit_prompt)} 
+    Note that pros and cons are with respect to the relevance and quality of the #{item_name(considerit_prompt)} 
     in response to the prompt. For example, if the prompt is asking for problems being faced, pro/con points should 
     be about the relevance and severity of that problem statement, not the drawbacks of the problem existing itself
     (e.g. a con point might be something like "this problem isn't high priority because if we fix this other problem, 
@@ -726,8 +728,11 @@ def opine(forum, considerit_prompt, proposal, avatar)
 
     You are to identify up to four pros and/or cons representing 
     the most important factors for you as you consider this #{item_name(considerit_prompt)}. You do not need to balance your pros and 
-    cons: you can have 4 pros if you want, for example. Or just one con and no pros. Please make sure 
-    to output up to four pro/con tradeoffs that are most salient to you as you deliberate.
+    cons: you can have 4 pros if you want, for example. Or just one con and no pros. However, if you are broadly positive
+    you should likely have at least one Pro point, and if you are broadly negative you should have at least one Con point.
+
+    Please make sure to output up to four pro/con tradeoffs that are most salient to you as you deliberate.
+
 
     #{proposal.user_id == user.id ? "Note that you wrote this proposal! Take that into account when writing you pros and cons." : ""}    
   PROMPT

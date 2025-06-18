@@ -517,8 +517,12 @@ def propose_many(forum, considerit_prompt, avatar, count)
   propose_prompt = <<~PROMPT
     Please propose exactly #{count} distict answers to this prompt: \"#{considerit_prompt[:data]["list_title"]}  #{considerit_prompt[:data].fetch("list_description", "")}\"   
 
-    Each proposal should give a name and a description. Each name should be direct and simple;  
-    Don't make the name clever, academic, or sweeping (e.g. do not use colonic titles!).
+    Your answer should give a name and a more extended description. 
+
+    The name is a summary of the main point of the proposal. It should be direct and understandable 
+    and less than 150 characters in length. Don't make the name clever, academic, or sweeping 
+    (e.g. do not use colonic titles!). Write the name so a high-schooler could understand it. 
+    Do not use *any* punctuation in the name.
 
     Each proposal should be novel compared to the others. A novel proposal isn't just different — it brings 
     up a **new framing, problem, or solution pathway** that the existing proposals have not touched at all. 
@@ -610,8 +614,12 @@ def propose(forum, considerit_prompt, avatar)
   propose_prompt = <<~PROMPT
     Please give one answer to this prompt: \"#{considerit_prompt[:data]["list_title"]}  #{considerit_prompt[:data].fetch("list_description", "")}\"   
 
-    Your answer should give a name and a description. The name should be direct and simple;  
-    Don't make the name clever, academic, or sweeping (e.g. do not use colonic titles!).
+    Your answer should give a name and a more extended description. 
+
+    The name is a summary of the main point of the proposal. It should be direct and understandable 
+    and less than 150 characters in length. Don't make the name clever, academic, or sweeping 
+    (e.g. do not use colonic titles!). Write it so a high-schooler could understand it. 
+    Do not use *any* punctuation.
   PROMPT
 
 
@@ -665,6 +673,9 @@ def propose(forum, considerit_prompt, avatar)
 end
 
 
+def item_name(considerit_prompt)
+  return "#{considerit_prompt.fetch("list_item_name", "Proposal")} Statement"
+end
 
 def opine(forum, considerit_prompt, proposal, avatar)
 
@@ -692,17 +703,29 @@ def opine(forum, considerit_prompt, proposal, avatar)
   prompt = <<~PROMPT 
     #{embodiment_instructions}
 
-    You are evaluating the following proposal: <proposal>#{proposal.name}: #{proposal.description}</proposal>. 
-    This proposal was made in response to the following prompt: 
+    The group has been prompted to propose responses to the following prompt: 
          <prompt>\"#{considerit_prompt["list_title"]}  #{considerit_prompt.fetch("list_description", "")}\"</prompt>
 
+    You are evaluating the following #{item_name(considerit_prompt)} that responds to that prompt: 
+         <proposal>#{proposal.name}: #{proposal.description}</proposal>. 
 
-    First, formulate your specific interests with respect to this proposal.
-    Then assess the pros and cons of this proposal. You are to identify up to four pros and/or cons representing 
-    the most important factors for you as you consider this proposal. You do not need to balance your pros and cons: 
-    you can have 4 pros if you want, for example. Or just one con and no pros.
 
-    Please make sure to output up to four pro/con tradeoffs that are most salient to you as you make a decision.
+    First, formulate your specific interests with respect to this #{item_name(considerit_prompt)}.
+
+    Then assess the pros and cons of this #{item_name(considerit_prompt)}. 
+
+    Note that pros and cons are with respect to  the relevance and quality of the #{item_name(considerit_prompt)} 
+    in response to the prompt. For example, if the prompt is asking for problems being faced, pro/con points should 
+    be about the relevance and severity of that problem statement, not the drawbacks of the problem existing itself
+    (e.g. a con point might be something like "this problem isn't high priority because if we fix this other problem, 
+    this problem will dissolve", whereas a pro point might be something like "This is a severe problem that is 
+    causing all kinds of downstream issues"). If however, the prompt is asking for ideas to solve a problem, then you
+    will be generating pros and cons of the idea itself.
+
+    You are to identify up to four pros and/or cons representing 
+    the most important factors for you as you consider this #{item_name(considerit_prompt)}. You do not need to balance your pros and 
+    cons: you can have 4 pros if you want, for example. Or just one con and no pros. Please make sure 
+    to output up to four pro/con tradeoffs that are most salient to you as you deliberate.
 
     #{proposal.user_id == user.id ? "Note that you wrote this proposal! Take that into account when writing you pros and cons." : ""}    
   PROMPT
@@ -714,9 +737,11 @@ def opine(forum, considerit_prompt, proposal, avatar)
   prompt = <<~PROMPT 
     #{embodiment_instructions}
 
-    You are evaluating the following proposal: <proposal>#{proposal.name}: #{proposal.description}</proposal>. 
-    This proposal was made in response to the following prompt: 
+    The group has been prompted to propose responses to the following prompt: 
          <prompt>\"#{considerit_prompt["list_title"]}  #{considerit_prompt.fetch("list_description", "")}\"</prompt>
+
+    You are evaluating the following proposal that responds to that prompt: 
+         <proposal>#{proposal.name}: #{proposal.description}</proposal>. 
 
     You have already articulated your interests and authored some pro and con statements: 
       <interests and authored pros+cons>#{intermediate}</interests and authored pros+cons>. 
@@ -1028,10 +1053,13 @@ def comment(forum, considerit_prompt, pnt, avatar)
       
       From your perspective, what do you want to add to this conversation? Take into account
       the full context of the forum's purpose, the current prompt, the proposal at hand, the
-      pro/con point, and the conversation up to this point.
+      pro/con point, the conversation up to this point, and your persona's perspective & values.
 
-      Feel free to make a statement, ask a provacative generative question spurred by the point, 
-      or answer a question posed implicitly or explicitly by someone else.
+      Feel free to make a statement, ask a generative question spurred by the point, identify missing outside 
+      information that would be helpful in carrying forward the conversation (don't hallucinate: you don't have to 
+      have the information on hand yourself), 
+      answer a question posed implicitly or explicitly by someone else, or clarify the 
+      point given the conversation so far, or even the proposal itself. 
 
       Make a unique, productive contribution to the conversation. Do not repeat something someone else already
       said. 
@@ -1043,12 +1071,16 @@ def comment(forum, considerit_prompt, pnt, avatar)
       #{prompt}
       
       From your perspective, what do you want to say in response to this point? Take into account
-      the full context of the forum's purpose, the current prompt, the proposal at hand, and the
-      pro/con point.
+      the full context of the forum's purpose, the current prompt, the proposal at hand, the
+      pro/con point, and your persona's perspective/values.
 
       Feel free to make a statement, identify a factual claim made by the point 
       and question it, ask a provacative generative question spurred by the point, 
-      or answer a question posed implicitly or explicitly by the point.
+      answer a question posed implicitly or explicitly by the point, identify missing outside 
+      information that would be helpful in carrying forward the conversation  (don't hallucinate: you don't have to 
+      have the information on hand yourself), or to help try to 
+      clarify the point, its relevance to the proposal, or even clarifications of the 
+      proposal itself. 
       
     PROMPT
 

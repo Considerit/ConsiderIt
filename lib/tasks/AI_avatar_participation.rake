@@ -198,7 +198,7 @@ def facilitate_dialogue(forum, last_successful_run)
   #   user = get_and_create_avatar_user(forum, v, generate_avatar_pic=true)
   # end
 
-  proposals_to_generate_per_prompt = ai_config.fetch("proposals_to_generate_per_prompt", 12)
+  proposals_to_generate_per_prompt = ai_config.fetch("proposals_to_generate_per_prompt", 8)
   single_avatar = ai_config["avatars"].values.length == 1
 
   # Seed AI proposals in response to all unarchived prompts

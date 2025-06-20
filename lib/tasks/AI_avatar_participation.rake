@@ -188,7 +188,6 @@ def facilitate_dialogue(forum, last_successful_run)
       to_import.push "[#{first_prompt["title"]}]{\"list_description\": \"#{first_prompt.fetch("description","")}\", \"slider_pole_labels\": {\"oppose\": \"lower priority\", \"support\": \"higher priority\"}}"
     end 
 
-
     forum.import_from_argdown to_import, user
     prompts = get_all_considerit_prompts(forum, include_archived=false)
   end 
@@ -387,9 +386,10 @@ def human_last_responded(pnt, last_successful_run)
     last_responder = last_comment.user_id
   end
 
-  if (last_comment || pnt).updated_at < last_successful_run
-    return false
-  end
+  # A problematic way to allow AI to choose NOT to respond to a comment thread
+  # if (last_comment || pnt).updated_at < last_successful_run
+  #   return false
+  # end
 
   avatars.each do |name, avatar|
     if avatar["user_id"] == last_responder

@@ -1587,6 +1587,8 @@ def get_and_create_avatar_user(forum, avatar, generate_avatar_pic=true)
     end
   end
 
+  user.add_to_active_in(forum)
+
   return user
 end
 

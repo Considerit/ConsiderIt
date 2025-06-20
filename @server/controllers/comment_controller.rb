@@ -62,6 +62,8 @@ class CommentController < ApplicationController
 
       current_user.update_subscription_key(point.proposal.key, 'watched', :force => false)
       dirty_key "/current_user"
+
+      Proposal.clear_cache(current_subdomain)
       
     else 
       result = {key: params[:key], errors: ['Comment could not be saved']}

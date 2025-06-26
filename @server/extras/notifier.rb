@@ -111,9 +111,9 @@ module Notifier
   end
 
 
-  def self.notify_parties(event_type, event_object, digest_object = nil)
+  def self.notify_parties(event_type, event_object, digest_object = nil, subdomain=nil)
     digest_object ||= Notifier.infer_digest_object(event_object, event_type)
-    subdomain = current_subdomain
+    subdomain ||= current_subdomain
     protagonist = event_object.user
     caller = DEBUG ? Notifier : Notifier.delay
     caller.notify_parties_offline(event_type, 

@@ -150,7 +150,10 @@ class SubdomainController < ApplicationController
               }
             })
             if img 
-              proposal.pic = URI.open(img)
+              begin
+                proposal.pic = URI.open(img)
+              rescue
+              end
             end
             proposal.save
 

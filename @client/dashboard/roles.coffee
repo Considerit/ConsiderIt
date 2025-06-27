@@ -704,7 +704,7 @@ UserWithRole = (user_key, on_remove_from_role) ->
       display: 'inline-block'
       padding: '6px 4px 6px 12px'
       fontSize: 13
-      backgroundColor: '#ddd' #'rgb(217, 227, 244)'
+      backgroundColor: '#ddd' 
       color: 'black'
       borderRadius: 8
       margin: 4

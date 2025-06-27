@@ -790,7 +790,7 @@ OpinionViews = ReactiveComponent
               style: 
                 left: "calc(50% - 15px)"
                 bottom: -29
-              dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="rgb(182,182,182)"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
+              dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="#B5B5B5"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
 
       }
     ]
@@ -1062,7 +1062,7 @@ window.OpinionViewInteractionWrapper = ReactiveComponent
 
               DIV 
                 style: 
-                  border: '1px solid #B6B6B6'
+                  border: '1px solid #B5B5B5'
                   borderRadius: 8
                   width: 'fit-content'
                   maxWidth: if width then width
@@ -1834,7 +1834,6 @@ styles += """
 
   .minimized_view {
     color: #{focus_blue};
-    /* border: 1px solid #2478cc; */
     background-color: #e9edfb;
     width: fit-content;
     position: relative;

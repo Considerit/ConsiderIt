@@ -248,7 +248,7 @@ window.DataDash = ReactiveComponent
 
 
         if @local.errors && @local.errors.length > 0
-          DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: '#FFE2E2'}, 
+          DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: '#FFD8D8'}, 
             H1 style: {fontSize: 18}, 'Ooops! There are errors in the uploaded files:'
             for error in @local.errors
               DIV style: {marginTop: 10}, error

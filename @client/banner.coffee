@@ -1642,7 +1642,7 @@ window.HawaiiHeader = (opts) ->
           HomepageTabs
             tab_style: opts.tab_style
             tab_wrapper_style: _.defaults {}, opts.tab_wrapper_style or {},
-              backgroundColor: opts.tab_background_color # '#005596'
+              backgroundColor: opts.tab_background_color
               margin: '0 6px'
             active_style: _.defaults {}, opts.tab_active_style or {},
               backgroundColor: 'white'
@@ -1849,7 +1849,7 @@ window.SeattleHeader = (opts) ->
       if true
         active_style = _.defaults {}, opts.tab_active_style or {},
           opacity: 1,
-          borderColor: named_colors.teal,
+          borderColor: '#008080',
           backgroundColor: 'white'
 
         DIV
@@ -1864,7 +1864,7 @@ window.SeattleHeader = (opts) ->
             HomepageTabs
               tab_style: _.defaults {}, opts.tab_style or {},
                 padding: '10px 30px 0px 30px',
-                color: named_colors.teal,
+                color: '#008080',
                 border: '1px solid',
                 borderBottom: 'none',
                 borderColor: 'transparent',
@@ -1873,7 +1873,7 @@ window.SeattleHeader = (opts) ->
                 opacity: 0.3
               
               tab_wrapper_style: _.defaults {}, opts.tab_wrapper_style or {},
-                backgroundColor: opts.tab_background_color # '#005596'
+                backgroundColor: opts.tab_background_color
               active_style: active_style
               active_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
                 backgroundColor: opts.tab_background_color

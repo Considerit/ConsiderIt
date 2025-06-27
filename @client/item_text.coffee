@@ -41,7 +41,7 @@ styles += """
     transition: border-color 1s;
     font-size: 20px;
     font-weight: 700;
-    color: #111;    
+    color: #000;    
   }
 
   @media #{PHONE_MEDIA} {

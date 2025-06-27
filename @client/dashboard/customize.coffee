@@ -107,7 +107,7 @@ window.CustomizationsDash = ReactiveComponent
                   borderRadius: 8
                   margin: 20
                   padding: 20
-                  backgroundColor: '#FFE2E2'
+                  backgroundColor: '#FFD8D8'
 
                 H1 style: {fontSize: 18}, 'Ooops!'
 

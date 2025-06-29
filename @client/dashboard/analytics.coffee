@@ -328,7 +328,7 @@ styles += """
     border-radius: 8px;
     padding: 4px 12px;
     font-weight: 400;
-    background-color: #eaeaea;
+    background-color: #ddd;
     color: #333;
     border: 1px solid #dadada;
   }
@@ -442,7 +442,7 @@ GraphSection =
                       e.stopPropagation()
                       e.preventDefault()              
                   style: 
-                    backgroundColor: if analytics_state.segment_by == segment then focus_blue else '#eaeaea'
+                    backgroundColor: if analytics_state.segment_by == segment then focus_blue else '#ddd'
                     color: if analytics_state.segment_by == segment then 'white' else '#444'
 
                   labels?[segment] or segment

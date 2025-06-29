@@ -153,7 +153,7 @@ styles += """
 
   .LIST-fat-header-field {
     background-color: white;
-    border: 1px solid #eaeaea;
+    border: 1px solid #ddd;
     border-radius: 8px;
     outline-color: #ccc;
     line-height: 1.4;
@@ -183,7 +183,7 @@ styles += """
   }
 
   .LIST-option-block .permissions_explanation {
-    color: #A0A0A0;
+    color: #999999;
     font-weight: 400;
     margin-left: 24px;
   }
@@ -206,7 +206,7 @@ styles += """
   #edit_description .ql-editor {
     min-height: 48px;
     padding: 12px 12px;
-    border: 1px solid #eaeaea;
+    border: 1px solid #ddd;
     background-color: white;
     text-align: inherit;
   }
@@ -692,7 +692,7 @@ window.EditNewList = ReactiveComponent
 
           active_option_style: 
             color: 'black'
-            backgroundColor: '#efefef'
+            backgroundColor: '#EEEEEE'
 
 
           selection_made_callback: (option) => 

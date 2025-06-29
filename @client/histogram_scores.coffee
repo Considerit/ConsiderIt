@@ -128,7 +128,7 @@ window.AggregatedHistogram =  ReactiveComponent
       width: legend_color_size
       height: legend_color_size
       display: 'inline-block'
-      boxShadow: "0 1px 2px 0 rgba(103,103,103,0.50), inset 0 -1px 2px 0 rgba(0,0,0,0.16)"
+      boxShadow: "0 1px 2px 0 #66666680, inset 0 -1px 2px 0 rgba(0,0,0,0.16)"
     separator_inserted = false 
 
 

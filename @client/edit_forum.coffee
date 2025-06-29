@@ -62,7 +62,6 @@ window.EditForum = ReactiveComponent
             translator 'forum.edit_button', 'Edit Banner & Forum Structure'
 
     else 
-
       DIV null,
         BUTTON 
           style: 
@@ -71,20 +70,10 @@ window.EditForum = ReactiveComponent
 
           translator 'shared.done_editing', 'Done Editing Forum'
 
-
         if subdomain.errors?.length > 0
-          DIV 
+          ErrorBlock subdomain.errors, 
             style: 
-              borderRadius: 8
-              margin: 20
-              padding: 20
-              backgroundColor: '#FFD8D8'
+              marginBottom: 10
+              marginLeft: 20 
 
-            H1 style: {fontSize: 18}, 'Ooops!'
-
-            for error in subdomain.errors
-              DIV 
-                style: 
-                  marginTop: 10
-                error
 

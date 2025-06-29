@@ -53,7 +53,7 @@ window.BUBBLE_WRAP = ReactiveComponent
           padding: 8
           borderRadius: 16
           backgroundColor: considerit_gray
-          boxShadow: '#b5b5b5 0 1px 1px 0px'
+          boxShadow: '#AAAAAA 0 1px 1px 0px'
 
 
         if @props.user || @props.pic

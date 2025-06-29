@@ -105,7 +105,7 @@ ProposalDescription = ReactiveComponent
 
           DIV
             style:
-              backgroundColor: '#f9f9f9'
+              backgroundColor: '#f7f7f7'
               cursor: 'pointer'
               paddingTop: 5
               paddingBottom: 5
@@ -124,7 +124,7 @@ ProposalDescription = ReactiveComponent
         else 
           A
             style:
-              backgroundColor: '#f9f9f9'
+              backgroundColor: '#f7f7f7'
               cursor: 'pointer'
               paddingTop: 5
               paddingBottom: 5
@@ -248,7 +248,7 @@ Proposal = ReactiveComponent
         style: 
           textAlign: 'center' 
           borderRadius: '0 0 16px 16px'
-          backgroundColor: '#f9f9f9'
+          backgroundColor: '#f7f7f7'
 
         
         TechnologyByConsiderit

@@ -1,7 +1,7 @@
   
 styles += """
   .dangerzone button {
-    background-color: #c31d1d;
+    background-color: #{failure_color};
     padding: 8px 24px;
     color: white;
     font-weight: 600;
@@ -56,6 +56,10 @@ window.DataDash = ReactiveComponent
     if user_tags
       query = "?#{(v.key for v in user_tags).join('=1&')}" 
 
+
+
+    @local.errors = ["asdfasdfasdf", "asfasfasfasdf"]
+    
     DIV null,
       if !paid
         UpgradeForumButton
@@ -87,7 +91,7 @@ window.DataDash = ReactiveComponent
 
           DIV 
             style: 
-              backgroundColor: '#f2f2f2'
+              backgroundColor: '#EEEEEE'
               padding: "8px 12px"
               marginTop: 24
 
@@ -247,14 +251,17 @@ window.DataDash = ReactiveComponent
           [ @drawArgdownImport(), @drawArgdownExport() ]
 
 
+
         if @local.errors && @local.errors.length > 0
-          DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: '#FFD8D8'}, 
-            H1 style: {fontSize: 18}, 'Ooops! There are errors in the uploaded files:'
-            for error in @local.errors
-              DIV style: {marginTop: 10}, error
+
+            ErrorBlock @local.errors, 
+              heading: 'Ooops! There are errors in the uploaded files:'
+              style: 
+                marginTop: 20
+                marginLeft: 20 
 
         if @local.successes
-          DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: '#E2FFE2'}, 
+          DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: success_color}, 
             H1 style: {fontSize: 18}, 'Success! Here\'s what happened:'
             
             for table, successes of @local.successes

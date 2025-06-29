@@ -32,7 +32,7 @@ window.styles += """
   padding: 2.5em 125px 3.5em 125px;
   font-size: 16px;
   box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 0 100px rgb(255 255 255 / 40%);
-  background-color: white; /* #f1f1f1; */
+  background-color: white; /* #EEEEEE; */
   position: relative;
   border-radius: 16px;
 }

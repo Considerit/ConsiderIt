@@ -102,11 +102,11 @@ window.Homepage = ReactiveComponent
     messages = []
     phase = customization('contribution_phase')
     if phase == 'frozen'
-      messages.push {style: {backgroundColor: '#2e98c0', color: 'white'}, img: 'snowflake.png', label: translator("engage.frozen_message", "The forum host has frozen this forum so no changes can be made.")}
+      messages.push {style: {}, img: "snowflake2.png", label: translator("engage.frozen_message", "The forum host has frozen this forum so no changes can be made.")}
     else if phase == 'ideas-only'
-      messages.push {style: {backgroundColor: '#fcde04', color: 'black'}, img: 'lightning.png', label: translator("engage.ideas_only_message", "The forum host has set this forum to be ideas only. No opinions for now.")}
+      messages.push {style: {}, img: "lightning-bolt.png", label: translator("engage.ideas_only_message", "The forum host has set this forum to be ideas only. No opinions for now.")}
     else if phase == 'opinions-only'
-      messages.push {style: {backgroundColor: '#c1ccd0', color: 'black'}, img: 'magnifying_glass.png', label: translator("engage.opinions_only_message", "The forum host has set this forum to be opinions only. No new ideas for now.")}
+      messages.push {style: {}, icon: magnifying_glass_icon, label: translator("engage.opinions_only_message", "The forum host has set this forum to be opinions only. No new ideas for now.")}
 
     if customization('anonymize_everything')
       if customization('anonymize_permanently')
@@ -133,7 +133,7 @@ window.Homepage = ReactiveComponent
           """
 
 
-        messages.push {style: {backgroundColor: '#d1d08d', color: 'black'}, img: 'venetian-mask.png', label: strong_privacy}
+        messages.push {style: {}, img: 'venetian-mask.png', label: strong_privacy}
       else 
         weak_privacy = TRANSLATE
           id: "engage.anonymize_message"
@@ -147,10 +147,10 @@ window.Homepage = ReactiveComponent
           The forum host has concealed the identities of others. No one except the hosts can currently see who 
           is saying what <italic>at this time</italic>. To ensure your identity is never revealed, anonymize your opinion on each proposal using 
           the <mask> </mask> button."""
-        messages.push {style: {backgroundColor: '#b88dd1', color: 'black'}, img: 'venetian-mask.png', label: weak_privacy}
+        messages.push {style: {}, img: 'venetian-mask.png', label: weak_privacy}
 
     if customization('hide_opinions')
-      messages.push {style: {backgroundColor: '#faa199', color: 'black'}, img: 'hiding.png', label: translator("engage.hide_opinions_message", "The forum host has hidden the opinions of other participants for the time being.")}
+      messages.push {style: {}, img: 'hiding.png', label: translator("engage.hide_opinions_message", "The forum host has hidden the opinions of other participants for the time being.")}
 
     DIV 
       key: "homepage_#{subdomain.name}"      
@@ -183,7 +183,8 @@ window.Homepage = ReactiveComponent
                 DIV 
                   key: message
                   style: _.defaults {}, (message.style or {}),
-                    backgroundColor: "rgb(184 226 187)"
+                    backgroundColor: "#eee"
+                    border: "1px solid #ccc"
                     borderRadius: 12
                     padding: '4px 24px'
                     maxWidth: 700
@@ -192,20 +193,27 @@ window.Homepage = ReactiveComponent
                     display: 'flex'
                     alignItems: 'center'
                     minHeight: 44
+                    color: 'black'
                     # textAlign: 'center'
 
-                  if message.img 
+                  if message.img || message.icon
                     DIV 
                       style:
                         minWidth: 40
                         paddingRight: 36
-                      IMG 
-                        style: 
-                          maxWidth: 34
 
-                        src: "#{bus_fetch('/application').asset_host}/images/#{message.img}"
+                      if message.icon
+                        message.icon(34, 34, 'black')
+                      else
+                        IMG 
+                          style: 
+                            maxWidth: 34
+                          src: "#{bus_fetch('/application').asset_host}/images/#{message.img}"
 
-                  SPAN null,
+
+                  SPAN 
+                    style:
+                      paddingLeft: 12
                     message.label
 
               if preamble = get_page_preamble()

@@ -513,7 +513,7 @@
 #         height: @props.height + REGION_SELECTION_VERTICAL_PADDING
 #         position: 'absolute'
 #         width: selection_width
-#         backgroundColor: "rgb(246, 247, 249)"
+#         backgroundColor: "rgb(247, 247, 247)"
 #         cursor: 'pointer'
 #         left: selection_left
 #         top: -2 #- REGION_SELECTION_VERTICAL_PADDING

@@ -102,20 +102,8 @@ window.CustomizationsDash = ReactiveComponent
 
           if @local.errors
             if @local.errors && @local.errors.length > 0
-              DIV 
-                style: 
-                  borderRadius: 8
-                  margin: 20
-                  padding: 20
-                  backgroundColor: '#FFD8D8'
+              ErrorBlock(@local.errors)
 
-                H1 style: {fontSize: 18}, 'Ooops!'
-
-                for error in @local.errors
-                  DIV 
-                    style: 
-                      marginTop: 10
-                    error
 
         DIV 
           style: 

@@ -597,7 +597,7 @@ window.ItemText = ReactiveComponent
             SPAN
               key: 'yourOpinion'
               className: 'separated monospaced metadata-piece'
-              style:  {  border:'solid 1px #dddddd', borderRadius:'8px', padding:'3px 10px', backgroundColor:'#f8f8f8'  }
+              style:  {  border:'solid 1px #dddddd', borderRadius:'8px', padding:'3px 10px', backgroundColor:'#f7f7f7'  }
 
               # Edit
               if opinion_prompt
@@ -673,7 +673,7 @@ window.ItemText = ReactiveComponent
           
           closedIcon 
             size: 12
-            fill: 'rgb(158, 35, 35)'
+            fill: failure_color
 
       else if read_only
         SPAN 
@@ -684,7 +684,7 @@ window.ItemText = ReactiveComponent
 
           closedIcon 
             size: 12
-            fill: 'rgb(158, 78, 35)'
+            fill: failure_color
 
 
 
@@ -762,7 +762,7 @@ styles += """
     border-radius: 8px;
     padding: 4px 10px;
     border: 1px solid #eee;
-    box-shadow: 0 1px 1px rgba(160,160,160,.8);
+    box-shadow: 0 1px 1px #999999CC;
     white-space: nowrap;
   }
 

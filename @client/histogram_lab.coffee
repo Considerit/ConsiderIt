@@ -94,7 +94,7 @@ window.HistogramTester = ReactiveComponent
           draw_base: true
           backgrounded: false
           draw_base_labels: true
-          base_style: "2px solid #414141"
+          base_style: "2px solid #333333"
           label_style: 
             display: 'none'
 
@@ -447,7 +447,7 @@ LayoutExplorer = ReactiveComponent
       ctx.moveTo(x, y)
       ctx.lineWidth = 3
       ctx.lineTo(x2, y2)
-      ctx.strokeStyle = '#FF6666'
+      ctx.strokeStyle = considerit_red
       ctx.closePath()
       ctx.stroke()
 
@@ -461,7 +461,7 @@ LayoutExplorer = ReactiveComponent
         ctx.moveTo(x2, y2)
         ctx.lineWidth = 1
         ctx.lineTo(body.x_target, height)
-        ctx.strokeStyle = '#FF6666'
+        ctx.strokeStyle = considerit_red
         ctx.closePath()
         ctx.stroke()
 
@@ -669,7 +669,7 @@ GlobalHistTiming = ReactiveComponent
 
               TR 
                 style: 
-                  backgroundColor: if i % 2 == 1 then '#f8f8f8'
+                  backgroundColor: if i % 2 == 1 then '#f7f7f7'
 
 
                     

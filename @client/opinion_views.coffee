@@ -301,11 +301,11 @@ default_weights = ->
             <g id="Group-8" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                 <polygon id="Rectangle" stroke="#{color}" points="0 0 23 0 23 17.8367347 11.5 17.8367347 6.41522296 23 6.41522296 17.8367347 0 17.8367347"></polygon>
                 <ellipse id="Oval" fill="#{color}" cx="4.66666683" cy="8.43750016" rx="1.5333335" ry="1.43750016"></ellipse>
-                <line stroke="#{color}" x1="8.37575758" y1="8.5" x2="17.7575758" y2="8.5" id="Line-5" stroke="#979797" stroke-linecap="square"></line>
+                <line stroke="#{color}" x1="8.37777778" y1="8.5" x2="17.7777778" y2="8.5" id="Line-5" stroke="#999999" stroke-linecap="square"></line>
                 <ellipse id="Oval" fill="#{color}" cx="4.66666683" cy="3.43750016" rx="1.5333335" ry="1.43750016"></ellipse>
-                <line stroke="#{color}" x1="8.37575758" y1="3.5" x2="17.7575758" y2="3.5" id="Line-5" stroke="#979797" stroke-linecap="square"></line>
+                <line stroke="#{color}" x1="8.37777778" y1="3.5" x2="17.7777778" y2="3.5" id="Line-5" stroke="#999999" stroke-linecap="square"></line>
                 <ellipse id="Oval" fill="#{color}" cx="4.66666683" cy="13.4375002" rx="1.5333335" ry="1.43750016"></ellipse>
-                <line stroke="#{color}" x1="8.37575758" y1="13.5" x2="17.7575758" y2="13.5" id="Line-5" stroke="#979797" stroke-linecap="square"></line>
+                <line stroke="#{color}" x1="8.37777778" y1="13.5" x2="17.7777778" y2="13.5" id="Line-5" stroke="#999999" stroke-linecap="square"></line>
             </g>
           """    
     }, {
@@ -789,8 +789,8 @@ OpinionViews = ReactiveComponent
               className: 'custom_view_triangle'
               style: 
                 left: "calc(50% - 15px)"
-                bottom: -29
-              dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="#B5B5B5"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
+                bottom: -27
+              dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="#AAAAAA"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
 
       }
     ]
@@ -891,7 +891,7 @@ OpinionViews = ReactiveComponent
         onClick: toggle_expanded
         style: 
           fontSize: 12
-          color: "#868686"
+          color: "#888888"
           whiteSpace: 'nowrap'
           marginLeft: 4
 
@@ -1062,7 +1062,7 @@ window.OpinionViewInteractionWrapper = ReactiveComponent
 
               DIV 
                 style: 
-                  border: '1px solid #B5B5B5'
+                  border: '1px solid #AAAAAA'
                   borderRadius: 8
                   width: 'fit-content'
                   maxWidth: if width then width
@@ -1111,7 +1111,7 @@ InteractiveOpinionViews = ReactiveComponent
         DIV 
           className: 'opinion_view_row color_code'
           style: 
-            borderTop: '1px dotted #DEDDDD' 
+            borderTop: '1px dotted #DDDDDD' 
 
           group_by_icon()
 
@@ -1125,7 +1125,7 @@ InteractiveOpinionViews = ReactiveComponent
               maxWidth: '75%'
               marginRight: 12
               borderColor: '#bbb'
-              backgroundColor: '#f9f9f9'
+              backgroundColor: '#f7f7f7'
               borderRadius: 2
 
             onChange: (ev) -> 
@@ -1336,7 +1336,7 @@ InteractiveOpinionViews = ReactiveComponent
       DIV 
         className: 'opinion_view_row'
         style: 
-          borderTop: '1px dotted #DEDDDD' 
+          borderTop: '1px dotted #DDDDDD' 
 
         weigh_icon()
 
@@ -1726,9 +1726,9 @@ VerificationProcessExplanation = ReactiveComponent
 styles += """
 
   button.opinion_view_button {
-    border: 1px solid #E0E0E0;
+    border: 1px solid #DDDDDD;
     border-bottom-color: #aaa;
-    background-color: #F0F0F0;
+    background-color: #EEEEEE;
     // box-shadow: inset 0 -1px 1px 0 rgba(0,0,0,0.62);
     border-radius: 8px;    
     font-size: 12px;
@@ -1790,7 +1790,7 @@ styles += """
   .attribute_group {
     margin-left: 50px;
     width: 100%;
-    background-color: #F3F3F3;  
+    background-color: #EEEEEE;  
     display: flex;  
     align-items: center;      
   }
@@ -1834,12 +1834,13 @@ styles += """
 
   .minimized_view {
     color: #{focus_blue};
-    background-color: #e9edfb;
+    background-color: #{focus_blue + "22"};
     width: fit-content;
     position: relative;
     display: inline-block;
     padding: 6px 12px;
     border-radius: 8px;
+    border: 1px solid #{focus_blue + "55"};
     min-width: 200px;
   }
   .minimized_view_name {

@@ -66,6 +66,32 @@ window.ajax_submit_files_in_form = (opts) ->
 
 
 
+window.ErrorBlock = (errors, opts={}) ->
+  DIV
+    role: 'alert'
+    style: _.defaults opts.style or {}, 
+      fontSize: 18
+      color: 'white'
+      backgroundColor: failure_color
+      padding: 20
+      marginTop: 10
+
+    if opts.heading
+      H1 style: {fontSize: 18, marginBottom: 12}, opts.heading
+
+
+    for error in errors
+      UL 
+        style:
+          listStyle: "none" 
+
+        LI null, 
+          I
+            className: 'fa fa-exclamation-circle'
+            style: {paddingRight: 9, }
+
+          SPAN null, error
+
 
     
 window.pad = (num, len) -> 
@@ -413,7 +439,7 @@ styles += """
   text-align: center;
   font-size: 10px; }
   .sk-wave .sk-rect {
-    background-color: rgba(223, 98, 100, .5);
+    background-color: #{considerit_red}88;
     height: 100%;
     width: 6px;
     display: inline-block;
@@ -491,7 +517,7 @@ window.reset_key = (obj_or_key, updates) ->
 
 
 safe_string = (user_content) -> 
-  user_content = user_content.replace(/(<li>|<br\s?\/?>|<p>)/g, '\n') #add newlines
+  user_content = user_content.replace(/(<li>|<br\s?\/?>|<p>)/g, '\n') # add newlines
   user_content = user_content.replace(/(<([^>]+)>)/ig, "") #strips all tags
 
   # autolink. We'll insert a delimiter ('(*-&)') to use for splitting later.

@@ -4,7 +4,7 @@ require './translations'
 
 window.styles += """
   #EDITPROFILE label.AUTH_field_label {
-    color: #8F8F8F;
+    color: #888888;
     text-transform: uppercase;
     margin-bottom: 2px;
     margin-top: 8px;
@@ -24,6 +24,17 @@ window.styles += """
       padding: 0 18px;
     }    
   }
+
+
+  .dangerzone input[type="submit"] {
+    background-color: #{failure_color};
+    padding: 8px 24px;
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;    
+  }
+
 """
 
 
@@ -129,20 +140,12 @@ window.EditProfile = ReactiveComponent
 
         FORM 
           id: 'delete_account_form'
-          
+          className: "dangerzone"
 
           INPUT
             type: 'submit' 
             value: translator 'auth.delete_account', 'Delete your account'
             # className: 'like_link'
-            style: 
-              color: '#b74e4e'
-              fontWeight: 600
-              padding: '10px 18px'
-              borderRadius: 8
-              border: 'none'
-              backgroundColor: '#efefef'
-              boxShadow: '0 1px 2px rgba(0,0,0,.2)'
 
             onClick: (ev) =>
               ev.preventDefault()
@@ -170,21 +173,14 @@ window.EditProfile = ReactiveComponent
 
         FORM 
           id: 'delete_data_form'
-          
+          className: "dangerzone"
+          style:
+            marginTop: '16px'
 
           INPUT
             type: 'submit' 
             value: translator 'auth.delete_data', 'Delete your data on this forum'
             # className: 'like_link'
-            style: 
-              marginTop: 18
-              color: '#b74e4e'
-              fontWeight: 600
-              padding: '10px 18px'
-              borderRadius: 8
-              border: 'none'
-              backgroundColor: '#efefef'
-              boxShadow: '0 1px 2px rgba(0,0,0,.2)'
 
             onClick: (ev) =>
               ev.preventDefault()

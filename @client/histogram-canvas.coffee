@@ -504,7 +504,7 @@ window.Histogram = ReactiveComponent
         height: @props.height + REGION_SELECTION_VERTICAL_PADDING + 2
         position: 'absolute'
         width: selection_width
-        backgroundColor: "rgb(246, 247, 249)"
+        backgroundColor: "#eeeeee"
         cursor: 'pointer'
         left: selection_left
         top: -2 #- REGION_SELECTION_VERTICAL_PADDING

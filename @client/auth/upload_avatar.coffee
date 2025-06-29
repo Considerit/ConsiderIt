@@ -34,7 +34,7 @@ window.AvatarInput = ReactiveComponent
           height: 60
           width: 60
           borderRadius: '50%'
-          backgroundColor: '#e6e6e6'
+          backgroundColor: '#ddd'
           overflow: 'hidden'
           display: 'inline-block'
           marginRight: 18

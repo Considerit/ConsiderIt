@@ -239,7 +239,7 @@ window.ModerationDash = ReactiveComponent
               BUTTON 
                 "data-model": model 
                 style: 
-                  backgroundColor: if active then 'white' else '#f0f0f0'
+                  backgroundColor: if active then 'white' else '#EEEEEE'
                   color: 'black'
                   fontSize: 18
                   marginLeft: 12
@@ -593,7 +593,7 @@ ModerateItem = ReactiveComponent
           SPAN 
             className: 'moderation btn'
             style: 
-              backgroundColor: '#81c765'
+              backgroundColor: success_color
 
 
             LABEL 
@@ -611,7 +611,7 @@ ModerateItem = ReactiveComponent
           SPAN 
             className: 'moderation btn'
             style: 
-              backgroundColor: '#ffc92a'
+              backgroundColor: caution_color
 
             LABEL 
               htmlFor: "quar-#{@props.item}"
@@ -627,7 +627,7 @@ ModerateItem = ReactiveComponent
           SPAN 
             className: 'moderation btn'
             style: 
-              backgroundColor: '#f94747'
+              backgroundColor: failure_color
 
             LABEL 
               htmlFor: "fail-#{@props.item}"
@@ -649,7 +649,7 @@ ModerateItem = ReactiveComponent
               SPAN 
                 className: 'moderation btn'
                 style: 
-                  backgroundColor: '#f94747'
+                  backgroundColor: failure_color
                   minWidth: 150
                   display: 'inline-block'
 

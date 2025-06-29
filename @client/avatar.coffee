@@ -220,8 +220,8 @@ window.AvatarPopover = ReactiveComponent
                     maxWidth: 450
                     borderRadius: 16
                     padding: '0.5em 16px'
-                    backgroundColor: '#f6f7f9'
-                    boxShadow: '#b5b5b5 0 1px 1px 0px'
+                    backgroundColor: '#f7f7f7'
+                    boxShadow: '#AAAAAA 0 1px 1px 0px'
                     margin: '0px 16px 12px 16px'
 
                   SPAN 
@@ -398,7 +398,7 @@ img.avatar:after {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #f7954c; 
+  background-color: #{attention_orange}; 
   border-radius: 50%;
   content: "";
 }

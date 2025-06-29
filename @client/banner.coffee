@@ -3,7 +3,7 @@ require './tabs'
 
 
 
-window.DEFAULT_BACKGROUND_COLOR = focus_blue # "#91d8f8"
+window.DEFAULT_BACKGROUND_COLOR = focus_blue
 
 
 
@@ -148,7 +148,7 @@ styles += """
   color: rgba(0,0,0,.4);
 }
 .dark .CustomizeTitle > .banner_title::placeholder, .with-image .CustomizeTitle > .banner_title::placeholder {
-  color: rgb(255,255,255,.6);
+  color: rgba(255,255,255,.6);
 }
 """
 
@@ -834,7 +834,7 @@ CustomizeBackground = ReactiveComponent
                   value: is_light
 
                   onChange: (e) =>
-                    @local.background_css = if e.target.value == 'true' then "rgb(255,255,255)" else 'rgb(0,0,0)'
+                    @local.background_css = if e.target.value == 'true' then "#ffffff" else '#000000'
                     save @local
 
                   OPTION 
@@ -953,9 +953,9 @@ window.EditBanner = ReactiveComponent
                   is_light = is_image_mostly_light image_data, img.width, img.height
 
                   if is_light 
-                    subdomain.customizations.banner.background_css = 'rgb(255,255,255)'
+                    subdomain.customizations.banner.background_css = '#ffffff'
                   else 
-                    subdomain.customizations.banner.background_css = 'rgb(0,0,0)'
+                    subdomain.customizations.banner.background_css = '#000000'
 
                   save subdomain
 
@@ -1701,7 +1701,7 @@ window.SeattleHeader = (opts) ->
     position: 'absolute'
     top: 22
     left: 20
-    color: "#0B4D92"
+    color: focus_color()
 
 
   if !homepage
@@ -1837,7 +1837,7 @@ window.SeattleHeader = (opts) ->
           DIV 
             style: 
               marginTop: 40
-              backgroundColor: "#F06668"
+              backgroundColor: considerit_red
               color: 'white'
               fontSize: 28
               textAlign: 'center'

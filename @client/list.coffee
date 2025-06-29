@@ -114,7 +114,7 @@ window.styles += """
     border: none;
     border-radius: 16px;
     box-shadow: -1px 1px 2px rgb(0 0 0 / 15%);
-    border-top: 1px solid #f3f3f3;
+    border-top: 1px solid #EEEEEE;
   }
 
 
@@ -247,7 +247,7 @@ styles += """
     text-align: center;
     border: none;
     font-size: 22px;
-    color: #446ae3;
+    color: #{focus_blue};
     padding-top: 96px;
     margin-top: 12px;
     margin-bottom: 8px;

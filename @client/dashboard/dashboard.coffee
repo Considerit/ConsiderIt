@@ -26,8 +26,8 @@ window.styles += """
   #DASHBOARD-menu {
     /* width: 265px; */
     flex-grow: 0;
-    background: rgb(246,246,246);
-    background: linear-gradient(180deg, rgba(246,246,246,1) 88%, rgba(255,255,255,1) 100%);
+    background: rgb(247,247,247);
+    background: linear-gradient(180deg, rgba(247,247,247,1) 88%, rgba(255,255,255,1) 100%);
     padding-bottom: 70px;
     border: 1px solid #ddd;
   }

@@ -365,9 +365,9 @@ window.Point = ReactiveComponent
         else
           BUTTON 
             style: 
-              border: "1px solid #{ if included || @local.hover_important then focus_color() else '#414141'}"
+              border: "1px solid #{ if included || @local.hover_important then focus_color() else '#333333'}"
               borderTopColor: if included then focus_color() else 'transparent'
-              color: if included then 'white' else if @local.hover_important then focus_color() else "#414141"
+              color: if included then 'white' else if @local.hover_important then focus_color() else "#333333"
               position: 'relative'
               top: -13
               padding: '8px 5px'
@@ -743,7 +743,7 @@ styles += """
     border-radius: 16px;
     top: -11px;
     background-color: #{considerit_gray};
-    /* box-shadow: #b5b5b5 0 1px 1px 0px; */
+    /* box-shadow: #AAAAAA 0 1px 1px 0px; */
     min-height: 34px; 
   }
 

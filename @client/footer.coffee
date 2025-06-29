@@ -18,7 +18,7 @@ window.Footer = ReactiveComponent
 styles += """
   .footer_wrapper {
     padding: 65px 0 15px 0;
-    background-color: #4f4f4f; /* #{selected_color}; */
+    background-color: #444444; /* #{selected_color}; */
     position: relative;
     z-index: 3;
     color: white;
@@ -336,9 +336,9 @@ window.CompletionWidget = ReactiveComponent
 
     [complete, num_proposals_done, total_proposals, messages] = user_has_met_completion_criteria()
     if complete 
-      txt = completion_config.when_complete 
+      txt = completion_config?.when_complete or "You've finished!"
     else 
-      txt = completion_config.when_incomplete
+      txt = completion_config?.when_incomplete or "Not done."
 
     if typeof(txt) == 'function'
       txt = txt()
@@ -347,7 +347,7 @@ window.CompletionWidget = ReactiveComponent
 
     DIV 
       style:
-        backgroundColor: if complete then "#a41995" else "black",
+        backgroundColor: if complete then selected_color else "black",
         color: 'white',
         padding: "12px 0 8px 0"
         position: 'fixed'
@@ -387,7 +387,7 @@ window.CompletionWidget = ReactiveComponent
 
 user_has_met_completion_criteria = ->
   completion_config = customization('completion_widget')
-  completion_criteria = completion_config.completion_criteria
+  completion_criteria = completion_config?.completion_criteria
   completion_criteria ?= {}
   _.defaults completion_criteria,
       "reasons_on_all": false,

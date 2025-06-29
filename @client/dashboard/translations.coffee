@@ -82,7 +82,7 @@ IN_SITU_TRANSLATOR = ReactiveComponent
 
     SPAN 
       style: 
-        backgroundColor: if translated then "rgba(166, 195, 151, .5)" else "rgba(251,124,124,.5)"
+        backgroundColor: if translated then "#{success_color}88" else "#{failure_color}88"
         position: 'relative'
       onMouseOver: =>
         if !@local.show_translator
@@ -345,7 +345,7 @@ styles += """
 }
 
 .translation_filters button {
-  background-color: #eaeaea;
+  background-color: #ddd;
   border: none;
   border-radius: 8px;
   margin: 0 8px;
@@ -528,7 +528,7 @@ TranslationsDash = ReactiveComponent
               left: 0
               width: WINDOW_WIDTH()
               zIndex: 999
-              backgroundColor: 'rgba(220,220,220,.8)'
+              backgroundColor: '#DDDDDD'
               textAlign: 'center'
               padding: '8px'
 
@@ -777,7 +777,7 @@ TranslationsForLang = ReactiveComponent
             rows.push TR 
               key: 'header'
               style: 
-                backgroundColor: '#dfdfdf'
+                backgroundColor: '#DDDDDD'
 
 
               for col in cols
@@ -811,7 +811,7 @@ TranslationsForLang = ReactiveComponent
                 rows.push TR 
                   key: "row-id-#{name}"
                   style: 
-                    backgroundColor: if idx % 2 == 1 then '#f8f8f8'
+                    backgroundColor: if idx % 2 == 1 then '#f7f7f7'
 
                   TD 
                     style: 

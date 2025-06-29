@@ -11,8 +11,8 @@ module MailerHelper
       """
       <tr>
       <td style='background-color: #ffffff; padding: 18px 24px 24px 24px; text-align: left; box-shadow:0px 1px 2px rgba(0,0,0,.3)'>
-      <h2 style='color:#434343; text-align: left; font-size:24px; margin: 0; padding: 0; font-weight: 400'>#{section_name}</h2>
-      <div style='color: #434343; text-align: left'>
+      <h2 style='color:#444444; text-align: left; font-size:24px; margin: 0; padding: 0; font-weight: 400'>#{section_name}</h2>
+      <div style='color: #444444; text-align: left'>
       """.html_safe
     end
 
@@ -117,11 +117,11 @@ module MailerHelper
     else 
       html = ''
 
-      html += "<a style='font-weight:600;color: #439fe0;text-decoration:underline; font-size:20px;' href='#{full_link(proposal.slug, {:utm_source => 'digest'})}'>#{proposal.name.strip}</a>"
+      html += "<a style='font-weight:600;color: #518eff;text-decoration:underline; font-size:20px;' href='#{full_link(proposal.slug, {:utm_source => 'digest'})}'>#{proposal.name.strip}</a>"
       if has_relationship
         html += relationship(proposal_info[:relationship])
       end
-      html += "<div style='color:#7D7D7D;font-size:14px;'>#{by_text}</div>"
+      html += "<div style='color:#777777;font-size:14px;'>#{by_text}</div>"
       html += ""
 
       if with_events && proposal_info.key?(:events)
@@ -194,7 +194,7 @@ module MailerHelper
       else
         html += "<tr><td style='min-height: 30px; padding-top:12px;'>"
         html += facepile ev[:users]
-        html += """<div style='color:#434343;font-size:14px;'>#{event_heading}</div>""" 
+        html += """<div style='color:#444444;font-size:14px;'>#{event_heading}</div>""" 
         if ev.key?(:obj)
           if ev.key?(:relationship)
             html += point_link(ev[:obj], ev[:relationship])
@@ -230,7 +230,7 @@ module MailerHelper
       text += "\r\n#{translated_link}"
       text
     else 
-      html = """&ldquo;<a style='font-weight:600;color: #434343;text-decoration:underline; font-weight: 500; font-size:16px;' 
+      html = """&ldquo;<a style='font-weight:600;color: #444444;text-decoration:underline; font-weight: 500; font-size:16px;' 
                  href='#{full_link(point.proposal.slug, {results: true, selected: "%2Fpoint%2F#{point.id}", utm_source: 'digest'})}'>#{point.title(90)}</a>&rdquo;"""
       if relationship
         html += relationship(relationship)

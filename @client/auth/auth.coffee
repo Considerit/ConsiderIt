@@ -37,7 +37,7 @@ window.AuthCallout = ReactiveComponent
         style: 
           padding: 12
           textAlign: 'center'
-          # backgroundColor: '#f1f1f1'
+          # backgroundColor: '#EEEEEE'
         
         DIV 
           style: 
@@ -367,7 +367,7 @@ window.styles += """
     padding: 10px 14px;
     font-size: 20px;
     display: inline-block;
-    background-color: #f2f2f2;
+    background-color: #EEEEEE;
   }
 
 
@@ -567,23 +567,10 @@ window.AuthForm =
   ShowErrors: (errors) ->  
     current_user = bus_fetch '/current_user'
     errors = (current_user.errors or []).concat(@local.errors or [])
+
     return SPAN null if !errors || errors.length == 0
 
-    DIV
-      role: 'alert'
-      style:
-        fontSize: 18
-        color: 'darkred'
-        backgroundColor: '#ffD8D8'
-        padding: 10
-        marginTop: 10
-      for error in errors
-        DIV null, 
-          I
-            className: 'fa fa-exclamation-circle'
-            style: {paddingRight: 9}
-
-          SPAN null, error
+    ErrorBlock(errors)
 
 
   i18n: ->

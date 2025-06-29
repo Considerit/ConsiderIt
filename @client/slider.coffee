@@ -96,7 +96,7 @@ window.Slider = ReactiveComponent
       handle_height: 6
       base_height: 6
       base_endpoint: 'square'
-      base_color: 'rgb(200, 200, 200)'
+      base_color: '#CCCCCC'
       polarized: false
       draw_helpers: false
       respond_to_click: true
@@ -167,7 +167,7 @@ window.Slider = ReactiveComponent
         DIV 
           style: 
             height: props.base_height + 4
-            backgroundColor: "rgb(81, 142, 255)"
+            backgroundColor: "#518eff"
             boxShadow: "0 0 #{1.5 * (props.base_height + 4)}px rgb(255 255 255), 0 0 3px rgba(0,0,0,.2) inset"
             position: 'relative'
             top: -2
@@ -217,14 +217,14 @@ window.Slider = ReactiveComponent
         d =  props.width / (props.regions.length)
 
         sty = 
-          color: '#BDBDBD'
+          color: '#BBBBBB'
           fontSize: 14
 
         for region, idx in props.regions
           w = sizeWhenRendered region.abbrev, sty
           DIV 
             style: _.extend {}, sty,
-              color: '#BDBDBD'
+              color: '#BBBBBB'
               fontSize: 14
               position: 'absolute'
               left: (idx + .5) * d - w.width / 2

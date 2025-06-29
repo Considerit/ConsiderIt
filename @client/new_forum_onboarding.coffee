@@ -27,7 +27,7 @@ styles += """
 
   #NewForumOnBoarding .header_subtitle {
     font-size: 18px;
-    color: #5D5C5C;
+    color: #333333;
   }
 
   #NewForumOnBoarding ul {
@@ -51,8 +51,8 @@ styles += """
   } 
 
   #NewForumOnBoarding .onboard_item.complete .checkbox {
-    border-color: #69BD8D;
-    background-color: #69BD8D;
+    border-color: #{success_color};
+    background-color: #{success_color};
   }
 
   #NewForumOnBoarding .onboard_item.complete .checkbox:after {
@@ -67,7 +67,7 @@ styles += """
   
 
   #NewForumOnBoarding .onboard_item.incomplete .checkbox {
-    border-color: #C5C5C5;
+    border-color: #BBBBBB;
   }
 
   #NewForumOnBoarding .onboard_item .label {
@@ -180,7 +180,7 @@ window.NewForumOnBoarding = ReactiveComponent
       DIV 
         style:
           fontSize: 18
-          color: '#5D5C5C'
+          color: '#333333'
           marginTop: 36
 
         'Learn more about the '
@@ -215,7 +215,7 @@ styles += """
     position: absolute;
     width: 10px;
     height: 30px;
-    background: #ffd300;
+    background: #{attention_orange};
     top: 0;
     opacity: 0;
 }
@@ -311,7 +311,7 @@ styles += """
     animation-duration: 818ms;
 }
 .confetti-piece:nth-child(odd) {
-    background: #7431e8;
+    background: #{focus_blue};
 }
 .confetti-piece:nth-child(even) {
     z-index: 1;
@@ -328,7 +328,7 @@ styles += """
     animation-delay: 1000ms;
 }
 .confetti-piece:nth-child(4n-7) {
-  background: red;
+  background: #{failure_color};
 }
 @keyframes makeItRain {
     from {opacity: 0;}

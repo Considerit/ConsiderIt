@@ -22,7 +22,7 @@ styles += """
   }
 
   #flash.error {
-    background-color: rgba(216, 62, 62, 0.9);
+    background-color: #{failure_color + "EE"};
   }
 
   #flash .flash-message {

@@ -106,7 +106,7 @@ window.Header = ReactiveComponent
         DIV 
           style: 
             backgroundColor: '#eee'
-            color: '#f00'
+            color: failure_color
             padding: '5px 20px'
             display: if root.server_error then 'block' else 'none'
 

@@ -389,7 +389,7 @@ styles += """
 
 #     drop_area_style = _.defaults {}, @props.drop_area_style, 
 #       position: 'absolute'
-#       border: '1px solid #979797'
+#       border: '1px solid #999999'
 #       boxShadow: '0px 1px 2px rgba(0,0,0,.2)'
 #       borderRadius: 8
 #       padding: "12px 24px 24px 24px"

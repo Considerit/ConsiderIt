@@ -16,7 +16,7 @@ styles += """
 
 .meanie-header {
   font-weight: bold;
-  background-color: #f2f2f2;
+  background-color: #EEEEEE;
   border: 1px solid #ccc;
 }
 

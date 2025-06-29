@@ -6,7 +6,7 @@ window.STAGE2_DELAY = ANIMATION_SPEED_ITEM_EXPANSION * 1.5
 window.STAGE3_DELAY = ANIMATION_SPEED_ITEM_EXPANSION * .5
 
 # window.PROPOSAL_ITEM_SPRING = # 4000 / 800 is decent
-#   stiffness: 4000  #600
+#   stiffness: 4000  # 600
 #   damping: 800
 
 window.PROPOSAL_ITEM_SPRING = { stiffness: 130, damping: 17 } # 'gentle'
@@ -318,7 +318,7 @@ styles += """
     position: absolute;
     top: 3px;
     cursor: pointer;
-    background-color: #e5e7ed;
+    background-color: #{focus_color()};
     border: none;
     opacity: 0;     
     padding: 7px 13px 95px 96px;   
@@ -539,7 +539,7 @@ ProposalItemWrapper = ReactiveComponent
                 toggle_expand
                   proposal: bus_fetch @props.proposal
 
-            iconX(22, '#888888')
+            iconX(22, '#ffffff')
 
 
 

@@ -122,23 +122,10 @@ window.EditComment = ReactiveComponent
 
       if @local.errors?.length > 0
         
-        DIV
-          role: 'alert'
-          style:
-            fontSize: 18
-            color: 'darkred'
-            backgroundColor: '#ffD8D8'
-            padding: 10
-            marginTop: 10
+        ErrorBlock @local.errors, 
+          style: 
             marginBottom: 10
             marginLeft: 60 
-          for error in @local.errors
-            DIV null, 
-              I
-                className: 'fa fa-exclamation-circle'
-                style: {paddingRight: 9}
-
-              SPAN null, error
 
       if permitted > 0
 

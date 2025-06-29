@@ -783,7 +783,7 @@ window.DecisionBoard = ReactiveComponent
             DIV 
               style: 
                 textAlign: 'center'
-                color: '#383838'
+                color: '#333333'
                 margin: "16px 0 4px 0"
                 fontSize: 14
                 fontWeight: 300
@@ -1495,7 +1495,7 @@ window.PointsList = ReactiveComponent
         apex_xfrac: 0
         width: POINT_MOUTH_WIDTH
         height: POINT_MOUTH_WIDTH
-        fill: '#F9FBFD'  #TODO: somehow make this focus_color() color mixed with white @ .2 opacity
+        fill:  '#FFFFFF'  #TODO: somehow make this focus_color() color mixed with white @ .2 opacity
         stroke: focus_color()
         stroke_width: 6
         dash_array: '24, 18'

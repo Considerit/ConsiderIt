@@ -69,9 +69,7 @@ styles += """
   }
 
 
-  [data-widget="EditPage"] .wildcard .draggable-list {
-    background-color: #E3EDE0;
-    border: 1px solid #CEDACA;
+  [data-widget="EditPage"] .wildcard.draggable-wrapper {
   }
 
   [data-widget="EditPage"] .draggable-list button {
@@ -227,7 +225,7 @@ window.EditPage = ReactiveComponent
         #       textAlign: 'center'
         #       padding: '36px 24px'
         #       border: '1px dotted #eee'
-        #       backgroundColor: '#f1f1f1'
+        #       backgroundColor: '#EEEEEE'
 
         #     "None defined yet."
 

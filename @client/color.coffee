@@ -2,16 +2,18 @@
 # Colors
 
 
-window.focus_blue = '#456ae4' #2478CC' #'#2196F3' # '#2478CC'
+window.focus_blue = '#456ae4'
 window.logo_red = "#B03A44"
 window.considerit_red = "#df6264"
 window.default_avatar_in_histogram_color = '#999'
-window.considerit_gray = '#f6f7f9'
-# window.selected_color = "#e316ae" # magenta
 window.selected_color = '#DA4570' #pinkish red
 window.upgrade_color = '#16a1e3'
 window.attention_orange = "#fb7e26"
-window.main_background_color = '#f6f7f9'
+window.considerit_gray = '#f7f7f7'
+window.main_background_color = '#f7f7f7'
+window.failure_color = "#F94747"
+window.success_color = "#81c765"
+window.caution_color = "#ffc92a"
 
 
 # Ugly! Need to have responsive colors or responsive styles. 
@@ -220,7 +222,7 @@ window.named_colors =
   'floralwhite': '#fffaf0'
   'forestgreen': '#228b22'
   'fuchsia': '#ff00ff'
-  'gainsboro': '#dcdcdc'
+  'gainsboro': '#DDDDDD'
   'ghostwhite': '#f8f8ff'
   'gold': '#ffd700'
   'goldenrod': '#daa520'
@@ -229,7 +231,7 @@ window.named_colors =
   'greenyellow': '#adff2f'
   'honeydew': '#f0fff0'
   'hotpink': '#ff69b4'
-  'indianred ': '#cd5c5c'
+  'indianred': '#cd5c5c'
   'indigo': '#4b0082'
   'ivory': '#fffff0'
   'khaki': '#f0e68c'

@@ -142,7 +142,7 @@ UserTags = ReactiveComponent
                     padding: '2px 12px'
                     fontSize: 18
                     cursor: 'pointer'
-                    borderBottom: '1px solid #fafafa'
+                    borderBottom: '1px solid #f7f7f7'
 
                   onMouseEnter: (e) =>
                     @local.hovered_user = user.key

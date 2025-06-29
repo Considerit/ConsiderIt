@@ -263,7 +263,7 @@ window.ShowHostQuestions = ReactiveComponent
               style: _.defaults question.input_style or {}, 
                 marginBottom: 6
                 width: 300
-                border: "1px solid #a1a1a1"
+                border: "1px solid #999999"
                 padding: '5px 10px'
                 fontSize: 18            
               key: "#{question.tag}_inputBox"

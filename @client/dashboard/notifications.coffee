@@ -64,7 +64,7 @@ window.Notifications = ReactiveComponent
           style:
             backgroundColor: if @local.via_unsubscribe_link then '#f7f7f7'
             padding: if @local.via_unsubscribe_link then '12px 18px'
-            border: if @local.via_unsubscribe_link then '1px solid #DA4570'
+            border: if @local.via_unsubscribe_link then "1px solid #{selected_color}"
 
           LABEL 
             className: 'toggle_switch'
@@ -98,7 +98,7 @@ window.Notifications = ReactiveComponent
             if @local.via_unsubscribe_link && !!prefs['send_emails']
               SPAN 
                 style:
-                  backgroundColor: "#DA4570"
+                  backgroundColor: selected_color
                   color: 'white'
                   textTransform: 'uppercase'
                   fontSize: '80%'
@@ -114,7 +114,7 @@ window.Notifications = ReactiveComponent
 
             SPAN
               style:
-                backgroundColor: "#DA4570"
+                backgroundColor: selected_color
                 padding: '12px 18px'
                 color: 'white'
 

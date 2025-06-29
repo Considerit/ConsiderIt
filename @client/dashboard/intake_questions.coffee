@@ -2,7 +2,7 @@
 
 styles += """
   .INTAKE_QUESTIONS .intake-question {
-    background-color: #F1F1F1;
+    background-color: #EEEEEE;
     border: 1px solid #DDDDDD;
     padding: 18px 10px 18px 38px;
     border-radius: 8px;
@@ -91,7 +91,7 @@ window.AnonymizationCheckForSigninQuestions = ->
 
     if questions.length > 0
       message = 
-        style: {backgroundColor: '#d1d08d', color: 'black'}
+        style: {backgroundColor: caution_color, color: 'black'}
         img: 'venetian-mask.png' 
         label: "You have permanently set participation to anonymous. The answers to any sign-in questions you ask will not be available to you. If the questions you are asking are not personally revealing for participants, please contact help@consider.it to whitelist your questions."
       return DIV 
@@ -99,7 +99,7 @@ window.AnonymizationCheckForSigninQuestions = ->
         style: _.defaults {}, (message.style or {}),
           backgroundColor: "rgb(184 226 187)"
           borderRadius: 12
-          padding: '4px 24px'
+          padding: '12px 24px'
           maxWidth: 700
           margin: "0 auto 16px auto"
           fontSize: 14
@@ -112,7 +112,7 @@ window.AnonymizationCheckForSigninQuestions = ->
           DIV 
             style:
               minWidth: 40
-              paddingRight: 24
+              marginRight: 18
             IMG 
               style: 
                 maxWidth: 34
@@ -346,7 +346,7 @@ styles += """
     padding: 6px 8px;
     width: 100%;
     font-size: 16px;
-    border: 1px solid #d1d1d1;
+    border: 1px solid #CCCCCC;
   }
 
 """
@@ -517,7 +517,7 @@ window.EditIntakeQuestion = ReactiveComponent
           DIV 
             style: 
               fontSize: 12
-              color: '#373737'
+              color: '#333333'
             'It is best practice to enable a “Prefer not to answer” option for nonessential questions.'
             BR null
             'To enable an open-ended response option, include a response named “Other”'

@@ -18,7 +18,7 @@ styles += """
 }
 
 .AllYourForums .forum.odd {
-  background-color: #fcfcfc;
+  background-color: #f7f7f7;
 }
 
 

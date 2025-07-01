@@ -591,8 +591,8 @@ question_mark_icon = () ->
   # svgPath2 = "M13.2271 16.9535C13.2271 17.6313 12.6777 18.1807 11.9999 18.1807C11.3221 18.1807 10.7726 17.6313 10.7726 16.9535C10.7726 16.2757 11.3221 15.7262 11.9999 15.7262C12.6777 15.7262 13.2271 16.2757 13.2271 16.9535Z"
 
   # Draw the question_mark icon onto the question_mark canvas
-  qm_ctx.fillStyle = 'black'
-  qm_ctx.strokeStyle = 'white'
+  qm_ctx.fillStyle = '#000000'
+  qm_ctx.strokeStyle = '#ffffff'
   qm_ctx.lineWidth = 1
 
   path1 = new Path2D(svgPath1)

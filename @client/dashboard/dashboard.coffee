@@ -394,10 +394,6 @@ window.styles += """
     background-color: #{selected_color};
   }
 
-  # input:focus + .toggle_switch_circle {
-  #   box-shadow: 0 0 1px #{selected_color};
-  # }
-
   input:checked + .toggle_switch_circle:before {
     transform: translateX(26px);
   }

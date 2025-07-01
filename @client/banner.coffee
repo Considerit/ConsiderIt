@@ -574,7 +574,7 @@ CustomizeLogo = ReactiveComponent
           style: 
             position: 'absolute'
             fontSize: 14
-            color: if is_light then 'rgba(0,0,0)' else 'rgba(255,255,255)'
+            color: if is_light then 'rgb(0,0,0)' else 'rgb(255,255,255)'
             zIndex: 1
             bottom: 0
             marginTop: 60

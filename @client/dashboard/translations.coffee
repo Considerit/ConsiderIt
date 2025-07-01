@@ -905,7 +905,7 @@ TranslationsForLang = ReactiveComponent
                                       display: 'inline-block'
                                       marginLeft: 20
                                       border: 'none'
-                                      color: '#999'
+                                      color: '#333'
                                       textDecoration: 'underline'
                                       fontSize: 14
 

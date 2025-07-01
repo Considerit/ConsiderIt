@@ -743,7 +743,6 @@ styles += """
     border-radius: 16px;
     top: -11px;
     background-color: #{considerit_gray};
-    /* box-shadow: #AAAAAA 0 1px 1px 0px; */
     min-height: 34px; 
   }
 

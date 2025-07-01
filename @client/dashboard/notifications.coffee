@@ -31,20 +31,11 @@ window.Notifications = ReactiveComponent
       @local.via_unsubscribe_post = true 
 
 
+    @local.via_unsubscribe_link = true
+    
     DIV 
       id: 'NOTIFICATIONS'
 
-
-      if @local.watched_proposals && !current_user.subscriptions['send_emails']
-        DIV 
-          style: 
-            border: "1px solid #{logo_red}" 
-            color: logo_red
-            padding: '4px 8px'
-
-          TRANSLATE
-            id: "email_notifications.watched_proposals_ack"
-            "You are unsubscribed from summary emails from this forum"
       
       if customization('email_notifications_disabled')
         DIV 
@@ -62,7 +53,7 @@ window.Notifications = ReactiveComponent
 
         DIV 
           style:
-            backgroundColor: if @local.via_unsubscribe_link then '#f7f7f7'
+            backgroundColor: if @local.via_unsubscribe_link then main_background_color
             padding: if @local.via_unsubscribe_link then '12px 18px'
             border: if @local.via_unsubscribe_link then "1px solid #{selected_color}"
 

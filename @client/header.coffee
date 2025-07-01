@@ -105,12 +105,11 @@ window.Header = ReactiveComponent
 
         DIV 
           style: 
-            backgroundColor: '#eee'
-            color: failure_color
-            padding: '5px 20px'
-            display: if root.server_error then 'block' else 'none'
+            display: if root.server_error then 'block' else 'none'            
 
-          translator "engage.server_error", 'Warning: there was a server error!'
+          ErrorBlock([translator("engage.server_error", 'Warning: there was a server error!')])
+
+          
 
 
 window.HostHeader = ReactiveComponent

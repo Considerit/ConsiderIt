@@ -345,7 +345,7 @@ window.DataDash = ReactiveComponent
         'Argdown-like Import'
         SUP
           style: 
-            color: '#999'
+            color: '#444'
             fontSize: 12
             fontWeight: 400
             paddingLeft: 4
@@ -419,7 +419,7 @@ window.DataDash = ReactiveComponent
 
         SUP
           style: 
-            color: '#999'
+            color: '#444'
             fontSize: 12
             fontWeight: 400
             paddingLeft: 4

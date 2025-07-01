@@ -345,7 +345,6 @@ window.ProposalsLoading = ReactiveComponent
         padding: '60px 0px'
         textAlign: 'center'
         fontStyle: 'italic'
-        #color: logo_red
         fontSize: 24
 
       DIV 

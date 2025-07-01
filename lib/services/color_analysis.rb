@@ -3,6 +3,7 @@
 require 'find'
 require 'json'
 require 'csv'
+require 'set'
 
 # Color Analysis Tool for ConsiderIt
 # This script extracts all colors used throughout the codebase and groups them by similarity
@@ -102,15 +103,103 @@ class ColorAnalyzer
     '#008080' # seattle banner
   ]
 
+  # Usage pattern detection regexes
+  USAGE_PATTERNS = {
+    # Variable definition pattern - must be first to prevent double recording
+    variable_definition: /window\.[\w_]+\s*=\s*(['"]#[0-9a-fA-F]{3,6}['"])/i,
+    # Icon function patterns - flexible to handle 2 or 3 parameters
+    icon: /(?:[\w_]*_?icon|Icon)\s+(?:[^,\n]*,\s*)*(['"]?[#\w]+['"]?)|(?:[\w_]*_?icon|Icon)\s*\([^)]*(['"]?[#\w]+['"]?)\s*\)/i,
+    # Background with flexible matching for complex conditional expressions
+    background: /(?:background-color|backgroundColor|background)\s*:\s*([^;,\}\n]+)/i,
+    # Text color with flexible matching for complex conditional expressions  
+    text: /(?:^|[^-\w])color\s*:\s*([^;,\}\n]+)/i,
+    # Border with flexible matching for complex conditional expressions
+    border: /(?:border(?:-(?:top|right|bottom|left))?(?:-color)?|borderColor|borderTop|borderRight|borderBottom|borderLeft|border-(?:top|right|bottom|left)-color)\s*:\s*([^;,\}\n]+)/i,
+    shadow: /(?:box-shadow|boxShadow|text-shadow|textShadow|drop-shadow|filter)[\s:]*([^;,\}\n]*)/i,
+    fill: /(?:fill\s*[:=]\s*|fillStyle\s*=\s*|<[^>]*fill\s*=\s*['"]?)([^;,\}\n]+)/i,
+    stroke: /(?:stroke\s*[:=]\s*|strokeStyle\s*=\s*|<[^>]*stroke\s*=\s*['"]?)([^;,\}\n]+)/i,
+    outline: /(?:outline|outline-color|outlineColor)\s*:\s*([^;,\}\n]+)/i,
+    svg_element: /<(?:circle|rect|path|line|polygon|ellipse)[^>]*(?:fill|stroke)\s*=\s*['"]([^'"]+)['"]/i,
+    gradient: /(?:linear-gradient|radial-gradient)\s*\([^)]*([#\w]+)/i,
+    function_parameter: /\w+\s+[^,()]*,\s*(['"]?[#\w]+['"]?)\s*[,)]/i,
+    config_property: /[\w_]+:\s*(['"]?[#\w]+['"]?)\s*[,\}]/i,
+    opacity: /opacity\s*:\s*([^;,\}\n]+)/i,
+    transform: /transform\s*:\s*([^;,\}\n]*)/i,
+    filter: /filter\s*:\s*([^;,\}\n]*)/i
+  }
+
   def initialize(root_path)
     @root_path = root_path
     @colors_found = {}
     @file_extensions = %w[.coffee .css .js .scss .sass]
+    @color_variables = load_color_variables
+  end
+
+  def load_color_variables
+    variables = {}
+    
+    # Scan all .coffee files for color variable definitions
+    Find.find(@root_path) do |path|
+      next if File.directory?(path)
+      next unless path.end_with?('.coffee')
+      next if skip_file?(path)
+      
+      begin
+        content = File.read(path, encoding: 'UTF-8')
+        content.each_line do |line|
+          # Match patterns like: window.success_color = "#81c765" or window.auth_text_gray = '#444'
+          if match = line.match(/window\.(\w+)\s*=\s*['"]([#\w]+)['"]/)
+            variable_name = match[1]
+            color_value = match[2]
+            normalized_color = normalize_hex(color_value) if color_value.start_with?('#')
+            if normalized_color
+              # Store both the original and any overrides
+              # For focus_blue, we'll track both #456ae4 and #073682
+              if variables[variable_name] && variable_name == 'focus_blue'
+                # Keep both values for focus_blue as it has an override
+                variables["#{variable_name}_original"] = variables[variable_name]
+                variables["#{variable_name}_override"] = normalized_color
+              end
+              variables[variable_name] = normalized_color
+            end
+          end
+        end
+      rescue => e
+        # Skip files that can't be read
+      end
+    end
+    
+    # Also check for function definitions that return colors
+    Find.find(@root_path) do |path|
+      next if File.directory?(path)
+      next unless path.end_with?('.coffee')
+      next if skip_file?(path)
+      
+      begin
+        content = File.read(path, encoding: 'UTF-8')
+        content.each_line do |line|
+          # Match patterns like: window.focus_color = -> focus_blue
+          if match = line.match(/window\.(\w+)\s*=\s*->\s*(\w+)/)
+            function_name = match[1]
+            target_variable = match[2]
+            if variables[target_variable]
+              variables[function_name] = variables[target_variable]
+              variables["#{function_name}()"] = variables[target_variable]
+            end
+          end
+        end
+      rescue => e
+        # Skip files that can't be read
+      end
+    end
+    
+    variables
   end
 
   def analyze
     puts "🎨 Starting color analysis of ConsiderIt codebase..."
     puts "📁 Scanning directory: #{@root_path}"
+    puts "🔍 Loaded #{@color_variables.length} color variables from color.coffee"
     
     Find.find(@root_path) do |path|
       next if File.directory?(path)
@@ -141,7 +230,8 @@ class ColorAnalyzer
       'color_analysis.rb',
       "@client/dashboard/analytics.coffee",
       "state_graph.coffee",
-      "@client/histogram-legacy.coffee"
+      "@client/histogram-legacy.coffee",
+      "@client/histogram_lab.coffee"
     ]
     
     skip_patterns.any? { |pattern| path.include?(pattern) }
@@ -196,7 +286,12 @@ class ColorAnalyzer
           next if match.nil? || match.empty?
           hex_match = match.is_a?(Array) ? match.first : match
           hex_color = normalize_hex("##{hex_match}")
-          record_color(hex_color, line.strip, file_path, line_number, 'hex') if hex_color
+          if hex_color
+            usage_pattern = detect_usage_pattern(line, "##{hex_match}")
+            # Skip if this is a variable definition to avoid duplicate recording
+            next if usage_pattern == :variable_definition
+            record_color(hex_color, line.strip, file_path, line_number, 'hex', nil, nil, usage_pattern)
+          end
         end
         
         # Extract RGB colors
@@ -205,7 +300,11 @@ class ColorAnalyzer
           hex_color = rgb_to_hex(r.to_i, g.to_i, b.to_i)
           alpha = a ? ", alpha: #{a}" : ""
           original = "rgb#{a ? 'a' : ''}(#{r},#{g},#{b}#{a ? ",#{a}" : ''})"
-          record_color(hex_color, line.strip, file_path, line_number, 'rgb', original, alpha)
+          # For RGB detection, we need to check the specific RGB value in the line context
+          usage_pattern = detect_usage_pattern(line, original)
+          # Skip if this is a variable definition to avoid duplicate recording
+          next if usage_pattern == :variable_definition
+          record_color(hex_color, line.strip, file_path, line_number, 'rgb', original, alpha, usage_pattern)
         end
         
         # Extract HSL colors
@@ -214,7 +313,8 @@ class ColorAnalyzer
           hex_color = hsl_to_hex(h.to_i, s.to_i, l.to_i)
           alpha = a ? ", alpha: #{a}" : ""
           original = "hsl#{a ? 'a' : ''}(#{h},#{s}%,#{l}%#{a ? ",#{a}" : ''})"
-          record_color(hex_color, line.strip, file_path, line_number, 'hsl', original, alpha)
+          usage_pattern = detect_usage_pattern(line, original)
+          record_color(hex_color, line.strip, file_path, line_number, 'hsl', original, alpha, usage_pattern)
         end
         
         # Extract named colors
@@ -225,7 +325,43 @@ class ColorAnalyzer
           next unless NAMED_COLORS.key?(color_name)
           
           hex_color = NAMED_COLORS[color_name]
-          record_color(hex_color, line.strip, file_path, line_number, 'named', color_name)
+          usage_pattern = detect_usage_pattern(line, color_name)
+          record_color(hex_color, line.strip, file_path, line_number, 'named', color_name, nil, usage_pattern)
+        end
+        
+        # Extract variable definitions (window.var = "color")
+        if match = line.match(USAGE_PATTERNS[:variable_definition])
+          color_with_quotes = match[1]
+          color_value = color_with_quotes.gsub(/['"]/, '')
+          hex_color = normalize_hex(color_value)
+          if hex_color
+            record_color(hex_color, line.strip, file_path, line_number, 'variable_definition', color_with_quotes, nil, :variable_definition)
+          end
+        end
+        
+        # Extract color variable references (prevent duplicates by prioritizing longer matches)
+        already_recorded = Set.new
+        
+        # Sort variables by length (longest first) to prioritize specific matches like 'focus_color()' over 'focus_color'
+        sorted_variables = @color_variables.keys.sort_by { |k| -k.length }
+        
+        sorted_variables.each do |var_name|
+          hex_color = @color_variables[var_name]
+          if line.include?(var_name) && !already_recorded.include?("#{file_path}:#{line_number}")
+            usage_pattern = detect_usage_pattern(line, var_name)
+            # Skip if this is a variable definition to avoid duplicate recording
+            next if usage_pattern == :variable_definition
+            
+            # For focus_blue/focus_color, use the original color value if it exists to avoid duplicates
+            if (var_name == 'focus_blue' || var_name == 'focus_color' || var_name == 'focus_color()') && @color_variables['focus_blue_original']
+              record_color(@color_variables['focus_blue_original'], line.strip, file_path, line_number, 'variable', var_name, nil, usage_pattern)
+            else
+              record_color(hex_color, line.strip, file_path, line_number, 'variable', var_name, nil, usage_pattern)
+            end
+            
+            # Mark this line as recorded to prevent duplicates
+            already_recorded.add("#{file_path}:#{line_number}")
+          end
         end
       rescue => e
         puts "⚠️  Error processing line #{line_number} in #{file_path}: #{e.message}"
@@ -255,7 +391,92 @@ class ColorAnalyzer
     ['.css', '.scss', '.sass'].include?(File.extname(file_path))
   end
 
-  def record_color(hex_color, line_content, file_path, line_number, type, original = nil, alpha = nil)
+  def detect_usage_pattern(line, color_value)
+    # First, check for variable definitions to prevent misclassification
+    if line.match(/window\.[\w_]+\s*=\s*['"]#[0-9a-fA-F]{3,6}['"]/) && line.include?(color_value)
+      return :variable_definition
+    end
+    
+    # Create unified pattern checks that work for both direct colors and variable references
+    line_lower = line.downcase
+    color_lower = color_value.downcase
+    
+    # Check for background patterns (most comprehensive)
+    if line_lower.match(/(?:background-color|backgroundcolor|background)\s*[:=]\s*/) ||
+       line.match(/(?:background|background-color|backgroundColor)\s*:\s*.*#{Regexp.escape(color_value)}/i)
+      return :background
+    end
+    
+    # Check for text color patterns  
+    if line_lower.match(/(?:^|[^-\w])color\s*[:=]\s*/) && !line_lower.include?('background') && !line_lower.include?('border') ||
+       line.match(/(?:^|[^-\w])color\s*:\s*.*#{Regexp.escape(color_value)}/i)
+      return :text
+    end
+    
+    # Check for border patterns (including border-top, border-right, border-*-color, etc.)
+    if line_lower.match(/(?:border|border-color|border-top|border-right|border-bottom|border-left|border-top-color|border-right-color|border-bottom-color|border-left-color|bordercolor|bordertop|borderright|borderbottom|borderleft|bordertopcolor|borderrightcolor|borderbottomcolor|borderleftcolor)\s*[:=]\s*/) ||
+       line.match(/(?:border|border-color|border-top|border-right|border-bottom|border-left|border-top-color|border-right-color|border-bottom-color|border-left-color|borderColor|borderTop|borderRight|borderBottom|borderLeft|borderTopColor|borderRightColor|borderBottomColor|borderLeftColor)\s*:\s*.*#{Regexp.escape(color_value)}/i)
+      return :border
+    end
+    
+    # Check for shadow patterns
+    if line_lower.match(/(?:box-shadow|boxshadow|text-shadow|textshadow|drop-shadow)\s*[:=]\s*/) ||
+       line.match(/(?:box-shadow|boxShadow|text-shadow|textShadow|drop-shadow)\s*:\s*.*#{Regexp.escape(color_value)}/i)
+      return :shadow
+    end
+    
+    # Check for icon patterns
+    if line.match(/(?:[\w_]*_?icon|Icon)\s+.*#{Regexp.escape(color_value)}/i) ||
+       line.match(/(?:[\w_]*_?icon|Icon)\s*\([^)]*#{Regexp.escape(color_value)}/i)
+      return :icon
+    end
+    
+    # Check for fill/stroke patterns
+    if line_lower.match(/(?:fill|fillstyle)\s*[:=]\s*/) ||
+       line.match(/(?:fill|fillStyle)\s*[:=]\s*.*#{Regexp.escape(color_value)}/i)
+      return :fill
+    end
+    
+    if line_lower.match(/(?:stroke|strokestyle)\s*[:=]\s*/) ||
+       line.match(/(?:stroke|strokeStyle)\s*[:=]\s*.*#{Regexp.escape(color_value)}/i)
+      return :stroke
+    end
+    
+    # Check for outline patterns
+    if line_lower.match(/(?:outline|outline-color|outlinecolor)\s*[:=]\s*/) ||
+       line.match(/(?:outline|outline-color|outlineColor)\s*:\s*.*#{Regexp.escape(color_value)}/i)
+      return :outline
+    end
+    
+    # Check for gradients
+    if line.match(/(?:linear-gradient|radial-gradient).*#{Regexp.escape(color_value)}/i)
+      return :gradient
+    end
+    
+    # Check for SVG elements
+    if line.match(/<(?:circle|rect|path|line|polygon|ellipse)[^>]*(?:fill|stroke)\s*=\s*['"]#{Regexp.escape(color_value)}/i)
+      return :svg_element
+    end
+    
+    # Special handling for CoffeeScript string interpolation
+    interpolation_pattern = "#{" + color_value + "}"
+    if line.include?(interpolation_pattern)
+      if line.match(/(?:border|border-color|borderColor).*#\{.*#{Regexp.escape(color_value)}.*\}/i)
+        return :border
+      elsif line.match(/(?:background|background-color|backgroundColor).*#\{.*#{Regexp.escape(color_value)}.*\}/i)
+        return :background
+      elsif line.match(/(?:^|[^-\w])color\s*:.*#\{.*#{Regexp.escape(color_value)}.*\}/i)
+        return :text
+      elsif line.match(/(?:box-shadow|boxShadow|text-shadow|textShadow).*#\{.*#{Regexp.escape(color_value)}.*\}/i)
+        return :shadow
+      end
+    end
+    
+    # If no specific pattern found, return :other
+    :other
+  end
+
+  def record_color(hex_color, line_content, file_path, line_number, type, original = nil, alpha = nil, usage_pattern = nil)
     # Skip if it's just a fragment of a larger hex number (like in URLs)
     return if hex_color.length > 7 # Skip malformed colors
     
@@ -266,7 +487,26 @@ class ColorAnalyzer
       count: 0,
       locations: [],
       types: Set.new,
-      originals: Set.new
+      originals: Set.new,
+      usage_patterns: {
+        background: [],
+        text: [],
+        border: [],
+        shadow: [],
+        fill: [],
+        stroke: [],
+        outline: [],
+        icon: [],
+        variable_definition: [],
+        svg_element: [],
+        gradient: [],
+        function_parameter: [],
+        config_property: [],
+        opacity: [],
+        transform: [],
+        filter: [],
+        other: []
+      }
     }
     
     @colors_found[color_key][:count] += 1
@@ -275,12 +515,18 @@ class ColorAnalyzer
     
     # Store all location info for HTML report
     relative_path = file_path.gsub(@root_path, '').gsub(/^\//, '')
-    @colors_found[color_key][:locations] << {
+    location_info = {
       file: relative_path,
       line: line_number,
       context: line_content.strip[0, 100] + (line_content.length > 100 ? '...' : ''),
       alpha: alpha
     }
+    
+    @colors_found[color_key][:locations] << location_info
+    
+    # Store usage pattern information
+    pattern_key = usage_pattern || :other
+    @colors_found[color_key][:usage_patterns][pattern_key] << location_info
   end
 
   def normalize_hex(hex)
@@ -383,6 +629,9 @@ class ColorAnalyzer
     
     # Generate interactive HTML report
     generate_html_report(by_similarity)
+    
+    # Generate usage patterns report
+    generate_usage_patterns_report(valid_colors)
     
     # Generate consolidation suggestions
     generate_consolidation_report(by_similarity)
@@ -1125,6 +1374,645 @@ class ColorAnalyzer
     end
     
     puts "✅ JSON data: color_analysis_output/color_data.json"
+  end
+
+  def generate_usage_patterns_report(colors)
+    File.open('color_analysis_output/colors_by_usage.html', 'w') do |file|
+      file.puts generate_usage_patterns_html(colors)
+    end
+    
+    puts "✅ Usage patterns report: color_analysis_output/colors_by_usage.html"
+  end
+
+  def generate_usage_patterns_html(colors)
+    # Group colors by usage pattern
+    usage_groups = {
+      background: {},
+      text: {},
+      border: {},
+      shadow: {},
+      fill: {},
+      stroke: {},
+      outline: {},
+      icon: {},
+      variable_definition: {},
+      svg_element: {},
+      gradient: {},
+      function_parameter: {},
+      config_property: {},
+      custom_property: {},
+      other: {}
+    }
+
+    colors.each do |hex, data|
+      data[:usage_patterns].each do |pattern, locations|
+        next if locations.empty?
+        usage_groups[pattern][hex] = {
+          hex: hex,
+          data: data,
+          usage_count: locations.length,
+          locations: locations
+        }
+      end
+    end
+
+    # Generate HTML
+    html = <<~HTML
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ConsiderIt Colors by Usage Pattern - Interactive Report</title>
+        <style>
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+          }
+          .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+          }
+          h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+          }
+          .summary {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 30px;
+          }
+          .tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+          }
+          .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            border-radius: 6px 6px 0 0;
+            margin-right: 5px;
+            transition: all 0.2s ease;
+          }
+          .tab.active {
+            background: #3498db;
+            color: white;
+          }
+          .tab:hover:not(.active) {
+            background: #f1f3f4;
+            color: #333;
+          }
+          .tab-content {
+            display: none;
+          }
+          .tab-content.active {
+            display: block;
+          }
+          .usage-section {
+            margin-bottom: 30px;
+          }
+          .usage-header {
+            background: #f1f3f4;
+            padding: 15px 20px;
+            font-weight: 600;
+            color: #444;
+            border-radius: 6px 6px 0 0;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 0;
+          }
+          .color-group {
+            margin-bottom: 30px;
+          }
+          .group-header {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px 6px 0 0;
+            padding: 12px 20px;
+            margin: 0 0 0 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 1px solid #e0e0e0;
+          }
+          .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+          }
+          .color-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+          }
+          .color-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+          }
+          .color-square {
+            height: 80px;
+            border-bottom: 1px solid #e0e0e0;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 5px;
+            box-sizing: border-box;
+          }
+          .color-info {
+            padding: 10px;
+            text-align: center;
+          }
+          .color-hex {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 5px;
+          }
+          .color-usage {
+            font-size: 11px;
+            color: #666;
+          }
+          .usage-badge {
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+          }
+          .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+          }
+          .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+          }
+          .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+          }
+          .close:hover {
+            color: #000;
+          }
+          .usage-list {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 15px;
+          }
+          .usage-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+          }
+          .usage-item:last-child {
+            border-bottom: none;
+          }
+          .usage-file {
+            color: #3498db;
+            font-weight: 600;
+            margin-bottom: 3px;
+          }
+          .usage-context {
+            color: #666;
+            background: white;
+            padding: 5px;
+            border-radius: 3px;
+            word-break: break-all;
+          }
+          .empty-section {
+            padding: 40px;
+            text-align: center;
+            color: #999;
+            font-style: italic;
+          }
+          .pattern-count {
+            background: #3498db;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>🎨 ConsiderIt Colors by Usage Pattern</h1>
+          
+          <div class="summary">
+            <strong>Usage Pattern Analysis:</strong>
+            Colors organized by how they're used throughout the codebase.
+            This helps identify semantic color usage and opportunities for design system improvements.
+            Click any color to see detailed usage information.
+          </div>
+
+          <div class="tabs">
+            #{generate_usage_tabs(usage_groups)}
+          </div>
+
+          #{generate_usage_tab_contents(usage_groups)}
+        </div>
+
+        <!-- Modal -->
+        <div id="colorModal" class="modal">
+          <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modalContent"></div>
+          </div>
+        </div>
+
+        <script>
+          const usageData = #{generate_usage_data_json(usage_groups)};
+          const allColorsData = #{generate_all_colors_data_json(colors)};
+
+          function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+              content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+              tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            const content = document.getElementById(tabName + '-content');
+            if (content) {
+              content.classList.add('active');
+            }
+            
+            // Mark selected tab as active
+            const tab = document.querySelector(`[onclick="showTab('${tabName}')"]`);
+            if (tab) {
+              tab.classList.add('active');
+            }
+          }
+
+          function showColorDetails(hex, pattern) {
+            // Get full color data for this color
+            const fullHex = hex.startsWith('#') ? hex : '#' + hex;
+            const colorData = allColorsData[fullHex.toLowerCase()];
+            
+            if (!colorData) {
+              console.error('Color not found:', fullHex);
+              return;
+            }
+
+            const modalContent = document.getElementById('modalContent');
+            
+            // Generate usage breakdown by pattern
+            const usageBreakdown = {};
+            let totalPatternUses = 0;
+            
+            Object.keys(colorData.usage_patterns).forEach(patternName => {
+              const uses = colorData.usage_patterns[patternName];
+              if (uses.length > 0) {
+                usageBreakdown[patternName] = uses.length;
+                totalPatternUses += uses.length;
+              }
+            });
+            
+            const usageBreakdownHtml = Object.keys(usageBreakdown)
+              .sort((a, b) => usageBreakdown[b] - usageBreakdown[a])
+              .map(pattern => 
+                `<span style="background: #e3f2fd; color: #1976d2; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-right: 8px; margin-bottom: 4px; display: inline-block;">
+                  ${pattern}: ${usageBreakdown[pattern]}
+                </span>`
+              ).join('');
+
+            modalContent.innerHTML = `
+              <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                <div style="width: 60px; height: 60px; background-color: ${fullHex}; border-radius: 8px; margin-right: 20px; border: 2px solid #ddd;"></div>
+                <div>
+                  <h2 style="margin: 0; color: #2c3e50; font-size: 24px;">${fullHex.toUpperCase()}</h2>
+                  <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">Clicked from: ${pattern} category</p>
+                </div>
+              </div>
+              
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; border-left: 4px solid #3498db;">
+                  <div style="font-size: 12px; color: #666; margin-bottom: 5px; text-transform: uppercase; font-weight: 600;">Total Uses</div>
+                  <div style="font-size: 24px; color: #2c3e50; font-weight: 600;">${colorData.count}</div>
+                </div>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; border-left: 4px solid #27ae60;">
+                  <div style="font-size: 12px; color: #666; margin-bottom: 5px; text-transform: uppercase; font-weight: 600;">Locations</div>
+                  <div style="font-size: 24px; color: #2c3e50; font-weight: 600;">${colorData.locations.length}</div>
+                </div>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; border-left: 4px solid #e74c3c;">
+                  <div style="font-size: 12px; color: #666; margin-bottom: 5px; text-transform: uppercase; font-weight: 600;">Color Types</div>
+                  <div style="font-size: 16px; color: #2c3e50; font-weight: 600;">${Array.from(colorData.types).join(', ')}</div>
+                </div>
+              </div>
+              
+              <div style="margin-bottom: 20px;">
+                <h3 style="color: #34495e; margin-bottom: 10px; font-size: 18px;">Usage Patterns</h3>
+                <div style="line-height: 1.6;">
+                  ${usageBreakdownHtml}
+                </div>
+              </div>
+
+              <h3 style="color: #34495e; margin-bottom: 10px; font-size: 18px;">Category Usage Locations (${colorData.usage_patterns[pattern].length})</h3>
+              <div class="usage-list">
+                ${colorData.usage_patterns[pattern].map(loc => `
+                  <div class="usage-item">
+                    <div class="usage-file">${loc.file}:${loc.line}</div>
+                    <div class="usage-context">${escapeHtml(loc.context)}</div>
+                  </div>
+                `).join('')}
+              </div>
+
+
+              <h3 style="color: #34495e; margin-bottom: 10px; font-size: 18px;">All Usage Locations (${colorData.locations.length})</h3>
+              <div class="usage-list">
+                ${colorData.locations.map(loc => `
+                  <div class="usage-item">
+                    <div class="usage-file">${loc.file}:${loc.line}</div>
+                    <div class="usage-context">${escapeHtml(loc.context)}</div>
+                  </div>
+                `).join('')}
+              </div>
+            `;
+            
+            document.getElementById('colorModal').style.display = 'block';
+          }
+
+          function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+          }
+
+          function closeModal() {
+            document.getElementById('colorModal').style.display = 'none';
+          }
+
+          window.onclick = function(event) {
+            const modal = document.getElementById('colorModal');
+            if (event.target === modal) {
+              closeModal();
+            }
+          }
+
+          // Show first tab by default
+          document.addEventListener('DOMContentLoaded', function() {
+            const firstTab = document.querySelector('.tab');
+            if (firstTab) {
+              firstTab.click();
+            }
+          });
+        </script>
+      </body>
+      </html>
+    HTML
+
+    html
+  end
+
+  def generate_usage_tabs(usage_groups)
+    pattern_labels = {
+      background: '🎨 Background',
+      text: '📝 Text',
+      border: '🔲 Border',
+      shadow: '🌫️ Shadow',
+      fill: '🎯 Fill',
+      stroke: '✏️ Stroke',
+      outline: '⭕ Outline',
+      icon: '🔧 Icons',
+      variable_definition: '📝 Variables',
+      svg_element: '🖼️ SVG',
+      gradient: '🌈 Gradients',
+      function_parameter: '🔧 Functions',
+      config_property: '⚙️ Config',
+      custom_property: '🔗 Properties',
+      other: '❓ Other'
+    }
+
+    usage_groups.map do |pattern, colors|
+      count = colors.length
+      active_class = pattern == :background ? ' active' : ''
+      
+      "<button class=\"tab#{active_class}\" onclick=\"showTab('#{pattern}')\">" +
+      "#{pattern_labels[pattern]}" +
+      "<span class=\"pattern-count\">#{count}</span>" +
+      "</button>"
+    end.join("\n")
+  end
+
+  def generate_usage_tab_contents(usage_groups)
+    pattern_descriptions = {
+      background: 'Colors used for background-color, backgroundColor, and background properties.',
+      text: 'Colors used for the color property (text color).',
+      border: 'Colors used for border, border-color, and related border properties.',
+      shadow: 'Colors used in box-shadow, text-shadow, and drop-shadow properties.',
+      fill: 'Colors used for SVG fill properties.',
+      stroke: 'Colors used for SVG stroke properties.',
+      outline: 'Colors used for outline and outline-color properties.',
+      icon: 'Colors passed to icon functions (trash_icon, edit_icon, etc.).',
+      variable_definition: 'Colors defined as global variables (window.color_name = ...).',
+      svg_element: 'Colors used directly in SVG element attributes.',
+      gradient: 'Colors used in CSS gradients (linear-gradient, radial-gradient).',
+      function_parameter: 'Colors passed as parameters to functions (cssTriangle, etc.).',
+      config_property: 'Colors assigned to configuration object properties.',
+      custom_property: 'Colors assigned to custom properties and configuration objects.',
+      other: 'Colors that don\'t fit into the above categories.'
+    }
+
+    usage_groups.map do |pattern, colors|
+      active_class = pattern == :background ? ' active' : ''
+      
+      content = if colors.empty?
+        "<div class=\"empty-section\">No colors found for this usage pattern.</div>"
+      else
+        # Group colors into gray and non-gray
+        gray_colors = {}
+        non_gray_colors = {}
+        
+        colors.each do |hex, data|
+          if is_gray_color?(hex)
+            gray_colors[hex] = data
+          else
+            non_gray_colors[hex] = data
+          end
+        end
+        
+        # Sort each group by similarity (hue for non-grays, lightness for grays)
+        sorted_gray = gray_colors.sort_by { |hex, _| color_lightness(hex) }
+        sorted_non_gray = non_gray_colors.sort_by { |hex, _| color_hue(hex) }
+        
+        # Generate color cards for each group
+        gray_section = if sorted_gray.any?
+          gray_cards = sorted_gray.map do |hex, data|
+            generate_color_card(hex, data, pattern)
+          end.join("")
+          
+          "<div class=\"color-group\">" +
+          "<h4 class=\"group-header\">🔘 Gray Colors (#{sorted_gray.length})</h4>" +
+          "<div class=\"color-grid\">#{gray_cards}</div>" +
+          "</div>"
+        else
+          ""
+        end
+        
+        non_gray_section = if sorted_non_gray.any?
+          non_gray_cards = sorted_non_gray.map do |hex, data|
+            generate_color_card(hex, data, pattern)
+          end.join("")
+          
+          "<div class=\"color-group\">" +
+          "<h4 class=\"group-header\">🌈 Non-Gray Colors (#{sorted_non_gray.length})</h4>" +
+          "<div class=\"color-grid\">#{non_gray_cards}</div>" +
+          "</div>"
+        else
+          ""
+        end
+        
+        gray_section + non_gray_section
+      end
+
+      "<div id=\"#{pattern}-content\" class=\"tab-content#{active_class}\">#{content}</div>"
+    end.join("\n")
+  end
+
+  def generate_color_card(hex, data, pattern)
+    "<div class=\"color-card\" onclick=\"showColorDetails('#{hex.gsub('#', '')}', '#{pattern}')\">" +
+    "<div class=\"color-square\" style=\"background-color: #{hex}\">" +
+    "<div class=\"usage-badge\">#{data[:usage_count]}</div>" +
+    "</div>" +
+    "<div class=\"color-info\">" +
+    "<div class=\"color-hex\">#{hex.upcase}</div>" +
+    "<div class=\"color-usage\">#{data[:usage_count]} use#{data[:usage_count] == 1 ? '' : 's'}</div>" +
+    "</div>" +
+    "</div>"
+  end
+
+  def is_gray_color?(hex)
+    # Convert hex to RGB
+    r, g, b = hex_to_rgb(hex)
+    
+    # Check if it's approximately gray (R, G, B values are similar)
+    max_diff = [r - g, r - b, g - b].map(&:abs).max
+    max_diff <= 15  # Allow small differences for colors like #f7f7f7
+  end
+
+  def color_lightness(hex)
+    r, g, b = hex_to_rgb(hex)
+    # Calculate relative luminance
+    (0.299 * r + 0.587 * g + 0.114 * b) / 255.0
+  end
+
+  def color_hue(hex)
+    r, g, b = hex_to_rgb(hex)
+    r, g, b = r / 255.0, g / 255.0, b / 255.0
+    
+    max = [r, g, b].max
+    min = [r, g, b].min
+    diff = max - min
+    
+    return 0 if diff == 0
+    
+    case max
+    when r
+      h = (60 * ((g - b) / diff) + 360) % 360
+    when g
+      h = (60 * ((b - r) / diff) + 120) % 360
+    when b
+      h = (60 * ((r - g) / diff) + 240) % 360
+    end
+    
+    h
+  end
+
+  def hex_to_rgb(hex)
+    hex = hex.gsub('#', '')
+    [
+      hex[0..1].to_i(16),
+      hex[2..3].to_i(16),
+      hex[4..5].to_i(16)
+    ]
+  end
+
+  def generate_usage_data_json(usage_groups)
+    data = {}
+    
+    usage_groups.each do |pattern, colors|
+      data[pattern] = {}
+      colors.each do |hex, color_data|
+        data[pattern][hex.downcase] = {
+          hex: hex,
+          data: color_data[:data],
+          usage_count: color_data[:usage_count],
+          locations: color_data[:locations]
+        }
+      end
+    end
+    
+    JSON.generate(data)
+  end
+
+  def generate_all_colors_data_json(colors)
+    data = {}
+    
+    colors.each do |hex, color_data|
+      data[hex.downcase] = {
+        hex: hex,
+        count: color_data[:count],
+        locations: color_data[:locations],
+        types: color_data[:types].to_a,
+        originals: color_data[:originals].to_a,
+        usage_patterns: color_data[:usage_patterns]
+      }
+    end
+    
+    JSON.generate(data)
   end
 end
 

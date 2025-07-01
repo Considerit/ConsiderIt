@@ -112,7 +112,7 @@ window.OpinionSlider = ReactiveComponent
         base_color: if mode == 'crafting' #slider.docked
                       '#518eff' 
                     else 
-                      '#999999'
+                      '#777'
 
 
         # base_endpoint: if slider.docked then 'square' else 'sharp'

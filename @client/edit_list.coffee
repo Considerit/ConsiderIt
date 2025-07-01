@@ -183,9 +183,10 @@ styles += """
   }
 
   .LIST-option-block .permissions_explanation {
-    color: #999999;
+    color: #333333;
     font-weight: 400;
     margin-left: 24px;
+    font-size: 12px;
   }
 
   @media #{PHONE_MEDIA} {
@@ -765,34 +766,6 @@ window.EditNewList = ReactiveComponent
                   textAlign: 'left'
                   paddingLeft: 10                        
                 "#{option.support}" 
-
-
-            # DIV 
-            #   style: 
-            #     margin: "12px 24px"
-            #     position: 'relative'
-            #     fontSize: 12
-
-            #   SPAN 
-            #     style: 
-            #       display: 'inline-block'
-            #       width: '100%'
-            #       borderBottom: '1px solid'
-            #       borderColor: '#666'
-
-            #   BR null
-            #   SPAN
-            #     style: 
-            #       position: 'relative'
-            #       left: 0
-
-            #     option.oppose 
-
-            #   SPAN
-            #     style: 
-            #       position: 'absolute'
-            #       right: 0
-            #     option.support
 
 
 

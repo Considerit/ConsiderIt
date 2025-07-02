@@ -96,19 +96,6 @@ styles += """
   .list_order_event .is_collapsed.ProposalItem {
     content-visibility: visible;
   }
-
-
-  /* partially implemented experimental lightbox */
-  /* .is_expanded.ProposalItem:before {
-    content: "";
-    background-color: rgba(0,0,0,.15);
-    position: absolute;
-    height: 999999px;
-    width: 999999px;
-    top: -9999px;
-    left: -9999px;
-    z-index: 2;
-  } */
 """
 
 
@@ -354,7 +341,7 @@ styles += """
     top: 0px;
     height: 100%;
 
-    box-shadow: 0px 0px 0px rgba(0,0,0,.25);    
+    box-shadow: 0px 0px 0px #00000040;    
 
     background-color: white;
     border-radius: 128px;
@@ -395,7 +382,7 @@ styles += """
 
   .is_expanded .opinion-block-wrapper::after {
     opacity: 1;
-    box-shadow: 0px 0px 3px rgba(0,0,0,.25);    
+    box-shadow: 0px 0px 3px #00000040;    
     transition: opacity #{.5 * ANIMATION_SPEED_ITEM_EXPANSION}s, box-shadow #{.5 * ANIMATION_SPEED_ITEM_EXPANSION}s;
 
   }
@@ -421,11 +408,11 @@ styles += """
     width: calc(100% + 1.3px);
     height: 39px;
     transform: scaleY(-1);
-    filter: drop-shadow(0px 1px 1px rgb(0 0 0 / 0.1));    
+    filter: drop-shadow(0px 1px 1px #00000026);  /* fiddly */  
   }
 
   .is_expanded:not(.expanding) .custom-shape-divider-top-1664224812 svg {
-    filter: drop-shadow(0px 0px 1px rgb(0 0 0 / 0.25));
+    filter: drop-shadow(0px 0px 1px #00000040); /* fiddly */
   }
   .custom-shape-divider-top-1664224812 .shape-fill {
       fill: #f3f4f5;
@@ -487,6 +474,7 @@ ProposalItemWrapper = ReactiveComponent
         # delayUntil: proposal.key
 
         DIV 
+          id: "opinion-block-#{proposal.key}"
           className: 'prep_for_flip opinion-block-wrapper'
 
           if @props.is_expanded
@@ -743,7 +731,7 @@ ProposalBlock = ReactiveComponent
               height: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
               width: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
               display: 'inline-block'
-              border: "2px dashed #ddd"
+              border: "2px dashed #CCCCCC"
       else
         @props.icon?() or SVG 
           className: 'proposal_bullet'

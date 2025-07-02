@@ -97,7 +97,7 @@ styles += """
   }
 
   [data-widget="ListItems"]:not(.expansion_event) .is_collapsed .transparency_fade {
-    background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%); /* linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 34%, rgba(255,255,255,0) 100%); */
+    background: linear-gradient(0deg, #FFFFFFFF 0%, #FFFFFF00 100%); /* linear-gradient(0deg, #FFFFFFFF 0%, #FFFFFFFF 34%, #FFFFFF00 100%); */
     bottom: 0px;
     height: 22px;
     position: absolute;
@@ -243,6 +243,10 @@ window.ItemText = ReactiveComponent
 
             DIV 
               ref: 'proposal_title'
+              role: "button"
+              "aria-expanded": @is_expanded
+              "aria-controls": "opinion-block-#{proposal.key}"
+              tabindex: 0
               className: "prep_for_flip proposal-title"
               "data-proposal": proposal.key
               onClick: @toggle_expand
@@ -605,7 +609,7 @@ window.ItemText = ReactiveComponent
                   BUTTON
                     key: 'edit-opinion-text'
                     className: 'monospaced'
-                    style: {  border:'none', backgroundColor:'rgba(0,0,0,0)', padding:0  }
+                    style: {  border:'none', backgroundColor: 'transparent', padding:0  }
                     onClick: toggleExpandPreferPersonal
                     onKeyPress: (e) =>
                       if e.which == 32 or e.which == 13
@@ -756,17 +760,6 @@ styles += """
     font-weight: 400;
   }
 
-  .ItemText .proposal-metadata .separated.give-your-opinion {
-    text-decoration: none;
-    background-color: #f7f7f7;
-    border-radius: 8px;
-    padding: 4px 10px;
-    border: 1px solid #eee;
-    box-shadow: 0 1px 1px #999999CC;
-    white-space: nowrap;
-  }
-
-
   .proposal-metadata .metadata-piece {
     font-size: 12px;
     color: #666;
@@ -775,31 +768,18 @@ styles += """
     border-width: 0 0 1px 0;
     background: transparent;
     border-style: solid;
-    border-color: #aaa;
+    border-color: transparent;
     white-space: nowrap;
     transition: border-color 1s;
     cursor: pointer;
     text-decoration: none;
   } 
-  .proposal-metadata .metadata-piece:hover,
-  .proposal-metadata .metadata-piece:focus-within {
-    border-color: #444;
+  .proposal-metadata button.metadata-piece {
+    border-color: #AAAAAA;
   }
-
-  /* 
-  .proposal-metadata .small-give-your-opinion {
-    color: white;
-    background-color: #{focus_color()};
-    font-weight: 600;
-    cursor: pointer;
-    font-family: #{customization('font')};
-    border-radius: 8px;
-    padding: 4px 12px;
-    font-size: 10px;
-  } */
-
-  .is_expanded .proposal-metadata .small-give-your-opinion {
-    display: none;
+  .proposal-metadata button.metadata-piece:hover,
+  .proposal-metadata button.metadata-piece:focus-within {
+    border-color: #{focus_color()};
   }
 
 

@@ -32,7 +32,6 @@ styles += """
   margin-right: 10px; 
   font-size: 22px;
   padding: 0;
-  box-shadow: 0px 1px 2px rgba(0,0,0,.4);  
   border-radius: 8px;         
 }
 .moderation label {
@@ -49,7 +48,6 @@ styles += """
 }
 
 .moderation.btn {
-  /* padding: 8px 18px; */
 }
 
 .moderate-item-wrapper {
@@ -239,13 +237,13 @@ window.ModerationDash = ReactiveComponent
               BUTTON 
                 "data-model": model 
                 style: 
-                  backgroundColor: if active then 'white' else '#EEEEEE'
-                  color: 'black'
+                  backgroundColor: if active then bg_light else bg_lightest_gray
+                  color: text_dark
                   fontSize: 18
                   marginLeft: 12
                   marginRight: 12
                   marginBottom: if active then -1
-                  border: '1px solid #bbb'
+                  border: "1px solid #{brd_mid_gray}"
                   borderBottom: 'none'
                   borderRadius: '4px 4px 0 0px'
                   padding: "6px 14px #{if active then 3 else 2}px 14px"
@@ -268,7 +266,7 @@ window.ModerationDash = ReactiveComponent
       if @local.model == 'Ban'
         DIV 
           style: 
-            borderTop: '1px solid #bbb'
+            borderTop: "1px solid #{brd_mid_gray}"
 
           BanHammer {all_items}
 
@@ -276,7 +274,7 @@ window.ModerationDash = ReactiveComponent
       else 
         DIV 
           style: 
-            borderTop: '1px solid #bbb'
+            borderTop: "1px solid #{brd_mid_gray}"
 
 
           UL 
@@ -298,7 +296,7 @@ window.ModerationDash = ReactiveComponent
                     style: 
                       fontSize: 14
                       fontWeight: if active then 700
-                      color: if active then 'black' else '#666'
+                      color: if active then text_dark else text_light_gray
 
                     onClick: => 
                       @local.show_category = definition.name 
@@ -310,7 +308,7 @@ window.ModerationDash = ReactiveComponent
                     style: 
                       fontSize: 10
                       paddingLeft: 4
-                      color: '#666'
+                      color: text_light_gray
                     "[#{definition.items?.length or 0}]"
 
 
@@ -702,18 +700,18 @@ styles += """
 }
 
 .grid-table-header {
-  background-color: #aaa;
+  background-color: #{bg_light_gray};
   padding: 1rem;
   font-weight: bold;
 }
 
 .row {
-  background-color: #eee;
+  background-color: #{bg_lightest_gray};
   padding: 1rem;
 }
 
 .row.alt {
-  background-color: #ddd;
+  background-color: #{bg_lighter_gray};
 }
 
 
@@ -887,9 +885,9 @@ DirectMessage = ReactiveComponent
       _.defaults wrapper_style, 
         margin: '18px 0'
         padding: '15px 20px'
-        backgroundColor: 'white'
-        backgroundColor: considerit_gray
-        boxShadow: "0 2px 4px rgba(0,0,0,.4)"
+        backgroundColor: bg_light
+        backgroundColor: bg_speech_bubble
+        boxShadow: "0 2px 4px #{shadow_dark_50}"
 
     DIV 
       style: wrapper_style

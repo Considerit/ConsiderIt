@@ -31,7 +31,6 @@ toggle_modes = ->
 
       SPAN 
         style: 
-          # color: 'white'
           fontWeight: 300
           fontSize: 16
 
@@ -105,7 +104,7 @@ window.Login = ReactiveComponent
                 DIV 
                   style:
                     fontSize: 13
-                    color: auth_text_gray
+                    color: text_gray
                     padding: '16px 0'
                   dangerouslySetInnerHTML: {__html: customization('login_footer')}
 
@@ -135,7 +134,7 @@ window.Login = ReactiveComponent
       BUTTON
         style: 
           textDecoration: 'underline'
-          color: '#333'
+          color: text_gray
           backgroundColor: 'transparent'
           border: 'none'
           fontSize: 12
@@ -213,7 +212,6 @@ window.CreateAccount = ReactiveComponent
               SPAN 
                 style: 
                   fontSize: 12
-                  color: "#666"
                   textTransform: 'lowercase'
                   marginLeft: 4
                   display: 'inline-block'
@@ -250,7 +248,7 @@ window.CreateAccount = ReactiveComponent
           DIV 
             style:
               fontSize: 13
-              color: auth_text_gray
+              color: text_gray
               padding: '16px 0'
             dangerouslySetInnerHTML: {__html: customization('auth_footer')}
 
@@ -260,7 +258,7 @@ window.CreateAccount = ReactiveComponent
             DIV 
               style:
                 fontSize: 13
-                color: auth_text_gray
+                color: text_gray
                 padding: '16px 0'
               dangerouslySetInnerHTML: {__html: customization('login_footer')}
 
@@ -289,7 +287,7 @@ window.CreateAccount = ReactiveComponent
       style: 
         marginTop: 12
         fontSize: 13
-        color: '#444'
+        color: text_gray
         textAlign: 'center'
 
       dangerouslySetInnerHTML: __html: terms

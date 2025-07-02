@@ -18,10 +18,10 @@ window.Footer = ReactiveComponent
 styles += """
   .footer_wrapper {
     padding: 65px 0 15px 0;
-    background-color: #444444;
+    background-color: #{bg_dark_gray};
     position: relative;
     z-index: 3;
-    color: white;
+    color: #{text_light};
   }
 
   .Footer .primary_info {
@@ -97,20 +97,6 @@ styles += """
 """
 
 
-big_button = -> 
-  backgroundColor: logo_red
-  # boxShadow: "0 4px 0 0 black"
-  boxShadow: "0 1px 2px 0 rgb(0 0 0 / 50%)"
-  fontWeight: 700
-  color: 'white'
-  padding: '6px 60px'
-  display: 'inline-block'
-  fontSize: 24
-  border: 'none'
-  borderRadius: 12
-  borderBottom: "1px solid black"
-
-
 window.DefaultFooter = ReactiveComponent
   displayName: 'Footer'
   render: ->
@@ -119,7 +105,7 @@ window.DefaultFooter = ReactiveComponent
     separator = SPAN 
       style: 
         padding: '0 6px'
-        color: '#ccc'
+        color: text_gray_on_dark
       #dangerouslySetInnerHTML: { __html: "&bull;"}
       '|'
 
@@ -164,7 +150,7 @@ window.DefaultFooter = ReactiveComponent
             }
 
             .custom-shape-divider-top-1651729272 .shape-fill {
-                fill: #{if bus_fetch('location').url.indexOf('/dashboard') > -1 || TABLET_SIZE() then 'white' else main_background_color};
+                fill: #{if bus_fetch('location').url.indexOf('/dashboard') > -1 || TABLET_SIZE() then 'white' else bg_container};
             }
             </style>
             <div class="custom-shape-divider-top-1651729272">
@@ -186,7 +172,7 @@ window.DefaultFooter = ReactiveComponent
 
             TechnologyByConsiderit
               size: if PHONE_SIZE() then 18 else 26
-              color: 'white'
+              color: text_light
 
 
             BR null
@@ -347,8 +333,8 @@ window.CompletionWidget = ReactiveComponent
 
     DIV 
       style:
-        backgroundColor: if complete then selected_color else "black",
-        color: 'white',
+        backgroundColor: if complete then selected_color else bg_dark
+        color: text_light
         padding: "12px 0 8px 0"
         position: 'fixed'
         bottom: 0

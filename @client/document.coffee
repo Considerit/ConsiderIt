@@ -20,7 +20,7 @@ GoogleDocEmbed = ReactiveComponent
 
 styles += """
   .Documentation {
-    background-color: #eee;
+    background-color: #{bg_lightest_gray};
     padding: 56px 0;
   }
   .doc_menu {
@@ -42,9 +42,7 @@ styles += """
     display: inline-block;    
   }
   .doc_menu li.active {
-    # background-color: #{focus_color()};
-    # color: white;
-    background-color: white;
+    background-color: #{bg_light};
   }
 
   .doc_groups {
@@ -72,7 +70,7 @@ styles += """
   .doc_group ul a {
     text-decoration: none;
     font-weight: 500;
-    color: #444;
+    color: #{text_gray};
   }
 
   .doc_group ul a:hover {
@@ -80,7 +78,7 @@ styles += """
   }
 
   .doc_group ul .active a {
-    color: black;
+    color: #{text_dark};
     text-decoration: underline;
   }
 
@@ -224,8 +222,8 @@ styles += """
     max-width: 1100px;
     margin: 0px auto;
     padding: 36px 86px;
-    background-color: white;
-    box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 2px;  
+    background-color: #{bg_light};
+    box-shadow: #{shadow_dark_20} 0px 1px 2px;  
   }
 
   @media #{NOT_LAPTOP_MEDIA} {
@@ -272,7 +270,7 @@ styles += """
   }
 
   .markdown-body b, .markdown-body strong {
-    color: black;
+    color: #{text_dark};
   }
 
 """

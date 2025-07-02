@@ -36,7 +36,7 @@ window.EditComment = ReactiveComponent
           width: 50
           height: 50
           backgroundColor: if permitted < 0 then 'transparent'
-          border:          if permitted < 0 then '1px dashed grey'
+          border:          if permitted < 0 then "1px dashed #{brd_dark_gray}"
 
         key: current_user.user
         hide_popover: true
@@ -85,7 +85,7 @@ window.EditComment = ReactiveComponent
               BUTTON 
                 style: 
                   textDecoration: 'underline'
-                  color: focus_color()
+                  color: focus_color
                   fontSize: if browser.is_mobile then 18
                   backgroundColor: 'transparent'
                   padding: 0

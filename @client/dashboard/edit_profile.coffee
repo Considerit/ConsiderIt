@@ -4,7 +4,6 @@ require './translations'
 
 window.styles += """
   #EDITPROFILE label.AUTH_field_label {
-    color: #888888;
     text-transform: uppercase;
     margin-bottom: 2px;
     margin-top: 8px;
@@ -29,7 +28,7 @@ window.styles += """
   .dangerzone input[type="submit"] {
     background-color: #{failure_color};
     padding: 8px 24px;
-    color: white;
+    color: #{text_light};
     font-weight: 600;
     border: none;
     border-radius: 8px;    
@@ -48,14 +47,17 @@ window.EditProfile = ReactiveComponent
 
     is_SSO = bus_fetch('/subdomain').SSO_domain  
 
+
     if @local.saved_successfully && is_SSO
       loadPage '/'
+
 
     on_submit = (ev) =>
       @Submit ev, 
         action: 'edit profile'
         has_host_questions: true
         has_avatar_upload: true
+        onSuccess: -> show_flash(i18n.successful_update)
 
     DIV 
       id: 'EDITPROFILE'
@@ -102,7 +104,7 @@ window.EditProfile = ReactiveComponent
       if forum_has_host_questions()
         DIV 
           style: 
-            backgroundColor: considerit_gray
+            backgroundColor: bg_speech_bubble
             marginBottom: 24
             marginTop: 52
 
@@ -119,17 +121,13 @@ window.EditProfile = ReactiveComponent
             disable_unchecking_required_booleans: true
 
       BUTTON 
-        className: "btn #{if @local.submitting then 'disabled' else ''}"
+        className: "btn"
+        disabled: @local.submitting
         onClick: on_submit
 
         translator 'shared.save_changes_button', 'Save changes'
 
-      if @local.saved_successfully
-        DIV 
-          style: 
-            backgroundColor: 'white'
-            color: '#888'
-          i18n.successful_update
+
 
       @ShowErrors()
 

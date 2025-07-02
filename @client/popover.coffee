@@ -263,10 +263,10 @@ window.Popover = ReactiveComponent
       padding: '4px 8px'
       borderRadius: 8
       zIndex: 9999
-      color: 'black'
-      backgroundColor: 'white'
+      color: text_dark
+      backgroundColor: bg_light
       position: 'absolute'      
-      boxShadow: '0 1px 9px rgba(0,0,0,.5)'
+      boxShadow: "0 1px 9px #{shadow_dark_50}"
       maxWidth: '80vw'
 
 
@@ -309,7 +309,7 @@ window.Popover = ReactiveComponent
 
         POLYGON
           stroke: "none" 
-          fill: 'white'
+          fill: bg_light
           points: "530.874,0.5 265.87,459.5 0.866,0.5"
 
         G null,
@@ -320,7 +320,7 @@ window.Popover = ReactiveComponent
               y1: 0.5
               x2: 265.87
               y2: 459.5
-              stroke: "black" 
+              stroke: brd_dark
               strokeWidth: 35
               strokeOpacity: .25
 

@@ -65,7 +65,7 @@ window.EditList = ReactiveComponent
 
             ThreeDotsIcon              
               size: 26
-              fill: '#888'
+              fill: text_neutral
 
           render_option: (option, is_active) ->
             SPAN 
@@ -152,10 +152,7 @@ styles += """
   }
 
   .LIST-fat-header-field {
-    background-color: white;
-    border: 1px solid #ddd;
     border-radius: 8px;
-    outline-color: #ccc;
     line-height: 1.4;
     padding: 8px 12px;
   }
@@ -165,7 +162,7 @@ styles += """
     font-weight: 400;
     margin-top: 36px;
     margin-bottom: 4px;
-    color: #{focus_color()};
+    color: #{focus_color};
     font-size: 18px;
   }
 
@@ -183,7 +180,7 @@ styles += """
   }
 
   .LIST-option-block .permissions_explanation {
-    color: #333333;
+    color: #{text_gray};
     font-weight: 400;
     margin-left: 24px;
     font-size: 12px;
@@ -200,16 +197,20 @@ styles += """
     position: absolute;
     border: none;
     outline: none;
-    color: #444;
+    color: #{text_gray};
     font-size: 12px;
   }
 
   #edit_description .ql-editor {
     min-height: 48px;
     padding: 12px 12px;
-    border: 1px solid #ddd;
-    background-color: white;
     text-align: inherit;
+  }
+
+  .LIST-fat-header-field, #edit_description .ql-editor {
+    border: 1px solid #{brd_light_gray};
+    background-color: #{bg_light};
+
   }
 
   #edit_description .ql-editor.ql-blank::before {
@@ -231,10 +232,6 @@ styles += """
     height: 18px;
     margin-right: 12px;
     flex-shrink: 0;
-  }
-
-  #edit_description .wysiwyg_text.focused {
-    outline: none;
   }
 
 
@@ -442,7 +439,7 @@ window.EditNewList = ReactiveComponent
             BUTTON 
               className: 'btn'
               style: 
-                backgroundColor: focus_color()
+                backgroundColor: focus_color
                 fontSize: 24
                 maxWidth: 465
                 width: '100%'
@@ -459,7 +456,7 @@ window.EditNewList = ReactiveComponent
             BUTTON
               className: 'like_link'
               style: 
-                color: '#777'
+                color: text_light_gray
                 marginTop: 14
                 
 
@@ -499,7 +496,7 @@ window.EditNewList = ReactiveComponent
           style: 
             padding: '4px 6px'
             fontSize: 'inherit'
-            border: '1px solid #ccc'
+            border: "1px solid #{brd_light_gray}"
           onChange: (e) =>
             edit_list.list_item_name = e.target.value
             save edit_list
@@ -617,7 +614,7 @@ window.EditNewList = ReactiveComponent
             flexGrow: 2
             width: '100%'
             borderTop: '1px solid'
-            borderColor: '#999'
+            borderColor: brd_mid_gray
             maxWidth: 500
           
           INPUT 
@@ -662,7 +659,7 @@ window.EditNewList = ReactiveComponent
             top: -13
 
           anchor_style: 
-            color: 'inherit' #focus_color() #'inherit'
+            color: 'inherit' 
             height: '100%'
             padding: '0px 4px'
             position: 'relative'
@@ -672,14 +669,14 @@ window.EditNewList = ReactiveComponent
 
           menu_style: 
             width: 420
-            backgroundColor: '#fff'
-            border: "1px solid #aaa"
+            backgroundColor: bg_light
+            border: "1px solid #{brd_mid_gray}"
             right: -99999
             left: 'auto'
             top: 24
             fontWeight: 400
             overflow: 'hidden'
-            boxShadow: '0 1px 2px rgba(0,0,0,.3)'
+            boxShadow: "0 1px 2px #{shadow_dark_25}"
             textAlign: 'left'
 
           menu_when_open_style: 
@@ -688,12 +685,12 @@ window.EditNewList = ReactiveComponent
           option_style: 
             padding: '8px 18px 12px 18px'
             display: 'block'
-            color: 'black'
+            color: text_dark
             fontWeight: 400
 
           active_option_style: 
-            color: 'black'
-            backgroundColor: '#EEEEEE'
+            color: text_dark
+            backgroundColor: bg_lightest_gray
 
 
           selection_made_callback: (option) => 
@@ -720,13 +717,13 @@ window.EditNewList = ReactiveComponent
             SPAN null, 
               LABEL 
                 style: 
-                  color: focus_color()
+                  color: focus_color
                   fontSize: 14
                   marginRight: 12
                   cursor: 'pointer'
                 translator 'engage.list-config-spectrum-select', 'presets'
 
-              SPAN style: _.extend cssTriangle 'bottom', focus_color(), 13, 8,
+              SPAN style: _.extend cssTriangle 'bottom', focus_color, 13, 8,
                 display: 'inline-block'
 
           render_option: (option, is_active) ->
@@ -734,7 +731,7 @@ window.EditNewList = ReactiveComponent
               return  DIV 
                         style: 
                           fontSize: 16
-                          borderBottom: '1px dashed #ccc'
+                          borderBottom: "1px dashed #{brd_light_gray}"
                           textAlign: 'center'
                           padding: '12px 0'
 
@@ -757,7 +754,7 @@ window.EditNewList = ReactiveComponent
                 dangerouslySetInnerHTML: __html: "&#10231;"
                 style: 
                   fontSize: 32
-                  color: '#888'
+                  color: text_light_gray
 
               SPAN 
                 style:
@@ -786,7 +783,7 @@ window.EditNewList = ReactiveComponent
           className: 'like_link'
           style: 
             textDecoration: 'underline'
-            color: focus_color()
+            color: focus_color
             marginBottom: 24
             marginTop: 8
             display: if screencasting() then 'none'

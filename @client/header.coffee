@@ -41,8 +41,6 @@ window.Header = ReactiveComponent
       # DIV 
       #   id: 'upgrade-message'
       #   style: 
-      #     backgroundColor: 'black'
-      #     color: 'white'
       #     padding: 10
       #     fontSize: 24
       #     textAlign: 'center'
@@ -86,7 +84,7 @@ window.Header = ReactiveComponent
           (customization('HomepageHeader') or customization('SiteHeader') or PhotoBanner).apply(@)
         else
           ShortHeader
-            background: 'white'
+            background: bg_light
             text: ''
             logo_src: false
 
@@ -97,7 +95,7 @@ window.Header = ReactiveComponent
               position: 'absolute'
               right: 4
               bottom: 4
-              color: if light_bg then 'black' else 'white'
+              color: if light_bg then text_dark else text_light
               fontSize: 14
             target: '_blank'
             dangerouslySetInnerHTML: __html: subdomain.customizations?.banner?.masthead_copyright_notice

@@ -513,12 +513,12 @@
 #         height: @props.height + REGION_SELECTION_VERTICAL_PADDING
 #         position: 'absolute'
 #         width: selection_width
-#         backgroundColor: "rgb(247, 247, 247)"
+#         backgroundColor: "#F7F7F7"
 #         cursor: 'pointer'
 #         left: selection_left
 #         top: -2 #- REGION_SELECTION_VERTICAL_PADDING
 #         borderTop: "2px solid"
-#         borderTopColor: if opinion_views.active_views.region_selected then focus_color() else 'transparent'
+#         borderTopColor: if opinion_views.active_views.region_selected then focus_color else 'transparent'
 
 #       if !opinion_views.active_views.region_selected
 #         DIV

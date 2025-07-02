@@ -2,8 +2,8 @@
 
 styles += """
   .INTAKE_QUESTIONS .intake-question {
-    background-color: #EEEEEE;
-    border: 1px solid #DDDDDD;
+    background-color: #{bg_lightest_gray};
+    border: 1px solid #{brd_light_gray};
     padding: 18px 10px 18px 38px;
     border-radius: 8px;
     margin: 8px 0;
@@ -86,18 +86,19 @@ move_question = (from, to) ->
 
 window.AnonymizationCheckForSigninQuestions = -> 
   subdomain = bus_fetch '/subdomain'
-  if subdomain.customizations.anonymize_permanently && !subdomain.customizations.anonymization_safe_opinion_filters
+  if true || subdomain.customizations.anonymize_permanently && !subdomain.customizations.anonymization_safe_opinion_filters
     questions = (q for q in subdomain.customizations.user_tags when q.self_report && q.key.indexOf('pledge_taken') == -1)
 
-    if questions.length > 0
+    if true || questions.length > 0
       message = 
-        style: {backgroundColor: caution_color, color: 'black'}
         img: 'venetian-mask.png' 
         label: "You have permanently set participation to anonymous. The answers to any sign-in questions you ask will not be available to you. If the questions you are asking are not personally revealing for participants, please contact help@consider.it to whitelist your questions."
       return DIV 
         key: message
-        style: _.defaults {}, (message.style or {}),
-          backgroundColor: "rgb(184 226 187)"
+        style: 
+          border: "1px solid #{brd_mid_gray}"
+          backgroundColor: bg_lightest_gray
+          color: text_dark
           borderRadius: 12
           padding: '12px 24px'
           maxWidth: 700
@@ -220,13 +221,13 @@ window.IntakeQuestions = ReactiveComponent
                     intake_q_state.editing = q
                     save intake_q_state
 
-                  edit_icon 23, 23, '#888'
+                  edit_icon 23, 23, text_neutral
 
                 BUTTON 
                   style: 
                     cursor: 'move'
 
-                  drag_icon 23, '#888'
+                  drag_icon 23, text_neutral
 
                 BUTTON 
                   style:
@@ -234,7 +235,7 @@ window.IntakeQuestions = ReactiveComponent
                     right: -36
                     cursor: 'pointer'
                   onClick: -> delete_question(q)
-                  trash_icon 23, 23, '#888'
+                  trash_icon 23, 23, text_neutral
 
 
         BUTTON 
@@ -334,7 +335,6 @@ styles += """
     font-weight: 500;
     text-transform: uppercase;
     margin-bottom: 4px;
-    // color: #666;
   }
 
   [data-widget="EditIntakeQuestion"] .field label .required {
@@ -346,7 +346,7 @@ styles += """
     padding: 6px 8px;
     width: 100%;
     font-size: 16px;
-    border: 1px solid #CCCCCC;
+    border: 1px solid #{brd_light_gray};
   }
 
 """
@@ -517,7 +517,7 @@ window.EditIntakeQuestion = ReactiveComponent
           DIV 
             style: 
               fontSize: 12
-              color: '#333333'
+              color: text_gray
             'It is best practice to enable a “Prefer not to answer” option for nonessential questions.'
             BR null
             'To enable an open-ended response option, include a response named “Other”'
@@ -611,7 +611,7 @@ window.EditIntakeQuestion = ReactiveComponent
           disabled: !validated
           style: 
             marginRight: 12
-            backgroundColor: if !validated then '#aaa'
+            backgroundColor: if !validated then bg_light_gray
             cursor: if !validated then 'not-allowed'
 
           'Save'

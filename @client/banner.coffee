@@ -1,12 +1,5 @@
 require './tabs'
 
-
-
-
-window.DEFAULT_BACKGROUND_COLOR = focus_blue
-
-
-
 ###########################
 # HOMEPAGE HEADER TEMPLATES
 
@@ -87,7 +80,7 @@ CustomizeGoogleTranslate = ReactiveComponent
           LABEL 
             className: 'toggle_switch_label'
             style:
-              backgroundColor: if is_light then 'rgba(255,255,255,.4)' else 'rgba(0,0,0,.4)'
+              backgroundColor: if is_light then bg_light_trans_25 else bg_dark_trans_25
 
             htmlFor: 'enable_google_translate'
             B null,
@@ -108,7 +101,7 @@ CustomizeGoogleTranslate = ReactiveComponent
               style: 
                 marginBottom: 16
                 textAlign: 'center'
-                color: 'black'
+                color: text_dark
 
               if edit_forum.editing 
                 AutoGrowTextArea 
@@ -145,10 +138,11 @@ styles += """
   line-height: 1.4;
 }
 .CustomizeTitle > .banner_title::placeholder {
-  color: rgba(0,0,0,.4);
+  color: #{text_neutral};
 }
+
 .dark .CustomizeTitle > .banner_title::placeholder, .with-image .CustomizeTitle > .banner_title::placeholder {
-  color: rgba(255,255,255,.6);
+  color: #{text_neutral};
 }
 """
 
@@ -227,7 +221,7 @@ styles += """
     min-height: 48px;
   }
   .wrapper.with-image .CustomizeDescription .ql-editor.ql-blank::before {
-    color: rgba(255,255,255,.4);
+    color: #{bg_light_trans_40};
   } 
 
 
@@ -289,7 +283,7 @@ CustomizeDescription = ReactiveComponent
           placeholder: translator("banner.description.label", "Describe your forum. What is being discussed? Who is it for, and who are the hosts? How long will it be open?")
           focus_on_mount: focus_on_mount
           button_style: 
-            backgroundColor: 'white'  
+            backgroundColor: bg_light
     else
       DIV null,
            
@@ -314,7 +308,7 @@ UploadFileSVG = (opts) ->
     dangerouslySetInnerHTML: __html: '<g><path d="M89.4,46.5c-2.3,0-4.1,1.8-4.1,4.1v28.2H14.6V50.5c0-2.3-1.8-4.1-4.1-4.1c-2.3,0-4.1,1.8-4.1,4.1v32.4   c0,2.3,1.8,4.1,4.1,4.1h78.9c2.3,0,4.1-1.8,4.1-4.1V50.5C93.5,48.3,91.7,46.5,89.4,46.5z"></path><path d="M52.7,14.2c-0.1-0.1-0.2-0.2-0.4-0.3c-0.1,0-0.1-0.1-0.3-0.2c-0.6-0.5-1.4-0.7-2.2-0.7c-0.5,0-1.1,0.1-1.6,0.3   c-0.5,0.2-1,0.5-1.4,0.8L26.8,34.3c-0.8,0.8-1.2,1.9-1.2,3c0,1.1,0.5,2,1.2,2.7c0.8,0.8,1.7,1.2,2.9,1.2s2.2-0.4,2.9-1.2l13-13.1   v41.6c0,2.3,1.8,4.1,4.1,4.1c2.3,0,4.1-1.8,4.1-4.1V26.9L67.1,40c0.8,0.8,1.7,1.2,2.9,1.2s2.2-0.4,2.9-1.2c0.8-0.8,1.2-1.9,1.2-3   c0-1.1-0.5-2-1.2-2.7L52.7,14.2z"></path></g>'
     height: opts.height or 100
     width: opts.height or 100
-    fill: opts.fill or '#fff'
+    fill: opts.fill or bg_light
     x: 0
     y: 0
     viewBox: "0 0 100 100"
@@ -371,7 +365,7 @@ UploadableLogo = (opts) ->
         SVG 
           height: delete_size
           width: delete_size
-          fill: '#fff'
+          fill: bg_light
           x: 0
           y: 0
           viewBox: "0 0 511.995 511.995"
@@ -410,7 +404,7 @@ UploadableLogo = (opts) ->
 
         UploadFileSVG
           height: icon_height
-          fill: if is_light then 'black' else 'white'
+          fill: if is_light then text_dark else text_light
 
 
 
@@ -547,8 +541,8 @@ CustomizeLogo = ReactiveComponent
     if edit_forum.editing
       _.extend style, 
         borderStyle: if !has_logo then 'dashed' else 'solid'
-        borderColor: if is_light then "rgba(0,0,0,.7)" else 'rgba(255,255,255,.7)'
-        borderWidth: 1 
+        borderColor: if is_light then brd_dark else brd_light
+        borderWidth: 2
         left: style.left - 1
         top: style.top - 1
 
@@ -574,7 +568,7 @@ CustomizeLogo = ReactiveComponent
           style: 
             position: 'absolute'
             fontSize: 14
-            color: if is_light then 'rgb(0,0,0)' else 'rgb(255,255,255)'
+            color: if is_light then text_dark else text_light
             zIndex: 1
             bottom: 0
             marginTop: 60
@@ -590,7 +584,7 @@ CustomizeLogo = ReactiveComponent
                 border: 'none'
                 textDecoration: 'underline'
                 padding: 0
-                backgroundColor: if !is_light then 'rgba(0,0,0,.3)' else 'rgba(255,255,255,.3)'
+                backgroundColor: if !is_light then bg_dark_trans_25 else bg_light_trans_25
 
               onClick: ->
                 document.querySelector('input#logo').click()
@@ -601,7 +595,7 @@ CustomizeLogo = ReactiveComponent
       if edit_forum.editing
         DIV 
           style: 
-            backgroundColor: if has_masthead && !has_logo then (if !is_light then 'rgba(0,0,0,.4)' else 'rgba(255,255,255,.4)')
+            backgroundColor: if has_masthead && !has_logo then (if !is_light then bg_dark_trans_25 else bg_light_trans_25)
             position: 'absolute'
             left: 0
             top: 0
@@ -615,7 +609,7 @@ CustomizeLogo = ReactiveComponent
           onMouseMove: if edit_forum.editing then onMouseMoveResize
 
           style: 
-            backgroundColor: if is_light then "black" else "white"
+            backgroundColor: if is_light then bg_dark else bg_light
             height: 17 * 2
             width: 17 * 2
             position: 'absolute'
@@ -625,7 +619,7 @@ CustomizeLogo = ReactiveComponent
             transform: 'rotate(45deg)'
             zIndex: 2
 
-DEFAULT_TEXT_BLOCK_COLOR = "#000000"
+DEFAULT_TEXT_BLOCK_COLOR = bg_dark
 DEFAULT_TEXT_BLOCK_OPACITY = 255 * .8
 CustomizeTextBlock = ReactiveComponent
   displayName: 'CustomizeTextBlock'
@@ -682,7 +676,7 @@ UploadBackgroundImageSVG = (opts) ->
     dangerouslySetInnerHTML: __html: '<g><path d="M64.3,53.9l-7.4-10.4c-0.6-0.8-1.7-0.9-2.4-0.2l-4.2,4.1c-0.7,0.7-1.8,0.6-2.4-0.2L37.5,33.3c-0.7-0.9-2-0.8-2.6,0.1     L17.9,60.3c-0.7,1,0.1,2.4,1.4,2.4H58C59.4,59.3,61.6,56.3,64.3,53.9z"></path><circle cx="59.3" cy="30.5" r="5.9"></circle><path d="M84.6,54V13.1c0-1.4-1.1-2.6-2.6-2.6H5.1c-1.4,0-2.6,1.1-2.6,2.6v60.7c0,1.4,1.2,2.6,2.6,2.6h57c2.2,7.5,9.1,13,17.3,13     c10,0,18.1-8.1,18.1-18.1C97.5,63.1,92,56.2,84.6,54z M7.6,15.7h71.8v37.6c0,0,0,0,0,0c-10,0-18.1,8.1-18.1,18.1H7.6V15.7z      M79.4,84.3c-7.1,0-13-5.8-13-13c0-7.1,5.8-13,13-13c7.1,0,13,5.8,13,13C92.4,78.5,86.6,84.3,79.4,84.3z"></path><path d="M84.9,68.8L81,63.6c-0.4-0.5-1-0.8-1.6-0.8c0,0,0,0,0,0c-0.6,0-1.2,0.3-1.6,0.8l-3.9,5.2c-0.5,0.6-0.5,1.4-0.2,2.1     c0.3,0.7,1,1.1,1.8,1.1h1.6v5.9c0,1.3,1,2.3,2.3,2.3c1.3,0,2.3-1,2.3-2.3V72h1.6c0.8,0,1.4-0.4,1.8-1.1     C85.5,70.2,85.4,69.4,84.9,68.8L84.9,68.8z"></path></g></g></g>'
     height: opts.height or 100
     width: opts.width or opts.height or 100
-    fill: opts.fill or '#fff'
+    fill: opts.fill
     x: "0px" 
     y: "0px" 
     viewBox: "0 0 100 100" 
@@ -713,7 +707,7 @@ CustomizeBackground = ReactiveComponent
     is_light = is_light_background()
 
     icon_height = 50
-    color = if is_light then 'rgba(0,0,0,1)' else 'rgba(255,255,255,1)'
+    color = if is_light then text_dark else text_light
 
     compressed = CONTENT_WIDTH() < 1036
 
@@ -726,7 +720,7 @@ CustomizeBackground = ReactiveComponent
           # bottom: 50
           # width: 218
           float: if !compressed then 'right'
-          backgroundColor: if is_light then 'rgba(255,255,255,.4)' else 'rgba(0,0,0,.4)'
+          backgroundColor: if is_light then bg_light_trans_25 else bg_dark_trans_25
           padding: '12px 24px'
           zIndex: 9
           marginTop: if compressed then 12 else if has_masthead && !compressed then -120 else -100
@@ -746,7 +740,7 @@ CustomizeBackground = ReactiveComponent
               alignItems: 'center'
               flexDirection: 'column'
               padding: 4
-              border: "1px dashed #{if is_light then 'black' else 'white'}"
+              border: "1px dashed #{if is_light then brd_dark else brd_light}"
               borderRadius: 4
 
               
@@ -761,7 +755,7 @@ CustomizeBackground = ReactiveComponent
 
               UploadBackgroundImageSVG
                 height: icon_height
-                fill: if is_light then 'black' else 'white'
+                fill: if is_light then bg_dark else bg_light
 
             DIV 
               style: 
@@ -800,7 +794,7 @@ CustomizeBackground = ReactiveComponent
                     onClick: (e) =>
                       e.stopPropagation()
                       e.preventDefault()
-                      @local.background_css = DEFAULT_BACKGROUND_COLOR
+                      @local.background_css = focus_color
                       save @local
                       document.querySelector('button#delete_masthead').click()
 
@@ -834,7 +828,7 @@ CustomizeBackground = ReactiveComponent
                   value: is_light
 
                   onChange: (e) =>
-                    @local.background_css = if e.target.value == 'true' then "#ffffff" else '#000000'
+                    @local.background_css = if e.target.value == 'true' then bg_light else bg_dark
                     save @local
 
                   OPTION 
@@ -864,7 +858,7 @@ CustomizeBackground = ReactiveComponent
                   style: 
                     marginLeft: 4
                   name: 'background_color'
-                  value: @local.background_css or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
+                  value: @local.background_css or customization('banner')?.background_css or focus_color
                   onChange: (e) =>
                     @local.background_css = e.target.value
                     save @local
@@ -898,14 +892,12 @@ window.EditBanner = ReactiveComponent
       @delete_logo = true 
       save edit_banner
 
-
-
     DIV null, 
       if !edit_forum.editing
         EditForum()
 
       if @local.file_errors
-        DIV style: {color: 'red'}, @local.file_errors
+        ErrorBlock @local.file_errors
 
       FORM 
         id: 'banner_files'
@@ -953,9 +945,9 @@ window.EditBanner = ReactiveComponent
                   is_light = is_image_mostly_light image_data, img.width, img.height
 
                   if is_light 
-                    subdomain.customizations.banner.background_css = '#ffffff'
+                    subdomain.customizations.banner.background_css = bg_light
                   else 
-                    subdomain.customizations.banner.background_css = '#000000'
+                    subdomain.customizations.banner.background_css = bg_dark
 
                   save subdomain
 
@@ -1056,12 +1048,12 @@ window.PhotoBanner = (opts) ->
 
   return SPAN null if !subdomain.name 
 
-  tab_background_color = (if edit_forum.editing then edit_banner.text_background_css) or customization('banner')?.text_background_css or '#666'
+  tab_background_color = (if edit_forum.editing then edit_banner.text_background_css) or customization('banner')?.text_background_css or bg_dark_gray
 
   if !homepage
     return  DIV
               style: 
-                backgroundColor: 'white'
+                backgroundColor: bg_container
 
               DIV
                 style:
@@ -1090,24 +1082,24 @@ window.PhotoBanner = (opts) ->
   has_translation_callout = subdomain.customizations.google_translate_style?.callout
 
 
-  background_color = customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
+  background_color = customization('banner')?.background_css or focus_color
 
   is_dark_theme = !is_light_background()
 
   if has_image_background
     text_block_color = edit_banner.text_background_css or customization('banner')?.text_background_css or DEFAULT_TEXT_BLOCK_COLOR 
     text_block_opacity = parseInt(edit_banner.text_background_css_opacity or customization('banner')?.text_background_css_opacity or DEFAULT_TEXT_BLOCK_OPACITY)
-    text_block_background = "#{text_block_color}#{convert_opacity(text_block_opacity)}" or 'rgba(0, 0, 0, .8)' 
+    text_block_background = "#{text_block_color}#{convert_opacity(text_block_opacity)}" or bg_dark_trans_80
     
     if text_block_opacity > 126
       text_block_is_dark = !is_light_background(text_block_color)
     else 
       text_block_is_dark = is_dark_theme
 
-    text_color = if text_block_is_dark then 'white' else 'black'
+    text_color = if text_block_is_dark then text_light else text_dark
 
   else  
-    text_color = if is_light_background(background_color) then 'black' else 'white'
+    text_color = if is_light_background(background_color) then text_dark else text_light
 
 
 
@@ -1119,11 +1111,11 @@ window.PhotoBanner = (opts) ->
       dangerouslySetInnerHTML: __html: """
         .PhotoBanner {
           position: relative;
-          color: black;
+          color: #{text_dark};
           padding-top: #{if edit_forum.editing then '54px' else '0px'};
         }
         .dark .PhotoBanner {
-          color: white;
+          color: #{text_light};
         }
         .PhotoBanner > .wrapper.with-image {
           background-image: url(#{edit_banner.masthead_preview or customization('banner')?.background_image_url});
@@ -1149,7 +1141,7 @@ window.PhotoBanner = (opts) ->
           padding: 16px;
           max-width: 380px;
           margin: 0 auto; 
-          background-color: rgba(255,255,255,.8);
+          background-color: #{bg_light_trans_80};
           position: relative; 
         }
 
@@ -1167,19 +1159,19 @@ window.PhotoBanner = (opts) ->
           background-color: #{text_block_background};
         } 
 
-
-        // .dark .PhotoBanner > .wrapper > .text_block, .PhotoBanner > .wrapper.with-image > .text_block {
-        //  color: black;
-        // }
-
         .PhotoBanner > .wrapper .CustomizeTitle .banner_title {
           font-size: 50px;
           font-weight: 700;
           font-family: #{header_font()};
           text-align: center;
           margin-bottom: #{if has_description || edit_forum.editing then 28 else 0}px;
-          text-shadow: 0px 1px 2px rgba(0,0,0,.4);
         }
+
+        .dark .PhotoBanner > .wrapper .CustomizeTitle .banner_title, 
+        .PhotoBanner > .wrapper.with-image .CustomizeTitle .banner_title {
+          text-shadow: 0px 1px 2px #{shadow_dark_50};
+        }
+
 
         @media #{TABLET_MEDIA} {
           .PhotoBanner > .wrapper .CustomizeTitle .banner_title {
@@ -1199,7 +1191,6 @@ window.PhotoBanner = (opts) ->
           }
         }  
 
-
         .PhotoBanner #tabs {
           margin-top: 100px;
           top: 0;
@@ -1211,8 +1202,6 @@ window.PhotoBanner = (opts) ->
           top: 0;
         }
 
-
-
         .PhotoBanner #tabs > ul {
         }
         .PhotoBanner #tabs > ul > li {
@@ -1220,21 +1209,15 @@ window.PhotoBanner = (opts) ->
           background-color: #{tab_background_color}AA;          
         }          
         .PhotoBanner #tabs > ul > li.selected {
-          background-color: #{main_background_color};
-          color: black;
+          background-color: #{bg_container};
+          color: #{text_dark};
         }
         .PhotoBanner #tabs > ul > li > h4 {
-          //text-transform: uppercase;
           font-family: #{header_font()};
           font-weight: 600;
           font-size: 17px;
           padding: 10px 16px 4px;
           color: #{text_color};
-        }
-        .dark .PhotoBanner #tabs > ul > li > h4 {
-        }
-        .PhotoBanner #tabs > ul > li.selected > h4, .PhotoBanner #tabs > ul > li.selected > h4 {
-          // color: black;        
         }
         """
 
@@ -1265,7 +1248,7 @@ window.PhotoBanner = (opts) ->
             key: 'editable_description'
             opts: opts
             style: 
-              border: if !has_description then (if has_image_background || is_dark_theme then '1px solid rgba(255,255,255,.5)' else '1px solid rgba(0,0,0,.5)')
+              border: if !has_description then (if has_image_background || is_dark_theme then "1px solid #{shadow_light}" else "1px solid #{shadow_dark_50}")
 
       CustomizeBackground()
 
@@ -1274,611 +1257,7 @@ window.PhotoBanner = (opts) ->
 
 
 
-window.MediaBanner = -> 
-  homepage = is_a_dialogue_page()
-  subdomain = bus_fetch '/subdomain'
-  edit_banner = bus_fetch 'edit_banner'
-
-  return SPAN null if !subdomain.name 
-
-  if !homepage
-    return  DIV
-              style: 
-                backgroundColor: 'white'
-
-              DIV
-                style:
-                  margin: 'auto'
-                  fontSize: 43
-                  padding: '10px 20px' 
-
-                back_to_homepage_button {fontSize: 32}, translator 'engage.back_to_homepage', 'Homepage'
-
-  has_image_background = edit_banner.masthead_preview != '*delete*' && (edit_banner.masthead_preview || customization('banner')?.background_image_url)
-  if has_image_background
-    bg = edit_banner.masthead_preview or customization('banner')?.background_image_url
-
-  convert_opacity = (value) ->
-    if !value
-      '00'
-    else 
-      parseInt(value).toString(16)
-    
-  DIV 
-    id: 'banner'
-    className: "MediaBanner"
-
-    STYLE
-      dangerouslySetInnerHTML: __html: """
-
-        .MediaBanner {
-          position: relative;
-          color: black;
-          background-color: #eee;
-          padding: 0px 2px;
-          border-bottom: 1px solid black;
-        } .dark .MediaBanner {
-          color: white;
-        }
-        .MediaBanner > .upper_wrapper {
-          padding-top: 28px;
-          background-color: white;
-        }
-
-        .MediaBanner > .upper_wrapper .CustomizeTitle .banner_title {
-          font-size: 60px;
-          font-weight: 700;
-          font-family: #{header_font()};
-          text-align: left;
-          margin-left: 36px;
-          margin-bottom: 22px;
-        }
-        .MediaBanner > .image_wrapper {
-          padding: 20px 36px;
-        } 
-        .MediaBanner > .image_wrapper > img {
-          object-fit: cover;
-          display: block;
-          height: 260px;
-          width: 100%;
-        }
-        .MediaBanner #tabs {
-          margin-top: 0;
-          top: 0;
-          border-top: 1px solid #ccc;
-          box-shadow: 0 1px 3px rgba(0,0,0,.15);
-        }
-        .MediaBanner #tabs > ul {
-          text-align: left;
-          width: 100%;
-          padding-left: 20px;          
-        }
-        .MediaBanner #tabs > ul > li {
-          background-color: transparent;
-          margin: 0px 6px;          
-        }          
-        .MediaBanner #tabs > ul > li > h4 {
-          text-transform: uppercase;
-          font-family: #{customization('font')};
-          font-weight: 600;
-          font-size: 16px;
-          padding: 16px 8px 24px;
-          color: black;
-        }
-        .dark .MediaBanner #tabs > ul > li > h4 {
-          color: white;
-        }
-
-        .MediaBanner #tabs > ul > li.selected > h4, 
-        .MediaBanner #tabs > ul > li:hover > h4 {
-          color: black;
-          text-decoration: underline;
-        }
-        .dark .MediaBanner #tabs > ul > li.selected > h4, 
-        .dark .MediaBanner #tabs > ul > li:hover > h4 {
-          color: white;
-        }
-      """
-
-    DIV 
-      className: 'upper_wrapper'
-
-      # CustomizeLogo() 
-
-      CustomizeGoogleTranslate()
-      CustomizeTitle()
-
-      CustomizeBackground()
-
-      HomepageTabs()
-
-    if has_image_background
-      DIV 
-        className: 'image_wrapper'
-
-        IMG
-          src: bg
-
-
-window.ImageHeader = (opts) ->
-  subdomain = bus_fetch '/subdomain'   
-  loc = bus_fetch 'location'    
-
-  return SPAN null if !subdomain.name
-
-  opts ||= {}
-  _.defaults opts, 
-    background_color: customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
-    background_image_url: customization('banner')?.background_image_url
-    text: customization('banner')?.title
-    external_link: subdomain.external_project_url
-
-  is_light = is_light_background()
-    
-  DIV 
-    style: 
-      backgroundColor: opts.background_color
-
-    IMG 
-      alt: opts.background_image_alternative_text
-      src: opts.background_image_url
-      style: 
-        width: '100%'
-
-    if opts.text
-      H1 style: {textAlign: 'center', color: 'white', margin: 'auto', fontSize: 60, fontWeight: 700, position: 'relative', paddingTop: 30}, 
-        opts.text
-
-    CustomizeBackground()
-
-    HomepageTabs(opts)
-
-
-
-# A small header with text and optionally a logo
-window.ShortHeader = (opts) ->
-  subdomain = bus_fetch '/subdomain'   
-  loc = bus_fetch 'location'
-
-  return SPAN null if !subdomain.name
-
-  homepage = is_a_dialogue_page()
-
-  opts ||= {}
-  _.defaults opts, (customization('forum_header') or {}),
-    text: customization('banner')?.title or subdomain.name
-    external_link: subdomain.external_project_url
-    logo_src: customization('banner')?.logo?.url
-    logo_height: 50
-    min_height: 70
-    padding: '8px 0'
-    padding_left_icon: 20
-
-
-  opts.background = 'transparent'
-  background_is_light = true
-
-  DIV 
-    style:
-      background: opts.background
-
-    DIV
-      style: 
-        position: 'relative'
-        padding: opts.padding
-        minHeight: opts.min_height
-        display: 'flex'
-        flexDirection: 'row'
-        justifyContent: 'flex-start'
-        alignItems: 'center'
-        width: if homepage then HOMEPAGE_WIDTH()
-        margin: if homepage then 'auto'
-
-      DIV 
-        style: 
-          paddingLeft: if !homepage then opts.padding_left_icon else 0
-          paddingRight: 20
-          height: if opts.logo_height then opts.logo_height
-          display: 'flex'
-          alignItems: 'center'
-
-
-        if opts.logo_src
-          A 
-            href: if !homepage then '/' else opts.external_link
-            style: 
-              fontSize: 0
-              cursor: if !homepage && !opts.external_link then 'default'
-              verticalAlign: 'middle'
-              display: 'block'
-
-          
-            IMG 
-              src: opts.logo_src
-              alt: "#{subdomain.name} logo"
-              style: 
-                height: opts.logo_height
-
-        if !homepage
-
-          DIV 
-            style: 
-              paddingRight: 18
-              position: if opts.logo_src then 'absolute'
-              bottom: if opts.logo_src then -30
-              left: if opts.logo_src then 7
-              
-
-            back_to_homepage_button
-              color: if !background_is_light && !opts.logo_src then 'white'
-              fontSize: 18
-              fontWeight: 600
-
-            , TRANSLATE("engage.navigate_back_to_homepage" , 'homepage')
-
-
-      if opts.text
-        H2 
-          style: 
-            color: if !background_is_light then 'white'
-            marginLeft: if opts.logo_src then 35
-            paddingRight: 90
-            fontSize: 32
-            fontWeight: 400
-
-          opts.text
-
-
-
-
-window.HawaiiHeader = (opts) ->
-
-  homepage = is_a_dialogue_page()
-  subdomain = bus_fetch '/subdomain'
-
-  return SPAN null if !subdomain.name 
-
-  background_color = opts.background_color or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
-  is_light = is_light_background(background_color)
-
-  opts ||= {}
-  _.defaults opts, 
-    background_color: background_color
-    background_image_url: opts.background_image_url or customization('banner')?.background_image_url
-    logo: customization('banner')?.logo?.url
-    logo_width: 200
-    title: '<title is required>'
-    subtitle: null
-    title_style: {}
-    subtitle_style: {}
-    tab_style: {}
-    homepage_button_style: {}
-
-  _.defaults opts.title_style,
-    fontSize: 47
-    color: if is_light then 'black' else 'white'
-    fontWeight: 300
-    display: 'inline-block'
-
-  _.defaults opts.subtitle_style,
-    position: 'relative'
-    fontSize: 22
-    color: if is_light then 'black' else 'white'
-    marginTop: 0
-    opacity: .7
-    textAlign: 'center'  
-
-  _.defaults opts.homepage_button_style,
-    display: 'inline-block'
-    color: if is_light then 'black' else 'white'
-    # opacity: .7
-    position: 'absolute'
-    left: -80
-    fontSize: opts.title_style.fontSize
-    #top: 38
-    fontWeight: 400
-    paddingLeft: 25 # Make the clickable target bigger
-    paddingRight: 25 # Make the clickable target bigger
-    cursor: if bus_fetch('location').url != '/' then 'pointer'
-
-
-  DIV
-    style:
-      position: 'relative'
-      padding: "30px 0"
-      backgroundPosition: 'center'
-      backgroundSize: 'cover'
-      backgroundImage: "url(#{opts.background_image_url})"
-      backgroundColor: opts.background_color
-
-
-    STYLE null,
-      '''.profile_anchor.login {font-size: 26px; padding-top: 16px;}
-         p {margin-bottom: 1em}'''
-
-    DIV 
-      style: 
-        margin: 'auto'
-        width: HOMEPAGE_WIDTH()
-        position: 'relative'
-        textAlign: if homepage then 'center'
-
-
-      back_to_homepage_button opts.homepage_button_style
-
-      if homepage && opts.logo
-        IMG 
-          alt: opts.logo_alternative_text
-          src: opts.logo
-          style: 
-            width: opts.logo_width
-            display: 'block'
-            margin: 'auto'
-            paddingTop: 20
-
-
-      H1 
-        style: opts.title_style
-        opts.title 
-
-      if homepage && opts.subtitle
-        subtitle_is_html = opts.subtitle.indexOf('<') > -1 && opts.subtitle.indexOf('>') > -1
-        DIV
-          style: opts.subtitle_style
-          
-          dangerouslySetInnerHTML: if subtitle_is_html then {__html: opts.subtitle}
-
-          if !subtitle_is_html
-            opts.subtitle       
-
-      if homepage
-        DIV 
-          style: 
-            position: 'relative'
-            margin: if get_tabs() then '62px auto 0 auto'
-            width: HOMEPAGE_WIDTH()
-            
-
-          HomepageTabs
-            tab_style: opts.tab_style
-            tab_wrapper_style: _.defaults {}, opts.tab_wrapper_style or {},
-              backgroundColor: opts.tab_background_color
-              margin: '0 6px'
-            active_style: _.defaults {}, opts.tab_active_style or {},
-              backgroundColor: 'white'
-              color: 'black'
-            active_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
-              backgroundColor: opts.tab_background_color
-            wrapper_style: _.defaults {}, opts.tabs_wrapper_style or {},
-              marginTop: 80
-              top: 0
-            list_style: opts.tabs_list_style or {}
-
-
-
-window.SeattleHeader = (opts) -> 
-
-  homepage = is_a_dialogue_page()
-  subdomain = bus_fetch '/subdomain'
-
-  return SPAN null if !subdomain.name 
-
-  opts ||= {}
-  _.defaults opts, 
-
-    external_link: subdomain.external_project_url
-
-    background_color: '#fff'
-    background_image_url: customization('banner')?.background_image_url
-
-    external_link_style: {}
-    quote_style: {}
-    paragraph_style: {}
-    section_heading_style: {}
-
-
-  paragraph_style = _.defaults opts.paragraph_style,
-    fontSize: 18
-    color: '#444'
-    paddingTop: 10
-    display: 'block'
-
-  quote_style = _.defaults opts.quote_style,
-    fontStyle: 'italic'
-    margin: 'auto'
-    padding: "40px 40px"
-    fontSize: paragraph_style.fontSize
-    color: paragraph_style.color 
-
-  section_heading_style = _.defaults opts.section_heading_style,
-    display: 'block'
-    fontWeight: 400
-    fontSize: 28
-    color: 'black'
-
-  external_link_style = _.defaults opts.external_link_style, 
-    display: 'block'
-    position: 'absolute'
-    top: 22
-    left: 20
-    color: focus_color()
-
-
-  if !homepage
-    return  DIV
-              style: 
-                backgroundColor: 'white'
-              DIV
-                style:
-                  width: HOMEPAGE_WIDTH()
-                  margin: 'auto'
-                  fontSize: 43
-                  padding: '10px 0' 
-
-                A
-                  href: '/' 
-
-                  '< '
-
-                  SPAN
-                    style:
-                      fontSize: 32
-                      position: 'relative'
-                      left: 5
-                    'Homepage'
-
-
-  DIV
-    style:
-      position: 'relative'
-
-    if opts.external_link
-      A 
-        href: opts.external_link
-        target: '_blank'
-        style: opts.external_link_style
-
-        I 
-          className: 'fa fa-chevron-left'
-          style: 
-            display: 'inline-block'
-            marginRight: 5
-
-        opts.external_link_anchor or opts.external_link
-
-    if opts.background_image_url
-      IMG
-        alt: opts.background_image_alternative_text
-        style: _.defaults {}, opts.image_style,
-          width: '100%'
-          display: 'block'
-        src: opts.background_image_url
-
-    DIV 
-      style: 
-        padding: '20px 0'
-
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-          margin: 'auto'
-
-        if opts.quote 
-            
-          DIV  
-            style: quote_style
-            "“#{opts.quote.what}”"
-
-            if opts.quote.who 
-              DIV  
-                style:
-                  paddingLeft: '70%'
-                  paddingTop: 10
-                "– #{opts.quote.who}"
-
-        DIV null,
-
-          for section, idx in opts.sections 
-
-            DIV 
-              style: 
-                marginBottom: 20                
-
-
-              if section.label 
-                HEADING = if idx == 0 then H1 else DIV
-                HEADING
-                  style: _.defaults {}, (section.label_style or {}), section_heading_style
-                  section.label 
-
-              DIV null, 
-                for paragraph in (section.paragraphs or [])
-                  SPAN 
-                    style: paragraph_style
-                    dangerouslySetInnerHTML: { __html: paragraph }
-
-        if opts.salutation 
-          DIV 
-            style: _.extend {}, paragraph_style,
-              marginTop: 10
-
-            if opts.salutation.text 
-              DIV 
-                style: 
-                  marginBottom: 18
-                opts.salutation.text 
-
-            A 
-              href: if opts.external_link then opts.external_link
-              target: '_blank'
-              style: 
-                display: 'block'
-                marginBottom: 8
-
-              if opts.salutation.image 
-                IMG
-                  src: opts.salutation.image 
-                  alt: ''
-                  style: 
-                    height: 70
-              else
-                opts.salutation.from 
-
-            if opts.salutation.after 
-              DIV 
-                style: _.extend {}, paragraph_style,
-                  margin: 0
-                dangerouslySetInnerHTML: { __html: opts.salutation.after }
-                
-        if opts.login_callout
-          AuthCallout()
-
-        if opts.closed 
-          DIV 
-            style: 
-              marginTop: 40
-              backgroundColor: considerit_red
-              color: 'white'
-              fontSize: 28
-              textAlign: 'center'
-              padding: "30px 42px"
-
-            "The comment period is now closed. Thank you for your input!"
-
-
-      if true
-        active_style = _.defaults {}, opts.tab_active_style or {},
-          opacity: 1,
-          borderColor: '#008080',
-          backgroundColor: 'white'
-
-        DIV
-          style: 
-            borderBottom: if get_tabs() then "1px solid " + active_style.borderColor
-
-          DIV
-            style:
-              width: HOMEPAGE_WIDTH()
-              margin: 'auto'
-
-            HomepageTabs
-              tab_style: _.defaults {}, opts.tab_style or {},
-                padding: '10px 30px 0px 30px',
-                color: '#008080',
-                border: '1px solid',
-                borderBottom: 'none',
-                borderColor: 'transparent',
-                fontSize: 18,
-                fontWeight: 700,
-                opacity: 0.3
-              
-              tab_wrapper_style: _.defaults {}, opts.tab_wrapper_style or {},
-                backgroundColor: opts.tab_background_color
-              active_style: active_style
-              active_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
-                backgroundColor: opts.tab_background_color
-              wrapper_style: _.defaults {}, opts.tabs_wrapper_style or {}
-              list_style: opts.tabs_list_style or {}
+require './banner_legacy'
 
 
 

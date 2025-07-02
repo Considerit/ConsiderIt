@@ -94,7 +94,7 @@ window.EditPoint = ReactiveComponent
 
         if !proposal.active
           DIV 
-            style: {color: '#777', fontSize: 12}
+            style: {color: text_light_gray, fontSize: 12}
             translator 'engage.no_new_points', 'New points disabled for this proposal'
         else
           BUTTON 
@@ -103,7 +103,7 @@ window.EditPoint = ReactiveComponent
             'data-action': 'submit-point'
             onClick: @savePoint
             style: 
-              backgroundColor: focus_color() 
+              backgroundColor: focus_color 
             translator 'engage.done_button', 'Done'             
 
         BUTTON
@@ -111,7 +111,7 @@ window.EditPoint = ReactiveComponent
           onClick: @done
           className: 'like_link'
           style:
-            color: '#888888'
+            color: text_light_gray
             top: 2
             marginLeft: 10
             position: 'relative'
@@ -130,7 +130,7 @@ window.EditPoint = ReactiveComponent
           if opinion.hide_name || customization('anonymize_permanently')
             DIV 
               style: 
-                color: focus_color()
+                color: focus_color
 
               translator 'engage.post_anonymously', 'Posting anonymously'
           else 
@@ -194,9 +194,9 @@ window.EditPoint = ReactiveComponent
         left: if @props.valence == 'pros' then "calc(-100% - 4px)" else "calc(100% + 4px)"
 
         width: "100%"
-        color: 'white'
+        color: text_light
         zIndex: 1
-        backgroundColor: focus_color() 
+        backgroundColor: focus_color 
 
       DIV 
         style: 

@@ -10,8 +10,8 @@ require 'set'
 
 class ColorAnalyzer
   COLOR_PATTERNS = {
-    # Hex colors: #fff, #ffffff, #123456
-    hex: /#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\b/,
+    # Hex colors: #fff, #ffffff, #123456, #12345678 (with alpha)
+    hex: /#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\b/,
     
     # RGB/RGBA: rgb(255,255,255), rgba(0,0,0,0.5)
     rgb: /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)/,
@@ -148,10 +148,21 @@ class ColorAnalyzer
         content = File.read(path, encoding: 'UTF-8')
         content.each_line do |line|
           # Match patterns like: window.success_color = "#81c765" or window.auth_text_gray = '#444'
-          if match = line.match(/window\.(\w+)\s*=\s*['"]([#\w]+)['"]/)
+          # Also handle named colors like: window.text_dark = 'black'
+          if match = line.match(/window\.(\w+)\s*=\s*['"]([^'"]+)['"]/)
             variable_name = match[1]
             color_value = match[2]
-            normalized_color = normalize_hex(color_value) if color_value.start_with?('#')
+            
+            # Handle hex colors
+            if color_value.start_with?('#')
+              normalized_color = normalize_hex(color_value)
+            # Handle named colors
+            elsif NAMED_COLORS.key?(color_value.downcase)
+              normalized_color = NAMED_COLORS[color_value.downcase]
+            else
+              normalized_color = nil
+            end
+            
             if normalized_color
               # Store both the original and any overrides
               # For focus_blue, we'll track both #456ae4 and #073682
@@ -231,7 +242,8 @@ class ColorAnalyzer
       "@client/dashboard/analytics.coffee",
       "state_graph.coffee",
       "@client/histogram-legacy.coffee",
-      "@client/histogram_lab.coffee"
+      "@client/histogram_lab.coffee",
+      "@client/banner_legacy.coffee"
     ]
     
     skip_patterns.any? { |pattern| path.include?(pattern) }
@@ -320,7 +332,8 @@ class ColorAnalyzer
         # Extract named colors
         line.scan(COLOR_PATTERNS[:named]) do |match|
           next if match.nil?
-          color_name = match.to_s.downcase.strip
+          # match is an array from scan, get the first (and only) element
+          color_name = (match.is_a?(Array) ? match.first : match).to_s.downcase.strip
           next if color_name.empty?
           next unless NAMED_COLORS.key?(color_name)
           
@@ -391,84 +404,100 @@ class ColorAnalyzer
     ['.css', '.scss', '.sass'].include?(File.extname(file_path))
   end
 
+  def strip_css_comments(line)
+    # Remove CSS comments /* ... */ to avoid interference with pattern matching
+    line.gsub(/\/\*.*?\*\//, '').strip
+  end
+
   def detect_usage_pattern(line, color_value)
+    # Strip comments before pattern detection
+    clean_line = strip_css_comments(line)
+    
     # First, check for variable definitions to prevent misclassification
-    if line.match(/window\.[\w_]+\s*=\s*['"]#[0-9a-fA-F]{3,6}['"]/) && line.include?(color_value)
+    if clean_line.match(/window\.[\w_]+\s*=\s*['"]#[0-9a-fA-F]{3,6}['"]/) && clean_line.include?(color_value)
       return :variable_definition
     end
     
     # Create unified pattern checks that work for both direct colors and variable references
-    line_lower = line.downcase
+    line_lower = clean_line.downcase
     color_lower = color_value.downcase
     
     # Check for background patterns (most comprehensive)
     if line_lower.match(/(?:background-color|backgroundcolor|background)\s*[:=]\s*/) ||
-       line.match(/(?:background|background-color|backgroundColor)\s*:\s*.*#{Regexp.escape(color_value)}/i)
+       clean_line.match(/(?:background|background-color|backgroundColor)\s*:\s*.*#{Regexp.escape(color_value)}/i)
       return :background
     end
     
     # Check for text color patterns  
     if line_lower.match(/(?:^|[^-\w])color\s*[:=]\s*/) && !line_lower.include?('background') && !line_lower.include?('border') ||
-       line.match(/(?:^|[^-\w])color\s*:\s*.*#{Regexp.escape(color_value)}/i)
+       clean_line.match(/(?:^|[^-\w])color\s*:\s*.*#{Regexp.escape(color_value)}/i)
       return :text
     end
     
     # Check for border patterns (including border-top, border-right, border-*-color, etc.)
     if line_lower.match(/(?:border|border-color|border-top|border-right|border-bottom|border-left|border-top-color|border-right-color|border-bottom-color|border-left-color|bordercolor|bordertop|borderright|borderbottom|borderleft|bordertopcolor|borderrightcolor|borderbottomcolor|borderleftcolor)\s*[:=]\s*/) ||
-       line.match(/(?:border|border-color|border-top|border-right|border-bottom|border-left|border-top-color|border-right-color|border-bottom-color|border-left-color|borderColor|borderTop|borderRight|borderBottom|borderLeft|borderTopColor|borderRightColor|borderBottomColor|borderLeftColor)\s*:\s*.*#{Regexp.escape(color_value)}/i)
+       clean_line.match(/(?:border|border-color|border-top|border-right|border-bottom|border-left|border-top-color|border-right-color|border-bottom-color|border-left-color|borderColor|borderTop|borderRight|borderBottom|borderLeft|borderTopColor|borderRightColor|borderBottomColor|borderLeftColor)\s*:\s*.*#{Regexp.escape(color_value)}/i)
       return :border
     end
     
     # Check for shadow patterns
     if line_lower.match(/(?:box-shadow|boxshadow|text-shadow|textshadow|drop-shadow)\s*[:=]\s*/) ||
-       line.match(/(?:box-shadow|boxShadow|text-shadow|textShadow|drop-shadow)\s*:\s*.*#{Regexp.escape(color_value)}/i)
+       clean_line.match(/(?:box-shadow|boxShadow|text-shadow|textShadow|drop-shadow)\s*:\s*.*#{Regexp.escape(color_value)}/i)
       return :shadow
     end
     
     # Check for icon patterns
-    if line.match(/(?:[\w_]*_?icon|Icon)\s+.*#{Regexp.escape(color_value)}/i) ||
-       line.match(/(?:[\w_]*_?icon|Icon)\s*\([^)]*#{Regexp.escape(color_value)}/i)
+    if clean_line.match(/(?:[\w_]*_?icon|Icon)\s+.*#{Regexp.escape(color_value)}/i) ||
+       clean_line.match(/(?:[\w_]*_?icon|Icon)\s*\([^)]*#{Regexp.escape(color_value)}/i)
       return :icon
     end
     
     # Check for fill/stroke patterns
     if line_lower.match(/(?:fill|fillstyle)\s*[:=]\s*/) ||
-       line.match(/(?:fill|fillStyle)\s*[:=]\s*.*#{Regexp.escape(color_value)}/i)
+       clean_line.match(/(?:fill|fillStyle)\s*[:=]\s*.*#{Regexp.escape(color_value)}/i)
       return :fill
     end
     
     if line_lower.match(/(?:stroke|strokestyle)\s*[:=]\s*/) ||
-       line.match(/(?:stroke|strokeStyle)\s*[:=]\s*.*#{Regexp.escape(color_value)}/i)
+       clean_line.match(/(?:stroke|strokeStyle)\s*[:=]\s*.*#{Regexp.escape(color_value)}/i)
       return :stroke
     end
     
     # Check for outline patterns
     if line_lower.match(/(?:outline|outline-color|outlinecolor)\s*[:=]\s*/) ||
-       line.match(/(?:outline|outline-color|outlineColor)\s*:\s*.*#{Regexp.escape(color_value)}/i)
+       clean_line.match(/(?:outline|outline-color|outlineColor)\s*:\s*.*#{Regexp.escape(color_value)}/i)
       return :outline
     end
     
+    # Check for filter patterns
+    if line_lower.match(/filter\s*[:=]\s*/) ||
+       clean_line.match(/filter\s*:\s*.*#{Regexp.escape(color_value)}/i)
+      return :filter
+    end
+    
     # Check for gradients
-    if line.match(/(?:linear-gradient|radial-gradient).*#{Regexp.escape(color_value)}/i)
+    if clean_line.match(/(?:linear-gradient|radial-gradient).*#{Regexp.escape(color_value)}/i)
       return :gradient
     end
     
     # Check for SVG elements
-    if line.match(/<(?:circle|rect|path|line|polygon|ellipse)[^>]*(?:fill|stroke)\s*=\s*['"]#{Regexp.escape(color_value)}/i)
+    if clean_line.match(/<(?:circle|rect|path|line|polygon|ellipse)[^>]*(?:fill|stroke)\s*=\s*['"]#{Regexp.escape(color_value)}/i)
       return :svg_element
     end
     
     # Special handling for CoffeeScript string interpolation
     interpolation_pattern = "#{" + color_value + "}"
-    if line.include?(interpolation_pattern)
-      if line.match(/(?:border|border-color|borderColor).*#\{.*#{Regexp.escape(color_value)}.*\}/i)
+    if clean_line.include?(interpolation_pattern)
+      if clean_line.match(/(?:border|border-color|borderColor).*#\{.*#{Regexp.escape(color_value)}.*\}/i)
         return :border
-      elsif line.match(/(?:background|background-color|backgroundColor).*#\{.*#{Regexp.escape(color_value)}.*\}/i)
+      elsif clean_line.match(/(?:background|background-color|backgroundColor).*#\{.*#{Regexp.escape(color_value)}.*\}/i)
         return :background
-      elsif line.match(/(?:^|[^-\w])color\s*:.*#\{.*#{Regexp.escape(color_value)}.*\}/i)
+      elsif clean_line.match(/(?:^|[^-\w])color\s*:.*#\{.*#{Regexp.escape(color_value)}.*\}/i)
         return :text
-      elsif line.match(/(?:box-shadow|boxShadow|text-shadow|textShadow).*#\{.*#{Regexp.escape(color_value)}.*\}/i)
+      elsif clean_line.match(/(?:box-shadow|boxShadow|text-shadow|textShadow).*#\{.*#{Regexp.escape(color_value)}.*\}/i)
         return :shadow
+      elsif clean_line.match(/filter.*#\{.*#{Regexp.escape(color_value)}.*\}/i)
+        return :filter
       end
     end
     
@@ -478,7 +507,7 @@ class ColorAnalyzer
 
   def record_color(hex_color, line_content, file_path, line_number, type, original = nil, alpha = nil, usage_pattern = nil)
     # Skip if it's just a fragment of a larger hex number (like in URLs)
-    return if hex_color.length > 7 # Skip malformed colors
+    return if hex_color.length > 9 # Skip malformed colors (allow up to 8-char hex+alpha)
     
     color_key = hex_color.downcase
     
@@ -537,8 +566,10 @@ class ColorAnalyzer
       hex = "##{hex[1]}#{hex[1]}#{hex[2]}#{hex[2]}#{hex[3]}#{hex[3]}"
     end
     
-    # Ensure it's a valid hex color
-    return nil if hex.length != 7 || !hex.match(/^#[0-9a-fA-F]{6}$/)
+    # Ensure it's a valid hex color (6 or 8 characters)
+    valid_6 = hex.length == 7 && hex.match(/^#[0-9a-fA-F]{6}$/)
+    valid_8 = hex.length == 9 && hex.match(/^#[0-9a-fA-F]{8}$/)
+    return nil unless valid_6 || valid_8
     
     hex.upcase
   end
@@ -585,7 +616,7 @@ class ColorAnalyzer
 
   def hex_to_rgb(hex)
     hex = hex.gsub('#', '')
-    return [0, 0, 0] if hex.length != 6
+    return [0, 0, 0] if hex.length != 6 && hex.length != 8
     
     [
       hex[0,2].to_i(16),
@@ -604,7 +635,7 @@ class ColorAnalyzer
     puts "📊 Generating reports..."
     
     # Filter out transparent and invalid colors
-    valid_colors = @colors_found.reject { |hex, _| hex == 'transparent' || hex.length != 7 }
+    valid_colors = @colors_found.reject { |hex, _| hex == 'transparent' || (hex.length != 7 && hex.length != 9) }
     
     # Filter out ignored colors
     valid_colors = valid_colors.reject { |hex, _| IGNORED_COLORS.include?(hex.upcase) }
@@ -713,8 +744,8 @@ class ColorAnalyzer
     all_gray = group.all? { |item| is_gray?(item[:hex]) }
     
     if all_gray
-      # For grays, sort by brightness (dark to light)
-      group.sort_by { |item| get_brightness(item[:hex]) }
+      # For grays, sort by brightness and alpha (dark to light, transparent to opaque)
+      group.sort_by { |item| get_gray_sort_key(item[:hex]) }
     else
       # For colored groups, sort by hue to create rainbow-like gradients
       group.sort_by { |item| get_hue(item[:hex]) }
@@ -725,6 +756,27 @@ class ColorAnalyzer
     r, g, b = hex_to_rgb(hex)
     # Calculate relative luminance
     (r * 299 + g * 587 + b * 114) / 1000.0
+  end
+
+  def get_gray_sort_key(hex)
+    # For gray colors, create a sort key that considers both brightness and alpha
+    brightness = get_brightness(hex)
+    alpha = get_alpha_value(hex)
+    
+    # Primary sort by brightness (dark to light)
+    # Secondary sort by alpha (transparent to opaque) - multiply by small factor to make it secondary
+    brightness + (alpha / 255.0) * 0.001
+  end
+
+  def get_alpha_value(hex)
+    hex_clean = hex.gsub('#', '')
+    if hex_clean.length == 8
+      # Extract alpha from 8-character hex
+      hex_clean[6, 2].to_i(16)
+    else
+      # No alpha channel, assume fully opaque
+      255
+    end
   end
 
   def get_hue(hex)
@@ -876,16 +928,26 @@ class ColorAnalyzer
   end
 
   def generate_html_content(grouped_colors)
-    gray_groups = []
-    non_gray_groups = []
+    gray_groups_no_alpha = []
+    gray_groups_with_alpha = []
+    non_gray_groups_no_alpha = []
+    non_gray_groups_with_alpha = []
     
-    # Separate groups into gray and non-gray
+    # Separate groups into 4 categories: gray/non-gray × alpha/no-alpha
     grouped_colors.each do |group|
+      # Categorize the group based on its first color
       first_color = group.first[:hex]
-      if is_gray?(first_color)
-        gray_groups << group
-      else
-        non_gray_groups << group
+      is_gray = is_gray?(first_color)
+      has_alpha = has_alpha_channel?(first_color)
+      
+      if is_gray && has_alpha
+        gray_groups_with_alpha << group
+      elsif is_gray && !has_alpha
+        gray_groups_no_alpha << group
+      elsif !is_gray && has_alpha
+        non_gray_groups_with_alpha << group
+      else # !is_gray && !has_alpha
+        non_gray_groups_no_alpha << group
       end
     end
 
@@ -944,7 +1006,6 @@ class ColorAnalyzer
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
             gap: 1px;
-            background: #e0e0e0;
             padding: 1px;
           }
           .color-square {
@@ -1090,6 +1151,25 @@ class ColorAnalyzer
           .emoji {
             font-size: 1.2em;
           }
+          .filter-section {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+          }
+          .filter-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+          }
+          .filter-help {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+          }
         </style>
       </head>
       <body>
@@ -1099,18 +1179,24 @@ class ColorAnalyzer
           <div class="summary">
             <strong>Analysis Summary:</strong>
             #{grouped_colors.flatten.length} unique colors found across the codebase.
-            Colors are grouped by similarity and separated into grays and non-grays.
+            Colors are grouped by similarity and separated into grays/non-grays, with/without alpha channels.
             Click any color square to see detailed usage information.
+          </div>
+          
+          <div class="filter-section">
+            <label for="fileFilter"><strong>🔍 Filter by File:</strong></label>
+            <input type="text" id="fileFilter" class="filter-input" placeholder="Enter file path or pattern (e.g., banner.coffee, @client/, .css)">
+            <div class="filter-help">Filter to show only colors used in files matching the pattern. Leave empty to show all colors.</div>
           </div>
     HTML
 
-    # Gray colors section
-    if gray_groups.any?
+    # Gray colors (no alpha) section
+    if gray_groups_no_alpha.any?
       html += <<~HTML
-        <h2><span class="emoji">🔘</span> Gray Colors (#{gray_groups.length} groups)</h2>
+        <h2><span class="emoji">🔘</span> Gray Colors (#{gray_groups_no_alpha.length} groups)</h2>
       HTML
       
-      gray_groups.each_with_index do |group, group_index|
+      gray_groups_no_alpha.each_with_index do |group, group_index|
         total_count = group.sum { |item| item[:data][:count] }
         html += <<~HTML
           <div class="group">
@@ -1125,9 +1211,11 @@ class ColorAnalyzer
           data = item[:data]
           is_dark = is_color_dark?(hex)
           
+          files_used = data[:locations].map { |loc| loc[:file] }.uniq.join(';')
           html += <<~HTML
             <div class="color-square #{is_dark ? 'dark' : ''}" 
                  style="background-color: #{hex}" 
+                 data-files="#{files_used}"
                  onclick="showColorDetails('#{hex.gsub('#', '')}')">
               <div class="color-label">#{data[:count]}</div>
             </div>
@@ -1138,17 +1226,53 @@ class ColorAnalyzer
       end
     end
 
-    # Non-gray colors section  
-    if non_gray_groups.any?
+    # Gray colors with alpha section
+    if gray_groups_with_alpha.any?
       html += <<~HTML
-        <h2><span class="emoji">🌈</span> Non-Gray Colors (#{non_gray_groups.length} groups)</h2>
+        <h2><span class="emoji">🔘🟨</span> Gray Colors with Alpha (#{gray_groups_with_alpha.length} groups)</h2>
       HTML
       
-      non_gray_groups.each_with_index do |group, group_index|
+      gray_groups_with_alpha.each_with_index do |group, group_index|
+        total_count = group.sum { |item| item[:data][:count] }
+        html += <<~HTML
+          <div class="group">
+            <div class="group-header">
+              Gray Alpha Group #{group_index + 1} - #{group.length} colors, #{total_count} total uses
+            </div>
+            <div class="color-grid">
+        HTML
+        
+        group.each do |item|
+          hex = item[:hex]
+          data = item[:data]
+          is_dark = is_color_dark?(hex)
+          
+          files_used = data[:locations].map { |loc| loc[:file] }.uniq.join(';')
+          html += <<~HTML
+            <div class="color-square #{is_dark ? 'dark' : ''}" 
+                 style="background-color: #{hex}" 
+                 data-files="#{files_used}"
+                 onclick="showColorDetails('#{hex.gsub('#', '')}')">
+              <div class="color-label">#{data[:count]}</div>
+            </div>
+          HTML
+        end
+        
+        html += "</div></div>"
+      end
+    end
+
+    # Non-gray colors (no alpha) section  
+    if non_gray_groups_no_alpha.any?
+      html += <<~HTML
+        <h2><span class="emoji">🌈</span> Non-Gray Colors (#{non_gray_groups_no_alpha.length} groups)</h2>
+      HTML
+      
+      non_gray_groups_no_alpha.each_with_index do |group, group_index|
         total_count = group.sum { |item| item[:data][:count] }
         
         # Check if this is the last group and has many different colors (likely miscellaneous)
-        is_misc_group = group_index == non_gray_groups.length - 1 && group.length > 3
+        is_misc_group = group_index == non_gray_groups_no_alpha.length - 1 && group.length > 3
         group_title = if is_misc_group
           "Miscellaneous Colors - #{group.length} colors, #{total_count} total uses"
         else
@@ -1168,9 +1292,56 @@ class ColorAnalyzer
           data = item[:data]
           is_dark = is_color_dark?(hex)
           
+          files_used = data[:locations].map { |loc| loc[:file] }.uniq.join(';')
           html += <<~HTML
             <div class="color-square #{is_dark ? 'dark' : ''}" 
                  style="background-color: #{hex}" 
+                 data-files="#{files_used}"
+                 onclick="showColorDetails('#{hex.gsub('#', '')}')">
+              <div class="color-label">#{data[:count]}</div>
+            </div>
+          HTML
+        end
+        
+        html += "</div></div>"
+      end
+    end
+
+    # Non-gray colors with alpha section  
+    if non_gray_groups_with_alpha.any?
+      html += <<~HTML
+        <h2><span class="emoji">🌈🟨</span> Non-Gray Colors with Alpha (#{non_gray_groups_with_alpha.length} groups)</h2>
+      HTML
+      
+      non_gray_groups_with_alpha.each_with_index do |group, group_index|
+        total_count = group.sum { |item| item[:data][:count] }
+        
+        # Check if this is the last group and has many different colors (likely miscellaneous)
+        is_misc_group = group_index == non_gray_groups_with_alpha.length - 1 && group.length > 3
+        group_title = if is_misc_group
+          "Miscellaneous Alpha Colors - #{group.length} colors, #{total_count} total uses"
+        else
+          "Alpha Color Group #{group_index + 1} - #{group.length} colors, #{total_count} total uses"
+        end
+        
+        html += <<~HTML
+          <div class="group">
+            <div class="group-header">
+              #{group_title}
+            </div>
+            <div class="color-grid">
+        HTML
+        
+        group.each do |item|
+          hex = item[:hex]
+          data = item[:data]
+          is_dark = is_color_dark?(hex)
+          
+          files_used = data[:locations].map { |loc| loc[:file] }.uniq.join(';')
+          html += <<~HTML
+            <div class="color-square #{is_dark ? 'dark' : ''}" 
+                 style="background-color: #{hex}" 
+                 data-files="#{files_used}"
                  onclick="showColorDetails('#{hex.gsub('#', '')}')">
               <div class="color-label">#{data[:count]}</div>
             </div>
@@ -1205,26 +1376,36 @@ class ColorAnalyzer
               return;
             }
 
+            // Get current file filter
+            const filterValue = document.getElementById('fileFilter').value.toLowerCase().trim();
+            
+            // Filter locations based on current file filter
+            const filteredLocations = filterValue ? 
+              colorInfo.locations.filter(loc => loc.file.toLowerCase().includes(filterValue)) :
+              colorInfo.locations;
+
             const modalContent = document.getElementById('modalContent');
             const isDark = isColorDark(hex);
+            const titleSuffix = filterValue ? ` (filtered by "${filterValue}")` : '';
             
             modalContent.innerHTML = `
               <div class="color-info">
                 <div class="color-preview" style="background-color: ${hex}; border-color: ${isDark ? '#fff' : '#000'}"></div>
                 <div class="color-details">
                   <h3>${hex}</h3>
-                  <p><strong>Usage:</strong> ${colorInfo.count} times across ${colorInfo.locations.length} locations</p>
+                  <p><strong>Usage${titleSuffix}:</strong> ${filteredLocations.length} time${filteredLocations.length === 1 ? '' : 's'} across ${filteredLocations.length} location${filteredLocations.length === 1 ? '' : 's'}</p>
+                  ${filterValue ? `<p style="color: #e74c3c; font-size: 14px; font-style: italic;">Showing only uses in files matching "${filterValue}"</p>` : ''}
                 </div>
               </div>
               
               <div class="color-stats">
                 <div class="stat-box">
-                  <div class="stat-label">Total Uses</div>
-                  <div class="stat-value">${colorInfo.count}</div>
+                  <div class="stat-label">Total Uses${filterValue ? ' (Filtered)' : ''}</div>
+                  <div class="stat-value">${filteredLocations.length}</div>
                 </div>
                 <div class="stat-box">
-                  <div class="stat-label">Locations</div>
-                  <div class="stat-value">${colorInfo.locations.length}</div>
+                  <div class="stat-label">Locations${filterValue ? ' (Filtered)' : ''}</div>
+                  <div class="stat-value">${filteredLocations.length}</div>
                 </div>
                 <div class="stat-box">
                   <div class="stat-label">Types</div>
@@ -1241,14 +1422,17 @@ class ColorAnalyzer
                 ${colorInfo.originals.join(', ')}
               </div>
               
-              <h4>All Usages (${colorInfo.locations.length} locations):</h4>
+              <h4>All Usages${titleSuffix} (${filteredLocations.length} location${filteredLocations.length === 1 ? '' : 's'}):</h4>
               <div class="usage-list">
-                ${colorInfo.locations.map(loc => `
-                  <div class="usage-item">
-                    <div class="usage-file">${loc.file}:${loc.line}</div>
-                    <div class="usage-context">${escapeHtml(loc.context)}</div>
-                  </div>
-                `).join('')}
+                ${filteredLocations.length > 0 ?
+                  filteredLocations.map(loc => `
+                    <div class="usage-item">
+                      <div class="usage-file">${loc.file}:${loc.line}</div>
+                      <div class="usage-context">${escapeHtml(loc.context)}</div>
+                    </div>
+                  `).join('') :
+                  '<div class="usage-item" style="text-align: center; color: #999; font-style: italic;">No uses found in the filtered files.</div>'
+                }
               </div>
             `;
             
@@ -1276,6 +1460,101 @@ class ColorAnalyzer
           function closeModal() {
             document.getElementById('colorModal').style.display = 'none';
           }
+
+          function filterByFile() {
+            const filterValue = document.getElementById('fileFilter').value.toLowerCase().trim();
+            const colorSquares = document.querySelectorAll('.color-square');
+            
+            colorSquares.forEach(square => {
+              const colorHex = square.getAttribute('onclick').match(/'([^']+)'/)[1];
+              const fullHex = '#' + colorHex;
+              const colorInfo = colorData[fullHex.toLowerCase()];
+              
+              if (!filterValue) {
+                // Show all if no filter - restore original counts
+                square.style.display = '';
+                const label = square.querySelector('.color-label');
+                if (label && colorInfo) {
+                  label.textContent = colorInfo.count;
+                }
+                return;
+              }
+              
+              // Calculate filtered usage count
+              let filteredCount = 0;
+              if (colorInfo && colorInfo.locations) {
+                filteredCount = colorInfo.locations.filter(loc => 
+                  loc.file.toLowerCase().includes(filterValue)
+                ).length;
+              }
+              
+              if (filteredCount > 0) {
+                // Show color and update count
+                square.style.display = '';
+                const label = square.querySelector('.color-label');
+                if (label) {
+                  label.textContent = filteredCount;
+                }
+              } else {
+                // Hide color completely
+                square.style.display = 'none';
+              }
+            });
+            
+            // Update group headers to show filtered counts
+            updateGroupHeaders(filterValue);
+          }
+          
+          function updateGroupHeaders(filterValue) {
+            const groups = document.querySelectorAll('.group');
+            
+            groups.forEach(group => {
+              const squares = group.querySelectorAll('.color-square');
+              const visibleSquares = Array.from(squares).filter(square => 
+                square.style.display !== 'none'
+              );
+              
+              const header = group.querySelector('.group-header');
+              if (header && header.textContent) {
+                const originalText = header.getAttribute('data-original-text') || header.textContent;
+                header.setAttribute('data-original-text', originalText);
+                
+                if (!filterValue) {
+                  header.textContent = originalText;
+                } else {
+                  // Calculate total filtered uses for this group
+                  let totalFilteredUses = 0;
+                  visibleSquares.forEach(square => {
+                    const label = square.querySelector('.color-label');
+                    if (label) {
+                      totalFilteredUses += parseInt(label.textContent) || 0;
+                    }
+                  });
+                  
+                  const groupMatch = originalText.match(/^(.+?) - (\d+) colors?, (\d+) total uses?$/);
+                  if (groupMatch) {
+                    const groupName = groupMatch[1];
+                    header.textContent = `${groupName} - ${visibleSquares.length} colors, ${totalFilteredUses} total uses (filtered)`;
+                  }
+                }
+              }
+              
+              // Hide group if no visible colors
+              if (visibleSquares.length === 0) {
+                group.style.display = 'none';
+              } else {
+                group.style.display = '';
+              }
+            });
+          }
+
+          // Add event listener for real-time filtering
+          document.addEventListener('DOMContentLoaded', function() {
+            const filterInput = document.getElementById('fileFilter');
+            if (filterInput) {
+              filterInput.addEventListener('input', filterByFile);
+            }
+          });
 
           window.onclick = function(event) {
             const modal = document.getElementById('colorModal');
@@ -1401,6 +1680,9 @@ class ColorAnalyzer
       function_parameter: {},
       config_property: {},
       custom_property: {},
+      opacity: {},
+      transform: {},
+      filter: {},
       other: {}
     }
 
@@ -1567,6 +1849,25 @@ class ColorAnalyzer
             font-size: 11px;
             font-weight: 600;
           }
+          .filter-section {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+          }
+          .filter-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+          }
+          .filter-help {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+          }
           .modal {
             display: none;
             position: fixed;
@@ -1653,6 +1954,12 @@ class ColorAnalyzer
             This helps identify semantic color usage and opportunities for design system improvements.
             Click any color to see detailed usage information.
           </div>
+          
+          <div class="filter-section">
+            <label for="fileFilter"><strong>🔍 Filter by File:</strong></label>
+            <input type="text" id="fileFilter" class="filter-input" placeholder="Enter file path or pattern (e.g., banner.coffee, @client/, .css)">
+            <div class="filter-help">Filter to show only colors used in files matching the pattern. Leave empty to show all colors.</div>
+          </div>
 
           <div class="tabs">
             #{generate_usage_tabs(usage_groups)}
@@ -1695,6 +2002,9 @@ class ColorAnalyzer
             if (tab) {
               tab.classList.add('active');
             }
+            
+            // Re-apply the current file filter to the new tab
+            filterByFile();
           }
 
           function showColorDetails(hex, pattern) {
@@ -1713,11 +2023,17 @@ class ColorAnalyzer
             const usageBreakdown = {};
             let totalPatternUses = 0;
             
+            // Get current file filter
+            const filterValue = document.getElementById('fileFilter').value.toLowerCase().trim();
+            
             Object.keys(colorData.usage_patterns).forEach(patternName => {
               const uses = colorData.usage_patterns[patternName];
-              if (uses.length > 0) {
-                usageBreakdown[patternName] = uses.length;
-                totalPatternUses += uses.length;
+              const filteredUses = filterValue ?
+                uses.filter(loc => loc.file.toLowerCase().includes(filterValue)) :
+                uses;
+              if (filteredUses.length > 0) {
+                usageBreakdown[patternName] = filteredUses.length;
+                totalPatternUses += filteredUses.length;
               }
             });
             
@@ -1729,56 +2045,75 @@ class ColorAnalyzer
                 </span>`
               ).join('');
 
+            // Filter all locations based on file filter
+            const filteredAllLocations = filterValue ?
+              colorData.locations.filter(loc => loc.file.toLowerCase().includes(filterValue)) :
+              colorData.locations;
+            
+            // Filter pattern-specific locations
+            const patternLocations = colorData.usage_patterns[pattern] || [];
+            const filteredPatternLocations = filterValue ?
+              patternLocations.filter(loc => loc.file.toLowerCase().includes(filterValue)) :
+              patternLocations;
+            
+            const titleSuffix = filterValue ? ` (filtered by "${filterValue}")` : '';
+            
             modalContent.innerHTML = `
               <div style="display: flex; align-items: center; margin-bottom: 20px;">
                 <div style="width: 60px; height: 60px; background-color: ${fullHex}; border-radius: 8px; margin-right: 20px; border: 2px solid #ddd;"></div>
                 <div>
                   <h2 style="margin: 0; color: #2c3e50; font-size: 24px;">${fullHex.toUpperCase()}</h2>
-                  <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">Clicked from: ${pattern} category</p>
+                  <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">Clicked from: ${pattern} category${titleSuffix}</p>
+                  ${filterValue ? `<p style="margin: 5px 0 0 0; color: #e74c3c; font-size: 12px; font-style: italic;">Showing only uses in files matching "${filterValue}"</p>` : ''}
                 </div>
               </div>
               
               <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
                 <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; border-left: 4px solid #3498db;">
-                  <div style="font-size: 12px; color: #666; margin-bottom: 5px; text-transform: uppercase; font-weight: 600;">Total Uses</div>
-                  <div style="font-size: 24px; color: #2c3e50; font-weight: 600;">${colorData.count}</div>
+                  <div style="font-size: 12px; color: #666; margin-bottom: 5px; text-transform: uppercase; font-weight: 600;">Total Uses${filterValue ? ' (Filtered)' : ''}</div>
+                  <div style="font-size: 24px; color: #2c3e50; font-weight: 600;">${filteredAllLocations.length}</div>
                 </div>
                 <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; border-left: 4px solid #27ae60;">
-                  <div style="font-size: 12px; color: #666; margin-bottom: 5px; text-transform: uppercase; font-weight: 600;">Locations</div>
-                  <div style="font-size: 24px; color: #2c3e50; font-weight: 600;">${colorData.locations.length}</div>
+                  <div style="font-size: 12px; color: #666; margin-bottom: 5px; text-transform: uppercase; font-weight: 600;">Pattern Uses${filterValue ? ' (Filtered)' : ''}</div>
+                  <div style="font-size: 24px; color: #2c3e50; font-weight: 600;">${filteredPatternLocations.length}</div>
                 </div>
                 <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; border-left: 4px solid #e74c3c;">
-                  <div style="font-size: 12px; color: #666; margin-bottom: 5px; text-transform: uppercase; font-weight: 600;">Color Types</div>
-                  <div style="font-size: 16px; color: #2c3e50; font-weight: 600;">${Array.from(colorData.types).join(', ')}</div>
+                  <div style="font-size: 12px; color: #666; margin-bottom: 5px; text-transform: uppercase; font-weight: 600;">Patterns${filterValue ? ' (Filtered)' : ''}</div>
+                  <div style="font-size: 16px; color: #2c3e50; font-weight: 600;">${Object.keys(usageBreakdown).length}</div>
                 </div>
               </div>
               
               <div style="margin-bottom: 20px;">
-                <h3 style="color: #34495e; margin-bottom: 10px; font-size: 18px;">Usage Patterns</h3>
+                <h3 style="color: #34495e; margin-bottom: 10px; font-size: 18px;">Usage Patterns${filterValue ? ` (filtered by "${filterValue}")` : ''}</h3>
                 <div style="line-height: 1.6;">
-                  ${usageBreakdownHtml}
+                  ${usageBreakdownHtml || '<em style="color: #999;">No patterns found for the current filter.</em>'}
                 </div>
               </div>
 
-              <h3 style="color: #34495e; margin-bottom: 10px; font-size: 18px;">Category Usage Locations (${colorData.usage_patterns[pattern].length})</h3>
+              <h3 style="color: #34495e; margin-bottom: 10px; font-size: 18px;">Category Usage Locations (${filteredPatternLocations.length})</h3>
               <div class="usage-list">
-                ${colorData.usage_patterns[pattern].map(loc => `
-                  <div class="usage-item">
-                    <div class="usage-file">${loc.file}:${loc.line}</div>
-                    <div class="usage-context">${escapeHtml(loc.context)}</div>
-                  </div>
-                `).join('')}
+                ${filteredPatternLocations.length > 0 ?
+                  filteredPatternLocations.map(loc => `
+                    <div class="usage-item">
+                      <div class="usage-file">${loc.file}:${loc.line}</div>
+                      <div class="usage-context">${escapeHtml(loc.context)}</div>
+                    </div>
+                  `).join('') :
+                  '<div class="usage-item" style="text-align: center; color: #999; font-style: italic;">No uses found for this pattern in the filtered files.</div>'
+                }
               </div>
 
-
-              <h3 style="color: #34495e; margin-bottom: 10px; font-size: 18px;">All Usage Locations (${colorData.locations.length})</h3>
+              <h3 style="color: #34495e; margin-bottom: 10px; font-size: 18px;">All Usage Locations (${filteredAllLocations.length})</h3>
               <div class="usage-list">
-                ${colorData.locations.map(loc => `
-                  <div class="usage-item">
-                    <div class="usage-file">${loc.file}:${loc.line}</div>
-                    <div class="usage-context">${escapeHtml(loc.context)}</div>
-                  </div>
-                `).join('')}
+                ${filteredAllLocations.length > 0 ?
+                  filteredAllLocations.map(loc => `
+                    <div class="usage-item">
+                      <div class="usage-file">${loc.file}:${loc.line}</div>
+                      <div class="usage-context">${escapeHtml(loc.context)}</div>
+                    </div>
+                  `).join('') :
+                  '<div class="usage-item" style="text-align: center; color: #999; font-style: italic;">No uses found in the filtered files.</div>'
+                }
               </div>
             `;
             
@@ -1795,6 +2130,152 @@ class ColorAnalyzer
             document.getElementById('colorModal').style.display = 'none';
           }
 
+          function filterByFile() {
+            const filterValue = document.getElementById('fileFilter').value.toLowerCase().trim();
+            const colorCards = document.querySelectorAll('.color-card');
+            
+            // Get the current active tab to know which usage pattern we're looking at
+            const activeTab = document.querySelector('.tab.active');
+            const currentPattern = activeTab ? activeTab.getAttribute('onclick').match(/'([^']+)'/)[1] : null;
+            
+            colorCards.forEach(card => {
+              const colorHex = card.getAttribute('onclick').match(/'([^']+)'/)[1];
+              const fullHex = '#' + colorHex;
+              const colorInfo = allColorsData[fullHex.toLowerCase()];
+              
+              if (!filterValue) {
+                // Show all if no filter - restore original counts for current pattern
+                card.style.display = '';
+                const badge = card.querySelector('.usage-badge');
+                const usageText = card.querySelector('.color-usage');
+                if (badge && colorInfo && currentPattern) {
+                  const patternData = colorInfo.usage_patterns[currentPattern] || [];
+                  const originalCount = patternData.length;
+                  badge.textContent = originalCount;
+                  usageText.textContent = `${originalCount} use${originalCount == 1 ? '' : 's'}`;
+                }
+                return;
+              }
+              
+              // Calculate filtered usage count for the current pattern only
+              let filteredCount = 0;
+              if (colorInfo && colorInfo.usage_patterns && currentPattern) {
+                const patternLocations = colorInfo.usage_patterns[currentPattern] || [];
+                filteredCount = patternLocations.filter(loc => 
+                  loc.file.toLowerCase().includes(filterValue)
+                ).length;
+              }
+              
+              if (filteredCount > 0) {
+                // Show card and update count
+                card.style.display = '';
+                const badge = card.querySelector('.usage-badge');
+                const usageText = card.querySelector('.color-usage');
+                if (badge && usageText) {
+                  badge.textContent = filteredCount;
+                  usageText.textContent = `${filteredCount} use${filteredCount == 1 ? '' : 's'} (filtered)`;
+                }
+              } else {
+                // Hide card completely
+                card.style.display = 'none';
+              }
+            });
+            
+            // Update group headers and hide empty groups
+            updateUsageGroupHeaders(filterValue);
+            
+            // Update tab counts independently (not based on current tab visibility)
+            updateTabCounts(filterValue);
+          }
+          
+          function updateUsageGroupHeaders(filterValue) {
+            const groups = document.querySelectorAll('.color-group');
+            
+            groups.forEach(group => {
+              const cards = group.querySelectorAll('.color-card');
+              const visibleCards = Array.from(cards).filter(card => 
+                card.style.display !== 'none'
+              );
+              
+              const header = group.querySelector('.group-header');
+              if (header && header.textContent) {
+                const originalText = header.getAttribute('data-original-text') || header.textContent;
+                header.setAttribute('data-original-text', originalText);
+                
+                if (!filterValue) {
+                  header.textContent = originalText;
+                } else {
+                  // Calculate total filtered uses for this group
+                  let totalFilteredUses = 0;
+                  visibleCards.forEach(card => {
+                    const badge = card.querySelector('.usage-badge');
+                    if (badge) {
+                      totalFilteredUses += parseInt(badge.textContent) || 0;
+                    }
+                  });
+                  
+                  const groupMatch = originalText.match(/^(.+?) \((\d+)\)$/);
+                  if (groupMatch) {
+                    const groupName = groupMatch[1];
+                    header.textContent = `${groupName} (${visibleCards.length} - ${totalFilteredUses} uses, filtered)`;
+                  }
+                }
+              }
+              
+              // Hide group if no visible cards
+              if (visibleCards.length === 0) {
+                group.style.display = 'none';
+              } else {
+                group.style.display = '';
+              }
+            });
+          }
+          
+          function updateTabCounts(filterValue) {
+            const tabs = document.querySelectorAll('.tab');
+            
+            tabs.forEach(tab => {
+              const tabName = tab.getAttribute('onclick').match(/'([^']+)'/)[1];
+              const countSpan = tab.querySelector('.pattern-count');
+              
+              if (countSpan) {
+                const originalCount = tab.getAttribute('data-original-count') || countSpan.textContent;
+                tab.setAttribute('data-original-count', originalCount);
+                
+                if (!filterValue) {
+                  countSpan.textContent = originalCount;
+                  tab.style.display = '';
+                } else {
+                  // Calculate how many colors would be visible in this specific tab for the filter
+                  let filteredCount = 0;
+                  
+                  // Get all colors in the usage data for this pattern
+                  if (usageData[tabName]) {
+                    Object.keys(usageData[tabName]).forEach(colorHex => {
+                      const colorInfo = allColorsData[colorHex];
+                      if (colorInfo && colorInfo.usage_patterns && colorInfo.usage_patterns[tabName]) {
+                        const patternLocations = colorInfo.usage_patterns[tabName] || [];
+                        const hasMatchingFiles = patternLocations.some(loc => 
+                          loc.file.toLowerCase().includes(filterValue)
+                        );
+                        if (hasMatchingFiles) {
+                          filteredCount++;
+                        }
+                      }
+                    });
+                  }
+                  
+                  if (filteredCount > 0) {
+                    countSpan.textContent = filteredCount;
+                    tab.style.display = '';
+                  } else {
+                    tab.style.display = 'none';
+                  }
+                }
+              }
+            });
+          }
+
           window.onclick = function(event) {
             const modal = document.getElementById('colorModal');
             if (event.target === modal) {
@@ -1802,11 +2283,17 @@ class ColorAnalyzer
             }
           }
 
-          // Show first tab by default
+          // Show first tab by default and set up filter
           document.addEventListener('DOMContentLoaded', function() {
             const firstTab = document.querySelector('.tab');
             if (firstTab) {
               firstTab.click();
+            }
+            
+            // Add filter event listener
+            const filterInput = document.getElementById('fileFilter');
+            if (filterInput) {
+              filterInput.addEventListener('input', filterByFile);
             }
           });
         </script>
@@ -1872,50 +2359,87 @@ class ColorAnalyzer
       content = if colors.empty?
         "<div class=\"empty-section\">No colors found for this usage pattern.</div>"
       else
-        # Group colors into gray and non-gray
-        gray_colors = {}
-        non_gray_colors = {}
+        # Group colors into 4 categories: gray/non-gray × alpha/no-alpha
+        gray_colors_no_alpha = {}
+        gray_colors_with_alpha = {}
+        non_gray_colors_no_alpha = {}
+        non_gray_colors_with_alpha = {}
         
         colors.each do |hex, data|
-          if is_gray_color?(hex)
-            gray_colors[hex] = data
-          else
-            non_gray_colors[hex] = data
+          is_gray = is_gray_color?(hex)
+          has_alpha = has_alpha_channel?(hex)
+          
+          if is_gray && has_alpha
+            gray_colors_with_alpha[hex] = data
+          elsif is_gray && !has_alpha
+            gray_colors_no_alpha[hex] = data
+          elsif !is_gray && has_alpha
+            non_gray_colors_with_alpha[hex] = data
+          else # !is_gray && !has_alpha
+            non_gray_colors_no_alpha[hex] = data
           end
         end
         
-        # Sort each group by similarity (hue for non-grays, lightness for grays)
-        sorted_gray = gray_colors.sort_by { |hex, _| color_lightness(hex) }
-        sorted_non_gray = non_gray_colors.sort_by { |hex, _| color_hue(hex) }
+        # Sort each group by similarity (hue for non-grays, lightness+alpha for grays)
+        sorted_gray_no_alpha = gray_colors_no_alpha.sort_by { |hex, _| color_lightness(hex) }
+        sorted_gray_with_alpha = gray_colors_with_alpha.sort_by { |hex, _| get_gray_sort_key(hex) }
+        sorted_non_gray_no_alpha = non_gray_colors_no_alpha.sort_by { |hex, _| color_hue(hex) }
+        sorted_non_gray_with_alpha = non_gray_colors_with_alpha.sort_by { |hex, _| color_hue(hex) }
         
         # Generate color cards for each group
-        gray_section = if sorted_gray.any?
-          gray_cards = sorted_gray.map do |hex, data|
+        gray_no_alpha_section = if sorted_gray_no_alpha.any?
+          gray_cards = sorted_gray_no_alpha.map do |hex, data|
             generate_color_card(hex, data, pattern)
           end.join("")
           
           "<div class=\"color-group\">" +
-          "<h4 class=\"group-header\">🔘 Gray Colors (#{sorted_gray.length})</h4>" +
+          "<h4 class=\"group-header\">🔘 Gray Colors (#{sorted_gray_no_alpha.length})</h4>" +
           "<div class=\"color-grid\">#{gray_cards}</div>" +
           "</div>"
         else
           ""
         end
         
-        non_gray_section = if sorted_non_gray.any?
-          non_gray_cards = sorted_non_gray.map do |hex, data|
+        gray_with_alpha_section = if sorted_gray_with_alpha.any?
+          gray_alpha_cards = sorted_gray_with_alpha.map do |hex, data|
             generate_color_card(hex, data, pattern)
           end.join("")
           
           "<div class=\"color-group\">" +
-          "<h4 class=\"group-header\">🌈 Non-Gray Colors (#{sorted_non_gray.length})</h4>" +
+          "<h4 class=\"group-header\">🔘🟨 Gray Colors with Alpha (#{sorted_gray_with_alpha.length})</h4>" +
+          "<div class=\"color-grid\">#{gray_alpha_cards}</div>" +
+          "</div>"
+        else
+          ""
+        end
+        
+        non_gray_no_alpha_section = if sorted_non_gray_no_alpha.any?
+          non_gray_cards = sorted_non_gray_no_alpha.map do |hex, data|
+            generate_color_card(hex, data, pattern)
+          end.join("")
+          
+          "<div class=\"color-group\">" +
+          "<h4 class=\"group-header\">🌈 Non-Gray Colors (#{sorted_non_gray_no_alpha.length})</h4>" +
           "<div class=\"color-grid\">#{non_gray_cards}</div>" +
           "</div>"
         else
           ""
         end
         
-        gray_section + non_gray_section
+        non_gray_with_alpha_section = if sorted_non_gray_with_alpha.any?
+          non_gray_alpha_cards = sorted_non_gray_with_alpha.map do |hex, data|
+            generate_color_card(hex, data, pattern)
+          end.join("")
+          
+          "<div class=\"color-group\">" +
+          "<h4 class=\"group-header\">🌈🟨 Non-Gray Colors with Alpha (#{sorted_non_gray_with_alpha.length})</h4>" +
+          "<div class=\"color-grid\">#{non_gray_alpha_cards}</div>" +
+          "</div>"
+        else
+          ""
+        end
+        
+        gray_no_alpha_section + gray_with_alpha_section + non_gray_no_alpha_section + non_gray_with_alpha_section
       end
 
       "<div id=\"#{pattern}-content\" class=\"tab-content#{active_class}\">#{content}</div>"
@@ -1923,7 +2447,8 @@ class ColorAnalyzer
   end
 
   def generate_color_card(hex, data, pattern)
-    "<div class=\"color-card\" onclick=\"showColorDetails('#{hex.gsub('#', '')}', '#{pattern}')\">" +
+    files_used = data[:locations].map { |loc| loc[:file] }.uniq.join(';')
+    "<div class=\"color-card\" data-files=\"#{files_used}\" onclick=\"showColorDetails('#{hex.gsub('#', '')}', '#{pattern}')\">" +
     "<div class=\"color-square\" style=\"background-color: #{hex}\">" +
     "<div class=\"usage-badge\">#{data[:usage_count]}</div>" +
     "</div>" +
@@ -1941,6 +2466,11 @@ class ColorAnalyzer
     # Check if it's approximately gray (R, G, B values are similar)
     max_diff = [r - g, r - b, g - b].map(&:abs).max
     max_diff <= 15  # Allow small differences for colors like #f7f7f7
+  end
+
+  def has_alpha_channel?(hex)
+    # Remove the # and check if it's 8 characters (includes alpha)
+    hex.gsub('#', '').length == 8
   end
 
   def color_lightness(hex)
@@ -1973,6 +2503,9 @@ class ColorAnalyzer
 
   def hex_to_rgb(hex)
     hex = hex.gsub('#', '')
+    # Handle both 6-character and 8-character hex codes
+    return [0, 0, 0] if hex.length != 6 && hex.length != 8
+    
     [
       hex[0..1].to_i(16),
       hex[2..3].to_i(16),

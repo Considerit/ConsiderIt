@@ -71,7 +71,7 @@ window.ErrorBlock = (errors, opts={}) ->
     role: 'alert'
     style: _.defaults opts.style or {}, 
       fontSize: 18
-      color: 'white'
+      color: text_light
       backgroundColor: failure_color
       padding: 20
       marginTop: 10
@@ -120,7 +120,7 @@ window.back_to_homepage_button = (style, text) ->
       style: _.defaults {}, style,
         fontSize: 43
         visibility: if is_a_dialogue_page() || !customization('has_homepage') then 'hidden' else 'visible'
-        color: 'black'
+        color: text_dark
         display: 'flex'
         alignItems: 'center'
 
@@ -680,10 +680,6 @@ window.location_origin = ->
 ## Styles
 ############
 
-
-
-window.focus_color = -> focus_blue
-
 ## CSS functions
 
 # Mixin for mediaquery for retina screens. 
@@ -896,7 +892,7 @@ hr {
   display: block;
   height: 1px;
   border: 0;
-  border-top: 1px solid #cccccc;
+  border-top: 1px solid #{brd_light_gray};
   margin: 0;
   padding: 0; }
 
@@ -968,7 +964,7 @@ button.like_link, input[type='submit'].like_link {
 }
 
 .btn {
-  color: white;
+  color: #{text_light};
   border: 0;
   font-weight: 700;
   padding: .325rem 1.5rem .4rem;
@@ -985,7 +981,7 @@ button.like_link, input[type='submit'].like_link {
   border-radius: .25rem;
   transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
   margin: 0;
-  background-color: #{focus_blue}; 
+  background-color: #{focus_color}; 
 } .btn[disabled="true"], .btn[disabled] {
   cursor: default;
   opacity: .5;
@@ -1016,11 +1012,11 @@ blockquote {
 window.styles += """
 
 body {
-  color: black;
+  color: #{text_dark};
 }
 
 h1, h2, h3, h4, h5, h6 {
-  /* color: black */; 
+  /* color: #{text_dark} */; 
 }
 
 html[lang='cs'] body, html[lang='cs'] input, html[lang='cs'] button, html[lang='cs'] textarea {
@@ -1059,11 +1055,11 @@ a.skip:hover {
 .content {
   position: relative;
   font-size: 16px;
-  color: black;
+  color: #{text_dark};
   min-height: 100%; 
   font-weight: 400;
 
-  background-color: #ffffff;
+  background-color: #{bg_light};
 
 }
 
@@ -1083,21 +1079,14 @@ a.skip:hover {
   cursor: pointer; }
 
 .primary_button {
-  color: white;
+  color: #{text_light};
   font-size: 29px;
   margin-top: 14px;
   border: none;
   padding: 8px 36px; }
 
-button.disabled {
-  background-color: #eeeeee;
-  color: #cccccc;
-  box-shadow: none;
-  border: none;
-  cursor: wait; }
-
 .primary_cancel_button {
-  color: #888888;
+  color: #{text_light_gray};
   margin-top: 0.5em; }
 
 .cancel_opinion_button {
@@ -1118,6 +1107,10 @@ select.unstyled:not([multiple]){
     padding: .5em;
     padding-right:1.5em;
     border-radius: 16px;
+}
+
+input[type="text"]:focus, textarea:focus {
+  outline: 1px solid #{focus_color}
 }
 
 """

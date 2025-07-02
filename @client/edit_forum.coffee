@@ -10,12 +10,12 @@ styles += """
   [data-widget="EditForum"] button {
     border: none;
     background-color: #{selected_color}; 
-    color: white; 
+    color: #{text_light}; 
     font-weight: 700;
     padding: 10px 22px; 
     border-radius: 8px;
     cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0,0,0,.4);
+    box-shadow: 0 1px 2px #{shadow_dark_50};
   }
 
 """
@@ -65,7 +65,7 @@ window.EditForum = ReactiveComponent
       DIV null,
         BUTTON 
           style: 
-            boxShadow: '0 1px 2px rgba(0,0,0,.5)'
+            boxShadow: "0 1px 2px #{shadow_dark_50}"
           onClick: stop_editing_forum
 
           translator 'shared.done_editing', 'Done Editing Forum'

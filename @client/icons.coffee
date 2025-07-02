@@ -1,7 +1,7 @@
 
 window.iconX = (size, color) ->
   size ?= 30
-  color ?= 'black'
+  color ?= text_dark
   SVG
     width: size
     height: size
@@ -17,7 +17,7 @@ window.iconX = (size, color) ->
 
 
 window.iconAnonymousMask = (height, color) ->
-  color ?= 'black'
+  color ?= text_dark
   width = 1.4 * height
   SVG
     width: width
@@ -34,7 +34,7 @@ window.iconAnonymousMask = (height, color) ->
     """
 
 window.closedIcon = ({size, fill}) ->
-  fill ?= 'black'
+  fill ?= text_dark
   SVG 
     width: size
     height: size
@@ -49,7 +49,7 @@ window.closedIcon = ({size, fill}) ->
 
 
 window.ThreeDotsIcon = ({size, fill}) ->
-  fill ?= 'black'
+  fill ?= text_dark
   SVG 
     width: size
     height: size
@@ -64,6 +64,10 @@ window.ThreeDotsIcon = ({size, fill}) ->
 
 
 window.double_up_icon = (size) -> 
+  circle_stroke = brd_light_gray
+  circle_fill = bg_lightest_gray
+  arrow_color = text_neutral
+
   SVG 
     width: size
     height: size
@@ -72,8 +76,8 @@ window.double_up_icon = (size) ->
       <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
           <g transform="translate(-869.000000, -2725.000000)">
               <g transform="translate(870.000000, 2726.000000)">
-                  <circle stroke="#CCCCCC" fill="#EEEEEE" cx="32" cy="32" r="32"></circle>
-                  <path d="M45.7016044,27.11626 C46.2524214,27.6626885 46.5621531,28.4064037 46.5621531,29.1816368 C46.5621531,29.957456 46.252409,30.7011836 45.7016044,31.2470136 C45.1556622,31.7978306 44.4119595,32.1075624 43.6362276,32.1075624 C42.8608947,32.1075624 42.1171795,31.7978182 41.5708508,31.2470136 L32,21.6469887 L22.4291492,31.2470136 C21.6913187,31.9853304 20.6154925,32.2731566 19.6073652,32.003346 C18.5997366,31.7330492 17.8122852,30.9455479 17.5419884,29.9379692 C17.2721778,28.9298544 17.5600078,27.8540157 18.2983208,27.1161852 L29.9345484,15.4799576 C30.4809768,14.9291406 31.2241933,14.6194089 31.9999252,14.6194089 C32.7756571,14.6194089 33.5189733,14.9291531 34.065302,15.4799576 L45.7016044,27.11626 Z M34.0653768,28.9346232 C33.5189484,28.3838062 32.7757319,28.0740745 32,28.0740745 C31.2242681,28.0740745 30.4809519,28.3838187 29.9346232,28.9346232 L18.2983956,40.5708508 C17.5600789,41.3086813 17.2722527,42.3845075 17.5420632,43.3926348 C17.81236,44.4002634 18.5998613,45.1877148 19.60744,45.4580116 C20.6155548,45.7278222 21.6913935,45.4399922 22.429224,44.7016792 L32.0000748,35.1016543 L41.5709256,44.7016792 C42.1173541,45.2524962 42.8610692,45.562228 43.6363024,45.562228 C44.4121216,45.562228 45.1558492,45.2524838 45.7016792,44.7016792 C46.2524962,44.155737 46.562228,43.4120343 46.562228,42.6363024 C46.562228,41.8609695 46.2524838,41.1172543 45.7016792,40.5709256 L34.0653768,28.9346232 Z" fill="#999999"></path>
+                  <circle stroke="#{circle_stroke}" fill="#{circle_fill}" cx="32" cy="32" r="32"></circle>
+                  <path d="M45.7016044,27.11626 C46.2524214,27.6626885 46.5621531,28.4064037 46.5621531,29.1816368 C46.5621531,29.957456 46.252409,30.7011836 45.7016044,31.2470136 C45.1556622,31.7978306 44.4119595,32.1075624 43.6362276,32.1075624 C42.8608947,32.1075624 42.1171795,31.7978182 41.5708508,31.2470136 L32,21.6469887 L22.4291492,31.2470136 C21.6913187,31.9853304 20.6154925,32.2731566 19.6073652,32.003346 C18.5997366,31.7330492 17.8122852,30.9455479 17.5419884,29.9379692 C17.2721778,28.9298544 17.5600078,27.8540157 18.2983208,27.1161852 L29.9345484,15.4799576 C30.4809768,14.9291406 31.2241933,14.6194089 31.9999252,14.6194089 C32.7756571,14.6194089 33.5189733,14.9291531 34.065302,15.4799576 L45.7016044,27.11626 Z M34.0653768,28.9346232 C33.5189484,28.3838062 32.7757319,28.0740745 32,28.0740745 C31.2242681,28.0740745 30.4809519,28.3838187 29.9346232,28.9346232 L18.2983956,40.5708508 C17.5600789,41.3086813 17.2722527,42.3845075 17.5420632,43.3926348 C17.81236,44.4002634 18.5998613,45.1877148 19.60744,45.4580116 C20.6155548,45.7278222 21.6913935,45.4399922 22.429224,44.7016792 L32.0000748,35.1016543 L41.5709256,44.7016792 C42.1173541,45.2524962 42.8610692,45.562228 43.6363024,45.562228 C44.4121216,45.562228 45.1558492,45.2524838 45.7016792,44.7016792 C46.2524962,44.155737 46.562228,43.4120343 46.562228,42.6363024 C46.562228,41.8609695 46.2524838,41.1172543 45.7016792,40.5709256 L34.0653768,28.9346232 Z" fill="#{arrow_color}"></path>
               </g>
           </g>
       </g>
@@ -86,7 +90,7 @@ window.plusIcon = (outline_color, size) ->
   SVG
     width: size 
     height: size
-    fill: outline_color or 'white'
+    fill: outline_color or bg_light
     viewBox: "50 50 600 450" 
 
     dangerouslySetInnerHTML: __html: """
@@ -151,6 +155,8 @@ window.ChevronLeft = (size) ->
 window.HelpIcon = (help_text, style) ->
   style ?= {}
 
+  color = style.color or text_light_gray 
+
   BUTTON 
     "data-tooltip": help_text
 
@@ -176,7 +182,7 @@ window.HelpIcon = (help_text, style) ->
         fillRule: "evenodd"
         G 
           transform: "translate(0.000000, 0.000000)" 
-          fill: style.color or "#666" 
+          fill: color
           fillRule: "nonzero"
           PATH 
             d: "M8.5,2.833339 C7.71759653,2.833339 7.08333333,3.4676022 7.08333333,4.25000567 C7.08333333,5.03240913 7.71759653,5.66667233 8.5,5.66667233 C9.28240347,5.66667233 9.91666667,5.03240913 9.91666667,4.25000567 C9.91666667,3.4676022 9.28240347,2.833339 8.5,2.833339 Z M6.61111111,6.61111678 L7.55555556,7.55556122 L7.55555556,13.2222279 L6.61111111,13.2222279 L6.61111111,14.1666723 L10.3888889,14.1666723 L10.3888889,13.2222279 L9.44444444,13.2222279 L9.44444444,6.61111678 L7.55555556,6.61111678 L6.61111111,6.61111678 Z"
@@ -189,7 +195,7 @@ window.GearIcon = (opts) ->
   SVG 
     height: opts.size or '100px' 
     width: opts.size or '100px'  
-    fill: opts.fill or "#888" 
+    fill: opts.fill or bg_neutral_gray 
     x: "0px" 
     y: "0px" 
     viewBox: "0 0 100 100"  
@@ -248,6 +254,10 @@ window.trash_icon = (width, height, color) ->
 
 window.filter_icon = (height) -> 
   height ?= 27
+  circle_fill = bg_light_gray
+  active_circle_fill = bg_dark_gray
+  line_stroke = slidergram_base_color
+
   SVG 
     className: 'opinion_view_class' 
     width: 33 / 27 * height
@@ -258,11 +268,11 @@ window.filter_icon = (height) ->
           <g id="Artboard-Copy-47" transform="translate(-373.000000, -868.000000)">
               <g id="Group-22" transform="translate(333.000000, 843.000000)">
                   <g id="filter2" transform="translate(40.000000, 25.000000)">
-                      <circle id="Oval" fill-opacity="0.491815314" fill="#AAAAAA" cx="4.5" cy="4.5" r="4.5"></circle>
-                      <circle id="Oval" fill-opacity="0.491815314" fill="#AAAAAA" cx="15.5" cy="4.5" r="4.5"></circle>
-                      <circle id="Oval" fill="#555555" cx="15.5" cy="22.5" r="4.5"></circle>
-                      <circle id="Oval" fill-opacity="0.491815314" fill="#AAAAAA" cx="25.5" cy="4.5" r="4.5"></circle>
-                      <line x1="2.1744186" y1="13" x2="31.8255814" y2="13" id="Line" stroke="#777777" stroke-linecap="square" stroke-dasharray="0,2"></line>
+                      <circle id="Oval" fill-opacity="0.491815314" fill="#{circle_fill}" cx="4.5" cy="4.5" r="4.5"></circle>
+                      <circle id="Oval" fill-opacity="0.491815314" fill="#{circle_fill}" cx="15.5" cy="4.5" r="4.5"></circle>
+                      <circle id="Oval" fill="#{active_circle_fill}" cx="15.5" cy="22.5" r="4.5"></circle>
+                      <circle id="Oval" fill-opacity="0.491815314" fill="#{circle_fill}" cx="25.5" cy="4.5" r="4.5"></circle>
+                      <line x1="2.1744186" y1="13" x2="31.8255814" y2="13" id="Line" stroke="#{line_stroke}" stroke-linecap="square" stroke-dasharray="0,2"></line>
                   </g>
               </g>
           </g>
@@ -271,6 +281,11 @@ window.filter_icon = (height) ->
     
 window.group_by_icon = (height) ->
   height ?= 19
+  orange_fill = attention_orange
+  blue_fill = focus_color
+  purple_fill = selected_color
+  line_stroke = brd_mid_gray
+
   SVG
     className: 'opinion_view_class' 
     width: 34/19 * height  
@@ -282,11 +297,11 @@ window.group_by_icon = (height) ->
           <g id="Artboard-Copy-47" transform="translate(-371.000000, -937.000000)">
               <g id="Group-22" transform="translate(333.000000, 843.000000)">
                   <g id="weigh" transform="translate(39.000000, 94.000000)">
-                      <circle id="Oval" fill="#{attention_orange}" cx="6.45454545" cy="13.1818182" r="5"></circle>
-                      <circle id="Oval" fill="#{attention_orange}" cx="16.2727273" cy="13" r="5"></circle>
-                      <circle id="Oval" fill="#5E91E9" cx="10.8181818" cy="5" r="5"></circle>
-                      <circle id="Oval" fill="#BC62C4" cx="27.8181818" cy="13" r="5"></circle>
-                      <line x1="0.228571429" y1="18.4545455" x2="31.7714286" y2="18.4545455" id="Line" stroke="#AAAAAA" stroke-linecap="square"></line>
+                      <circle id="Oval" fill="#{orange_fill}" cx="6.45454545" cy="13.1818182" r="5"></circle>
+                      <circle id="Oval" fill="#{orange_fill}" cx="16.2727273" cy="13" r="5"></circle>
+                      <circle id="Oval" fill="#{blue_fill}" cx="10.8181818" cy="5" r="5"></circle>
+                      <circle id="Oval" fill="#{purple_fill}" cx="27.8181818" cy="13" r="5"></circle>
+                      <line x1="0.228571429" y1="18.4545455" x2="31.7714286" y2="18.4545455" id="Line" stroke="#{line_stroke}" stroke-linecap="square"></line>
                   </g>
               </g>
           </g>
@@ -296,6 +311,9 @@ window.group_by_icon = (height) ->
 
 window.weigh_icon = (height) ->
   height ?= 18
+  circle_fill = bg_neutral_gray
+  line_stroke = slidergram_base_color
+
   SVG
     className: 'opinion_view_class' 
     width: height * 34/18 
@@ -307,10 +325,10 @@ window.weigh_icon = (height) ->
           <g id="Artboard-Copy-47" transform="translate(-372.000000, -759.000000)">
               <g id="Group-22" transform="translate(333.000000, 602.000000)">
                   <g id="weigh" transform="translate(40.000000, 157.000000)">
-                      <circle id="Oval" fill="#999999" cx="4.36363636" cy="13.0909091" r="2.90909091"></circle>
-                      <circle id="Oval" fill="#999999" cx="27.6363636" cy="13.0909091" r="4.36363636"></circle>
-                      <circle id="Oval" fill="#999999" cx="13.8181818" cy="8" r="8"></circle>
-                      <line x1="0.228571429" y1="17.4545455" x2="31.7714286" y2="17.4545455" id="Line" stroke="#AAAAAA" stroke-linecap="square"></line>
+                      <circle id="Oval" fill="#{circle_fill}" cx="4.36363636" cy="13.0909091" r="2.90909091"></circle>
+                      <circle id="Oval" fill="#{circle_fill}" cx="27.6363636" cy="13.0909091" r="4.36363636"></circle>
+                      <circle id="Oval" fill="#{circle_fill}" cx="13.8181818" cy="8" r="8"></circle>
+                      <line x1="0.228571429" y1="17.4545455" x2="31.7714286" y2="17.4545455" id="Line" stroke="#{line_stroke}" stroke-linecap="square"></line>
                   </g>
               </g>
           </g>
@@ -318,6 +336,8 @@ window.weigh_icon = (height) ->
     """
 
 window.date_icon = (activated) ->
+  fill_color = if activated then text_light else text_dark
+
   SVG 
     width: 13
     height: 12 
@@ -325,7 +345,7 @@ window.date_icon = (activated) ->
     dangerouslySetInnerHTML: __html: """
 
     <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g transform="translate(-234.000000, -823.000000)" fill="#{if activated then '#ffffff' else '#000000'}" fill-rule="nonzero">
+        <g transform="translate(-234.000000, -823.000000)" fill="#{fill_color}" fill-rule="nonzero">
             <g transform="translate(234.500000, 823.000000)">
                 <path d="M84.3,5.7 L73.1,5.7 L73.1,2.9 C73.1,1.3 71.8,-1.77635684e-15 70.2,-1.77635684e-15 C68.6,-1.77635684e-15 67.3,1.3 67.3,2.9 L67.3,5.7 L50.4,5.7 L50.4,2.9 C50.4,1.3 49.1,-1.77635684e-15 47.5,-1.77635684e-15 C45.9,-1.77635684e-15 44.6,1.3 44.6,2.9 L44.6,5.7 L27.7,5.7 L27.7,2.9 C27.7,1.3 26.4,-1.77635684e-15 24.8,-1.77635684e-15 C23.2,-1.77635684e-15 21.9,1.3 21.9,2.9 L21.9,5.7 L10.7,5.7 C4.8,5.7 0,10.5 0,16.4 L0,75.2 C0,81.1 4.8,85.9 10.7,85.9 L84.4,85.9 C90.3,85.9 95.1,81.1 95.1,75.2 L95.1,16.4 C95,10.5 90.2,5.7 84.3,5.7 Z M89.2,75.1 C89.2,77.8 87,79.9 84.4,79.9 L10.7,79.9 C8,79.9 5.9,77.7 5.9,75.1 L5.9,16.4 C5.9,13.7 8.1,11.6 10.7,11.6 L21.9,11.6 L21.9,14.4 C21.9,16 23.2,17.3 24.8,17.3 C26.4,17.3 27.7,16 27.7,14.4 L27.7,11.6 L44.6,11.6 L44.6,14.4 C44.6,16 45.9,17.3 47.5,17.3 C49.1,17.3 50.4,16 50.4,14.4 L50.4,11.6 L67.3,11.6 L67.3,14.4 C67.3,16 68.6,17.3 70.2,17.3 C71.8,17.3 73.1,16 73.1,14.4 L73.1,11.6 L84.3,11.6 C87,11.6 89.1,13.8 89.1,16.4 L89.1,75.1 L89.2,75.1 Z" id="Shape"></path>
                 <path d="M29.9,27.9 L21.4,27.9 C19.8,27.9 18.6,29.2 18.6,30.7 C18.6,32.3 19.9,33.5 21.4,33.5 L29.9,33.5 C31.5,33.5 32.7,32.2 32.7,30.7 C32.8,29.2 31.5,27.9 29.9,27.9 Z" id="Path"></path>

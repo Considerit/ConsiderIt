@@ -23,7 +23,7 @@ window.ResetPassword = ReactiveComponent
 
         DIV
           style:
-            color: auth_text_gray
+            color: text_gray
             marginBottom: 18
           i18n.verification_sent_message
 

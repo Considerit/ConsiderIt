@@ -130,8 +130,8 @@ UserTags = ReactiveComponent
               position: 'absolute'
               zIndex: 99
               listStyle: 'none'
-              backgroundColor: '#fff'
-              border: '1px solid #eee'
+              backgroundColor: bg_light
+              border: "1px solid #{brd_lightest_gray}"
 
             for user,idx in available_users
               do (user) => 
@@ -142,7 +142,7 @@ UserTags = ReactiveComponent
                     padding: '2px 12px'
                     fontSize: 18
                     cursor: 'pointer'
-                    borderBottom: '1px solid #f7f7f7'
+                    borderBottom: "1px solid #{brd_lightest_gray}"
 
                   onMouseEnter: (e) =>
                     @local.hovered_user = user.key
@@ -179,7 +179,7 @@ UserTags = ReactiveComponent
                       padding: '5px 10px'
                       marginRight: 18
                       display: 'inline-block'
-                      border: "1px solid #{ if editing then '#bbb' else 'transparent'}"
+                      border: "1px solid #{ if editing then brd_mid_gray else 'transparent'}"
                       fontSize: 18
                       width: 400
 
@@ -190,7 +190,7 @@ UserTags = ReactiveComponent
                     style: 
                       padding: '5px 10px'
                       display: 'inline-block'
-                      border: "1px solid #{ if editing then '#bbb' else 'transparent'}"
+                      border: "1px solid #{ if editing then brd_mid_gray else 'transparent'}"
                       fontSize: 18
                       width: 400
 
@@ -246,9 +246,9 @@ UserTags = ReactiveComponent
             INPUT 
               type: 'submit'
               style: 
-                backgroundColor: focus_color()
+                backgroundColor: focus_color
                 border: 'none'
-                color: 'white'
+                color: text_light
                 padding: '5px 10px'
                 borderRadius: 8
                 fontSize: 18
@@ -303,7 +303,7 @@ UserTags = ReactiveComponent
                       backgroundColor: 'none'
                       border: 'none'
                       padding: 0
-                      color: focus_color()
+                      color: focus_color
                       textDecoration: 'underline'
                       marginLeft: 12
                     onClick: do (tag) => =>

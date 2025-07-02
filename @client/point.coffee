@@ -69,17 +69,16 @@ window.Point = ReactiveComponent
     
 
 
-    point_content_style = {}
+    point_content_style =
+      backgroundColor: bg_speech_bubble
 
     if is_selected
       _.extend point_content_style,
-        borderColor: focus_color()
-        backgroundColor: 'white'
+        borderColor: focus_color
 
     else if @local.has_focus
       _.extend point_content_style,
-        borderColor: '#999'
-        backgroundColor: 'white'
+        borderColor: brd_mid_gray
 
     expand_to_see_details = !!point.text
 
@@ -105,7 +104,7 @@ window.Point = ReactiveComponent
         key: 1
         style:
           fontSize: 10
-          color: '#888'
+          color: text_light_gray
         " (#{translator({id: "engage.read_more"}, "read more")})"
 
     else 
@@ -166,8 +165,8 @@ window.Point = ReactiveComponent
               apex_xfrac: 0
               width: POINT_MOUTH_WIDTH
               height: POINT_MOUTH_WIDTH
-              fill: considerit_gray
-              stroke: if is_selected then focus_color() else if @local.has_focus then '#888' else 'transparent'
+              fill: bg_speech_bubble
+              stroke: if is_selected then focus_color else if @local.has_focus then brd_neutral_gray else 'transparent'
               stroke_width: if is_selected || @local.has_focus then 20 else 0
 
         DIV 
@@ -213,7 +212,7 @@ window.Point = ReactiveComponent
             DIV 
               style: 
                 fontSize: 12
-                color: '#666'
+                color: text_light_gray
 
               if !PHONE_SIZE() && !screencasting() && !embedded_demo() && bus_fetch('/subdomain').name != 'galacticfederation'
                 [
@@ -253,7 +252,7 @@ window.Point = ReactiveComponent
               BUTTON
                 style:
                   fontSize: if browser.is_mobile then 24 else 14
-                  color: focus_color()
+                  color: focus_color
                   padding: '3px 12px 3px 0'
                   backgroundColor: 'transparent'
                   border: 'none'
@@ -272,7 +271,7 @@ window.Point = ReactiveComponent
                 'data-action': 'delete-point'
                 style:
                   fontSize: if browser.is_mobile then 24 else 14
-                  color: focus_color()
+                  color: focus_color
                   padding: '3px 8px'
                   backgroundColor: 'transparent'
                   border: 'none'
@@ -359,22 +358,22 @@ window.Point = ReactiveComponent
             I 
               style: 
                 fontSize: if included then 25 else 40
-                color: focus_color()
+                color: focus_color
               className: "fa fa-long-arrow-#{if !right then 'left' else 'right'}"
 
         else
           BUTTON 
             style: 
-              border: "1px solid #{ if included || @local.hover_important then focus_color() else '#333333'}"
-              borderTopColor: if included then focus_color() else 'transparent'
-              color: if included then 'white' else if @local.hover_important then focus_color() else "#333333"
+              border: "1px solid #{ if included || @local.hover_important then focus_color else brd_dark_gray}"
+              borderTopColor: if included then focus_color else 'transparent'
+              color: if included then text_light else if @local.hover_important then focus_color else text_gray
               position: 'relative'
               top: -13
               padding: '8px 5px'
               textAlign: 'center'
               borderRadius: '0 0 16px 16px'
               cursor: 'pointer'
-              backgroundColor: if included then focus_color() else 'white'
+              backgroundColor: if included then focus_color else bg_light
               fontSize: 16  
               zIndex: 0
               display: if can_opine < 0 then 'none'
@@ -684,7 +683,7 @@ styles += """
 
   @media #{NOT_PHONE_MEDIA} {
     .point.community_point {
-      filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 1px 1px);
+      filter: drop-shadow(#{shadow_dark_25} 0px 1px 1px);
     }
 
   }
@@ -742,7 +741,7 @@ styles += """
     padding: 8px;
     border-radius: 16px;
     top: -11px;
-    background-color: #{considerit_gray};
+    background-color: #{bg_speech_bubble};
     min-height: 34px; 
   }
 
@@ -784,10 +783,10 @@ styles += """
     height: 22px; }
 
   .community_point.con .point_includer_avatar {
-    box-shadow: -1px 2px 0 0 #eeeeee; }
+    box-shadow: -1px 2px 0 0 #{bg_item}; }   /* coin effect. should be ~ background color of an expanded item */
 
   .community_point.pro .point_includer_avatar {
-    box-shadow: 1px 2px 0 0 #eeeeee; }
+    box-shadow: 1px 2px 0 0 #{bg_item}; }    /* coin effect. should be ~ background color of an expanded item */
 
   .decision_board_point.pro .point_includer_avatar {
     left: -10px; }

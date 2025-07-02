@@ -86,7 +86,7 @@ window.ProfileMenu = ReactiveComponent
                 SPAN 
                   key: 'username'
                   style: 
-                    color: if menu_showing then '#777'
+                    color: if menu_showing then text_gray
                     fontSize: 18
                     position: 'relative'
                     paddingRight: 12
@@ -104,10 +104,9 @@ window.ProfileMenu = ReactiveComponent
                 translator "user_menu.option.#{option.label}", option.label
             
             anchor_style: 
-              color: if !light_background then 'white'
+              color: if !light_background then text_light
               zIndex: 9999999999
-              backgroundColor: 'rgba(255,255,255, .1)'
-              # boxShadow: '0px 1px 1px rgba(0,0,0,.1)'
+              backgroundColor: bg_light_trans_25
               borderRadius: 8
               padding: '3px 4px'
               fontWeight: 600
@@ -117,14 +116,14 @@ window.ProfileMenu = ReactiveComponent
             anchor_when_open_style: 
               backgroundColor: 'transparent'
               boxShadow: 'none'
-              color: '#666'
+              color: text_light_gray
             
             menu_style: 
               left: 'auto'
               right: -9999
               margin: '-42px 0 0 -8px'
               padding: "56px 14px 8px 8px"
-              backgroundColor: '#eee'
+              backgroundColor: bg_lightest_gray
               textAlign: 'right'
               minWidth: '100%'
             
@@ -132,7 +131,7 @@ window.ProfileMenu = ReactiveComponent
               right: 0
             
             option_style: 
-              color: focus_color()
+              color: focus_color
               position: 'relative'
               bottom: 8
               paddingLeft: 27
@@ -141,11 +140,11 @@ window.ProfileMenu = ReactiveComponent
               fontWeight: 600 
 
             active_option_style: 
-              color: 'black'
+              color: text_dark
         else 
           is_light = is_light_background()
-          color = if is_light then 'black' else 'white'
-          bg = if is_light then 'rgba(255,255,255,.4)' else 'rgba(0,0,0,.4)'
+          color = if is_light then text_dark else text_light
+          bg = if is_light then bg_light_trans_40 else bg_dark_trans_40
 
           settings = [{name: 'Forum Settings', url: '/dashboard/application'}, {name: 'Permissions & Roles', url: '/dashboard/roles'}]
           if is_admin
@@ -209,7 +208,7 @@ window.ProfileMenu = ReactiveComponent
             href: '/login_via_saml'
             treat_as_external_link: true
             style: 
-              color: if !light_background then 'white'
+              color: if !light_background then text_light
               backgroundColor: 'transparent'
               border: 'none'
               textDecoration: 'none'
@@ -237,7 +236,7 @@ window.ProfileMenu = ReactiveComponent
                   form: 'login'
 
               style: 
-                color: if !light_background then 'white'
+                color: if !light_background then text_light
                 fontWeight: 700
                 fontSize: 18
                 marginLeft: 20
@@ -265,8 +264,8 @@ window.ProfileMenu = ReactiveComponent
 
       DIV 
         style: 
-          backgroundColor: focus_color()
-          color: 'white'
+          backgroundColor: focus_color
+          color: text_light
           fontWeight: 600
           padding: '4px 12px'
           fontSize: 21
@@ -276,7 +275,7 @@ window.ProfileMenu = ReactiveComponent
 
 
         SPAN 
-          style: cssTriangle 'right', focus_color(), 10, 12,
+          style: cssTriangle 'right', focus_color, 10, 12,
             position: 'absolute'
             right: -10
             top: 12
@@ -302,8 +301,8 @@ window.ProfileMenu = ReactiveComponent
             right: 0
             zIndex: 999
             padding: 40
-            backgroundColor: 'white'
-            boxShadow: '0 1px 2px rgba(0,0,0,.3)'
+            backgroundColor: bg_light
+            boxShadow: "0 1px 2px #{shadow_dark_25}"
             fontSize: 21
 
           DIV style: marginBottom: 20,

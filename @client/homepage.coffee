@@ -23,7 +23,7 @@ styles += """
 
   @media #{LAPTOP_MEDIA} {
     .main_background {
-      background-color: #{main_background_color};
+      background-color: #{bg_container};
     }
     #homepagetab {
       width: calc(var(--HOMEPAGE_WIDTH) + var(--LIST_PADDING_RIGHT) + var(--LIST_PADDING_LEFT));
@@ -39,7 +39,7 @@ styles += """
 
   @media #{NOT_LAPTOP_MEDIA} {
     .main_background {
-      background-color: white;
+      background-color: #{bg_light};
     }
   }
 
@@ -183,8 +183,8 @@ window.Homepage = ReactiveComponent
                 DIV 
                   key: message
                   style: _.defaults {}, (message.style or {}),
-                    backgroundColor: "#eee"
-                    border: "1px solid #ccc"
+                    backgroundColor: bg_lightest_gray
+                    border: "1px solid #{brd_light_gray}"
                     borderRadius: 12
                     padding: '4px 24px'
                     maxWidth: 700
@@ -193,7 +193,7 @@ window.Homepage = ReactiveComponent
                     display: 'flex'
                     alignItems: 'center'
                     minHeight: 44
-                    color: 'black'
+                    color: text_dark
                     # textAlign: 'center'
 
                   if message.img || message.icon
@@ -203,7 +203,7 @@ window.Homepage = ReactiveComponent
                         paddingRight: 36
 
                       if message.icon
-                        message.icon(34, 34, 'black')
+                        message.icon(34, 34, text_dark)
                       else
                         IMG 
                           style: 
@@ -255,13 +255,13 @@ window.Homepage = ReactiveComponent
                 HomepageTabs
                   go_to_hash: 'active_tab'
                   active_style: 
-                    backgroundColor: '#666'
-                    color: 'white'
+                    backgroundColor: bg_dark_gray
+                    color: text_light
                   tab_style: 
                     backgroundColor: 'transparent'
                     margin: 4
                     padding: "8px 20px"
-                    color: '#555'
+                    color: text_gray
 
 
   typeset : -> 

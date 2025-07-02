@@ -193,7 +193,7 @@ styles += """
   }
 
   .DecisionBoard .points_heading_label {
-    color: #{focus_color()};
+    color: #{focus_color};
     font-weight: 700;
   }
 
@@ -440,13 +440,12 @@ window.Reasons = ReactiveComponent
         BUTTON 
           id: "show_all_reasons"
           style: 
-            backgroundColor: "#eee"
+            backgroundColor: bg_lightest_gray
             padding: '12px 0'
             fontSize: 24
             textAlign: 'center'
             textDecoration: 'underline'
             border: 'none'
-            #border: '1px solid rgba(0,0,0,.5)'                
             cursor: 'pointer'
             display: 'block'
             width: "var(--BODY_WIDTH)"
@@ -471,7 +470,7 @@ styles += """
 
   .save_opinion_button {
     display: none;
-    background-color: #{focus_color()};
+    background-color: #{focus_color};
     width: 100%;
     margin-top: 14px;
     border-radius: 16px;
@@ -483,9 +482,9 @@ styles += """
   }    
 
   .summary .give_opinion_button {
-    background-color: #{focus_color()};
+    background-color: #{focus_color};
     display: block;
-    color: white;
+    color: #{text_light};
     padding: .25em 18px;
     margin: 0;
     font-size: 16px;
@@ -509,12 +508,12 @@ styles += """
   .below_save {  text-align:center;  }
   .below_save .btn {
     margin: 10px;
-    border: solid 1px #ddd;
+    border: solid 1px #{brd_light_gray};
     border-radius: 15px;
-    font-weight: lighter;
+    font-weight: normal;
     font-size: 0.9em;
-    background-color: #eee;
-    color: black;
+    background-color: #{bg_lightest_gray};
+    color: #{text_gray};
   }
   .below_save .btn svg {  margin-left:20px;  }
 
@@ -527,12 +526,12 @@ styles += """
 
   .crafting .decision_board_body {
     transform: translate(0, 10px);
-    background-color: white;
+    background-color: #{bg_light};
   }
 
   .results .decision_board_body {
     border-style: solid;
-    background-color: #{focus_color()};
+    background-color: #{focus_color};
     cursor: pointer;
     min-height: 32px;
   }
@@ -600,7 +599,7 @@ window.DecisionBoard = ReactiveComponent
     mode = getProposalMode(proposal)
 
     decision_board_style =
-      borderColor: focus_color()
+      borderColor: focus_color
       transition: if @last_proposal_mode != mode || @transitioning  
                     "transform #{CRAFTING_TRANSITION_SPEED}ms, " + \
                     "width #{CRAFTING_TRANSITION_SPEED}ms, " + \
@@ -783,7 +782,7 @@ window.DecisionBoard = ReactiveComponent
             DIV 
               style: 
                 textAlign: 'center'
-                color: '#333333'
+                color: text_gray
                 margin: "16px 0 4px 0"
                 fontSize: 14
                 fontWeight: 300
@@ -797,7 +796,7 @@ window.DecisionBoard = ReactiveComponent
               BUTTON
                 key: 'anonymize opinion button'
                 className: 'btn'
-                style:  {  backgroundColor: (if your_opinion.hide_name then focus_blue else null), display: if customization('anonymize_permanently') then 'none'  }
+                style:  {  backgroundColor: (if your_opinion.hide_name then focus_color else null), display: if customization('anonymize_permanently') then 'none'  }
                 "data-tooltip": anonymize_button_tooltip
                 "aria-label": anonymize_button_tooltip
                 onClick: -> toggle_anonymize_opinion(your_opinion)
@@ -806,7 +805,7 @@ window.DecisionBoard = ReactiveComponent
                   key: 'anonymize opinion label'
                   style: 
                     textTransform: 'capitalize'
-                    color: if your_opinion.hide_name then 'white'
+                    color: if your_opinion.hide_name then text_light
                     fontWeight: if your_opinion.hide_name then 600
                   anonymize_button_text
 
@@ -814,7 +813,7 @@ window.DecisionBoard = ReactiveComponent
                   SPAN
                     key: 'anonymize opinion icon'
                     style: {  height:'22px', display:'inline-block', verticalAlign:'bottom'  }
-                    iconAnonymousMask YOUR_OPINION_BUTTON_SIZE, if your_opinion.hide_name then '#FFFFFF' else '#888888'
+                    iconAnonymousMask YOUR_OPINION_BUTTON_SIZE, if your_opinion.hide_name then text_light else text_neutral
 
               BUTTON
                 key: 'remove opinion button'
@@ -834,7 +833,7 @@ window.DecisionBoard = ReactiveComponent
                   SPAN
                     key: 'remove opinion icon'
                     style: {  height:'20px', display:'inline-block', verticalAlign:'bottom'  }
-                    iconX YOUR_OPINION_BUTTON_SIZE, '#444444'
+                    iconX YOUR_OPINION_BUTTON_SIZE, text_gray
 
 
 
@@ -1108,7 +1107,7 @@ window.PointsList = ReactiveComponent
             style: 
               fontStyle: 'italic'
               textAlign: 'center'
-              color: '#777'
+              color: text_light_gray
               display: if WINDOW_WIDTH() < 430 then 'none'
 
             if none_given
@@ -1300,7 +1299,7 @@ window.PointsList = ReactiveComponent
         is_left: @props.valence == 'cons'
         style: {}
         text_style:
-          #color: focus_color()
+          #color: focus_color
           textDecoration: 'underline'
 
 
@@ -1335,7 +1334,7 @@ window.PointsList = ReactiveComponent
               left: -25px;
               top: 5px;
               font-weight: #{if browser.high_density_display then 300 else 400};
-              color: black;
+              color: #{text_dark};
             }
           """
 
@@ -1344,7 +1343,7 @@ window.PointsList = ReactiveComponent
         className: "write_#{@props.valence} btn"
         style: 
           marginLeft: 8
-          backgroundColor: focus_color()
+          backgroundColor: focus_color
           position: 'relative'
           opacity: if bus_fetch(shared_local_key(proposal)).has_focus == 'edit point' then .1
 
@@ -1443,7 +1442,7 @@ window.PointsList = ReactiveComponent
               key: 'rect'
               width: '100%'
               height: '100%'
-              fill: 'white'
+              fill: bg_light
 
             do => 
               if is_left
@@ -1463,7 +1462,7 @@ window.PointsList = ReactiveComponent
                   y1: y1
                   x2: x2 
                   y2: y2 
-                  stroke: focus_color()
+                  stroke: focus_color
                   strokeWidth: 1
                   strokeOpacity: .2
 
@@ -1475,7 +1474,7 @@ window.PointsList = ReactiveComponent
           rx: 16
           ry: 16
           fill: "url(#drop-stripes-#{is_left}-#{s_w}-#{s_h})"
-          stroke: focus_color()
+          stroke: focus_color
           strokeWidth: stroke_width
           strokeDasharray: '4, 3'
 
@@ -1495,8 +1494,8 @@ window.PointsList = ReactiveComponent
         apex_xfrac: 0
         width: POINT_MOUTH_WIDTH
         height: POINT_MOUTH_WIDTH
-        fill:  '#FFFFFF'  #TODO: somehow make this focus_color() color mixed with white @ .2 opacity
-        stroke: focus_color()
+        fill:  bg_light  #TODO: somehow make this focus_color color mixed with white @ .2 opacity
+        stroke: focus_color
         stroke_width: 6
         dash_array: '24, 18'
         style: mouth_style
@@ -1555,7 +1554,7 @@ GroupSelectionRegion = ReactiveComponent
     DIV 
       style: 
         width: wrapper_width
-        border: if !PHONE_SIZE() then "3px solid #{if get_selected_point() then '#eee' else focus_color() }"
+        border: if !PHONE_SIZE() then "3px solid #{if get_selected_point() then brd_lightest_gray else focus_color }"
         height: '100%'
         position: 'absolute'
         borderRadius: 32
@@ -1566,14 +1565,14 @@ GroupSelectionRegion = ReactiveComponent
       if !PHONE_SIZE()
         DIV 
           style: cssTriangle 'top', \
-                             (if get_selected_point() then '#eee' else focus_color()), \
+                             (if get_selected_point() then brd_lightest_gray else focus_color), \
                              w, h,               
                                 position: 'relative'
                                 top: -26
                                 left: left - w / 2
 
           DIV
-            style: cssTriangle 'top', 'white', w - 1, h - 1,
+            style: cssTriangle 'top', brd_light, w - 1, h - 1,
               position: 'relative'
               left: -(w - 2) / 2
               top: 6
@@ -1596,7 +1595,7 @@ GroupSelectionRegion = ReactiveComponent
           style: _.extend name_style,
             position: 'absolute'
             top: -(avatar_height + 172)
-            color: focus_color()
+            color: focus_color
             left: "min(#{wrapper_width - name_width}px, max(0px, calc(#{left}px - #{name_width / 2}px)))" #Math.min(wrapper_width - name_width - 10, Math.max(0, left - name_width / 2))
           title 
   

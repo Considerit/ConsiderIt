@@ -53,7 +53,7 @@ window.Notifications = ReactiveComponent
 
         DIV 
           style:
-            backgroundColor: if @local.via_unsubscribe_link then main_background_color
+            backgroundColor: if @local.via_unsubscribe_link then bg_container
             padding: if @local.via_unsubscribe_link then '12px 18px'
             border: if @local.via_unsubscribe_link then "1px solid #{selected_color}"
 
@@ -90,7 +90,7 @@ window.Notifications = ReactiveComponent
               SPAN 
                 style:
                   backgroundColor: selected_color
-                  color: 'white'
+                  color: text_light
                   textTransform: 'uppercase'
                   fontSize: '80%'
                   fontWeight: 'bold'
@@ -107,7 +107,7 @@ window.Notifications = ReactiveComponent
               style:
                 backgroundColor: selected_color
                 padding: '12px 18px'
-                color: 'white'
+                color: text_light
 
               TRANSLATE
                 id: "email_notifications.watched_proposals_ack"

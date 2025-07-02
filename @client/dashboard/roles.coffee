@@ -272,7 +272,7 @@ AddRolesAndInvite = ReactiveComponent
       style: 
         position: 'relative'
         padding: if @local.expanded then '18px 24px'
-        border: if @local.expanded then '1px solid #ccc' else '1px solid transparent'
+        border: if @local.expanded then "1px solid #{brd_light_gray}" else '1px solid transparent'
 
 
       if !@local.expanded 
@@ -295,7 +295,7 @@ AddRolesAndInvite = ReactiveComponent
             BUTTON 
               className: 'like_link'
               style: 
-                color: '#666'
+                color: text_light_gray
                 marginLeft: 20
                 fontSize: 14
                 textDecoration: 'none'
@@ -414,7 +414,7 @@ ResendInvitations = ReactiveComponent
           className: 'btn'
           disabled: @local.added.length == 0
           style: 
-            backgroundColor: focus_color()
+            backgroundColor: focus_color
             cursor: if @local.added.length == 0 then 'default'
             opacity: if @local.added.length == 0 then 0.5
 
@@ -441,7 +441,7 @@ ResendInvitations = ReactiveComponent
         BUTTON 
           className: 'like_link'
           style: 
-            color: '#333'
+            color: text_gray
             marginLeft: 24
             position: 'relative'
             top: 2
@@ -548,17 +548,17 @@ ModalAddRolesAndInvite = ReactiveComponent
           wrapper_style: 
             display: 'inline-block'
           menu_style: 
-            backgroundColor: '#ddd'
-            border: '1px solid #ddd'
+            backgroundColor: bg_light_gray
 
           option_style: 
-            padding: '4px 12px'
+            padding: '8px 8px 4px 8px'
             fontSize: 18
             cursor: 'pointer'
             display: 'block'
 
           active_option_style:
-            backgroundColor: '#eee'
+            backgroundColor: bg_dark
+            color: text_light
 
         if @local.filtered && @local.filtered.length > 0 
           BUTTON 
@@ -631,7 +631,7 @@ ModalAddRolesAndInvite = ReactiveComponent
           className: 'btn'
           disabled: @local.added.length == 0
           style: 
-            backgroundColor: focus_color()
+            backgroundColor: focus_color
             cursor: if @local.added.length == 0 then 'default'
             opacity: if @local.added.length == 0 then 0.5
 
@@ -661,7 +661,7 @@ ModalAddRolesAndInvite = ReactiveComponent
         BUTTON 
           className: 'like_link'
           style: 
-            color: '#333'
+            color: text_gray
             marginLeft: 24
             position: 'relative'
             top: 2
@@ -682,6 +682,8 @@ UsersWithRole = ReactiveComponent
       style: 
         marginLeft: -4
         marginBottom: 12
+        display: 'flex'
+        alignItems: 'center'
 
       if target.roles[role.name]
         for user_key in target.roles[role.name]
@@ -704,17 +706,22 @@ UserWithRole = (user_key, on_remove_from_role) ->
       display: 'inline-block'
       padding: '6px 4px 6px 12px'
       fontSize: 13
-      backgroundColor: '#ddd' 
-      color: 'black'
+      backgroundColor: bg_speech_bubble
+      boxShadow: "#{shadow_dark_25} 0 1px 1px 0px"
+      color: text_dark
       borderRadius: 8
       margin: 4
 
     DIV
       style: 
         display: 'inline-block'
+
       if user_key && user_key[0] == '/'
         user = bus_fetch user_key
-        SPAN null,
+        SPAN 
+          style: 
+            display: 'flex'
+
           if user.avatar_file_name
             Avatar 
               key: user_key
@@ -733,7 +740,7 @@ UserWithRole = (user_key, on_remove_from_role) ->
                 user.name 
             DIV 
               style: 
-                color: if user.name then '#888'
+                color: if user.name then text_light_gray
               user.email
 
       else

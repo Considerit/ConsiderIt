@@ -2,24 +2,75 @@
 # Colors
 
 
-window.focus_blue = '#456ae4'
+window.focus_color = '#456ae4'
 window.logo_red = "#B03A44"
 window.considerit_red = "#df6264"
-window.default_avatar_in_histogram_color = '#999'
 window.selected_color = '#DA4570' #pinkish red
-window.upgrade_color = '#16a1e3'
+window.upgrade_color = '#518eff'
 window.attention_orange = "#fb7e26"
-window.considerit_gray = '#f7f7f7'
-window.main_background_color = '#f7f7f7'
 window.failure_color = "#F94747"
 window.success_color = "#81c765"
 window.caution_color = "#ffc92a"
 
+window.slidergram_base_color = "#777777"
+
+window.text_dark = '#000000'
+window.text_gray = '#333333'    
+window.text_light_gray = '#666666'
+window.text_neutral = '#888888'
+window.text_gray_on_dark = '#cccccc'
+window.text_light = '#ffffff'
+
+
+window.bg_dark = '#000000'
+window.bg_dark_gray = '#444444'
+window.bg_neutral_gray = "#888888"
+window.bg_light_gray = '#aaaaaa'
+window.bg_lighter_gray = '#cccccc'
+window.bg_lightest_gray = '#eeeeee'
+window.bg_light = '#ffffff'
+
+
+window.bg_container = '#f7f7f7'
+window.bg_item = '#ffffff'
+window.bg_item_separator = '#f3f4f5'
+window.bg_speech_bubble = '#f7f7f7'
+
+window.bg_dark_trans_25 = '#00000040'
+window.bg_dark_trans_40 = '#00000066'
+window.bg_dark_trans_60 = '#00000099'
+window.bg_dark_trans_80 = '#000000CC'
+
+window.bg_light_transparent = '#ffffff00'
+window.bg_light_trans_25 = '#FFFFFF40'
+window.bg_light_trans_40 = '#FFFFFF66'
+window.bg_light_trans_60 = '#FFFFFF99'
+window.bg_light_trans_80 = '#FFFFFFCC'
+window.bg_light_opaque = '#ffffffff'
+
+
+window.brd_dark = '#000000'
+window.brd_dark_gray = '#444444'
+window.brd_neutral_gray = '#888888'
+window.brd_mid_gray = '#aaaaaa' 
+window.brd_light_gray = '#cccccc' 
+window.brd_lightest_gray = '#eeeeee'
+window.brd_light = '#ffffff'
+
+
+window.shadow_dark_15 = "#00000026"
+window.shadow_dark_20 = "#00000033"
+window.shadow_dark_25 = "#00000040"
+window.shadow_dark_50 = "#00000080"
+window.shadow_light = "#FFFFFF66"
+
+
+
 
 # Ugly! Need to have responsive colors or responsive styles. 
 if location.href.indexOf('aeroparticipa') > -1
-  window.focus_blue = "#073682"
-  window.selected_color = focus_blue
+  window.focus_color = "#073682"
+  window.selected_color = focus_color
 
 
 
@@ -146,7 +197,7 @@ window.getColors = (num, continuous) ->
 
 
 window.is_light_background = (color) ->
-  color ||= bus_fetch('edit_banner').background_css or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
+  color ||= bus_fetch('edit_banner').background_css or customization('banner')?.background_css or focus_color
   if color of named_colors
     color = named_colors[color]
 

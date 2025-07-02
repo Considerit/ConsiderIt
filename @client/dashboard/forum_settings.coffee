@@ -7,7 +7,7 @@ window.styles += """
     max-width: 650px;
   }
   .FORUM_SETTINGS input[type="text"], .FORUM_SETTINGS textarea { 
-    border: 1px solid #aaa; 
+    border: 1px solid #{brd_mid_gray}; 
     display: block; 
     font-size: 18px; 
     padding: 4px 8px; 
@@ -319,7 +319,7 @@ window.ForumSettingsDash = ReactiveComponent
                   href: "/dashboard/translations"
                   style:
                     textDecoration: 'underline'
-                    color: focus_color()
+                    color: focus_color
                     fontWeight: 700
               "Translations for {language} are {percent_complete}% completed. Help improve the translations <link>here</link>."
 

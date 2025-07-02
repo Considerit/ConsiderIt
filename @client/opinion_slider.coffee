@@ -20,8 +20,8 @@ styles += """
   .add_reasons_callout {
     --ADD_REASONS_CALLOUT_BUTTON_WIDTH: 130px;
 
-    background-color: #{focus_color()};
-    color: white;
+    background-color: #{focus_color};
+    color: #{text_light};
     font-weight: 600;
     font-size: 10px;
     border-radius: 8px;
@@ -51,7 +51,7 @@ styles += """
     --ADD_REASONS_CALLOUT_BUTTON_WIDTH: 160px;
 
     background-color: transparent;
-    color: #{focus_color()};
+    color: #{focus_color};
   }
 
 """
@@ -99,7 +99,6 @@ window.OpinionSlider = ReactiveComponent
       className: 'OpinionSlider'
       style: 
         width: @props.width
-        filter: if @props.backgrounded then 'grayscale(100%)'
 
 
       Slider
@@ -110,9 +109,9 @@ window.OpinionSlider = ReactiveComponent
         base_height: @props.base_height or 2
 
         base_color: if mode == 'crafting' #slider.docked
-                      '#518eff' 
+                      upgrade_color
                     else 
-                      '#777'
+                      slidergram_base_color
 
 
         # base_endpoint: if slider.docked then 'square' else 'sharp'
@@ -125,7 +124,7 @@ window.OpinionSlider = ReactiveComponent
         handle_width: @props.handle_width
 
         handle_props: 
-          color: if @props.backgrounded then '#ccc' else focus_color()
+          color: focus_color
           detail: @props.focused
 
         handle_style: 
@@ -258,9 +257,8 @@ window.OpinionSlider = ReactiveComponent
       pointerEvents: 'none' 
       fontSize: if TABLET_SIZE() then "22px" else "30px"
       fontWeight: if !TABLET_SIZE() then 700
-      color: if @props.backgrounded then '#eee' else focus_color()
+      color: focus_color
       textAlign: 'center'
-      #visibility: if @props.backgrounded then 'hidden'
 
     # Keep feedback centered over handle, but keep within the bounds of 
     # the slider region when the slider is in an extreme position. 
@@ -428,11 +426,11 @@ window.SliderBubblemouth = ReactiveComponent
     mode = getProposalMode(proposal)
     if mode == 'crafting'
       transform = "translate(0, -4px) scale(1,.7)"
-      fill = 'white'
+      fill = bg_light
 
     else 
       transform = "translate(0, -22px) scale(.6,.6) "
-      fill = focus_color()
+      fill = focus_color
 
 
     DIV 
@@ -452,7 +450,7 @@ window.SliderBubblemouth = ReactiveComponent
         width: w
         height: h
         fill: fill
-        stroke: focus_color()
+        stroke: focus_color
         stroke_width: if mode == 'crafting' then stroke_width else 0
 
 

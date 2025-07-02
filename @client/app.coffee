@@ -278,7 +278,7 @@ Page = ReactiveComponent
 
                   DIV 
                     style: 
-                      color: '#555'
+                      color: text_gray
                       fontSize: 16
                     "Check if the url is correct. The author may also have deleted it. Good luck!"
 

@@ -366,7 +366,7 @@ window.Histogram = ReactiveComponent
                    style: 
                      width: '100%'
                      height: @props.base_style?.height or 1
-                     backgroundColor: @props.base_style?.color or "#999"
+                     backgroundColor: @props.base_style?.color or slidergram_base_color
         else 
           base = SPAN null
 
@@ -440,7 +440,7 @@ window.Histogram = ReactiveComponent
     label_style = @props.label_style or {
       fontSize: 12
       fontWeight: 400
-      color: '#555'
+      color: text_gray
       bottom: -19
     }
 
@@ -504,12 +504,12 @@ window.Histogram = ReactiveComponent
         height: @props.height + REGION_SELECTION_VERTICAL_PADDING + 2
         position: 'absolute'
         width: selection_width
-        backgroundColor: "#eeeeee"
+        backgroundColor: bg_lightest_gray
         cursor: 'pointer'
         left: selection_left
         top: -2 #- REGION_SELECTION_VERTICAL_PADDING
         borderTop: "2px solid"
-        borderTopColor: if opinion_views.active_views.region_selected then focus_color() else 'transparent'
+        borderTopColor: if opinion_views.active_views.region_selected then focus_color else 'transparent'
 
       if !opinion_views.active_views.region_selected 
         DIV
@@ -774,16 +774,12 @@ HistoAvatars = ReactiveComponent
       'data-visibility-name': 'histogram'
       'data-component': @local.key      
       style: 
-        # backgroundColor: 'red'
         transform: "translateZ(0)"
         height: @props.height
         width: @props.width
         position: 'relative'
         cursor: if !@props.backgrounded && 
                     @enable_range_selection then 'pointer'
-        # borderLeft: "3px solid black"
-        # borderRight: "3px solid black"
-
 
       if !@ready_to_draw()
         DIV 

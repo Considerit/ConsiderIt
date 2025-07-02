@@ -34,7 +34,7 @@ window.AvatarInput = ReactiveComponent
           height: 60
           width: 60
           borderRadius: '50%'
-          backgroundColor: '#ddd'
+          backgroundColor: bg_lightest_gray
           overflow: 'hidden'
           display: 'inline-block'
           marginRight: 18
@@ -58,7 +58,7 @@ window.AvatarInput = ReactiveComponent
               top: 8
 
             PATH 
-              fill: "#ccc" 
+              fill: bg_lighter_gray
               d: "M64.134,50.642c-0.938-0.75-1.93-1.43-2.977-2.023c8.734-6.078,10.867-18.086,4.797-26.805  c-6.086-8.727-18.086-10.875-26.82-4.797c-8.719,6.086-10.867,18.086-4.781,26.812c1.297,1.867,2.922,3.484,4.781,4.789  c-1.039,0.594-2.039,1.273-2.977,2.023c-6.242,5.031-11.352,11.312-15.023,18.438c-0.906,1.75-1.75,3.539-2.555,5.344  c17.883,16.328,45.266,16.328,63.133,0c-0.789-1.805-1.641-3.594-2.547-5.344C75.509,61.954,70.384,55.673,64.134,50.642z"
 
       INPUT 

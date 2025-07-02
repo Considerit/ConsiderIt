@@ -66,7 +66,7 @@ styles += """
     }
 
     .oauth_providers_wrapper {
-      border-left: 1px dashed #ccc;
+      border-left: 1px dashed #{brd_light_gray};
       margin-left: 40px;
       padding: 15px 0 0 40px;
     }
@@ -198,8 +198,8 @@ styles += """
   left: 12px;
 }
 .third_party_option {
-  border: 1px solid #bbb;
-  color: black;
+  border: 1px solid #{brd_mid_gray};
+  color: #{text_dark};
   width: 120px;
   padding: 8px 0px;
   margin-bottom: 12px;

@@ -39,6 +39,10 @@ window.styles += """
   .AutoGrowTextArea {
     padding: 4px 8px;
   }
+
+  .AutoGrowTextArea:focus {
+    outline: 1px solid #{focus_color};
+  }
 """
 
 window.AutoGrowTextArea = ReactiveComponent
@@ -141,7 +145,7 @@ window.CharacterCountTextInput = ReactiveComponent
 styles += """
 
 .wysiwyg_text.focused {
-  outline: 2px solid #{focus_color()};
+  outline: 2px solid #{focus_color};
 }
 
 """
@@ -310,9 +314,9 @@ window.WysiwygEditor = ReactiveComponent
                       textAlign: 'center'
                       cursor: 'pointer'
                       padding: 2
-                      border: '1px solid #aaa'
+                      border: "1px solid #{brd_mid_gray}"
                       borderRadius: 3
-                      backgroundColor: 'white'
+                      backgroundColor: bg_light
                       display: if toolbar_horizontal then 'inline-block' else 'block'
                       marginBottom: 4
                     title: button.title
@@ -412,7 +416,7 @@ html .ql-container{
   content: attr(data-placeholder);
   pointer-events: none;
   position: absolute;
-  color: rgba(0,0,0,.4);
+  color: #00000066;
   font-weight: 500;
   width: 100%;
   height: 100%;
@@ -422,7 +426,7 @@ html .ql-container{
 }
 
 .dark .ql-editor.ql-blank::before{
-  color: rgba(255,255,255,.4);
+  color: #{text_light}66;
 }
 
 
@@ -486,7 +490,7 @@ html .ql-container{
 }
 .ql-editor ul[data-checked=true] > li::before,
 .ql-editor ul[data-checked=false] > li::before {
-  color: #777;
+  color: #{text_light_gray};
   cursor: pointer;
   pointer-events: all;
 }

@@ -2,8 +2,8 @@
 
 styles += """
   #NewForumOnBoarding {
-    background: #FFFFFF;
-    box-shadow: 0 4px 6px 0 rgba(0,0,0,0.13);
+    background: #{bg_light};
+    box-shadow: 0 4px 6px 0 00000026;
     border-radius: 0 0 8px 8px;   
     max-width: 780px;
     margin: 48px auto 60px auto;
@@ -27,7 +27,7 @@ styles += """
 
   #NewForumOnBoarding .header_subtitle {
     font-size: 18px;
-    color: #333333;
+    color: #{text_gray};
   }
 
   #NewForumOnBoarding ul {
@@ -57,7 +57,7 @@ styles += """
 
   #NewForumOnBoarding .onboard_item.complete .checkbox:after {
     content: "✓";
-    color: white;
+    color: #{text_light};
     font-size: 18px;
     position: relative;
     top: -2px;
@@ -67,7 +67,7 @@ styles += """
   
 
   #NewForumOnBoarding .onboard_item.incomplete .checkbox {
-    border-color: #BBBBBB;
+    border-color: #{brd_mid_gray};
   }
 
   #NewForumOnBoarding .onboard_item .label {
@@ -87,7 +87,7 @@ styles += """
 
   #NewForumOnBoarding button.done_onboarding {
     margin-top: 0px;
-    color: white;
+    color: #{text_light};
     background-color: #{selected_color};
     border: none;
     padding: 8px 24px;
@@ -180,7 +180,7 @@ window.NewForumOnBoarding = ReactiveComponent
       DIV 
         style:
           fontSize: 18
-          color: '#333333'
+          color: text_gray
           marginTop: 36
 
         'Learn more about the '
@@ -311,7 +311,7 @@ styles += """
     animation-duration: 818ms;
 }
 .confetti-piece:nth-child(odd) {
-    background: #{focus_blue};
+    background: #{focus_color};
 }
 .confetti-piece:nth-child(even) {
     z-index: 1;

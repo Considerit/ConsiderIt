@@ -305,7 +305,7 @@ styles += """
     position: absolute;
     top: 3px;
     cursor: pointer;
-    background-color: #{focus_color()};
+    background-color: #{focus_color};
     border: none;
     opacity: 0;     
     padding: 7px 13px 95px 96px;   
@@ -341,9 +341,9 @@ styles += """
     top: 0px;
     height: 100%;
 
-    box-shadow: 0px 0px 0px #00000040;    
+    box-shadow: 0px 0px 0px #{shadow_dark_25};    
 
-    background-color: white;
+    background-color: #{bg_item};
     border-radius: 128px;
 
   }
@@ -382,13 +382,13 @@ styles += """
 
   .is_expanded .opinion-block-wrapper::after {
     opacity: 1;
-    box-shadow: 0px 0px 3px #00000040;    
+    box-shadow: 0px 0px 3px #{shadow_dark_25};    
     transition: opacity #{.5 * ANIMATION_SPEED_ITEM_EXPANSION}s, box-shadow #{.5 * ANIMATION_SPEED_ITEM_EXPANSION}s;
 
   }
 
   .is_expanded:not(.flipping) .opinion-block-wrapper::after {
-    background-image: linear-gradient(180deg, #f3f4f5 75px, #FFFFFF 150px, #FFFFFF 90%, #f3f4f5 96%);
+    background-image: linear-gradient(180deg, #{bg_item_separator} 75px, #{bg_item} 150px, #{bg_item} 90%, #{bg_item_separator} 96%);
   }
 
 
@@ -408,14 +408,14 @@ styles += """
     width: calc(100% + 1.3px);
     height: 39px;
     transform: scaleY(-1);
-    filter: drop-shadow(0px 1px 1px #00000026);  /* fiddly */  
+    filter: drop-shadow(0px 1px 1px #{shadow_dark_15});  /* fiddly */  
   }
 
   .is_expanded:not(.expanding) .custom-shape-divider-top-1664224812 svg {
-    filter: drop-shadow(0px 0px 1px #00000040); /* fiddly */
+    filter: drop-shadow(0px 0px 1px #{shadow_dark_25}); /* fiddly */
   }
   .custom-shape-divider-top-1664224812 .shape-fill {
-      fill: #f3f4f5;
+      fill: #{bg_item_separator};
   }
 
 
@@ -527,7 +527,7 @@ ProposalItemWrapper = ReactiveComponent
                 toggle_expand
                   proposal: bus_fetch @props.proposal
 
-            iconX(22, '#ffffff')
+            iconX(22, text_light)
 
 
 
@@ -731,14 +731,14 @@ ProposalBlock = ReactiveComponent
               height: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
               width: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
               display: 'inline-block'
-              border: "2px dashed #CCCCCC"
+              border: "2px dashed #{brd_light_gray}"
       else
         @props.icon?() or SVG 
           className: 'proposal_bullet'
           key: 'bullet'
           width: 8
           viewBox: '0 0 200 200' 
-          CIRCLE cx: 100, cy: 100, r: 80, fill: '#000000'
+          CIRCLE cx: 100, cy: 100, r: 80, fill: bg_dark
 
 
   draw_edit_and_delete: ->
@@ -772,7 +772,7 @@ ProposalBlock = ReactiveComponent
           e.stopPropagation()
           e.preventDefault()
           
-        edit_icon 18, 18, '#444'
+        edit_icon 18, 18, text_gray
 
       if permit('delete proposal', proposal, subdomain) > 0
         BUTTON
@@ -787,7 +787,7 @@ ProposalBlock = ReactiveComponent
               loadPage('/')
 
 
-          trash_icon 18, 18, '#444'
+          trash_icon 18, 18, text_gray
 
 
 

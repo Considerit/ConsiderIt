@@ -317,15 +317,15 @@ AccessDenied = ->
         width: HOMEPAGE_WIDTH()
         margin: 'auto'
         padding: '50px 100px'
-        backgroundColor: focus_color()
-        color: 'white'
+        backgroundColor: focus_color
+        color: text_light
         fontSize: 22
 
 
       H1 
         style: 
           fontSize: 36
-          color: 'white'
+          color: text_light
           paddingBottom: 40
 
         TRANSLATE 

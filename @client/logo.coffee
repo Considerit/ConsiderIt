@@ -1,9 +1,9 @@
 window.drawLogo = (opts) -> 
 
   opts = _.defaults opts,
-    main_text_color: 'white'
+    main_text_color: text_light
     o_text_color: logo_red
-    line_color: 'white'
+    line_color: text_light
     i_dot_x: 252.25
     height: 60
 

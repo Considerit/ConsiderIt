@@ -53,7 +53,7 @@ window.Comment = ReactiveComponent
         if current_user.user == comment.user
           if permit('update comment', comment) > 0
             comment_action_style = 
-              color: '#444'
+              color: text_gray
               textDecoration: 'underline'
               cursor: 'pointer',
               padding: '0 10px 0 0'
@@ -87,7 +87,7 @@ styles += """
 
 .comment_entry_name {
   font-weight: 600;
-  color: #666666; 
+  color: #{text_light_gray}; 
   margin-bottom: 4px;
 }
 
@@ -128,14 +128,14 @@ window.Discussion = ReactiveComponent
 
     discussion_style =
       width: "var(--BODY_WIDTH)"
-      border: "3px solid #{focus_color()}"
+      border: "3px solid #{focus_color}"
       position: 'absolute'
       zIndex: 100
       padding: '20px 40px'
       borderRadius: 16
-      backgroundColor: 'white'
-      outline: 'none' #'1px dotted #ccc'
-      boxShadow: if @local.has_focus then "0 0 7px #{focus_color()}"
+      backgroundColor: bg_item
+      outline: 'none' 
+      boxShadow: if @local.has_focus then "0 0 7px #{focus_color}"
 
     # Reconfigure discussion board position
     side = if is_pro then 'right' else 'left'
@@ -199,8 +199,8 @@ window.Discussion = ReactiveComponent
           apex_xfrac: 1.1
           width: 36
           height: 28
-          fill: 'white', 
-          stroke: focus_color(), 
+          fill: bg_light, 
+          stroke: focus_color, 
           stroke_width: 11
 
       BUTTON
@@ -213,7 +213,7 @@ window.Discussion = ReactiveComponent
           right: 8
           top: 8
           fontSize: 24
-          color: '#aaa'
+          color: focus_color
           backgroundColor: 'transparent'
           border: 'none'
         'x'
@@ -228,7 +228,7 @@ window.Discussion = ReactiveComponent
             style:
               textAlign: 'left'
               fontSize: 24
-              color: focus_color()
+              color: focus_color
               fontWeight: 600
               marginBottom: 10
             #t('Author’s Explanation')
@@ -245,7 +245,7 @@ window.Discussion = ReactiveComponent
             style:
               textAlign: 'left'
               fontSize: 24
-              color: focus_color()
+              color: focus_color
               marginBottom: 25
               marginTop: 10
               fontWeight: 600

@@ -275,7 +275,7 @@ window.StateGraph = ReactiveComponent
             font-size: 32px;
             -webkit-text-fill-color: red; /* Will override color (regardless of order) */
             -webkit-text-stroke-width: 1px;
-            -webkit-text-stroke-color: white;
+            -webkit-text-stroke-color: #{text_light};
           }
           .tooltip.component { 
             color: blue;
@@ -399,9 +399,9 @@ window.StateGraph = ReactiveComponent
     link
       .style 'stroke', (l) => 
         if graph.focus == l.source.graph_key || graph.focus == l.target.graph_key
-          "rgb(213, 231, 255)"
+          "#D5E7FF"
         else
-          "rgb(240,240,240)"
+          "#F0F0F0"
 
 
     drag = @force

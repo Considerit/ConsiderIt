@@ -37,7 +37,6 @@ window.AuthCallout = ReactiveComponent
         style: 
           padding: 12
           textAlign: 'center'
-          # backgroundColor: '#EEEEEE'
         
         DIV 
           style: 
@@ -48,8 +47,9 @@ window.AuthCallout = ReactiveComponent
           if '*' not in subdomain.roles.participant
             DIV 
               style: 
-                fontSize: 12
-                marginTop: 4
+                fontSize: 14
+                marginTop: 8
+                fontWeight: 'normal'
               translator 'engage.permissions.only_some_participate', 'Only some accounts are authorized to participate.'
         
         if @props.children 
@@ -270,7 +270,7 @@ window.logout = ->
     location.reload()
 
 
-window.auth_text_gray = '#444'    # the gray color for solid text
+
 
 
 # default styles for auth forms
@@ -292,7 +292,7 @@ window.styles += """
   #AUTH_goal {
     font-size: 16px;
     text-align: center;
-    color: white;
+    color: #{text_light};
     margin-bottom: 8px;
     font-style: italic;
   }
@@ -306,8 +306,8 @@ window.styles += """
   .AUTH_body_wrapper {
     padding: 3.5em 105px 4em 90px;
     font-size: 16px;
-    box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 0 100px rgb(255 255 255 / 40%);
-    background-color: white;
+    box-shadow: 0 2px 4px #{shadow_dark_50}, 0 0 100px #{shadow_light};
+    background-color: #{bg_light};
     position: relative;
     border-radius: 16px;
   }
@@ -319,7 +319,7 @@ window.styles += """
   }
 
   .AUTH_cancel.floating {
-    color: white;
+    color: #{text_light};
     position: absolute;
     cursor: pointer;
     right: -46px;
@@ -354,7 +354,7 @@ window.styles += """
   }
 
   .AUTH_field_label {
-    color: #444;
+    color: #{text_gray};
     font-size: 12px;
     display: block;
     text-transform: uppercase;
@@ -363,11 +363,11 @@ window.styles += """
   .AUTH_text_input {
     margin-bottom: 6px;
     width: 100%;
-    border: 1px solid #ccc;
+    border: 1px solid #{brd_light_gray};
     padding: 10px 14px;
     font-size: 20px;
     display: inline-block;
-    background-color: #EEEEEE;
+    background-color: #{bg_lightest_gray};
   }
 
 
@@ -461,7 +461,8 @@ window.AuthForm =
             children 
 
             BUTTON
-              className: "btn AUTH_submit_button #{if @local.submitting then 'disabled'}"
+              className: "btn AUTH_submit_button"
+              disabled: @local.submitting
               onClick: options.on_submit
               
               options.submit_button or @i18n().submit_button 

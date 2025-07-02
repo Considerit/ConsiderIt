@@ -206,7 +206,7 @@ AnalyticsTabs = ReactiveComponent
                       style: 
                         fontSize: 16
                         textTransform: 'uppercase'
-                        color: if active then focus_color() else '#999'
+                        color: if active then focus_color else '#999'
                         textDecoration: if active then 'underline'
                       args.heading
 
@@ -329,7 +329,7 @@ styles += """
     padding: 4px 12px;
     font-weight: 400;
     background-color: #ddd;
-    color: #333;
+    color: #{text_gray};
     border: 1px solid #dadada;
   }
 
@@ -442,7 +442,7 @@ GraphSection =
                       e.stopPropagation()
                       e.preventDefault()              
                   style: 
-                    backgroundColor: if analytics_state.segment_by == segment then focus_blue else '#ddd'
+                    backgroundColor: if analytics_state.segment_by == segment then focus_color else '#ddd'
                     color: if analytics_state.segment_by == segment then 'white' else '#444'
 
                   labels?[segment] or segment
@@ -794,7 +794,7 @@ styles += """
   border: none;
   border-radius: 4px;
   pointer-events: none;
-  color: white;
+  color: #{text_light};
 }
 
 

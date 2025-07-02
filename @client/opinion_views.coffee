@@ -292,7 +292,7 @@ default_weights = ->
         point_inclusions = Math.log(1 + Math.min(8,opinion.point_inclusions?.length or 0))
         .1 + point_inclusions
       icon: (color) -> 
-        color ?= 'black'
+        color ?= text_dark
         SVG
           width: 14
           height: 14
@@ -301,11 +301,11 @@ default_weights = ->
             <g id="Group-8" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                 <polygon id="Rectangle" stroke="#{color}" points="0 0 23 0 23 17.8367347 11.5 17.8367347 6.41522296 23 6.41522296 17.8367347 0 17.8367347"></polygon>
                 <ellipse id="Oval" fill="#{color}" cx="4.66666683" cy="8.43750016" rx="1.5333335" ry="1.43750016"></ellipse>
-                <line stroke="#{color}" x1="8.37777778" y1="8.5" x2="17.7777778" y2="8.5" id="Line-5" stroke="#999999" stroke-linecap="square"></line>
+                <line stroke="#{color}" x1="8.37777778" y1="8.5" x2="17.7777778" y2="8.5" id="Line-5" stroke-linecap="square"></line>
                 <ellipse id="Oval" fill="#{color}" cx="4.66666683" cy="3.43750016" rx="1.5333335" ry="1.43750016"></ellipse>
-                <line stroke="#{color}" x1="8.37777778" y1="3.5" x2="17.7777778" y2="3.5" id="Line-5" stroke="#999999" stroke-linecap="square"></line>
+                <line stroke="#{color}" x1="8.37777778" y1="3.5" x2="17.7777778" y2="3.5" id="Line-5" stroke-linecap="square"></line>
                 <ellipse id="Oval" fill="#{color}" cx="4.66666683" cy="13.4375002" rx="1.5333335" ry="1.43750016"></ellipse>
-                <line stroke="#{color}" x1="8.37777778" y1="13.5" x2="17.7777778" y2="13.5" id="Line-5" stroke="#999999" stroke-linecap="square"></line>
+                <line stroke="#{color}" x1="8.37777778" y1="13.5" x2="17.7777778" y2="13.5" id="Line-5" stroke-linecap="square"></line>
             </g>
           """    
     }, {
@@ -332,7 +332,7 @@ default_weights = ->
         else 
           .1
       icon: (color) -> 
-        color ?= 'black'
+        color ?= text_dark
         SVG
           width: 14
           height: 14
@@ -359,7 +359,7 @@ default_weights = ->
         u = u.key or u 
         .1 + (influencer_scores[u] or 0)
       icon: (color) -> 
-        color ?= 'black'
+        color ?= text_dark
         SVG
           width: 14
           height: 14
@@ -783,14 +783,14 @@ OpinionViews = ReactiveComponent
                   height: 0 
                   borderLeft: '12px solid transparent'
                   borderRight: '12px solid transparent'                    
-                  borderTop: "7px solid #{focus_blue}"
+                  borderTop: "7px solid #{focus_color}"
           else 
             DIV 
               className: 'custom_view_triangle'
               style: 
                 left: "calc(50% - 15px)"
                 bottom: -27
-              dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="#AAAAAA"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
+              dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#{bg_light}" stroke="#{brd_mid_gray}"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
 
       }
     ]
@@ -887,7 +887,7 @@ OpinionViews = ReactiveComponent
         onClick: toggle_expanded
         style: 
           fontSize: 12
-          color: "#888888"
+          color: text_light_gray
           whiteSpace: 'nowrap'
           marginLeft: 4
 
@@ -1058,7 +1058,7 @@ window.OpinionViewInteractionWrapper = ReactiveComponent
 
               DIV 
                 style: 
-                  border: '1px solid #AAAAAA'
+                  border: "1px solid #{brd_mid_gray}"
                   borderRadius: 8
                   width: 'fit-content'
                   maxWidth: if width then width
@@ -1106,8 +1106,6 @@ InteractiveOpinionViews = ReactiveComponent
             cur_val = idx
         DIV 
           className: 'opinion_view_row color_code'
-          style: 
-            borderTop: '1px dotted #DDDDDD' 
 
           group_by_icon()
 
@@ -1120,8 +1118,8 @@ InteractiveOpinionViews = ReactiveComponent
             style: 
               maxWidth: '75%'
               marginRight: 12
-              borderColor: '#bbb'
-              backgroundColor: '#f7f7f7'
+              borderColor: brd_mid_gray
+              backgroundColor: bg_lightest_gray
               borderRadius: 2
 
             onChange: (ev) -> 
@@ -1181,7 +1179,7 @@ InteractiveOpinionViews = ReactiveComponent
                 SPAN 
                   className: 'toggle_switch_circle'
                   style: 
-                    backgroundColor: if opinion_views_ui.aggregate_into_groups then focus_color()
+                    backgroundColor: if opinion_views_ui.aggregate_into_groups then focus_color
             
               SPAN 
                 style: 
@@ -1327,12 +1325,8 @@ InteractiveOpinionViews = ReactiveComponent
               'x'
 
 
-
-
       DIV 
         className: 'opinion_view_row'
-        style: 
-          borderTop: '1px dotted #DDDDDD' 
 
         weigh_icon()
 
@@ -1364,7 +1358,7 @@ InteractiveOpinionViews = ReactiveComponent
                     e.stopPropagation()
                     
                   if weight.icon
-                    weight.icon if activated_weights[weight.key] then 'white'
+                    weight.icon if activated_weights[weight.key] then text_light
 
                   SPAN 
                     style: 
@@ -1565,13 +1559,12 @@ NonInteractiveOpinionViews = ReactiveComponent
 styles += """
 
   button.opinion_view_button {
-    border: 1px solid #DDDDDD;
-    border-bottom-color: #aaa;
-    background-color: #EEEEEE;
-    // box-shadow: inset 0 -1px 1px 0 rgba(0,0,0,0.62);
+    border: 1px solid #{brd_light_gray};
+    border-bottom-color: #{brd_mid_gray};
+    background-color: #{bg_lightest_gray};
     border-radius: 8px;    
     font-size: 12px;
-    color: #000000;
+    color: #{text_dark};
     font-weight: 400;
   }
   button.opinion_view_button.filter {
@@ -1590,9 +1583,9 @@ styles += """
   }
 
   button.opinion_view_button.active {
-    background-color: #{focus_blue};
-    color: white;
-    border-color: #{focus_blue};
+    background-color: #{focus_color};
+    color: #{text_light};
+    border-color: #{focus_color};
   }
 
 
@@ -1629,7 +1622,7 @@ styles += """
   .attribute_group {
     margin-left: 50px;
     width: 100%;
-    background-color: #EEEEEE;  
+    background-color: #{bg_lightest_gray};  
     display: flex;  
     align-items: center;      
   }
@@ -1643,7 +1636,7 @@ styles += """
   }
   .attribute_close, .minimized_view_close {
     font-size: 13px;
-    color: #000000;
+    color: #{text_dark};
     background-color: transparent;
     border: none;
   }
@@ -1655,7 +1648,7 @@ styles += """
   .minimized_view_close {
     margin-top: 1px;
     margin-left: 22px;
-    color: #{focus_color()};
+    color: #{focus_color};
 
   }
   .minimized_view_list {
@@ -1672,14 +1665,14 @@ styles += """
   }
 
   .minimized_view {
-    color: #{focus_blue};
-    background-color: #{focus_blue + "22"};
+    color: #{focus_color};
+    background-color: #{focus_color + "22"};
     width: fit-content;
     position: relative;
     display: inline-block;
     padding: 6px 12px;
     border-radius: 8px;
-    border: 1px solid #{focus_blue + "55"};
+    border: 1px solid #{focus_color + "55"};
     min-width: 200px;
   }
   .minimized_view_name {
@@ -1720,7 +1713,7 @@ styles += """
   }
   .opinion-date-filter label {
     padding: 0 8px 0 18px;
-    color: #666;
+    color: #{text_light_gray};
     font-size: 12px;
   }
   
@@ -1749,12 +1742,12 @@ styles += """
     border-radius: 8px;
   }
   [data-widget="DropMenu"].bluedrop button.dropMenu-anchor, .toggle_buttons button {
-    background-color: white;
-    color: #{focus_blue};
+    background-color: #{bg_light};
+    color: #{focus_color};
     font-weight: 600;
     font-size: 12px;
     border: 1px solid;
-    border-color: #{focus_blue};
+    border-color: #{focus_color};
     padding: 4px 16px;
   }  
   .toggle_buttons li:not(:last-child) button {
@@ -1772,8 +1765,8 @@ styles += """
   }
 
   [data-widget="DropMenu"].bluedrop button.dropMenu-anchor, .toggle_buttons .active button {
-    background-color: #{focus_blue};
-    color: white;
+    background-color: #{focus_color};
+    color: #{text_light};
   }
 
   .toggle_buttons button[disabled] {
@@ -1782,12 +1775,12 @@ styles += """
   }
 
   .grays .toggle_buttons button {
-    color: #444;
-    border-color: #444;
+    color: #{text_gray};
+    border-color: currentColor;
   }
   .grays .toggle_buttons .active button {
-    background-color: #444;
-    color: white;
+    background-color: #{bg_dark_gray};
+    color: #{text_light};
   }
 """
 

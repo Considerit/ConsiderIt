@@ -3,7 +3,7 @@ styles += """
   .dangerzone button {
     background-color: #{failure_color};
     padding: 8px 24px;
-    color: white;
+    color: #{text_light};
     font-weight: 600;
     border: none;
     border-radius: 8px;    
@@ -91,7 +91,7 @@ window.DataDash = ReactiveComponent
 
           DIV 
             style: 
-              backgroundColor: '#EEEEEE'
+              backgroundColor: bg_lightest_gray
               padding: "8px 12px"
               marginTop: 24
 
@@ -191,7 +191,7 @@ window.DataDash = ReactiveComponent
                   id: "#{table}-file"
                   name: "#{table.toLowerCase()}-file"
                   type:'file'
-                  style: {backgroundColor: selected_color, color: 'white', fontWeight: 700, borderRadius: 8, padding: 6}
+                  style: {backgroundColor: selected_color, color: text_light, fontWeight: 700, borderRadius: 8, padding: 6}
             
 
           if current_user.is_super_admin
@@ -336,7 +336,7 @@ window.DataDash = ReactiveComponent
       action: '/dashboard/data_import_argdown'
       style: 
         marginTop: 72
-        borderTop: '1px dotted #ddd'
+        borderTop: "1px dotted #{brd_light_gray}"
 
       H2
         style: 
@@ -345,7 +345,7 @@ window.DataDash = ReactiveComponent
         'Argdown-like Import'
         SUP
           style: 
-            color: '#444'
+            color: text_gray
             fontSize: 12
             fontWeight: 400
             paddingLeft: 4
@@ -419,7 +419,7 @@ window.DataDash = ReactiveComponent
 
         SUP
           style: 
-            color: '#444'
+            color: text_gray
             fontSize: 12
             fontWeight: 400
             paddingLeft: 4

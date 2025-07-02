@@ -334,7 +334,7 @@ window.HomepageTabs = ReactiveComponent
           LABEL 
             className: 'toggle_switch_label'
             style:
-              backgroundColor: if is_light then 'rgba(255,255,255,.4)' else 'rgba(0,0,0,.4)'
+              backgroundColor: if is_light then bg_light_trans_25 else bg_dark_trans_25
             htmlFor: if paid then 'enable_tabs'
             B null,
               'Enable Tabs.'
@@ -418,16 +418,16 @@ styles += """
   }  
 
   .dragging-list #tabs > ul > li[data-accepts-lists="true"] {
-    outline: 4px solid black;
+    outline: 4px solid #{brd_dark};
   }
 
   .dragging-list .dark #tabs > ul > li[data-accepts-lists="true"] {
-    outline: 4px solid white;
+    outline: 4px solid #{brd_light};
   }
 
   .dragging-list #tabs > ul > li.draggedOver-by_list[data-accepts-lists="true"],
   .dragging-list .dark #tabs > ul > li.draggedOver-by_list[data-accepts-lists="true"] {
-    outline: 4px solid red;
+    outline: 4px solid #{attention_orange};
   }
 
   #tabs > ul > li[draggable="false"].demo:not(.add_new):not(.selected) {
@@ -442,11 +442,11 @@ styles += """
     padding: 10px 20px 4px 20px;
     font-size: 16px;
     font-weight: 600;        
-    color: white;
+    color: #{text_light};
   }
   #tabs > ul > li.selected > h4 {
     opacity: 1;
-    color: black;
+    color: #{text_dark};
   }
   #tabs > ul > li:hover > h4,
   #tabs > ul > li:focus-within > h4 {
@@ -455,7 +455,7 @@ styles += """
 
   #tabs > ul > li > h4 > input {
     background-color: transparent;
-    border: 1px solid #ccc;
+    border: 1px solid #{brd_light_gray};
     letter-spacing: inherit;
     font-size: inherit;
     font-weight: inherit;
@@ -469,10 +469,10 @@ styles += """
     background-color: transparent;
   }
   #tabs > ul > li[draggable="false"].demo.add_new > h4 {
-    color: black;
+    color: #{text_dark};
   }  
   .dark #tabs > ul > li[draggable="false"].demo.add_new > h4 {
-    color: white;
+    color: #{text_light};
   }
 
   .tab.draggable-source--is-dragging {
@@ -554,7 +554,7 @@ window.Tab = ReactiveComponent
             cursor: 'move'
             backgroundColor: 'transparent'
             border: 'none'                    
-          drag_icon 15, '#888'
+          drag_icon 15, text_neutral
 
       H4 
         className: if current then 'main_background'
@@ -627,7 +627,7 @@ window.Tab = ReactiveComponent
             cursor: 'pointer'
           onClick: ->
             delete_tab tab.name
-          trash_icon 15, 15, '#888'
+          trash_icon 15, 15, text_neutral
 
       if featured 
         @props.featured_insertion?()

@@ -286,8 +286,8 @@ styles += """
     overflow: hidden;
     font-style: normal;
     width: 280px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.7);
-    background-color: rgb(238, 238, 238);
+    box-shadow: 0 2px 5px #{shadow_dark_50};
+    background-color: #{bg_lightest_gray};
     padding: 8px 0;
   }
 
@@ -301,153 +301,13 @@ styles += """
     font-weight: 600;
     font-size: 18px;
     text-transform: capitalize;
-    color: #{focus_blue};
+    color: #{focus_color};
   }
 
   .default_drop[data-widget="DropMenu"] .menu-item.active-menu-item {
-    /* background-color: #eee; */
-    color: black;
+    color: #{text_dark};
   }
 """
 
-
-# # DropOverlay
-# # Like a DropMenu, but just render a component in the open area after activation
-
-# # structure: 
-
-# #   DropOverlay
-
-# #     Wrapper
-
-# #       Anchor (triggers area open)
-
-# #       OpenArea (a component)
-
-
-# # props: 
-
-# #   open_area_on (focus | activation)  (common case is hover vs click) 
-# #   wrapper_style
-# #   anchor_style
-# #   anchor_when_open_style
-# #   render_anchor
-
-# # state: 
-# #   - open
-
-# window.DropOverlay = ReactiveComponent
-#   displayName: 'DropOverlay'
-
-#   on_keydown: (e) ->
-#     # cancel on ESC if a cancel button has been defined
-#     if e.key == 'Escape' || e.keyCode == 27
-#       @onClose()
-
-#   on_click: (e) ->
-#     if @local.show_area
-#       # if the focus isn't still on an element inside of this menu, 
-#       # then we should close the menu
-#       el = document.getElementById("overlay-wrap")
-#       if el && !$$.closest(e.target, '#overlay-wrap')
-#         @onClose()
-
-#   onOpen: ->
-#     document.addEventListener 'keydown', @on_keydown
-#     document.addEventListener 'click', @on_click
-#     @local.show_area = true
-#     save @local
-
-#   onClose: -> 
-#     document.removeEventListener 'keydown', @on_keydown
-#     document.removeEventListener 'click', @on_click    
-#     document.activeElement.blur()
-#     @local.show_area = false
-#     save @local
-#     @props.close_callback?()
-
-
-#   render : ->
-#     open_area_on = @props.open_area_on or 'activation' #other option is 'focus'
-
-#     wrapper_style = _.defaults {}, @props.wrapper_style, 
-#       position: 'relative'
-
-#     if !@props.anchor_class_name
-#       anchor_style = _.defaults {}, @props.anchor_style,
-#         position: 'relative'
-#         background: 'transparent'
-#         border: 'none'
-#         cursor: 'pointer'
-#         fontSize: 'inherit'
-#     else 
-#       anchor_style = _.defaults {}, @props.anchor_style
-      
-#     anchor_when_open_style = _.defaults {}, @props.anchor_open_style, anchor_style
-    
-#     render_anchor = @props.render_anchor
-
-#     drop_area_style = _.defaults {}, @props.drop_area_style, 
-#       position: 'absolute'
-#       border: '1px solid #999999'
-#       boxShadow: '0px 1px 2px rgba(0,0,0,.2)'
-#       borderRadius: 8
-#       padding: "12px 24px 24px 24px"
-#       zIndex: 999999999
-#       backgroundColor: 'white'
-
-#     # wrapper
-#     DIV 
-#       id: 'overlay-wrap'
-#       ref: 'area_wrap'
-#       key: 'droparea-wrapper'
-#       style: wrapper_style
-
-#       onTouchEnd: (e) => 
-#         if @local.show_area
-#           @onClose()
-#         else 
-#           @onOpen()
-#         e.preventDefault()
-
-#       # anchor
-
-#       BUTTON 
-#         tabIndex: 0
-#         'aria-haspopup': "true"
-#         'aria-owns': "DropOverlay-#{@local.key}"
-#         style: if @local.show_area then anchor_when_open_style else anchor_style
-#         className: "menu_anchor #{if @props.anchor_class_name then @props.anchor_class_name}"
-
-#         onMouseEnter: if open_area_on == 'focus' then (e) => 
-#                 @onOpen()
-
-#         onClick: if open_area_on == 'activation' then (e) => 
-#                     if @local.show_area
-#                       @onClose()
-#                     else 
-#                       @onOpen()
-
-#         onKeyDown: (e) => 
-#           if e.which == 13 || e.which == 32  
-#             if @local.show_area
-#               @onClose()
-#             else 
-#               @onOpen()
-#             e.preventDefault()
-#             e.stopPropagation() 
-
-#         render_anchor @local.show_area 
-
-#       # drop area
-
-#       DIV
-#         id: "DropOverlay-#{@local.key}" 
-#         role: "dialog"
-#         'aria-hidden': !@local.show_area
-#         hidden: !@local.show_area
-#         style: drop_area_style
-
-#         @props.children
 
                   

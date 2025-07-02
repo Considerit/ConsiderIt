@@ -128,14 +128,14 @@ window.AggregatedHistogram =  ReactiveComponent
       width: legend_color_size
       height: legend_color_size
       display: 'inline-block'
-      boxShadow: "0 1px 2px 0 #66666680, inset 0 -1px 2px 0 rgba(0,0,0,0.16)"
+      boxShadow: "inset 0 -1px 2px 0 #{shadow_dark_25}"
     separator_inserted = false 
 
 
     label_style = 
       fontSize: 12
       fontWeight: 400
-      color: '#555'
+      color: text_gray
       bottom: -13
 
     FLIPPED 

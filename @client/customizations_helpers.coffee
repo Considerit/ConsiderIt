@@ -204,7 +204,7 @@ window.ExpandableSection = ReactiveComponent
 
         style: 
           fontWeight: 600
-          color: @props.text_color or 'black'
+          color: @props.text_color or text_dark
           cursor: 'pointer'
           marginTop: 12
           fontSize: 22

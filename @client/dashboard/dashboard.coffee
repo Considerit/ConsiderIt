@@ -21,20 +21,20 @@ window.styles += """
   #DASHBOARD-flex-container {
     display: flex;
     flex-wrap: nowrap;
-    border-top: 1px solid #EEEEEE;
+    border-top: 1px solid #{brd_lightest_gray};
   }
   #DASHBOARD-menu {
     /* width: 265px; */
     flex-grow: 0;
-    background: rgb(247,247,247);
-    background: linear-gradient(180deg, rgba(247,247,247,1) 88%, rgba(255,255,255,1) 100%);
+    background: #{bg_container};
+    background: linear-gradient(180deg, #{bg_container} 88%, #{bg_light} 100%);
     padding-bottom: 70px;
-    border: 1px solid #ddd;
+    border: 1px solid #{brd_light_gray};
   }
 
   #DASHBOARD-menu a {
     text-decoration: none;
-    color: black;
+    color: #{text_dark};
     padding: 8px 24px;
     display: block;
     font-weight: 400;
@@ -42,7 +42,7 @@ window.styles += """
     font-size: 14px;  
   } #DASHBOARD-menu a.active {
      background-color: #{selected_color};
-     color: white;
+     color: #{text_light};
   } 
   
 
@@ -78,7 +78,7 @@ window.styles += """
   #DASHBOARD-main .explanation {
     font-size: 14px;
     margin: 8px 0;
-    color: #444;
+    color: #{text_gray};
   }
 
   #DASHBOARD-main .explanation p {
@@ -199,10 +199,10 @@ window.Dashboard = ReactiveComponent
         href: opts.href
         # style: 
         #   paddingLeft: 44
-        if opts.icon && false
-          SPAN
-            className: 'icon'
-            dangerouslySetInnerHTML: __html: dashboard_icons[opts.icon]( if active then 'white' else 'black')
+        # if opts.icon && false
+        #   SPAN
+        #     className: 'icon'
+        #     dangerouslySetInnerHTML: __html: dashboard_icons[opts.icon]( if active then 'white' else 'black')
 
         SPAN 
           className: 'label'
@@ -212,7 +212,7 @@ window.Dashboard = ReactiveComponent
           UpgradeForumButton
             tag: SPAN
             style: 
-              backgroundColor: '#666'
+              backgroundColor: bg_dark_gray
 
 
     draw_menu_separator = (title) -> 
@@ -320,10 +320,10 @@ if !browser.is_mobile
       -webkit-appearance: button;
       -moz-appearance: button;
       appearance: button;
-      border: 4px solid #ccc;
-      border-top-color: #bbb;
-      border-left-color: #bbb;
-      background: #fff;
+      border: 4px solid #{brd_light_gray};
+      border-top-color: #{brd_mid_gray};
+      border-left-color: #{brd_mid_gray};
+      background: #{bg_light};
       width: 20px;
       height: 20px;
       border-radius: 50%;
@@ -332,7 +332,7 @@ if !browser.is_mobile
       margin-top: 0;
     }
     .radio_group input[type='radio']:checked{
-      border: 10px solid #{focus_blue};
+      border: 10px solid #{focus_color};
     }
 
     .radio_group {
@@ -368,11 +368,11 @@ window.styles += """
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ccc;
+    background-color: #{bg_lighter_gray};  /* widget bg */
     -webkit-transition: .4s;
     transition: .4s;
     border-radius: 34px;
-    box-shadow: 0 1px 2px rgb(0 0 0 / 40%);
+    box-shadow: 0 1px 2px #{shadow_dark_50};
 
   }
 
@@ -383,11 +383,11 @@ window.styles += """
     width: 18px;
     left: 4px;
     bottom: 4px;
-    background-color: white;
+    background-color: #{bg_light};
     -webkit-transition: .4s;
     transition: .4s;
     border-radius: 50%;
-    box-shadow: 0 1px 2px rgb(0 0 0 / 20%)
+    box-shadow: 0 1px 2px #{shadow_dark_20}
   }
 
   input:checked + .toggle_switch_circle {

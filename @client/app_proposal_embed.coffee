@@ -9,10 +9,6 @@ require './tooltip'
 require 'dashboard/translations'
 require './item'
 
-
-window.focus_color = -> focus_blue
-
-
 # The containing window calls this to let us know that the containing window is allowing 
 # for javascript to be run. In particular, that means the iframe can be resized, which 
 # opens up more interactive possibilities. 
@@ -86,7 +82,7 @@ ProposalDescription = ReactiveComponent
         DIV 
           style: 
             fontSize: 12
-            color: "#888"
+            color: text_light_gray
             fontStyle: 'italic'
             paddingTop: 0
 
@@ -105,13 +101,13 @@ ProposalDescription = ReactiveComponent
 
           DIV
             style:
-              backgroundColor: '#f7f7f7'
+              backgroundColor: bg_speech_bubble
               cursor: 'pointer'
               paddingTop: 5
               paddingBottom: 5
               marginTop: -5
               textAlign: 'center'
-              color: '#888'
+              color: text_light_gray
               fontSize: 12
             onMouseDown: => 
               if window.parentIFrame
@@ -124,13 +120,13 @@ ProposalDescription = ReactiveComponent
         else 
           A
             style:
-              backgroundColor: '#f7f7f7'
+              backgroundColor: bg_speech_bubble
               cursor: 'pointer'
               paddingTop: 5
               paddingBottom: 5
               marginTop: -5
               textAlign: 'center'
-              color: '#888'
+              color: text_light_gray
               fontSize: 12
             target: '_blank'
             href: proposal_link(@proposal) 
@@ -168,8 +164,8 @@ Proposal = ReactiveComponent
     DIV 
       style: 
         width: width
-        backgroundColor: 'white'
-        border: '1px solid #ccc'
+        backgroundColor: bg_item
+        border: "1px solid #{brd_light_gray}"
         borderRadius: '16px 16px 18px 18px'
 
       Tooltip()
@@ -213,11 +209,11 @@ Proposal = ReactiveComponent
             href: proposal_link(@proposal) 
             target: '_blank'          
             style: 
-              color: focus_color()
+              color: focus_color
               padding: '6px 12px'
-              backgroundColor: focus_color()
+              backgroundColor: focus_color
               borderRadius: 16
-              color: 'white'
+              color: text_light
               position: 'relative'
 
             SPAN 
@@ -235,8 +231,8 @@ Proposal = ReactiveComponent
                 apex_xfrac: .2
                 width: w
                 height: h
-                fill: focus_color()
-                stroke: focus_color()
+                fill: focus_color
+                stroke: focus_color
                 stroke_width: 0
                 dash_array: "none"
 
@@ -248,7 +244,7 @@ Proposal = ReactiveComponent
         style: 
           textAlign: 'center' 
           borderRadius: '0 0 16px 16px'
-          backgroundColor: '#f7f7f7'
+          backgroundColor: bg_speech_bubble
 
         
         TechnologyByConsiderit

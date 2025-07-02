@@ -110,11 +110,11 @@ responsive_style_registry.unshift (responsive_vars) ->
 
 window.styles += """
   .List, .NewList, .draggable-wrapper {
-    background-color: white;
+    background-color: #{bg_item};
     border: none;
     border-radius: 16px;
-    box-shadow: -1px 1px 2px rgb(0 0 0 / 15%);
-    border-top: 1px solid #EEEEEE;
+    box-shadow: -1px 1px 2px #{shadow_dark_20};
+    border-top: 1px solid #{brd_lightest_gray};
   }
 
 
@@ -129,21 +129,6 @@ window.styles += """
     box-shadow: none;
   }
 
-  # .embedded-demo .List {
-  #   padding: 0;
-  # }
-
-
-  .LIST_item_connector {
-    display: none;
-    /* position: absolute;
-    height: calc(100% - var(--PROPOSAL_AUTHOR_AVATAR_SIZE) - 28px);
-    width: 1px;
-    background-color: #ccc;
-    left: calc(50% - var(--HOMEPAGE_WIDTH) / 2 + var(--PROPOSAL_AUTHOR_AVATAR_SIZE)/2);
-    top: 28px;  /* half the line height of the list header */
-    z-index: 0; */ 
-  }
 """
 
 window.list_link = (list_key) ->
@@ -197,10 +182,6 @@ window.List = ReactiveComponent
 
       A name: list_link(list_key)
 
-      DIV
-        ref: 'LIST_item_connector'
-        className: 'LIST_item_connector'
-
       ListHeader 
         list: list
         combines_these_lists: @props.combines_these_lists 
@@ -239,7 +220,7 @@ styles += """
   }
 
   .show-all-proposals button {
-    background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 60%, rgba(255,255,255,0) 100%);
+    background: linear-gradient(0deg, #{bg_light_opaque} 0%, #{bg_light_opaque} 60%, #{bg_light_transparent} 100%);
     width: 100%;
     cursor: pointer;
     padding: 32px 0 22px 0;
@@ -247,7 +228,7 @@ styles += """
     text-align: center;
     border: none;
     font-size: 22px;
-    color: #{focus_blue};
+    color: #{focus_color};
     padding-top: 96px;
     margin-top: 12px;
     margin-bottom: 8px;
@@ -304,7 +285,7 @@ ListItems = ReactiveComponent
             className: 'monospaced'
             style: 
               paddingLeft: "var(--PROPOSAL_AUTHOR_AVATAR_GUTTER)"
-              color: '#444'
+              color: text_gray
               fontWeight: 400
             "+#{proposals.length - @props.show_first_num_items}"
 
@@ -533,7 +514,7 @@ styles += """
     }
 
     .ListHeader-wrapper, button.NewList {
-      background-color: #eee;
+      background-color: #{bg_lightest_gray};
     }
 
   }
@@ -639,7 +620,7 @@ window.ListHeader = ReactiveComponent
 
 styles += """
   .NewList, .EditingNewList {
-    border: 3px dashed #{focus_color()}aa;
+    border: 3px dashed #{focus_color}aa;
     transition: border 500ms;    
     box-shadow: none;
   }
@@ -655,7 +636,7 @@ styles += """
 
   .NewList:hover, .EditingNewList:hover,
   .NewList:focus-within, .EditingNewList:focus-within {
-    border-color: #{focus_blue};
+    border-color: #{focus_color};
   }
 
   @media #{NOT_LAPTOP_MEDIA} {
@@ -676,16 +657,16 @@ styles += """
 
   .NewList .LIST-title span {
     position: relative;
-    color: #{focus_blue};
+    color: #{focus_color};
     border-bottom-width: 2px;
-    border-bottom-color: #{focus_blue}aa;
+    border-bottom-color: #{focus_color}aa;
     border-bottom-style: solid;
     transition: border-bottom 500ms;
   }
 
   .NewList:hover .LIST-title span,
   .NewList:focus-within .LIST-title span {
-    border-bottom-color: #{focus_blue};
+    border-bottom-color: #{focus_color};
   }
 
   .NewList .LIST-description {
@@ -993,7 +974,7 @@ styles += """
   .LIST-description {
     font-size: 16px;
     font-weight: 400;
-    color: black;
+    color: #{text_dark};
     margin-top: 14px;
     margin-bottom: 18px;
     padding: 0px var(--AVATAR_SIZE_AND_GUTTER);

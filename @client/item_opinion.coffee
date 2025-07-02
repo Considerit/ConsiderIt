@@ -340,7 +340,6 @@ window.Slidergram = ReactiveComponent
         width: width
         your_opinion: your_opinion
         focused: @is_expanded && mode == 'crafting'
-        backgrounded: false
         draw_handle: !opinion_focus_elsewhere && (can_opine == Permission.NOT_LOGGED_IN || can_opine > 0)
         permitted: permitted_to_opine
 
@@ -389,7 +388,7 @@ ParticipationStatus = ReactiveComponent
       DIV
         style: 
           backgroundColor: attention_orange
-          color: 'white'
+          color: text_light
           margin: '0px auto 8px auto'
           display: 'inline-block'
           padding: '4px 6px'

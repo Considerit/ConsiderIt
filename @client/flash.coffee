@@ -11,23 +11,23 @@ styles += """
     font-size: 15px;
   }
   #flash {
-    color: white;
-    background-color: rgba(0, 0, 0, 0.88);
+    color: #{text_light};
+    background-color: #{bg_dark};
     border-radius: 3px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     cursor: default;
     max-width: 400px;
     display: flex;
     font-weight: 600;
+    align-items: center;
   }
 
   #flash.error {
-    background-color: #{failure_color + "EE"};
+    background-color: #{failure_color};
   }
 
   #flash .flash-message {
     padding: 8px 18px;
-    border-right: 1px solid rgba(255,255,255,.5);
+    border-right: 1px solid transparent;
   }
 
   #flash .flash-close {
@@ -35,7 +35,7 @@ styles += """
 
   #flash .flash-close button {
     background-color: transparent;
-    color: white;
+    color: #{text_light};
     border: none;
     padding: 8px 18px;
   }
@@ -117,8 +117,3 @@ window.Flash = ReactiveComponent
           BUTTON 
             onClick: clear_flash
             'x'
-
-
-
-
-

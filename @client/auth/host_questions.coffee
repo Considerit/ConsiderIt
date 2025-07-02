@@ -26,7 +26,7 @@ window.HostQuestions = ReactiveComponent
         DIV 
           style:
             fontSize: 13
-            color: auth_text_gray
+            color: text_gray
             padding: '16px 0'
             textAlign: 'center'
           "By proceeding, you consent to the collection of the above data on behalf of the Forum Host. You can edit your responses later in your User Profile." 
@@ -94,7 +94,7 @@ window.HostQuestions = ReactiveComponent
           DIV 
             style:
               fontSize: 13
-              color: auth_text_gray
+              color: text_gray
               padding: '16px 0'
             dangerouslySetInnerHTML: {__html: customization('auth_footer')}
 
@@ -151,7 +151,7 @@ styles += """
 
   .question_metadata {
     font-size: 14px;
-    color: #333;
+    color: #{text_gray};
   }
   .question_metadata .optionality {
     font-style: italic;
@@ -263,7 +263,7 @@ window.ShowHostQuestions = ReactiveComponent
               style: _.defaults question.input_style or {}, 
                 marginBottom: 6
                 width: 300
-                border: "1px solid #999999"
+                border: "1px solid #{brd_mid_gray}"
                 padding: '5px 10px'
                 fontSize: 18            
               key: "#{question.tag}_inputBox"
@@ -458,7 +458,6 @@ window.ShowHostQuestions = ReactiveComponent
         # if !question.required && question.input not in ['boolean', 'checklist']
         #   op = DIV 
         #         style: 
-        #           color: '#888'
         #           fontSize: 12
         #         translator('optional', 'optional')
 

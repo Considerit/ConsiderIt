@@ -106,7 +106,8 @@ class ColorAnalyzer
   # Usage pattern detection regexes
   USAGE_PATTERNS = {
     # Variable definition pattern - must be first to prevent double recording
-    variable_definition: /window\.[\w_]+\s*=\s*(['"]#[0-9a-fA-F]{3,6}['"])/i,
+    # Matches both direct hex assignments and variable-to-variable assignments
+    variable_definition: /window\.[\w_]+\s*=\s*(?:(['"]#[0-9a-fA-F]{3,8}['"])|(['"](?:black|white|red|green|blue|yellow|orange|purple|pink|brown|gray|grey)['"])|(\w+))/i,
     # Icon function patterns - flexible to handle 2 or 3 parameters
     icon: /(?:[\w_]*_?icon|Icon)\s+(?:[^,\n]*,\s*)*(['"]?[#\w]+['"]?)|(?:[\w_]*_?icon|Icon)\s*\([^)]*(['"]?[#\w]+['"]?)\s*\)/i,
     # Background with flexible matching for complex conditional expressions
@@ -137,8 +138,9 @@ class ColorAnalyzer
 
   def load_color_variables
     variables = {}
+    variable_references = {}
     
-    # Scan all .coffee files for color variable definitions
+    # First pass: Scan all .coffee files for color variable definitions
     Find.find(@root_path) do |path|
       next if File.directory?(path)
       next unless path.end_with?('.coffee')
@@ -147,7 +149,7 @@ class ColorAnalyzer
       begin
         content = File.read(path, encoding: 'UTF-8')
         content.each_line do |line|
-          # Match patterns like: window.success_color = "#81c765" or window.auth_text_gray = '#444'
+          # Match patterns like: window.success_color = "#81c765" or window.text_gray = '#444'
           # Also handle named colors like: window.text_dark = 'black'
           if match = line.match(/window\.(\w+)\s*=\s*['"]([^'"]+)['"]/)
             variable_name = match[1]
@@ -165,14 +167,20 @@ class ColorAnalyzer
             
             if normalized_color
               # Store both the original and any overrides
-              # For focus_blue, we'll track both #456ae4 and #073682
-              if variables[variable_name] && variable_name == 'focus_blue'
-                # Keep both values for focus_blue as it has an override
+              # For focus_color, we'll track both #456ae4 and #073682
+              if variables[variable_name] && variable_name == 'focus_color'
+                # Keep both values for focus_color as it has an override
                 variables["#{variable_name}_original"] = variables[variable_name]
                 variables["#{variable_name}_override"] = normalized_color
               end
               variables[variable_name] = normalized_color
             end
+          # Match patterns like: window.default_avatar_in_histogram_color = bg_light_gray
+          elsif match = line.match(/window\.(\w+)\s*=\s*(\w+)/)
+            variable_name = match[1]
+            reference_name = match[2]
+            # Store this for later resolution
+            variable_references[variable_name] = reference_name
           end
         end
       rescue => e
@@ -180,7 +188,14 @@ class ColorAnalyzer
       end
     end
     
-    # Also check for function definitions that return colors
+    # Second pass: Resolve variable references
+    variable_references.each do |variable_name, reference_name|
+      if variables[reference_name]
+        variables[variable_name] = variables[reference_name]
+      end
+    end
+    
+    # Third pass: Check for function definitions that return colors
     Find.find(@root_path) do |path|
       next if File.directory?(path)
       next unless path.end_with?('.coffee')
@@ -189,7 +204,7 @@ class ColorAnalyzer
       begin
         content = File.read(path, encoding: 'UTF-8')
         content.each_line do |line|
-          # Match patterns like: window.focus_color = -> focus_blue
+          # Match patterns like: window.focus_color = -> focus_color
           if match = line.match(/window\.(\w+)\s*=\s*->\s*(\w+)/)
             function_name = match[1]
             target_variable = match[2]
@@ -344,7 +359,8 @@ class ColorAnalyzer
         
         # Extract variable definitions (window.var = "color")
         if match = line.match(USAGE_PATTERNS[:variable_definition])
-          color_with_quotes = match[1]
+          color_with_quotes = match[1] || match[2] || match[3]
+          next if color_with_quotes.nil?
           color_value = color_with_quotes.gsub(/['"]/, '')
           hex_color = normalize_hex(color_value)
           if hex_color
@@ -355,7 +371,7 @@ class ColorAnalyzer
         # Extract color variable references (prevent duplicates by prioritizing longer matches)
         already_recorded = Set.new
         
-        # Sort variables by length (longest first) to prioritize specific matches like 'focus_color()' over 'focus_color'
+        # Sort variables by length (longest first) to prioritize specific matches like 'focus_color' over 'focus_color'
         sorted_variables = @color_variables.keys.sort_by { |k| -k.length }
         
         sorted_variables.each do |var_name|
@@ -365,9 +381,9 @@ class ColorAnalyzer
             # Skip if this is a variable definition to avoid duplicate recording
             next if usage_pattern == :variable_definition
             
-            # For focus_blue/focus_color, use the original color value if it exists to avoid duplicates
-            if (var_name == 'focus_blue' || var_name == 'focus_color' || var_name == 'focus_color()') && @color_variables['focus_blue_original']
-              record_color(@color_variables['focus_blue_original'], line.strip, file_path, line_number, 'variable', var_name, nil, usage_pattern)
+            # For focus_color/focus_color, use the original color value if it exists to avoid duplicates
+            if (var_name == 'focus_color' || var_name == 'focus_color' || var_name == 'focus_color') && @color_variables['focus_color_original']
+              record_color(@color_variables['focus_color_original'], line.strip, file_path, line_number, 'variable', var_name, nil, usage_pattern)
             else
               record_color(hex_color, line.strip, file_path, line_number, 'variable', var_name, nil, usage_pattern)
             end
@@ -405,8 +421,13 @@ class ColorAnalyzer
   end
 
   def strip_css_comments(line)
-    # Remove CSS comments /* ... */ to avoid interference with pattern matching
-    line.gsub(/\/\*.*?\*\//, '').strip
+    return '' if line.nil?
+    
+    # Remove CSS comments /* ... */ and CoffeeScript comments # ... to avoid interference with pattern matching
+    cleaned = line.gsub(/\/\*.*?\*\//, '') # CSS comments
+                 .gsub(/#\s+.*$/, '')      # CoffeeScript comments (# followed by space to end of line)
+                 .strip
+    cleaned
   end
 
   def detect_usage_pattern(line, color_value)
@@ -414,7 +435,9 @@ class ColorAnalyzer
     clean_line = strip_css_comments(line)
     
     # First, check for variable definitions to prevent misclassification
-    if clean_line.match(/window\.[\w_]+\s*=\s*['"]#[0-9a-fA-F]{3,6}['"]/) && clean_line.include?(color_value)
+    # Check for both direct hex assignments and variable-to-variable assignments
+    if (clean_line.match(/window\.[\w_]+\s*=\s*['"]#[0-9a-fA-F]{3,8}['"]/) && clean_line.include?(color_value)) ||
+       (clean_line.match(/window\.[\w_]+\s*=\s*\w+/) && clean_line.include?(color_value))
       return :variable_definition
     end
     
@@ -1133,6 +1156,15 @@ class ColorAnalyzer
             color: #3498db;
             font-weight: 600;
           }
+          .file-link {
+            color: #3498db;
+            text-decoration: none;
+            cursor: pointer;
+          }
+          .file-link:hover {
+            color: #2980b9;
+            text-decoration: underline;
+          }
           .usage-context {
             color: #666;
             margin-top: 3px;
@@ -1187,6 +1219,13 @@ class ColorAnalyzer
             <label for="fileFilter"><strong>🔍 Filter by File:</strong></label>
             <input type="text" id="fileFilter" class="filter-input" placeholder="Enter file path or pattern (e.g., banner.coffee, @client/, .css)">
             <div class="filter-help">Filter to show only colors used in files matching the pattern. Leave empty to show all colors.</div>
+            
+            <br><br>
+            <label><strong>🎯 Variable Filter:</strong></label>
+            <button id="variableFilterToggle" class="filter-button" onclick="toggleVariableFilter()" style="margin-left: 10px; padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">
+              Hide Variable Uses
+            </button>
+            <div class="filter-help">Click to hide/show colors that are already using variables (helps identify hardcoded colors that need replacement).</div>
           </div>
     HTML
 
@@ -1427,7 +1466,14 @@ class ColorAnalyzer
                 ${filteredLocations.length > 0 ?
                   filteredLocations.map(loc => `
                     <div class="usage-item">
-                      <div class="usage-file">${loc.file}:${loc.line}</div>
+                      <div class="usage-file">
+                        <a href="#" 
+                           class="file-link" 
+                           onclick="openInSublime('#{@root_path}/${loc.file}', ${loc.line}); return false;"
+                           title="Click to open in Sublime Text">
+                          ${loc.file}:${loc.line}
+                        </a>
+                      </div>
                       <div class="usage-context">${escapeHtml(loc.context)}</div>
                     </div>
                   `).join('') :
@@ -1455,6 +1501,16 @@ class ColorAnalyzer
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+          }
+
+          function openInSublime(filePath, lineNumber) {
+            // Try to make a request to a local HTTP server that will open the file
+            fetch(`http://localhost:9999/open?file=${encodeURIComponent(filePath)}&line=${lineNumber}`)
+              .catch(() => {
+                // Fallback: try to use subl:// URL scheme
+                const sublUrl = `subl://open?url=file://${encodeURIComponent(filePath)}&line=${lineNumber}`;
+                window.location.href = sublUrl;
+              });
           }
 
           function closeModal() {
@@ -1555,6 +1611,136 @@ class ColorAnalyzer
               filterInput.addEventListener('input', filterByFile);
             }
           });
+
+          let variableFilterActive = false;
+          // Store original counts
+          let originalCounts = {};
+
+          function toggleVariableFilter() {
+            variableFilterActive = !variableFilterActive;
+            const button = document.getElementById('variableFilterToggle');
+            
+            if (variableFilterActive) {
+              // Store original counts before filtering
+              document.querySelectorAll('.tab').forEach(tab => {
+                const onclick = tab.getAttribute('onclick');
+                if (onclick) {
+                  const tabMatch = onclick.match(/showTab\\('([^']+)'/);
+                  if (tabMatch) {
+                    const tabName = tabMatch[1];
+                    const countElement = tab.querySelector('.pattern-count');
+                    if (countElement) {
+                      originalCounts[tabName] = countElement.textContent;
+                    }
+                  }
+                }
+              });
+              
+              button.textContent = 'Show Variable Uses';
+              button.style.background = '#e74c3c';
+            } else {
+              // Restore original counts
+              document.querySelectorAll('.tab').forEach(tab => {
+                const onclick = tab.getAttribute('onclick');
+                if (onclick) {
+                  const tabMatch = onclick.match(/showTab\\('([^']+)'/);
+                  if (tabMatch) {
+                    const tabName = tabMatch[1];
+                    const countElement = tab.querySelector('.pattern-count');
+                    if (countElement && originalCounts[tabName]) {
+                      countElement.textContent = originalCounts[tabName];
+                    }
+                  }
+                }
+              });
+              
+              button.textContent = 'Hide Variable Uses';
+              button.style.background = '#3498db';
+            }
+            
+            applyVariableFilter();
+          }
+
+          function applyVariableFilter() {
+            const colorSquares = document.querySelectorAll('.color-square');
+            
+            colorSquares.forEach(square => {
+              if (!variableFilterActive) {
+                square.style.display = 'block';
+                return;
+              }
+              
+              // Get the color hex from the onclick attribute
+              const onclick = square.getAttribute('onclick');
+              if (!onclick) return;
+              
+              const match = onclick.match(/showColorDetails\\('([^']+)'/);
+              if (!match) return;
+              
+              const colorHex = '#' + match[1];
+              
+              // Check if this color has variable usage by looking at the data
+              const colorInfo = colorData[colorHex.toLowerCase()];
+              if (!colorInfo) {
+                square.style.display = 'block';
+                return;
+              }
+              
+              // Check if any usage contains variable references
+              const hasVariableUsage = colorInfo.locations.some(location => {
+                const context = location.context.toLowerCase();
+                // Look for common variable patterns: variables or interpolation
+                return context.includes('bg_') || context.includes('text_') || context.includes('brd_') || 
+                       context.includes('shadow_') || context.includes('focus_') || context.includes('selected_') ||
+                       context.includes('slidergram_') || context.includes('logo_') || context.includes('attention_') ||
+                       context.includes('failure_') || context.includes('success_') || context.includes('caution_') ||
+                       context.includes('upgrade_') || context.includes('considerit_') ||
+                       context.includes('#' + '{');
+              });
+              
+              if (hasVariableUsage) {
+                square.style.display = 'none';
+              } else {
+                square.style.display = 'block';
+              }
+            });
+            
+            // Update group counts in similarity view
+            updateGroupCounts();
+          }
+
+          function updateGroupCounts() {
+            document.querySelectorAll('.group').forEach(group => {
+              const visibleSquares = group.querySelectorAll('.color-square[style*="display: block"], .color-square:not([style*="display: none"])');
+              const header = group.querySelector('.group-header');
+              if (header) {
+                // Store original text if not already stored
+                if (!header.getAttribute('data-original-text')) {
+                  header.setAttribute('data-original-text', header.textContent);
+                }
+                
+                const originalText = header.getAttribute('data-original-text');
+                const baseText = originalText.replace(/ - \d+ colors?, \d+ total uses.*$/, '');
+                
+                if (variableFilterActive) {
+                  // Calculate total filtered uses
+                  let totalUses = 0;
+                  visibleSquares.forEach(square => {
+                    const colorHex = square.getAttribute('onclick').match(/showColorDetails\('([^']+)'/)[1];
+                    const fullHex = '#' + colorHex;
+                    const colorInfo = colorData[fullHex.toLowerCase()];
+                    if (colorInfo) {
+                      totalUses += colorInfo.count;
+                    }
+                  });
+                  
+                  header.textContent = baseText + ' - ' + visibleSquares.length + ' colors, ' + totalUses + ' total uses (filtered)';
+                } else {
+                  header.textContent = originalText;
+                }
+              }
+            });
+          }
 
           window.onclick = function(event) {
             const modal = document.getElementById('colorModal');
@@ -1920,6 +2106,15 @@ class ColorAnalyzer
             font-weight: 600;
             margin-bottom: 3px;
           }
+          .file-link {
+            color: #3498db;
+            text-decoration: none;
+            cursor: pointer;
+          }
+          .file-link:hover {
+            color: #2980b9;
+            text-decoration: underline;
+          }
           .usage-context {
             color: #666;
             background: white;
@@ -1959,6 +2154,13 @@ class ColorAnalyzer
             <label for="fileFilter"><strong>🔍 Filter by File:</strong></label>
             <input type="text" id="fileFilter" class="filter-input" placeholder="Enter file path or pattern (e.g., banner.coffee, @client/, .css)">
             <div class="filter-help">Filter to show only colors used in files matching the pattern. Leave empty to show all colors.</div>
+            
+            <br><br>
+            <label><strong>🎯 Variable Filter:</strong></label>
+            <button id="variableFilterToggle" class="filter-button" onclick="toggleVariableFilter()" style="margin-left: 10px; padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">
+              Hide Variable Uses
+            </button>
+            <div class="filter-help">Click to hide/show colors that are already using variables (helps identify hardcoded colors that need replacement).</div>
           </div>
 
           <div class="tabs">
@@ -2095,7 +2297,14 @@ class ColorAnalyzer
                 ${filteredPatternLocations.length > 0 ?
                   filteredPatternLocations.map(loc => `
                     <div class="usage-item">
-                      <div class="usage-file">${loc.file}:${loc.line}</div>
+                      <div class="usage-file">
+                        <a href="#" 
+                           class="file-link" 
+                           onclick="openInSublime('#{@root_path}/${loc.file}', ${loc.line}); return false;"
+                           title="Click to open in Sublime Text">
+                          ${loc.file}:${loc.line}
+                        </a>
+                      </div>
                       <div class="usage-context">${escapeHtml(loc.context)}</div>
                     </div>
                   `).join('') :
@@ -2108,7 +2317,14 @@ class ColorAnalyzer
                 ${filteredAllLocations.length > 0 ?
                   filteredAllLocations.map(loc => `
                     <div class="usage-item">
-                      <div class="usage-file">${loc.file}:${loc.line}</div>
+                      <div class="usage-file">
+                        <a href="#" 
+                           class="file-link" 
+                           onclick="openInSublime('#{@root_path}/${loc.file}', ${loc.line}); return false;"
+                           title="Click to open in Sublime Text">
+                          ${loc.file}:${loc.line}
+                        </a>
+                      </div>
                       <div class="usage-context">${escapeHtml(loc.context)}</div>
                     </div>
                   `).join('') :
@@ -2124,6 +2340,16 @@ class ColorAnalyzer
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+          }
+
+          function openInSublime(filePath, lineNumber) {
+            // Try to make a request to a local HTTP server that will open the file
+            fetch(`http://localhost:9999/open?file=${encodeURIComponent(filePath)}&line=${lineNumber}`)
+              .catch(() => {
+                // Fallback: try to use subl:// URL scheme
+                const sublUrl = `subl://open?url=file://${encodeURIComponent(filePath)}&line=${lineNumber}`;
+                window.location.href = sublUrl;
+              });
           }
 
           function closeModal() {
@@ -2296,6 +2522,159 @@ class ColorAnalyzer
               filterInput.addEventListener('input', filterByFile);
             }
           });
+
+          let variableFilterActive = false;
+          // Store original counts
+          let originalCounts = {};
+
+          function toggleVariableFilter() {
+            variableFilterActive = !variableFilterActive;
+            const button = document.getElementById('variableFilterToggle');
+            
+            if (variableFilterActive) {
+              // Store original counts before filtering
+              document.querySelectorAll('.tab').forEach(tab => {
+                const onclick = tab.getAttribute('onclick');
+                if (onclick) {
+                  const tabMatch = onclick.match(/showTab\\('([^']+)'/);
+                  if (tabMatch) {
+                    const tabName = tabMatch[1];
+                    const countElement = tab.querySelector('.pattern-count');
+                    if (countElement) {
+                      originalCounts[tabName] = countElement.textContent;
+                    }
+                  }
+                }
+              });
+              
+              button.textContent = 'Show Variable Uses';
+              button.style.background = '#e74c3c';
+            } else {
+              // Restore original counts
+              document.querySelectorAll('.tab').forEach(tab => {
+                const onclick = tab.getAttribute('onclick');
+                if (onclick) {
+                  const tabMatch = onclick.match(/showTab\\('([^']+)'/);
+                  if (tabMatch) {
+                    const tabName = tabMatch[1];
+                    const countElement = tab.querySelector('.pattern-count');
+                    if (countElement && originalCounts[tabName]) {
+                      countElement.textContent = originalCounts[tabName];
+                    }
+                  }
+                }
+              });
+              
+              button.textContent = 'Hide Variable Uses';
+              button.style.background = '#3498db';
+            }
+            
+            applyVariableFilter();
+          }
+
+          function applyVariableFilter() {
+            const colorCards = document.querySelectorAll('.color-card');
+            
+            colorCards.forEach(card => {
+              if (!variableFilterActive) {
+                card.style.display = 'block';
+                return;
+              }
+              
+              // Get the color hex from the onclick attribute
+              const onclick = card.getAttribute('onclick');
+              if (!onclick) return;
+              
+              const match = onclick.match(/showColorDetails\\('([^']+)'/);
+              if (!match) return;
+              
+              const colorHex = '#' + match[1];
+              const currentTab = document.querySelector('.tab.active').getAttribute('onclick').match(/showTab\\('([^']+)'/)[1];
+              
+              // Check if this color has variable usage in the current tab
+              const colorData = usageData[currentTab] && usageData[currentTab][colorHex];
+              if (!colorData) {
+                card.style.display = 'block';
+                return;
+              }
+              
+              // Check if any usage contains variable references
+              const hasVariableUsage = colorData.locations.some(location => {
+                const context = location.context.toLowerCase();
+                // Look for common variable patterns: variables or interpolation
+                return context.includes('bg_') || context.includes('text_') || context.includes('brd_') || 
+                       context.includes('shadow_') || context.includes('focus_') || context.includes('selected_') ||
+                       context.includes('slidergram_') || context.includes('logo_') || context.includes('attention_') ||
+                       context.includes('failure_') || context.includes('success_') || context.includes('caution_') ||
+                       context.includes('upgrade_') || context.includes('considerit_') ||
+                       context.includes('#' + '{');
+              });
+              
+              if (hasVariableUsage) {
+                card.style.display = 'none';
+              } else {
+                card.style.display = 'block';
+              }
+            });
+            
+            // Update tab counts when filter is active
+            updateTabCounts();
+          }
+
+          function updateTabCounts() {
+            document.querySelectorAll('.tab').forEach(tab => {
+              const tabName = tab.getAttribute('onclick').match(/showTab\\('([^']+)'/)[1];
+              const countElement = tab.querySelector('.pattern-count');
+              if (!countElement) return;
+              
+              if (!variableFilterActive) {
+                // Restore original count when filter is off
+                const originalCount = tab.getAttribute('data-original-count');
+                if (originalCount) {
+                  countElement.textContent = originalCount;
+                }
+                return;
+              }
+              
+              // Calculate filtered count for this specific tab
+              let filteredCount = 0;
+              
+              // Get all colors in the usage data for this pattern
+              if (usageData[tabName]) {
+                Object.keys(usageData[tabName]).forEach(colorHex => {
+                  const colorInfo = usageData[tabName][colorHex];
+                  if (colorInfo && colorInfo.locations) {
+                    // Check if this color has variable usage
+                    const hasVariableUsage = colorInfo.locations.some(location => {
+                      const context = location.context.toLowerCase();
+                      return context.includes('bg_') || context.includes('text_') || context.includes('brd_') || 
+                             context.includes('shadow_') || context.includes('focus_') || context.includes('selected_') ||
+                             context.includes('slidergram_') || context.includes('logo_') || context.includes('attention_') ||
+                             context.includes('failure_') || context.includes('success_') || context.includes('caution_') ||
+                             context.includes('upgrade_') || context.includes('considerit_') ||
+                             context.includes('#' + '{');
+                    });
+                    
+                    // Only count colors that DON'T have variable usage
+                    if (!hasVariableUsage) {
+                      filteredCount++;
+                    }
+                  }
+                });
+              }
+              
+              countElement.textContent = filteredCount;
+            });
+          }
+
+          // Apply variable filter when switching tabs
+          const originalShowTab = showTab;
+          showTab = function(tabName) {
+            originalShowTab(tabName);
+            if (variableFilterActive) {
+              setTimeout(applyVariableFilter, 10);
+            }
+          };
         </script>
       </body>
       </html>

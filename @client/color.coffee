@@ -65,12 +65,19 @@ window.shadow_dark_50 = "#00000080"
 window.shadow_light = "#FFFFFF66"
 
 
-
-
 # Ugly! Need to have responsive colors or responsive styles. 
 if location.href.indexOf('aeroparticipa') > -1
   window.focus_color = "#073682"
   window.selected_color = focus_color
+
+
+
+window.color_variable_defs = """
+  :root, :before, :after {
+    --focus_color: #{focus_color};
+  }
+
+"""
 
 
 
@@ -146,12 +153,6 @@ window.hsv2rgb = (h,s,v, as_array) ->
   else 
     "rgb(#{Math.round(r*256)}, #{Math.round(g*256)}, #{Math.round(b*256)})"
 
-
-
-
-window.addOpacity = (color, opacity) -> 
-  c = parseCssRgb color
-  "rgba(#{c.r},#{c.g},#{c.b},#{opacity}"
 
 # fixed saturation & brightness; random hue
 # adapted from http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/

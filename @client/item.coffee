@@ -305,7 +305,7 @@ styles += """
     position: absolute;
     top: 3px;
     cursor: pointer;
-    background-color: #{focus_color};
+    background-color: var(--focus_color);
     border: none;
     opacity: 0;     
     padding: 7px 13px 95px 96px;   

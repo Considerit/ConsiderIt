@@ -796,7 +796,9 @@ window.DecisionBoard = ReactiveComponent
               BUTTON
                 key: 'anonymize opinion button'
                 className: 'btn'
-                style:  {  backgroundColor: (if your_opinion.hide_name then focus_color else null), display: if customization('anonymize_permanently') then 'none'  }
+                style:  
+                  backgroundColor: (if your_opinion.hide_name then focus_color else null)
+                  display: if customization('anonymize_permanently') then 'none'
                 "data-tooltip": anonymize_button_tooltip
                 "aria-label": anonymize_button_tooltip
                 onClick: -> toggle_anonymize_opinion(your_opinion)

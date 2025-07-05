@@ -794,7 +794,7 @@ CustomizeBackground = ReactiveComponent
                     onClick: (e) =>
                       e.stopPropagation()
                       e.preventDefault()
-                      @local.background_css = focus_color
+                      @local.background_css = 'var(--focus_color)'
                       save @local
                       document.querySelector('button#delete_masthead').click()
 
@@ -858,7 +858,7 @@ CustomizeBackground = ReactiveComponent
                   style: 
                     marginLeft: 4
                   name: 'background_color'
-                  value: @local.background_css or customization('banner')?.background_css or focus_color
+                  value: @local.background_css or customization('banner')?.background_css or "var(--focus_color)"
                   onChange: (e) =>
                     @local.background_css = e.target.value
                     save @local
@@ -1082,7 +1082,7 @@ window.PhotoBanner = (opts) ->
   has_translation_callout = subdomain.customizations.google_translate_style?.callout
 
 
-  background_color = customization('banner')?.background_css or focus_color
+  background_color = customization('banner')?.background_css or "var(--focus_color)"
 
   is_dark_theme = !is_light_background()
 

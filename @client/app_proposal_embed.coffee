@@ -209,7 +209,7 @@ Proposal = ReactiveComponent
             href: proposal_link(@proposal) 
             target: '_blank'          
             style: 
-              color: focus_color
+              color: text_light
               padding: '6px 12px'
               backgroundColor: focus_color
               borderRadius: 16

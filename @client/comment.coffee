@@ -128,14 +128,14 @@ window.Discussion = ReactiveComponent
 
     discussion_style =
       width: "var(--BODY_WIDTH)"
-      border: "3px solid #{focus_color}"
+      border: "3px solid var(--focus_color)"
       position: 'absolute'
       zIndex: 100
       padding: '20px 40px'
       borderRadius: 16
       backgroundColor: bg_item
       outline: 'none' 
-      boxShadow: if @local.has_focus then "0 0 7px #{focus_color}"
+      boxShadow: if @local.has_focus then "0 0 7px var(--focus_color)"
 
     # Reconfigure discussion board position
     side = if is_pro then 'right' else 'left'
@@ -200,7 +200,7 @@ window.Discussion = ReactiveComponent
           width: 36
           height: 28
           fill: bg_light, 
-          stroke: focus_color, 
+          stroke: 'var(--focus_color)', 
           stroke_width: 11
 
       BUTTON
@@ -213,7 +213,7 @@ window.Discussion = ReactiveComponent
           right: 8
           top: 8
           fontSize: 24
-          color: focus_color
+          color: 'var(--focus_color)'
           backgroundColor: 'transparent'
           border: 'none'
         'x'
@@ -228,7 +228,7 @@ window.Discussion = ReactiveComponent
             style:
               textAlign: 'left'
               fontSize: 24
-              color: focus_color
+              color: 'var(--focus_color)'
               fontWeight: 600
               marginBottom: 10
             #t('Author’s Explanation')
@@ -245,7 +245,7 @@ window.Discussion = ReactiveComponent
             style:
               textAlign: 'left'
               fontSize: 24
-              color: focus_color
+              color: "var(--focus_color)"
               marginBottom: 25
               marginTop: 10
               fontWeight: 600

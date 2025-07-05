@@ -195,7 +195,7 @@ window.AvatarPopover = ReactiveComponent
                 className: 'like_link'
                 style: 
                   paddingLeft: 8 
-                  # color: focus_color
+
                 onClick: toggle_reasons
                 if @local.show_reasons                 
                   translator 'avatar_popover.hide_reasons', 'Hide reasons'

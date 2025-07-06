@@ -292,7 +292,7 @@ window.styles += """
   #AUTH_goal {
     font-size: 16px;
     text-align: center;
-    color: #{text_light};
+    color: var(--text_light);
     margin-bottom: 8px;
     font-style: italic;
   }
@@ -306,8 +306,8 @@ window.styles += """
   .AUTH_body_wrapper {
     padding: 3.5em 105px 4em 90px;
     font-size: 16px;
-    box-shadow: 0 2px 4px #{shadow_dark_50}, 0 0 100px #{shadow_light};
-    background-color: #{bg_light};
+    box-shadow: 0 2px 4px var(--shadow_dark_50), 0 0 100px var(--shadow_light);
+    background-color: var(--bg_light);
     position: relative;
     border-radius: 16px;
   }
@@ -319,7 +319,7 @@ window.styles += """
   }
 
   .AUTH_cancel.floating {
-    color: #{text_light};
+    color: var(--text_light);
     position: absolute;
     cursor: pointer;
     right: -46px;
@@ -346,7 +346,7 @@ window.styles += """
     margin-top: 20px;
     border-radius: 16px;
     padding: .8rem 1.5rem .8rem;
-    background-color: #{selected_color};
+    background-color: var(--selected_color);
   }
 
   .AUTH_field_wrapper {
@@ -354,7 +354,7 @@ window.styles += """
   }
 
   .AUTH_field_label {
-    color: #{text_gray};
+    color: var(--text_gray);
     font-size: 12px;
     display: block;
     text-transform: uppercase;
@@ -363,11 +363,11 @@ window.styles += """
   .AUTH_text_input {
     margin-bottom: 6px;
     width: 100%;
-    border: 1px solid #{brd_light_gray};
+    border: 1px solid var(--brd_light_gray);
     padding: 10px 14px;
     font-size: 20px;
     display: inline-block;
-    background-color: #{bg_lightest_gray};
+    background-color: var(--bg_lightest_gray);
   }
 
 

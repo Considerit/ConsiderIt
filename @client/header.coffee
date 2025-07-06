@@ -84,7 +84,7 @@ window.Header = ReactiveComponent
           (customization('HomepageHeader') or customization('SiteHeader') or PhotoBanner).apply(@)
         else
           ShortHeader
-            background: bg_light
+            background: "var(--bg_light)"
             text: ''
             logo_src: false
 
@@ -95,7 +95,7 @@ window.Header = ReactiveComponent
               position: 'absolute'
               right: 4
               bottom: 4
-              color: if light_bg then text_dark else text_light
+              color: if light_bg then "var(--text_dark)" else "var(--text_light)"
               fontSize: 14
             target: '_blank'
             dangerouslySetInnerHTML: __html: subdomain.customizations?.banner?.masthead_copyright_notice

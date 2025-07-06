@@ -12,9 +12,6 @@ window.failure_color = "#F94747"
 window.success_color = "#81c765"
 window.caution_color = "#ffc92a"
 
-window.focus_color_slightly_transluscent = focus_color + "ad"
-window.focus_color_mostly_transluscent = focus_color + "22"
-
 window.slidergram_base_color = "#777777"
 
 window.text_dark = '#000000'
@@ -77,9 +74,68 @@ if location.href.indexOf('aeroparticipa') > -1
 
 window.color_variable_defs = """
   :root, :before, :after {
+    /* Core colors */
     --focus_color: #{focus_color};
-    --focus_color_slightly_transluscent: #{focus_color_slightly_transluscent};
-    --focus_color_mostly_transluscent: #{focus_color_mostly_transluscent};
+    --focus_color_slightly_transluscent: color-mix(in srgb, var(--focus_color) 68%, transparent);
+    --focus_color_mostly_transluscent: color-mix(in srgb, var(--focus_color) 13%, transparent);
+    --logo_red: #{logo_red};
+    --considerit_red: #{considerit_red};
+    --selected_color: #{selected_color};
+    --upgrade_color: #{upgrade_color};
+    --attention_orange: #{attention_orange};
+    --failure_color: #{failure_color};
+    --success_color: #{success_color};
+    --caution_color: #{caution_color};
+    --slidergram_base_color: #{slidergram_base_color};
+
+    /* Text colors */
+    --text_dark: #{text_dark};
+    --text_gray: #{text_gray};
+    --text_light_gray: #{text_light_gray};
+    --text_neutral: #{text_neutral};
+    --text_gray_on_dark: #{text_gray_on_dark};
+    --text_light: #{text_light};
+
+    /* Background colors */
+    --bg_dark: #{bg_dark};
+    --bg_dark_gray: #{bg_dark_gray};
+    --bg_neutral_gray: #{bg_neutral_gray};
+    --bg_light_gray: #{bg_light_gray};
+    --bg_lighter_gray: #{bg_lighter_gray};
+    --bg_lightest_gray: #{bg_lightest_gray};
+    --bg_light: #{bg_light};
+    --bg_container: #{bg_container};
+    --bg_item: #{bg_item};
+    --bg_item_separator: #{bg_item_separator};
+    --bg_speech_bubble: #{bg_speech_bubble};
+
+    /* Background transparency variants using color-mix */
+    --bg_dark_trans_25: color-mix(in srgb, var(--bg_dark) 25%, transparent);
+    --bg_dark_trans_40: color-mix(in srgb, var(--bg_dark) 40%, transparent);
+    --bg_dark_trans_60: color-mix(in srgb, var(--bg_dark) 60%, transparent);
+    --bg_dark_trans_80: color-mix(in srgb, var(--bg_dark) 80%, transparent);
+    --bg_light_transparent: color-mix(in srgb, var(--bg_light) 0%, transparent);
+    --bg_light_trans_25: color-mix(in srgb, var(--bg_light) 25%, transparent);
+    --bg_light_trans_40: color-mix(in srgb, var(--bg_light) 40%, transparent);
+    --bg_light_trans_60: color-mix(in srgb, var(--bg_light) 60%, transparent);
+    --bg_light_trans_80: color-mix(in srgb, var(--bg_light) 80%, transparent);
+    --bg_light_opaque: #{bg_light_opaque};
+
+    /* Border colors */
+    --brd_dark: #{brd_dark};
+    --brd_dark_gray: #{brd_dark_gray};
+    --brd_neutral_gray: #{brd_neutral_gray};
+    --brd_mid_gray: #{brd_mid_gray};
+    --brd_light_gray: #{brd_light_gray};
+    --brd_lightest_gray: #{brd_lightest_gray};
+    --brd_light: #{brd_light};
+
+    /* Shadow colors using color-mix for transparency */
+    --shadow_dark_15: color-mix(in srgb, var(--bg_dark) 15%, transparent);
+    --shadow_dark_20: color-mix(in srgb, var(--bg_dark) 20%, transparent);
+    --shadow_dark_25: color-mix(in srgb, var(--bg_dark) 25%, transparent);
+    --shadow_dark_50: color-mix(in srgb, var(--bg_dark) 50%, transparent);
+    --shadow_light: color-mix(in srgb, var(--bg_light) 40%, transparent);
   }
 
 """
@@ -87,20 +143,33 @@ window.color_variable_defs = """
 
 
 window.parseCssRgb = (css_color_str) ->
-  # Handle CSS variables like '--var(focus_color)'
-  if css_color_str?.match(/^--?var\(/i)
-    # Extract variable name from --var(variable_name) or var(variable_name)
-    var_match = css_color_str.match(/^--?var\(\s*([^)]+)\s*\)/i)
+  # Handle CSS variables like 'var(--focus_color)'
+  if css_color_str?.match(/^var\(/i)
+    # Extract variable name from var(--variable-name)
+    var_match = css_color_str.match(/^var\(\s*(--[^)]+)\s*\)/i)
     if var_match
       var_name = var_match[1].trim()
-      # Remove leading -- if present
-      var_name = var_name.replace(/^--/, '')
-      # Look up the variable on window
-      if window[var_name]?
-        css_color_str = window[var_name]
-      else
-        console.error "CSS variable #{var_name} not found on window"
-        return {r: 0, g: 0, b: 0, a: 1}
+      # Remove leading -- to get the JavaScript variable name
+      js_var_name = var_name.replace(/^--/, '')
+      # Try to get the computed CSS variable value first
+      try
+        computed_value = getComputedStyle(document.documentElement).getPropertyValue(var_name).trim()
+        if computed_value
+          css_color_str = computed_value
+        else
+          # Fallback to JavaScript variable lookup
+          if window[js_var_name]?
+            css_color_str = window[js_var_name]
+          else
+            console.error "CSS variable #{var_name} not found in computed styles or window as #{js_var_name}"
+            return {r: 0, g: 0, b: 0, a: 1}
+      catch error
+        # Fallback to JavaScript variable lookup if getComputedStyle fails
+        if window[js_var_name]?
+          css_color_str = window[js_var_name]
+        else
+          console.error "CSS variable #{var_name} not found on window as #{js_var_name}"
+          return {r: 0, g: 0, b: 0, a: 1}
 
   test = document.createElement('div')
   test.style.color = css_color_str

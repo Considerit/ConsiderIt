@@ -14,7 +14,7 @@ styles += """
   [data-widget="EditPage"] .field_explanation {
     font-size: 14px;
     margin-top: 6px;
-    color: #{text_gray};
+    color: var(--text_gray);
   }
 
   [data-widget="EditPage"] .radio_group label {
@@ -62,7 +62,7 @@ styles += """
 
   [data-widget="EditPage"] .draggable-wrapper.draggedOver.from_above::after, [data-widget="EditPage"] .draggable-wrapper.draggedOver.from_below::before {
     height: 60px;
-    outline: 1px dotted #{brd_dark_gray};
+    outline: 1px dotted var(--brd_dark_gray);
 
   }
 
@@ -96,7 +96,7 @@ styles += """
 
   [data-widget="EditPage"] button.convert_page {
     padding: 8px 16px;
-    border: 1px solid #{brd_light_gray};
+    border: 1px solid var(--brd_light_gray);
     border-radius: 8px;
     margin-top: 12px;
   }
@@ -112,7 +112,7 @@ styles += """
 
   .not-editing.draggable-mirror {
     z-index: 99999;
-    background-color: #{bg_light_trans_80} !important;
+    background-color: var(--bg_light_trans_80) !important;
   }
 
 
@@ -244,7 +244,7 @@ window.EditPage = ReactiveComponent
                           position: 'relative'
                           left: 7
 
-                        drag_icon 15, text_neutral
+                        drag_icon 15, "var(--text_neutral)"
                     else 
                       DIV 
                         style: 
@@ -286,7 +286,7 @@ window.EditPage = ReactiveComponent
                           @local.edit_list = lst
                           save @local
 
-                        edit_icon 18, 18, text_neutral
+                        edit_icon 18, 18, "var(--text_neutral)"
 
 
                     if !wildcard 
@@ -300,7 +300,7 @@ window.EditPage = ReactiveComponent
                           @ordered_lists.splice( @ordered_lists.indexOf(lst), 1  )
                           delete_list(lst)
 
-                        trash_icon 23, 23, text_neutral
+                        trash_icon 23, 23, "var(--text_neutral)"
 
 
         if !@local.edit_list
@@ -335,7 +335,7 @@ window.EditPage = ReactiveComponent
             style: 
               textDecoration: 'underline'
               fontWeight: 700
-              color: text_light_gray
+              color: "var(--text_light_gray)"
             onClick: (e) => 
               @local.show_all_options = true 
               save @local
@@ -345,7 +345,7 @@ window.EditPage = ReactiveComponent
             style: 
               marginLeft: 0
               marginTop: 42
-              border: "1px solid #{brd_light_gray}"
+              border: "1px solid var(--brd_light_gray)"
               padding: "0px 48px 48px 48px"
               borderRadius: 8
 
@@ -358,7 +358,7 @@ window.EditPage = ReactiveComponent
                 padding: "4px 8px"
                 position: 'relative'
                 top: -12
-                color: text_gray
+                color: "var(--text_gray)"
 
               "Advanced settings for this page"
 
@@ -569,10 +569,10 @@ window.EditPage = ReactiveComponent
           borderRadius: 8
           minHeight: 42
           width: '100%'     
-          border: "1px solid #{brd_light_gray}"  
+          border: "1px solid var(--brd_light_gray)"  
           marginTop: 4   
           padding: '8px 12px'
-          backgroundColor: bg_light
+          backgroundColor: "var(--bg_light)"
         style: 
           fontSize: 16
 

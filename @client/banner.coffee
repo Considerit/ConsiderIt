@@ -80,7 +80,7 @@ CustomizeGoogleTranslate = ReactiveComponent
           LABEL 
             className: 'toggle_switch_label'
             style:
-              backgroundColor: if is_light then bg_light_trans_25 else bg_dark_trans_25
+              backgroundColor: if is_light then "var(--bg_light_trans_25)" else "var(--bg_dark_trans_25)"
 
             htmlFor: 'enable_google_translate'
             B null,
@@ -101,7 +101,7 @@ CustomizeGoogleTranslate = ReactiveComponent
               style: 
                 marginBottom: 16
                 textAlign: 'center'
-                color: text_dark
+                color: "var(--text_dark)"
 
               if edit_forum.editing 
                 AutoGrowTextArea 
@@ -138,11 +138,11 @@ styles += """
   line-height: 1.4;
 }
 .CustomizeTitle > .banner_title::placeholder {
-  color: #{text_neutral};
+  color: var(--text_neutral);
 }
 
 .dark .CustomizeTitle > .banner_title::placeholder, .with-image .CustomizeTitle > .banner_title::placeholder {
-  color: #{text_neutral};
+  color: var(--text_neutral);
 }
 """
 
@@ -221,7 +221,7 @@ styles += """
     min-height: 48px;
   }
   .wrapper.with-image .CustomizeDescription .ql-editor.ql-blank::before {
-    color: #{bg_light_trans_40};
+    color: var(--bg_light_trans_40);
   } 
 
 
@@ -283,7 +283,7 @@ CustomizeDescription = ReactiveComponent
           placeholder: translator("banner.description.label", "Describe your forum. What is being discussed? Who is it for, and who are the hosts? How long will it be open?")
           focus_on_mount: focus_on_mount
           button_style: 
-            backgroundColor: bg_light
+            backgroundColor: "var(--bg_light)"
     else
       DIV null,
            
@@ -308,7 +308,7 @@ UploadFileSVG = (opts) ->
     dangerouslySetInnerHTML: __html: '<g><path d="M89.4,46.5c-2.3,0-4.1,1.8-4.1,4.1v28.2H14.6V50.5c0-2.3-1.8-4.1-4.1-4.1c-2.3,0-4.1,1.8-4.1,4.1v32.4   c0,2.3,1.8,4.1,4.1,4.1h78.9c2.3,0,4.1-1.8,4.1-4.1V50.5C93.5,48.3,91.7,46.5,89.4,46.5z"></path><path d="M52.7,14.2c-0.1-0.1-0.2-0.2-0.4-0.3c-0.1,0-0.1-0.1-0.3-0.2c-0.6-0.5-1.4-0.7-2.2-0.7c-0.5,0-1.1,0.1-1.6,0.3   c-0.5,0.2-1,0.5-1.4,0.8L26.8,34.3c-0.8,0.8-1.2,1.9-1.2,3c0,1.1,0.5,2,1.2,2.7c0.8,0.8,1.7,1.2,2.9,1.2s2.2-0.4,2.9-1.2l13-13.1   v41.6c0,2.3,1.8,4.1,4.1,4.1c2.3,0,4.1-1.8,4.1-4.1V26.9L67.1,40c0.8,0.8,1.7,1.2,2.9,1.2s2.2-0.4,2.9-1.2c0.8-0.8,1.2-1.9,1.2-3   c0-1.1-0.5-2-1.2-2.7L52.7,14.2z"></path></g>'
     height: opts.height or 100
     width: opts.height or 100
-    fill: opts.fill or bg_light
+    fill: opts.fill or "var(--bg_light)"
     x: 0
     y: 0
     viewBox: "0 0 100 100"
@@ -365,7 +365,7 @@ UploadableLogo = (opts) ->
         SVG 
           height: delete_size
           width: delete_size
-          fill: bg_light
+          fill: "var(--bg_light)"
           x: 0
           y: 0
           viewBox: "0 0 511.995 511.995"
@@ -404,7 +404,7 @@ UploadableLogo = (opts) ->
 
         UploadFileSVG
           height: icon_height
-          fill: if is_light then text_dark else text_light
+          fill: if is_light then "var(--text_dark)" else "var(--text_light)"
 
 
 
@@ -541,7 +541,7 @@ CustomizeLogo = ReactiveComponent
     if edit_forum.editing
       _.extend style, 
         borderStyle: if !has_logo then 'dashed' else 'solid'
-        borderColor: if is_light then brd_dark else brd_light
+        borderColor: if is_light then "var(--brd_dark)" else "var(--brd_light)"
         borderWidth: 2
         left: style.left - 1
         top: style.top - 1
@@ -568,7 +568,7 @@ CustomizeLogo = ReactiveComponent
           style: 
             position: 'absolute'
             fontSize: 14
-            color: if is_light then text_dark else text_light
+            color: if is_light then "var(--text_dark)" else "var(--text_light)"
             zIndex: 1
             bottom: 0
             marginTop: 60
@@ -584,7 +584,7 @@ CustomizeLogo = ReactiveComponent
                 border: 'none'
                 textDecoration: 'underline'
                 padding: 0
-                backgroundColor: if !is_light then bg_dark_trans_25 else bg_light_trans_25
+                backgroundColor: if !is_light then "var(--bg_dark_trans_25)" else "var(--bg_light_trans_25)"
 
               onClick: ->
                 document.querySelector('input#logo').click()
@@ -595,7 +595,7 @@ CustomizeLogo = ReactiveComponent
       if edit_forum.editing
         DIV 
           style: 
-            backgroundColor: if has_masthead && !has_logo then (if !is_light then bg_dark_trans_25 else bg_light_trans_25)
+            backgroundColor: if has_masthead && !has_logo then (if !is_light then "var(--bg_dark_trans_25)" else "var(--bg_light_trans_25)")
             position: 'absolute'
             left: 0
             top: 0
@@ -609,7 +609,7 @@ CustomizeLogo = ReactiveComponent
           onMouseMove: if edit_forum.editing then onMouseMoveResize
 
           style: 
-            backgroundColor: if is_light then bg_dark else bg_light
+            backgroundColor: if is_light then "var(--bg_dark)" else "var(--bg_light)"
             height: 17 * 2
             width: 17 * 2
             position: 'absolute'
@@ -619,7 +619,7 @@ CustomizeLogo = ReactiveComponent
             transform: 'rotate(45deg)'
             zIndex: 2
 
-DEFAULT_TEXT_BLOCK_COLOR = bg_dark
+DEFAULT_TEXT_BLOCK_COLOR = "var(--bg_dark)"
 DEFAULT_TEXT_BLOCK_OPACITY = 255 * .8
 CustomizeTextBlock = ReactiveComponent
   displayName: 'CustomizeTextBlock'
@@ -707,7 +707,7 @@ CustomizeBackground = ReactiveComponent
     is_light = is_light_background()
 
     icon_height = 50
-    color = if is_light then text_dark else text_light
+    color = if is_light then "var(--text_dark)" else "var(--text_light)"
 
     compressed = CONTENT_WIDTH() < 1036
 
@@ -720,7 +720,7 @@ CustomizeBackground = ReactiveComponent
           # bottom: 50
           # width: 218
           float: if !compressed then 'right'
-          backgroundColor: if is_light then bg_light_trans_25 else bg_dark_trans_25
+          backgroundColor: if is_light then "var(--bg_light_trans_25)" else "var(--bg_dark_trans_25)"
           padding: '12px 24px'
           zIndex: 9
           marginTop: if compressed then 12 else if has_masthead && !compressed then -120 else -100
@@ -740,7 +740,7 @@ CustomizeBackground = ReactiveComponent
               alignItems: 'center'
               flexDirection: 'column'
               padding: 4
-              border: "1px dashed #{if is_light then brd_dark else brd_light}"
+              border: "1px dashed #{if is_light then "var(--brd_dark)" else "var(--brd_light)"}"
               borderRadius: 4
 
               
@@ -755,7 +755,7 @@ CustomizeBackground = ReactiveComponent
 
               UploadBackgroundImageSVG
                 height: icon_height
-                fill: if is_light then bg_dark else bg_light
+                fill: if is_light then "var(--bg_dark)" else "var(--bg_light)"
 
             DIV 
               style: 
@@ -828,7 +828,7 @@ CustomizeBackground = ReactiveComponent
                   value: is_light
 
                   onChange: (e) =>
-                    @local.background_css = if e.target.value == 'true' then bg_light else bg_dark
+                    @local.background_css = if e.target.value == 'true' then "var(--bg_light)" else bg_dark
                     save @local
 
                   OPTION 
@@ -945,9 +945,9 @@ window.EditBanner = ReactiveComponent
                   is_light = is_image_mostly_light image_data, img.width, img.height
 
                   if is_light 
-                    subdomain.customizations.banner.background_css = bg_light
+                    subdomain.customizations.banner.background_css = "var(--bg_light)"
                   else 
-                    subdomain.customizations.banner.background_css = bg_dark
+                    subdomain.customizations.banner.background_css = "var(--bg_dark)"
 
                   save subdomain
 
@@ -1048,12 +1048,12 @@ window.PhotoBanner = (opts) ->
 
   return SPAN null if !subdomain.name 
 
-  tab_background_color = (if edit_forum.editing then edit_banner.text_background_css) or customization('banner')?.text_background_css or bg_dark_gray
+  tab_background_color = (if edit_forum.editing then edit_banner.text_background_css) or customization('banner')?.text_background_css or "var(--bg_dark_gray)"
 
   if !homepage
     return  DIV
               style: 
-                backgroundColor: bg_container
+                backgroundColor: "var(--bg_container)"
 
               DIV
                 style:
@@ -1087,19 +1087,19 @@ window.PhotoBanner = (opts) ->
   is_dark_theme = !is_light_background()
 
   if has_image_background
-    text_block_color = edit_banner.text_background_css or customization('banner')?.text_background_css or DEFAULT_TEXT_BLOCK_COLOR 
+    text_block_color = DEFAULT_TEXT_BLOCK_COLOR 
     text_block_opacity = parseInt(edit_banner.text_background_css_opacity or customization('banner')?.text_background_css_opacity or DEFAULT_TEXT_BLOCK_OPACITY)
-    text_block_background = "#{text_block_color}#{convert_opacity(text_block_opacity)}" or bg_dark_trans_80
+    text_block_background = "#{text_block_color}#{convert_opacity(text_block_opacity)}" or "var(--bg_dark_trans_80)"
     
     if text_block_opacity > 126
       text_block_is_dark = !is_light_background(text_block_color)
     else 
       text_block_is_dark = is_dark_theme
 
-    text_color = if text_block_is_dark then text_light else text_dark
+    text_color = if text_block_is_dark then "var(--text_light)" else "var(--text_dark)"
 
   else  
-    text_color = if is_light_background(background_color) then text_dark else text_light
+    text_color = if is_light_background(background_color) then "var(--text_dark)" else "var(--text_light)"
 
 
 
@@ -1111,11 +1111,11 @@ window.PhotoBanner = (opts) ->
       dangerouslySetInnerHTML: __html: """
         .PhotoBanner {
           position: relative;
-          color: #{text_dark};
+          color: var(--text_dark);
           padding-top: #{if edit_forum.editing then '54px' else '0px'};
         }
         .dark .PhotoBanner {
-          color: #{text_light};
+          color: var(--text_light);
         }
         .PhotoBanner > .wrapper.with-image {
           background-image: url(#{edit_banner.masthead_preview or customization('banner')?.background_image_url});
@@ -1141,7 +1141,7 @@ window.PhotoBanner = (opts) ->
           padding: 16px;
           max-width: 380px;
           margin: 0 auto; 
-          background-color: #{bg_light_trans_80};
+          background-color: var(--bg_light_trans_80);
           position: relative; 
         }
 
@@ -1169,7 +1169,7 @@ window.PhotoBanner = (opts) ->
 
         .dark .PhotoBanner > .wrapper .CustomizeTitle .banner_title, 
         .PhotoBanner > .wrapper.with-image .CustomizeTitle .banner_title {
-          text-shadow: 0px 1px 2px #{shadow_dark_50};
+          text-shadow: 0px 1px 2px var(--shadow_dark_50);
         }
 
 
@@ -1209,8 +1209,8 @@ window.PhotoBanner = (opts) ->
           background-color: #{tab_background_color}AA;          
         }          
         .PhotoBanner #tabs > ul > li.selected {
-          background-color: #{bg_container};
-          color: #{text_dark};
+          background-color: var(--bg_container);
+          color: var(--text_dark);
         }
         .PhotoBanner #tabs > ul > li > h4 {
           font-family: #{header_font()};
@@ -1248,7 +1248,7 @@ window.PhotoBanner = (opts) ->
             key: 'editable_description'
             opts: opts
             style: 
-              border: if !has_description then (if has_image_background || is_dark_theme then "1px solid #{shadow_light}" else "1px solid #{shadow_dark_50}")
+              border: if !has_description then (if has_image_background || is_dark_theme then "1px solid var(--shadow_light)" else "1px solid var(--shadow_dark_50)")
 
       CustomizeBackground()
 

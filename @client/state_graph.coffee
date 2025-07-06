@@ -275,7 +275,7 @@ window.StateGraph = ReactiveComponent
             font-size: 32px;
             -webkit-text-fill-color: red; /* Will override color (regardless of order) */
             -webkit-text-stroke-width: 1px;
-            -webkit-text-stroke-color: #{text_light};
+            -webkit-text-stroke-color: var(--text_light);
           }
           .tooltip.component { 
             color: blue;

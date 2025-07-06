@@ -1,7 +1,7 @@
 
 window.iconX = (size, color) ->
   size ?= 30
-  color ?= text_dark
+  color ?= "var(--text_dark)"
   SVG
     width: size
     height: size
@@ -17,7 +17,7 @@ window.iconX = (size, color) ->
 
 
 window.iconAnonymousMask = (height, color) ->
-  color ?= text_dark
+  color ?= "var(--text_dark)"
   width = 1.4 * height
   SVG
     width: width
@@ -34,7 +34,7 @@ window.iconAnonymousMask = (height, color) ->
     """
 
 window.closedIcon = ({size, fill}) ->
-  fill ?= text_dark
+  fill ?= "var(--text_dark)"
   SVG 
     width: size
     height: size
@@ -49,7 +49,7 @@ window.closedIcon = ({size, fill}) ->
 
 
 window.ThreeDotsIcon = ({size, fill}) ->
-  fill ?= text_dark
+  fill ?= "var(--text_dark)"
   SVG 
     width: size
     height: size
@@ -64,9 +64,9 @@ window.ThreeDotsIcon = ({size, fill}) ->
 
 
 window.double_up_icon = (size) -> 
-  circle_stroke = brd_light_gray
-  circle_fill = bg_lightest_gray
-  arrow_color = text_neutral
+  circle_stroke = "var(--brd_light_gray)"
+  circle_fill = "var(--bg_lightest_gray)"
+  arrow_color = "var(--text_neutral)"
 
   SVG 
     width: size
@@ -90,7 +90,7 @@ window.plusIcon = (outline_color, size) ->
   SVG
     width: size 
     height: size
-    fill: outline_color or bg_light
+    fill: outline_color or "var(--bg_light)"
     viewBox: "50 50 600 450" 
 
     dangerouslySetInnerHTML: __html: """
@@ -155,7 +155,7 @@ window.ChevronLeft = (size) ->
 window.HelpIcon = (help_text, style) ->
   style ?= {}
 
-  color = style.color or text_light_gray 
+  color = style.color or "var(--text_light_gray)" 
 
   BUTTON 
     "data-tooltip": help_text
@@ -195,7 +195,7 @@ window.GearIcon = (opts) ->
   SVG 
     height: opts.size or '100px' 
     width: opts.size or '100px'  
-    fill: opts.fill or bg_neutral_gray 
+    fill: opts.fill or "var(--bg_neutral_gray)" 
     x: "0px" 
     y: "0px" 
     viewBox: "0 0 100 100"  
@@ -254,8 +254,8 @@ window.trash_icon = (width, height, color) ->
 
 window.filter_icon = (height) -> 
   height ?= 27
-  circle_fill = bg_light_gray
-  active_circle_fill = bg_dark_gray
+  circle_fill = "var(--bg_light_gray)"
+  active_circle_fill = "var(--bg_dark_gray)"
   line_stroke = slidergram_base_color
 
   SVG 
@@ -283,8 +283,8 @@ window.group_by_icon = (height) ->
   height ?= 19
   orange_fill = attention_orange
   blue_fill = "var(--focus_color)"
-  purple_fill = selected_color
-  line_stroke = brd_mid_gray
+  purple_fill = "var(--selected_color)"
+  line_stroke = "var(--brd_mid_gray)"
 
   SVG
     className: 'opinion_view_class' 
@@ -311,7 +311,7 @@ window.group_by_icon = (height) ->
 
 window.weigh_icon = (height) ->
   height ?= 18
-  circle_fill = bg_neutral_gray
+  circle_fill = "var(--bg_neutral_gray)"
   line_stroke = slidergram_base_color
 
   SVG
@@ -336,7 +336,7 @@ window.weigh_icon = (height) ->
     """
 
 window.date_icon = (activated) ->
-  fill_color = if activated then text_light else text_dark
+  fill_color = if activated then "var(--text_light)" else "var(--text_dark)"
 
   SVG 
     width: 13

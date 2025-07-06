@@ -37,8 +37,8 @@ Development = ReactiveComponent
         left: 0
         top: 0
         opacity: if @local.hover_top then 1 else 0
-        backgroundColor: bg_dark
-        color: text_light
+        backgroundColor: "var(--bg_dark)"
+        color: "var(--text_light)"
         padding: 15
       tabIndex: 0 
 
@@ -71,8 +71,8 @@ Development = ReactiveComponent
             LI 
               style: 
                 paddingLeft: 20
-                backgroundColor: bg_dark
-                color: text_light
+                backgroundColor: "var(--bg_dark)"
+                color: "var(--text_light)"
                 display: 'inline-block'
 
               @local.search    
@@ -94,7 +94,7 @@ Development = ReactiveComponent
                       padding: "4px 8px"
                       fontSize: 18
                       backgroundColor: hsv2rgb(hues[idx], .7, .5)
-                      color: text_light
+                      color: "var(--text_light)"
                       display: 'inline-block'
                       opacity: if @local.search.length > 0 && sub.name.toLowerCase().indexOf(@local.search.toLowerCase()) == -1 then .3   
                     sub.name

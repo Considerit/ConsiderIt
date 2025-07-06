@@ -51,8 +51,8 @@ window.BUBBLE_WRAP = ReactiveComponent
           outline: 'none'
           padding: 8
           borderRadius: 16
-          backgroundColor: bg_speech_bubble
-          boxShadow: "#{shadow_dark_25} 0 1px 1px 0px"
+          backgroundColor: "var(--bg_speech_bubble)"
+          boxShadow: "var(--shadow_dark_25) 0 1px 1px 0px"
 
 
         if @props.user || @props.pic
@@ -63,7 +63,7 @@ window.BUBBLE_WRAP = ReactiveComponent
               apex_xfrac: 0
               width: mouth_w
               height: mouth_w
-              fill: bg_speech_bubble
+              fill: "var(--bg_speech_bubble)"
               stroke: 'none'
               box_shadow: _.defaults {}, (@props.mouth_shadow or {}),   
                 dx: 3

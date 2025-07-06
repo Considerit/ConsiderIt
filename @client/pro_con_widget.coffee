@@ -440,7 +440,7 @@ window.Reasons = ReactiveComponent
         BUTTON 
           id: "show_all_reasons"
           style: 
-            backgroundColor: bg_lightest_gray
+            backgroundColor: "var(--bg_lightest_gray)"
             padding: '12px 0'
             fontSize: 24
             textAlign: 'center'
@@ -484,7 +484,7 @@ styles += """
   .summary .give_opinion_button {
     background-color: var(--focus_color);
     display: block;
-    color: #{text_light};
+    color: var(--text_light);
     padding: .25em 18px;
     margin: 0;
     font-size: 16px;
@@ -508,12 +508,12 @@ styles += """
   .below_save {  text-align:center;  }
   .below_save .btn {
     margin: 10px;
-    border: solid 1px #{brd_light_gray};
+    border: solid 1px var(--brd_light_gray);
     border-radius: 15px;
     font-weight: normal;
     font-size: 0.9em;
-    background-color: #{bg_lightest_gray};
-    color: #{text_gray};
+    background-color: var(--bg_lightest_gray);
+    color: var(--text_gray);
   }
   .below_save .btn svg {  margin-left:20px;  }
 
@@ -526,7 +526,7 @@ styles += """
 
   .crafting .decision_board_body {
     transform: translate(0, 10px);
-    background-color: #{bg_light};
+    background-color: var(--bg_light);
   }
 
   .results .decision_board_body {
@@ -782,7 +782,7 @@ window.DecisionBoard = ReactiveComponent
             DIV 
               style: 
                 textAlign: 'center'
-                color: text_gray
+                color: "var(--text_gray)"
                 margin: "16px 0 4px 0"
                 fontSize: 14
                 fontWeight: 300
@@ -807,7 +807,7 @@ window.DecisionBoard = ReactiveComponent
                   key: 'anonymize opinion label'
                   style: 
                     textTransform: 'capitalize'
-                    color: if your_opinion.hide_name then text_light
+                    color: if your_opinion.hide_name then "var(--text_light)"
                     fontWeight: if your_opinion.hide_name then 600
                   anonymize_button_text
 
@@ -815,7 +815,7 @@ window.DecisionBoard = ReactiveComponent
                   SPAN
                     key: 'anonymize opinion icon'
                     style: {  height:'22px', display:'inline-block', verticalAlign:'bottom'  }
-                    iconAnonymousMask YOUR_OPINION_BUTTON_SIZE, if your_opinion.hide_name then text_light else text_neutral
+                    iconAnonymousMask YOUR_OPINION_BUTTON_SIZE, if your_opinion.hide_name then "var(--text_light)" else "var(--text_neutral)"
 
               BUTTON
                 key: 'remove opinion button'
@@ -835,7 +835,7 @@ window.DecisionBoard = ReactiveComponent
                   SPAN
                     key: 'remove opinion icon'
                     style: {  height:'20px', display:'inline-block', verticalAlign:'bottom'  }
-                    iconX YOUR_OPINION_BUTTON_SIZE, text_gray
+                    iconX YOUR_OPINION_BUTTON_SIZE, "var(--text_gray)"
 
 
 
@@ -1109,7 +1109,7 @@ window.PointsList = ReactiveComponent
             style: 
               fontStyle: 'italic'
               textAlign: 'center'
-              color: text_light_gray
+              color: "var(--text_light_gray)"
               display: if WINDOW_WIDTH() < 430 then 'none'
 
             if none_given
@@ -1335,7 +1335,7 @@ window.PointsList = ReactiveComponent
               left: -25px;
               top: 5px;
               font-weight: #{if browser.high_density_display then 300 else 400};
-              color: #{text_dark};
+              color: var(--text_dark);
             }
           """
 
@@ -1443,7 +1443,7 @@ window.PointsList = ReactiveComponent
               key: 'rect'
               width: '100%'
               height: '100%'
-              fill: bg_light
+              fill: "var(--bg_light)"
 
             do => 
               if is_left
@@ -1495,7 +1495,7 @@ window.PointsList = ReactiveComponent
         apex_xfrac: 0
         width: POINT_MOUTH_WIDTH
         height: POINT_MOUTH_WIDTH
-        fill:  bg_light  #TODO: somehow make this focus_color color mixed with white @ .2 opacity
+        fill:  "var(--bg_light)"  #TODO: somehow make this focus_color color mixed with white @ .2 opacity
         stroke: "var(--focus_color)"
         stroke_width: 6
         dash_array: '24, 18'
@@ -1555,7 +1555,7 @@ GroupSelectionRegion = ReactiveComponent
     DIV 
       style: 
         width: wrapper_width
-        border: if !PHONE_SIZE() then "3px solid #{if get_selected_point() then brd_lightest_gray else 'var(--focus_color)' }"
+        border: if !PHONE_SIZE() then "3px solid #{if get_selected_point() then "var(--brd_lightest_gray)" else 'var(--focus_color)' }"
         height: '100%'
         position: 'absolute'
         borderRadius: 32
@@ -1566,14 +1566,14 @@ GroupSelectionRegion = ReactiveComponent
       if !PHONE_SIZE()
         DIV 
           style: cssTriangle 'top', \
-                             (if get_selected_point() then brd_lightest_gray else "var(--focus_color)"), \
+                             (if get_selected_point() then "var(--brd_lightest_gray)" else "var(--focus_color)"), \
                              w, h,               
                                 position: 'relative'
                                 top: -26
                                 left: left - w / 2
 
           DIV
-            style: cssTriangle 'top', brd_light, w - 1, h - 1,
+            style: cssTriangle 'top', "var(--brd_light)", w - 1, h - 1,
               position: 'relative'
               left: -(w - 2) / 2
               top: 6

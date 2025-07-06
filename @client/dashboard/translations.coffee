@@ -82,7 +82,7 @@ IN_SITU_TRANSLATOR = ReactiveComponent
 
     SPAN 
       style: 
-        backgroundColor: if translated then "#{success_color}88" else "#{failure_color}88"
+        backgroundColor: if translated then "color-mix(in srgb, var(--success_color) 53%, transparent)" else "color-mix(in srgb, var(--failure_color) 53%, transparent)"
         position: 'relative'
       onMouseOver: =>
         if !@local.show_translator
@@ -114,8 +114,8 @@ IN_SITU_TRANSLATOR = ReactiveComponent
             fontSize: 14
             width: 300
             padding: '4px 8px'
-            backgroundColor: bg_light
-            border: "1px solid #{brd_light_gray}"
+            backgroundColor: "var(--bg_light)"
+            border: "1px solid var(--brd_light_gray)"
 
           onClick: (e) => 
             e.stopPropagation()
@@ -152,7 +152,7 @@ IN_SITU_TRANSLATOR = ReactiveComponent
             style: 
               backgroundColor: 'none'
               border: 'none'
-              color: text_light_gray
+              color: "var(--text_light_gray)"
 
             onClick: => 
               @local.show_translator = false 
@@ -345,7 +345,7 @@ styles += """
 }
 
 .translation_filters button {
-  background-color: #{bg_lighter_gray};
+  background-color: var(--bg_lighter_gray);
   border: none;
   border-radius: 8px;
   margin: 0 8px;
@@ -353,7 +353,7 @@ styles += """
 
 .translation_filters button.active {
   background-color: var(--focus_color);
-  color: #{text_light};
+  color: var(--text_light);
 }
 
 """
@@ -528,7 +528,7 @@ TranslationsDash = ReactiveComponent
               left: 0
               width: WINDOW_WIDTH()
               zIndex: 999
-              backgroundColor: bg_lighter_gray
+              backgroundColor: "var(--bg_lighter_gray)"
               textAlign: 'center'
               padding: '8px'
 
@@ -770,7 +770,7 @@ TranslationsForLang = ReactiveComponent
             rows.push TR 
               key: 'header'
               style: 
-                backgroundColor: bg_lighter_gray
+                backgroundColor: "var(--bg_lighter_gray)"
 
 
               for col in cols
@@ -788,13 +788,13 @@ TranslationsForLang = ReactiveComponent
                 if !@props.forum_specific
                   percentile = percentiles[name]
                   if percentile >= 75 
-                    use_color = failure_color
+                    use_color = "var(--failure_color)"
                     use_label = 'high use'
                   else if percentile >= 25 
                     use_color = caution_color
                     use_label = 'medium use'                  
                   else if percentile >= 0 
-                    use_color = success_color
+                    use_color = "var(--success_color)"
                     use_label = 'low use'                  
                   else 
                     use_color = upgrade_color
@@ -804,7 +804,7 @@ TranslationsForLang = ReactiveComponent
                 rows.push TR 
                   key: "row-id-#{name}"
                   style: 
-                    backgroundColor: if idx % 2 == 1 then bg_container
+                    backgroundColor: if idx % 2 == 1 then "var(--bg_container)"
 
                   TD 
                     style: 
@@ -845,7 +845,7 @@ TranslationsForLang = ReactiveComponent
                               fontSize: 14
                               backgroundColor: 'transparent'
                               border: 'none'
-                              color: text_light_gray
+                              color: "var(--text_light_gray)"
                               position: 'absolute'
                               right: -25
                               padding: '4px'
@@ -874,7 +874,7 @@ TranslationsForLang = ReactiveComponent
 
                               DIV 
                                 style: 
-                                  color: if proposal.accepted then selected_color
+                                  color: if proposal.accepted then "var(--selected_color)"
                                 proposal.translation 
 
 
@@ -898,7 +898,7 @@ TranslationsForLang = ReactiveComponent
                                       display: 'inline-block'
                                       marginLeft: 20
                                       border: 'none'
-                                      color: text_gray
+                                      color: "var(--text_gray)"
                                       textDecoration: 'underline'
                                       fontSize: 14
 
@@ -917,7 +917,7 @@ draw_translation_metadata = (proposal) ->
   SPAN 
     style: 
       fontSize: 14
-      color: text_light_gray
+      color: "var(--text_light_gray)"
       paddingRight: 4
     "#{proposal.origin_server} - #{proposer.name or proposer.user or proposal.user_id} #{prettyDate(proposal.created_at)}"
 
@@ -1029,7 +1029,7 @@ editable_translation = (id, lang_code, subdomain_id, updated_translations, propo
         verticalAlign: 'top'
         fontSize: 'inherit'
         width: '100%'
-        borderColor: brd_light_gray
+        borderColor: "var(--brd_light_gray)"
       onChange: (e) -> 
         trans = e.target.value
         if !updated_translations[id]

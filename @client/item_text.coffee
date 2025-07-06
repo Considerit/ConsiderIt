@@ -5,7 +5,7 @@ EXPANDED_MAX_HEIGHT = 500
 styles += """
 
   :root {
-    --proposal_title_underline_color: #{text_dark};
+    --proposal_title_underline_color: var(--text_dark);
   }
 
   .ItemText .proposal-title {
@@ -41,7 +41,7 @@ styles += """
     transition: border-color 1s;
     font-size: 20px;
     font-weight: 700;
-    color: #{text_dark};    
+    color: var(--text_dark);    
   }
 
   @media #{PHONE_MEDIA} {
@@ -52,7 +52,7 @@ styles += """
 
   .proposal-title-text-inline:hover,
   .proposal-title-text-inline:focus-within {
-    border-color: #{brd_dark};
+    border-color: var(--brd_dark);
   }
 
 
@@ -68,11 +68,11 @@ styles += """
 
     // padding: 8px 0px;
 
-    color: #{text_gray};
+    color: var(--text_gray);
   }
 
   .is_collapsed .proposal-description {
-    color: #{text_light_gray};
+    color: var(--text_light_gray);
   }
 
   .is_collapsed .proposal-description.hidden-by-customization {
@@ -97,7 +97,7 @@ styles += """
   }
 
   [data-widget="ListItems"]:not(.expansion_event) .is_collapsed .transparency_fade {
-    background: linear-gradient(0deg, #{bg_light_opaque} 0%, #{bg_light_transparent} 100%); 
+    background: linear-gradient(0deg, var(--bg_light_opaque) 0%, var(--bg_light_transparent) 100%); 
     bottom: 0px;
     height: 22px;
     position: absolute;
@@ -274,7 +274,7 @@ window.ItemText = ReactiveComponent
                       className: 'proposal-title-text'
                       "data-list-title": if @props.show_list_title then list_title
                       style: if !@props.show_list_title then {} else
-                        "--list-color": @props.list_title_color or text_dark
+                        "--list-color": @props.list_title_color or "var(--text_dark)"
 
                       SPAN 
                         className: 'proposal-title-text-inline'
@@ -498,7 +498,7 @@ window.ItemText = ReactiveComponent
         prefer_personal_view: true
 
     YOUR_OPINION_BUTTON_SIZE = 18
-    YOUR_OPINION_BUTTON_COLOR = text_gray
+    YOUR_OPINION_BUTTON_COLOR = "var(--text_gray)"
 
     DIV
       className: 'proposal-metadata'   
@@ -602,10 +602,10 @@ window.ItemText = ReactiveComponent
               key: 'yourOpinion'
               className: 'separated monospaced metadata-piece'
               style:  
-                border: "solid 1px #{brd_light_gray}"
+                border: "solid 1px var(--brd_light_gray)"
                 borderRadius:'8px'
                 padding:'3px 10px'
-                backgroundColor: bg_speech_bubble
+                backgroundColor: "var(--bg_speech_bubble)"
 
               # Edit
               if opinion_prompt
@@ -655,7 +655,7 @@ window.ItemText = ReactiveComponent
                     onClick: -> toggle_anonymize_opinion(your_opinion)
 
                     iconAnonymousMask YOUR_OPINION_BUTTON_SIZE, \
-                      if your_opinion.hide_name then "var(--focus_color)" else text_neutral
+                      if your_opinion.hide_name then "var(--focus_color)" else "var(--text_neutral)"
 
                   # Remove
                   BUTTON
@@ -681,7 +681,7 @@ window.ItemText = ReactiveComponent
           
           closedIcon 
             size: 12
-            fill: failure_color
+            fill: "var(--failure_color)"
 
       else if read_only
         SPAN 
@@ -692,7 +692,7 @@ window.ItemText = ReactiveComponent
 
           closedIcon 
             size: 12
-            fill: failure_color
+            fill: "var(--failure_color)"
 
 
 
@@ -766,7 +766,7 @@ styles += """
 
   .proposal-metadata .metadata-piece {
     font-size: 12px;
-    color: #{text_light_gray};
+    color: var(--text_light_gray);
 
     padding: 0;
     border-width: 0 0 1px 0;
@@ -779,7 +779,7 @@ styles += """
     text-decoration: none;
   } 
   .proposal-metadata button.metadata-piece {
-    border-color: #{brd_mid_gray};
+    border-color: var(--brd_mid_gray);
   }
   .proposal-metadata button.metadata-piece:hover,
   .proposal-metadata button.metadata-piece:focus-within {

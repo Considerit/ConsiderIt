@@ -110,11 +110,11 @@ responsive_style_registry.unshift (responsive_vars) ->
 
 window.styles += """
   .List, .NewList, .draggable-wrapper {
-    background-color: #{bg_item};
+    background-color: var(--bg_item);
     border: none;
     border-radius: 16px;
-    box-shadow: -1px 1px 2px #{shadow_dark_20};
-    border-top: 1px solid #{brd_lightest_gray};
+    box-shadow: -1px 1px 2px var(--shadow_dark_20);
+    border-top: 1px solid var(--brd_lightest_gray);
   }
 
 
@@ -220,7 +220,7 @@ styles += """
   }
 
   .show-all-proposals button {
-    background: linear-gradient(0deg, #{bg_light_opaque} 0%, #{bg_light_opaque} 60%, #{bg_light_transparent} 100%);
+    background: linear-gradient(0deg, var(--bg_light_opaque) 0%, var(--bg_light_opaque) 60%, var(--bg_light_transparent) 100%);
     width: 100%;
     cursor: pointer;
     padding: 32px 0 22px 0;
@@ -285,7 +285,7 @@ ListItems = ReactiveComponent
             className: 'monospaced'
             style: 
               paddingLeft: "var(--PROPOSAL_AUTHOR_AVATAR_GUTTER)"
-              color: text_gray
+              color: "var(--text_gray)"
               fontWeight: 400
             "+#{proposals.length - @props.show_first_num_items}"
 
@@ -514,7 +514,7 @@ styles += """
     }
 
     .ListHeader-wrapper, button.NewList {
-      background-color: #{bg_lightest_gray};
+      background-color: var(--bg_lightest_gray);
     }
 
   }
@@ -974,7 +974,7 @@ styles += """
   .LIST-description {
     font-size: 16px;
     font-weight: 400;
-    color: #{text_dark};
+    color: var(--text_dark);
     margin-top: 14px;
     margin-bottom: 18px;
     padding: 0px var(--AVATAR_SIZE_AND_GUTTER);

@@ -65,7 +65,7 @@ window.EditList = ReactiveComponent
 
             ThreeDotsIcon              
               size: 26
-              fill: text_neutral
+              fill: "var(--text_neutral)"
 
           render_option: (option, is_active) ->
             SPAN 
@@ -180,7 +180,7 @@ styles += """
   }
 
   .LIST-option-block .permissions_explanation {
-    color: #{text_gray};
+    color: var(--text_gray);
     font-weight: 400;
     margin-left: 24px;
     font-size: 12px;
@@ -197,7 +197,7 @@ styles += """
     position: absolute;
     border: none;
     outline: none;
-    color: #{text_gray};
+    color: var(--text_gray);
     font-size: 12px;
   }
 
@@ -208,8 +208,8 @@ styles += """
   }
 
   .LIST-fat-header-field, #edit_description .ql-editor {
-    border: 1px solid #{brd_light_gray};
-    background-color: #{bg_light};
+    border: 1px solid var(--brd_light_gray);
+    background-color: var(--bg_light);
 
   }
 
@@ -456,7 +456,7 @@ window.EditNewList = ReactiveComponent
             BUTTON
               className: 'like_link'
               style: 
-                color: text_light_gray
+                color: "var(--text_light_gray)"
                 marginTop: 14
                 
 
@@ -496,7 +496,7 @@ window.EditNewList = ReactiveComponent
           style: 
             padding: '4px 6px'
             fontSize: 'inherit'
-            border: "1px solid #{brd_light_gray}"
+            border: "1px solid var(--brd_light_gray)"
           onChange: (e) =>
             edit_list.list_item_name = e.target.value
             save edit_list
@@ -614,7 +614,7 @@ window.EditNewList = ReactiveComponent
             flexGrow: 2
             width: '100%'
             borderTop: '1px solid'
-            borderColor: brd_mid_gray
+            borderColor: "var(--brd_mid_gray)"
             maxWidth: 500
           
           INPUT 
@@ -669,14 +669,14 @@ window.EditNewList = ReactiveComponent
 
           menu_style: 
             width: 420
-            backgroundColor: bg_light
-            border: "1px solid #{brd_mid_gray}"
+            backgroundColor: "var(--bg_light)"
+            border: "1px solid var(--brd_mid_gray)"
             right: -99999
             left: 'auto'
             top: 24
             fontWeight: 400
             overflow: 'hidden'
-            boxShadow: "0 1px 2px #{shadow_dark_25}"
+            boxShadow: "0 1px 2px var(--shadow_dark_25)"
             textAlign: 'left'
 
           menu_when_open_style: 
@@ -685,12 +685,12 @@ window.EditNewList = ReactiveComponent
           option_style: 
             padding: '8px 18px 12px 18px'
             display: 'block'
-            color: text_dark
+            color: "var(--text_dark)"
             fontWeight: 400
 
           active_option_style: 
-            color: text_dark
-            backgroundColor: bg_lightest_gray
+            color: "var(--text_dark)"
+            backgroundColor: "var(--bg_lightest_gray)"
 
 
           selection_made_callback: (option) => 
@@ -731,7 +731,7 @@ window.EditNewList = ReactiveComponent
               return  DIV 
                         style: 
                           fontSize: 16
-                          borderBottom: "1px dashed #{brd_light_gray}"
+                          borderBottom: "1px dashed var(--brd_light_gray)"
                           textAlign: 'center'
                           padding: '12px 0'
 
@@ -754,7 +754,7 @@ window.EditNewList = ReactiveComponent
                 dangerouslySetInnerHTML: __html: "&#10231;"
                 style: 
                   fontSize: 32
-                  color: text_light_gray
+                  color: "var(--text_light_gray)"
 
               SPAN 
                 style:

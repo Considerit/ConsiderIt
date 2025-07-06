@@ -53,9 +53,9 @@ window.Notifications = ReactiveComponent
 
         DIV 
           style:
-            backgroundColor: if @local.via_unsubscribe_link then bg_container
+            backgroundColor: if @local.via_unsubscribe_link then "var(--bg_container)"
             padding: if @local.via_unsubscribe_link then '12px 18px'
-            border: if @local.via_unsubscribe_link then "1px solid #{selected_color}"
+            border: if @local.via_unsubscribe_link then "1px solid var(--selected_color)"
 
           LABEL 
             className: 'toggle_switch'
@@ -89,8 +89,8 @@ window.Notifications = ReactiveComponent
             if @local.via_unsubscribe_link && !!prefs['send_emails']
               SPAN 
                 style:
-                  backgroundColor: selected_color
-                  color: text_light
+                  backgroundColor: "var(--selected_color)"
+                  color: "var(--text_light)"
                   textTransform: 'uppercase'
                   fontSize: '80%'
                   fontWeight: 'bold'
@@ -105,9 +105,9 @@ window.Notifications = ReactiveComponent
 
             SPAN
               style:
-                backgroundColor: selected_color
+                backgroundColor: "var(--selected_color)"
                 padding: '12px 18px'
-                color: text_light
+                color: "var(--text_light)"
 
               TRANSLATE
                 id: "email_notifications.watched_proposals_ack"

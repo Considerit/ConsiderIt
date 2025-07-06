@@ -314,9 +314,9 @@ window.WysiwygEditor = ReactiveComponent
                       textAlign: 'center'
                       cursor: 'pointer'
                       padding: 2
-                      border: "1px solid #{brd_mid_gray}"
+                      border: "1px solid var(--brd_mid_gray)"
                       borderRadius: 3
-                      backgroundColor: bg_light
+                      backgroundColor: "var(--bg_light)"
                       display: if toolbar_horizontal then 'inline-block' else 'block'
                       marginBottom: 4
                     title: button.title
@@ -426,7 +426,7 @@ html .ql-container{
 }
 
 .dark .ql-editor.ql-blank::before{
-  color: #{text_light}66;
+  color: var(--text_light)66;
 }
 
 
@@ -490,7 +490,7 @@ html .ql-container{
 }
 .ql-editor ul[data-checked=true] > li::before,
 .ql-editor ul[data-checked=false] > li::before {
-  color: #{text_light_gray};
+  color: var(--text_light_gray);
   cursor: pointer;
   pointer-events: all;
 }

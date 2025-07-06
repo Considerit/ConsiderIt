@@ -7,7 +7,7 @@ window.styles += """
     max-width: 650px;
   }
   .FORUM_SETTINGS input[type="text"], .FORUM_SETTINGS textarea { 
-    border: 1px solid #{brd_mid_gray}; 
+    border: 1px solid var(--brd_mid_gray); 
     display: block; 
     font-size: 18px; 
     padding: 4px 8px; 

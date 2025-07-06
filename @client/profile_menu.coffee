@@ -4,7 +4,7 @@ require './drop_menu'
 
 styles += """
   button.create_account {
-    background-color: #{selected_color};
+    background-color: var(--selected_color);
   }
   #user_nav {
     position: absolute;
@@ -86,7 +86,7 @@ window.ProfileMenu = ReactiveComponent
                 SPAN 
                   key: 'username'
                   style: 
-                    color: if menu_showing then text_gray
+                    color: if menu_showing then "var(--text_gray)"
                     fontSize: 18
                     position: 'relative'
                     paddingRight: 12
@@ -104,9 +104,9 @@ window.ProfileMenu = ReactiveComponent
                 translator "user_menu.option.#{option.label}", option.label
             
             anchor_style: 
-              color: if !light_background then text_light
+              color: if !light_background then "var(--text_light)"
               zIndex: 9999999999
-              backgroundColor: bg_light_trans_25
+              backgroundColor: "var(--bg_light_trans_25)"
               borderRadius: 8
               padding: '3px 4px'
               fontWeight: 600
@@ -116,14 +116,14 @@ window.ProfileMenu = ReactiveComponent
             anchor_when_open_style: 
               backgroundColor: 'transparent'
               boxShadow: 'none'
-              color: text_light_gray
+              color: "var(--text_light_gray)"
             
             menu_style: 
               left: 'auto'
               right: -9999
               margin: '-42px 0 0 -8px'
               padding: "56px 14px 8px 8px"
-              backgroundColor: bg_lightest_gray
+              backgroundColor: "var(--bg_lightest_gray)"
               textAlign: 'right'
               minWidth: '100%'
             
@@ -140,11 +140,11 @@ window.ProfileMenu = ReactiveComponent
               fontWeight: 600 
 
             active_option_style: 
-              color: text_dark
+              color: "var(--text_dark)"
         else 
           is_light = is_light_background()
-          color = if is_light then text_dark else text_light
-          bg = if is_light then bg_light_trans_40 else bg_dark_trans_40
+          color = if is_light then "var(--text_dark)" else "var(--text_light)"
+          bg = if is_light then "var(--bg_light_trans_40)" else "var(--bg_dark_trans_40)"
 
           settings = [{name: 'Forum Settings', url: '/dashboard/application'}, {name: 'Permissions & Roles', url: '/dashboard/roles'}]
           if is_admin
@@ -208,7 +208,7 @@ window.ProfileMenu = ReactiveComponent
             href: '/login_via_saml'
             treat_as_external_link: true
             style: 
-              color: if !light_background then text_light
+              color: if !light_background then "var(--text_light)"
               backgroundColor: 'transparent'
               border: 'none'
               textDecoration: 'none'
@@ -236,7 +236,7 @@ window.ProfileMenu = ReactiveComponent
                   form: 'login'
 
               style: 
-                color: if !light_background then text_light
+                color: if !light_background then "var(--text_light)"
                 fontWeight: 700
                 fontSize: 18
                 marginLeft: 20
@@ -265,7 +265,7 @@ window.ProfileMenu = ReactiveComponent
       DIV 
         style: 
           backgroundColor: "var(--focus_color)"
-          color: text_light
+          color: "var(--text_light)"
           fontWeight: 600
           padding: '4px 12px'
           fontSize: 21
@@ -301,8 +301,8 @@ window.ProfileMenu = ReactiveComponent
             right: 0
             zIndex: 999
             padding: 40
-            backgroundColor: bg_light
-            boxShadow: "0 1px 2px #{shadow_dark_25}"
+            backgroundColor: "var(--bg_light)"
+            boxShadow: "0 1px 2px var(--shadow_dark_25)"
             fontSize: 21
 
           DIV style: marginBottom: 20,

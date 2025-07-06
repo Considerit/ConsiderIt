@@ -23,7 +23,7 @@ styles += """
 
   @media #{LAPTOP_MEDIA} {
     .main_background {
-      background-color: #{bg_container};
+      background-color: var(--bg_container);
     }
     #homepagetab {
       width: calc(var(--HOMEPAGE_WIDTH) + var(--LIST_PADDING_RIGHT) + var(--LIST_PADDING_LEFT));
@@ -39,7 +39,7 @@ styles += """
 
   @media #{NOT_LAPTOP_MEDIA} {
     .main_background {
-      background-color: #{bg_light};
+      background-color: var(--bg_light);
     }
   }
 
@@ -183,8 +183,8 @@ window.Homepage = ReactiveComponent
                 DIV 
                   key: message
                   style: _.defaults {}, (message.style or {}),
-                    backgroundColor: bg_lightest_gray
-                    border: "1px solid #{brd_light_gray}"
+                    backgroundColor: "var(--bg_lightest_gray)"
+                    border: "1px solid var(--brd_light_gray)"
                     borderRadius: 12
                     padding: '4px 24px'
                     maxWidth: 700
@@ -193,7 +193,7 @@ window.Homepage = ReactiveComponent
                     display: 'flex'
                     alignItems: 'center'
                     minHeight: 44
-                    color: text_dark
+                    color: "var(--text_dark)"
                     # textAlign: 'center'
 
                   if message.img || message.icon
@@ -203,7 +203,7 @@ window.Homepage = ReactiveComponent
                         paddingRight: 36
 
                       if message.icon
-                        message.icon(34, 34, text_dark)
+                        message.icon(34, 34, "var(--text_dark)")
                       else
                         IMG 
                           style: 
@@ -248,20 +248,20 @@ window.Homepage = ReactiveComponent
                 DIV 
                   style: 
                     textAlign: 'center'
-                    color: selected_color
+                    color: "var(--selected_color)"
                     fontWeight: 600
                   translator 'tabs.footer_label', "Explore more on these other pages:"
                   
                 HomepageTabs
                   go_to_hash: 'active_tab'
                   active_style: 
-                    backgroundColor: bg_dark_gray
-                    color: text_light
+                    backgroundColor: "var(--bg_dark_gray)"
+                    color: "var(--text_light)"
                   tab_style: 
                     backgroundColor: 'transparent'
                     margin: 4
                     padding: "8px 20px"
-                    color: text_gray
+                    color: "var(--text_gray)"
 
 
   typeset : -> 

@@ -72,8 +72,8 @@ window.ErrorBlock = (errors, opts={}) ->
     role: 'alert'
     style: _.defaults opts.style or {}, 
       fontSize: 18
-      color: text_light
-      backgroundColor: failure_color
+      color: "var(--text_light)"
+      backgroundColor: "var(--failure_color)"
       padding: 20
       marginTop: 10
 
@@ -123,7 +123,7 @@ window.back_to_homepage_button = (style, text) ->
       style: _.defaults {}, style,
         fontSize: 43
         visibility: if is_a_dialogue_page() || !customization('has_homepage') then 'hidden' else 'visible'
-        color: text_dark
+        color: "var(--text_dark)"
         display: 'flex'
         alignItems: 'center'
 
@@ -895,7 +895,7 @@ hr {
   display: block;
   height: 1px;
   border: 0;
-  border-top: 1px solid #{brd_light_gray};
+  border-top: 1px solid var(--brd_light_gray);
   margin: 0;
   padding: 0; }
 
@@ -967,7 +967,7 @@ button.like_link, input[type='submit'].like_link {
 }
 
 .btn {
-  color: #{text_light};
+  color: var(--text_light);
   border: 0;
   font-weight: 700;
   padding: .325rem 1.5rem .4rem;
@@ -1015,11 +1015,11 @@ blockquote {
 window.styles += """
 
 body {
-  color: #{text_dark};
+  color: var(--text_dark);
 }
 
 h1, h2, h3, h4, h5, h6 {
-  /* color: #{text_dark} */; 
+  /* color: var(--text_dark) */; 
 }
 
 html[lang='cs'] body, html[lang='cs'] input, html[lang='cs'] button, html[lang='cs'] textarea {
@@ -1058,11 +1058,11 @@ a.skip:hover {
 .content {
   position: relative;
   font-size: 16px;
-  color: #{text_dark};
+  color: var(--text_dark);
   min-height: 100%; 
   font-weight: 400;
 
-  background-color: #{bg_light};
+  background-color: var(--bg_light);
 
 }
 
@@ -1082,14 +1082,14 @@ a.skip:hover {
   cursor: pointer; }
 
 .primary_button {
-  color: #{text_light};
+  color: var(--text_light);
   font-size: 29px;
   margin-top: 14px;
   border: none;
   padding: 8px 36px; }
 
 .primary_cancel_button {
-  color: #{text_light_gray};
+  color: var(--text_light_gray);
   margin-top: 0.5em; }
 
 .cancel_opinion_button {

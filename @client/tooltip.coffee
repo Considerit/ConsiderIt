@@ -8,14 +8,14 @@ styles += """
   height: 0; 
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;  
-  border-top: 10px solid #{brd_dark};
+  border-top: 10px solid var(--brd_dark);
 }
 #tooltip .upward_arrow {
   width: 0; 
   height: 0; 
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;  
-  border-bottom: 10px solid #{brd_dark};
+  border-bottom: 10px solid var(--brd_dark);
 }
 
 """
@@ -96,10 +96,10 @@ window.Tooltip = ReactiveComponent
       borderRadius: 8
       pointerEvents: 'none'
       zIndex: 999999999999
-      color: text_light
-      backgroundColor: bg_dark
+      color: "var(--text_light)"
+      backgroundColor: "var(--bg_dark)"
       position: 'absolute'      
-      boxShadow: '0 1px 1px #{shadow_dark_20}'
+      boxShadow: '0 1px 1px var(--shadow_dark_20)'
       maxWidth: 350
 
     DIV
@@ -127,8 +127,8 @@ window.Tooltip = ReactiveComponent
           display: if tooltip.hide_triangle then 'none' 
 
         POLYGON
-          stroke: brd_dark
-          fill: bg_dark
+          stroke: "var(--brd_dark)"
+          fill: "var(--bg_dark)"
           points: "530.874,0.5 265.87,459.5 0.866,0.5"
 
 

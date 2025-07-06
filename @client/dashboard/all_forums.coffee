@@ -18,7 +18,7 @@ styles += """
 }
 
 .AllYourForums .forum.odd {
-  background-color: #{bg_container};
+  background-color: var(--bg_container);
 }
 
 
@@ -40,7 +40,7 @@ styles += """
 }
 
 .AllYourForums .forum_link {
-  color: #{text_light_gray};
+  color: var(--text_light_gray);
   font-weight: 400;
   font-size: 15px;
 }
@@ -81,7 +81,7 @@ window.AllYourForums = ReactiveComponent
               else 
                 DIV 
                   style: 
-                    border: "1px dashed #{brd_light_gray}"
+                    border: "1px dashed var(--brd_light_gray)"
                     borderRadius: 8
                     width: 120
                     height: 70
@@ -135,7 +135,7 @@ window.AllYourForums = ReactiveComponent
                       xhr.open 'PUT', '/import_configuration_from_subdomain', true
                       xhr.send frm
 
-                  import_icon 18, text_gray
+                  import_icon 18, "var(--text_gray)"
 
 
                 BUTTON 
@@ -165,7 +165,7 @@ window.AllYourForums = ReactiveComponent
                       xhr.open 'DELETE', '/destroy_forum', true
                       xhr.send frm
 
-                  trash_icon 18, 18, text_neutral
+                  trash_icon 18, 18, "var(--text_neutral)"
 
 
 

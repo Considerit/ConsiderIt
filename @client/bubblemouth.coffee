@@ -34,7 +34,7 @@ window.Bubblemouth = (props) ->
     skew_x: 15
     skew_y: 80
     apex_xfrac: .5
-    fill: bg_light, 
+    fill: "var(--bg_light)", 
     stroke: 'var(--focus_color)', 
     stroke_width: 10
     # dash_array: "none"   
@@ -129,7 +129,7 @@ window.PointBubblemouth = (props) ->
     skew_x: 15
     skew_y: 80
     apex_xfrac: .5
-    fill: bg_light, 
+    fill: "var(--bg_light)", 
     stroke: "var(--focus_color)", 
     stroke_width: 10
     # dash_array: "none"   

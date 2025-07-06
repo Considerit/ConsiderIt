@@ -440,7 +440,7 @@ window.Histogram = ReactiveComponent
     label_style = @props.label_style or {
       fontSize: 12
       fontWeight: 400
-      color: text_gray
+      color: "var(--text_gray)"
       bottom: -19
     }
 
@@ -504,7 +504,7 @@ window.Histogram = ReactiveComponent
         height: @props.height + REGION_SELECTION_VERTICAL_PADDING + 2
         position: 'absolute'
         width: selection_width
-        backgroundColor: bg_lightest_gray
+        backgroundColor: "var(--bg_lightest_gray)"
         cursor: 'pointer'
         left: selection_left
         top: -2 #- REGION_SELECTION_VERTICAL_PADDING

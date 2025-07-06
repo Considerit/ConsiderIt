@@ -36,7 +36,7 @@ window.EditComment = ReactiveComponent
           width: 50
           height: 50
           backgroundColor: if permitted < 0 then 'transparent'
-          border:          if permitted < 0 then "1px dashed #{brd_dark_gray}"
+          border:          if permitted < 0 then "1px dashed var(--brd_dark_gray)"
 
         key: current_user.user
         hide_popover: true

@@ -1,9 +1,9 @@
   
 styles += """
   .dangerzone button {
-    background-color: #{failure_color};
+    background-color: var(--failure_color);
     padding: 8px 24px;
-    color: #{text_light};
+    color: var(--text_light);
     font-weight: 600;
     border: none;
     border-radius: 8px;    
@@ -91,7 +91,7 @@ window.DataDash = ReactiveComponent
 
           DIV 
             style: 
-              backgroundColor: bg_lightest_gray
+              backgroundColor: "var(--bg_lightest_gray)"
               padding: "8px 12px"
               marginTop: 24
 
@@ -191,7 +191,7 @@ window.DataDash = ReactiveComponent
                   id: "#{table}-file"
                   name: "#{table.toLowerCase()}-file"
                   type:'file'
-                  style: {backgroundColor: selected_color, color: text_light, fontWeight: 700, borderRadius: 8, padding: 6}
+                  style: {backgroundColor: "var(--selected_color)", color: "var(--text_light)", fontWeight: 700, borderRadius: 8, padding: 6}
             
 
           if current_user.is_super_admin
@@ -261,7 +261,7 @@ window.DataDash = ReactiveComponent
                 marginLeft: 20 
 
         if @local.successes
-          DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: success_color}, 
+          DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: "var(--success_color)"}, 
             H1 style: {fontSize: 18}, 'Success! Here\'s what happened:'
             
             for table, successes of @local.successes
@@ -336,7 +336,7 @@ window.DataDash = ReactiveComponent
       action: '/dashboard/data_import_argdown'
       style: 
         marginTop: 72
-        borderTop: "1px dotted #{brd_light_gray}"
+        borderTop: "1px dotted var(--brd_light_gray)"
 
       H2
         style: 
@@ -345,7 +345,7 @@ window.DataDash = ReactiveComponent
         'Argdown-like Import'
         SUP
           style: 
-            color: text_gray
+            color: "var(--text_gray)"
             fontSize: 12
             fontWeight: 400
             paddingLeft: 4
@@ -419,7 +419,7 @@ window.DataDash = ReactiveComponent
 
         SUP
           style: 
-            color: text_gray
+            color: "var(--text_gray)"
             fontSize: 12
             fontWeight: 400
             paddingLeft: 4

@@ -487,7 +487,7 @@ FilterProposalsMenu = ReactiveComponent
 
               current_filter
 
-              SPAN style: _.extend cssTriangle 'bottom', brd_light, 8, 5,
+              SPAN style: _.extend cssTriangle 'bottom', "var(--brd_light)", 8, 5,
                 display: 'inline-block'
                 marginLeft: 4   
                 marginBottom: 2
@@ -511,7 +511,7 @@ FilterProposalsMenu = ReactiveComponent
                 style: 
                   float: 'right'
                 HelpIcon translator("engage.filter.#{option.name}.description", option.description),
-                  color: text_dark #if is_active then text_light
+                  color: "var(--text_dark)" #if is_active then text_light
                 
           ]
 
@@ -556,7 +556,7 @@ SortProposalsMenu = ReactiveComponent
 
               current_sort
 
-              SPAN style: _.extend cssTriangle 'bottom', brd_light, 8, 5,
+              SPAN style: _.extend cssTriangle 'bottom', "var(--brd_light)", 8, 5,
                 display: 'inline-block'
                 marginLeft: 4   
                 marginBottom: 2
@@ -611,7 +611,7 @@ ManualProposalResort = ReactiveComponent
 
       SPAN 
         style: 
-          color: text_light_gray
+          color: "var(--text_light_gray)"
           fontSize: 10
           position: 'absolute'
           top: -16
@@ -623,9 +623,9 @@ ManualProposalResort = ReactiveComponent
 
       BUTTON 
         style: 
-          color: text_light
+          color: "var(--text_light)"
           fontWeight: 800
-          backgroundColor: selected_color
+          backgroundColor: "var(--selected_color)"
           textAlign: 'center'
           fontSize: 12
           padding: '3px 16px'
@@ -647,7 +647,7 @@ ManualProposalResort = ReactiveComponent
           viewBox: "0 0 17 20" 
           dangerouslySetInnerHTML: __html: """
                 <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                    <g transform="translate(-318.000000, -564.000000)" fill="#{bg_light}" fill-rule="nonzero">
+                    <g transform="translate(-318.000000, -564.000000)" fill="var(--bg_light)" fill-rule="nonzero">
                         <g transform="translate(318.000000, 564.000000)">
                             <g transform="translate(0.000000, 0.000000)">
                                 <path d="M8.25687555,19.6225181 C8.33853565,19.7047747 8.47091122,19.7047747 8.55257132,19.6225181 L11.3646601,16.7891261 C11.4244669,16.7288791 11.4423691,16.6382674 11.4100203,16.5595369 C11.3776715,16.4808064 11.301441,16.4294337 11.2168695,16.4294337 L5.59257699,16.4294337 C5.5079845,16.4294337 5.4317111,16.4807419 5.39933258,16.559483 C5.36695405,16.6382241 5.38484894,16.7288641 5.44467062,16.7891261 L8.25687555,19.6225181 Z" id="Path"></path>

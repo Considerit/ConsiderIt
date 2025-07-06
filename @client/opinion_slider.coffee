@@ -21,7 +21,7 @@ styles += """
     --ADD_REASONS_CALLOUT_BUTTON_WIDTH: 130px;
 
     background-color: var(--focus_color);
-    color: #{text_light};
+    color: var(--text_light);
     font-weight: 600;
     font-size: 10px;
     border-radius: 8px;
@@ -426,7 +426,7 @@ window.SliderBubblemouth = ReactiveComponent
     mode = getProposalMode(proposal)
     if mode == 'crafting'
       transform = "translate(0, -4px) scale(1,.7)"
-      fill = bg_light
+      fill = "var(--bg_light)"
 
     else 
       transform = "translate(0, -22px) scale(.6,.6) "

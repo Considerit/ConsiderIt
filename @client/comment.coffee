@@ -53,7 +53,7 @@ window.Comment = ReactiveComponent
         if current_user.user == comment.user
           if permit('update comment', comment) > 0
             comment_action_style = 
-              color: text_gray
+              color: "var(--text_gray)"
               textDecoration: 'underline'
               cursor: 'pointer',
               padding: '0 10px 0 0'
@@ -87,7 +87,7 @@ styles += """
 
 .comment_entry_name {
   font-weight: 600;
-  color: #{text_light_gray}; 
+  color: var(--text_light_gray); 
   margin-bottom: 4px;
 }
 
@@ -133,7 +133,7 @@ window.Discussion = ReactiveComponent
       zIndex: 100
       padding: '20px 40px'
       borderRadius: 16
-      backgroundColor: bg_item
+      backgroundColor: "var(--bg_item)"
       outline: 'none' 
       boxShadow: if @local.has_focus then "0 0 7px var(--focus_color)"
 
@@ -199,7 +199,7 @@ window.Discussion = ReactiveComponent
           apex_xfrac: 1.1
           width: 36
           height: 28
-          fill: bg_light, 
+          fill: "var(--bg_light)", 
           stroke: 'var(--focus_color)', 
           stroke_width: 11
 

@@ -237,13 +237,13 @@ window.ModerationDash = ReactiveComponent
               BUTTON 
                 "data-model": model 
                 style: 
-                  backgroundColor: if active then bg_light else bg_lightest_gray
-                  color: text_dark
+                  backgroundColor: if active then bg_light else "var(--bg_lightest_gray)"
+                  color: "var(--text_dark)"
                   fontSize: 18
                   marginLeft: 12
                   marginRight: 12
                   marginBottom: if active then -1
-                  border: "1px solid #{brd_mid_gray}"
+                  border: "1px solid var(--brd_mid_gray)"
                   borderBottom: 'none'
                   borderRadius: '4px 4px 0 0px'
                   padding: "6px 14px #{if active then 3 else 2}px 14px"
@@ -266,7 +266,7 @@ window.ModerationDash = ReactiveComponent
       if @local.model == 'Ban'
         DIV 
           style: 
-            borderTop: "1px solid #{brd_mid_gray}"
+            borderTop: "1px solid var(--brd_mid_gray)"
 
           BanHammer {all_items}
 
@@ -274,7 +274,7 @@ window.ModerationDash = ReactiveComponent
       else 
         DIV 
           style: 
-            borderTop: "1px solid #{brd_mid_gray}"
+            borderTop: "1px solid var(--brd_mid_gray)"
 
 
           UL 
@@ -296,7 +296,7 @@ window.ModerationDash = ReactiveComponent
                     style: 
                       fontSize: 14
                       fontWeight: if active then 700
-                      color: if active then text_dark else text_light_gray
+                      color: if active then "var(--text_dark)" else "var(--text_light_gray)"
 
                     onClick: => 
                       @local.show_category = definition.name 
@@ -591,7 +591,7 @@ ModerateItem = ReactiveComponent
           SPAN 
             className: 'moderation btn'
             style: 
-              backgroundColor: success_color
+              backgroundColor: "var(--success_color)"
 
 
             LABEL 
@@ -625,7 +625,7 @@ ModerateItem = ReactiveComponent
           SPAN 
             className: 'moderation btn'
             style: 
-              backgroundColor: failure_color
+              backgroundColor: "var(--failure_color)"
 
             LABEL 
               htmlFor: "fail-#{@props.item}"
@@ -647,7 +647,7 @@ ModerateItem = ReactiveComponent
               SPAN 
                 className: 'moderation btn'
                 style: 
-                  backgroundColor: failure_color
+                  backgroundColor: "var(--failure_color)"
                   minWidth: 150
                   display: 'inline-block'
 
@@ -700,18 +700,18 @@ styles += """
 }
 
 .grid-table-header {
-  background-color: #{bg_light_gray};
+  background-color: var(--bg_light_gray);
   padding: 1rem;
   font-weight: bold;
 }
 
 .row {
-  background-color: #{bg_lightest_gray};
+  background-color: var(--bg_lightest_gray);
   padding: 1rem;
 }
 
 .row.alt {
-  background-color: #{bg_lighter_gray};
+  background-color: var(--bg_lighter_gray);
 }
 
 
@@ -885,9 +885,9 @@ DirectMessage = ReactiveComponent
       _.defaults wrapper_style, 
         margin: '18px 0'
         padding: '15px 20px'
-        backgroundColor: bg_light
+        backgroundColor: "var(--bg_light)"
         backgroundColor: bg_speech_bubble
-        boxShadow: "0 2px 4px #{shadow_dark_50}"
+        boxShadow: "0 2px 4px var(--shadow_dark_50)"
 
     DIV 
       style: wrapper_style

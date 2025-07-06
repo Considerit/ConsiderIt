@@ -38,12 +38,12 @@ window.MediaBanner = ->
 
         .MediaBanner {
           position: relative;
-          color: #{text_dark};
+          color: var(--text_dark);
           background-color: #eee;
           padding: 0px 2px;
           border-bottom: 1px solid black;
         } .dark .MediaBanner {
-          color: #{text_light};
+          color: var(--text_light);
         }
         .MediaBanner > .upper_wrapper {
           padding-top: 28px;
@@ -88,20 +88,20 @@ window.MediaBanner = ->
           font-weight: 600;
           font-size: 16px;
           padding: 16px 8px 24px;
-          color: #{text_dark};
+          color: var(--text_dark);
         }
         .dark .MediaBanner #tabs > ul > li > h4 {
-          color: #{text_light};
+          color: var(--text_light);
         }
 
         .MediaBanner #tabs > ul > li.selected > h4, 
         .MediaBanner #tabs > ul > li:hover > h4 {
-          color: #{text_dark};
+          color: var(--text_dark);
           text-decoration: underline;
         }
         .dark .MediaBanner #tabs > ul > li.selected > h4, 
         .dark .MediaBanner #tabs > ul > li:hover > h4 {
-          color: #{text_light};
+          color: var(--text_light);
         }
       """
 
@@ -151,7 +151,7 @@ window.ImageHeader = (opts) ->
         width: '100%'
 
     if opts.text
-      H1 style: {textAlign: 'center', color: text_light, margin: 'auto', fontSize: 60, fontWeight: 700, position: 'relative', paddingTop: 30}, 
+      H1 style: {textAlign: 'center', color: "var(--text_light)", margin: 'auto', fontSize: 60, fontWeight: 700, position: 'relative', paddingTop: 30}, 
         opts.text
 
     CustomizeBackground()
@@ -281,21 +281,21 @@ window.HawaiiHeader = (opts) ->
 
   _.defaults opts.title_style,
     fontSize: 47
-    color: if is_light then text_dark else text_light
+    color: if is_light then "var(--text_dark)" else "var(--text_light)"
     fontWeight: 300
     display: 'inline-block'
 
   _.defaults opts.subtitle_style,
     position: 'relative'
     fontSize: 22
-    color: if is_light then text_dark else text_light
+    color: if is_light then "var(--text_dark)" else "var(--text_light)"
     marginTop: 0
     opacity: .7
     textAlign: 'center'  
 
   _.defaults opts.homepage_button_style,
     display: 'inline-block'
-    color: if is_light then text_dark else text_light
+    color: if is_light then "var(--text_dark)" else "var(--text_light)"
     # opacity: .7
     position: 'absolute'
     left: -80
@@ -371,7 +371,7 @@ window.HawaiiHeader = (opts) ->
               margin: '0 6px'
             active_style: _.defaults {}, opts.tab_active_style or {},
               backgroundColor: 'white'
-              color: text_dark
+              color: "var(--text_dark)"
             active_tab_wrapper_style: _.defaults {}, opts.active_tab_wrapper_style or {},
               backgroundColor: opts.tab_background_color
             wrapper_style: _.defaults {}, opts.tabs_wrapper_style or {},
@@ -419,7 +419,7 @@ window.SeattleHeader = (opts) ->
     display: 'block'
     fontWeight: 400
     fontSize: 28
-    color: text_dark
+    color: "var(--text_dark)"
 
   external_link_style = _.defaults opts.external_link_style, 
     display: 'block'
@@ -563,7 +563,7 @@ window.SeattleHeader = (opts) ->
             style: 
               marginTop: 40
               backgroundColor: considerit_red
-              color: text_light
+              color: "var(--text_light)"
               fontSize: 28
               textAlign: 'center'
               padding: "30px 42px"

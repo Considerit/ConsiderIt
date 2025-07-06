@@ -11,8 +11,8 @@ styles += """
     font-size: 15px;
   }
   #flash {
-    color: #{text_light};
-    background-color: #{bg_dark};
+    color: var(--text_light);
+    background-color: var(--bg_dark);
     border-radius: 3px;
     cursor: default;
     max-width: 400px;
@@ -22,7 +22,7 @@ styles += """
   }
 
   #flash.error {
-    background-color: #{failure_color};
+    background-color: var(--failure_color);
   }
 
   #flash .flash-message {
@@ -35,7 +35,7 @@ styles += """
 
   #flash .flash-close button {
     background-color: transparent;
-    color: #{text_light};
+    color: var(--text_light);
     border: none;
     padding: 8px 18px;
   }

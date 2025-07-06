@@ -206,7 +206,7 @@ AnalyticsTabs = ReactiveComponent
                       style: 
                         fontSize: 16
                         textTransform: 'uppercase'
-                        color: if active then "var(--focus_color)" else text_neutral
+                        color: if active then "var(--focus_color)" else "var(--text_neutral)"
                         textDecoration: if active then 'underline'
                       args.heading
 
@@ -329,7 +329,7 @@ styles += """
     padding: 4px 12px;
     font-weight: 400;
     background-color: #ddd;
-    color: #{text_gray};
+    color: var(--text_gray);
     border: 1px solid #dadada;
   }
 
@@ -443,7 +443,7 @@ GraphSection =
                       e.preventDefault()              
                   style: 
                     backgroundColor: if analytics_state.segment_by == segment then "var(--focus_color)" else bg_lighter_gray
-                    color: if analytics_state.segment_by == segment then text_light else text_gray
+                    color: if analytics_state.segment_by == segment then "var(--text_light)" else "var(--text_gray)"
 
                   labels?[segment] or segment
 
@@ -794,7 +794,7 @@ styles += """
   border: none;
   border-radius: 4px;
   pointer-events: none;
-  color: #{text_light};
+  color: var(--text_light);
 }
 
 

@@ -4,7 +4,7 @@ styles += """
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 1px;
-  border: 1px solid #{brd_light_gray};
+  border: 1px solid var(--brd_light_gray);
   max-width: 800px;
   margin: 40px auto;
 }
@@ -16,13 +16,13 @@ styles += """
 
 .meanie-header {
   font-weight: bold;
-  background-color: #{bg_lightest_gray};
-  border: 1px solid #{brd_light_gray};
+  background-color: var(--bg_lightest_gray);
+  border: 1px solid var(--brd_light_gray);
 }
 
 .meanie-cell {
-  border: 1px solid #{brd_light_gray};
-  background-color: #{bg_light};
+  border: 1px solid var(--brd_light_gray);
+  background-color: var(--bg_light);
 }
 
 

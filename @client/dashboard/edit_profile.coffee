@@ -26,9 +26,9 @@ window.styles += """
 
 
   .dangerzone input[type="submit"] {
-    background-color: #{failure_color};
+    background-color: var(--failure_color);
     padding: 8px 24px;
-    color: #{text_light};
+    color: var(--text_light);
     font-weight: 600;
     border: none;
     border-radius: 8px;    
@@ -104,7 +104,7 @@ window.EditProfile = ReactiveComponent
       if forum_has_host_questions()
         DIV 
           style: 
-            backgroundColor: bg_speech_bubble
+            backgroundColor: "var(--bg_speech_bubble)"
             marginBottom: 24
             marginTop: 52
 

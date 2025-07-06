@@ -2,13 +2,13 @@
 
 styles += """
   #NewForumOnBoarding {
-    background: #{bg_light};
+    background: var(--bg_light);
     box-shadow: 0 4px 6px 0 00000026;
     border-radius: 0 0 8px 8px;   
     max-width: 780px;
     margin: 48px auto 60px auto;
     padding: 24px 64px;
-    border-top: 14px solid #{selected_color};
+    border-top: 14px solid var(--selected_color);
     position: relative;
   }
 
@@ -19,7 +19,7 @@ styles += """
   }
 
   #NewForumOnBoarding h1 {
-    color: #{selected_color};
+    color: var(--selected_color);
     font-weight: 700;
     font-size: 26px;
 
@@ -27,7 +27,7 @@ styles += """
 
   #NewForumOnBoarding .header_subtitle {
     font-size: 18px;
-    color: #{text_gray};
+    color: var(--text_gray);
   }
 
   #NewForumOnBoarding ul {
@@ -51,13 +51,13 @@ styles += """
   } 
 
   #NewForumOnBoarding .onboard_item.complete .checkbox {
-    border-color: #{success_color};
-    background-color: #{success_color};
+    border-color: var(--success_color);
+    background-color: var(--success_color);
   }
 
   #NewForumOnBoarding .onboard_item.complete .checkbox:after {
     content: "✓";
-    color: #{text_light};
+    color: var(--text_light);
     font-size: 18px;
     position: relative;
     top: -2px;
@@ -67,7 +67,7 @@ styles += """
   
 
   #NewForumOnBoarding .onboard_item.incomplete .checkbox {
-    border-color: #{brd_mid_gray};
+    border-color: var(--brd_mid_gray);
   }
 
   #NewForumOnBoarding .onboard_item .label {
@@ -79,7 +79,7 @@ styles += """
     position: absolute;
     right: 20px;
     top: 10px;
-    color: #{selected_color};
+    color: var(--selected_color);
     text-decoration: none;
     font-weight: 600;
     font-size: 20px;
@@ -87,8 +87,8 @@ styles += """
 
   #NewForumOnBoarding button.done_onboarding {
     margin-top: 0px;
-    color: #{text_light};
-    background-color: #{selected_color};
+    color: var(--text_light);
+    background-color: var(--selected_color);
     border: none;
     padding: 8px 24px;
     font-weight: 700;
@@ -180,7 +180,7 @@ window.NewForumOnBoarding = ReactiveComponent
       DIV 
         style:
           fontSize: 18
-          color: text_gray
+          color: "var(--text_gray)"
           marginTop: 36
 
         'Learn more about the '
@@ -328,7 +328,7 @@ styles += """
     animation-delay: 1000ms;
 }
 .confetti-piece:nth-child(4n-7) {
-  background: #{failure_color};
+  background: var(--failure_color);
 }
 @keyframes makeItRain {
     from {opacity: 0;}

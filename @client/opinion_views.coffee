@@ -292,7 +292,7 @@ default_weights = ->
         point_inclusions = Math.log(1 + Math.min(8,opinion.point_inclusions?.length or 0))
         .1 + point_inclusions
       icon: (color) -> 
-        color ?= text_dark
+        color ?= "var(--text_dark)"
         SVG
           width: 14
           height: 14
@@ -332,7 +332,7 @@ default_weights = ->
         else 
           .1
       icon: (color) -> 
-        color ?= text_dark
+        color ?= "var(--text_dark)"
         SVG
           width: 14
           height: 14
@@ -359,7 +359,7 @@ default_weights = ->
         u = u.key or u 
         .1 + (influencer_scores[u] or 0)
       icon: (color) -> 
-        color ?= text_dark
+        color ?= "var(--text_dark)"
         SVG
           width: 14
           height: 14
@@ -790,7 +790,7 @@ OpinionViews = ReactiveComponent
               style: 
                 left: "calc(50% - 15px)"
                 bottom: -27
-              dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#{bg_light}" stroke="#{brd_mid_gray}"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
+              dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="var(--bg_light)" stroke="var(--brd_mid_gray)"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
 
       }
     ]
@@ -887,7 +887,7 @@ OpinionViews = ReactiveComponent
         onClick: toggle_expanded
         style: 
           fontSize: 12
-          color: text_light_gray
+          color: "var(--text_light_gray)"
           whiteSpace: 'nowrap'
           marginLeft: 4
 
@@ -1058,7 +1058,7 @@ window.OpinionViewInteractionWrapper = ReactiveComponent
 
               DIV 
                 style: 
-                  border: "1px solid #{brd_mid_gray}"
+                  border: "1px solid var(--brd_mid_gray)"
                   borderRadius: 8
                   width: 'fit-content'
                   maxWidth: if width then width
@@ -1118,8 +1118,8 @@ InteractiveOpinionViews = ReactiveComponent
             style: 
               maxWidth: '75%'
               marginRight: 12
-              borderColor: brd_mid_gray
-              backgroundColor: bg_lightest_gray
+              borderColor: "var(--brd_mid_gray)"
+              backgroundColor: "var(--bg_lightest_gray)"
               borderRadius: 2
 
             onChange: (ev) -> 
@@ -1358,7 +1358,7 @@ InteractiveOpinionViews = ReactiveComponent
                     e.stopPropagation()
                     
                   if weight.icon
-                    weight.icon if activated_weights[weight.key] then text_light
+                    weight.icon if activated_weights[weight.key] then "var(--text_light)"
 
                   SPAN 
                     style: 
@@ -1559,12 +1559,12 @@ NonInteractiveOpinionViews = ReactiveComponent
 styles += """
 
   button.opinion_view_button {
-    border: 1px solid #{brd_light_gray};
-    border-bottom-color: #{brd_mid_gray};
-    background-color: #{bg_lightest_gray};
+    border: 1px solid var(--brd_light_gray);
+    border-bottom-color: var(--brd_mid_gray);
+    background-color: var(--bg_lightest_gray);
     border-radius: 8px;    
     font-size: 12px;
-    color: #{text_dark};
+    color: var(--text_dark);
     font-weight: 400;
   }
   button.opinion_view_button.filter {
@@ -1584,7 +1584,7 @@ styles += """
 
   button.opinion_view_button.active {
     background-color: var(--focus_color);
-    color: #{text_light};
+    color: var(--text_light);
     border-color: var(--focus_color);
   }
 
@@ -1622,7 +1622,7 @@ styles += """
   .attribute_group {
     margin-left: 50px;
     width: 100%;
-    background-color: #{bg_lightest_gray};  
+    background-color: var(--bg_lightest_gray);  
     display: flex;  
     align-items: center;      
   }
@@ -1636,7 +1636,7 @@ styles += """
   }
   .attribute_close, .minimized_view_close {
     font-size: 13px;
-    color: #{text_dark};
+    color: var(--text_dark);
     background-color: transparent;
     border: none;
   }
@@ -1713,7 +1713,7 @@ styles += """
   }
   .opinion-date-filter label {
     padding: 0 8px 0 18px;
-    color: #{text_light_gray};
+    color: var(--text_light_gray);
     font-size: 12px;
   }
   
@@ -1742,7 +1742,7 @@ styles += """
     border-radius: 8px;
   }
   [data-widget="DropMenu"].bluedrop button.dropMenu-anchor, .toggle_buttons button {
-    background-color: #{bg_light};
+    background-color: var(--bg_light);
     color: var(--focus_color);
     font-weight: 600;
     font-size: 12px;
@@ -1766,7 +1766,7 @@ styles += """
 
   [data-widget="DropMenu"].bluedrop button.dropMenu-anchor, .toggle_buttons .active button {
     background-color: var(--focus_color);
-    color: #{text_light};
+    color: var(--text_light);
   }
 
   .toggle_buttons button[disabled] {
@@ -1775,12 +1775,12 @@ styles += """
   }
 
   .grays .toggle_buttons button {
-    color: #{text_gray};
+    color: var(--text_gray);
     border-color: currentColor;
   }
   .grays .toggle_buttons .active button {
-    background-color: #{bg_dark_gray};
-    color: #{text_light};
+    background-color: var(--bg_dark_gray);
+    color: var(--text_light);
   }
 """
 

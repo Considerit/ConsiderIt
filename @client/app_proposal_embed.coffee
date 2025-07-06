@@ -82,7 +82,7 @@ ProposalDescription = ReactiveComponent
         DIV 
           style: 
             fontSize: 12
-            color: text_light_gray
+            color: "var(--text_light_gray)"
             fontStyle: 'italic'
             paddingTop: 0
 
@@ -101,13 +101,13 @@ ProposalDescription = ReactiveComponent
 
           DIV
             style:
-              backgroundColor: bg_speech_bubble
+              backgroundColor: "var(--bg_speech_bubble)"
               cursor: 'pointer'
               paddingTop: 5
               paddingBottom: 5
               marginTop: -5
               textAlign: 'center'
-              color: text_light_gray
+              color: "var(--text_light_gray)"
               fontSize: 12
             onMouseDown: => 
               if window.parentIFrame
@@ -120,13 +120,13 @@ ProposalDescription = ReactiveComponent
         else 
           A
             style:
-              backgroundColor: bg_speech_bubble
+              backgroundColor: "var(--bg_speech_bubble)"
               cursor: 'pointer'
               paddingTop: 5
               paddingBottom: 5
               marginTop: -5
               textAlign: 'center'
-              color: text_light_gray
+              color: "var(--text_light_gray)"
               fontSize: 12
             target: '_blank'
             href: proposal_link(@proposal) 
@@ -164,8 +164,8 @@ Proposal = ReactiveComponent
     DIV 
       style: 
         width: width
-        backgroundColor: bg_item
-        border: "1px solid #{brd_light_gray}"
+        backgroundColor: "var(--bg_item)"
+        border: "1px solid var(--brd_light_gray)"
         borderRadius: '16px 16px 18px 18px'
 
       Tooltip()
@@ -209,11 +209,11 @@ Proposal = ReactiveComponent
             href: proposal_link(@proposal) 
             target: '_blank'          
             style: 
-              color: text_light
+              color: "var(--text_light)"
               padding: '6px 12px'
               backgroundColor: "var(--focus_color)"
               borderRadius: 16
-              color: text_light
+              color: "var(--text_light)"
               position: 'relative'
 
             SPAN 
@@ -244,7 +244,7 @@ Proposal = ReactiveComponent
         style: 
           textAlign: 'center' 
           borderRadius: '0 0 16px 16px'
-          backgroundColor: bg_speech_bubble
+          backgroundColor: "var(--bg_speech_bubble)"
 
         
         TechnologyByConsiderit

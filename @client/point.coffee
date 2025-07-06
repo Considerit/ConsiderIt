@@ -75,12 +75,12 @@ window.Point = ReactiveComponent
     if is_selected
       _.extend point_content_style,
         borderColor: "var(--focus_color)"
-        backgroundColor: bg_light
+        backgroundColor: "var(--bg_light)"
 
     else if @local.has_focus
       _.extend point_content_style,
-        borderColor: brd_mid_gray
-        backgroundColor: bg_light
+        borderColor: "var(--brd_mid_gray)"
+        backgroundColor: "var(--bg_light)"
 
     expand_to_see_details = !!point.text
 
@@ -106,7 +106,7 @@ window.Point = ReactiveComponent
         key: 1
         style:
           fontSize: 10
-          color: text_light_gray
+          color: "var(--text_light_gray)"
         " (#{translator({id: "engage.read_more"}, "read more")})"
 
     else 
@@ -167,7 +167,7 @@ window.Point = ReactiveComponent
               apex_xfrac: 0
               width: POINT_MOUTH_WIDTH
               height: POINT_MOUTH_WIDTH
-              fill: bg_speech_bubble
+              fill: "var(--bg_speech_bubble)"
               stroke: if is_selected then "var(--focus_color)" else if @local.has_focus then brd_neutral_gray else 'transparent'
               stroke_width: if is_selected || @local.has_focus then 20 else 0
 
@@ -214,7 +214,7 @@ window.Point = ReactiveComponent
             DIV 
               style: 
                 fontSize: 12
-                color: text_light_gray
+                color: "var(--text_light_gray)"
 
               if !PHONE_SIZE() && !screencasting() && !embedded_demo() && bus_fetch('/subdomain').name != 'galacticfederation'
                 [
@@ -366,9 +366,9 @@ window.Point = ReactiveComponent
         else
           BUTTON 
             style: 
-              border: "1px solid #{ if included || @local.hover_important then "var(--focus_color)" else brd_dark_gray}"
+              border: "1px solid #{ if included || @local.hover_important then "var(--focus_color)" else "var(--brd_dark_gray)"}"
               borderTopColor: if included then "var(--focus_color)" else 'transparent'
-              color: if included then text_light else if @local.hover_important then "var(--focus_color)" else text_gray
+              color: if included then "var(--text_light)" else if @local.hover_important then "var(--focus_color)" else "var(--text_gray)"
               position: 'relative'
               top: -13
               padding: '8px 5px'
@@ -685,7 +685,7 @@ styles += """
 
   @media #{NOT_PHONE_MEDIA} {
     .point.community_point {
-      filter: drop-shadow(#{shadow_dark_25} 0px 1px 1px);
+      filter: drop-shadow(var(--shadow_dark_25) 0px 1px 1px);
     }
 
   }
@@ -743,7 +743,7 @@ styles += """
     padding: 8px;
     border-radius: 16px;
     top: -11px;
-    background-color: #{bg_speech_bubble};
+    background-color: var(--bg_speech_bubble);
     min-height: 34px; 
   }
 
@@ -785,10 +785,10 @@ styles += """
     height: 22px; }
 
   .community_point.con .point_includer_avatar {
-    box-shadow: -1px 2px 0 0 #{bg_item}; }   /* coin effect. should be ~ background color of an expanded item */
+    box-shadow: -1px 2px 0 0 var(--bg_item); }   /* coin effect. should be ~ background color of an expanded item */
 
   .community_point.pro .point_includer_avatar {
-    box-shadow: 1px 2px 0 0 #{bg_item}; }    /* coin effect. should be ~ background color of an expanded item */
+    box-shadow: 1px 2px 0 0 var(--bg_item); }    /* coin effect. should be ~ background color of an expanded item */
 
   .decision_board_point.pro .point_includer_avatar {
     left: -10px; }

@@ -286,8 +286,8 @@ styles += """
     overflow: hidden;
     font-style: normal;
     width: 280px;
-    box-shadow: 0 2px 5px #{shadow_dark_50};
-    background-color: #{bg_lightest_gray};
+    box-shadow: 0 2px 5px var(--shadow_dark_50);
+    background-color: var(--bg_lightest_gray);
     padding: 8px 0;
   }
 
@@ -305,7 +305,7 @@ styles += """
   }
 
   .default_drop[data-widget="DropMenu"] .menu-item.active-menu-item {
-    color: #{text_dark};
+    color: var(--text_dark);
   }
 """
 

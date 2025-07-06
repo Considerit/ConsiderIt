@@ -2,8 +2,8 @@
 
 styles += """
   .INTAKE_QUESTIONS .intake-question {
-    background-color: #{bg_lightest_gray};
-    border: 1px solid #{brd_light_gray};
+    background-color: var(--bg_lightest_gray);
+    border: 1px solid var(--brd_light_gray);
     padding: 18px 10px 18px 38px;
     border-radius: 8px;
     margin: 8px 0;
@@ -96,9 +96,9 @@ window.AnonymizationCheckForSigninQuestions = ->
       return DIV 
         key: message
         style: 
-          border: "1px solid #{brd_mid_gray}"
-          backgroundColor: bg_lightest_gray
-          color: text_dark
+          border: "1px solid var(--brd_mid_gray)"
+          backgroundColor: "var(--bg_lightest_gray)"
+          color: "var(--text_dark)"
           borderRadius: 12
           padding: '12px 24px'
           maxWidth: 700
@@ -221,13 +221,13 @@ window.IntakeQuestions = ReactiveComponent
                     intake_q_state.editing = q
                     save intake_q_state
 
-                  edit_icon 23, 23, text_neutral
+                  edit_icon 23, 23, "var(--text_neutral)"
 
                 BUTTON 
                   style: 
                     cursor: 'move'
 
-                  drag_icon 23, text_neutral
+                  drag_icon 23, "var(--text_neutral)"
 
                 BUTTON 
                   style:
@@ -235,7 +235,7 @@ window.IntakeQuestions = ReactiveComponent
                     right: -36
                     cursor: 'pointer'
                   onClick: -> delete_question(q)
-                  trash_icon 23, 23, text_neutral
+                  trash_icon 23, 23, "var(--text_neutral)"
 
 
         BUTTON 
@@ -346,7 +346,7 @@ styles += """
     padding: 6px 8px;
     width: 100%;
     font-size: 16px;
-    border: 1px solid #{brd_light_gray};
+    border: 1px solid var(--brd_light_gray);
   }
 
 """
@@ -517,7 +517,7 @@ window.EditIntakeQuestion = ReactiveComponent
           DIV 
             style: 
               fontSize: 12
-              color: text_gray
+              color: "var(--text_gray)"
             'It is best practice to enable a “Prefer not to answer” option for nonessential questions.'
             BR null
             'To enable an open-ended response option, include a response named “Other”'
@@ -611,7 +611,7 @@ window.EditIntakeQuestion = ReactiveComponent
           disabled: !validated
           style: 
             marginRight: 12
-            backgroundColor: if !validated then bg_light_gray
+            backgroundColor: if !validated then "var(--bg_light_gray)"
             cursor: if !validated then 'not-allowed'
 
           'Save'

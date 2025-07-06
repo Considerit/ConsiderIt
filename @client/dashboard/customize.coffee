@@ -61,7 +61,7 @@ window.CustomizationsDash = ReactiveComponent
           .customizations .CodeMirror {
             height: 500px;
             font-size: 14px;
-            border: 1px solid #{brd_light_gray};
+            border: 1px solid var(--brd_light_gray);
           }
 
         """}

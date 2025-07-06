@@ -5,7 +5,7 @@ styles += """
     border: none;
     padding: 0; 
     border-radius: 8px;
-    color: #{text_light};
+    color: var(--text_light);
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -28,7 +28,7 @@ styles += """
   .feedback-for-hosts {
     margin-top: 2px;
     font-size: 12px;
-    color: #{text_light_gray};
+    color: var(--text_light_gray);
     font-weight: 400;
   }
 
@@ -155,7 +155,7 @@ window.NewProposal = ReactiveComponent
                 width: PROPOSAL_AUTHOR_AVATAR_SIZE
                 marginRight: "var(--PROPOSAL_AUTHOR_AVATAR_GUTTER)"
                 borderRadius: 0
-                backgroundColor: bg_lighter_gray
+                backgroundColor: "var(--bg_lighter_gray)"
                 flexGrow: 0
                 flexShrink: 0
 
@@ -172,7 +172,7 @@ window.NewProposal = ReactiveComponent
                 flexGrow: 0
                 flexShrink: 0
 
-              CIRCLE cx: 100, cy: 100, r: 80, fill: bg_dark
+              CIRCLE cx: 100, cy: 100, r: 80, fill: "var(--bg_dark)"
 
           DIV 
             style: 
@@ -209,10 +209,10 @@ window.NewProposal = ReactiveComponent
               style: 
                 fontSize: 20
                 width: w
-                border: "1px solid #{brd_light_gray}"
+                border: "1px solid var(--brd_light_gray)"
                 padding: '6px 8px'
                 fontWeight: 600
-                color: text_dark
+                color: "var(--text_dark)"
                 minHeight: 75        
                 resize: 'vertical'    
 
@@ -240,7 +240,7 @@ window.NewProposal = ReactiveComponent
               'aria-label': translator("engage.edit_proposal.description.placeholder", 'Add details here')  
               container_style: 
                 padding: '6px 8px'
-                border: "1px solid #{brd_light_gray}"
+                border: "1px solid var(--brd_light_gray)"
 
               style: 
                 fontSize: 16
@@ -266,7 +266,7 @@ window.NewProposal = ReactiveComponent
                 'aria-label': proposal_fields[additional_field]
                 container_style: 
                   padding: '6px 8px'
-                  border: "1px solid #{brd_light_gray}"
+                  border: "1px solid var(--brd_light_gray)"
 
                 style: 
                   fontSize: 16
@@ -402,7 +402,7 @@ window.NewProposal = ReactiveComponent
             BUTTON 
               className: 'like_link'
               style: 
-                color: text_light_gray
+                color: "var(--text_light_gray)"
                 position: 'relative'
                 top: 2
                 marginLeft: 12
@@ -433,7 +433,7 @@ window.NewProposal = ReactiveComponent
         color: "var(--focus_color)"
         zIndex: 1
         marginBottom: if mobile then 20
-        backgroundColor: if mobile then bg_light_trans_80
+        backgroundColor: if mobile then "var(--bg_light_trans_80)"
         fontSize: 14
 
 
@@ -450,7 +450,7 @@ window.NewProposal = ReactiveComponent
           PATH
             stroke: "var(--focus_color)"
             strokeWidth: 1
-            fill: bg_light
+            fill: "var(--bg_light)"
 
             d: """
                 M#{guidelines_w},33

@@ -19,8 +19,8 @@ window.SU = ReactiveComponent
         left: 0
         top: 0
         width: '100%'
-        backgroundColor: bg_dark
-        color: text_light
+        backgroundColor: "var(--bg_dark)"
+        color: "var(--text_light)"
         padding: 10
 
       onMouseLeave: => 
@@ -35,7 +35,7 @@ window.SU = ReactiveComponent
           LI 
             key: user.key or user
             style: 
-              backgroundColor: bg_dark
+              backgroundColor: "var(--bg_dark)"
               listStyle: 'none'
               display: 'inline-block'
               margin: 10

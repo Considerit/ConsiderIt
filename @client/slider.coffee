@@ -168,7 +168,7 @@ window.Slider = ReactiveComponent
           style: 
             height: props.base_height + 4
             backgroundColor: upgrade_color
-            boxShadow: "0 0 #{1.5 * (props.base_height + 4)}px #{shadow_light}, 0 0 3px #{shadow_dark_25} inset"
+            boxShadow: "0 0 #{1.5 * (props.base_height + 4)}px #{shadow_light}, 0 0 3px var(--shadow_dark_25) inset"
             position: 'relative'
             top: -2
             width: "#{Math.abs(100 * slider.value * (if props.polarized then .5 else 1))}%"
@@ -188,7 +188,7 @@ window.Slider = ReactiveComponent
               top: 0
               width: 1
               height: (props.ticks.height or 5) * (if Math.abs(tick_position - slider_base_style.width / 2) < 3 then 2 else 1)
-              backgroundColor: bg_light_gray 
+              backgroundColor: "var(--bg_light_gray)" 
 
       # Draw the endpoints on either side of the base
       for endpoint, idx in endpoints
@@ -217,7 +217,7 @@ window.Slider = ReactiveComponent
         d =  props.width / (props.regions.length)
 
         sty = 
-          color: text_light_gray
+          color: "var(--text_light_gray)"
           fontSize: 14
 
         for region, idx in props.regions
@@ -317,7 +317,7 @@ window.Slider = ReactiveComponent
                 left: if !support then -21
                 position: 'absolute'
                 top: 7.5
-                color: text_light
+                color: "var(--text_light)"
                 pointerEvents: 'none'
 
               if support then ChevronRight(15) else ChevronLeft(15)
@@ -330,7 +330,7 @@ window.Slider = ReactiveComponent
                 left: if !support then -19
                 position: 'absolute'
                 top: 7.5
-                color: text_light
+                color: "var(--text_light)"
                 pointerEvents: 'none'
 
               if support then ChevronRight(15) else ChevronLeft(15)
@@ -481,7 +481,7 @@ slider_handle.face = (props) ->
       pointerEvents: 'none'
       position: 'absolute'
       top: 0
-      filter: if props.has_focus then "drop-shadow(0 0 1px #{shadow_dark_50})"
+      filter: if props.has_focus then "drop-shadow(0 0 1px var(--shadow_dark_50))"
 
     DEFS null,
       svg.innerbevel
@@ -524,7 +524,7 @@ slider_handle.face = (props) ->
               width: bw
               height: bh
               transform: "rotate(#{ direction * (5 + 30 * Math.abs(.5 - props.value))} #{x + (if is_left then bw else 0)} #{y + bh})"
-              fill: bg_light
+              fill: "var(--bg_light)"
 
           # eyes
           for is_left in [true, false]
@@ -536,7 +536,7 @@ slider_handle.face = (props) ->
               cx: 50 + direction * ( 13 + 6 * (1 - props.value))
               cy: 39
               r: 3 #+ 1.6 * (1 - props.value)
-              fill: bg_light
+              fill: "var(--bg_light)"
 
           # mouth
           do =>
@@ -550,7 +550,7 @@ slider_handle.face = (props) ->
             [qx1, qy1] = [50, my + .5 * frowniness + 2 * frowniness * (2 * props.value - 1)]
 
             PATH
-              stroke: bg_light
+              stroke: "var(--bg_light)"
               fill: "var(--focus_color)"
               strokeWidth: 3 
               d: """
@@ -569,7 +569,7 @@ slider_handle.triangley = (props) ->
       position: 'absolute'
       top: 0
       zIndex: 10
-      filter: if props.has_focus then "drop-shadow(0 0 3px #{shadow_dark_50})"
+      filter: if props.has_focus then "drop-shadow(0 0 3px var(--shadow_dark_50))"
 
   id = "triangley_filter-#{(Math.random() * 1000000).toFixed(0)}"
   SVG svg_props,
@@ -652,7 +652,7 @@ slider_handle.flat = (props) ->
         height: props.handle_height
         width: props.handle_width        
         backgroundColor: "var(--focus_color)"
-        boxShadow: "inset 0 -1px 2px #{shadow_dark_25}"
+        boxShadow: "inset 0 -1px 2px var(--shadow_dark_25)"
 
 
   svg_props = 
@@ -664,7 +664,7 @@ slider_handle.flat = (props) ->
       # position: 'absolute'
       # top: 0
       zIndex: 10
-      filter: if props.has_focus then "drop-shadow(0 0 3px #{shadow_dark_50})"
+      filter: if props.has_focus then "drop-shadow(0 0 3px var(--shadow_dark_50))"
 
   SVG svg_props,
 

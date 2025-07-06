@@ -18,10 +18,10 @@ window.Footer = ReactiveComponent
 styles += """
   .footer_wrapper {
     padding: 65px 0 15px 0;
-    background-color: #{bg_dark_gray};
+    background-color: var(--bg_dark_gray);
     position: relative;
     z-index: 3;
-    color: #{text_light};
+    color: var(--text_light);
   }
 
   .Footer .primary_info {
@@ -105,7 +105,7 @@ window.DefaultFooter = ReactiveComponent
     separator = SPAN 
       style: 
         padding: '0 6px'
-        color: text_gray_on_dark
+        color: "var(--text_gray_on_dark)"
       #dangerouslySetInnerHTML: { __html: "&bull;"}
       '|'
 
@@ -150,7 +150,7 @@ window.DefaultFooter = ReactiveComponent
             }
 
             .custom-shape-divider-top-1651729272 .shape-fill {
-                fill: #{if bus_fetch('location').url.indexOf('/dashboard') > -1 || TABLET_SIZE() then 'white' else bg_container};
+                fill: #{if bus_fetch('location').url.indexOf('/dashboard') > -1 || TABLET_SIZE() then 'white' else "var(--bg_container)"};
             }
             </style>
             <div class="custom-shape-divider-top-1651729272">
@@ -172,7 +172,7 @@ window.DefaultFooter = ReactiveComponent
 
             TechnologyByConsiderit
               size: if PHONE_SIZE() then 18 else 26
-              color: text_light
+              color: "var(--text_light)"
 
 
             BR null
@@ -333,8 +333,8 @@ window.CompletionWidget = ReactiveComponent
 
     DIV 
       style:
-        backgroundColor: if complete then selected_color else bg_dark
-        color: text_light
+        backgroundColor: if complete then "var(--selected_color)" else "var(--bg_dark)"
+        color: "var(--text_light)"
         padding: "12px 0 8px 0"
         position: 'fixed'
         bottom: 0

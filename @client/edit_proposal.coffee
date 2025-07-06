@@ -65,7 +65,7 @@ window.EditProposal = ReactiveComponent
       width: '100%'
       padding: 12
       marginBottom: 8
-      border: "1px solid #{brd_light_gray}"
+      border: "1px solid var(--brd_light_gray)"
 
     input_style = _.extend {}, description_field_style, 
       display: 'block'
@@ -73,7 +73,7 @@ window.EditProposal = ReactiveComponent
 
     explanation_style = 
       fontSize: 16
-      color: text_gray
+      color: "var(--text_gray)"
       marginBottom: 6
 
 
@@ -292,7 +292,7 @@ window.EditProposal = ReactiveComponent
             className: 'like_link'
             style: 
               fontSize: 20
-              color: text_light_gray
+              color: "var(--text_light_gray)"
               position: 'relative'
               top: 20
               marginLeft: 12

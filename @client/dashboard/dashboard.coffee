@@ -21,28 +21,28 @@ window.styles += """
   #DASHBOARD-flex-container {
     display: flex;
     flex-wrap: nowrap;
-    border-top: 1px solid #{brd_lightest_gray};
+    border-top: 1px solid var(--brd_lightest_gray);
   }
   #DASHBOARD-menu {
     /* width: 265px; */
     flex-grow: 0;
-    background: #{bg_container};
-    background: linear-gradient(180deg, #{bg_container} 88%, #{bg_light} 100%);
+    background: var(--bg_container);
+    background: linear-gradient(180deg, var(--bg_container) 88%, var(--bg_light) 100%);
     padding-bottom: 70px;
-    border: 1px solid #{brd_light_gray};
+    border: 1px solid var(--brd_light_gray);
   }
 
   #DASHBOARD-menu a {
     text-decoration: none;
-    color: #{text_dark};
+    color: var(--text_dark);
     padding: 8px 24px;
     display: block;
     font-weight: 400;
     white-space: nowrap;
     font-size: 14px;  
   } #DASHBOARD-menu a.active {
-     background-color: #{selected_color};
-     color: #{text_light};
+     background-color: var(--selected_color);
+     color: var(--text_light);
   } 
   
 
@@ -71,14 +71,14 @@ window.styles += """
   #DASHBOARD-title {
     font-weight: 700;
     font-size: 36px;
-    color: #{selected_color};
+    color: var(--selected_color);
     margin-bottom: 36px;
   }
 
   #DASHBOARD-main .explanation {
     font-size: 14px;
     margin: 8px 0;
-    color: #{text_gray};
+    color: var(--text_gray);
   }
 
   #DASHBOARD-main .explanation p {
@@ -92,7 +92,7 @@ window.styles += """
   }
 
   #DASHBOARD-main .btn {
-    background-color: #{selected_color};
+    background-color: var(--selected_color);
   }
 
   @media #{NOT_LAPTOP_MEDIA} {
@@ -212,7 +212,7 @@ window.Dashboard = ReactiveComponent
           UpgradeForumButton
             tag: SPAN
             style: 
-              backgroundColor: bg_dark_gray
+              backgroundColor: "var(--bg_dark_gray)"
 
 
     draw_menu_separator = (title) -> 
@@ -320,10 +320,10 @@ if !browser.is_mobile
       -webkit-appearance: button;
       -moz-appearance: button;
       appearance: button;
-      border: 4px solid #{brd_light_gray};
-      border-top-color: #{brd_mid_gray};
-      border-left-color: #{brd_mid_gray};
-      background: #{bg_light};
+      border: 4px solid var(--brd_light_gray);
+      border-top-color: var(--brd_mid_gray);
+      border-left-color: var(--brd_mid_gray);
+      background: var(--bg_light);
       width: 20px;
       height: 20px;
       border-radius: 50%;
@@ -368,11 +368,11 @@ window.styles += """
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #{bg_lighter_gray};  /* widget bg */
+    background-color: var(--bg_lighter_gray);  /* widget bg */
     -webkit-transition: .4s;
     transition: .4s;
     border-radius: 34px;
-    box-shadow: 0 1px 2px #{shadow_dark_50};
+    box-shadow: 0 1px 2px var(--shadow_dark_50);
 
   }
 
@@ -383,15 +383,15 @@ window.styles += """
     width: 18px;
     left: 4px;
     bottom: 4px;
-    background-color: #{bg_light};
+    background-color: var(--bg_light);
     -webkit-transition: .4s;
     transition: .4s;
     border-radius: 50%;
-    box-shadow: 0 1px 2px #{shadow_dark_20}
+    box-shadow: 0 1px 2px var(--shadow_dark_20)
   }
 
   input:checked + .toggle_switch_circle {
-    background-color: #{selected_color};
+    background-color: var(--selected_color);
   }
 
   input:checked + .toggle_switch_circle:before {

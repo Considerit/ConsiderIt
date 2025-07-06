@@ -13,7 +13,7 @@ window.styles += """
   position: fixed;
   top: 0;
   left: 0;
-  background: #{bg_dark_trans_60};
+  background: var(--bg_dark_trans_60);
   
   width: 100vw;
   height: 100vh;
@@ -30,8 +30,8 @@ window.styles += """
 #modal-body {
   padding: 2.5em 125px 3.5em 125px;
   font-size: 16px;
-  box-shadow: 0 2px 4px #{shadow_dark_50}, 0 0 100px #{shadow_light};
-  background-color: #{bg_light};
+  box-shadow: 0 2px 4px var(--shadow_dark_50), 0 0 100px var(--shadow_light);
+  background-color: var(--bg_light);
   position: relative;
   border-radius: 16px;
 }

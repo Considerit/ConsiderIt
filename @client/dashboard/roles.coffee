@@ -272,7 +272,7 @@ AddRolesAndInvite = ReactiveComponent
       style: 
         position: 'relative'
         padding: if @local.expanded then '18px 24px'
-        border: if @local.expanded then "1px solid #{brd_light_gray}" else '1px solid transparent'
+        border: if @local.expanded then "1px solid var(--brd_light_gray)" else '1px solid transparent'
 
 
       if !@local.expanded 
@@ -295,7 +295,7 @@ AddRolesAndInvite = ReactiveComponent
             BUTTON 
               className: 'like_link'
               style: 
-                color: text_light_gray
+                color: "var(--text_light_gray)"
                 marginLeft: 20
                 fontSize: 14
                 textDecoration: 'none'
@@ -441,7 +441,7 @@ ResendInvitations = ReactiveComponent
         BUTTON 
           className: 'like_link'
           style: 
-            color: text_gray
+            color: "var(--text_gray)"
             marginLeft: 24
             position: 'relative'
             top: 2
@@ -548,7 +548,7 @@ ModalAddRolesAndInvite = ReactiveComponent
           wrapper_style: 
             display: 'inline-block'
           menu_style: 
-            backgroundColor: bg_light_gray
+            backgroundColor: "var(--bg_light_gray)"
 
           option_style: 
             padding: '8px 8px 4px 8px'
@@ -557,8 +557,8 @@ ModalAddRolesAndInvite = ReactiveComponent
             display: 'block'
 
           active_option_style:
-            backgroundColor: bg_dark
-            color: text_light
+            backgroundColor: "var(--bg_dark)"
+            color: "var(--text_light)"
 
         if @local.filtered && @local.filtered.length > 0 
           BUTTON 
@@ -661,7 +661,7 @@ ModalAddRolesAndInvite = ReactiveComponent
         BUTTON 
           className: 'like_link'
           style: 
-            color: text_gray
+            color: "var(--text_gray)"
             marginLeft: 24
             position: 'relative'
             top: 2
@@ -707,8 +707,8 @@ UserWithRole = (user_key, on_remove_from_role) ->
       padding: '6px 4px 6px 12px'
       fontSize: 13
       backgroundColor: bg_speech_bubble
-      boxShadow: "#{shadow_dark_25} 0 1px 1px 0px"
-      color: text_dark
+      boxShadow: "var(--shadow_dark_25) 0 1px 1px 0px"
+      color: "var(--text_dark)"
       borderRadius: 8
       margin: 4
 
@@ -740,7 +740,7 @@ UserWithRole = (user_key, on_remove_from_role) ->
                 user.name 
             DIV 
               style: 
-                color: if user.name then text_light_gray
+                color: if user.name then "var(--text_light_gray)"
               user.email
 
       else

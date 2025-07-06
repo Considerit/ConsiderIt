@@ -158,7 +158,7 @@ window.AvatarPopover = ReactiveComponent
                       style: 
                         fontSize: 14
                         backgroundColor: if is_grouped then get_color_for_group(val or unreported)
-                        color: if is_grouped then text_light
+                        color: if is_grouped then "var(--text_light)"
                         display: 'inline-block'
                         marginRight: 8
                         padding: if is_grouped then '2px 8px'
@@ -216,14 +216,14 @@ window.AvatarPopover = ReactiveComponent
                     maxWidth: 450
                     borderRadius: 16
                     padding: '0.5em 16px'
-                    backgroundColor: bg_speech_bubble
-                    boxShadow: "#{shadow_dark_25} 0 1px 1px 0px"
+                    backgroundColor: "var(--bg_speech_bubble)"
+                    boxShadow: "var(--shadow_dark_25) 0 1px 1px 0px"
                     margin: '0px 16px 12px 16px'
 
                   SPAN 
                     style: 
                       textTransform: 'uppercase'
-                      color: text_gray
+                      color: "var(--text_gray)"
                       paddingRight: 8
                     if point.is_pro 
                       get_point_label 'pro'
@@ -307,7 +307,7 @@ window.avatar = (user, props) ->
     # In most cases the white will allow for a transparent look. It 
     # isn't set to transparent because a transparent icon in many cases
     # will reveal content behind it that is undesirable to show.  
-    style.backgroundColor = bg_item
+    style.backgroundColor = "var(--bg_item)"
 
   else if attrs.set_bg_color && !attrs.custom_bg_color 
     user.bg_color ?= hsv2rgb(Math.random() / 5 + .6, Math.random() / 8 + .025, Math.random() / 4 + .4)
@@ -378,7 +378,7 @@ styles += """
   padding: 0;
   border-radius: 50%;
   background-size: cover;
-  background-color: #{bg_light_gray}; 
+  background-color: var(--bg_light_gray); 
   transition: width 750ms, height 750ms, transform 750ms, background-color 750ms, opacity 50ms;
   user-select: none; 
   -moz-user-select: none; 
@@ -406,7 +406,7 @@ img.avatar:after {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #{text_dark};
+  color: var(--text_dark);
   font-size: 24px;
   font-weight: bold;
 }
@@ -587,8 +587,8 @@ question_mark_icon = () ->
   # svgPath2 = "M13.2271 16.9535C13.2271 17.6313 12.6777 18.1807 11.9999 18.1807C11.3221 18.1807 10.7726 17.6313 10.7726 16.9535C10.7726 16.2757 11.3221 15.7262 11.9999 15.7262C12.6777 15.7262 13.2271 16.2757 13.2271 16.9535Z"
 
   # Draw the question_mark icon onto the question_mark canvas
-  qm_ctx.fillStyle = bg_dark
-  qm_ctx.strokeStyle = text_light
+  qm_ctx.fillStyle = "var(--bg_dark)"
+  qm_ctx.strokeStyle = "var(--text_light)"
   qm_ctx.lineWidth = 1
 
   path1 = new Path2D(svgPath1)

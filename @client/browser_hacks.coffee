@@ -44,10 +44,10 @@ window.BrowserHacks = ReactiveComponent
     if  browser.is_opera_mini #|| browser.is_android_browser
       DIV 
         style: 
-          backgroundColor: failure_color
+          backgroundColor: "var(--failure_color)"
           padding: 10
           textAlign: 'center'
-          color: text_light
+          color: "var(--text_light)"
           fontSize: 24
 
         "This website does not work well with "
@@ -56,7 +56,7 @@ window.BrowserHacks = ReactiveComponent
         A 
           href: "https://play.google.com/store/apps/details?id=com.android.chrome&hl=en"
           style: 
-            color: text_light
+            color: "var(--text_light)"
             textDecoration: 'underline'
           'Chrome for Android' 
         ' if you experience difficulty. Thanks, and sorry for the inconvenience!'

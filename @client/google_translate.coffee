@@ -13,7 +13,7 @@ styles += """
     border: none;
     padding: 4px 12px;
     font-size: 14px;
-    box-shadow: 0 1px 3px #{shadow_dark_50};    
+    box-shadow: 0 1px 3px var(--shadow_dark_50);    
   }
 """
 window.GoogleTranslate = ReactiveComponent

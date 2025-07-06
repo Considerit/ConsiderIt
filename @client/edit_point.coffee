@@ -94,7 +94,7 @@ window.EditPoint = ReactiveComponent
 
         if !proposal.active
           DIV 
-            style: {color: text_light_gray, fontSize: 12}
+            style: {color: "var(--text_light_gray)", fontSize: 12}
             translator 'engage.no_new_points', 'New points disabled for this proposal'
         else
           BUTTON 
@@ -111,7 +111,7 @@ window.EditPoint = ReactiveComponent
           onClick: @done
           className: 'like_link'
           style:
-            color: text_light_gray
+            color: "var(--text_light_gray)"
             top: 2
             marginLeft: 10
             position: 'relative'
@@ -194,7 +194,7 @@ window.EditPoint = ReactiveComponent
         left: if @props.valence == 'pros' then "calc(-100% - 4px)" else "calc(100% + 4px)"
 
         width: "100%"
-        color: text_light
+        color: "var(--text_light)"
         zIndex: 1
         backgroundColor: "var(--focus_color)" 
 

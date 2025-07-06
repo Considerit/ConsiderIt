@@ -318,14 +318,14 @@ AccessDenied = ->
         margin: 'auto'
         padding: '50px 100px'
         backgroundColor: "var(--focus_color)"
-        color: text_light
+        color: "var(--text_light)"
         fontSize: 22
 
 
       H1 
         style: 
           fontSize: 36
-          color: text_light
+          color: "var(--text_light)"
           paddingBottom: 40
 
         TRANSLATE 

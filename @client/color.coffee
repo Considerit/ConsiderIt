@@ -82,6 +82,21 @@ window.color_variable_defs = """
 
 
 window.parseCssRgb = (css_color_str) ->
+  # Handle CSS variables like '--var(focus_color)'
+  if css_color_str?.match(/^--?var\(/i)
+    # Extract variable name from --var(variable_name) or var(variable_name)
+    var_match = css_color_str.match(/^--?var\(\s*([^)]+)\s*\)/i)
+    if var_match
+      var_name = var_match[1].trim()
+      # Remove leading -- if present
+      var_name = var_name.replace(/^--/, '')
+      # Look up the variable on window
+      if window[var_name]?
+        css_color_str = window[var_name]
+      else
+        console.error "CSS variable #{var_name} not found on window"
+        return {r: 0, g: 0, b: 0, a: 1}
+
   test = document.createElement('div')
   test.style.color = css_color_str
   css_color_str = test.style.color

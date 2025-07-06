@@ -103,7 +103,7 @@ window.EditPoint = ReactiveComponent
             'data-action': 'submit-point'
             onClick: @savePoint
             style: 
-              backgroundColor: focus_color 
+              backgroundColor: "var(--focus_color)" 
             translator 'engage.done_button', 'Done'             
 
         BUTTON
@@ -130,7 +130,7 @@ window.EditPoint = ReactiveComponent
           if opinion.hide_name || customization('anonymize_permanently')
             DIV 
               style: 
-                color: focus_color
+                color: "var(--focus_color)"
 
               translator 'engage.post_anonymously', 'Posting anonymously'
           else 
@@ -196,7 +196,7 @@ window.EditPoint = ReactiveComponent
         width: "100%"
         color: text_light
         zIndex: 1
-        backgroundColor: focus_color 
+        backgroundColor: "var(--focus_color)" 
 
       DIV 
         style: 

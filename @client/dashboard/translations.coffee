@@ -352,7 +352,7 @@ styles += """
 }
 
 .translation_filters button.active {
-  background-color: #{focus_color};
+  background-color: var(--focus_color);
   color: #{text_light};
 }
 

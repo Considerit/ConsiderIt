@@ -131,7 +131,7 @@ window.ProfileMenu = ReactiveComponent
               right: 0
             
             option_style: 
-              color: focus_color
+              color: "var(--focus_color)"
               position: 'relative'
               bottom: 8
               paddingLeft: 27
@@ -264,7 +264,7 @@ window.ProfileMenu = ReactiveComponent
 
       DIV 
         style: 
-          backgroundColor: focus_color
+          backgroundColor: "var(--focus_color)"
           color: text_light
           fontWeight: 600
           padding: '4px 12px'
@@ -275,7 +275,7 @@ window.ProfileMenu = ReactiveComponent
 
 
         SPAN 
-          style: cssTriangle 'right', focus_color, 10, 12,
+          style: cssTriangle 'right', "var(--focus_color)", 10, 12,
             position: 'absolute'
             right: -10
             top: 12

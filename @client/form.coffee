@@ -41,7 +41,7 @@ window.styles += """
   }
 
   .AutoGrowTextArea:focus {
-    outline: 1px solid #{focus_color};
+    outline: 1px solid var(--focus_color);
   }
 """
 
@@ -145,7 +145,7 @@ window.CharacterCountTextInput = ReactiveComponent
 styles += """
 
 .wysiwyg_text.focused {
-  outline: 2px solid #{focus_color};
+  outline: 2px solid var(--focus_color);
 }
 
 """

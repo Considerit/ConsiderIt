@@ -85,7 +85,7 @@ window.NewProposal = ReactiveComponent
         
         DIV className: 'proposal-left-spacing'
                   
-        plusIcon(focus_color, AVATAR_SIZE())
+        plusIcon("var(--focus_color)", AVATAR_SIZE())
 
         DIV className: 'proposal-avatar-spacing'
 
@@ -97,7 +97,7 @@ window.NewProposal = ReactiveComponent
             className: 'proposal-title-text-inline'
             style: 
               # marginLeft: 23
-              color: focus_color 
+              color: "var(--focus_color)" 
 
             if permitted
               list_i18n().new_response_label(list_key)
@@ -338,7 +338,7 @@ window.NewProposal = ReactiveComponent
               className: 'btn'
               disabled: @local.submitting
               style: 
-                backgroundColor: focus_color
+                backgroundColor: "var(--focus_color)"
 
               onClick: => 
                 name = document.getElementById("#{list_name}-name").value
@@ -430,7 +430,7 @@ window.NewProposal = ReactiveComponent
         position: if mobile then 'relative' else 'absolute'
         right: -guidelines_w - 20
         width: guidelines_w
-        color: focus_color
+        color: "var(--focus_color)"
         zIndex: 1
         marginBottom: if mobile then 20
         backgroundColor: if mobile then bg_light_trans_80
@@ -448,7 +448,7 @@ window.NewProposal = ReactiveComponent
             left: -20
 
           PATH
-            stroke: focus_color
+            stroke: "var(--focus_color)"
             strokeWidth: 1
             fill: bg_light
 

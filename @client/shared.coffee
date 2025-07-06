@@ -981,7 +981,7 @@ button.like_link, input[type='submit'].like_link {
   border-radius: .25rem;
   transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
   margin: 0;
-  background-color: #{focus_color}; 
+  background-color: var(--focus_color); 
 } .btn[disabled="true"], .btn[disabled] {
   cursor: default;
   opacity: .5;
@@ -1110,7 +1110,7 @@ select.unstyled:not([multiple]){
 }
 
 input[type="text"]:focus, textarea:focus {
-  outline: 1px solid #{focus_color}
+  outline: 1px solid var(--focus_color)
 }
 
 """

@@ -193,7 +193,7 @@ styles += """
   }
 
   .DecisionBoard .points_heading_label {
-    color: #{focus_color};
+    color: var(--focus_color);
     font-weight: 700;
   }
 
@@ -470,7 +470,7 @@ styles += """
 
   .save_opinion_button {
     display: none;
-    background-color: #{focus_color};
+    background-color: var(--focus_color);
     width: 100%;
     margin-top: 14px;
     border-radius: 16px;
@@ -482,7 +482,7 @@ styles += """
   }    
 
   .summary .give_opinion_button {
-    background-color: #{focus_color};
+    background-color: var(--focus_color);
     display: block;
     color: #{text_light};
     padding: .25em 18px;
@@ -531,7 +531,7 @@ styles += """
 
   .results .decision_board_body {
     border-style: solid;
-    background-color: #{focus_color};
+    background-color: var(--focus_color);
     cursor: pointer;
     min-height: 32px;
   }
@@ -599,7 +599,7 @@ window.DecisionBoard = ReactiveComponent
     mode = getProposalMode(proposal)
 
     decision_board_style =
-      borderColor: focus_color
+      borderColor: "var(--focus_color)"
       transition: if @last_proposal_mode != mode || @transitioning  
                     "transform #{CRAFTING_TRANSITION_SPEED}ms, " + \
                     "width #{CRAFTING_TRANSITION_SPEED}ms, " + \
@@ -797,7 +797,7 @@ window.DecisionBoard = ReactiveComponent
                 key: 'anonymize opinion button'
                 className: 'btn'
                 style:  
-                  backgroundColor: (if your_opinion.hide_name then focus_color else null)
+                  backgroundColor: (if your_opinion.hide_name then "var(--focus_color)" else null)
                   display: if customization('anonymize_permanently') then 'none'
                 "data-tooltip": anonymize_button_tooltip
                 "aria-label": anonymize_button_tooltip
@@ -1301,7 +1301,6 @@ window.PointsList = ReactiveComponent
         is_left: @props.valence == 'cons'
         style: {}
         text_style:
-          #color: focus_color
           textDecoration: 'underline'
 
 
@@ -1345,7 +1344,7 @@ window.PointsList = ReactiveComponent
         className: "write_#{@props.valence} btn"
         style: 
           marginLeft: 8
-          backgroundColor: focus_color
+          backgroundColor: "var(--focus_color)"
           position: 'relative'
           opacity: if bus_fetch(shared_local_key(proposal)).has_focus == 'edit point' then .1
 
@@ -1464,7 +1463,7 @@ window.PointsList = ReactiveComponent
                   y1: y1
                   x2: x2 
                   y2: y2 
-                  stroke: focus_color
+                  stroke: "var(--focus_color)"
                   strokeWidth: 1
                   strokeOpacity: .2
 
@@ -1476,7 +1475,7 @@ window.PointsList = ReactiveComponent
           rx: 16
           ry: 16
           fill: "url(#drop-stripes-#{is_left}-#{s_w}-#{s_h})"
-          stroke: focus_color
+          stroke: "var(--focus_color)"
           strokeWidth: stroke_width
           strokeDasharray: '4, 3'
 
@@ -1497,7 +1496,7 @@ window.PointsList = ReactiveComponent
         width: POINT_MOUTH_WIDTH
         height: POINT_MOUTH_WIDTH
         fill:  bg_light  #TODO: somehow make this focus_color color mixed with white @ .2 opacity
-        stroke: focus_color
+        stroke: "var(--focus_color)"
         stroke_width: 6
         dash_array: '24, 18'
         style: mouth_style
@@ -1556,7 +1555,7 @@ GroupSelectionRegion = ReactiveComponent
     DIV 
       style: 
         width: wrapper_width
-        border: if !PHONE_SIZE() then "3px solid #{if get_selected_point() then brd_lightest_gray else focus_color }"
+        border: if !PHONE_SIZE() then "3px solid #{if get_selected_point() then brd_lightest_gray else 'var(--focus_color)' }"
         height: '100%'
         position: 'absolute'
         borderRadius: 32
@@ -1567,7 +1566,7 @@ GroupSelectionRegion = ReactiveComponent
       if !PHONE_SIZE()
         DIV 
           style: cssTriangle 'top', \
-                             (if get_selected_point() then brd_lightest_gray else focus_color), \
+                             (if get_selected_point() then brd_lightest_gray else "var(--focus_color)"), \
                              w, h,               
                                 position: 'relative'
                                 top: -26
@@ -1597,7 +1596,7 @@ GroupSelectionRegion = ReactiveComponent
           style: _.extend name_style,
             position: 'absolute'
             top: -(avatar_height + 172)
-            color: focus_color
+            color: "var(--focus_color)"
             left: "min(#{wrapper_width - name_width}px, max(0px, calc(#{left}px - #{name_width / 2}px)))" #Math.min(wrapper_width - name_width - 10, Math.max(0, left - name_width / 2))
           title 
   

@@ -206,7 +206,7 @@ AnalyticsTabs = ReactiveComponent
                       style: 
                         fontSize: 16
                         textTransform: 'uppercase'
-                        color: if active then '--var(focus_color)' else text_neutral
+                        color: if active then "var(--focus_color)" else text_neutral
                         textDecoration: if active then 'underline'
                       args.heading
 
@@ -442,7 +442,7 @@ GraphSection =
                       e.stopPropagation()
                       e.preventDefault()              
                   style: 
-                    backgroundColor: if analytics_state.segment_by == segment then "--var(focus_color)" else bg_lighter_gray
+                    backgroundColor: if analytics_state.segment_by == segment then "var(--focus_color)" else bg_lighter_gray
                     color: if analytics_state.segment_by == segment then text_light else text_gray
 
                   labels?[segment] or segment

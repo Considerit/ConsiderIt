@@ -343,7 +343,7 @@ window.Slider = ReactiveComponent
                 left: if !support then -20
                 position: 'absolute'
                 top: 7.5
-                color: focus_color
+                color: "var(--focus_color)"
                 pointerEvents: 'none'
 
               if support then ChevronRight(15) else ChevronLeft(15)
@@ -551,7 +551,7 @@ slider_handle.face = (props) ->
 
             PATH
               stroke: bg_light
-              fill: focus_color
+              fill: "var(--focus_color)"
               strokeWidth: 3 
               d: """
                 M #{x1} #{y1}
@@ -632,12 +632,12 @@ slider_handle.triangley = (props) ->
     G 
       stroke: "none" 
       strokeWidth: "0" 
-      fill: focus_color 
+      fill: "var(--focus_color)" 
       fillRule: "evenodd"
 
       PATH 
         d: "M1,6 L20,6 L20,16 L1,16 L1,6 Z M10.5,0 L20,6 L1,6 L10.5,0 Z"
-        fill: focus_color
+        fill: "var(--focus_color)"
         filter: "url(##{id})" 
 
 
@@ -651,7 +651,7 @@ slider_handle.flat = (props) ->
         zIndex: 10
         height: props.handle_height
         width: props.handle_width        
-        backgroundColor: focus_color
+        backgroundColor: "var(--focus_color)"
         boxShadow: "inset 0 -1px 2px #{shadow_dark_25}"
 
 

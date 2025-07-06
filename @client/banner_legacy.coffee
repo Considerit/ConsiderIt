@@ -133,7 +133,7 @@ window.ImageHeader = (opts) ->
 
   opts ||= {}
   _.defaults opts, 
-    background_color: customization('banner')?.background_css or focus_color
+    background_color: customization('banner')?.background_css or "var(--focus_color)"
     background_image_url: customization('banner')?.background_image_url
     text: customization('banner')?.title
     external_link: subdomain.external_project_url
@@ -263,7 +263,7 @@ window.HawaiiHeader = (opts) ->
 
   return SPAN null if !subdomain.name 
 
-  background_color = opts.background_color or customization('banner')?.background_css or focus_color
+  background_color = opts.background_color or customization('banner')?.background_css or "var(--focus_color)"
   is_light = is_light_background(background_color)
 
   opts ||= {}
@@ -426,7 +426,7 @@ window.SeattleHeader = (opts) ->
     position: 'absolute'
     top: 22
     left: 20
-    color: focus_color
+    color: "var(--focus_color)"
 
 
   if !homepage

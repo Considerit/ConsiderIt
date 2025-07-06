@@ -282,7 +282,7 @@ window.filter_icon = (height) ->
 window.group_by_icon = (height) ->
   height ?= 19
   orange_fill = attention_orange
-  blue_fill = focus_color
+  blue_fill = "var(--focus_color)"
   purple_fill = selected_color
   line_stroke = brd_mid_gray
 

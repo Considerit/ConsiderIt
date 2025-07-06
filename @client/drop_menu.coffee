@@ -301,7 +301,7 @@ styles += """
     font-weight: 600;
     font-size: 18px;
     text-transform: capitalize;
-    color: #{focus_color};
+    color: var(--focus_color);
   }
 
   .default_drop[data-widget="DropMenu"] .menu-item.active-menu-item {

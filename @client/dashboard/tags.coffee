@@ -246,7 +246,7 @@ UserTags = ReactiveComponent
             INPUT 
               type: 'submit'
               style: 
-                backgroundColor: focus_color
+                backgroundColor: "var(--focus_color)"
                 border: 'none'
                 color: text_light
                 padding: '5px 10px'
@@ -303,7 +303,7 @@ UserTags = ReactiveComponent
                       backgroundColor: 'none'
                       border: 'none'
                       padding: 0
-                      color: focus_color
+                      color: "var(--focus_color)"
                       textDecoration: 'underline'
                       marginLeft: 12
                     onClick: do (tag) => =>

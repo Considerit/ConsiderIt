@@ -211,7 +211,7 @@ Proposal = ReactiveComponent
             style: 
               color: text_light
               padding: '6px 12px'
-              backgroundColor: focus_color
+              backgroundColor: "var(--focus_color)"
               borderRadius: 16
               color: text_light
               position: 'relative'
@@ -231,8 +231,8 @@ Proposal = ReactiveComponent
                 apex_xfrac: .2
                 width: w
                 height: h
-                fill: focus_color
-                stroke: focus_color
+                fill: "var(--focus_color)"
+                stroke: "var(--focus_color)"
                 stroke_width: 0
                 dash_array: "none"
 

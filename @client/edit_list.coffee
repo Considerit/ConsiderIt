@@ -162,7 +162,7 @@ styles += """
     font-weight: 400;
     margin-top: 36px;
     margin-bottom: 4px;
-    color: #{focus_color};
+    color: var(--focus_color);
     font-size: 18px;
   }
 
@@ -439,7 +439,7 @@ window.EditNewList = ReactiveComponent
             BUTTON 
               className: 'btn'
               style: 
-                backgroundColor: focus_color
+                backgroundColor: "var(--focus_color)"
                 fontSize: 24
                 maxWidth: 465
                 width: '100%'
@@ -717,13 +717,13 @@ window.EditNewList = ReactiveComponent
             SPAN null, 
               LABEL 
                 style: 
-                  color: focus_color
+                  color: "var(--focus_color)"
                   fontSize: 14
                   marginRight: 12
                   cursor: 'pointer'
                 translator 'engage.list-config-spectrum-select', 'presets'
 
-              SPAN style: _.extend cssTriangle 'bottom', focus_color, 13, 8,
+              SPAN style: _.extend cssTriangle 'bottom', "var(--focus_color)", 13, 8,
                 display: 'inline-block'
 
           render_option: (option, is_active) ->
@@ -783,7 +783,7 @@ window.EditNewList = ReactiveComponent
           className: 'like_link'
           style: 
             textDecoration: 'underline'
-            color: focus_color
+            color: "var(--focus_color)"
             marginBottom: 24
             marginTop: 8
             display: if screencasting() then 'none'

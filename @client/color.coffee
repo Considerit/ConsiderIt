@@ -12,6 +12,9 @@ window.failure_color = "#F94747"
 window.success_color = "#81c765"
 window.caution_color = "#ffc92a"
 
+window.focus_color_slightly_transluscent = focus_color + "ad"
+window.focus_color_mostly_transluscent = focus_color + "22"
+
 window.slidergram_base_color = "#777777"
 
 window.text_dark = '#000000'
@@ -75,6 +78,8 @@ if location.href.indexOf('aeroparticipa') > -1
 window.color_variable_defs = """
   :root, :before, :after {
     --focus_color: #{focus_color};
+    --focus_color_slightly_transluscent: #{focus_color_slightly_transluscent};
+    --focus_color_mostly_transluscent: #{focus_color_mostly_transluscent};
   }
 
 """
@@ -213,7 +218,7 @@ window.getColors = (num, continuous) ->
 
 
 window.is_light_background = (color) ->
-  color ||= bus_fetch('edit_banner').background_css or customization('banner')?.background_css or focus_color
+  color ||= bus_fetch('edit_banner').background_css or customization('banner')?.background_css or "var(--focus_color)"
   if color of named_colors
     color = named_colors[color]
 

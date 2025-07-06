@@ -332,7 +332,7 @@ if !browser.is_mobile
       margin-top: 0;
     }
     .radio_group input[type='radio']:checked{
-      border: 10px solid #{focus_color};
+      border: 10px solid var(--focus_color);
     }
 
     .radio_group {

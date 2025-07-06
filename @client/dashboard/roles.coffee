@@ -414,7 +414,7 @@ ResendInvitations = ReactiveComponent
           className: 'btn'
           disabled: @local.added.length == 0
           style: 
-            backgroundColor: focus_color
+            backgroundColor: "var(--focus_color)"
             cursor: if @local.added.length == 0 then 'default'
             opacity: if @local.added.length == 0 then 0.5
 
@@ -631,7 +631,7 @@ ModalAddRolesAndInvite = ReactiveComponent
           className: 'btn'
           disabled: @local.added.length == 0
           style: 
-            backgroundColor: focus_color
+            backgroundColor: "var(--focus_color)"
             cursor: if @local.added.length == 0 then 'default'
             opacity: if @local.added.length == 0 then 0.5
 

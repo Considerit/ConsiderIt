@@ -69,16 +69,18 @@ window.Point = ReactiveComponent
     
 
 
-    point_content_style =
-      backgroundColor: bg_speech_bubble
+    point_content_style = {}
+      
 
     if is_selected
       _.extend point_content_style,
-        borderColor: focus_color
+        borderColor: "var(--focus_color)"
+        backgroundColor: bg_light
 
     else if @local.has_focus
       _.extend point_content_style,
         borderColor: brd_mid_gray
+        backgroundColor: bg_light
 
     expand_to_see_details = !!point.text
 
@@ -166,7 +168,7 @@ window.Point = ReactiveComponent
               width: POINT_MOUTH_WIDTH
               height: POINT_MOUTH_WIDTH
               fill: bg_speech_bubble
-              stroke: if is_selected then focus_color else if @local.has_focus then brd_neutral_gray else 'transparent'
+              stroke: if is_selected then "var(--focus_color)" else if @local.has_focus then brd_neutral_gray else 'transparent'
               stroke_width: if is_selected || @local.has_focus then 20 else 0
 
         DIV 
@@ -252,7 +254,7 @@ window.Point = ReactiveComponent
               BUTTON
                 style:
                   fontSize: if browser.is_mobile then 24 else 14
-                  color: focus_color
+                  color: "var(--focus_color)"
                   padding: '3px 12px 3px 0'
                   backgroundColor: 'transparent'
                   border: 'none'
@@ -271,7 +273,7 @@ window.Point = ReactiveComponent
                 'data-action': 'delete-point'
                 style:
                   fontSize: if browser.is_mobile then 24 else 14
-                  color: focus_color
+                  color: "var(--focus_color)"
                   padding: '3px 8px'
                   backgroundColor: 'transparent'
                   border: 'none'
@@ -358,22 +360,22 @@ window.Point = ReactiveComponent
             I 
               style: 
                 fontSize: if included then 25 else 40
-                color: focus_color
+                color: "var(--focus_color)"
               className: "fa fa-long-arrow-#{if !right then 'left' else 'right'}"
 
         else
           BUTTON 
             style: 
-              border: "1px solid #{ if included || @local.hover_important then focus_color else brd_dark_gray}"
-              borderTopColor: if included then focus_color else 'transparent'
-              color: if included then text_light else if @local.hover_important then focus_color else text_gray
+              border: "1px solid #{ if included || @local.hover_important then "var(--focus_color)" else brd_dark_gray}"
+              borderTopColor: if included then "var(--focus_color)" else 'transparent'
+              color: if included then text_light else if @local.hover_important then "var(--focus_color)" else text_gray
               position: 'relative'
               top: -13
               padding: '8px 5px'
               textAlign: 'center'
               borderRadius: '0 0 16px 16px'
               cursor: 'pointer'
-              backgroundColor: if included then focus_color else bg_light
+              backgroundColor: if included then "var(--focus_color)" else bg_light
               fontSize: 16  
               zIndex: 0
               display: if can_opine < 0 then 'none'

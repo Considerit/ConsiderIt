@@ -311,7 +311,7 @@ styles += """
     animation-duration: 818ms;
 }
 .confetti-piece:nth-child(odd) {
-    background: #{focus_color};
+    background: var(--focus_color);
 }
 .confetti-piece:nth-child(even) {
     z-index: 1;

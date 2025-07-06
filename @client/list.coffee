@@ -228,7 +228,7 @@ styles += """
     text-align: center;
     border: none;
     font-size: 22px;
-    color: #{focus_color};
+    color: var(--focus_color);
     padding-top: 96px;
     margin-top: 12px;
     margin-bottom: 8px;
@@ -620,7 +620,7 @@ window.ListHeader = ReactiveComponent
 
 styles += """
   .NewList, .EditingNewList {
-    border: 3px dashed #{focus_color}aa;
+    border: 3px dashed var(--focus_color_slightly_transluscent);
     transition: border 500ms;    
     box-shadow: none;
   }
@@ -636,7 +636,7 @@ styles += """
 
   .NewList:hover, .EditingNewList:hover,
   .NewList:focus-within, .EditingNewList:focus-within {
-    border-color: #{focus_color};
+    border-color: var(--focus_color);
   }
 
   @media #{NOT_LAPTOP_MEDIA} {
@@ -657,16 +657,16 @@ styles += """
 
   .NewList .LIST-title span {
     position: relative;
-    color: #{focus_color};
+    color: var(--focus_color);
     border-bottom-width: 2px;
-    border-bottom-color: #{focus_color}aa;
+    border-bottom-color: var(--focus_color_slightly_transluscent);
     border-bottom-style: solid;
     transition: border-bottom 500ms;
   }
 
   .NewList:hover .LIST-title span,
   .NewList:focus-within .LIST-title span {
-    border-bottom-color: #{focus_color};
+    border-bottom-color: var(--focus_color);
   }
 
   .NewList .LIST-description {

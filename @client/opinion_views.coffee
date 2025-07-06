@@ -783,7 +783,7 @@ OpinionViews = ReactiveComponent
                   height: 0 
                   borderLeft: '12px solid transparent'
                   borderRight: '12px solid transparent'                    
-                  borderTop: "7px solid #{focus_color}"
+                  borderTop: "7px solid var(--focus_color)"
           else 
             DIV 
               className: 'custom_view_triangle'
@@ -1179,7 +1179,7 @@ InteractiveOpinionViews = ReactiveComponent
                 SPAN 
                   className: 'toggle_switch_circle'
                   style: 
-                    backgroundColor: if opinion_views_ui.aggregate_into_groups then focus_color
+                    backgroundColor: if opinion_views_ui.aggregate_into_groups then "var(--focus_color)"
             
               SPAN 
                 style: 
@@ -1583,9 +1583,9 @@ styles += """
   }
 
   button.opinion_view_button.active {
-    background-color: #{focus_color};
+    background-color: var(--focus_color);
     color: #{text_light};
-    border-color: #{focus_color};
+    border-color: var(--focus_color);
   }
 
 
@@ -1648,7 +1648,7 @@ styles += """
   .minimized_view_close {
     margin-top: 1px;
     margin-left: 22px;
-    color: #{focus_color};
+    color: var(--focus_color);
 
   }
   .minimized_view_list {
@@ -1665,14 +1665,14 @@ styles += """
   }
 
   .minimized_view {
-    color: #{focus_color};
-    background-color: #{focus_color + "22"};
+    color: var(--focus_color);
+    background-color: var(--focus_color_mostly_transluscent);
     width: fit-content;
     position: relative;
     display: inline-block;
     padding: 6px 12px;
     border-radius: 8px;
-    border: 1px solid #{focus_color + "55"};
+    border: 1px solid currentColor;
     min-width: 200px;
   }
   .minimized_view_name {
@@ -1743,11 +1743,11 @@ styles += """
   }
   [data-widget="DropMenu"].bluedrop button.dropMenu-anchor, .toggle_buttons button {
     background-color: #{bg_light};
-    color: #{focus_color};
+    color: var(--focus_color);
     font-weight: 600;
     font-size: 12px;
     border: 1px solid;
-    border-color: #{focus_color};
+    border-color: var(--focus_color);
     padding: 4px 16px;
   }  
   .toggle_buttons li:not(:last-child) button {
@@ -1765,7 +1765,7 @@ styles += """
   }
 
   [data-widget="DropMenu"].bluedrop button.dropMenu-anchor, .toggle_buttons .active button {
-    background-color: #{focus_color};
+    background-color: var(--focus_color);
     color: #{text_light};
   }
 

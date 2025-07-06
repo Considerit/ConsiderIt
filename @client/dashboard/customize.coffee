@@ -92,7 +92,7 @@ window.CustomizationsDash = ReactiveComponent
               className: 'btn'
               onClick: => @submit()
               style: 
-                backgroundColor: focus_color
+                backgroundColor: "var(--focus_color)"
                 marginTop: 18
 
               'Save'
@@ -192,7 +192,7 @@ window.CustomizationsDash = ReactiveComponent
                       if k of @local.property_changes
                         @submit_change(k, @local.property_changes[k], true)
                     style: 
-                      backgroundColor: focus_color
+                      backgroundColor: "var(--focus_color)"
                       opacity: if k not of @local.property_changes then .5
                       cursor: if k not of @local.property_changes then 'default'
                       marginTop: 18
@@ -248,7 +248,7 @@ window.CustomizationsDash = ReactiveComponent
               style: 
                 display: 'block'
                 textDecoration: 'underline'
-                color: focus_color
+                color: "var(--focus_color)"
                 marginBottom: 5
               "Load documentation in own tab"
             "."

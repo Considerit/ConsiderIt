@@ -37,7 +37,7 @@ styles += """
   .proposal-title-text-inline {
     border-bottom-width: 2px;
     border-style: solid;
-    border-color: #{focus_color + "ad"}; /* with some transparency */
+    border-color: var(--focus_color_slightly_transluscent);
     transition: border-color 1s;
     font-size: 20px;
     font-weight: 700;
@@ -655,7 +655,7 @@ window.ItemText = ReactiveComponent
                     onClick: -> toggle_anonymize_opinion(your_opinion)
 
                     iconAnonymousMask YOUR_OPINION_BUTTON_SIZE, \
-                      if your_opinion.hide_name then focus_color else text_neutral
+                      if your_opinion.hide_name then "var(--focus_color)" else text_neutral
 
                   # Remove
                   BUTTON
@@ -783,7 +783,7 @@ styles += """
   }
   .proposal-metadata button.metadata-piece:hover,
   .proposal-metadata button.metadata-piece:focus-within {
-    border-color: #{focus_color};
+    border-color: var(--focus_color);
   }
 
 

@@ -85,7 +85,7 @@ window.EditComment = ReactiveComponent
               BUTTON 
                 style: 
                   textDecoration: 'underline'
-                  color: focus_color
+                  color: "var(--focus_color)"
                   fontSize: if browser.is_mobile then 18
                   backgroundColor: 'transparent'
                   padding: 0

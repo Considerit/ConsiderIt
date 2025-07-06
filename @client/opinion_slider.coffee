@@ -20,7 +20,7 @@ styles += """
   .add_reasons_callout {
     --ADD_REASONS_CALLOUT_BUTTON_WIDTH: 130px;
 
-    background-color: #{focus_color};
+    background-color: var(--focus_color);
     color: #{text_light};
     font-weight: 600;
     font-size: 10px;
@@ -51,7 +51,7 @@ styles += """
     --ADD_REASONS_CALLOUT_BUTTON_WIDTH: 160px;
 
     background-color: transparent;
-    color: #{focus_color};
+    color: var(--focus_color);
   }
 
 """
@@ -124,7 +124,7 @@ window.OpinionSlider = ReactiveComponent
         handle_width: @props.handle_width
 
         handle_props: 
-          color: focus_color
+          color: "var(--focus_color)"
           detail: @props.focused
 
         handle_style: 
@@ -257,7 +257,7 @@ window.OpinionSlider = ReactiveComponent
       pointerEvents: 'none' 
       fontSize: if TABLET_SIZE() then "22px" else "30px"
       fontWeight: if !TABLET_SIZE() then 700
-      color: focus_color
+      color: "var(--focus_color)"
       textAlign: 'center'
 
     # Keep feedback centered over handle, but keep within the bounds of 
@@ -430,7 +430,7 @@ window.SliderBubblemouth = ReactiveComponent
 
     else 
       transform = "translate(0, -22px) scale(.6,.6) "
-      fill = focus_color
+      fill = "var(--focus_color)"
 
 
     DIV 
@@ -450,7 +450,7 @@ window.SliderBubblemouth = ReactiveComponent
         width: w
         height: h
         fill: fill
-        stroke: focus_color
+        stroke: "var(--focus_color)"
         stroke_width: if mode == 'crafting' then stroke_width else 0
 
 

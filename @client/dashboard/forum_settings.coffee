@@ -319,7 +319,7 @@ window.ForumSettingsDash = ReactiveComponent
                   href: "/dashboard/translations"
                   style:
                     textDecoration: 'underline'
-                    color: focus_color
+                    color: "var(--focus_color)"
                     fontWeight: 700
               "Translations for {language} are {percent_complete}% completed. Help improve the translations <link>here</link>."
 

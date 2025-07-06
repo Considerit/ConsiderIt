@@ -6,7 +6,7 @@ styles += """
   }
 
   [data-widget="EditProposal"] input:checked + .toggle_switch_circle {
-    background-color: #{focus_color};
+    background-color: var(--focus_color);
   }
 
   [data-widget="EditProposal"] label:not(.toggle_switch):not(.toggle_label){
@@ -14,14 +14,14 @@ styles += """
     font-weight: 600;
     padding-right: 24px;
     display: inline-block;
-    color: #{focus_color};
+    color: var(--focus_color);
     margin-bottom: 3px;
     text-transform: capitalize;
   }
 
   [data-widget="EditProposal"] .toggle_label {
     padding-left: 18px;
-    color: #{focus_color};
+    color: var(--focus_color);
     font-weight: 600;
     font-size: 18px;
   }

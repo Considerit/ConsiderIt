@@ -317,7 +317,7 @@ AccessDenied = ->
         width: HOMEPAGE_WIDTH()
         margin: 'auto'
         padding: '50px 100px'
-        backgroundColor: focus_color
+        backgroundColor: "var(--focus_color)"
         color: text_light
         fontSize: 22
 

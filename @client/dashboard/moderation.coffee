@@ -237,7 +237,7 @@ window.ModerationDash = ReactiveComponent
               BUTTON 
                 "data-model": model 
                 style: 
-                  backgroundColor: if active then bg_light else "var(--bg_lightest_gray)"
+                  backgroundColor: if active then "var(--bg_light)" else "var(--bg_light_gray)"
                   color: "var(--text_dark)"
                   fontSize: 18
                   marginLeft: 12
@@ -886,7 +886,7 @@ DirectMessage = ReactiveComponent
         margin: '18px 0'
         padding: '15px 20px'
         backgroundColor: "var(--bg_light)"
-        backgroundColor: bg_speech_bubble
+        backgroundColor: "var(--bg_speech_bubble)"
         boxShadow: "0 2px 4px var(--shadow_dark_50)"
 
     DIV 

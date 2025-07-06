@@ -29,7 +29,7 @@ window.styles += """
     background: var(--bg_container);
     background: linear-gradient(180deg, var(--bg_container) 88%, var(--bg_light) 100%);
     padding-bottom: 70px;
-    border: 1px solid var(--brd_light_gray);
+    /* border: 1px solid var(--brd_light_gray); */
   }
 
   #DASHBOARD-menu a {

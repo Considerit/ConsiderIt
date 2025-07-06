@@ -150,7 +150,7 @@ window.DefaultFooter = ReactiveComponent
             }
 
             .custom-shape-divider-top-1651729272 .shape-fill {
-                fill: #{if bus_fetch('location').url.indexOf('/dashboard') > -1 || TABLET_SIZE() then 'white' else "var(--bg_container)"};
+                fill: #{if bus_fetch('location').url.indexOf('/dashboard') > -1 || TABLET_SIZE() then 'var(--bg_light)' else "var(--bg_container)"};
             }
             </style>
             <div class="custom-shape-divider-top-1651729272">

@@ -328,9 +328,9 @@ styles += """
     border-radius: 8px;
     padding: 4px 12px;
     font-weight: 400;
-    background-color: #ddd;
+    background-color: var(--bg_lighter_gray);
     color: var(--text_gray);
-    border: 1px solid #dadada;
+    border: 1px solid var(--brd_light_gray);
   }
 
   .segment_grid {
@@ -442,8 +442,8 @@ GraphSection =
                       e.stopPropagation()
                       e.preventDefault()              
                   style: 
-                    backgroundColor: if analytics_state.segment_by == segment then "var(--focus_color)" else bg_lighter_gray
-                    color: if analytics_state.segment_by == segment then "var(--text_light)" else "var(--text_gray)"
+                    backgroundColor: if analytics_state.segment_by == segment then "var(--focus_color)" # else bg_lighter_gray
+                    color: if analytics_state.segment_by == segment then "var(--text_light)" # else "var(--text_gray)"
 
                   labels?[segment] or segment
 

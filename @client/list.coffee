@@ -220,7 +220,7 @@ styles += """
   }
 
   .show-all-proposals button {
-    background: linear-gradient(0deg, var(--bg_light_opaque) 0%, var(--bg_light_opaque) 60%, var(--bg_light_transparent) 100%);
+    background: linear-gradient(0deg, var(--bg_light_opaque) 0%, var(--bg_light_opaque) 60%, var(--bg_item_transparent) 100%);
     width: 100%;
     cursor: pointer;
     padding: 32px 0 22px 0;

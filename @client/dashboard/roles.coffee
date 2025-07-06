@@ -706,7 +706,7 @@ UserWithRole = (user_key, on_remove_from_role) ->
       display: 'inline-block'
       padding: '6px 4px 6px 12px'
       fontSize: 13
-      backgroundColor: bg_speech_bubble
+      backgroundColor: "var(--bg_speech_bubble)"
       boxShadow: "var(--shadow_dark_25) 0 1px 1px 0px"
       color: "var(--text_dark)"
       borderRadius: 8

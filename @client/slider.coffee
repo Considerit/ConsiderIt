@@ -168,7 +168,7 @@ window.Slider = ReactiveComponent
           style: 
             height: props.base_height + 4
             backgroundColor: upgrade_color
-            boxShadow: "0 0 #{1.5 * (props.base_height + 4)}px #{shadow_light}, 0 0 3px var(--shadow_dark_25) inset"
+            boxShadow: "0 0 #{1.5 * (props.base_height + 4)}px var(--shadow_light), 0 0 3px var(--shadow_dark_25) inset"
             position: 'relative'
             top: -2
             width: "#{Math.abs(100 * slider.value * (if props.polarized then .5 else 1))}%"

@@ -68,6 +68,7 @@ window.ajax_submit_files_in_form = (opts) ->
 
 window.ErrorBlock = (errors, opts={}) ->
   DIV
+    key: 'errorblock'
     role: 'alert'
     style: _.defaults opts.style or {}, 
       fontSize: 18
@@ -80,12 +81,14 @@ window.ErrorBlock = (errors, opts={}) ->
       H1 style: {fontSize: 18, marginBottom: 12}, opts.heading
 
 
-    for error in errors
+    for error, idx in errors
       UL 
+        key: 'error list'
         style:
           listStyle: "none" 
 
-        LI null, 
+        LI 
+          key: idx
           I
             className: 'fa fa-exclamation-circle'
             style: {paddingRight: 9, }

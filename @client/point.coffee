@@ -12,7 +12,7 @@ window.Point = ReactiveComponent
   render : ->
     point = bus_fetch @props.point
 
-    return SPAN null if !point.proposal
+    return SPAN {key: -1} if !point.proposal
 
     proposal = bus_fetch point.proposal
 

@@ -246,7 +246,7 @@ window.ItemText = ReactiveComponent
               role: "button"
               "aria-expanded": @is_expanded
               "aria-controls": "opinion-block-#{proposal.key}"
-              tabindex: 0
+              tabIndex: 0
               className: "prep_for_flip proposal-title"
               "data-proposal": proposal.key
               onClick: @toggle_expand

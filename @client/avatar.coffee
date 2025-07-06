@@ -279,7 +279,7 @@ window.avatar = (user, props) ->
       user = arest.cache[user]
     else 
       bus_fetch user
-      return SPAN null
+      return SPAN {key: Math.random()}
 
   style = {}
   if attrs.style

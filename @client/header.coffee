@@ -17,7 +17,7 @@ window.Header = ReactiveComponent
     # auth = bus_fetch('auth')
     # return SPAN null if auth.form && auth.form not in ['edit profile']
 
-    return SPAN null if !subdomain.name # || embedded_demo()
+    return SPAN {key: -1} if !subdomain.name # || embedded_demo()
 
 
     

@@ -442,7 +442,7 @@ styles += """
   text-align: center;
   font-size: 10px; }
   .sk-wave .sk-rect {
-    background-color: #{considerit_red}88;
+    background-color: var(--considerit_red);
     height: 100%;
     width: 6px;
     display: inline-block;
@@ -955,9 +955,11 @@ a {
   cursor: pointer;
   text-align: center; 
   font-size: inherit;
+  white-space: nowrap;
 } .button:focus, button:focus, input[type='submit']:focus {
 } .button:active:focus, button:active:focus, input[type='submit']:active:focus{
 }
+
 
 button.like_link, input[type='submit'].like_link {
   background: none;
@@ -965,6 +967,30 @@ button.like_link, input[type='submit'].like_link {
   text-decoration: underline;
   padding: 0px;
 }
+
+button.like_link_with_bottom_border, input[type='submit'].like_link_with_bottom_border {
+  background: none;
+  padding: 0px;
+  border-width: 0 0 1px 0;
+  border-color: var(--brd_mid_gray);
+  transition: border-color 1s;
+}
+button.like_link_with_bottom_border:hover, input[type='submit'].like_link_with_bottom_border:hover,
+button.like_link_with_bottom_border:focus-within, input[type='submit'].like_link_with_bottom_border:focus-within {
+  border-color: var(--focus_color);
+}
+
+
+button.icon, button.naked_button, input[type='submit'].naked_button, input[type='submit'].icon {
+  background: none;
+  border: none;
+  text-decoration: none;
+}
+
+button.icon, input[type='submit'].icon {
+  line-height: 0;
+}
+
 
 .btn {
   color: var(--text_light);
@@ -986,9 +1012,36 @@ button.like_link, input[type='submit'].like_link {
   margin: 0;
   background-color: var(--focus_color); 
 } .btn[disabled="true"], .btn[disabled] {
-  cursor: default;
+  cursor: not-allowed;
   opacity: .5;
 }
+
+button.selector_button, input[type='submit'].selector_button {
+  border: 1px solid var(--brd_light_gray);
+  border-bottom-color: var(--brd_mid_gray);
+  background-color: var(--bg_lightest_gray);
+  border-radius: 8px;    
+  color: var(--text_dark);
+  font-weight: 400;  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button.selector_button.active, input[type='submit'].selector_button.active {
+  background-color: var(--focus_color);
+  color: var(--text_light);
+  border-color: var(--focus_color);
+}
+
+
+button.danger_button, input[type='submit'].danger_button {
+  background-color: var(--failure_color);
+  padding: 8px 24px;
+}
+
+
+
 
 
 table {
@@ -1075,30 +1128,8 @@ a.skip:hover {
   filter: FlipH;
   -ms-filter: 'FlipH'; }
 
-.primary_button, .primary_cancel_button {
-  border-radius: 16px;
-  text-align: center;
-  padding: 3px;
-  cursor: pointer; }
 
-.primary_button {
-  color: var(--text_light);
-  font-size: 29px;
-  margin-top: 14px;
-  border: none;
-  padding: 8px 36px; }
-
-.primary_cancel_button {
-  color: var(--text_light_gray);
-  margin-top: 0.5em; }
-
-.cancel_opinion_button {
-  float: right;
-  background: transparent;
-  border: none;
-  margin-top: 0.5em; }
-
-button.primary_button, input[type='submit'] {
+input[type='submit'] {
   display: inline-block; }
 
 select.unstyled:not([multiple]){

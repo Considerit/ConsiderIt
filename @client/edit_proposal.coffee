@@ -86,8 +86,6 @@ window.EditProposal = ReactiveComponent
 
     available_lists = lists_current_user_can_add_to get_all_lists()
 
-    @local.file_errors = ["blaldsasdfasdf"]
-
     local = @local
 
     wrap_in_modal HOMEPAGE_WIDTH(), @props.done_callback, DIV null,

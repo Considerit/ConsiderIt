@@ -346,16 +346,12 @@ UploadableLogo = (opts) ->
 
     if editing && has_logo # delete logo
       delete_size = 30
-      BUTTON 
+      BUTTON
+        className: 'icon' 
         style: 
-          width: delete_size
-          height: delete_size
           position: 'absolute'
           right: 4
           top: 4
-          border: 'none'
-          background: 'none'
-          cursor: 'pointer'
           padding: 0
           zIndex: 1
 
@@ -579,11 +575,9 @@ CustomizeLogo = ReactiveComponent
             translator 'banner.logo_label', 'Logo (optional)'
           else 
             BUTTON 
+              className: 'like_link'
               style: 
                 color: 'inherit'
-                border: 'none'
-                textDecoration: 'underline'
-                padding: 0
                 backgroundColor: if !is_light then "var(--bg_dark_trans_25)" else "var(--bg_light_trans_25)"
 
               onClick: ->
@@ -784,12 +778,8 @@ CustomizeBackground = ReactiveComponent
                   BUTTON 
                     className: 'like_link'
                     style: 
-                      cursor: 'pointer'
-                      zIndex: 1
                       color: color
                       fontSize: 12
-                      # marginTop: 12
-                      # marginLeft: 4
 
                     onClick: (e) =>
                       e.stopPropagation()

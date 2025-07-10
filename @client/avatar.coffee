@@ -394,7 +394,7 @@ img.avatar:after {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #{attention_orange}; 
+  background-color: var(--attention_orange); 
   border-radius: 50%;
   content: "";
 }

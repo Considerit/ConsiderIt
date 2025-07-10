@@ -21,8 +21,6 @@ styles += """
     flex-grow: 0;
     display: inline-block;
     margin-left: 24px;
-    background-color: transparent;
-    border: none;
   }
 
   .INTAKE_QUESTIONS .intake-question.open svg {
@@ -35,12 +33,6 @@ styles += """
     padding-right: 60px;
     flex-grow: 1;
   }
-
-  .INTAKE_QUESTIONS button.new_question {
-    padding: "8px 8px";
-    margin-top: 12px;
-  }
-
 
 
 
@@ -86,10 +78,10 @@ move_question = (from, to) ->
 
 window.AnonymizationCheckForSigninQuestions = -> 
   subdomain = bus_fetch '/subdomain'
-  if true || subdomain.customizations.anonymize_permanently && !subdomain.customizations.anonymization_safe_opinion_filters
+  if subdomain.customizations.anonymize_permanently && !subdomain.customizations.anonymization_safe_opinion_filters
     questions = (q for q in subdomain.customizations.user_tags when q.self_report && q.key.indexOf('pledge_taken') == -1)
 
-    if true || questions.length > 0
+    if questions.length > 0
       message = 
         img: 'venetian-mask.png' 
         label: "You have permanently set participation to anonymous. The answers to any sign-in questions you ask will not be available to you. If the questions you are asking are not personally revealing for participants, please contact help@consider.it to whitelist your questions."
@@ -187,6 +179,10 @@ window.IntakeQuestions = ReactiveComponent
           marginTop: 36
           pointerEvents: if permit('configure paid feature') < 0 then 'none'
           opacity: if permit('configure paid feature') < 0 then .4
+          display: 'flex'
+          flexDirection: "column"
+          gap: 3
+
 
         H2 
           style: 
@@ -215,8 +211,7 @@ window.IntakeQuestions = ReactiveComponent
 
 
                 BUTTON 
-                  style: 
-                    cursor: 'pointer'
+                  className: "icon"
                   onClick: => 
                     intake_q_state.editing = q
                     save intake_q_state
@@ -224,27 +219,31 @@ window.IntakeQuestions = ReactiveComponent
                   edit_icon 23, 23, "var(--text_neutral)"
 
                 BUTTON 
+                  className: "icon"
                   style: 
                     cursor: 'move'
 
                   drag_icon 23, "var(--text_neutral)"
 
                 BUTTON 
+                  className: "icon"                
                   style:
                     position: 'absolute'
                     right: -36
-                    cursor: 'pointer'
+
                   onClick: -> delete_question(q)
                   trash_icon 23, 23, "var(--text_neutral)"
 
 
         BUTTON 
-          className: 'new_question btn'
+          className: 'btn'
+          style: 
+            alignSelf: 'flex-start'
           onClick: -> 
             intake_q_state.new_question = true 
             save intake_q_state
 
-          "+ question"
+          "Add question"
 
 
       DIV 
@@ -611,8 +610,6 @@ window.EditIntakeQuestion = ReactiveComponent
           disabled: !validated
           style: 
             marginRight: 12
-            backgroundColor: if !validated then "var(--bg_light_gray)"
-            cursor: if !validated then 'not-allowed'
 
           'Save'
 

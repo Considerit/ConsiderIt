@@ -30,13 +30,7 @@ styles += """
     border-right: 1px solid transparent;
   }
 
-  #flash .flash-close {
-  }
-
   #flash .flash-close button {
-    background-color: transparent;
-    color: var(--text_light);
-    border: none;
     padding: 8px 18px;
   }
 
@@ -115,5 +109,6 @@ window.Flash = ReactiveComponent
           className: 'flash-close'
 
           BUTTON 
+            className: 'icon'
             onClick: clear_flash
-            'x'
+            iconX 16, "var(--text_light)"

@@ -83,13 +83,10 @@ window.EditComment = ReactiveComponent
           if permitted == Permission.NOT_LOGGED_IN
             DIV null,
               BUTTON 
+                className: "like_link"
                 style: 
-                  textDecoration: 'underline'
                   color: "var(--focus_color)"
                   fontSize: if browser.is_mobile then 18
-                  backgroundColor: 'transparent'
-                  padding: 0
-                  border: 'none'
                 translator 'engage.permissions.login_to_participate', 'Create an account to participate'
 
 
@@ -133,7 +130,6 @@ window.EditComment = ReactiveComponent
           className: "btn"
           style: 
             marginLeft: 60
-            padding: '8px 16px'
             # fontSize: if browser.is_mobile then 24
           'data-action': 'save-comment'
           
@@ -165,5 +161,8 @@ window.EditComment = ReactiveComponent
                 @local.new_comment = null
                 save @local
 
-          translator "engage.save_comment_button", 'Post comment'
+          if @props.fresh 
+            translator "engage.save_comment_button", 'Post comment'
+          else
+            translator 'Update'
 

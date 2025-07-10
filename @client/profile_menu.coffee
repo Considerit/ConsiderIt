@@ -179,7 +179,6 @@ window.ProfileMenu = ReactiveComponent
                   BUTTON
                     className: 'like_link'
                     style: 
-                      # textDecoration: 'underline'
                       fontWeight: 700
                       color: color
                       fontSize: 14
@@ -229,7 +228,7 @@ window.ProfileMenu = ReactiveComponent
               translator "shared.auth.sign_up", "Sign up"
 
             BUTTON
-              className: 'profile_anchor login like_link'
+              className: 'like_link'
               'data-action': 'login'
               onClick: (e) =>
                 reset_key 'auth',
@@ -347,11 +346,3 @@ window.ProfileMenu = ReactiveComponent
             src: asset('bitcoin/KevinBitcoin.jpg')
             style: 
               width: 570    
-
-
-styles += """
-  .profile_menu_wrap:hover .profile_anchor,
-  .profile_menu_wrap:focus-within .profile_anchor { 
-    color: inherit; 
-  }
-"""

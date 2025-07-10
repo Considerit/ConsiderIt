@@ -299,12 +299,9 @@ UserTags = ReactiveComponent
                       fontStyle: 'italic'
                     "Lots of values."
                   BUTTON
+                    className: 'like_link'
                     style: 
-                      backgroundColor: 'none'
-                      border: 'none'
-                      padding: 0
                       color: "var(--focus_color)"
-                      textDecoration: 'underline'
                       marginLeft: 12
                     onClick: do (tag) => =>
                       @local.show_all ?= {}

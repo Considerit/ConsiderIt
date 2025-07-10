@@ -3,7 +3,7 @@ require './edit_list'
 require './item'
 
 
-window.PROPOSAL_AUTHOR_AVATAR_SIZE = 40
+PROPOSAL_AUTHOR_AVATAR_SIZE = 40
 PROPOSAL_AVATAR_GUTTER = 18
 PROPOSAL_AUTHOR_AVATAR_SIZE_SMALL = 20
 PROPOSAL_AVATAR_GUTTER_SMALL = 12
@@ -219,7 +219,7 @@ styles += """
     z-index: 10;    
   }
 
-  .show-all-proposals button {
+  button.show-all-proposals_button {
     background: linear-gradient(0deg, var(--bg_light_opaque) 0%, var(--bg_light_opaque) 60%, var(--bg_item_transparent) 100%);
     width: 100%;
     cursor: pointer;
@@ -270,6 +270,7 @@ ListItems = ReactiveComponent
           listStyle: 'none'
 
         BUTTON
+          className: "show-all-proposals_button"
           onClick: => 
             list_state = bus_fetch list_key
             list_state.show_all_proposals = true
@@ -824,12 +825,9 @@ COLLAPSE_ICON_SIZE = 40
 styles += """
 
   .CollapseList {
-    border: none;
-    background-color: transparent;
     padding: 0; 
     margin: 0; 
     line-height: 0;
-    cursor: pointer;
   }
 
   .embedded-demo .CollapseList {
@@ -948,7 +946,7 @@ CollapseList = (list_key) ->
 
 
   BUTTON 
-    className: "CollapseList #{if is_collapsed then 'collapsed' else 'expanded'}"
+    className: "icon CollapseList #{if is_collapsed then 'collapsed' else 'expanded'}"
     'aria-label': translator('accessibility-expand-or-collapse-list', 'Expand or collapse list.')
     'aria-pressed': !is_collapsed
     # 'data-tooltip': translator('accessibility-expand-or-collapse-list', 'Expand or collapse list.')
@@ -1075,7 +1073,8 @@ styles += """
 
   .opinion-view-container {
     flex-shrink: 0;  
-    width: var(--ITEM_OPINION_WIDTH);  
+    width: var(--ITEM_OPINION_WIDTH); 
+    margin-right: var(--LIST_PADDING_RIGHT);
   }
 
   @media #{NOT_LAPTOP_MEDIA} {
@@ -1141,8 +1140,8 @@ window.ListActions = (props) ->
             marginBottom: 20
 
 
-      DIV 
-        className: "proposal-score-spacing"
+      # DIV 
+      #   className: "proposal-score-spacing"
 
     DIV null,
       OpinionViewInteractionWrapper
@@ -1191,7 +1190,7 @@ window.get_all_lists_not_configured_for_a_page = ->
 
     for lst in lists
       if lst not of all_configured_lists
-        unconfigured_lists[k] = 1
+        unconfigured_lists[lst] = 1
 
     Object.keys(unconfigured_lists)
 

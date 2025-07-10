@@ -487,7 +487,7 @@ FilterProposalsMenu = ReactiveComponent
 
               current_filter
 
-              SPAN style: _.extend cssTriangle 'bottom', "var(--brd_light)", 8, 5,
+              SPAN style: _.extend cssTriangle 'bottom', "currentColor", 8, 5,
                 display: 'inline-block'
                 marginLeft: 4   
                 marginBottom: 2
@@ -556,7 +556,7 @@ SortProposalsMenu = ReactiveComponent
 
               current_sort
 
-              SPAN style: _.extend cssTriangle 'bottom', "var(--brd_light)", 8, 5,
+              SPAN style: _.extend cssTriangle 'bottom', "currentColor", 8, 5,
                 display: 'inline-block'
                 marginLeft: 4   
                 marginBottom: 2
@@ -622,17 +622,13 @@ ManualProposalResort = ReactiveComponent
 
 
       BUTTON 
+        className: 'btn'
         style: 
-          color: "var(--text_light)"
-          fontWeight: 800
           backgroundColor: "var(--selected_color)"
-          textAlign: 'center'
           fontSize: 12
           padding: '3px 16px'
-          border: 'none'
           borderRadius: 8
           display: 'flex'
-          alignItems: 'center'
 
         # 'data-tooltip': if !browser.is_mobile then translator "engage.sort_order.out-of-order-tooltip", "A re-sort may be needed because someone else added or updated their opinion, or you selected an opinion view that filtered or weighed opinions differently."
 
@@ -647,7 +643,7 @@ ManualProposalResort = ReactiveComponent
           viewBox: "0 0 17 20" 
           dangerouslySetInnerHTML: __html: """
                 <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                    <g transform="translate(-318.000000, -564.000000)" fill="var(--bg_light)" fill-rule="nonzero">
+                    <g transform="translate(-318.000000, -564.000000)" fill="currentColor" fill-rule="nonzero">
                         <g transform="translate(318.000000, 564.000000)">
                             <g transform="translate(0.000000, 0.000000)">
                                 <path d="M8.25687555,19.6225181 C8.33853565,19.7047747 8.47091122,19.7047747 8.55257132,19.6225181 L11.3646601,16.7891261 C11.4244669,16.7288791 11.4423691,16.6382674 11.4100203,16.5595369 C11.3776715,16.4808064 11.301441,16.4294337 11.2168695,16.4294337 L5.59257699,16.4294337 C5.5079845,16.4294337 5.4317111,16.4807419 5.39933258,16.559483 C5.36695405,16.6382241 5.38484894,16.7288641 5.44467062,16.7891261 L8.25687555,19.6225181 Z" id="Path"></path>

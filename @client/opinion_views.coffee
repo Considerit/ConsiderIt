@@ -292,7 +292,7 @@ default_weights = ->
         point_inclusions = Math.log(1 + Math.min(8,opinion.point_inclusions?.length or 0))
         .1 + point_inclusions
       icon: (color) -> 
-        color ?= "var(--text_dark)"
+        color ?= "currentColor"
         SVG
           width: 14
           height: 14
@@ -332,7 +332,7 @@ default_weights = ->
         else 
           .1
       icon: (color) -> 
-        color ?= "var(--text_dark)"
+        color ?= "currentColor" 
         SVG
           width: 14
           height: 14
@@ -359,7 +359,7 @@ default_weights = ->
         u = u.key or u 
         .1 + (influencer_scores[u] or 0)
       icon: (color) -> 
-        color ?= "var(--text_dark)"
+        color ?= "currentColor"
         SVG
           width: 14
           height: 14
@@ -1208,6 +1208,9 @@ InteractiveOpinionViews = ReactiveComponent
           UL 
             style: 
               listStyle: 'none'
+              display: "inline-flex"
+              flexDirection: "row"
+              gap: 8
 
             for attribute, cnt in attributes
               do (attribute) ->
@@ -1216,15 +1219,14 @@ InteractiveOpinionViews = ReactiveComponent
                 if attr_name.length > 40
                   attr_name = "#{attr_name.substring(0,37)}..."
                   shortened = true
+
                 LI 
                   key: attr_name
-                  style: 
-                    display: 'inline-block'
 
                   BUTTON
                     "data-attribute": attr_name
                     title: if shortened then attribute.name
-                    className: "filter opinion_view_button #{if opinion_views_ui.activated_attributes[attribute.key] then 'active' else ''}"
+                    className: "selector_button opinion_view_button #{if opinion_views_ui.activated_attributes[attribute.key] then 'active' else ''}"
                     onClick: -> toggle_attribute_visibility(attribute)
 
                     if attribute.icon 
@@ -1319,10 +1321,10 @@ InteractiveOpinionViews = ReactiveComponent
                             dangerouslySetInnerHTML: __html: val_name
 
             BUTTON
-              className: 'attribute_close'
+              className: 'icon'
               onClick: -> toggle_attribute_visibility(attribute)
 
-              'x'
+              iconX 14, "var(--text_dark)"
 
 
       DIV 
@@ -1339,26 +1341,25 @@ InteractiveOpinionViews = ReactiveComponent
         UL 
           style: 
             listStyle: 'none'
+            display: "inline-flex"
+            flexDirection: "row"
+            gap: 8
 
           for weight in get_weights()
             do (weight) ->
               LI 
                 key: weight.key
-                style: 
-                  marginRight: 8
-                  marginBottom: 1
-                  display: 'inline-block'
                 'data-key': weight.key
 
                 BUTTON 
-                  className: "weight opinion_view_button #{if activated_weights[weight.key] then 'active' else ''}"
+                  className: "selector_button opinion_view_button #{if activated_weights[weight.key] then 'active' else ''}"
                   "data-tooltip": weight.label
                   onClick: (e) ->
                     toggle_weight weight
                     e.stopPropagation()
                     
                   if weight.icon
-                    weight.icon if activated_weights[weight.key] then "var(--text_light)"
+                    weight.icon()
 
                   SPAN 
                     style: 
@@ -1542,7 +1543,9 @@ NonInteractiveOpinionViews = ReactiveComponent
                   dangerouslySetInnerHTML: __html: mini.filters
 
               BUTTON 
-                className: "minimized_view_close" 
+                className: "icon" 
+                style: 
+                  marginLeft: 22
                 onClick: =>
                   local_state = bus_fetch @props.ui_key or @local
 
@@ -1550,7 +1553,7 @@ NonInteractiveOpinionViews = ReactiveComponent
                   if !user_has_set_a_view()
                     reset_to_all(local_state)
 
-                'x'
+                iconX 13, "var(--focus_color)"
 
 
 
@@ -1559,35 +1562,9 @@ NonInteractiveOpinionViews = ReactiveComponent
 styles += """
 
   button.opinion_view_button {
-    border: 1px solid var(--brd_light_gray);
-    border-bottom-color: var(--brd_mid_gray);
-    background-color: var(--bg_lightest_gray);
-    border-radius: 8px;    
     font-size: 12px;
-    color: var(--text_dark);
-    font-weight: 400;
-  }
-  button.opinion_view_button.filter {
     padding: 4px 12px;
-    margin: 0 8px 8px 0;
-
   }
-  button.opinion_view_button.weight {
-    width: 100%;
-    display: flex;
-    padding: 4px 4px 4px 12px;
-    text-align: left;
-    align-items: center;
-    margin-right: 12px;
-
-  }
-
-  button.opinion_view_button.active {
-    background-color: var(--focus_color);
-    color: var(--text_light);
-    border-color: var(--focus_color);
-  }
-
 
   .opinion_view_row {
     padding: 16px 0px;
@@ -1634,23 +1611,11 @@ styles += """
     width: 100px;
     padding-right: 16px; 
   }
-  .attribute_close, .minimized_view_close {
-    font-size: 13px;
-    color: var(--text_dark);
-    background-color: transparent;
-    border: none;
-  }
   .custom_view_triangle {
     position: absolute;
     z-index: 1;
   }
 
-  .minimized_view_close {
-    margin-top: 1px;
-    margin-left: 22px;
-    color: var(--focus_color);
-
-  }
   .minimized_view_list {
     list-style: none;
     margin: auto;
@@ -1669,8 +1634,9 @@ styles += """
     background-color: var(--focus_color_mostly_transluscent);
     width: fit-content;
     position: relative;
-    display: inline-block;
-    padding: 6px 12px;
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 6px 6px 12px;
     border-radius: 8px;
     border: 1px solid currentColor;
     min-width: 200px;
@@ -1806,7 +1772,7 @@ window.ToggleButtons = (items, view_state, style) ->
         LI 
           ref: key
           key: key
-          className: if view_state.active == key then 'active'
+          className: "toggle_button #{if view_state.active == key then 'active'}"
           'data-view-state': key
           
           BUTTON

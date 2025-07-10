@@ -66,6 +66,7 @@ window.TRANSLATE = (args, native_text) ->
     translations = bus_fetch "/translations/#{target_lang}"
 
     props = _.extend({lang_used, target_lang, message, native_text}, args)
+
     props.translation_key = props.key
     IN_SITU_TRANSLATOR props, translation
 
@@ -136,28 +137,28 @@ IN_SITU_TRANSLATOR = ReactiveComponent
 
             editable_translation id, target_lang, subdomain_id, updated_translations, proposed_translations.proposals[id], message_style
 
-
-          BUTTON 
-            className: "btn"
+          DIV 
             style: 
-              fontSize: 14
-            onClick: => 
-              promote_temporary_translations(updated_translations.key)
-              @local.show_translator = false 
-              save @local 
+              display: 'flex'
+              gap: 8
+              alignItems: "center"
+              
+            BUTTON 
+              className: "btn"
+              onClick: => 
+                promote_temporary_translations(updated_translations.key)
+                @local.show_translator = false 
+                save @local 
 
-            "Save" 
+              "Save" 
 
-          BUTTON 
-            style: 
-              backgroundColor: 'none'
-              border: 'none'
-              color: "var(--text_light_gray)"
+            BUTTON 
+              className: 'like_link'
 
-            onClick: => 
-              @local.show_translator = false 
-              save @local 
-            "Cancel" 
+              onClick: => 
+                @local.show_translator = false 
+                save @local 
+              "Cancel" 
 
               
 
@@ -396,7 +397,7 @@ TranslationsDash = ReactiveComponent
 
 
         SELECT 
-          value: local.translating_lang or subdomain.lang or 'en'
+          defaultValue: local.translating_lang or subdomain.lang or 'en'
           style: 
             fontSize: 20
             marginLeft: 14
@@ -450,7 +451,11 @@ TranslationsDash = ReactiveComponent
 
           "Add a new language"
 
-          DIV null,
+
+          DIV 
+            style:
+              display: 'flex'
+              alignItems: 'center'  
 
             INPUT 
               style: 
@@ -468,6 +473,7 @@ TranslationsDash = ReactiveComponent
                 fontSize: 18
 
             BUTTON
+              className: 'btn'
               onClick: => 
                 abbrev = @refs.newlang_abbrev.value
                 label = @refs.newlang_label.value
@@ -675,6 +681,7 @@ TranslationsForLang = ReactiveComponent
         DIV null,
 
           BUTTON
+            className: "btn"
             onClick: =>  
               proposals = []
               for id, props of proposed_translations.proposals
@@ -802,7 +809,7 @@ TranslationsForLang = ReactiveComponent
 
 
                 rows.push TR 
-                  key: "row-id-#{name}"
+                  key: "row-id-#{name}-#{idx}"
                   style: 
                     backgroundColor: if idx % 2 == 1 then "var(--bg_container)"
 
@@ -841,20 +848,18 @@ TranslationsForLang = ReactiveComponent
                       if current_user.is_super_admin
                         do (name) =>
                           BUTTON 
+                            className: 'icon'
                             style: 
-                              fontSize: 14
-                              backgroundColor: 'transparent'
-                              border: 'none'
-                              color: "var(--text_light_gray)"
                               position: 'absolute'
                               right: -25
                               padding: '4px'
                               top: 'calc(50% - 14px)'
+
                             onClick: => 
                               deleteTranslationString name
                               delete native_messages[name]
                               delete updated_translations[name]
-                            "x"
+                            iconX 14, "var(--text_gray)"
 
 
                     if current_user.is_super_admin && proposed_translations.proposals[name]?.proposals.length > 0
@@ -884,8 +889,7 @@ TranslationsForLang = ReactiveComponent
                                 DIV null,
 
                                   BUTTON
-                                    style: 
-                                      borderRadius: 8
+                                    className: 'btn'
                                     onClick: => 
                                       proposal.accepted = true
                                       updateTranslations [proposal]
@@ -893,14 +897,9 @@ TranslationsForLang = ReactiveComponent
                                     "Ok"
 
                                   BUTTON
+                                    className: "like_link"
                                     style: 
-                                      backgroundColor: 'transparent'
-                                      display: 'inline-block'
                                       marginLeft: 20
-                                      border: 'none'
-                                      color: "var(--text_gray)"
-                                      textDecoration: 'underline'
-                                      fontSize: 14
 
                                     onClick: => 
                                       rejectProposals(name, [proposal])

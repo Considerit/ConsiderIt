@@ -459,7 +459,7 @@ window.Reasons = ReactiveComponent
 
           TRANSLATE
             id: "engage.show_all_thoughts"
-            "Show All Reasons"
+            "Show All Considerations"
 
 
 
@@ -470,7 +470,6 @@ styles += """
 
   .save_opinion_button {
     display: none;
-    background-color: var(--focus_color);
     width: 100%;
     margin-top: 14px;
     border-radius: 16px;
@@ -482,12 +481,6 @@ styles += """
   }    
 
   .summary .give_opinion_button {
-    background-color: var(--focus_color);
-    display: block;
-    color: var(--text_light);
-    padding: .25em 18px;
-    margin: 0;
-    font-size: 16px;
     width: 100%;
     border-radius: 16px;
     box-shadow: none;
@@ -506,16 +499,11 @@ styles += """
   }
 
   .below_save {  text-align:center;  }
-  .below_save .btn {
-    margin: 10px;
-    border: solid 1px var(--brd_light_gray);
-    border-radius: 15px;
-    font-weight: normal;
-    font-size: 0.9em;
-    background-color: var(--bg_lightest_gray);
-    color: var(--text_gray);
+  .below_save .selector_button {
+    padding: .325rem 1.5rem .4rem
   }
-  .below_save .btn svg {  margin-left:20px;  }
+
+  .below_save button svg {  margin-left:20px;  }
 
 
   .decision_board_body {
@@ -746,19 +734,6 @@ window.DecisionBoard = ReactiveComponent
           'aria-label': translator 'engage.update_opinion_button', 'Show everyone\'s opinion'
 
           translator 'engage.update_opinion_button', 'Show everyone\'s opinion'
-
-        
-        if !your_opinion.key || (your_opinion.key && permit('update opinion', proposal, your_opinion) < 0)
-
-          DIV 
-            className: 'below_save'
-            style: 
-              display: 'none'
-                      
-            BUTTON 
-              className:'cancel_opinion_button primary_cancel_button'
-              onClick: => update_proposal_mode(proposal, 'results', 'cancel_button')
-
               
 
         if your_opinion.key && permit('update opinion', proposal, your_opinion) > 0 && mode == 'crafting'
@@ -787,41 +762,45 @@ window.DecisionBoard = ReactiveComponent
                 fontSize: 14
                 fontWeight: 300
 
-              
-
               translator 'engage.below_save_opinion_buttons', 'Your opinion and comments about this proposal:'
                       
             
-            DIV null,
-              BUTTON
-                key: 'anonymize opinion button'
-                className: 'btn'
-                style:  
-                  backgroundColor: (if your_opinion.hide_name then "var(--focus_color)" else null)
-                  display: if customization('anonymize_permanently') then 'none'
-                "data-tooltip": anonymize_button_tooltip
-                "aria-label": anonymize_button_tooltip
-                onClick: -> toggle_anonymize_opinion(your_opinion)
+            DIV 
+              style:
+                display: 'flex'
+                justifyContent: 'center'
+                gap: 18
 
-                SPAN
-                  key: 'anonymize opinion label'
-                  style: 
-                    textTransform: 'capitalize'
-                    color: if your_opinion.hide_name then "var(--text_light)"
-                    fontWeight: if your_opinion.hide_name then 600
-                  anonymize_button_text
 
-                if not TABLET_SIZE()
+              if !customization('anonymize_permanently')
+                BUTTON
+                  key: 'anonymize opinion button'
+                  className: "selector_button #{if your_opinion.hide_name then 'active' else ''}"
+                  "data-tooltip": anonymize_button_tooltip
+                  "aria-label": anonymize_button_tooltip
+
+
+                  onClick: -> toggle_anonymize_opinion(your_opinion)
+
                   SPAN
-                    key: 'anonymize opinion icon'
-                    style: {  height:'22px', display:'inline-block', verticalAlign:'bottom'  }
+                    key: 'anonymize opinion label'
+                    style: 
+                      textTransform: 'capitalize'
+                      color: if your_opinion.hide_name then "var(--text_light)"
+                      fontWeight: if your_opinion.hide_name then 600
+                    anonymize_button_text
+
+                  if not TABLET_SIZE()
                     iconAnonymousMask YOUR_OPINION_BUTTON_SIZE, if your_opinion.hide_name then "var(--text_light)" else "var(--text_neutral)"
 
               BUTTON
                 key: 'remove opinion button'
-                className: 'btn'
+                className: "selector_button"
                 "data-tooltip": your_opinion_i18n.remove_opinion_button()
                 "aria-label": your_opinion_i18n.remove_opinion_button()
+                style: 
+                  display: "flex"
+                  alignItems: "center"
 
                 onClick: -> remove_opinion(your_opinion)
 
@@ -832,10 +811,7 @@ window.DecisionBoard = ReactiveComponent
                   translator('engage.delete_button', 'delete')
 
                 if not TABLET_SIZE()
-                  SPAN
-                    key: 'remove opinion icon'
-                    style: {  height:'20px', display:'inline-block', verticalAlign:'bottom'  }
-                    iconX YOUR_OPINION_BUTTON_SIZE, "var(--text_gray)"
+                  iconX YOUR_OPINION_BUTTON_SIZE, "var(--text_gray)"
 
 
 
@@ -1342,11 +1318,11 @@ window.PointsList = ReactiveComponent
 
       BUTTON 
         className: "write_#{@props.valence} btn"
+        disabled: bus_fetch(shared_local_key(proposal)).has_focus == 'edit point'
+
         style: 
           marginLeft: 8
-          backgroundColor: "var(--focus_color)"
           position: 'relative'
-          opacity: if bus_fetch(shared_local_key(proposal)).has_focus == 'edit point' then .1
 
 
         TRANSLATE 

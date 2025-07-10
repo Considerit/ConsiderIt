@@ -102,8 +102,6 @@ window.EditPoint = ReactiveComponent
             ref: 'submit_point'
             'data-action': 'submit-point'
             onClick: @savePoint
-            style: 
-              backgroundColor: "var(--focus_color)" 
             translator 'engage.done_button', 'Done'             
 
         BUTTON
@@ -111,11 +109,8 @@ window.EditPoint = ReactiveComponent
           onClick: @done
           className: 'like_link'
           style:
-            color: "var(--text_light_gray)"
-            top: 2
             marginLeft: 10
-            position: 'relative'
-            padding: 0
+
           translator 'shared.cancel_button', 'cancel'
 
         DIV 

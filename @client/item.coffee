@@ -283,9 +283,6 @@ styles += """
     position: absolute;
     left: calc(50% - 26px);
     bottom: -26px;
-    cursor: pointer;
-    background-color: transparent;
-    border: none;
     opacity: 0;        
   }
 
@@ -301,12 +298,10 @@ styles += """
 
   /* The x on the top right that will collapse the proposal */
 
-  .top_closer {
+  button.top_closer {
     position: absolute;
     top: 3px;
-    cursor: pointer;
     background-color: var(--focus_color);
-    border: none;
     opacity: 0;     
     padding: 7px 13px 95px 96px;   
     border-radius: 23%;
@@ -504,7 +499,7 @@ ProposalItemWrapper = ReactiveComponent
 
 
           BUTTON 
-            className: 'bottom_closer'
+            className: 'icon bottom_closer'
             onClick: => 
               toggle_expand
                 proposal: bus_fetch @props.proposal
@@ -518,7 +513,7 @@ ProposalItemWrapper = ReactiveComponent
 
 
           BUTTON 
-            className: 'top_closer'
+            className: 'icon top_closer'
             onClick: => 
               toggle_expand
                 proposal: bus_fetch @props.proposal
@@ -579,26 +574,6 @@ styles += """
 
   .using_bullets .proposal-avatar-spacing {
     width: var(--PROPOSAL_BULLET_GUTTER);
-  }
-
-
-  .proposal-score-spacing {
-    width: var(--LIST_PADDING_RIGHT);
-    height: 2px;
-    flex-grow: 0;
-    flex-shrink: 0;        
-  }
-
-  @media #{TABLET_MEDIA} {
-    .proposal-score-spacing {
-      width: 20px;
-    }
-  }
-
-  @media #{PHONE_MEDIA} {
-    .proposal-score-spacing {
-      width: 8px;
-    }
   }
 
 
@@ -721,8 +696,8 @@ ProposalBlock = ReactiveComponent
             anonymous: anonymous
 
             style:
-              height: PROPOSAL_AUTHOR_AVATAR_SIZE
-              width: PROPOSAL_AUTHOR_AVATAR_SIZE
+              height: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
+              width: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
 
         else # no author specified
           SPAN 
@@ -753,11 +728,12 @@ ProposalBlock = ReactiveComponent
 
 
       BUTTON 
-        className: 'like_link'   
+        className: 'icon'   
         "aria-label": TRANSLATE 'engage.edit_button', 'edit'
         "data-tooltip": TRANSLATE 'engage.edit_button', 'edit'
         style: 
           marginRight: 4
+          padding: 0
 
         onClick: (e) => 
           proposal_editing = bus_fetch('proposal_editing')
@@ -776,7 +752,7 @@ ProposalBlock = ReactiveComponent
 
       if permit('delete proposal', proposal, subdomain) > 0
         BUTTON
-          className: 'like_link'
+          className: 'icon'
 
           "data-tooltip": TRANSLATE 'engage.delete_button', 'delete'
           "aria-label": TRANSLATE 'engage.delete_button', 'delete'
@@ -785,6 +761,8 @@ ProposalBlock = ReactiveComponent
             if confirm('Delete this proposal forever?')
               destroy(proposal.key)
               loadPage('/')
+          style:
+            padding: 0
 
 
           trash_icon 18, 18, "var(--text_gray)"

@@ -7,14 +7,6 @@ styles += """
     height: 25px;
     min-width: 190px;
   }
-  .translation_consent {
-    white-space: nowrap;
-    border-radius: 8px;
-    border: none;
-    padding: 4px 12px;
-    font-size: 14px;
-    box-shadow: 0 1px 3px var(--shadow_dark_50);    
-  }
 """
 window.GoogleTranslate = ReactiveComponent
   displayName: 'GoogleTranslate'
@@ -54,7 +46,6 @@ window.GoogleTranslate = ReactiveComponent
 
         if !@local.show_google_translate
           BUTTON 
-            className: 'translation_consent'
             onClick: => 
               confirmation = """
                 Loading Google Translate will add third-party cookies to facilitate the language translation. Press Ok if you consent.\r\n\r\n

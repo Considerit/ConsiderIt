@@ -8,14 +8,9 @@ window.stop_editing_forum = ->
 
 styles += """
   [data-widget="EditForum"] button {
-    border: none;
     background-color: var(--selected_color); 
-    color: var(--text_light); 
-    font-weight: 700;
     padding: 10px 22px; 
     border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 0 1px 2px var(--shadow_dark_50);
   }
 
 """
@@ -53,7 +48,7 @@ window.EditForum = ReactiveComponent
           marginLeft: if !TABLET_SIZE() then -152
 
         BUTTON 
-
+          className: "btn"
           onClick: enter_edit
 
           if PHONE_SIZE()
@@ -64,8 +59,7 @@ window.EditForum = ReactiveComponent
     else 
       DIV null,
         BUTTON 
-          style: 
-            boxShadow: "0 1px 2px var(--shadow_dark_50)"
+          className: "btn"
           onClick: stop_editing_forum
 
           translator 'shared.done_editing', 'Done Editing Forum'

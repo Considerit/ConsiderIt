@@ -47,9 +47,6 @@ styles += """
 
 [data-widget="DropMenu"] .dropMenu-anchor {
   position: relative;
-  background: transparent;
-  border: none;
-  cursor: pointer;
   font-size: inherit;
 }
 
@@ -177,7 +174,7 @@ window.DropMenu = ReactiveComponent
         'aria-haspopup': "true"
         'aria-owns': "dropMenu-#{@local.key}"
         style: if @local.show_menu then anchor_when_open_style else anchor_style
-        className: "dropMenu-anchor #{if @props.anchor_class_name then @props.anchor_class_name else ''}"
+        className: "naked_button dropMenu-anchor #{if @props.anchor_class_name then @props.anchor_class_name else ''}"
 
         onMouseEnter: if open_menu_on == 'focus' && !browser.touch then (e) => 
           @local.show_menu = true

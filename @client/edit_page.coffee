@@ -74,8 +74,6 @@ styles += """
     flex-shrink: 0;
     flex-grow: 0;
     display: inline-block;
-    background-color: transparent;
-    border: none;
   }
   [data-widget="EditPage"] .draggable-list .LIST-title {
     padding-left: 24px;
@@ -84,14 +82,6 @@ styles += """
 
   [data-widget="EditPage"] H2.list_header {
     font-size: 22px;
-  }
-  [data-widget="EditPage"] button.add_new_list {
-    border: none;
-    background-color: transparent;
-    margin-top: 12px;
-    padding: 8px 16px;
-    font-size: 24px;
-    margin-left: 26px;
   }
 
   [data-widget="EditPage"] button.convert_page {
@@ -238,6 +228,7 @@ window.EditPage = ReactiveComponent
 
                     if drag_capabilities.length > 0 
                       BUTTON 
+                        className: "icon"
                         "data-tooltip": drag_capabilities
                         style: 
                           cursor: 'move'
@@ -270,15 +261,14 @@ window.EditPage = ReactiveComponent
                           save edit_forum
                                     
                         BUTTON 
-                          className: 'disaggregate like_link'
+                          className: 'like_link'
                           onClick: disaggregate_wildcard
 
                           'disaggregate'
 
                     if !wildcard 
                       BUTTON 
-                        style: 
-                          cursor: 'pointer'
+                        className: "icon"
                         "data-tooltip": "Edit"
                         onClick: (e) =>
                           e.preventDefault()
@@ -291,10 +281,10 @@ window.EditPage = ReactiveComponent
 
                     if !wildcard 
                       BUTTON 
+                        className: "icon"
                         style:
                           position: 'absolute'
                           right: -36
-                          cursor: 'pointer'
                         "data-tooltip": "Delete"
                         onClick: (e) =>
                           @ordered_lists.splice( @ordered_lists.indexOf(lst), 1  )
@@ -306,20 +296,6 @@ window.EditPage = ReactiveComponent
         if !@local.edit_list
           NewList
             wrapper_clss: 'draggable-list'
-
-          # BUTTON
-          #   className: "add_new_list"
-          #   "data-tooltip": list_i18n().explanation
-
-          #   onClick: =>
-          #     @local.add_new_list = true 
-          #     save @local
-          #   "+ "  
-          #   SPAN 
-          #     style: 
-          #       textDecoration: 'underline'
-          #     list_i18n().button
-
 
       
 
@@ -333,7 +309,6 @@ window.EditPage = ReactiveComponent
           BUTTON 
             className: 'like_link'
             style: 
-              textDecoration: 'underline'
               fontWeight: 700
               color: "var(--text_light_gray)"
             onClick: (e) => 
@@ -432,6 +407,7 @@ window.EditPage = ReactiveComponent
                       @ordered_lists.splice 0, @ordered_lists.length
                       for l in get_all_lists_not_configured_for_a_page()
                         @ordered_lists.push l
+                  save @local
 
 
                 else 
@@ -441,9 +417,9 @@ window.EditPage = ReactiveComponent
                     if option.id == PAGE_TYPES.ALL 
                       @ordered_lists.push '*'
                     @local.type = option.id
-
-                save @local
-
+                    save @local
+                  else 
+                    document.getElementById("page_type#{@local.type}").checked = true
 
 
               INPUT 

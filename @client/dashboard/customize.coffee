@@ -92,7 +92,6 @@ window.CustomizationsDash = ReactiveComponent
               className: 'btn'
               onClick: => @submit()
               style: 
-                backgroundColor: "var(--focus_color)"
                 marginTop: 18
 
               'Save'
@@ -192,11 +191,9 @@ window.CustomizationsDash = ReactiveComponent
                       if k of @local.property_changes
                         @submit_change(k, @local.property_changes[k], true)
                     style: 
-                      backgroundColor: "var(--focus_color)"
-                      opacity: if k not of @local.property_changes then .5
-                      cursor: if k not of @local.property_changes then 'default'
                       marginTop: 18
-                    disabled: if k not of @local.property_changes then true
+                      
+                    disabled: k not of @local.property_changes
                     'Save'
 
 

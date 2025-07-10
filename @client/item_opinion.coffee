@@ -23,12 +23,7 @@ styles += """
     justify-content: center;
   }
 
-  .is_expanded .OpinionBlock .proposal-score-spacing {
-    width: 0;
-  }
-
   @media #{NOT_LAPTOP_MEDIA} {
-    .is_expanded .fast-thought .proposal-score-spacing, 
     .is_expanded .fast-thought .proposal-left-spacing, 
     .is_expanded .fast-thought .proposal-left-spacing, 
     .is_expanded .fast-thought .proposal-avatar-wrapper, 
@@ -42,10 +37,15 @@ styles += """
     display: flex;
   }
 
+  .is_collapsed .OpinionBlock .slidergram_wrapper {
+    margin-right: var(--LIST_PADDING_RIGHT);
+  }
+
   .is_expanded .OpinionBlock .slidergram_wrapper {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    margin-right: 0;
   }
 
 
@@ -220,10 +220,6 @@ window.OpinionBlock = ReactiveComponent
 
           Slidergram @props
 
-
-        # always create the spacing, as the spacing also acts as the right padding
-        DIV 
-          className: 'proposal-score-spacing'
 
       
       if @is_expanded

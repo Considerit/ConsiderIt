@@ -5,7 +5,6 @@ require './third_party'
 window.styles += """
   button.toggle_auth {
     color: var(--selected_color);
-    font-weight: 700;
   }
 """
 
@@ -132,17 +131,12 @@ window.Login = ReactiveComponent
         width: '100%'
 
       BUTTON
+        className: 'like_link'
         style: 
-          textDecoration: 'underline'
-          color: "var(--text_gray)"
-          backgroundColor: 'transparent'
-          border: 'none'
           fontSize: 12
-          padding: 0
           position: 'relative'
           top: -8
-          fontWeight: 700
-
+          
         onClick: reset
 
         translator('auth.forgot_password.link', 'Help! I forgot my password') 

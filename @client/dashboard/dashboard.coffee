@@ -91,7 +91,7 @@ window.styles += """
     cursor: pointer;
   }
 
-  #DASHBOARD-main .btn {
+  [data-widget="Dashboard"] .btn {
     background-color: var(--selected_color);
   }
 

@@ -1,15 +1,4 @@
   
-styles += """
-  .dangerzone button {
-    background-color: var(--failure_color);
-    padding: 8px 24px;
-    color: var(--text_light);
-    font-weight: 600;
-    border: none;
-    border-radius: 8px;    
-  }
-
-"""
 
 
 window.DataDash = ReactiveComponent
@@ -285,6 +274,7 @@ window.DataDash = ReactiveComponent
 
         if current_user.is_admin
           DIV 
+            className: "danger_button btn"
             style: 
               marginBottom: 24
             BUTTON 
@@ -306,6 +296,7 @@ window.DataDash = ReactiveComponent
 
         if current_user.is_admin
           DIV 
+            className: "danger_button btn"
             style: 
               marginBottom: 24
             BUTTON 

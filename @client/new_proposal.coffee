@@ -151,8 +151,8 @@ window.NewProposal = ReactiveComponent
               img_size: 'large'
               anonymous: @local.hide_name
               style:
-                height: PROPOSAL_AUTHOR_AVATAR_SIZE
-                width: PROPOSAL_AUTHOR_AVATAR_SIZE
+                height: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
+                width: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
                 marginRight: "var(--PROPOSAL_AUTHOR_AVATAR_GUTTER)"
                 borderRadius: 0
                 backgroundColor: "var(--bg_lighter_gray)"
@@ -337,8 +337,6 @@ window.NewProposal = ReactiveComponent
             BUTTON 
               className: 'btn'
               disabled: @local.submitting
-              style: 
-                backgroundColor: "var(--focus_color)"
 
               onClick: => 
                 name = document.getElementById("#{list_name}-name").value

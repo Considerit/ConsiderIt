@@ -20,12 +20,8 @@ styles += """
   .add_reasons_callout {
     --ADD_REASONS_CALLOUT_BUTTON_WIDTH: 130px;
 
-    background-color: var(--focus_color);
-    color: var(--text_light);
-    font-weight: 600;
     font-size: 10px;
     border-radius: 8px;
-    border: none;
     padding: 4px 12px;
     position: absolute;
     opacity: 0;
@@ -200,7 +196,7 @@ window.OpinionSlider = ReactiveComponent
     return SPAN null if !opinion_prompt
 
     BUTTON
-      className: "add_reasons_callout #{if slide_prompt then 'slide_prompt' else ''}"
+      className: "btn add_reasons_callout #{if slide_prompt then 'slide_prompt' else ''}"
       style:
         left: "calc( #{(slider.value + 1) / 2} * var(--ITEM_OPINION_WIDTH) - var(--ADD_REASONS_CALLOUT_BUTTON_WIDTH) / 2)"
 

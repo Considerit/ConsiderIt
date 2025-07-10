@@ -109,18 +109,14 @@ styles += """
     transition: opacity #{ANIMATION_SPEED_ITEM_EXPANSION}s ease;
   }
 
-  [data-widget="ListItems"].flipping .expand_full_text {
+  [data-widget="ListItems"].flipping button.expand_full_text {
     opacity: 0;
   }
-  .expand_full_text {
-    text-decoration: underline;
-    cursor: pointer;
+  button.expand_full_text {
     padding: 24px 0px 10px 0px;
     font-weight: 600;
     text-align: left;
-    border: none;
     width: 100%;
-    background-color: transparent;
   }
 
 
@@ -463,7 +459,7 @@ window.ItemText = ReactiveComponent
 
       if @super_long_description && @props.is_expanded && !@local.description_fully_expanded && !embedded_demo()
         BUTTON
-          className: 'expand_full_text'
+          className: 'like_link expand_full_text'
 
           onMouseDown: => 
             @local.description_fully_expanded = true
@@ -528,7 +524,7 @@ window.ItemText = ReactiveComponent
           if show_timestamp
             SPAN 
               key: 'date'
-              className: 'separated monospaced metadata-piece'
+              className: 'monospaced metadata-piece'
               style: 
                 borderBottom: 'none'
               
@@ -538,7 +534,7 @@ window.ItemText = ReactiveComponent
           if show_author_name_in_meta_data
             SPAN 
               key: 'author name'
-              className: 'separated monospaced metadata-piece'
+              className: 'monospaced metadata-piece'
               style: 
                 borderBottom: 'none'
 
@@ -550,7 +546,7 @@ window.ItemText = ReactiveComponent
 
           BUTTON 
             key: 'opinion-count'
-            className: 'opinion-count metadata-piece separated like_link monospaced'
+            className: 'metadata-piece like_link_with_bottom_border monospaced'
             onClick: => 
               toggle_expand
                 proposal: proposal 
@@ -583,7 +579,7 @@ window.ItemText = ReactiveComponent
 
             BUTTON
               key: 'proposal-link'
-              className: 'pros_cons_count metadata-piece separated like_link monospaced'
+              className: 'metadata-piece like_link_with_bottom_border monospaced'
               onClick: => 
                 toggle_expand
                   proposal: proposal
@@ -600,20 +596,22 @@ window.ItemText = ReactiveComponent
           if (you_have_opinion && permit('update opinion', proposal, proposal.your_opinion) > 0) || permit('publish opinion', proposal) > 0
             SPAN
               key: 'yourOpinion'
-              className: 'separated monospaced metadata-piece'
+              className: 'monospaced metadata-piece'
               style:  
-                border: "solid 1px var(--brd_light_gray)"
                 borderRadius:'8px'
-                padding:'3px 10px'
-                backgroundColor: "var(--bg_speech_bubble)"
+                padding:'2px 6px 2px 10px'
+                backgroundColor: "var(--bg_lightest_gray)"
+                display: 'inline-flex'
+                alignItems: 'center'
+                gap: 2
 
               # Edit
               if opinion_prompt
                 [
                   BUTTON
                     key: 'edit-opinion-text'
-                    className: 'monospaced'
-                    style: {  border:'none', backgroundColor: 'transparent', padding:0  }
+                    className: 'monospaced naked_button'
+                    style: {  padding:0  }
                     onClick: toggleExpandPreferPersonal
                     onKeyPress: (e) =>
                       if e.which == 32 or e.which == 13
@@ -630,9 +628,10 @@ window.ItemText = ReactiveComponent
                       id: "edit-opinion-#{proposal.key}"
                       "aria-label": translator('engage.edit_opinion_button', 'Edit your opinion')
                       "data-tooltip": translator('engage.edit_opinion_button', 'Edit your opinion')
-                      className: 'metadata-piece'
-                      style: {  border:'none', verticalAlign:'bottom', marginBottom:'-3px', marginLeft:'10px'  }
+                      className: 'icon'
                       onClick: toggleExpandPreferPersonal
+                      style:
+                        marginLeft: 3
                       onKeyPress: (e) =>
                         if e.which == 32 || e.which == 13
                           toggleExpandPreferPersonal()
@@ -650,8 +649,7 @@ window.ItemText = ReactiveComponent
                     "aria-checked": Boolean( your_opinion.hide_name )
                     "aria-label": your_opinion_i18n.anonymize_opinion_button()
                     "data-tooltip": your_opinion_i18n.anonymize_opinion_button()
-                    className: 'metadata-piece'
-                    style: {  border:'none', verticalAlign:'bottom', marginBottom:'-1px', marginLeft:'15px', display: if customization('anonymize_permanently') then 'none'  }
+                    className: 'icon'
                     onClick: -> toggle_anonymize_opinion(your_opinion)
 
                     iconAnonymousMask YOUR_OPINION_BUTTON_SIZE, \
@@ -662,8 +660,7 @@ window.ItemText = ReactiveComponent
                     key: 'remove_opinion'
                     "aria-label": your_opinion_i18n.remove_opinion_button()
                     "data-tooltip": your_opinion_i18n.remove_opinion_button()
-                    className: 'metadata-piece'
-                    style: {  border:'none', verticalAlign:'bottom', marginBottom:'-3px', marginLeft:'15px'  }
+                    className: 'icon'
                     onClick: -> remove_opinion(your_opinion)
 
                     iconX YOUR_OPINION_BUTTON_SIZE, YOUR_OPINION_BUTTON_COLOR
@@ -755,36 +752,17 @@ window.getOpinionPrompt = ({proposal, prefer_drag_prompt}) ->
 styles += """
   .ItemText .proposal-metadata  {
     margin-top: 8px;
-  }
-
-
-  .ItemText .proposal-metadata .separated {
-    padding-right: 0px;
-    margin-right: 14px;
-    font-weight: 400;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    flex-wrap: wrap;
   }
 
   .proposal-metadata .metadata-piece {
     font-size: 12px;
     color: var(--text_light_gray);
-
-    padding: 0;
-    border-width: 0 0 1px 0;
-    background: transparent;
-    border-style: solid;
-    border-color: transparent;
     white-space: nowrap;
-    transition: border-color 1s;
-    cursor: pointer;
-    text-decoration: none;
   } 
-  .proposal-metadata button.metadata-piece {
-    border-color: var(--brd_mid_gray);
-  }
-  .proposal-metadata button.metadata-piece:hover,
-  .proposal-metadata button.metadata-piece:focus-within {
-    border-color: var(--focus_color);
-  }
 
 
 """

@@ -267,9 +267,11 @@ window.WysiwygEditor = ReactiveComponent
               style: _.defaults {}, @props.toolbar_style, 
                 position: 'absolute'
                 width: if !toolbar_horizontal then 30
-                left: if !toolbar_horizontal then -32
+                left: if !toolbar_horizontal then -34
                 top: if toolbar_horizontal then -25 else 0
-                display: 'block'
+                display: 'flex'
+                flexDirection: if toolbar_horizontal then "row" else "column"
+                gap: 3
                 # visibility: if wysiwyg_editor.showing != @props.editor_key then 'hidden'
 
               onFocus: (e) => 
@@ -308,17 +310,7 @@ window.WysiwygEditor = ReactiveComponent
                     tabIndex: if @local.focused_toolbar_item == idx then 0 else -1
                     className: button.className
                     'aria-label': button.title
-                    style: _.defaults {}, @props.button_style, 
-                      fontSize: 14
-                      width: 28
-                      textAlign: 'center'
-                      cursor: 'pointer'
-                      padding: 2
-                      border: "1px solid var(--brd_mid_gray)"
-                      borderRadius: 3
-                      backgroundColor: "var(--bg_light)"
-                      display: if toolbar_horizontal then 'inline-block' else 'block'
-                      marginBottom: 4
+                    style: @props.button_style or {}
                     title: button.title
                     value: button.value 
                     onClick: button.onClick
@@ -425,8 +417,10 @@ html .ql-container{
   box-sizing: border-box;
 }
 
-.dark .ql-editor.ql-blank::before{
-  color: var(--text_light)66;
+.dark .ql-editor.ql-blank::before, 
+[data-theme="high-contrast-dark"] .ql-editor.ql-blank::before, 
+[data-theme="dark"] .ql-editor.ql-blank::before{
+  color: #ffffff66;
 }
 
 

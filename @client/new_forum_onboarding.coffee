@@ -77,22 +77,8 @@ styles += """
 
   #NewForumOnBoarding .close_checklist {
     position: absolute;
-    right: 20px;
+    right: 12px;
     top: 10px;
-    color: var(--selected_color);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 20px;
-  }
-
-  #NewForumOnBoarding button.done_onboarding {
-    margin-top: 0px;
-    color: var(--text_light);
-    background-color: var(--selected_color);
-    border: none;
-    padding: 8px 24px;
-    font-weight: 700;
-    border-radius: 8px;
   }
 
 
@@ -139,9 +125,9 @@ window.NewForumOnBoarding = ReactiveComponent
     DIV 
       id: 'NewForumOnBoarding'
       BUTTON 
-        className: 'close_checklist like_link'
+        className: 'close_checklist icon'
         onClick: complete_onboarding
-        'x'
+        iconX 20, "var(--selected_color)"
 
       DIV 
         className: 'header_wrapper'
@@ -166,8 +152,10 @@ window.NewForumOnBoarding = ReactiveComponent
         DIV null, 
           ConfettiCelebration()
           BUTTON 
-            className: 'done_onboarding'
+            className: 'btn'
             onClick: complete_onboarding
+            style: 
+              backgroundColor: "var(--selected_color)";
             "done"
 
       else 
@@ -215,7 +203,7 @@ styles += """
     position: absolute;
     width: 10px;
     height: 30px;
-    background: #{attention_orange};
+    background: var(--attention_orange);
     top: 0;
     opacity: 0;
 }

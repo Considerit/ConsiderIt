@@ -318,8 +318,7 @@ window.HawaiiHeader = (opts) ->
 
 
     STYLE null,
-      '''.profile_anchor.login {font-size: 26px; padding-top: 16px;}
-         p {margin-bottom: 1em}'''
+      '''p {margin-bottom: 1em}'''
 
     DIV 
       style: 

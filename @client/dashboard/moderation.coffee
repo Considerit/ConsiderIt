@@ -220,6 +220,7 @@ window.ModerationDash = ReactiveComponent
 
       UL 
         className: 'moderation_tabs'
+        role: 'tablist'
         style: 
           listStyle: 'none'
           marginTop: 48
@@ -230,6 +231,9 @@ window.ModerationDash = ReactiveComponent
           do (model) => 
             active = @local.model == model
             LI 
+              role: 'tab'
+              'aria-controls': 'moderation-content-wrapper'
+              'aria-selected': active
               key: model
               style: 
                 display: 'inline-block'
@@ -237,7 +241,7 @@ window.ModerationDash = ReactiveComponent
               BUTTON 
                 "data-model": model 
                 style: 
-                  backgroundColor: if active then "var(--bg_light)" else "var(--bg_light_gray)"
+                  backgroundColor: if active then "var(--bg_light)" else "var(--bg_lighter_gray)"
                   color: "var(--text_dark)"
                   fontSize: 18
                   marginLeft: 12
@@ -313,6 +317,7 @@ window.ModerationDash = ReactiveComponent
 
 
           UL 
+            id: "moderation-content-wrapper"
             className: 'moderation-content-wrapper'        
 
             style: 
@@ -491,6 +496,7 @@ ModerateItem = ReactiveComponent
                 style: 
                   textDecoration: 'underline'
                   padding: '0 8px'
+                  fontWeight: "normal"
                 target: '_blank'
                 href: href
                 'data-nojax': true
@@ -500,11 +506,9 @@ ModerateItem = ReactiveComponent
 
               if author && arest.key_id(author.key) >= 0 && !@local.messaging
                 BUTTON
+                  className: 'like_link'
                   style: 
                     marginLeft: 8
-                    textDecoration: 'underline'
-                    backgroundColor: 'transparent'
-                    border: 'none'
                   onClick: => 
                     @local.messaging =
                       moderatable: moderatable
@@ -929,10 +933,9 @@ DirectMessage = ReactiveComponent
         'Send'
         
       BUTTON 
+        className: "like_link"
         style: 
           marginLeft: 8
-          backgroundColor: 'transparent'
-          border: 'none'
         onClick: => 
           @props.callback?()
         @props.cancel_button_label or 'cancel'

@@ -22,7 +22,7 @@ window.iconAnonymousMask = (height, color) ->
   SVG
     width: width
     height: height
-    viewBox: "-350 0 700 200"
+    viewBox: "-350 0 700 300"
     stroke: color
     dangerouslySetInnerHTML: __html: """
 
@@ -159,10 +159,8 @@ window.HelpIcon = (help_text, style) ->
 
   BUTTON 
     "data-tooltip": help_text
-
+    className: 'icon'
     style: _.defaults style or {}, 
-      backgroundColor: 'transparent'
-      border: 'none'
       padding: 0
       display: 'inline-block'
       width: style.width or 17

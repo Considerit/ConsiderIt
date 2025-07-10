@@ -439,12 +439,10 @@ window.EditNewList = ReactiveComponent
             BUTTON 
               className: 'btn'
               style: 
-                backgroundColor: "var(--focus_color)"
                 fontSize: 24
                 maxWidth: 465
                 width: '100%'
                 marginTop: 36
-                borderRadius: 16
               disabled: (edit_list.list_title or "").length == 0
               onClick: submit
 
@@ -782,7 +780,6 @@ window.EditNewList = ReactiveComponent
         BUTTON 
           className: 'like_link'
           style: 
-            textDecoration: 'underline'
             color: "var(--focus_color)"
             marginBottom: 24
             marginTop: 8

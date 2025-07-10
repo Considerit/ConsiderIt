@@ -252,12 +252,11 @@ window.Point = ReactiveComponent
             if permit('update point', point) > 0 && 
                 (@props.rendered_as == 'decision_board_point' || TABLET_SIZE())
               BUTTON
+                className: "like_link"
                 style:
                   fontSize: if browser.is_mobile then 24 else 14
                   color: "var(--focus_color)"
                   padding: '3px 12px 3px 0'
-                  backgroundColor: 'transparent'
-                  border: 'none'
 
                 onTouchEnd: (e) -> e.stopPropagation()
                 onClick: ((e) =>
@@ -271,12 +270,11 @@ window.Point = ReactiveComponent
                 (@props.rendered_as == 'decision_board_point' || TABLET_SIZE())
               BUTTON
                 'data-action': 'delete-point'
+                className: "like_link"
                 style:
                   fontSize: if browser.is_mobile then 24 else 14
                   color: "var(--focus_color)"
-                  padding: '3px 8px'
-                  backgroundColor: 'transparent'
-                  border: 'none'
+                  padding: '3px 12px 3px 0'
                 onTouchEnd: (e) -> e.stopPropagation()       
                 onClick: (e) =>
                   e.stopPropagation()
@@ -363,22 +361,16 @@ window.Point = ReactiveComponent
                 color: "var(--focus_color)"
               className: "fa fa-long-arrow-#{if !right then 'left' else 'right'}"
 
-        else
+        else if can_opine >= 0
+          
           BUTTON 
+            className: "selector_button #{if included then 'active' else ''}"
             style: 
-              border: "1px solid #{ if included || @local.hover_important then "var(--focus_color)" else "var(--brd_dark_gray)"}"
-              borderTopColor: if included then "var(--focus_color)" else 'transparent'
-              color: if included then "var(--text_light)" else if @local.hover_important then "var(--focus_color)" else "var(--text_gray)"
               position: 'relative'
               top: -13
               padding: '8px 5px'
-              textAlign: 'center'
               borderRadius: '0 0 16px 16px'
-              cursor: 'pointer'
-              backgroundColor: if included then "var(--focus_color)" else bg_light
-              fontSize: 16  
               zIndex: 0
-              display: if can_opine < 0 then 'none'
               width: '100%'
 
             onMouseEnter: => 

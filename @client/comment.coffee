@@ -54,14 +54,12 @@ window.Comment = ReactiveComponent
           if permit('update comment', comment) > 0
             comment_action_style = 
               color: "var(--text_gray)"
-              textDecoration: 'underline'
-              cursor: 'pointer',
               padding: '0 10px 0 0'
-              backgroundColor: 'transparent'
-              border: 'none'
+
             DIV style: { marginLeft: 60}, 
               BUTTON
                 'data-action' : 'delete-comment'
+                className: 'like_link'
                 style: comment_action_style
                 onClick: do (key = comment.key) => (e) =>
                   e.stopPropagation()
@@ -71,6 +69,7 @@ window.Comment = ReactiveComponent
                 translator('engage.delete_button', 'delete')
 
               BUTTON
+                className: 'like_link'
                 style: comment_action_style
                 onClick: do (key = comment.key) => (e) =>
                   e.stopPropagation()
@@ -207,16 +206,13 @@ window.Discussion = ReactiveComponent
         'aria-label': 'close point' 
         onClick: close_point
 
-
+        className: 'icon'
         style: 
           position: 'absolute'
           right: 8
           top: 8
-          fontSize: 24
-          color: 'var(--focus_color)'
-          backgroundColor: 'transparent'
-          border: 'none'
-        'x'
+
+        iconX(26, "var(--focus_color)")
 
       if point.text?.length > 0 
         SECTION 

@@ -24,16 +24,6 @@ window.styles += """
     }    
   }
 
-
-  .dangerzone input[type="submit"] {
-    background-color: var(--failure_color);
-    padding: 8px 24px;
-    color: var(--text_light);
-    font-weight: 600;
-    border: none;
-    border-radius: 8px;    
-  }
-
 """
 
 
@@ -142,6 +132,7 @@ window.EditProfile = ReactiveComponent
 
           INPUT
             type: 'submit' 
+            className: 'danger_button btn'
             value: translator 'auth.delete_account', 'Delete your account'
             # className: 'like_link'
 
@@ -177,6 +168,7 @@ window.EditProfile = ReactiveComponent
 
           INPUT
             type: 'submit' 
+            className: 'danger_button btn'            
             value: translator 'auth.delete_data', 'Delete your data on this forum'
             # className: 'like_link'
 

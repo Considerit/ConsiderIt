@@ -295,10 +295,8 @@ AddRolesAndInvite = ReactiveComponent
             BUTTON 
               className: 'like_link'
               style: 
-                color: "var(--text_light_gray)"
                 marginLeft: 20
                 fontSize: 14
-                textDecoration: 'none'
 
               onClick: (e) => 
                 @local.expanded = true 
@@ -413,10 +411,6 @@ ResendInvitations = ReactiveComponent
         BUTTON
           className: 'btn'
           disabled: @local.added.length == 0
-          style: 
-            backgroundColor: "var(--focus_color)"
-            cursor: if @local.added.length == 0 then 'default'
-            opacity: if @local.added.length == 0 then 0.5
 
           onClick: (e) => 
 
@@ -498,7 +492,11 @@ ModalAddRolesAndInvite = ReactiveComponent
 
         @props.add_button
 
-      SPAN null, 
+      DIV 
+        style: 
+          display: "flex"
+          alignItems: "center"
+
         DropMenu
           options: filtered_users
           open_menu_on: 'activation'
@@ -562,10 +560,9 @@ ModalAddRolesAndInvite = ReactiveComponent
 
         if @local.filtered && @local.filtered.length > 0 
           BUTTON 
+            className: "btn"
             onClick: => 
               processNewFolks()
-            style: 
-              display: 'inline-block'
             'add'
 
 
@@ -630,10 +627,7 @@ ModalAddRolesAndInvite = ReactiveComponent
         BUTTON
           className: 'btn'
           disabled: @local.added.length == 0
-          style: 
-            backgroundColor: "var(--focus_color)"
-            cursor: if @local.added.length == 0 then 'default'
-            opacity: if @local.added.length == 0 then 0.5
+
 
           onClick: (e) => 
 
@@ -703,7 +697,8 @@ UserWithRole = (user_key, on_remove_from_role) ->
   DIV 
     key: user_key
     style:
-      display: 'inline-block'
+      display: 'inline-flex'
+      alignItems: 'center'
       padding: '6px 4px 6px 12px'
       fontSize: 13
       backgroundColor: "var(--bg_speech_bubble)"
@@ -711,6 +706,7 @@ UserWithRole = (user_key, on_remove_from_role) ->
       color: "var(--text_dark)"
       borderRadius: 8
       margin: 4
+      border: "1px solid var(--brd_light_gray)"
 
     DIV
       style: 
@@ -748,14 +744,12 @@ UserWithRole = (user_key, on_remove_from_role) ->
 
     BUTTON # remove user from role
       'aria-label': "Remove #{user?.name or user_key} from role"
+      className: 'icon'
       style: 
-        cursor: 'pointer'
         marginLeft: 8
-        border: 'none'
-        backgroundColor: 'transparent'
-        verticalAlign: 'top'
+
       onClick: -> on_remove_from_role(user_key) if on_remove_from_role
-      'x'
+      iconX 13, "var(--text_dark)"
 
 
 ## Export...

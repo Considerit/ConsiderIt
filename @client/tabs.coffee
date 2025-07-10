@@ -427,7 +427,7 @@ styles += """
 
   .dragging-list #tabs > ul > li.draggedOver-by_list[data-accepts-lists="true"],
   .dragging-list .dark #tabs > ul > li.draggedOver-by_list[data-accepts-lists="true"] {
-    outline: 4px solid #{attention_orange};
+    outline: 4px solid var(--attention_orange);
   }
 
   #tabs > ul > li[draggable="false"].demo:not(.add_new):not(.selected) {
@@ -550,10 +550,9 @@ window.Tab = ReactiveComponent
 
       if edit_forum.editing  && !tab.add_new && !tab.demo && get_tabs().length > 1
         BUTTON 
+          className: 'icon'
           style: 
             cursor: 'move'
-            backgroundColor: 'transparent'
-            border: 'none'                    
           drag_icon 15, "var(--text_neutral)"
 
       H4 
@@ -620,11 +619,9 @@ window.Tab = ReactiveComponent
       
       if edit_forum.editing && tab_name == get_current_tab_name() && !tab.demo
         BUTTON 
+          className: 'icon'
           style:
             display: 'inline-block'
-            backgroundColor: 'transparent'
-            border: 'none'
-            cursor: 'pointer'
           onClick: ->
             delete_tab tab.name
           trash_icon 15, 15, "var(--text_neutral)"

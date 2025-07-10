@@ -109,10 +109,8 @@ window.AllYourForums = ReactiveComponent
 
 
                 BUTTON 
+                  className: 'icon'
                   style:
-                    backgroundColor: 'transparent'
-                    border: 'none'
-                    cursor: 'pointer'
                     padding: '4px'
                   'data-tooltip': "Import Configuration from #{forum.name} to this forum"
 
@@ -139,10 +137,8 @@ window.AllYourForums = ReactiveComponent
 
 
                 BUTTON 
+                  className: 'icon'                
                   style:
-                    backgroundColor: 'transparent'
-                    border: 'none'
-                    cursor: 'pointer'
                     padding: '4px'
                   'data-tooltip': 'Delete forum'
 

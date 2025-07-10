@@ -357,11 +357,11 @@ window.ProposalsLoading = ReactiveComponent
         
         drawLogo 
           height: 50
-          main_text_color: logo_red
-          o_text_color: logo_red
+          main_text_color: "var(--logo_red)"
+          o_text_color: "var(--logo_red)"
           clip: false
           draw_line: true 
-          line_color: logo_red
+          line_color: "var(--logo_red)"
           i_dot_x: if negative then 284 - @cnt % 284 else @cnt % 284
           transition: false
 

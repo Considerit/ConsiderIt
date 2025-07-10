@@ -254,7 +254,7 @@ window.filter_icon = (height) ->
   height ?= 27
   circle_fill = "var(--bg_light_gray)"
   active_circle_fill = "var(--bg_dark_gray)"
-  line_stroke = slidergram_base_color
+  line_stroke = "var(--slidergram_base_color)"
 
   SVG 
     className: 'opinion_view_class' 
@@ -279,7 +279,7 @@ window.filter_icon = (height) ->
     
 window.group_by_icon = (height) ->
   height ?= 19
-  orange_fill = attention_orange
+  orange_fill = "var(--attention_orange)"
   blue_fill = "var(--focus_color)"
   purple_fill = "var(--selected_color)"
   line_stroke = "var(--brd_mid_gray)"
@@ -310,7 +310,7 @@ window.group_by_icon = (height) ->
 window.weigh_icon = (height) ->
   height ?= 18
   circle_fill = "var(--bg_neutral_gray)"
-  line_stroke = slidergram_base_color
+  line_stroke = "var(--slidergram_base_color)"
 
   SVG
     className: 'opinion_view_class' 

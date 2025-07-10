@@ -798,13 +798,13 @@ TranslationsForLang = ReactiveComponent
                     use_color = "var(--failure_color)"
                     use_label = 'high use'
                   else if percentile >= 25 
-                    use_color = caution_color
+                    use_color = "var(--caution_color"
                     use_label = 'medium use'                  
                   else if percentile >= 0 
                     use_color = "var(--success_color)"
                     use_label = 'low use'                  
                   else 
-                    use_color = upgrade_color
+                    use_color = "var(--upgrade_color)"
                     use_label = 'rarely used'
 
 

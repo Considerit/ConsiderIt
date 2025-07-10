@@ -105,9 +105,9 @@ window.OpinionSlider = ReactiveComponent
         base_height: @props.base_height or 2
 
         base_color: if mode == 'crafting' #slider.docked
-                      upgrade_color
+                      "var(--upgrade_color)"
                     else 
-                      slidergram_base_color
+                      "var(--slidergram_base_color)"
 
 
         # base_endpoint: if slider.docked then 'square' else 'sharp'

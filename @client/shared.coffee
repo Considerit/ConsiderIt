@@ -1007,7 +1007,7 @@ button.icon, input[type='submit'].icon {
   -webkit-user-select: none;
   -ms-user-select: none;
 
-  border-radius: .25rem;
+  border-radius: .5rem;
   transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
   margin: 0;
   background-color: var(--focus_color); 

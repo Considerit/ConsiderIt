@@ -312,7 +312,7 @@ window.ModerationDash = ReactiveComponent
                     style: 
                       fontSize: 10
                       paddingLeft: 4
-                      color: text_light_gray
+                      color: "var(--text_light_gray)"
                     "[#{definition.items?.length or 0}]"
 
 
@@ -613,7 +613,7 @@ ModerateItem = ReactiveComponent
           SPAN 
             className: 'moderation btn'
             style: 
-              backgroundColor: caution_color
+              backgroundColor: "var(--caution_color)"
 
             LABEL 
               htmlFor: "quar-#{@props.item}"

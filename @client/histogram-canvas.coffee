@@ -366,7 +366,7 @@ window.Histogram = ReactiveComponent
                    style: 
                      width: '100%'
                      height: @props.base_style?.height or 1
-                     backgroundColor: @props.base_style?.color or slidergram_base_color
+                     backgroundColor: @props.base_style?.color or "var(--slidergram_base_color)"
         else 
           base = SPAN null
 

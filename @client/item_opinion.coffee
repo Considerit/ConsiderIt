@@ -383,7 +383,7 @@ ParticipationStatus = ReactiveComponent
 
       DIV
         style: 
-          backgroundColor: attention_orange
+          backgroundColor: "var(--attention_orange)"
           color: "var(--text_light)"
           margin: '0px auto 8px auto'
           display: 'inline-block'

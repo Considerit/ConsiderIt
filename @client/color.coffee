@@ -14,35 +14,35 @@ window.caution_color = "#ffc92a"
 
 window.slidergram_base_color = "#777777"
 
-window.text_dark = '#000000'
-window.text_gray = '#333333'    
-window.text_light_gray = '#666666'
-window.text_neutral = '#888888'
-window.text_gray_on_dark = '#cccccc'
-window.text_light = '#ffffff'
+text_dark = '#000000'
+text_gray = '#333333'    
+text_light_gray = '#666666'
+text_neutral = '#888888'
+text_gray_on_dark = '#cccccc'
+text_light = '#ffffff'
 
 
-window.bg_dark = '#000000'
-window.bg_dark_gray = '#444444'
-window.bg_neutral_gray = "#888888"
-window.bg_light_gray = '#aaaaaa'
-window.bg_lighter_gray = '#cccccc'
-window.bg_lightest_gray = '#eeeeee'
-window.bg_light = '#ffffff'
+bg_dark = '#000000'
+bg_dark_gray = '#444444'
+bg_neutral_gray = "#888888"
+bg_light_gray = '#aaaaaa'
+bg_lighter_gray = '#cccccc'
+bg_lightest_gray = '#eeeeee'
+bg_light = '#ffffff'
 
 
-window.bg_container = '#f7f7f7'
-window.bg_item = '#ffffff'
-window.bg_item_separator = '#f3f4f5'
-window.bg_speech_bubble = '#f7f7f7'
+bg_container = '#f7f7f7'
+bg_item = '#ffffff'
+bg_item_separator = '#f3f4f5'
+bg_speech_bubble = '#f7f7f7'
 
-window.brd_dark = '#000000'
-window.brd_dark_gray = '#444444'
-window.brd_neutral_gray = '#888888'
-window.brd_mid_gray = '#aaaaaa' 
-window.brd_light_gray = '#cccccc' 
-window.brd_lightest_gray = '#eeeeee'
-window.brd_light = '#ffffff'
+brd_dark = '#000000'
+brd_dark_gray = '#444444'
+brd_neutral_gray = '#888888'
+brd_mid_gray = '#aaaaaa' 
+brd_light_gray = '#cccccc' 
+brd_lightest_gray = '#eeeeee'
+brd_light = '#ffffff'
 
 
 # Color inversion utility functions
@@ -597,6 +597,12 @@ window.is_image_mostly_light = (image_data, width, height) ->
         light_pixels += 1
 
   light_pixels >= hsp_sample_size * hsp_sample_size / 2
+
+
+
+
+
+
 
 window.named_colors =
   'aliceblue': '#f0f8ff'

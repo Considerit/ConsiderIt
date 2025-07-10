@@ -2,7 +2,7 @@ window.drawLogo = (opts) ->
 
   opts = _.defaults opts,
     main_text_color: "var(--text_light)"
-    o_text_color: logo_red
+    o_text_color: "var(--logo_red)"
     line_color: "var(--text_light)"
     i_dot_x: 252.25
     height: 60

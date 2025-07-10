@@ -96,7 +96,7 @@ window.Slider = ReactiveComponent
       handle_height: 6
       base_height: 6
       base_endpoint: 'square'
-      base_color: slidergram_base_color
+      base_color: "var(--slidergram_base_color)"
       polarized: false
       draw_helpers: false
       respond_to_click: true
@@ -167,7 +167,7 @@ window.Slider = ReactiveComponent
         DIV 
           style: 
             height: props.base_height + 4
-            backgroundColor: upgrade_color
+            backgroundColor: "var(--upgrade_color)"
             boxShadow: "0 0 #{1.5 * (props.base_height + 4)}px var(--shadow_light), 0 0 3px var(--shadow_dark_25) inset"
             position: 'relative'
             top: -2

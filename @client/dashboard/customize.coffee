@@ -206,7 +206,7 @@ window.CustomizationsDash = ReactiveComponent
             marginBottom: 5
             cursor: 'pointer'
             fontWeight: 600
-            color: text_light_gray
+            color: "var(--text_light_gray)"
             textDecoration: 'underline'
             
           onClick: => @local.show_shared = !@local.show_shared; save @local
@@ -227,7 +227,7 @@ window.CustomizationsDash = ReactiveComponent
             marginBottom: 5
             cursor: 'pointer'
             fontWeight: 600
-            color: text_light_gray
+            color: "var(--text_light_gray)"
             textDecoration: 'underline'
 
           onClick: => @local.show_doc = !@local.show_doc; save @local

@@ -46,6 +46,7 @@ window.brd_light = '#ffffff'
 
 
 # Color inversion utility functions
+
 window.hexToRgba = (hex) ->
   # Handle 6-digit hex (#RRGGBB)
   result6 = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
@@ -89,7 +90,7 @@ window.hexToRgba = (hex) ->
   
   null
 
-window.rgbaToHex = (r, g, b, a) ->
+rgbaToHex = (r, g, b, a) ->
   # Convert to hex with proper padding
   rHex = Math.round(r).toString(16).padStart(2, '0')
   gHex = Math.round(g).toString(16).padStart(2, '0')
@@ -101,20 +102,21 @@ window.rgbaToHex = (r, g, b, a) ->
   else
     "##{rHex}#{gHex}#{bHex}"
 
-window.invertColor = (hex) ->
+# Backward compatibility
+hexToRgb = (hex) ->
+  rgba = hexToRgba(hex)
+  return null unless rgba
+  { r: rgba.r, g: rgba.g, b: rgba.b }
+
+invertColor = (hex) ->
   rgba = hexToRgba(hex)
   return hex unless rgba
   # Invert RGB, preserve alpha
   rgbaToHex(255 - rgba.r, 255 - rgba.g, 255 - rgba.b, rgba.a)
 
-# Backward compatibility
-window.hexToRgb = (hex) ->
+colorTransparency = (hex, opacity) -> 
   rgba = hexToRgba(hex)
-  return null unless rgba
-  { r: rgba.r, g: rgba.g, b: rgba.b }
-
-window.rgbToHex = (r, g, b) ->
-  rgbaToHex(r, g, b, 255)
+  return "rgba(#{rgba.r}, #{rgba.g}, #{rgba.b}, #{opacity})"
 
 
 # Ugly! Need to have responsive colors or responsive styles. 
@@ -126,69 +128,73 @@ if location.href.indexOf('aeroparticipa') > -1
 
 window.generateColorVariableDefs = ->
   """
-  :root, :before, :after {
-    /* Core colors (theme-independent) */
-    --focus_color: #{focus_color};
-    --focus_color_slightly_transluscent: color-mix(in srgb, var(--focus_color) 68%, transparent);
-    --focus_color_mostly_transluscent: color-mix(in srgb, var(--focus_color) 13%, transparent);
-    --logo_red: #{logo_red};
-    --considerit_red: #{considerit_red};
-    --selected_color: #{selected_color};
-    --upgrade_color: #{upgrade_color};
-    --attention_orange: #{attention_orange};
-    --failure_color: #{failure_color};
-    --success_color: #{success_color};
-    --caution_color: #{caution_color};
-    --slidergram_base_color: #{slidergram_base_color};
+    :root, :before, :after {
+      /* Core colors (theme-independent) */
+      --focus_color: #{focus_color};
+      --focus_color_rgb: #{hexToRgb(focus_color).r}, #{hexToRgb(focus_color).g}, #{hexToRgb(focus_color).b};
+      --focus_color_slightly_transluscent: rgba(var(--focus_color_rgb), 0.68);
+      --focus_color_mostly_transluscent: rgba(var(--focus_color_rgb), 0.13);
+      --logo_red: #{logo_red};
+      --considerit_red: #{considerit_red};
+      --selected_color: #{selected_color};
+      --upgrade_color: #{upgrade_color};
+      --attention_orange: #{attention_orange};
+      --failure_color: #{failure_color};
+      --success_color: #{success_color};
+      --caution_color: #{caution_color};
+      --slidergram_base_color: #{slidergram_base_color};
 
-    /* Default Light Theme */
-    --text_dark: #{text_dark};
-    --text_gray: #{text_gray};
-    --text_light_gray: #{text_light_gray};
-    --text_neutral: #{text_neutral};
-    --text_gray_on_dark: #{text_gray_on_dark};
-    --text_light: #{text_light};
+      /* Default Light Theme */
+      --text_dark: #{text_dark};
+      --text_gray: #{text_gray};
+      --text_light_gray: #{text_light_gray};
+      --text_neutral: #{text_neutral};
+      --text_gray_on_dark: #{text_gray_on_dark};
+      --text_light: #{text_light};
 
-    --bg_dark: #{bg_dark};
-    --bg_dark_gray: #{bg_dark_gray};
-    --bg_neutral_gray: #{bg_neutral_gray};
-    --bg_light_gray: #{bg_light_gray};
-    --bg_lighter_gray: #{bg_lighter_gray};
-    --bg_lightest_gray: #{bg_lightest_gray};
-    --bg_light: #{bg_light};
-    --bg_container: #{bg_container};
-    --bg_item: #{bg_item};
-    --bg_item_separator: #{bg_item_separator};
-    --bg_speech_bubble: #{bg_speech_bubble};
+      --bg_dark: #{bg_dark};
+      --bg_dark_rgb: #{hexToRgb(bg_dark).r}, #{hexToRgb(bg_dark).g}, #{hexToRgb(bg_dark).b};
+      --bg_dark_gray: #{bg_dark_gray};
+      --bg_neutral_gray: #{bg_neutral_gray};
+      --bg_light_gray: #{bg_light_gray};
+      --bg_lighter_gray: #{bg_lighter_gray};
+      --bg_lightest_gray: #{bg_lightest_gray};
+      --bg_light: #{bg_light};
+      --bg_light_rgb: #{hexToRgb(bg_light).r}, #{hexToRgb(bg_light).g}, #{hexToRgb(bg_light).b};
+      --bg_container: #{bg_container};
+      --bg_item: #{bg_item};
+      --bg_item_rgb: #{hexToRgb(bg_item).r}, #{hexToRgb(bg_item).g}, #{hexToRgb(bg_item).b};
+      --bg_item_separator: #{bg_item_separator};
+      --bg_speech_bubble: #{bg_speech_bubble};
 
-    --brd_dark: #{brd_dark};
-    --brd_dark_gray: #{brd_dark_gray};
-    --brd_neutral_gray: #{brd_neutral_gray};
-    --brd_mid_gray: #{brd_mid_gray};
-    --brd_light_gray: #{brd_light_gray};
-    --brd_lightest_gray: #{brd_lightest_gray};
-    --brd_light: #{brd_light};
+      --brd_dark: #{brd_dark};
+      --brd_dark_gray: #{brd_dark_gray};
+      --brd_neutral_gray: #{brd_neutral_gray};
+      --brd_mid_gray: #{brd_mid_gray};
+      --brd_light_gray: #{brd_light_gray};
+      --brd_lightest_gray: #{brd_lightest_gray};
+      --brd_light: #{brd_light};
 
-    /* Background transparency variants using color-mix */
-    --bg_item_transparent: color-mix(in srgb, var(--bg_item), 0%, transparent);
-    --bg_dark_trans_25: color-mix(in srgb, var(--bg_dark) 25%, transparent);
-    --bg_dark_trans_40: color-mix(in srgb, var(--bg_dark) 40%, transparent);
-    --bg_dark_trans_60: color-mix(in srgb, var(--bg_dark) 60%, transparent);
-    --bg_dark_trans_80: color-mix(in srgb, var(--bg_dark) 80%, transparent);
-    --bg_light_transparent: color-mix(in srgb, var(--bg_light) 0%, transparent);
-    --bg_light_trans_25: color-mix(in srgb, var(--bg_light) 25%, transparent);
-    --bg_light_trans_40: color-mix(in srgb, var(--bg_light) 40%, transparent);
-    --bg_light_trans_60: color-mix(in srgb, var(--bg_light) 60%, transparent);
-    --bg_light_trans_80: color-mix(in srgb, var(--bg_light) 80%, transparent);
-    --bg_light_opaque: color-mix(in srgb, var(--bg_light) 100%, transparent);
+      /* Background transparency variants */
+      --bg_item_transparent: rgba(var(--bg_item_rgb), 0.0);
+      --bg_dark_trans_25: rgba(var(--bg_dark_rgb), 0.25);
+      --bg_dark_trans_40: rgba(var(--bg_dark_rgb), 0.40);
+      --bg_dark_trans_60: rgba(var(--bg_dark_rgb), 0.60);
+      --bg_dark_trans_80: rgba(var(--bg_dark_rgb), 0.80);
+      --bg_light_transparent: rgba(var(--bg_light_rgb), 0.0);
+      --bg_light_trans_25: rgba(var(--bg_light_rgb), 0.25);
+      --bg_light_trans_40: rgba(var(--bg_light_rgb), 0.40);
+      --bg_light_trans_60: rgba(var(--bg_light_rgb), 0.60);
+      --bg_light_trans_80: rgba(var(--bg_light_rgb), 0.80);
+      --bg_light_opaque: rgba(var(--bg_light_rgb), 1.0);
 
-    /* Shadow colors using color-mix for transparency */
-    --shadow_dark_15: color-mix(in srgb, var(--bg_dark) 15%, transparent);
-    --shadow_dark_20: color-mix(in srgb, var(--bg_dark) 20%, transparent);
-    --shadow_dark_25: color-mix(in srgb, var(--bg_dark) 25%, transparent);
-    --shadow_dark_50: color-mix(in srgb, var(--bg_dark) 50%, transparent);
-    --shadow_light: color-mix(in srgb, var(--bg_light) 40%, transparent);
-  }
+      /* Shadow colors */
+      --shadow_dark_15: rgba(var(--bg_dark_rgb), 0.15);
+      --shadow_dark_20: rgba(var(--bg_dark_rgb), 0.20);
+      --shadow_dark_25: rgba(var(--bg_dark_rgb), 0.25);
+      --shadow_dark_50: rgba(var(--bg_dark_rgb), 0.50);
+      --shadow_light: rgba(var(--bg_light_rgb), 0.40);
+    }
 
   /* Dark Theme - Programmatically Generated Inversions */
   [data-theme="dark"],
@@ -210,9 +216,7 @@ window.generateColorVariableDefs = ->
     --bg_lighter_gray: #{invertColor(bg_lighter_gray)};
     --bg_lightest_gray: #{invertColor(bg_lightest_gray)};
     --bg_light: #{invertColor(bg_light)};
-    /* --bg_container: #{invertColor(bg_container)}; */
     --bg_container: #444444;    
-    /* --bg_item: #{invertColor(bg_item)}; */
     --bg_item: #171717;
     --bg_item_separator: #{invertColor(bg_item_separator)};
     --bg_speech_bubble: #{invertColor(bg_speech_bubble)};
@@ -248,10 +252,7 @@ window.generateColorVariableDefs = ->
     --bg_lighter_gray: #cccccc;
     --bg_lightest_gray: #eeeeee;
     --bg_light: #ffffff;
-    /* --bg_container: #ffffff;
-    --bg_item: #ffffff;
-    --bg_item_separator: #f0f0f0;
-    --bg_speech_bubble: #f8f8f8; */
+
 
     /* High contrast borders */
     --brd_dark: #000000;
@@ -269,12 +270,6 @@ window.generateColorVariableDefs = ->
     --failure_color: #ff0000;
     --caution_color: #ff8000;
 
-    /* High contrast shadows */
-    /* --shadow_dark_15: color-mix(in srgb, #000000 30%, transparent);
-    --shadow_dark_20: color-mix(in srgb, #000000 40%, transparent);
-    --shadow_dark_25: color-mix(in srgb, #000000 50%, transparent);
-    --shadow_dark_50: color-mix(in srgb, #000000 80%, transparent);
-    --shadow_light: color-mix(in srgb, #ffffff 60%, transparent); */
   }
 
   /* High Contrast Dark Theme */
@@ -297,12 +292,10 @@ window.generateColorVariableDefs = ->
     --bg_lighter_gray: #333333;
     --bg_lightest_gray: #111111;
     --bg_light: #000000;
-    /* --bg_container: #{invertColor(bg_container)}; */
     --bg_container: #444444;    
-    /* --bg_item: #{invertColor(bg_item)}; */
     --bg_item: #171717;
     --bg_item_separator: #0f0f0f;
-    --bg_speech_bubble: #070707;
+    --bg_speech_bubble: #{invertColor(bg_speech_bubble)};
     --bg_light_opaque: #171717ff;
 
     /* High contrast dark borders */
@@ -321,12 +314,6 @@ window.generateColorVariableDefs = ->
     --failure_color: #ff00ff;
     --caution_color: #ffff00;
 
-    /* High contrast dark shadows */
-    /* --shadow_dark_15: color-mix(in srgb, #ffffff 30%, transparent);
-    --shadow_dark_20: color-mix(in srgb, #ffffff 40%, transparent);
-    --shadow_dark_25: color-mix(in srgb, #ffffff 50%, transparent);
-    --shadow_dark_50: color-mix(in srgb, #ffffff 80%, transparent);
-    --shadow_light: color-mix(in srgb, #000000 60%, transparent); */
   }
 
   /* User-agent style integration */
@@ -347,6 +334,27 @@ window.generateColorVariableDefs = ->
   [data-theme="high-contrast-dark"] :after {
     color-scheme: dark;
   }
+
+
+  [data-theme="dark"],
+  [data-theme="dark"] :before,
+  [data-theme="dark"] :after,
+  [data-theme="high-contrast-dark"],
+  [data-theme="high-contrast-dark"] :before,
+  [data-theme="high-contrast-dark"] :after {
+    button.btn, 
+    input[type='submit'].btn, 
+    button.selector_button.active,
+    input[type='submit'].selector_button.active, 
+    [data-widget="DropMenu"].bluedrop button.dropMenu-anchor, 
+    .toggle_buttons .active button,
+    #DASHBOARD-menu a.active {
+      color: var(--text_dark);
+    }
+
+  }
+
+
 
   """
 

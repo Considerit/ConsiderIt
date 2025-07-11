@@ -84,9 +84,12 @@ window.AutoGrowTextArea = ReactiveComponent
     props = _.extend {}, @props,
       className: className
       onChange: @onChange
-      rows: 1
       style: _.extend {}, (@props.style or {}), {height: @local.height}
       ref: 'input'
+
+    props = _.defaults {}, props,
+      rows: 1
+      'aria-label': props.placeholder
     
     for prop_to_strip in ['parents', 'min_height', 'focus_on_mount', 'onHeightChange']
       if prop_to_strip of props

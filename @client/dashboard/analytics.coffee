@@ -74,23 +74,28 @@ window.DataAnalytics = ReactiveComponent
                 if !@local[attr]?
                   @local[attr] = default_value
 
+
                 LABEL 
                   key: label
-                  className: 'toggle'
-                  LABEL 
-                    className: 'toggle_switch'
+                  style:
+                    display: 'flex'
+                    alignItems: 'center'
+                    gap: 3
 
-                    INPUT 
-                      type: 'checkbox'
-                      defaultChecked: default_value
-                      onChange: (ev) => 
-                        @local[attr] = !@local[attr]
-                        save @local
 
-                    SPAN 
-                      className: 'toggle_switch_circle'
+                  INPUT 
+                    name: "toggle #{label}"
+                    className: 'small'
+                    type: 'checkbox'
+                    role: 'switch'
+                    defaultChecked: default_value
+                    onChange: (ev) => 
+                      @local[attr] = !@local[attr]
+                      save @local
 
-                  SPAN null,
+                  SPAN 
+                    style: 
+                      fontSize: 13
                     label
 
 
@@ -361,20 +366,6 @@ styles += """
   .toggle > span {
     font-size: 11px;
     margin-left: 8px;           
-  }
-
-  .toggle .toggle_switch {
-    width: 36px;
-    height: 16px;
-  }
-  .toggle .toggle_switch .toggle_switch_circle:before {
-    height: 12px; 
-    width: 12px;
-    bottom: 2px;
-  }
-
-  .toggle input:checked + .toggle_switch_circle:before {
-    transform: translateX(18px);
   }
 
   .analytics_section .notice {

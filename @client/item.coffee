@@ -500,6 +500,8 @@ ProposalItemWrapper = ReactiveComponent
 
           BUTTON 
             className: 'icon bottom_closer'
+            "aria-label": translator('engage.collapse_proposal', 'Collapse proposal')
+
             onClick: => 
               toggle_expand
                 proposal: bus_fetch @props.proposal
@@ -514,6 +516,8 @@ ProposalItemWrapper = ReactiveComponent
 
           BUTTON 
             className: 'icon top_closer'
+            "aria-label": translator('engage.collapse_proposal', 'Collapse proposal')
+
             onClick: => 
               toggle_expand
                 proposal: bus_fetch @props.proposal
@@ -683,6 +687,7 @@ ProposalBlock = ReactiveComponent
 
         if proposal.pic 
           IMG
+            alt: "Icon associated with this proposal"
             className: 'proposal_pic'
             src: proposal.pic 
 

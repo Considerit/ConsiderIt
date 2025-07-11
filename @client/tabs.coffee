@@ -297,39 +297,33 @@ window.HomepageTabs = ReactiveComponent
           style:
             display: 'flex'
             justifyContent: 'center'
-
+            alignItems: 'center'
           
-          LABEL 
-            className: 'toggle_switch'
+          INPUT 
+            id: 'enable_tabs'
+            type: 'checkbox'
+            name: 'enable_tabs'
+            role: 'switch'
+            "aria-hidden": !paid            
+            checked: !!get_tabs()
             style: 
               pointerEvents: if !paid then 'none'
               opacity: if !paid then .4
 
-            INPUT 
-              id: 'enable_tabs'
-              type: 'checkbox'
-              name: 'enable_tabs'
-              checked: !!get_tabs()
-              onChange: (ev) -> 
-                if ev.target.checked
-                  loc = bus_fetch 'location'
-                  new_tab_name = prompt("What is the name of the first tab? You'll be able to add more later.")
-                  if new_tab_name
-                    create_new_tab new_tab_name
-                    loc.query_params.tab = new_tab_name
-                    if subdomain.customizations.lists?
-                      delete subdomain.customizations.lists
-                      save subdomain
-                else
-                  if confirm(translator "homepage_tab.disable_confirmation", "Are you sure you want to disable tabs? Existing tabs will be deleted. All existing lists will still be visible.")
-                    for tab in get_tabs()?.slice() or []
-                      delete_tab(tab.name, true)
-
-                
-            
-            SPAN 
-              className: 'toggle_switch_circle'
-
+            onChange: (ev) -> 
+              if ev.target.checked
+                loc = bus_fetch 'location'
+                new_tab_name = prompt("What is the name of the first tab? You'll be able to add more later.")
+                if new_tab_name
+                  create_new_tab new_tab_name
+                  loc.query_params.tab = new_tab_name
+                  if subdomain.customizations.lists?
+                    delete subdomain.customizations.lists
+                    save subdomain
+              else
+                if confirm(translator "homepage_tab.disable_confirmation", "Are you sure you want to disable tabs? Existing tabs will be deleted. All existing lists will still be visible.")
+                  for tab in get_tabs()?.slice() or []
+                    delete_tab(tab.name, true)
 
           LABEL 
             className: 'toggle_switch_label'

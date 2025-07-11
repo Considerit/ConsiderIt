@@ -246,6 +246,7 @@ window.Histogram = ReactiveComponent
     histo_height = @props.height + REGION_SELECTION_VERTICAL_PADDING
     
     @id = "histo-#{@local.key.replace(/\//g, '__')}"
+
     histogram_props = 
       id: @id
       key: 'histogram'
@@ -411,12 +412,16 @@ window.Histogram = ReactiveComponent
       histo
 
   drawAvatars: ({histo_height, enable_individual_selection, onClick}) -> 
+    proposal = bus_fetch @props.proposal
+
+    return SPAN null if !proposal.key
 
     DIV 
       className: 'histoavatars-container'
       key: 'histoavatars'
 
       HistoAvatars
+        proposal_id: proposal.id
         histo_key: @props.histo_key or @props.proposal.key or @props.proposal   
         weights: @weights
         salience: @salience
@@ -765,6 +770,8 @@ HistoAvatars = ReactiveComponent
     @adjusted_width  = Math.round @props.width  + 2 * @cut_off_buffer
 
     proposal = bus_fetch @props.histo_key
+
+
     DIV 
       className: 'HistoAvatars'
       id: histocache_key
@@ -793,8 +800,8 @@ HistoAvatars = ReactiveComponent
         onMouseMove: @handleMouseMove
         onMouseOut: @handleMouseOut
         role: "img" 
-        'aria-labelledby': if !@props.backgrounded then "histo-label-#{proposal.id}"
-        'aria-describedby': if !@props.backgrounded then "histo-description-#{proposal.id}"
+        'aria-labelledby': if !@props.backgrounded then "histo-label-#{@props.proposal_id}"
+        'aria-describedby': if !@props.backgrounded then "histo-description-#{@props.proposal_id}"
 
 
   componentDidMount: ->   

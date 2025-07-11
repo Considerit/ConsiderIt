@@ -27,8 +27,9 @@ window.ResetPassword = ReactiveComponent
             marginBottom: 18
           i18n.verification_sent_message
 
-        INPUT({name: 'user[verification_code]', disabled: true, style: {display: 'none'}} ) # prevent autofill of code with email address
-        INPUT({type: 'password', name: 'user[password]', disabled: true, style: {display: 'none'}} ) # prevent autofill of code with password
+        INPUT({type: 'hidden', name: 'user[verification_code]', disabled: true, 'aria-hidden': true, 'focusable': false, style: {display: 'none'}} ) # prevent autofill of code with email address
+        INPUT({type: 'hidden', name: 'user[password]', disabled: true, 'aria-hidden': true, 'focusable': false, style: {display: 'none'}} ) # prevent autofill of code with password
+        
         @RenderInput 
           label: i18n.code_label
           name: 'verification_code'

@@ -125,6 +125,7 @@ window.NewForumOnBoarding = ReactiveComponent
     DIV 
       id: 'NewForumOnBoarding'
       BUTTON 
+        'aria-label': "Close new forum onboarding checklist"
         className: 'close_checklist icon'
         onClick: complete_onboarding
         iconX 20, "var(--selected_color)"

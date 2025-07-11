@@ -265,10 +265,17 @@ window.generateColorVariableDefs = ->
 
     /* Enhanced visibility colors for high contrast */
     --focus_color: #0000ff;
-    --selected_color: #ff0000;
+    --selected_color: #880000;
     --success_color: #008000;
     --failure_color: #ff0000;
     --caution_color: #ff8000;
+
+
+    --focus_color: #{focus_color};
+    --selected_color: #97002c;
+    --failure_color: #97002c;
+    --success_color: #437C2D;
+    --caution_color: #8A6700;
 
   }
 

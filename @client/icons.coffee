@@ -159,6 +159,7 @@ window.HelpIcon = (help_text, style) ->
 
   BUTTON 
     "data-tooltip": help_text
+    "aria-label": help_text
     className: 'icon'
     style: _.defaults style or {}, 
       padding: 0

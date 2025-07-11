@@ -1147,4 +1147,21 @@ input[type="text"]:focus, textarea:focus {
   outline: 1px solid var(--focus_color)
 }
 
+
+
+/* 
+ * Utility class to hide content visually while keeping it screen reader-accessible.
+ * Source: https://www.scottohara.me/blog/2017/04/14/inclusively-hidden.html 
+ */
+
+.visually-hidden:not(:focus):not(:active) {
+  clip: rect(0 0 0 0); 
+  clip-path: inset(100%); 
+  height: 1px; 
+  overflow: hidden; 
+  position: absolute; 
+  white-space: nowrap; 
+  width: 1px; 
+}
+
 """

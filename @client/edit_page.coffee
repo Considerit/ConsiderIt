@@ -230,6 +230,7 @@ window.EditPage = ReactiveComponent
                       BUTTON 
                         className: "icon"
                         "data-tooltip": drag_capabilities
+                        "aria-label": drag_capabilities
                         style: 
                           cursor: 'move'
                           position: 'relative'
@@ -270,18 +271,20 @@ window.EditPage = ReactiveComponent
                       BUTTON 
                         className: "icon"
                         "data-tooltip": "Edit"
+                        "aria-label": 'Edit'
                         onClick: (e) =>
                           e.preventDefault()
                           e.stopPropagation()
                           @local.edit_list = lst
                           save @local
 
-                        edit_icon 18, 18, "var(--text_neutral)"
+                        edit_icon 23, 23, "var(--text_neutral)"
 
 
                     if !wildcard 
                       BUTTON 
                         className: "icon"
+                        "aria-label": 'Delete'
                         style:
                           position: 'absolute'
                           right: -36

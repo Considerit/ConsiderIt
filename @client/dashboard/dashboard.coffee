@@ -41,7 +41,7 @@ window.styles += """
     white-space: nowrap;
     font-size: 14px;  
   } #DASHBOARD-menu a.active {
-     background-color: var(--selected_color);
+     background-color: var(--focus_color);
      color: var(--text_light);
   } 
   
@@ -71,7 +71,7 @@ window.styles += """
   #DASHBOARD-title {
     font-weight: 700;
     font-size: 36px;
-    color: var(--selected_color);
+    color: var(--focus_color);
     margin-bottom: 36px;
   }
 
@@ -91,9 +91,12 @@ window.styles += """
     cursor: pointer;
   }
 
-  [data-widget="Dashboard"] .btn {
-    background-color: var(--selected_color);
+  [data-widget="Dashboard"], [data-widget="Dashboard"]:before, [data-widget="Dashboard"]:after {
+    --focus_color: var(--selected_color);
   }
+
+
+
 
   @media #{NOT_LAPTOP_MEDIA} {
     #DASHBOARD-main {
@@ -343,58 +346,68 @@ if !browser.is_mobile
 
 window.styles += """
 
-  /* From https://www.w3schools.com/howto/howto_css_switch.asp */
-  /* The switch - the box around the slider */
-
-  .toggle_switch {
+  /* Modified from https://alvaromontoro.com/blog/68017/creating-a-css-only-toggle-switch */
+  input:where([type="checkbox"][role="switch"]) {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
     position: relative;
-    display: inline-block;
+    font-size: inherit;
     width: 52px;
     height: 26px;
-  }
-
-  /* Hide default HTML checkbox */
-  .toggle_switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-
-  /* The slider */
-  .toggle_switch .toggle_switch_circle {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    box-sizing: content-box;
+    border-radius: 1em;
+    color: inherit;
     background-color: var(--bg_lighter_gray);  /* widget bg */
-    -webkit-transition: .4s;
-    transition: .4s;
-    border-radius: 34px;
-    box-shadow: 0 1px 2px var(--shadow_dark_50);
-
+    box-shadow: 0 1px 2px var(--shadow_dark_50);    
   }
 
-  .toggle_switch .toggle_switch_circle:before {
-    position: absolute;
+  input:where([type="checkbox"][role="switch"])::before {
     content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(2px, -50%);
+    box-sizing: border-box;
     height: 18px;
     width: 18px;
-    left: 4px;
-    bottom: 4px;
+    margin: 0 0.15em;
+    border: none;
+    border-radius: 50%;
     background-color: var(--bg_light);
+    box-shadow: 0 1px 2px var(--shadow_dark_20)
     -webkit-transition: .4s;
     transition: .4s;
-    border-radius: 50%;
-    box-shadow: 0 1px 2px var(--shadow_dark_20)
   }
 
-  input:checked + .toggle_switch_circle {
-    background-color: var(--selected_color);
+
+  input:where([type="checkbox"][role="switch"]):checked {
+    background-color: var(--focus_color);
   }
 
-  input:checked + .toggle_switch_circle:before {
-    transform: translateX(26px);
+  input:where([type="checkbox"][role="switch"]):checked::before {
+    transform: translate(28px, -50%);
   }
+
+
+
+
+
+
+  input:where([type="checkbox"][role="switch"]).small {
+    width: 36px;
+    height: 16px;
+  }
+
+  input:where([type="checkbox"][role="switch"]).small::before {
+    transform: translate(1px, -50%);
+    height: 12px;
+    width: 12px;
+    margin: 0 0.15em;
+  }
+
+  input:where([type="checkbox"][role="switch"]).small:checked::before {
+    transform: translate(18px, -50%);
+  }
+
 """

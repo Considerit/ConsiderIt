@@ -180,20 +180,22 @@ window.ShowHostQuestions = ReactiveComponent
 
         for [label, render, question] in host_questions
           field_id = render?.props?.id or render?[0]?.props?.id
+          console.log([label, render, question])
           LI 
             key: label
             className: 'question'
 
-            LABEL
-              className: 'question-prompt'
-              htmlFor: field_id
-                
-                
+            if field_id
+              LABEL
+                className: 'question-prompt'
+                htmlFor: field_id
+                  
+                  
 
-              SPAN
-                style: 
-                  paddingRight: if !question.required then 8 
-                dangerouslySetInnerHTML: __html: label 
+                SPAN
+                  style: 
+                    paddingRight: if !question.required then 8 
+                  dangerouslySetInnerHTML: __html: label 
 
 
             render

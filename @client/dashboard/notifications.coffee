@@ -2,9 +2,6 @@ window.styles += """
   #NOTIFICATIONS {
     font-size: 18px;
   }
-  #NOTIFICATIONS .toggle_switch {
-    top: -1px;
-  }
 
 """
 
@@ -56,26 +53,25 @@ window.Notifications = ReactiveComponent
             backgroundColor: if @local.via_unsubscribe_link then "var(--bg_container)"
             padding: if @local.via_unsubscribe_link then '12px 18px'
             border: if @local.via_unsubscribe_link then "1px solid var(--selected_color)"
+            display: 'flex'
+            alignItems: "center"
 
-          LABEL 
-            className: 'toggle_switch'
 
-            INPUT 
-              id: 'enable_email'
-              type: 'checkbox'
-              name: 'enable_email'
-              defaultChecked: !!prefs['send_emails']
-              onChange: (e) => 
+          INPUT 
+            id: 'enable_email'
+            type: 'checkbox'
+            name: 'enable_email'
+            role: 'switch'
+            defaultChecked: !!prefs['send_emails']
+            "aria-label": translator "email_notifications.send_digests", 'Send me email summaries of relevant forum activity'
+            onChange: (e) => 
 
-                if current_user.subscriptions['send_emails']
-                  current_user.subscriptions['send_emails'] = false
-                else
-                  current_user.subscriptions['send_emails'] = settings['default_subscription']
-                save current_user
-                e.stopPropagation()
-            
-            SPAN 
-              className: 'toggle_switch_circle'
+              if current_user.subscriptions['send_emails']
+                current_user.subscriptions['send_emails'] = false
+              else
+                current_user.subscriptions['send_emails'] = settings['default_subscription']
+              save current_user
+              e.stopPropagation()
 
 
           LABEL 
@@ -86,17 +82,17 @@ window.Notifications = ReactiveComponent
             B null,
               TRANSLATE "email_notifications.send_digests", 'Send me email summaries of relevant forum activity'
 
-            if @local.via_unsubscribe_link && !!prefs['send_emails']
-              SPAN 
-                style:
-                  backgroundColor: "var(--selected_color)"
-                  color: "var(--text_light)"
-                  textTransform: 'uppercase'
-                  fontSize: '80%'
-                  fontWeight: 'bold'
-                  marginLeft: 20
-                  padding: '2px 8px'
-                translator('email_notifications.unsubscribe_helper', 'turn off to unsubscribe')
+          if @local.via_unsubscribe_link && !!prefs['send_emails']
+            SPAN 
+              style:
+                backgroundColor: "var(--selected_color)"
+                color: "var(--text_light)"
+                textTransform: 'uppercase'
+                fontSize: '80%'
+                fontWeight: 'bold'
+                marginLeft: 20
+                padding: '2px 8px'
+              translator('email_notifications.unsubscribe_helper', 'turn off to unsubscribe')
 
         if @local.via_unsubscribe_post && !prefs['send_emails']
           DIV 

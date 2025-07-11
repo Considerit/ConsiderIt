@@ -69,7 +69,7 @@ window.Login = ReactiveComponent
     @Draw 
       task: translator "auth.login.heading", 'Login to Participate'
       goal: if auth.goal then translator "auth.login_goal.#{auth.goal.toLowerCase()}", auth.goal
-      disallow_cancel: disallow_cancel()
+      disallow_cancel: disallow_cancel() || @props.disallow_cancel
       render_below_title: toggle_modes
       on_submit: on_submit
       submit_button: translator "auth.log_in", 'Log in'
@@ -220,7 +220,7 @@ window.CreateAccount = ReactiveComponent
               translator 'auth.create-by-invitation.heading', 'Complete registration'
             else 
               translator 'auth.create.heading', 'Create your account'
-      disallow_cancel: disallow_cancel()
+      disallow_cancel: disallow_cancel() || @props.disallow_cancel
       goal: if auth.goal then translator "auth.login_goal.#{auth.goal.toLowerCase()}", auth.goal
       on_submit: on_submit
       render_below_title: if !@props.by_invitation then toggle_modes

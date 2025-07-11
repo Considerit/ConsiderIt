@@ -74,6 +74,7 @@ window.AllYourForums = ReactiveComponent
 
               if forum.logo 
                 IMG 
+                  alt: 'Logo for this forum'
                   src: forum.logo
                   style: 
                     maxWidth: 120
@@ -112,6 +113,7 @@ window.AllYourForums = ReactiveComponent
                   className: 'icon'
                   style:
                     padding: '4px'
+                  'aria-label': "Import Configuration from #{forum.name} to this forum"
                   'data-tooltip': "Import Configuration from #{forum.name} to this forum"
 
                   onKeyPress: (e) =>
@@ -140,6 +142,7 @@ window.AllYourForums = ReactiveComponent
                   className: 'icon'                
                   style:
                     padding: '4px'
+                  'aria-label': 'Delete forum'
                   'data-tooltip': 'Delete forum'
 
                   onKeyPress: (e) =>

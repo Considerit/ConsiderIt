@@ -46,12 +46,9 @@ window.styles += """
     display: flex;
   }
 
-  .FORUM_SETTINGS .input_group.checkbox .toggle_switch {
-    margin-top: 6px;
-  }
-
-  .FORUM_SETTINGS .input_group.checkbox .toggle_switch.disabled{
+  .FORUM_SETTINGS .input_group.checkbox.disabled {
     opacity: 0.3;
+    pointer-events: none;
   }
 
   """
@@ -117,22 +114,16 @@ window.ForumSettingsDash = ReactiveComponent
 
       #   DIV className: 'input_group checkbox',
 
-      #     LABEL 
-      #       className: 'toggle_switch'
-
-      #       INPUT 
-      #         id: 'enable_unregistered_participation'
-      #         type: 'checkbox'
-      #         name: 'enable_unregistered_participation'
-      #         defaultChecked: customization('unregistered_participation')
-      #         onChange: (ev) -> 
-      #           subdomain.customizations ||= {}
-      #           subdomain.customizations.unregistered_participation = ev.target.checked
-      #           save subdomain
-
-
-      #       SPAN 
-      #         className: 'toggle_switch_circle'
+          # INPUT 
+          #   id: 'enable_unregistered_participation'
+          #   type: 'checkbox'
+          #   role: 'switch'
+          #   name: 'enable_unregistered_participation'
+          #   defaultChecked: customization('unregistered_participation')
+          #   onChange: (ev) -> 
+          #     subdomain.customizations ||= {}
+          #     subdomain.customizations.unregistered_participation = ev.target.checked
+          #     save subdomain
           
 
       #     LABEL 
@@ -226,6 +217,10 @@ window.ForumSettingsDash = ReactiveComponent
           method: 'post'
           style: 
             marginTop: 40
+          onSubmit: (ev) => 
+            if !confirm("Are you sure you want to rename this forum?")
+              ev.preventDefault()
+              ev.stopPropagation()
 
           LABEL
             htmlFor: 'name'
@@ -246,9 +241,9 @@ window.ForumSettingsDash = ReactiveComponent
 
           INPUT
             type: 'submit' 
+            value: "Rename Forum"
 
-            onSubmit: => 
-              confirm("Are you sure you want to rename this forum?")
+
   
 
   drawMiscSettings : -> 
@@ -341,22 +336,16 @@ window.ForumSettingsDash = ReactiveComponent
       # DISABLE EMAIL NOTIFICATIONS
       DIV className: 'input_group checkbox',
         
-        LABEL 
-          className: 'toggle_switch'
-
-          INPUT 
-            id: 'email_notifications_disabled'
-            type: 'checkbox'
-            name: 'email_notifications_disabled'
-            defaultChecked: customization('email_notifications_disabled')
-            onChange: (ev) -> 
-              subdomain.customizations ||= {}
-              subdomain.customizations.email_notifications_disabled = ev.target.checked
-              save subdomain
-
-          SPAN 
-            className: 'toggle_switch_circle'
-
+        INPUT 
+          id: 'email_notifications_disabled'
+          type: 'checkbox'
+          role: 'switch'
+          name: 'email_notifications_disabled'
+          defaultChecked: customization('email_notifications_disabled')
+          onChange: (ev) -> 
+            subdomain.customizations ||= {}
+            subdomain.customizations.email_notifications_disabled = ev.target.checked
+            save subdomain
 
         LABEL 
           className: 'indented'        
@@ -394,42 +383,35 @@ window.ForumSettingsDash = ReactiveComponent
 
         DIV className: 'input_group checkbox',
 
-          LABEL 
-            className: 'toggle_switch'
+          INPUT 
+            id: 'enable_civility_pledge'
+            type: 'checkbox'
+            name: 'enable_civility_pledge'
+            role: 'switch'
+            defaultChecked: question_index() != null
+            onChange: (ev) -> 
+              subdomain.customizations ||= {}
+              subdomain.customizations.user_tags ?= []
+              if ev.target.checked
+                pledge =
+                  key: key
+                  no_opinion_view: true
+                  visibility: "host-only"
+                  participation_pledge: true
+                  view_name: 'participation_pledge'
+                  self_report: 
+                    input: "boolean"
+                    question: 'I pledge to be civil and to use only one account'
+                    required: true
+                subdomain.customizations.user_tags.push pledge
+              else 
+                idx = question_index()
+                if idx != null
+                  subdomain.customizations.user_tags.splice(idx, 1)
+                  if subdomain.customizations.user_tags.length == 0
+                    delete subdomain.customizations.user_tags
 
-            INPUT 
-              id: 'enable_civility_pledge'
-              type: 'checkbox'
-              name: 'enable_civility_pledge'
-              defaultChecked: question_index() != null
-              onChange: (ev) -> 
-                subdomain.customizations ||= {}
-                subdomain.customizations.user_tags ?= []
-                if ev.target.checked
-                  pledge =
-                    key: key
-                    no_opinion_view: true
-                    visibility: "host-only"
-                    participation_pledge: true
-                    view_name: 'participation_pledge'
-                    self_report: 
-                      input: "boolean"
-                      question: 'I pledge to be civil and to use only one account'
-                      required: true
-                  subdomain.customizations.user_tags.push pledge
-                else 
-                  idx = question_index()
-                  if idx != null
-                    subdomain.customizations.user_tags.splice(idx, 1)
-                    if subdomain.customizations.user_tags.length == 0
-                      delete subdomain.customizations.user_tags
-
-                save subdomain
-
-
-            SPAN 
-              className: 'toggle_switch_circle'
-          
+              save subdomain
 
           LABEL 
             className: 'indented'
@@ -444,23 +426,16 @@ window.ForumSettingsDash = ReactiveComponent
 
       DIV className: 'input_group checkbox',
 
-        LABEL 
-          className: 'toggle_switch'
-
-          INPUT 
-            id: 'enable_google_translate'
-            type: 'checkbox'
-            name: 'enable_google_translate'
-            defaultChecked: !customization('disable_google_translate')
-            onChange: (ev) -> 
-              subdomain.customizations ||= {}
-              subdomain.customizations.disable_google_translate = !ev.target.checked
-              save subdomain
-
-
-          SPAN 
-            className: 'toggle_switch_circle'
-        
+        INPUT 
+          id: 'enable_google_translate'
+          type: 'checkbox'
+          name: 'enable_google_translate'
+          role: 'switch'
+          defaultChecked: !customization('disable_google_translate')
+          onChange: (ev) -> 
+            subdomain.customizations ||= {}
+            subdomain.customizations.disable_google_translate = !ev.target.checked
+            save subdomain        
 
         LABEL 
           className: 'indented'
@@ -485,23 +460,18 @@ window.ForumSettingsDash = ReactiveComponent
       if current_user.is_super_admin
         DIV className: 'input_group checkbox',
 
-          LABEL 
-            className: 'toggle_switch'
-
-            INPUT 
-              id: 'enable_plausible'
-              type: 'checkbox'
-              name: 'enable_plausible'
-              defaultChecked: customization('enable_plausible_analytics')
-              onChange: (ev) -> 
-                subdomain.customizations ||= {}
-                subdomain.customizations.enable_plausible_analytics = ev.target.checked
-                save subdomain
+          INPUT 
+            id: 'enable_plausible'
+            type: 'checkbox'
+            role: 'switch'
+            name: 'enable_plausible'
+            defaultChecked: customization('enable_plausible_analytics')
+            onChange: (ev) -> 
+              subdomain.customizations ||= {}
+              subdomain.customizations.enable_plausible_analytics = ev.target.checked
+              save subdomain
 
 
-            SPAN 
-              className: 'toggle_switch_circle'
-          
 
           LABEL 
             className: 'indented'
@@ -544,22 +514,17 @@ window.ForumSettingsDash = ReactiveComponent
         # HIDE OPINIONS OF EVERYONE
         DIV className: 'input_group checkbox',
 
-          LABEL 
-            className: 'toggle_switch'
-
-            INPUT 
-              id: 'hide_opinions'
-              type: 'checkbox'
-              name: 'hide_opinions'
-              defaultChecked: customization('hide_opinions')
-              onChange: (ev) -> 
-                subdomain.customizations ||= {}
-                subdomain.customizations.hide_opinions = ev.target.checked
-                save subdomain, ->
-                  arest.serverFetch('/users') # anonymity may have changed, so force a refetch
-
-            SPAN 
-              className: 'toggle_switch_circle'
+          INPUT 
+            id: 'hide_opinions'
+            type: 'checkbox'
+            name: 'hide_opinions'
+            role: 'switch'
+            defaultChecked: customization('hide_opinions')
+            onChange: (ev) -> 
+              subdomain.customizations ||= {}
+              subdomain.customizations.hide_opinions = ev.target.checked
+              save subdomain, ->
+                arest.serverFetch('/users') # anonymity may have changed, so force a refetch
           
 
           LABEL 
@@ -576,25 +541,21 @@ window.ForumSettingsDash = ReactiveComponent
         ########################
         # ANONYMIZE EVERYTHING
         DIV 
-          className: 'input_group checkbox'
-          
-          LABEL 
-            className: 'toggle_switch' + ( if allow_change_anon  then ''  else ' disabled' )
+          className: "input_group checkbox #{if !allow_change_anon then 'disabled' else ""}"
 
-            INPUT 
-              id: 'anonymize_everything'
-              type: 'checkbox'
-              name: 'anonymize_everything'
-              defaultChecked: customization('anonymize_everything')
-              disabled: not allow_change_anon
-              onChange: (ev) -> 
-                subdomain.customizations ||= {}
-                subdomain.customizations.anonymize_everything = ev.target.checked
-                save subdomain, ->
-                  location.reload() # anonymity may have changed, so force a refresh
-            
-            SPAN 
-              className: 'toggle_switch_circle'
+          INPUT 
+            id: 'anonymize_everything'
+            type: 'checkbox'
+            name: 'anonymize_everything'
+            role: 'switch'
+            defaultChecked: customization('anonymize_everything')
+            disabled: not allow_change_anon            
+
+            onChange: (ev) -> 
+              subdomain.customizations ||= {}
+              subdomain.customizations.anonymize_everything = ev.target.checked
+              save subdomain, ->
+                location.reload() # anonymity may have changed, so force a refresh
 
 
           LABEL 
@@ -612,62 +573,51 @@ window.ForumSettingsDash = ReactiveComponent
         # Anonymize permanently
 
         DIV 
-          className: 'input_group checkbox'
+          className: "input_group checkbox #{if !allow_change_perm_anon then 'disabled' else ""}"
           style: 
             paddingLeft: 70
           
-          LABEL 
-            className: 'toggle_switch' + ( if allow_change_perm_anon  then ''  else ' disabled' )
-            onClick: (ev) -> 
-              # Enforce disabled condition
-              if not allow_change_perm_anon
-                ev.stopPropagation()
-                ev.preventDefault()
-                return
-              # Receives click-events from both label and span, which should be deduplicated to prevent redundant confirmation-dialogs
-              # Deduplicate by time between confirm() finish and second event.
-              #   Deduplicating by time between events fails, because second event time is delayed until confirm() response.
-              #   Deduplicating by target is fragile, assumes specific target order.
-              #   Deduplicating by event X/Y coordinates would fail for accessibility cases like keyboard control.
-              # If user just ok'd to confirm change... this is a duplicate click event, do not re-prompt to confirm
-              now = new Date()
-              confirmed = @lastConfirmTime and ( now - @lastConfirmTime < 100 )
-              if confirmed
-                return confirmed
-              # Prompt user for confirmation, and stop click-events if user cancels change
-              confirmed = confirm( 'This makes anonymization of this forum permanent. You will not be able to revert. Are you certain?' )
-              if confirmed
-                @lastConfirmTime = new Date()
-              else
-                ev.stopPropagation()
-                ev.preventDefault()
 
-            INPUT 
-              id: 'anonymize_permanently'
-              type: 'checkbox'
-              name: 'anonymize_permanently'
-              defaultChecked: customization('anonymize_permanently')
-              disabled: not allow_change_perm_anon
-              onChange: (ev) -> 
-                subdomain.customizations ||= {}
-                if ev.target.checked
-                  subdomain.customizations.anonymize_everything = true
-                subdomain.customizations.anonymize_permanently = ev.target.checked
-                save subdomain, ->
-                  arest.serverFetch('/users') # anonymity may have changed, so force a refetch
+
+          LABEL 
             
-            SPAN 
-              className: 'toggle_switch_circle'
-
-          LABEL 
-            className: 'indented'
             htmlFor: 'anonymize_permanently'
-            B null,
-              'Anonymize permanently.'
-            
-            DIV 
-              className: 'explanation'
-              "Permanently hide the identities of participants. You will never see the identities of participants. Data export will not reveal the identity of participants. This is irreversible."
+
+            DIV
+              style: 
+                display: "flex"
+
+              INPUT 
+                id: 'anonymize_permanently'
+                type: 'checkbox'
+                name: 'anonymize_permanently'
+                role: 'switch'
+                defaultChecked: customization('anonymize_permanently')
+                disabled: not allow_change_perm_anon
+                onChange: (ev) -> 
+                  confirmed = confirm( 'This makes anonymization of this forum permanent. You will not be able to revert. Are you certain?' )
+
+                  if confirmed && allow_change_perm_anon
+                    subdomain.customizations ||= {}
+                    if ev.target.checked
+                      subdomain.customizations.anonymize_everything = true
+                    subdomain.customizations.anonymize_permanently = ev.target.checked
+                    save subdomain, ->
+                      arest.serverFetch('/users') # anonymity may have changed, so force a refetch
+                  else
+                    ev.target.checked = !ev.target.checked
+
+                  ev.stopPropagation()
+
+
+              DIV 
+                className: 'indented'
+                B null,
+                  'Anonymize permanently.'
+                
+                DIV 
+                  className: 'explanation'
+                  "Permanently hide the identities of participants. You will never see the identities of participants. Data export will not reveal the identity of participants. This is irreversible."
 
 
 

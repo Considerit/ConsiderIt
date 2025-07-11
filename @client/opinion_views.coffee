@@ -1,6 +1,6 @@
 require './shared'
 require './customizations'
-
+require './murmurhash'
 
 
 save 
@@ -1166,20 +1166,13 @@ InteractiveOpinionViews = ReactiveComponent
                                  The position on the histogram is the average score for all the people with 
                                  that value, and the size of the circle is the number of people with that value."""
 
-              SPAN
-                className: 'toggle_switch'
-
-                INPUT 
-                  type: 'checkbox'
-                  checked: opinion_views_ui.aggregate_into_groups
-                  onChange: (e) -> 
-                    opinion_views_ui.aggregate_into_groups = !opinion_views_ui.aggregate_into_groups        
-                    save opinion_views_ui
-
-                SPAN 
-                  className: 'toggle_switch_circle'
-                  style: 
-                    backgroundColor: if opinion_views_ui.aggregate_into_groups then "var(--focus_color)"
+              INPUT 
+                type: 'checkbox'
+                checked: opinion_views_ui.aggregate_into_groups
+                role: 'switch'
+                onChange: (e) -> 
+                  opinion_views_ui.aggregate_into_groups = !opinion_views_ui.aggregate_into_groups        
+                  save opinion_views_ui
             
               SPAN 
                 style: 
@@ -1281,40 +1274,43 @@ InteractiveOpinionViews = ReactiveComponent
                       shortened = true
 
                     do (val) => 
+                      id = "attr-val-#{murmurhash("#{val}:#{attribute.name}")}"
                       LI 
+                        id: id
                         key: "#{val}:#{attribute.name}"
                         "data-attribute": attribute.name
                         "data-value": val
                         style: 
                           display: 'inline-block'
 
+                        if is_grouped
+                          STYLE
+                            dangerouslySetInnerHTML: __html: """
+                              ##{id} input:where([type="checkbox"][role="switch"]):checked {
+                                background-color: #{group_colors[val]};
+                              }
+                            """
+
                         LABEL 
                           className: "attribute_value_selector"
                           title: if shortened then val 
 
-                          SPAN
-                            className: if is_grouped then 'toggle_switch' else ''
+                          INPUT 
+                            name: id
+                            type: if true_false then 'radio' else 'checkbox'
+                            value: val
+                            checked: checked
+                            role: if is_grouped then 'switch'
+                            onChange: (e) ->
+                              # create a view on the fly for this attribute
+                              if true_false
+                                opinion_views_ui.visible_attribute_values[attribute.key][true] = false
+                                opinion_views_ui.visible_attribute_values[attribute.key][false] = false
+                                opinion_views_ui.visible_attribute_values[attribute.key]["either"] = false
 
-                            INPUT 
-                              type: if true_false then 'radio' else 'checkbox'
-                              value: val
-                              checked: checked
-                              onChange: (e) ->
-                                # create a view on the fly for this attribute
-                                if true_false
-                                  opinion_views_ui.visible_attribute_values[attribute.key][true] = false
-                                  opinion_views_ui.visible_attribute_values[attribute.key][false] = false
-                                  opinion_views_ui.visible_attribute_values[attribute.key]["either"] = false
-
-                                opinion_views_ui.visible_attribute_values[attribute.key][val] = e.target.checked
-                                save opinion_views_ui
-                                construct_view_for_attribute(attribute)
-
-                            if is_grouped
-                              SPAN 
-                                className: 'toggle_switch_circle'
-                                style: 
-                                  backgroundColor: if checked then group_colors[val]
+                              opinion_views_ui.visible_attribute_values[attribute.key][val] = e.target.checked
+                              save opinion_views_ui
+                              construct_view_for_attribute(attribute)
 
                           SPAN 
                             className: 'attribute_value_value'
@@ -1323,6 +1319,7 @@ InteractiveOpinionViews = ReactiveComponent
             BUTTON
               className: 'icon'
               onClick: -> toggle_attribute_visibility(attribute)
+              "aria-label": "Toggle #{attribute} filter"
 
               iconX 14, "var(--text_dark)"
 

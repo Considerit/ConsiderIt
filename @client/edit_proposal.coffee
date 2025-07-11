@@ -5,20 +5,6 @@ styles += """
 
   }
 
-  [data-widget="EditProposal"] input:checked + .toggle_switch_circle {
-    background-color: var(--focus_color);
-  }
-
-  [data-widget="EditProposal"] label:not(.toggle_switch):not(.toggle_label){
-    font-size: 20px;
-    font-weight: 600;
-    padding-right: 24px;
-    display: inline-block;
-    color: var(--focus_color);
-    margin-bottom: 3px;
-    text-transform: capitalize;
-  }
-
   [data-widget="EditProposal"] .toggle_label {
     padding-left: 18px;
     color: var(--focus_color);
@@ -121,8 +107,12 @@ window.EditProposal = ReactiveComponent
               minHeight: 20
             html: if @props.fresh then null else proposal.description
 
+
         DIV
           className: 'block'
+          style: 
+            display: 'flex'
+            gap: 8
 
           LABEL 
             htmlFor:'category'
@@ -201,17 +191,13 @@ window.EditProposal = ReactiveComponent
             display: if !current_user.is_admin then 'none' else 'flex'
             alignItems: 'center'
 
-          LABEL 
-            className: 'toggle_switch'
 
-            INPUT 
-              id: 'open_for_discussion'
-              name: 'open_for_discussion'
-              type: 'checkbox'
-              defaultChecked: if @props.fresh then true else proposal.active
-
-            SPAN 
-              className: 'toggle_switch_circle'
+          INPUT 
+            id: 'open_for_discussion'
+            name: 'open_for_discussion'
+            type: 'checkbox'
+            role: 'switch'
+            defaultChecked: if @props.fresh then true else proposal.active
 
           LABEL 
             className: 'toggle_label'

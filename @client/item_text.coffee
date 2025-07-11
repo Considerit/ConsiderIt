@@ -637,6 +637,7 @@ window.ItemText = ReactiveComponent
                           toggleExpandPreferPersonal()
 
                       edit_icon YOUR_OPINION_BUTTON_SIZE, YOUR_OPINION_BUTTON_SIZE, YOUR_OPINION_BUTTON_COLOR
+
                  ]
 
               if (your_opinion = proposal.your_opinion) && your_opinion.key && permit('update opinion', proposal, your_opinion) > 0
@@ -654,6 +655,7 @@ window.ItemText = ReactiveComponent
 
                     iconAnonymousMask YOUR_OPINION_BUTTON_SIZE, \
                       if your_opinion.hide_name then "var(--focus_color)" else "var(--text_neutral)"
+
 
                   # Remove
                   BUTTON

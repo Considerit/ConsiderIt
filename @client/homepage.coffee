@@ -248,8 +248,7 @@ window.Homepage = ReactiveComponent
                 DIV 
                   style: 
                     textAlign: 'center'
-                    color: "var(--selected_color)"
-                    fontWeight: 600
+                    fontWeight: 400
                   translator 'tabs.footer_label', "Explore more on these other pages:"
                   
                 HomepageTabs

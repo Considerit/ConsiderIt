@@ -31,17 +31,30 @@ styles += """
     top: 32px;
   }
 
+  .is_collapsed.ProposalItem:hover .add_reasons_callout, 
+  .is_collapsed.ProposalItem:focus-within .add_reasons_callout,
   .ProposalItem:hover .add_reasons_callout, 
   .ProposalItem:focus-within .add_reasons_callout,
   .one-col .ProposalItem .add_reasons_callout {
     opacity: 1;
+    display: block;
+  }
+
+  .ProposalItem:hover .add_reasons_callout, 
+  .ProposalItem:focus-within .add_reasons_callout,
+  .one-col .ProposalItem .add_reasons_callout {
+    opacity: 1;
+    display: auto;
   }
 
   .collapsing.ProposalItem:hover .add_reasons_callout,
-  .collapsing.ProposalItem:focus-within .add_reasons_callout {
+  .collapsing.ProposalItem:focus-within .add_reasons_callout,
+  .is_collapsed.ProposalItem .add_reasons_callout,
+  .is_collapsed.ProposalItem .add_reasons_callout {
     opacity: 0;
     display: none;
   }  
+
 
   .add_reasons_callout.slide_prompt {
     --ADD_REASONS_CALLOUT_BUTTON_WIDTH: 160px;
@@ -431,6 +444,7 @@ window.SliderBubblemouth = ReactiveComponent
 
     DIV 
       key: 'slider_bubblemouth'
+      "aria-hidden": true
       style: 
         left: left
         top: top

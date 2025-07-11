@@ -212,6 +212,7 @@ window.IntakeQuestions = ReactiveComponent
 
                 BUTTON 
                   className: "icon"
+                  'aria-label': "edit question"
                   onClick: => 
                     intake_q_state.editing = q
                     save intake_q_state
@@ -220,12 +221,14 @@ window.IntakeQuestions = ReactiveComponent
 
                 BUTTON 
                   className: "icon"
+                  'aria-label': "reorder question"
                   style: 
                     cursor: 'move'
 
                   drag_icon 23, "var(--text_neutral)"
 
                 BUTTON 
+                  'aria-label': "delete question"
                   className: "icon"                
                   style:
                     position: 'absolute'

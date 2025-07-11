@@ -62,7 +62,6 @@ window.EditList = ReactiveComponent
 
           anchor_tooltip: translator "engage.list-config-icon-tooltip", "Configure list settings" 
           render_anchor: ->
-
             ThreeDotsIcon              
               size: 26
               fill: "var(--text_neutral)"
@@ -375,7 +374,7 @@ window.EditNewList = ReactiveComponent
             DIV 
               className: 'text-wrapper'
 
-              H1 
+              DIV 
                 className: 'LIST-title'
 
 
@@ -624,6 +623,7 @@ window.EditNewList = ReactiveComponent
 
             ref: 'oppose_slider'
             defaultValue: customization('slider_pole_labels', list_key, subdomain).oppose 
+            "aria-label": translator 'engage.slider_config.negative-pole-placeholder', 'Negative pole'
             placeholder: translator 'engage.slider_config.negative-pole-placeholder', 'Negative pole'
             onChange: (e) ->
               edit_list.slider_pole_labels ?= {}
@@ -644,6 +644,7 @@ window.EditNewList = ReactiveComponent
               edit_list.slider_pole_labels.support = e.target.value 
               save edit_list
             placeholder: translator 'engage.slider_config.positive-pole-placeholder', 'Positive pole'
+            "aria-label": translator 'engage.slider_config.positive-pole-placeholder', 'Positive pole'
 
 
         DropMenu

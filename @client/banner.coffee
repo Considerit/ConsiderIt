@@ -52,30 +52,26 @@ CustomizeGoogleTranslate = ReactiveComponent
           style:
             display: 'flex'
             justifyContent: 'center'
+            alignItems: 'center'
             paddingTop: if !subdomain.customizations.banner.background_image_url then 48
 
           
-          LABEL 
-            className: 'toggle_switch'
-
-            INPUT 
-              id: 'enable_google_translate'
-              type: 'checkbox'
-              name: 'enable_google_translate'
-              checked: !!@local.google_translate_style && @local.google_translate_style != '*delete*'
-              onChange: (ev) => 
-                if ev.target.checked
-                  @local.google_translate_style = 
-                    prominent: true
-                    callout: "¿No hablas ingles? Elige tu idioma:"
-                    textAlign: "center"
-                  save @local
-                else
-                  @local.google_translate_style = '*delete*'
-                  save @local
-
-            SPAN 
-              className: 'toggle_switch_circle'
+          INPUT 
+            id: 'enable_google_translate'
+            type: 'checkbox'
+            name: 'enable_google_translate'
+            role: 'switch'
+            checked: !!@local.google_translate_style && @local.google_translate_style != '*delete*'
+            onChange: (ev) => 
+              if ev.target.checked
+                @local.google_translate_style = 
+                  prominent: true
+                  callout: "¿No hablas ingles? Elige tu idioma:"
+                  textAlign: "center"
+                save @local
+              else
+                @local.google_translate_style = '*delete*'
+                save @local
 
           LABEL 
             className: 'toggle_switch_label'
@@ -901,6 +897,7 @@ window.EditBanner = ReactiveComponent
           name: 'logo'
           accept: "image/jpg, image/jpeg, image/pjpeg, image/png, image/x-png, image/gif, image/webp"          
           ref: 'logo_file_input'
+          "aria-label": 'Upload logo'
           onChange: (ev) =>
             edit_banner.logo_preview = URL.createObjectURL ev.target.files[0]
             @delete_logo = false 
@@ -912,6 +909,7 @@ window.EditBanner = ReactiveComponent
           accept: "image/jpg, image/jpeg, image/pjpeg, image/png, image/x-png, image/gif, image/webp"          
           name: 'masthead'
           ref: 'masthead_file_input'
+          "aria-label": 'Upload masthead'
           onChange: (ev) =>
             edit_banner.masthead_preview = URL.createObjectURL ev.target.files[0]
             @delete_masthead = false
@@ -951,6 +949,7 @@ window.EditBanner = ReactiveComponent
       BUTTON 
         onClick: delete_masthead
         id: 'delete_masthead'
+        "aria-label": "Delete masthead"
         style: 
           display: 'none '
 
@@ -959,6 +958,7 @@ window.EditBanner = ReactiveComponent
         BUTTON 
           id: 'delete_logo'
           onClick: delete_logo
+          "aria-label": "Delete logo"
           style: 
             display: 'none'
 

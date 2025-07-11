@@ -173,6 +173,9 @@ window.DropMenu = ReactiveComponent
         tabIndex: 0
         'aria-haspopup': "true"
         'aria-owns': "dropMenu-#{@local.key}"
+        "aria-label": @props.anchor_tooltip
+        "data-tooltip": @props.anchor_tooltip
+        
         style: if @local.show_menu then anchor_when_open_style else anchor_style
         className: "naked_button dropMenu-anchor #{if @props.anchor_class_name then @props.anchor_class_name else ''}"
 
@@ -199,7 +202,6 @@ window.DropMenu = ReactiveComponent
             e.preventDefault()
             e.stopPropagation() 
 
-        "data-tooltip": @props.anchor_tooltip
 
         render_anchor @local.show_menu 
 

@@ -64,6 +64,7 @@ window.AvatarInput = ReactiveComponent
       INPUT 
         id: 'user_avatar'
         name: "avatar"
+        "aria-label": "upload user pic"
         type: "file"
         accept: "image/jpg, image/jpeg, image/pjpeg, image/png, image/x-png, image/gif, image/webp"        
         style: {marginTop: 24, verticalAlign: 'top'}

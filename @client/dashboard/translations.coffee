@@ -135,7 +135,7 @@ IN_SITU_TRANSLATOR = ReactiveComponent
             LABEL null, 
               "#{available_languages[target_lang]} translation:"
 
-            editable_translation id, target_lang, subdomain_id, updated_translations, proposed_translations.proposals[id], message_style
+            editable_translation id, target_lang, subdomain_id, updated_translations, proposed_translations.proposals[id], @props.native_text, message_style
 
           DIV 
             style: 
@@ -463,11 +463,14 @@ TranslationsDash = ReactiveComponent
               type: 'text'
               ref: 'newlang_abbrev'
               placeholder: 'Abbreviation'
+              "aria-label": 'Abbreviation'
 
             INPUT               
               type: 'text'
               ref: 'newlang_label'
               placeholder: 'Full Name'
+              "aria-label": 'Full Name'
+
               style: 
                 margin: '0 8px'
                 fontSize: 18
@@ -804,7 +807,7 @@ TranslationsForLang = ReactiveComponent
                     use_color = "var(--success_color)"
                     use_label = 'low use'                  
                   else 
-                    use_color = "var(--upgrade_color)"
+                    use_color = "var(--bg_dark)"
                     use_label = 'rarely used'
 
 
@@ -827,9 +830,11 @@ TranslationsForLang = ReactiveComponent
                       if !@props.forum_specific
                         SPAN 
                           style: 
-                            color: use_color
+                            backgroundColor: use_color
                             fontSize: 12
-                            paddingLeft: 12
+                            marginLeft: 12
+                            color: "var(--text_light)"
+                            padding: '0 2px'
                           use_label
 
 
@@ -844,7 +849,8 @@ TranslationsForLang = ReactiveComponent
                       style: 
                         position: 'relative'
 
-                      editable_translation name, lang, subdomain_id, updated_translations, proposed_translations.proposals[name]
+                      editable_translation name, lang, subdomain_id, updated_translations, proposed_translations.proposals[name], native_messages[name]
+                      
                       if current_user.is_super_admin
                         do (name) =>
                           BUTTON 
@@ -854,6 +860,8 @@ TranslationsForLang = ReactiveComponent
                               right: -25
                               padding: '4px'
                               top: 'calc(50% - 14px)'
+
+                            'aria-label': 'delete'
 
                             onClick: => 
                               deleteTranslationString name
@@ -981,7 +989,7 @@ deleteTranslationString = (string_id) ->
 
 
 
-editable_translation = (id, lang_code, subdomain_id, updated_translations, proposed_translations, style) -> 
+editable_translation = (id, lang_code, subdomain_id, updated_translations, proposed_translations, native_text, style) -> 
   current_user = bus_fetch '/current_user'
 
 
@@ -1024,6 +1032,7 @@ editable_translation = (id, lang_code, subdomain_id, updated_translations, propo
 
     AutoGrowTextArea
       defaultValue: updated_translations[id]?.translation or val
+      "aria-label": native_text
       style: _.defaults (style or {}),
         verticalAlign: 'top'
         fontSize: 'inherit'

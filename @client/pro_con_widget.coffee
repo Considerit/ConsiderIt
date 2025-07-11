@@ -1037,7 +1037,7 @@ window.PointsList = ReactiveComponent
     
     HEADING = if @props.rendered_as == 'community_point' then H3 else H4 
 
-    wrapper [
+    wrapper proposal, [
 
 
       HEADING 
@@ -1120,8 +1120,7 @@ window.PointsList = ReactiveComponent
     contains_selection || is_editing
 
 
-  drawCommunityPoints: (children) -> 
-    proposal = bus_fetch @props.proposal 
+  drawCommunityPoints: (proposal, children) -> 
 
     mode = getProposalMode(proposal)
 
@@ -1146,30 +1145,37 @@ window.PointsList = ReactiveComponent
     SECTION
       key: 'community_points'
       className: "point_list points_by_community #{@props.valence}_by_community"
+      "aria-hidden": @props.style?.visibility == 'hidden'
+
       style: _.defaults (@props.style or {}),
         minHeight: (if points_for_proposal(proposal).length > 4 && mode == 'crafting' then window.innerHeight else 100)
         zIndex: if @columnStandsOut() then 6 else 1
         transition: "transform #{CRAFTING_TRANSITION_SPEED}ms, width #{CRAFTING_TRANSITION_SPEED}ms"
         transform: "translate(#{x_pos}, 0)"
+
       if mode == 'crafting' && !TABLET_SIZE()
 
-        [A
-          key: 'skip to'
-          className: 'hidden'
-          href: "##{@props.valence}_on_decision_board"
-          'data-nojax': true
-          onClick: (e) => 
-            e.stopPropagation()
-            document.activeElement?.blur()
-            document.querySelector("[name='#{@props.valence}_on_decision_board']").focus()
+        [
 
-          "Skip to Your points."
-        A key: 'anchor', name: "#{@props.valence}_by_community"]
+          if @props.style?.visibility != 'hidden'
+            A
+              key: 'skip to'
+              className: 'hidden'
+              href: "##{@props.valence}_on_decision_board-#{proposal.id}"
+              'data-nojax': true
+              onClick: (e) => 
+                e.stopPropagation()
+                document.activeElement?.blur()
+                document.querySelector("[name='#{@props.valence}_on_decision_board-#{proposal.id}']").focus()
+
+              "Skip to Your points."
+          A key: 'anchor', name: "#{@props.valence}_by_community-#{proposal.id}"
+        ]
 
       children
 
 
-  drawYourPoints: (children) -> 
+  drawYourPoints: (proposal, children) -> 
       
     SECTION 
       className: "point_list points_on_decision_board #{@props.valence}_on_decision_board"
@@ -1180,7 +1186,7 @@ window.PointsList = ReactiveComponent
         position: 'relative'
         zIndex: if @columnStandsOut() then 6 else 1        
         float: if @props.valence == 'pros' then 'right' else 'left'    
-      A name: "#{@props.valence}_on_decision_board"
+      A name: "#{@props.valence}_on_decision_board-#{proposal.id}"
       children
 
   drawAddNewPoint: -> 
@@ -1235,12 +1241,12 @@ window.PointsList = ReactiveComponent
 
             A
               className: 'hidden'
-              href: "##{@props.valence}_by_community"
+              href: "##{@props.valence}_by_community-#{proposal.id}"
               'data-nojax': true
               onClick: (e) => 
                 e.stopPropagation()
                 document.activeElement?.blur()
-                document.querySelector("[name='#{@props.valence}_by_community']").focus()
+                document.querySelector("[name='#{@props.valence}_by_community-#{proposal.id}']").focus()
 
               "Skip to #{noun} points by others to vote on important ones."
  

@@ -46,8 +46,6 @@ window.DataDash = ReactiveComponent
       query = "?#{(v.key for v in user_tags).join('=1&')}" 
 
 
-
-    @local.errors = ["asdfasdfasdf", "asfasfasfasdf"]
     
     DIV null,
       if !paid
@@ -274,10 +272,10 @@ window.DataDash = ReactiveComponent
 
         if current_user.is_admin
           DIV 
-            className: "danger_button btn"
             style: 
               marginBottom: 24
             BUTTON 
+              className: "danger_button btn"
               onClick: => 
                 if confirm("Are you sure you want to delete all proposals, opinions, and comments on this forum?")
                   
@@ -296,10 +294,10 @@ window.DataDash = ReactiveComponent
 
         if current_user.is_admin
           DIV 
-            className: "danger_button btn"
             style: 
               marginBottom: 24
             BUTTON 
+              className: "danger_button btn"
               onClick: => 
                 if confirm("Are you sure you want to entirely delete this forum? In addition to removing all content, the forum and all its configuration will be removed.")
                   

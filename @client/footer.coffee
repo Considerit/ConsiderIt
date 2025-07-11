@@ -188,6 +188,7 @@ window.DefaultFooter = ReactiveComponent
 
                 "Consider.it is Open Source"
                 IMG 
+                  alt: "Github logo"
                   width: 18
                   height: 18
                   src: asset('product_page/github_logo_white.png')

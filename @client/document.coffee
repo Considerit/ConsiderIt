@@ -262,7 +262,7 @@ styles += """
 
   .markdown-body a {
     text-decoration: underline; 
-    color: var(--considerit_red);    
+    color: var(--text_dark);    
   }
   .markdown-body li {
     list-style-position: outside;

@@ -331,6 +331,7 @@ window.avatar = (user, props) ->
     className: classes
     'data-user': user.key
     'data-popover': if !props.hide_popover && !anonymous && !screencasting() then alt 
+    'alt': alt     
     'data-tooltip': if anonymous then alt
     'data-anon': anonymous  
     tabIndex: if props.focusable then 0 else -1

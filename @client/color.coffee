@@ -118,6 +118,22 @@ colorTransparency = (hex, opacity) ->
   rgba = hexToRgba(hex)
   return "rgba(#{rgba.r}, #{rgba.g}, #{rgba.b}, #{opacity})"
 
+window.desaturateHexColor = (hexval, amount = 1) ->
+
+  hex = get_css_variable_value(hexval)
+  return hexval unless hex?
+
+  rgba = hexToRgba(hex)
+  return hex unless rgba?
+
+  hsl = rgb2hsl(rgba)
+  hsl.s *= 1 - Math.max(0, Math.min(1, amount))  # Clamp amount to [0,1]
+
+  # Convert HSL back to RGB
+  [r, g, b] = hsv2rgb(hsl.h, hsl.s, hsl.l, true)  # Using HSL as HSV is close enough for desaturation here
+
+  rgbaToHex(Math.round(r * 255), Math.round(g * 255), Math.round(b * 255), rgba.a)
+
 
 # Ugly! Need to have responsive colors or responsive styles. 
 if location.href.indexOf('aeroparticipa') > -1
@@ -321,6 +337,12 @@ window.generateColorVariableDefs = ->
     --failure_color: #ff00ff;
     --caution_color: #ffff00;
 
+    --focus_color: #{focus_color};
+    --selected_color: #97002c;
+    --failure_color: #97002c;
+    --success_color: #437C2D;
+    --caution_color: #8A6700;
+
   }
 
   /* User-agent style integration */
@@ -355,6 +377,7 @@ window.generateColorVariableDefs = ->
     input[type='submit'].selector_button.active, 
     [data-widget="DropMenu"].bluedrop button.dropMenu-anchor, 
     .toggle_buttons .active button,
+
     #DASHBOARD-menu a.active {
       color: var(--text_dark);
     }
@@ -431,11 +454,11 @@ if window.matchMedia
       setTheme(if e.matches then 'high-contrast' else 'light')
 
 
-window.parseCssRgb = (css_color_str) ->
+get_css_variable_value = (str) ->
   # Handle CSS variables like 'var(--focus_color)'
-  if css_color_str?.match(/^var\(/i)
+  if str?.match(/^var\(/i)
     # Extract variable name from var(--variable-name)
-    var_match = css_color_str.match(/^var\(\s*(--[^)]+)\s*\)/i)
+    var_match = str.match(/^var\(\s*(--[^)]+)\s*\)/i)
     if var_match
       var_name = var_match[1].trim()
       # Remove leading -- to get the JavaScript variable name
@@ -444,21 +467,33 @@ window.parseCssRgb = (css_color_str) ->
       try
         computed_value = getComputedStyle(document.documentElement).getPropertyValue(var_name).trim()
         if computed_value
-          css_color_str = computed_value
+          return computed_value
         else
           # Fallback to JavaScript variable lookup
           if window[js_var_name]?
-            css_color_str = window[js_var_name]
+            return window[js_var_name]
           else
             console.error "CSS variable #{var_name} not found in computed styles or window as #{js_var_name}"
-            return {r: 0, g: 0, b: 0, a: 1}
+            return null
       catch error
         # Fallback to JavaScript variable lookup if getComputedStyle fails
         if window[js_var_name]?
-          css_color_str = window[js_var_name]
+          return window[js_var_name]
         else
           console.error "CSS variable #{var_name} not found on window as #{js_var_name}"
-          return {r: 0, g: 0, b: 0, a: 1}
+          return null
+  else
+    return str
+
+
+window.parseCssRgb = (css_color_str) ->
+  css_color_str = get_css_variable_value(css_color_str)
+  if !css_color_str
+    return {
+      r: 0
+      g: 0
+      b: 0
+    }
 
   test = document.createElement('div')
   test.style.color = css_color_str

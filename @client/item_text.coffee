@@ -764,9 +764,12 @@ styles += """
     font-size: 12px;
     color: var(--text_light_gray);
     white-space: nowrap;
+    padding: 6px 0px 2px 0px;
   } 
 
-
+  .proposal-metadata .metadata-piece.like_link_with_bottom_border {
+    padding: 6px 0px 2px 0px;
+  }
 """
 
 

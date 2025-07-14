@@ -206,6 +206,7 @@ window.Homepage = ReactiveComponent
                         message.icon(34, 34, "var(--text_dark)")
                       else
                         IMG 
+                          'aria-hidden': true
                           style: 
                             maxWidth: 34
                           src: "#{bus_fetch('/application').asset_host}/images/#{message.img}"

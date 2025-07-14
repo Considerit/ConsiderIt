@@ -28,11 +28,13 @@ window.Header = ReactiveComponent
 
     header_bonus = customization('header_bonus') # currently used for things like inserting google font
 
+    has_image_background = has_banner_image_background() 
+
     HEADER 
       style: 
         position: 'relative'
         zIndex: if bus_fetch('edit_forum').editing then 1 # necessary b/c of payment modal
-      className: if !light_bg then 'dark'
+      className: "#{if !light_bg then 'dark' else 'light'} #{if has_image_background then 'image_background' else ''}"
 
       if current_user.is_admin
         HostHeader()

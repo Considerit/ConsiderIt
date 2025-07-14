@@ -293,53 +293,58 @@ window.HomepageTabs = ReactiveComponent
 
 
       if edit_forum.editing 
+
         DIV 
           style:
-            display: 'flex'
-            justifyContent: 'center'
-            alignItems: 'center'
-          
-          INPUT 
-            id: 'enable_tabs'
-            type: 'checkbox'
-            name: 'enable_tabs'
-            role: 'switch'
-            "aria-hidden": !paid            
-            checked: !!get_tabs()
-            style: 
-              pointerEvents: if !paid then 'none'
-              opacity: if !paid then .4
+            textAlign: 'center'
 
-            onChange: (ev) -> 
-              if ev.target.checked
-                loc = bus_fetch 'location'
-                new_tab_name = prompt("What is the name of the first tab? You'll be able to add more later.")
-                if new_tab_name
-                  create_new_tab new_tab_name
-                  loc.query_params.tab = new_tab_name
-                  if subdomain.customizations.lists?
-                    delete subdomain.customizations.lists
-                    save subdomain
-              else
-                if confirm(translator "homepage_tab.disable_confirmation", "Are you sure you want to disable tabs? Existing tabs will be deleted. All existing lists will still be visible.")
-                  for tab in get_tabs()?.slice() or []
-                    delete_tab(tab.name, true)
-
-          LABEL 
-            className: 'toggle_switch_label'
+          DIV 
+            className: 'configuration_area'
             style:
-              backgroundColor: if is_light then "var(--bg_light_trans_25)" else "var(--bg_dark_trans_25)"
-            htmlFor: if paid then 'enable_tabs'
-            B null,
-              'Enable Tabs.'
+              display: 'inline-flex'
+              justifyContent: 'center'
+              alignItems: 'center'
             
-            DIV null,
+            INPUT 
+              id: 'enable_tabs'
+              type: 'checkbox'
+              name: 'enable_tabs'
+              role: 'switch'
+              "aria-hidden": !paid            
+              checked: !!get_tabs()
+              style: 
+                pointerEvents: if !paid then 'none'
+                opacity: if !paid then .4
 
-              "Tabs help organize your forum into different pages."
+              onChange: (ev) -> 
+                if ev.target.checked
+                  loc = bus_fetch 'location'
+                  new_tab_name = prompt("What is the name of the first tab? You'll be able to add more later.")
+                  if new_tab_name
+                    create_new_tab new_tab_name
+                    loc.query_params.tab = new_tab_name
+                    if subdomain.customizations.lists?
+                      delete subdomain.customizations.lists
+                      save subdomain
+                else
+                  if confirm(translator "homepage_tab.disable_confirmation", "Are you sure you want to disable tabs? Existing tabs will be deleted. All existing lists will still be visible.")
+                    for tab in get_tabs()?.slice() or []
+                      delete_tab(tab.name, true)
 
-          if !paid
-            UpgradeForumButton
-              text: 'upgrade'
+            LABEL 
+              className: 'toggle_switch_label'
+
+              htmlFor: if paid then 'enable_tabs'
+              B null,
+                'Enable Tabs.'
+              
+              DIV null,
+
+                "Tabs help organize your forum into different pages."
+
+            if !paid
+              UpgradeForumButton
+                text: 'upgrade'
 
 
       A 
@@ -545,6 +550,7 @@ window.Tab = ReactiveComponent
       if edit_forum.editing  && !tab.add_new && !tab.demo && get_tabs().length > 1
         BUTTON 
           className: 'icon'
+          'aria-label': 'Reorder this tab'
           style: 
             cursor: 'move'
           drag_icon 15, "var(--text_neutral)"
@@ -570,6 +576,7 @@ window.Tab = ReactiveComponent
             className: "tab_name_input"
             type: 'text'
             defaultValue: tab_name
+            'aria-label': "Name of the tab"
             style: 
               fontSize: 'inherit'
               color: 'inherit'
@@ -614,6 +621,7 @@ window.Tab = ReactiveComponent
       if edit_forum.editing && tab_name == get_current_tab_name() && !tab.demo
         BUTTON 
           className: 'icon'
+          'aria-label': 'Delete this tab'
           style:
             display: 'inline-block'
           onClick: ->

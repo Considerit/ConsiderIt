@@ -956,8 +956,6 @@ CollapseList = (list_key) ->
       document.activeElement.blur()
       e.stopPropagation()
 
-    'aria-hidden': true
-
     if !TABLET_SIZE()
       double_up_icon(COLLAPSE_ICON_SIZE)
     else 

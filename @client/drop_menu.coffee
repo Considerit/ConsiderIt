@@ -77,7 +77,7 @@ window.DropMenu = ReactiveComponent
 
     anchor_style = @props.anchor_style or {}
 
-    anchor_when_open_style = _.defaults {}, (@props.anchor_open_style or {}), anchor_style
+    anchor_when_open_style = _.extend {}, anchor_style, (@props.anchor_when_open_style or {})
     
     menu_style = @props.menu_style or {}
 

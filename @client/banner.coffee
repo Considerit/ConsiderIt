@@ -44,16 +44,17 @@ CustomizeGoogleTranslate = ReactiveComponent
     DIV 
       style: 
         paddingTop: if trns?.callout && !edit_forum.editing then 24    
-
+        textAlign: 'center'
 
       if is_admin && edit_forum.editing   
 
         DIV 
+          className: 'configuration_area'
           style:
-            display: 'flex'
+            display: 'inline-flex'
             justifyContent: 'center'
             alignItems: 'center'
-            paddingTop: if !subdomain.customizations.banner.background_image_url then 48
+            marginTop: if !subdomain.customizations.banner.background_image_url then 48
 
           
           INPUT 
@@ -75,8 +76,6 @@ CustomizeGoogleTranslate = ReactiveComponent
 
           LABEL 
             className: 'toggle_switch_label'
-            style:
-              backgroundColor: if is_light then "var(--bg_light_trans_25)" else "var(--bg_dark_trans_25)"
 
             htmlFor: 'enable_google_translate'
             B null,
@@ -97,17 +96,17 @@ CustomizeGoogleTranslate = ReactiveComponent
               style: 
                 marginBottom: 16
                 textAlign: 'center'
-                color: "var(--text_dark)"
 
               if edit_forum.editing 
                 AutoGrowTextArea 
                   className: 'banner_title'
+                  'aria-label': 'Preamble for the Google Translator widget'
                   defaultValue: @local.google_translate_style?.callout
                   style: 
-                    color: 'inherit'
+                    # color: 'inherit'
                     fontSize: 'inherit'
                     backgroundColor: 'transparent'
-                    border: 'none'
+                    border: '1px solid currentColor'
                     width: '100%'
                   onChange: (e) =>
                     @local.google_translate_style.callout = e.target.value
@@ -217,7 +216,7 @@ styles += """
     min-height: 48px;
   }
   .wrapper.with-image .CustomizeDescription .ql-editor.ql-blank::before {
-    color: var(--bg_light_trans_40);
+    color: rgba(255,255,255, 0.40);
   } 
 
 
@@ -279,7 +278,8 @@ CustomizeDescription = ReactiveComponent
           placeholder: translator("banner.description.label", "Describe your forum. What is being discussed? Who is it for, and who are the hosts? How long will it be open?")
           focus_on_mount: focus_on_mount
           button_style: 
-            backgroundColor: "var(--bg_light)"
+            backgroundColor: "#ffffff"
+            color: "#000000"
     else
       DIV null,
            
@@ -304,7 +304,7 @@ UploadFileSVG = (opts) ->
     dangerouslySetInnerHTML: __html: '<g><path d="M89.4,46.5c-2.3,0-4.1,1.8-4.1,4.1v28.2H14.6V50.5c0-2.3-1.8-4.1-4.1-4.1c-2.3,0-4.1,1.8-4.1,4.1v32.4   c0,2.3,1.8,4.1,4.1,4.1h78.9c2.3,0,4.1-1.8,4.1-4.1V50.5C93.5,48.3,91.7,46.5,89.4,46.5z"></path><path d="M52.7,14.2c-0.1-0.1-0.2-0.2-0.4-0.3c-0.1,0-0.1-0.1-0.3-0.2c-0.6-0.5-1.4-0.7-2.2-0.7c-0.5,0-1.1,0.1-1.6,0.3   c-0.5,0.2-1,0.5-1.4,0.8L26.8,34.3c-0.8,0.8-1.2,1.9-1.2,3c0,1.1,0.5,2,1.2,2.7c0.8,0.8,1.7,1.2,2.9,1.2s2.2-0.4,2.9-1.2l13-13.1   v41.6c0,2.3,1.8,4.1,4.1,4.1c2.3,0,4.1-1.8,4.1-4.1V26.9L67.1,40c0.8,0.8,1.7,1.2,2.9,1.2s2.2-0.4,2.9-1.2c0.8-0.8,1.2-1.9,1.2-3   c0-1.1-0.5-2-1.2-2.7L52.7,14.2z"></path></g>'
     height: opts.height or 100
     width: opts.height or 100
-    fill: opts.fill or "var(--bg_light)"
+    fill: opts.fill or "#ffffff"
     x: 0
     y: 0
     viewBox: "0 0 100 100"
@@ -339,6 +339,7 @@ UploadableLogo = (opts) ->
       IMG 
         style: opts.image_style
         src: opts.src
+        alt: "forum logo"
 
     if editing && has_logo # delete logo
       delete_size = 30
@@ -350,6 +351,7 @@ UploadableLogo = (opts) ->
           top: 4
           padding: 0
           zIndex: 1
+        'aria-label': 'Delete logo'
 
         onClick: ->
           document.querySelector(opts.trigger_delete).click()
@@ -357,7 +359,7 @@ UploadableLogo = (opts) ->
         SVG 
           height: delete_size
           width: delete_size
-          fill: "var(--bg_light)"
+          fill: "#ffffff"
           x: 0
           y: 0
           viewBox: "0 0 511.995 511.995"
@@ -396,7 +398,7 @@ UploadableLogo = (opts) ->
 
         UploadFileSVG
           height: icon_height
-          fill: if is_light then "var(--text_dark)" else "var(--text_light)"
+          fill: if is_light then "#000000" else "#ffffff"
 
 
 
@@ -533,7 +535,7 @@ CustomizeLogo = ReactiveComponent
     if edit_forum.editing
       _.extend style, 
         borderStyle: if !has_logo then 'dashed' else 'solid'
-        borderColor: if is_light then "var(--brd_dark)" else "var(--brd_light)"
+        borderColor: if is_light then "#000000" else "#ffffff"
         borderWidth: 2
         left: style.left - 1
         top: style.top - 1
@@ -560,7 +562,7 @@ CustomizeLogo = ReactiveComponent
           style: 
             position: 'absolute'
             fontSize: 14
-            color: if is_light then "var(--text_dark)" else "var(--text_light)"
+            color: if is_light then "#000000" else "#ffffff"
             zIndex: 1
             bottom: 0
             marginTop: 60
@@ -571,10 +573,10 @@ CustomizeLogo = ReactiveComponent
             translator 'banner.logo_label', 'Logo (optional)'
           else 
             BUTTON 
-              className: 'like_link'
+              'aria-label': "Upload logo"
+              className: 'like_link configuration_area'
               style: 
                 color: 'inherit'
-                backgroundColor: if !is_light then "var(--bg_dark_trans_25)" else "var(--bg_light_trans_25)"
 
               onClick: ->
                 document.querySelector('input#logo').click()
@@ -585,7 +587,7 @@ CustomizeLogo = ReactiveComponent
       if edit_forum.editing
         DIV 
           style: 
-            backgroundColor: if has_masthead && !has_logo then (if !is_light then "var(--bg_dark_trans_25)" else "var(--bg_light_trans_25)")
+            backgroundColor: if has_masthead && !has_logo then (if !is_light then "rgba(0,0,0, 0.25)" else "rgba(255,255,255, 0.25)")
             position: 'absolute'
             left: 0
             top: 0
@@ -599,7 +601,7 @@ CustomizeLogo = ReactiveComponent
           onMouseMove: if edit_forum.editing then onMouseMoveResize
 
           style: 
-            backgroundColor: if is_light then "var(--bg_dark)" else "var(--bg_light)"
+            backgroundColor: if is_light then "#000000" else "#ffffff"
             height: 17 * 2
             width: 17 * 2
             position: 'absolute'
@@ -609,7 +611,7 @@ CustomizeLogo = ReactiveComponent
             transform: 'rotate(45deg)'
             zIndex: 2
 
-DEFAULT_TEXT_BLOCK_COLOR = "var(--bg_dark)"
+DEFAULT_TEXT_BLOCK_COLOR = "#000000"
 DEFAULT_TEXT_BLOCK_OPACITY = 255 * .8
 CustomizeTextBlock = ReactiveComponent
   displayName: 'CustomizeTextBlock'
@@ -639,6 +641,7 @@ CustomizeTextBlock = ReactiveComponent
         type: 'color'
         name: 'text_background_css'
         defaultValue: customization('banner')?.text_background_css or DEFAULT_TEXT_BLOCK_COLOR
+        'aria-label': "Background color for the banner text block"
         style: 
           width: '100%'
           display: 'block'
@@ -653,6 +656,7 @@ CustomizeTextBlock = ReactiveComponent
         step: 1
         max: 255
         name: 'text_background_css_opacity'
+        'aria-label': "Opacity for the banner text block"
         defaultValue: customization('banner')?.text_background_css_opacity or DEFAULT_TEXT_BLOCK_OPACITY
         style:
           width: '100%'
@@ -697,7 +701,7 @@ CustomizeBackground = ReactiveComponent
     is_light = is_light_background()
 
     icon_height = 50
-    color = if is_light then "var(--text_dark)" else "var(--text_light)"
+    color = if is_light then "#000000" else "#ffffff"
 
     compressed = CONTENT_WIDTH() < 1036
 
@@ -705,12 +709,12 @@ CustomizeBackground = ReactiveComponent
       style: 
         textAlign: if compressed then 'right'
       DIV
+        className: 'configuration_area'
         style: 
           position: 'relative'
           # bottom: 50
           # width: 218
           float: if !compressed then 'right'
-          backgroundColor: if is_light then "var(--bg_light_trans_25)" else "var(--bg_dark_trans_25)"
           padding: '12px 24px'
           zIndex: 9
           marginTop: if compressed then 12 else if has_masthead && !compressed then -120 else -100
@@ -730,7 +734,7 @@ CustomizeBackground = ReactiveComponent
               alignItems: 'center'
               flexDirection: 'column'
               padding: 4
-              border: "1px dashed #{if is_light then "var(--brd_dark)" else "var(--brd_light)"}"
+              border: "1px dashed #{if is_light then "#000000" else "#ffffff"}"
               borderRadius: 4
 
               
@@ -745,7 +749,7 @@ CustomizeBackground = ReactiveComponent
 
               UploadBackgroundImageSVG
                 height: icon_height
-                fill: if is_light then "var(--bg_dark)" else "var(--bg_light)"
+                fill: if is_light then "#000000" else "#ffffff"
 
             DIV 
               style: 
@@ -814,7 +818,7 @@ CustomizeBackground = ReactiveComponent
                   value: is_light
 
                   onChange: (e) =>
-                    @local.background_css = if e.target.value == 'true' then "var(--bg_light)" else bg_dark
+                    @local.background_css = if e.target.value == 'true' then "#ffffff" else "#000000"
                     save @local
 
                   OPTION 
@@ -933,9 +937,9 @@ window.EditBanner = ReactiveComponent
                   is_light = is_image_mostly_light image_data, img.width, img.height
 
                   if is_light 
-                    subdomain.customizations.banner.background_css = "var(--bg_light)"
+                    subdomain.customizations.banner.background_css = "#ffffff"
                   else 
-                    subdomain.customizations.banner.background_css = "var(--bg_dark)"
+                    subdomain.customizations.banner.background_css = "#000000"
 
                   save subdomain
 
@@ -1025,8 +1029,56 @@ window.EditBanner = ReactiveComponent
 
 
 
+HostShortcuts = ->
+  current_user = bus_fetch '/current_user'
+
+  is_admin = current_user.is_admin
+
+  settings = [{name: 'Forum Settings', url: '/dashboard/application'}, {name: 'Permissions & Roles', url: '/dashboard/roles'}]
+  if is_admin
+    settings.push {name: 'Sign-up Questions', url: '/dashboard/intake_questions', paid: true}
+
+  show_dash_modal = bus_fetch 'show_dash_modal'
+
+  DIV 
+    className: "host_shortcuts configuration_area"
+
+    if show_dash_modal.showing
+      ModalDash
+        url: show_dash_modal.showing.url
+        done_callback: =>
+          show_dash_modal.showing = null 
+          save show_dash_modal
+
+    UL 
+      style: 
+        listStyle: 'none'
+
+      for config in settings
+        LI 
+          key: config.name
+          style: 
+            marginBottom: 6
+
+          BUTTON
+            className: 'like_link'
+
+            onClick: do(config) => => 
+              show_dash_modal.showing = config
+              save show_dash_modal
 
 
+            config.name
+
+          if config.paid && permit('configure paid feature') < 0
+            UpgradeForumButton
+              text: 'upgrade'
+  
+
+
+window.has_banner_image_background = ->
+  edit_banner = bus_fetch 'edit_banner'
+  has_image_background = edit_banner.masthead_preview != '*delete*' && (edit_banner.masthead_preview || customization('banner')?.background_image_url)
 
 window.PhotoBanner = (opts) -> 
   opts ?= {}
@@ -1038,7 +1090,8 @@ window.PhotoBanner = (opts) ->
 
   return SPAN null if !subdomain.name 
 
-  tab_background_color = (if edit_forum.editing then edit_banner.text_background_css) or customization('banner')?.text_background_css or "var(--bg_dark_gray)"
+
+
 
   if !homepage
     return  DIV
@@ -1054,7 +1107,7 @@ window.PhotoBanner = (opts) ->
                 back_to_homepage_button {fontSize: 32}, translator 'engage.back_to_homepage', 'Homepage'
 
 
-  has_image_background = edit_banner.masthead_preview != '*delete*' && (edit_banner.masthead_preview || customization('banner')?.background_image_url)
+  has_image_background = has_banner_image_background() 
 
   convert_opacity = (value) ->
     if !value
@@ -1076,20 +1129,25 @@ window.PhotoBanner = (opts) ->
 
   is_dark_theme = !is_light_background()
 
+
+
   if has_image_background
-    text_block_color = DEFAULT_TEXT_BLOCK_COLOR 
+    text_block_color =   (if edit_forum.editing then edit_banner.text_background_css) or customization('banner')?.text_background_css or DEFAULT_TEXT_BLOCK_COLOR 
     text_block_opacity = parseInt(edit_banner.text_background_css_opacity or customization('banner')?.text_background_css_opacity or DEFAULT_TEXT_BLOCK_OPACITY)
-    text_block_background = "#{text_block_color}#{convert_opacity(text_block_opacity)}" or "var(--bg_dark_trans_80)"
+    text_block_background = "#{text_block_color}#{convert_opacity(text_block_opacity)}" or "rgba(0,0,0, 0.80)" 
     
     if text_block_opacity > 126
       text_block_is_dark = !is_light_background(text_block_color)
     else 
       text_block_is_dark = is_dark_theme
 
-    text_color = if text_block_is_dark then "var(--text_light)" else "var(--text_dark)"
+    text_color = if text_block_is_dark then "#ffffff" else "#000000"
 
   else  
-    text_color = if is_light_background(background_color) then "var(--text_dark)" else "var(--text_light)"
+    text_color = if is_light_background(background_color) then "#000000" else "#ffffff"
+    text_block_background = background_color
+
+  # tab_text_color = if is_light_background(tab_background_color) then '#000000' else '#ffffff'
 
 
 
@@ -1100,21 +1158,55 @@ window.PhotoBanner = (opts) ->
     STYLE
       dangerouslySetInnerHTML: __html: """
         .PhotoBanner {
+
+          --banner_block_bg_color: #{text_block_background};
+          --banner_block_text_color: #{text_color};
+          --banner_naked_text_color: #000000;
+          --banner_background_color: #{background_color};
+
+          --tab_text_color: #{text_color};
+          --configuration_background_opacity: .5;
+
+          --configuration_background_color: rgba(255,255,255, var(--configuration_background_opacity));
+          --configuration_text_color: #000000;
+
+          --translator_background_color: #00000088;
+          --translator_text_color: #ffffff;
+
           position: relative;
-          color: var(--text_dark);
+          color: var(--banner_naked_text_color);
           padding-top: #{if edit_forum.editing then '54px' else '0px'};
         }
-        .dark .PhotoBanner {
-          color: var(--text_light);
+
+        .image_background .PhotoBanner {
+          --configuration_background_opacity: .75;        
+          --translator_background_color: #000000CC;
+
         }
+        .dark.image_background .PhotoBanner {
+          --translator_background_color: #ffffffCC;  
+        }
+
+        .dark .PhotoBanner {
+          --banner_naked_text_color: #ffffff;
+          --translator_background_color: #ffffff88;
+          --translator_text_color: #000000;                    
+          --configuration_background_color: rgba(0,0,0, 0.5);
+          --configuration_text_color: #ffffff;
+        }
+
+
         .PhotoBanner > .wrapper.with-image {
+          
           background-image: url(#{edit_banner.masthead_preview or customization('banner')?.background_image_url});
           background-size: cover;
           background-position: center;
-          padding-top: 120px;           
+          padding-top: 120px;
+
         }
+
         .PhotoBanner > .wrapper.no-image {
-          background: #{background_color};
+          background: var(--banner_background_color);
         }
 
         @media #{NOT_LAPTOP_MEDIA} {
@@ -1131,22 +1223,24 @@ window.PhotoBanner = (opts) ->
           padding: 16px;
           max-width: 380px;
           margin: 0 auto; 
-          background-color: var(--bg_light_trans_80);
+          background-color: var(--translator_background_color);
+          color: var(--translator_text_color);
           position: relative; 
         }
+
 
         .PhotoBanner > .wrapper > .text_block {
           padding: 64px 48px 48px 48px;
           width: #{HOMEPAGE_WIDTH()}px;
           max-width: #{720 + 48 * 2}px;
           margin: auto;
-          color: #{text_color};
+          color: var(--banner_block_text_color);
           position: relative;
           top: 0;          
         } 
 
         .PhotoBanner > .wrapper.with-image > .text_block {
-          background-color: #{text_block_background};
+          background-color: var(--banner_block_bg_color);
         } 
 
         .PhotoBanner > .wrapper .CustomizeTitle .banner_title {
@@ -1159,7 +1253,7 @@ window.PhotoBanner = (opts) ->
 
         .dark .PhotoBanner > .wrapper .CustomizeTitle .banner_title, 
         .PhotoBanner > .wrapper.with-image .CustomizeTitle .banner_title {
-          text-shadow: 0px 1px 2px var(--shadow_dark_50);
+          text-shadow: 0px 1px 2px rgba(0,0,0, 0.50);
         }
 
 
@@ -1196,7 +1290,7 @@ window.PhotoBanner = (opts) ->
         }
         .PhotoBanner #tabs > ul > li {
           margin: 2px 6px 0px 6px;
-          background-color: #{tab_background_color}AA;          
+          background-color: var(--banner_block_bg_color);        
         }          
         .PhotoBanner #tabs > ul > li.selected {
           background-color: var(--bg_container);
@@ -1207,8 +1301,32 @@ window.PhotoBanner = (opts) ->
           font-weight: 600;
           font-size: 17px;
           padding: 10px 16px 4px;
-          color: #{text_color};
+          color: var(--banner_block_text_color);
         }
+
+       .host_shortcuts {
+          position: absolute;
+          z-index: 999;
+          right: 30px;
+          top: 17px;
+          font-size: 26px;        
+          margin-top: 48px;
+          padding: 12px 24px;
+          font-size: 14px;
+        }
+
+        .host_shortcuts .like_link {
+          font-weight: 700;
+          font-size: 14px;
+          color: var(--configuration_text_color);
+        }
+
+
+        .configuration_area, header button.configuration_area {
+          background-color: var(--configuration_background_color);
+          color: var(--configuration_text_color);
+        }
+
         """
 
 
@@ -1216,6 +1334,10 @@ window.PhotoBanner = (opts) ->
       className: "wrapper #{if has_image_background then 'with-image' else 'no-image'} #{if has_translation_callout then 'with-translation-callout' else 'no-translation-callout'}"
 
       CustomizeLogo()
+
+
+      if edit_forum.editing
+        HostShortcuts()
 
 
       CustomizeGoogleTranslate()
@@ -1238,7 +1360,7 @@ window.PhotoBanner = (opts) ->
             key: 'editable_description'
             opts: opts
             style: 
-              border: if !has_description then (if has_image_background || is_dark_theme then "1px solid var(--shadow_light)" else "1px solid var(--shadow_dark_50)")
+              border: if !has_description then (if has_image_background || is_dark_theme then "1px solid rgba(255,255,255, 0.40))" else "1px solid rgba(0,0,0, 0.40)")
 
       CustomizeBackground()
 

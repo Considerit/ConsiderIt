@@ -17,6 +17,52 @@ styles += """
       right: 8px;
     }
   }
+
+  .auth_area_banner a, .auth_area_banner .like_link {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 18px;
+    margin-left: 20px;
+    position: relative;
+    top: 0;    
+  }
+
+  .dark .auth_area_banner a, .dark .auth_area_banner .like_link {
+    color: #ffffff;
+  }
+
+  .dark.image_background .auth_area_banner a, .dark.image_background .auth_area_banner .like_link {
+    color: #000000;
+  }
+
+  .image_background .auth_area_banner {
+    background-color: #000000aa;
+    padding: 12px 36px;
+    border-radius: 16px;
+  }
+
+  .dark.image_background .auth_area_banner {
+    background-color: #ffffffaa;
+  }
+
+  [data-widget="ProfileMenu"] [data-widget="DropMenu"] .dropMenu-anchor {
+    color: #ffffff;
+    background-color: #00000088;
+
+    z-index: 9999999999;
+    border-radius: 8px;
+    padding: 3px 4px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+  }
+
+  .dark [data-widget="ProfileMenu"] [data-widget="DropMenu"] .dropMenu-anchor {
+    color: #000000;
+    background-color: #ffffff88;    
+  }
+
+
 """
 
 window.ProfileMenu = ReactiveComponent
@@ -46,11 +92,7 @@ window.ProfileMenu = ReactiveComponent
 
     menu_options = _.compact menu_options
 
-    light_background = !is_a_dialogue_page() || is_light_background() 
-
-
     edit_forum = bus_fetch 'edit_forum'
-
 
 
     DIV
@@ -102,17 +144,7 @@ window.ProfileMenu = ReactiveComponent
                 translator "auth.log_out", "Log out"
               else 
                 translator "user_menu.option.#{option.label}", option.label
-            
-            anchor_style: 
-              color: if !light_background then "var(--text_light)"
-              zIndex: 9999999999
-              backgroundColor: "var(--bg_light_trans_25)"
-              borderRadius: 8
-              padding: '3px 4px'
-              fontWeight: 600
-              display: 'flex'
-              alignItems: 'center'
-            
+                        
             anchor_when_open_style: 
               backgroundColor: 'transparent'
               boxShadow: 'none'
@@ -141,208 +173,41 @@ window.ProfileMenu = ReactiveComponent
 
             active_option_style: 
               color: "var(--text_dark)"
-        else 
-          is_light = is_light_background()
-          color = if is_light then "var(--text_dark)" else "var(--text_light)"
-          bg = if is_light then "var(--bg_light_trans_40)" else "var(--bg_dark_trans_40)"
-
-          settings = [{name: 'Forum Settings', url: '/dashboard/application'}, {name: 'Permissions & Roles', url: '/dashboard/roles'}]
-          if is_admin
-            settings.push {name: 'Sign-up Questions', url: '/dashboard/intake_questions', paid: true}
-
-          show_dash_modal = bus_fetch 'show_dash_modal'
-
-          DIV 
-            style: 
-              marginTop: 48
-              padding: '12px 24px'
-              backgroundColor: bg
-              fontSize: 14
-
-            if show_dash_modal.showing
-              ModalDash
-                url: show_dash_modal.showing.url
-                done_callback: =>
-                  show_dash_modal.showing = null 
-                  save show_dash_modal
-
-            UL 
-              style: 
-                listStyle: 'none'
-
-              for config in settings
-                LI 
-                  key: config.name
-                  style: 
-                    marginBottom: 6
-
-                  BUTTON
-                    className: 'like_link'
-                    style: 
-                      fontWeight: 700
-                      color: color
-                      fontSize: 14
-
-                    onClick: do(config) => => 
-                      show_dash_modal.showing = config
-                      save show_dash_modal
-
-
-                    config.name
-
-                  if config.paid && permit('configure paid feature') < 0
-                    UpgradeForumButton
-                      text: 'upgrade'
-
-
-
-
 
 
       else
 
+        DIV 
+          className: "auth_area_banner" 
 
-        if bus_fetch('/subdomain').SSO_domain
-          A
-            href: '/login_via_saml'
-            treat_as_external_link: true
-            style: 
-              color: if !light_background then "var(--text_light)"
-              backgroundColor: 'transparent'
-              border: 'none'
-              textDecoration: 'none'
-
-            translator "auth.log_in", "Log in"
-        else 
-          DIV 
-            style: 
-              fontSize: 18  
-
-            BUTTON
-              className: 'btn create_account'
-              'data-action': 'create_account'
-              onClick: (e) =>
-                reset_key 'auth',
-                  form: 'create account'
-
-              translator "shared.auth.sign_up", "Sign up"
-
-            BUTTON
-              className: 'like_link'
-              'data-action': 'login'
-              onClick: (e) =>
-                reset_key 'auth',
-                  form: 'login'
-
-              style: 
-                color: if !light_background then "var(--text_light)"
-                fontWeight: 700
-                fontSize: 18
-                marginLeft: 20
-                position: 'relative'
-                top: 0
-
+          if bus_fetch('/subdomain').SSO_domain
+            A            
+              href: '/login_via_saml'
+              treat_as_external_link: true
 
               translator "auth.log_in", "Log in"
-
-
-
-
-
-  bitcoinVerification: -> 
-    current_user = bus_fetch('/current_user')
-    subdomain = bus_fetch('/subdomain')
-
-    DIV 
-      style: 
-        position: 'absolute'
-        zIndex: 10
-        left: -315
-      onMouseEnter: => @local.show_verify = true; save @local
-      onMouseLeave: => @local.show_verify = false; save @local 
-
-      DIV 
-        style: 
-          backgroundColor: "var(--focus_color)"
-          color: "var(--text_light)"
-          fontWeight: 600
-          padding: '4px 12px'
-          fontSize: 21
-          borderRadius: if !@local.show_verify then 8
-          position: 'relative'
-          cursor: 'pointer'
-
-
-        SPAN 
-          style: cssTriangle 'right', "var(--focus_color)", 10, 12,
-            position: 'absolute'
-            right: -10
-            top: 12
-
-        'Please verify you are human!'
-
-      if @local.show_verify
-
-        today = new Date()
-        dd = today.getDate()
-        mm = today.getMonth() + 1
-        yyyy = today.getFullYear()
-
-        dd = '0' + dd if dd < 10
-        mm = '0' + mm if mm < 10
-
-        today = yyyy + '/' + mm + '/' + dd
-
-        DIV 
-          style: 
-            width: 650
-            position: 'absolute'
-            right: 0
-            zIndex: 999
-            padding: 40
-            backgroundColor: "var(--bg_light)"
-            boxShadow: "0 1px 2px var(--shadow_dark_25)"
-            fontSize: 21
-
-          DIV style: marginBottom: 20,
-            "To verify you are human, write on a piece of paper:"
-
-          DIV style: marginBottom: 20, marginLeft: 50,
-
-            current_user.name
-            BR null
-            "bitcoin.consider.it"
-            BR null
-            today
-
-          DIV style: marginBottom: 20,
-
-            "Then take a photo of yourself with it, and email the photo to "
-
-            A 
-              href: 'mailto:verify@consider.it'
+          else 
+            DIV 
               style: 
-                textDecoration: 'underline'
-              'verify@consider.it' 
+                fontSize: 18  
 
-            ". This photo will be publicly visible proof that you are real!"
+              BUTTON
+                className: 'btn create_account'
+                'data-action': 'create_account'
+                onClick: (e) =>
+                  reset_key 'auth',
+                    form: 'create account'
 
-          DIV style: marginBottom: 20,
-            "Yours,"
-            BR null
-            "The Admins"
+                translator "shared.auth.sign_up", "Sign up"
 
-          IMG 
-            src: asset('bitcoin/verify example.jpg')
-            style: 
-              width: 570
+              BUTTON
+                className: 'like_link'
+                'data-action': 'login'
+                onClick: (e) =>
+                  reset_key 'auth',
+                    form: 'login'
 
-          IMG 
-            src: asset('bitcoin/verification-travis.jpg')
-            style: 
-              width: 570
 
-          IMG 
-            src: asset('bitcoin/KevinBitcoin.jpg')
-            style: 
-              width: 570    
+
+                translator "auth.log_in", "Log in"
+

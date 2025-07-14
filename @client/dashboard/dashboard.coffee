@@ -225,11 +225,12 @@ window.Dashboard = ReactiveComponent
 
     DIV 
       id: "DASHBOARD-flex-container"
+      "aria-label": "Admin dashboard navigation"
       "data-name": loc.url
       style: 
         width: DASHBOARD_WIDTH()
 
-      DIV
+      NAV
         id: "DASHBOARD-menu"
 
         draw_menu_separator 'settings'

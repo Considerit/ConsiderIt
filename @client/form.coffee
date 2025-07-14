@@ -512,6 +512,10 @@ html .ql-container{
 .ql-editor ol li:before {
   content: counter(list-num, decimal) '. ';
 }
+.ql-editor ol li[data-list="bullet"]:before {
+  content: counter(list-num, disc) '. ';
+}
+
 .ql-editor ol li.ql-indent-1 {
   counter-increment: list-1;
 }
@@ -803,6 +807,9 @@ styles += """
   list-style: outside; padding-bottom: 8px;}
 .wysiwyg_text ol li {
   list-style-type: decimal; }  
+.wysiwyg_text ol li[data-list="bullet"] {
+  list-style-type: disc; }  
+
 .wysiwyg_text ul, .description_field ul,
 .wysiwyg_text ol, .description_field ol {
   padding-left: 20px;

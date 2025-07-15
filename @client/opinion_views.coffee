@@ -1111,52 +1111,55 @@ InteractiveOpinionViews = ReactiveComponent
 
           LABEL 
             className: 'opinion_view_name'
+
+
             translator 'opinion_views.view_type_group', 'Color code by'
             ':'
 
-          SELECT 
-            style: 
-              maxWidth: '75%'
-              marginRight: 12
-              borderColor: "var(--brd_mid_gray)"
-              backgroundColor: "var(--bg_lightest_gray)"
-              borderRadius: 2
+            SELECT 
+              name: 'color_code_field'
+              style: 
+                maxWidth: '75%'
+                marginLeft: 12
+                borderColor: "var(--brd_mid_gray)"
+                backgroundColor: "var(--bg_lightest_gray)"
+                borderRadius: 2
 
-            onChange: (ev) -> 
-              if ev.target.value != null
-                attribute = attributes[ev.target.value]
-                opinion_views_ui.group_by = attribute?.key
-              else 
-                opinion_views_ui.group_by = null
+              onChange: (ev) -> 
+                if ev.target.value != null
+                  attribute = attributes[ev.target.value]
+                  opinion_views_ui.group_by = attribute?.key
+                else 
+                  opinion_views_ui.group_by = null
 
-              if opinion_views_ui.group_by && (!opinion_views_ui.activated_attributes[opinion_views_ui.group_by] ||  \
-                                  (o for o,val of opinion_views_ui.visible_attribute_values[opinion_views_ui.group_by] when val).length == 0)
-                            # if no attribute value is selected, which mean all are enabled, select them all
-                opinion_views_ui.activated_attributes[opinion_views_ui.group_by] = true 
-                for option in attribute.options 
-                  opinion_views_ui.visible_attribute_values[attribute.key][option] = true
-              save opinion_views_ui
+                if opinion_views_ui.group_by && (!opinion_views_ui.activated_attributes[opinion_views_ui.group_by] ||  \
+                                    (o for o,val of opinion_views_ui.visible_attribute_values[opinion_views_ui.group_by] when val).length == 0)
+                              # if no attribute value is selected, which mean all are enabled, select them all
+                  opinion_views_ui.activated_attributes[opinion_views_ui.group_by] = true 
+                  for option in attribute.options 
+                    opinion_views_ui.visible_attribute_values[attribute.key][option] = true
+                save opinion_views_ui
 
-              if opinion_views_ui.group_by
-                set_group_by_attribute attribute 
+                if opinion_views_ui.group_by
+                  set_group_by_attribute attribute 
 
-              else 
-                delete opinion_views.active_views.group_by
-                save opinion_views
+                else 
+                  delete opinion_views.active_views.group_by
+                  save opinion_views
 
 
-            value: cur_val
+              value: cur_val
 
-            OPTION 
-              value: null
-              ""
-            for attribute,idx in attributes 
-              continue if !attribute.options
-              do (attribute) =>
-                OPTION 
-                  key: idx
-                  value: idx 
-                  attribute.name or attribute.question
+              OPTION 
+                value: null
+                ""
+              for attribute,idx in attributes 
+                continue if !attribute.options
+                do (attribute) =>
+                  OPTION 
+                    key: idx
+                    value: idx 
+                    attribute.name or attribute.question
 
           if cur_val > -1
             LABEL 
@@ -1566,6 +1569,7 @@ styles += """
   .opinion_view_row {
     padding: 16px 0px;
     display: flex;
+    align-items: center;
   } 
   svg.opinion_view_class {
     display: block; 

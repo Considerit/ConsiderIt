@@ -75,10 +75,8 @@ styles += """
       width: var(--ITEM_TEXT_WIDTH);
     }
   }
-
-
-
 """
+
 window.Homepage = ReactiveComponent
   displayName: 'Homepage'
   render: ->

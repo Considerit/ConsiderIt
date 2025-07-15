@@ -393,24 +393,27 @@ TranslationsDash = ReactiveComponent
         style: 
           marginTop: 24
 
-        "Which language do you wish to translate for?"
+        LABEL null,
+
+          "Which language do you wish to translate for?"
 
 
-        SELECT 
-          defaultValue: local.translating_lang or subdomain.lang or 'en'
-          style: 
-            fontSize: 20
-            marginLeft: 14
-            display: 'inline-block'
-          onChange: (ev) => 
-            local.translating_lang = ev.target.value
-            save local
+          SELECT 
+            name: "tranlation_target_lang"
+            defaultValue: local.translating_lang or subdomain.lang or 'en'
+            style: 
+              fontSize: 20
+              marginLeft: 14
+              display: 'inline-block'
+            onChange: (ev) => 
+              local.translating_lang = ev.target.value
+              save local
 
-          for [k,v] in all_langs
-            OPTION 
-              key: "#{k}-#{v}"
-              value: k
-              "#{v} (#{k})"
+            for [k,v] in all_langs
+              OPTION 
+                key: "#{k}-#{v}"
+                value: k
+                "#{v} (#{k})"
 
         DIV 
           style: 

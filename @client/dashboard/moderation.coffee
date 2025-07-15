@@ -83,6 +83,26 @@ styles += """
   }
 
 }
+
+
+.moderate-item-bubble-wrapper .context {
+  opacity: .5;
+}
+
+
+
+[data-theme="high-contrast"],
+[data-theme="high-contrast"] :before,
+[data-theme="high-contrast"] :after,
+[data-theme="high-contrast-dark"],
+[data-theme="high-contrast-dark"] :before,
+[data-theme="high-contrast-dark"] :after {
+  .moderate-item-bubble-wrapper .context {
+    opacity: .75;
+  }
+}
+
+
 """
 
 
@@ -184,6 +204,8 @@ window.ModerationDash = ReactiveComponent
 
 
         SELECT 
+          'aria-label': 'Moderation policy options'
+          name: 'moderation_policy_options'
           style: 
             fontSize: 20
             maxWidth: '80vw'
@@ -218,7 +240,7 @@ window.ModerationDash = ReactiveComponent
           " for an explanation of these moderation policies."
 
 
-      UL 
+      DIV 
         className: 'moderation_tabs'
         role: 'tablist'
         style: 
@@ -230,39 +252,39 @@ window.ModerationDash = ReactiveComponent
 
           do (model) => 
             active = @local.model == model
-            LI 
+
+            BUTTON 
+              key: model                
               role: 'tab'
+              tabIndex: if active then 0 else -1
               'aria-controls': 'moderation-content-wrapper'
               'aria-selected': active
-              key: model
+
+              "data-model": model 
               style: 
+                backgroundColor: if active then "var(--bg_light)" else "var(--bg_lighter_gray)"
+                color: "var(--text_dark)"
                 display: 'inline-block'
+                fontSize: 18
+                marginLeft: 12
+                marginRight: 12
+                marginBottom: if active then -1
+                border: "1px solid var(--brd_mid_gray)"
+                borderBottom: 'none'
+                borderRadius: '4px 4px 0 0px'
+                padding: "6px 14px #{if active then 3 else 2}px 14px"
 
-              BUTTON 
-                "data-model": model 
-                style: 
-                  backgroundColor: if active then "var(--bg_light)" else "var(--bg_lighter_gray)"
-                  color: "var(--text_dark)"
-                  fontSize: 18
-                  marginLeft: 12
-                  marginRight: 12
-                  marginBottom: if active then -1
-                  border: "1px solid var(--brd_mid_gray)"
-                  borderBottom: 'none'
-                  borderRadius: '4px 4px 0 0px'
-                  padding: "6px 14px #{if active then 3 else 2}px 14px"
+              onClick: => select_class(model)
 
-                onClick: => select_class(model)
+              "#{if model == 'Proposal' then 'Review ' else ''}#{model}s"
 
-                "#{if model == 'Proposal' then 'Review ' else ''}#{model}s"
-
-                if model != 'Ban'
-                  SPAN 
-                    style: 
-                      fontSize: 12
-                      verticalAlign: 'top'
-                      paddingLeft: 8
-                    "[#{all_items[model].pending?.items?.length or 0}]"
+              if model != 'Ban'
+                SPAN 
+                  style: 
+                    fontSize: 12
+                    verticalAlign: 'top'
+                    paddingLeft: 8
+                  "[#{all_items[model].pending?.items?.length or 0}]"
 
 
 
@@ -415,8 +437,6 @@ ModerateItem = ReactiveComponent
 
               DIV 
                 class_name: 'context'
-                style: 
-                  opacity: .5
                 BUBBLE_WRAP 
                   key: point.key
                   title: point.nutshell 
@@ -438,8 +458,6 @@ ModerateItem = ReactiveComponent
 
               DIV 
                 class_name: 'context'
-                style: 
-                  opacity: .5
                 BUBBLE_WRAP 
                   key: proposal.key
                   title: proposal.name 
@@ -452,8 +470,6 @@ ModerateItem = ReactiveComponent
               list_key = get_list_for_proposal(proposal)
               DIV 
                 class_name: 'context'
-                style: 
-                  opacity: .5
 
 
                 BUBBLE_WRAP 
@@ -568,6 +584,9 @@ ModerateItem = ReactiveComponent
               marginLeft: if TABLET_SIZE() then 36 else 63
                     
             SELECT
+              'aria-label': 'Change proposal category'
+              name: 'change_category'
+           
               style: 
                 fontSize: 18
                 maxWidth: '60vw'

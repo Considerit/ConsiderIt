@@ -37,12 +37,14 @@ styles += """
   display: block;
   font-size: 18px;
   text-decoration: none;
+  padding: 4px 0px;
 }
 
 .AllYourForums .forum_link {
   color: var(--text_light_gray);
   font-weight: 400;
   font-size: 15px;
+  padding: 4px 0px;
 }
 
 .AllYourForums .host-row {

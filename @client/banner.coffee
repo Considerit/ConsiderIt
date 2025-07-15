@@ -1178,14 +1178,6 @@ window.PhotoBanner = (opts) ->
           padding-top: #{if edit_forum.editing then '54px' else '0px'};
         }
 
-        .image_background .PhotoBanner {
-          --configuration_background_opacity: .75;        
-          --translator_background_color: #000000CC;
-
-        }
-        .dark.image_background .PhotoBanner {
-          --translator_background_color: #ffffffCC;  
-        }
 
         .dark .PhotoBanner {
           --banner_naked_text_color: #ffffff;
@@ -1193,6 +1185,16 @@ window.PhotoBanner = (opts) ->
           --translator_text_color: #000000;                    
           --configuration_background_color: rgba(0,0,0, 0.5);
           --configuration_text_color: #ffffff;
+        }
+
+
+        .image_background .PhotoBanner {
+          --configuration_background_opacity: .75;        
+          --translator_background_color: #000000CC;
+
+        }
+        .dark.image_background .PhotoBanner {
+          --translator_background_color: #ffffffCC;  
         }
 
 

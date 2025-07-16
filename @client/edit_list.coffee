@@ -195,7 +195,6 @@ styles += """
     padding-top: 2px;
     position: absolute;
     border: none;
-    outline: none;
     color: var(--text_gray);
     font-size: 12px;
   }

@@ -209,7 +209,13 @@ do ->
 
 
 window.POINT_MOUTH_WIDTH = 17
+styles += """
 
+  :root, :before, :after {
+    --point_mouth_width: 17px;
+  }
+
+"""
 
 # HEARTBEAT
 # Any component that renders a HEARTBEAT will get rerendered on an interval.

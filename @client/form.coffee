@@ -403,7 +403,6 @@ html .ql-container{
 }
 .ql-editor {
   min-height: 120px;
-  outline: none;
 }
 
 

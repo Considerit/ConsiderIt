@@ -31,7 +31,7 @@ window.Point = ReactiveComponent
         else 
           includers = [point.user]
 
-        s = #includers_style
+        s =
           rows: 8
           dx: 2
           dy: 5
@@ -67,37 +67,7 @@ window.Point = ReactiveComponent
               set_bg_color: true
               anonymous: anonymous
     
-
-
-    point_content_style = {}
-      
-
-    if is_selected
-      _.extend point_content_style,
-        borderColor: "var(--focus_color)"
-        backgroundColor: "var(--bg_light)"
-
-    else if @local.has_focus
-      _.extend point_content_style,
-        borderColor: "var(--brd_mid_gray)"
-        backgroundColor: "var(--bg_light)"
-
     expand_to_see_details = !!point.text
-
-
-
-
-    includers_style = 
-      position: 'absolute'
-      height: 25
-      width: 25
-      top: 0
-    left_or_right = if point.is_pro && @props.rendered_as != 'decision_board_point'
-                      'right' 
-                    else 
-                      'left'
-    ioffset = -50
-    includers_style[left_or_right] = ioffset
 
     draw_all_includers = @props.rendered_as == 'community_point' || TABLET_SIZE()
 
@@ -115,13 +85,20 @@ window.Point = ReactiveComponent
     LI
       key: "point-#{point.id}"
       'data-id': @props.point
-      className: "point #{@props.rendered_as} #{if point.is_pro then 'pro' else 'con'} #{if customization('disable_comments') && !expand_to_see_details then 'commenting-disabled' else ''} #{if is_selected then 'is-selected' else ''}"
+      className: "point #{@props.rendered_as} #{if point.is_pro then 'pro' else 'con'} #{if customization('disable_comments') && !expand_to_see_details then 'commenting-disabled' else ''} #{if is_selected then 'is-selected' else ''} #{if @local.has_focus then 'is-focused' else ''}"
       onClick: @selectPoint
+      onBlur: (e) => @local.has_focus = false; save(@local)
+      onFocus: (e) => @local.has_focus = true; save(@local)
+
       # onTouchEnd: @selectPoint
       onKeyDown: (e) =>
         if (is_selected && e.which == 27) || e.which == 13 || e.which == 32
           @selectPoint(e)
           e.preventDefault()
+
+      draggable: @props.enable_dragging
+      "data-point": point.key
+
 
       if @props.rendered_as == 'decision_board_point'
         DIV 
@@ -135,41 +112,16 @@ window.Point = ReactiveComponent
       DIV 
         ref: 'point_content'
         className:'point_content'
-        style : point_content_style
-        tabIndex: 0
-        onBlur: (e) => @local.has_focus = false; save(@local)
-        onFocus: (e) => @local.has_focus = true; save(@local)
-        draggable: @props.enable_dragging
-        "data-point": point.key
 
 
         if @props.rendered_as != 'decision_board_point' && !PHONE_SIZE()
-
-          side = if point.is_pro then 'right' else 'left'
-          mouth_style = 
-            top: 8
-            position: 'absolute'
-
-          mouth_style[side] = -POINT_MOUTH_WIDTH + \
-            if is_selected || @local.has_focus then 3 else 1
-          
-          if !point.is_pro
-            mouth_style['transform'] = 'rotate(270deg) scaleX(-1)'
-          else 
-            mouth_style['transform'] = 'rotate(90deg)'
-
           DIV 
+            className: 'community_point_mouth'
             'role': 'presentation'
             key: 'community_point_mouth'
-            style: mouth_style
 
             PointBubblemouth 
               apex_xfrac: 0
-              width: POINT_MOUTH_WIDTH
-              height: POINT_MOUTH_WIDTH
-              fill: "var(--bg_speech_bubble)"
-              stroke: if is_selected then "var(--focus_color)" else if @local.has_focus then brd_neutral_gray else 'transparent'
-              stroke_width: if is_selected || @local.has_focus then 20 else 0
 
         DIV 
           style: 
@@ -288,7 +240,6 @@ window.Point = ReactiveComponent
           className:'includers'
           onMouseEnter: @highlightIncluders
           onMouseLeave: @unHighlightIncluders
-          style: includers_style
             
           renderIncluders(draw_all_includers)
 
@@ -321,26 +272,16 @@ window.Point = ReactiveComponent
 
         if !TABLET_SIZE() && @props.enable_dragging
           right = (included && point.is_pro) || (!included && !point.is_pro)
-          if right 
-            sty = 
-              right: if !@local.focused_include then 20 else if included then -20 else -40
-          else 
-            sty = 
-              left: if !@local.focused_include then 20 else if included then -20 else -40
 
           BUTTON
+            className: "focused_include_button #{if @local.focused_include then 'has-focus' else ''}"
             'aria-label': if included 
                             translator 'engage.uninclude_explanation', 'Mark this point as unimportant and move to next point' 
                           else 
                             translator 'engage.include_explanation', 'Mark this point as important and move to next point'
-            style: _.extend sty, 
-              position: 'absolute'
-              top: 20
-              opacity: if !@local.focused_include then 0
-              padding: 0
-              backgroundColor: 'transparent'
-              border: 'none'              
+            style:
               display: if get_selected_point() then 'none'
+
             onFocus: (e) => 
               @local.focused_include = true; save @local
             onBlur: (e) => @local.focused_include = false; save @local
@@ -404,6 +345,9 @@ window.Point = ReactiveComponent
           comments: "/comments/#{point.id}"
           point: point.key
           rendered_as: @props.rendered_as
+          onClose: =>
+            @local.has_focus = false
+            save @local
 
   componentDidMount : ->    
     @ensureDiscussionIsInViewPort()
@@ -434,9 +378,6 @@ window.Point = ReactiveComponent
 
       @draggable.on 'drag:start', (evt) =>
         point_width = evt.source.getBoundingClientRect().width
-
-        # if @props.rendered_as != 'decision_board_point'
-        #   point_root.closest(".ProposalItem").classList.add 'community-point-is-being-dragged'
 
       @draggable.on 'mirror:created', (evt) =>        
         evt.mirror.style.width = "#{point_width}px"
@@ -660,6 +601,7 @@ styles += """
   .point {
     position: relative;
     list-style: none outside none;
+    outline: none;
   }
 
   .point.decision_board_point {
@@ -722,7 +664,13 @@ styles += """
     top: -3px;
     position: relative;
     z-index: 1;
-    outline: none;
+    outline-width: 3px;
+  }
+
+  .is-selected .point_content,
+  .is-focused .point_content {
+    border-color: var(--focus_color);
+    background-color: var(--bg_light);
   }
 
   .decision_board_point .point_content {
@@ -785,4 +733,82 @@ styles += """
   .decision_board_point.pro .point_includer_avatar {
     left: -10px; }
 
+
+  .community_point_mouth {
+    --point_mouth_offset: 1px;    
+    top: 8px;
+    position: absolute;
+  }
+
+  .pro .community_point_mouth {
+    right: calc(-1 * var(--point_mouth_width) + var(--point_mouth_offset));
+    transform: rotate(90deg);
+  }
+
+  .con .community_point_mouth {
+    left: calc(-1 * var(--point_mouth_width) + var(--point_mouth_offset));
+    transform: rotate(270deg) scaleX(-1);
+  }
+
+  .point.is-selected .community_point_mouth,
+  .point.is-focused .community_point_mouth {
+    --point_mouth_offset: 3px;
+  }
+
+  .point.is-selected.community_point .pointbubblemouth path, 
+  .point.is-focused.community_point .pointbubblemouth path {
+    stroke-width: 20px;
+  }
+
+  .point.community_point .pointbubblemouth path {
+    stroke-width: 0px;
+  }
+
+  .point .includers {
+    position: absolute;
+    height: 25px;
+    width: 25px;
+    top: 0px;
+  }
+  .point.pro .includers {
+    right: -50px;
+  }
+  .point.con .includers {
+    left: -50px;
+  }
+
+  .focused_include_button {
+    position: absolute;
+    top: 20px;
+    opacity: 0;
+    z-index: 999;
+    border: none;
+    background-color: transparent;
+    padding: 0;
+
+    --include_offset: 20px;
+
+  }
+
+  .focused_include_button.has-focus {
+    --include_offset: -18px;
+    opacity: 1;
+  }
+
+  .decision_board_point .focused_include_button.has-focus {
+    --include_offset: -20px;
+    opacity: 1;
+  }
+
+  .pro.decision_board_point .focused_include_button,
+  .con.community_point .focused_include_button
+  {
+    right: var(--include_offset);
+  }
+
+  .con.decision_board_point .focused_include_button,
+  .pro.community_point .focused_include_button
+  {
+    left: var(--include_offset);
+  }
 """

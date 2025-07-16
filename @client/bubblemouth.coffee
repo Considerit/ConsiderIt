@@ -129,10 +129,6 @@ window.PointBubblemouth = (props) ->
     skew_x: 15
     skew_y: 80
     apex_xfrac: .5
-    fill: "var(--bg_light)", 
-    stroke: "var(--focus_color)", 
-    stroke_width: 10
-    # dash_array: "none"   
     box_shadow: null
 
   full_width = props.svg_w + 4 * props.skew_x * Math.max(.5, Math.abs(.5 - props.apex_xfrac))
@@ -171,22 +167,32 @@ window.PointBubblemouth = (props) ->
     if x_pad > 0
       x_pad *= -1
   SVG 
+    className: 'pointbubblemouth'
     version: "1.1" 
     xmlns: "http://www.w3.org/2000/svg"
-    width: props.width
-    height: props.height
     viewBox: "#{x_pad} 0 #{full_width} #{svg_h}"
     preserveAspectRatio: "none"
     style: if props.style then props.style
         
     PATH
       key: 'stroke'
-      fill: props.fill
-      stroke: props.stroke
-      strokeWidth: props.stroke_width * 2
+      # strokeWidth: props.stroke_width * 2
       strokeDasharray: if props.dash_array then props.dash_array
       d: bubblemouth_path
       style: props.style or {}
-        
+  
+styles += """
+  .pointbubblemouth {
+    width: var(--point_mouth_width);
+    height: var(--point_mouth_width);
+  }
+  .pointbubblemouth path {
+    fill: var(--bg_speech_bubble);
+    stroke: var(--focus_color);
+    stroke-width: 20px;
+  }
+
+
+"""      
 
  

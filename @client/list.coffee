@@ -770,7 +770,6 @@ styles += """
   .LIST-title-wrapper {
     position: relative;
     text-align: center;
-    outline: none;
   }
 
   @media #{TABLET_MEDIA} {

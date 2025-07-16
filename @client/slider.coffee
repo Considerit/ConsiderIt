@@ -295,7 +295,7 @@ window.Slider = ReactiveComponent
         position: 'relative'
         marginLeft: -handle_width / 2
         zIndex: 10
-        outline: 'none'
+        # outline: 'none'
         left: if props.polarized
                 props.width * (slider.value + 1) / 2
               else 

@@ -133,7 +133,6 @@ window.Discussion = ReactiveComponent
       padding: '20px 40px'
       borderRadius: 16
       backgroundColor: "var(--bg_item)"
-      outline: 'none' 
       boxShadow: if @local.has_focus then "0 0 7px var(--focus_color)"
 
     # Reconfigure discussion board position
@@ -171,10 +170,11 @@ window.Discussion = ReactiveComponent
         mouth_style.left = 100
 
 
-    close_point = (e) ->
+    close_point = (e) =>
       loc = bus_fetch('location')
       delete loc.query_params.selected
       save loc
+      @props.onClose?()
       e.preventDefault()
       e.stopPropagation()
 

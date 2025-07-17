@@ -1,6 +1,7 @@
 require './shared'
 require './customizations'
 require './murmurhash'
+require './accessibility'
 
 
 save 
@@ -208,7 +209,9 @@ window.get_color_for_group = (val) ->
 
 
 window.missing_attribute_info_label = -> 
-  i18n().unreported 
+  i18n().unreported
+
+ 
 
 i18n = ->
   unreported: translator('opinion_views.unreported', 'Unreported')
@@ -537,6 +540,13 @@ DateFilters = ->
   date_options = default_date_options()
   DIV 
     className: 'grays' # for toggle buttons
+    role: 'group'
+    'aria-labelledby': 'date-filter-label'
+
+    DIV
+      id: 'date-filter-label'
+      className: 'sr-only'
+      translator('opinion_views.date_filter_label', 'Date filter options')
 
     ToggleButtons date_options, date_toggle_state
 
@@ -549,25 +559,34 @@ DateFilters = ->
           style: 
             position: 'relative'
 
-          LABEL null,
+          LABEL 
+            htmlFor: 'start'
             translator 'opinion_views.date_from', 'From:'
           INPUT 
             type: 'date'
             id: 'start'
             name: 'opinion-start'
+            'aria-describedby': 'date-from-help'
             defaultValue: if date_toggle_state.start then to_date_str date_toggle_state.start
             onChange: (e) ->
               date_toggle_state.start = new Date(e.target.value).getTime()
               save date_toggle_state
-              date_option_changed date_options[3]            
+              date_option_changed date_options[3]
+              # Announce change to screen readers
+              announceToScreenReader(translator('opinion_views.date_from_updated', 'Start date updated'))
               e.preventDefault()
+          DIV
+            id: 'date-from-help'
+            className: 'sr-only'
+            translator('opinion_views.date_from_help', 'Select the earliest date for filtering opinions')
 
         SPAN 
           style: 
             position: 'relative'
             paddingLeft: 8
 
-          LABEL null,
+          LABEL 
+            htmlFor: 'end'
             translator 'opinion_views.date_to', 'To:'
 
             
@@ -575,12 +594,19 @@ DateFilters = ->
             type: 'date'
             id: 'end'
             name: 'opinion-end'
+            'aria-describedby': 'date-to-help'
             defaultValue: if date_toggle_state.end then to_date_str date_toggle_state.end
             onChange: (e) ->
               date_toggle_state.end = new Date(e.target.value).getTime()
               save date_toggle_state
               date_option_changed date_options[3]
+              # Announce change to screen readers
+              announceToScreenReader(translator('opinion_views.date_to_updated', 'End date updated'))
               e.preventDefault()
+          DIV
+            id: 'date-to-help'
+            className: 'sr-only'
+            translator('opinion_views.date_to_help', 'Select the latest date for filtering opinions')
 
 
 
@@ -846,6 +872,13 @@ OpinionViews = ReactiveComponent
     DIV 
       style: (@props.style or {})
       className: 'filter_opinions_to'
+      role: 'region'
+      'aria-labelledby': 'opinion-views-heading'
+
+      DIV
+        id: 'opinion-views-heading'
+        className: 'sr-only'
+        translator('opinion_views.heading', 'Opinion filtering and viewing options')
 
       DIV 
         style: 
@@ -881,10 +914,22 @@ OpinionViews = ReactiveComponent
       local_state.minimized = !local_state.minimized
       save local_state
 
+      # Announce state change
+      state = if local_state.minimized then 'collapsed' else 'expanded'
+      announceToScreenReader("Opinion view configuration #{state}")
+      
+      # Focus management - focus the button after state change
+      setTimeout ->
+        e.target.focus()
+      , 100
+
     DIV null,
       BUTTON 
         className: 'like_link'
         onClick: toggle_expanded
+        'aria-expanded': !local_state.minimized
+        'aria-controls': 'opinion-view-config'
+        'aria-label': if local_state.minimized then 'Expand opinion view configuration' else 'Collapse opinion view configuration'
         style: 
           fontSize: 12
           color: "var(--text_light_gray)"
@@ -1031,6 +1076,9 @@ window.OpinionViewInteractionWrapper = ReactiveComponent
 
     DIV 
       className: "opinion_view_interaction_wrapper #{if opinion_views_ui.active == 'custom' && (opinion_views_ui.last_interacted_with == local_state.key || local_state.minimized) then 'showing_custom' else ''}"
+      id: "view-content-#{opinion_views_ui.active}"
+      role: 'tabpanel'
+      'aria-labelledby': "tab-#{opinion_views_ui.active}"
 
       if opinion_views_ui.active == 'custom'
         width = @props.width
@@ -1042,6 +1090,8 @@ window.OpinionViewInteractionWrapper = ReactiveComponent
           if local_state.minimized || opinion_views_ui.last_interacted_with != local_state.key
 
             DIV 
+              id: 'opinion-view-config'
+              'aria-label': 'Opinion view configuration summary'
               style:
                 marginTop: 0
                 # width: if width then width
@@ -1057,6 +1107,8 @@ window.OpinionViewInteractionWrapper = ReactiveComponent
                 justifyContent: if @props.more_views_positioning == 'left' then 'flex-start' else if @props.more_views_positioning == 'centered' then 'center' else 'flex-end'
 
               DIV 
+                id: 'opinion-view-config'
+                'aria-label': 'Opinion view configuration options'
                 style: 
                   border: "1px solid var(--brd_mid_gray)"
                   borderRadius: 8
@@ -1118,6 +1170,7 @@ InteractiveOpinionViews = ReactiveComponent
 
             SELECT 
               name: 'color_code_field'
+              'aria-label': 'Select attribute to color code by'
               style: 
                 maxWidth: '75%'
                 marginLeft: 12
@@ -1141,11 +1194,13 @@ InteractiveOpinionViews = ReactiveComponent
                 save opinion_views_ui
 
                 if opinion_views_ui.group_by
-                  set_group_by_attribute attribute 
+                  set_group_by_attribute attribute
+                  announceToScreenReader("Color coding set to #{attribute.name}")
 
                 else 
                   delete opinion_views.active_views.group_by
                   save opinion_views
+                  announceToScreenReader('Color coding removed')
 
 
               value: cur_val
@@ -1191,11 +1246,14 @@ InteractiveOpinionViews = ReactiveComponent
       if attributes.length > 0 
         DIV 
           className: 'opinion_view_row'
+          role: 'group'
+          'aria-labelledby': 'filter-attributes-label'
 
           filter_icon()
 
 
           LABEL 
+            id: 'filter-attributes-label'
             className: 'opinion_view_name'
             translator 'opinion_views.view_type_filter', 'Narrow by'
             ':'
@@ -1223,7 +1281,13 @@ InteractiveOpinionViews = ReactiveComponent
                     "data-attribute": attr_name
                     title: if shortened then attribute.name
                     className: "selector_button opinion_view_button #{if opinion_views_ui.activated_attributes[attribute.key] then 'active' else ''}"
-                    onClick: -> toggle_attribute_visibility(attribute)
+                    'aria-pressed': opinion_views_ui.activated_attributes[attribute.key]
+                    'aria-label': if opinion_views_ui.activated_attributes[attribute.key] then "Remove #{attr_name} filter" else "Add #{attr_name} filter"
+                    onClick: -> 
+                      toggle_attribute_visibility(attribute)
+                      # Announce filter change
+                      status = if opinion_views_ui.activated_attributes[attribute.key] then 'removed' else 'added'
+                      announceToScreenReader("#{attr_name} filter #{status}")
 
                     if attribute.icon 
                       SPAN 
@@ -1304,6 +1368,7 @@ InteractiveOpinionViews = ReactiveComponent
                             value: val
                             checked: checked
                             role: if is_grouped then 'switch'
+                            'aria-describedby': "#{id}-description"
                             onChange: (e) ->
                               # create a view on the fly for this attribute
                               if true_false
@@ -1314,25 +1379,38 @@ InteractiveOpinionViews = ReactiveComponent
                               opinion_views_ui.visible_attribute_values[attribute.key][val] = e.target.checked
                               save opinion_views_ui
                               construct_view_for_attribute(attribute)
+                              # Announce selection change
+                              action = if e.target.checked then 'selected' else 'deselected'
+                              announceToScreenReader("#{val_name} #{action} for #{attribute.name}")
 
                           SPAN 
                             className: 'attribute_value_value'
                             dangerouslySetInnerHTML: __html: val_name
+                          
+                          DIV
+                            id: "#{id}-description"
+                            className: 'sr-only'
+                            "#{if is_grouped then 'Color coding option' else 'Filter option'} for #{attribute.name}"
 
             BUTTON
               className: 'icon'
-              onClick: -> toggle_attribute_visibility(attribute)
-              "aria-label": "Toggle #{attribute} filter"
+              onClick: -> 
+                toggle_attribute_visibility(attribute)
+                announceToScreenReader("#{attribute.name} filter removed")
+              "aria-label": "Remove #{attribute.name} filter"
 
               iconX 14, "var(--text_dark)"
 
 
       DIV 
         className: 'opinion_view_row'
+        role: 'group'
+        'aria-labelledby': 'weight-options-label'
 
         weigh_icon()
 
         LABEL 
+          id: 'weight-options-label'
           className: 'opinion_view_name'
 
           translator 'opinion_views.view_type_weigh', 'Weigh by'
@@ -1354,10 +1432,15 @@ InteractiveOpinionViews = ReactiveComponent
                 BUTTON 
                   className: "selector_button opinion_view_button #{if activated_weights[weight.key] then 'active' else ''}"
                   "data-tooltip": weight.label
+                  'aria-pressed': !!activated_weights[weight.key]
+                  'aria-label': if activated_weights[weight.key] then "Remove #{weight.name} weighting" else "Add #{weight.name} weighting"
                   onClick: (e) ->
                     toggle_weight weight
+                    # Announce weight change
+                    status = if activated_weights[weight.key] then 'removed' else 'added'
+                    announceToScreenReader("#{weight.name} weighting #{status}")
                     e.stopPropagation()
-                    
+
                   if weight.icon
                     weight.icon()
 
@@ -1546,12 +1629,16 @@ NonInteractiveOpinionViews = ReactiveComponent
                 className: "icon" 
                 style: 
                   marginLeft: 22
+                'aria-label': "Remove #{mini.name} #{if mini.label then mini.label.toLowerCase() else 'filter'}"
                 onClick: =>
                   local_state = bus_fetch @props.ui_key or @local
 
                   mini.toggle()
                   if !user_has_set_a_view()
                     reset_to_all(local_state)
+                    announceToScreenReader('All filters removed, showing all opinions')
+                  else
+                    announceToScreenReader("#{mini.name} filter removed")
 
                 iconX 13, "var(--focus_color)"
 
@@ -1761,11 +1848,14 @@ window.ToggleButtons = (items, view_state, style) ->
     save view_state
 
     item.callback?(item, prev)
+    # Announce view change
+    announceToScreenReader("#{item.label} view selected")
 
   UL 
     key: 'toggle buttons'
     className: 'toggle_buttons'
     style: style or {}
+    role: 'tablist'
 
     for item in items
       do (item) =>
@@ -1775,10 +1865,15 @@ window.ToggleButtons = (items, view_state, style) ->
           key: key
           className: "toggle_button #{if view_state.active == key then 'active'}"
           'data-view-state': key
+          role: 'presentation'
           
           BUTTON
             disabled: item.disabled 
-            onClick: (e) -> toggled(e, item) 
+            onClick: (e) -> toggled(e, item)
+            role: 'tab'
+            'aria-selected': view_state.active == key
+            'aria-controls': "view-content-#{key}"
+            id: "tab-#{key}"
 
             item.label
 

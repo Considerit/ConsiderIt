@@ -678,11 +678,10 @@ window.ItemText = ReactiveComponent
             position: 'relative'
             top: 2;
           "data-tooltip": translator 'engage.proposal_closed', 'Closed to new contributions.'
-
+          "aria-label": translator 'engage.proposal_closed', 'Closed to new contributions.'
           closedIcon 
             size: 12
             fill: "var(--failure_color)"
-            label: translator 'engage.proposal_closed', 'Closed to new contributions.'
 
       else if read_only
         SPAN 
@@ -690,11 +689,11 @@ window.ItemText = ReactiveComponent
             position: 'relative'
             top: 2;
           "data-tooltip": translator "engage.proposal_read_only.short", 'read-only'
+          "aria-label": translator "engage.proposal_read_only.short", 'read-only'
 
           closedIcon 
             size: 12
             fill: "var(--failure_color)"
-            label: translator "engage.proposal_read_only.short", 'read-only'
 
 
 

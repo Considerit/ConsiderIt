@@ -253,7 +253,7 @@ window.Histogram = ReactiveComponent
       key: 'histogram'
       className: 'histogram'
       role: 'region'
-
+      inert: if @props.backgrounded then 'true'
       'aria-hidden': @props.backgrounded
 
       style:
@@ -1115,6 +1115,13 @@ HistoAvatars = ReactiveComponent
 
       @hit_ctx.drawImage hit_region_avatars[key], sprite.x * DEVICE_PIXEL_RATIO, sprite.y * DEVICE_PIXEL_RATIO, sprite.width * DEVICE_PIXEL_RATIO, sprite.height * DEVICE_PIXEL_RATIO
 
+      # brave browser doesn't return the exact color because of an obscure security protocol:
+      #  https://github.com/brave/brave-browser/issues/9591
+      if navigator.brave?.isBrave() 
+        pixel = @hit_ctx.getImageData(sprite.x * DEVICE_PIXEL_RATIO + sprite.width * DEVICE_PIXEL_RATIO / 2, sprite.y * DEVICE_PIXEL_RATIO + sprite.height * DEVICE_PIXEL_RATIO / 2, 1, 1).data
+        color = "rgb(#{pixel[0]},#{pixel[1]},#{pixel[2]})"
+        hit_region_color_to_user_map[color] = key
+
     @last_hit_region_key = hit_key
 
 
@@ -1166,6 +1173,7 @@ HistoAvatars = ReactiveComponent
 
   userAtPosition: (e) -> 
 
+
     return if !@buffer
     canvas = @refs.canvas
 
@@ -1180,13 +1188,13 @@ HistoAvatars = ReactiveComponent
     color = "rgb(#{pixel[0]},#{pixel[1]},#{pixel[2]})"
 
     user = hit_region_color_to_user_map[color]
-
     user
 
 
   handleMouseMove: (e) ->
     # don't show popover if the slider is being moved or we've already selected a user
     return if bus_fetch(namespaced_key('slider', @props.histo_key)).is_moving || bus_fetch('opinion_views').active_views.single_opinion_selected
+
 
     user = @userAtPosition(e)
     id = null

@@ -160,7 +160,7 @@ window.Slider = ReactiveComponent
       key: 'slider_base'
       className: 'slider_base'
       style : slider_base_style
-      onClick: @handleMouseClick
+      onClick: if props.respond_to_click then @handleMouseClick
 
 
       if props.show_val_highlighter

@@ -413,7 +413,6 @@ styles += """
   #tabs > ul > li {
     display: inline-block;
     position: relative;
-    outline: none;
   }  
 
   .dragging-list #tabs > ul > li[data-accepts-lists="true"] {

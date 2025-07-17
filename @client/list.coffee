@@ -205,9 +205,11 @@ window.List = ReactiveComponent
           expansion_key: @props.expansion_key
 
 
+
       if customization('footer', list_key) && !is_collapsed
         customization('footer', list_key)()
 
+      CollapseList list_key          
 
 
 styles += """
@@ -583,7 +585,6 @@ window.ListHeader = ReactiveComponent
       DIV 
         className: 'ListHeader-wrapper'
 
-        CollapseList list_key          
 
         # DIV 
         #   className: 'avatar-spacing'

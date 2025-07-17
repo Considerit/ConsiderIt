@@ -253,6 +253,7 @@ window.Histogram = ReactiveComponent
       tabIndex: if !@props.backgrounded then 0
 
       className: 'histogram'
+      role: 'region'
       'aria-hidden': @props.backgrounded
       'aria-labelledby': if !@props.backgrounded then "histo-label-#{proposal.id}"
       'aria-describedby': if !@props.backgrounded then "histo-description-#{proposal.id}"

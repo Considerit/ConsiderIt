@@ -440,6 +440,7 @@ window.ItemText = ReactiveComponent
         className: "proposal-description wysiwyg_text proposal_item_animation #{if @local.description_fully_expanded then 'fully_expanded' else ''} #{if customization('hide_collapsed_proposal_description') then 'hidden-by-customization' else ''}"
         ref: 'proposal_description'
         onClick: if @exceeds_collapsed_description_height && !@is_expanded then @toggle_expand
+        inert: if !!(!@props.is_expanded && @exceeds_collapsed_description_height) then "true"
 
         DIV 
           style:
@@ -677,10 +678,11 @@ window.ItemText = ReactiveComponent
             position: 'relative'
             top: 2;
           "data-tooltip": translator 'engage.proposal_closed', 'Closed to new contributions.'
-          
+
           closedIcon 
             size: 12
             fill: "var(--failure_color)"
+            label: translator 'engage.proposal_closed', 'Closed to new contributions.'
 
       else if read_only
         SPAN 
@@ -692,6 +694,7 @@ window.ItemText = ReactiveComponent
           closedIcon 
             size: 12
             fill: "var(--failure_color)"
+            label: translator "engage.proposal_read_only.short", 'read-only'
 
 
 

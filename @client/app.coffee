@@ -29,6 +29,7 @@ require './opinion_slider'
 require './tooltip'
 require './popover'
 require './flash'
+require './accessibility'
 require './development'
 require './su'
 require './edit_point'
@@ -390,6 +391,7 @@ Root = ReactiveComponent
       Tooltip()
       Popover()
       Flash()
+      ScreenReaderAnnouncement()
       CompletionWidget()
 
 

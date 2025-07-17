@@ -501,7 +501,8 @@ ProposalItemWrapper = ReactiveComponent
           BUTTON 
             className: 'icon bottom_closer'
             "aria-label": translator('engage.collapse_proposal', 'Collapse proposal')
-
+            "inert": if !@props.is_expanded then "true"
+            "aria-hidden": if !@props.is_expanded then "true"
             onClick: => 
               toggle_expand
                 proposal: bus_fetch @props.proposal
@@ -517,7 +518,8 @@ ProposalItemWrapper = ReactiveComponent
           BUTTON 
             className: 'icon top_closer'
             "aria-label": translator('engage.collapse_proposal', 'Collapse proposal')
-
+            "inert": if !@props.is_expanded then "true"
+            "aria-hidden": if !@props.is_expanded then "true"            
             onClick: => 
               toggle_expand
                 proposal: bus_fetch @props.proposal

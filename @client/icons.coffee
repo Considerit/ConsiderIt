@@ -8,6 +8,7 @@ window.iconX = (size, color) ->
     viewBox: "-50 -50 200 200"
     stroke: color
     fill: 'none'
+    'aria-label': 'x icon'
 
     dangerouslySetInnerHTML: __html: """
        <g>
@@ -24,6 +25,7 @@ window.iconAnonymousMask = (height, color) ->
     height: height
     viewBox: "-350 0 700 300"
     stroke: color
+    'aria-label': 'anonymous mask icon'
     dangerouslySetInnerHTML: __html: """
 
     <g style="">
@@ -39,7 +41,9 @@ window.closedIcon = ({size, fill}) ->
     width: size
     height: size
     viewBox: "0 0 700 700"
+    'aria-label': 'closed icon, circle with line through it'
     dangerouslySetInnerHTML: __html: """
+
 
     <g style="">
       <path fill="#{fill}" d="M 564.996 591.909 C 558.141 591.909 551.293 589.222 546.053 583.981 L 116.152 154.08 C 105.672 143.6 105.672 126.54 116.152 116.06 C 126.632 105.58 143.692 105.58 154.172 116.06 L 584.073 545.961 C 594.553 556.443 594.553 573.501 584.073 583.981 C 578.697 589.222 571.85 591.909 564.996 591.909 Z" style=""></path>
@@ -54,6 +58,7 @@ window.ThreeDotsIcon = ({size, fill}) ->
     width: size
     height: size
     viewBox: "0 0 700 700"
+    'aria-label': '3 vertical dots icon'
     dangerouslySetInnerHTML: __html: """
        <g>
         <path fill="#{fill}" d="m419.35 280c0 38.301-31.047 69.348-69.348 69.348s-69.348-31.047-69.348-69.348 31.047-69.348 69.348-69.348 69.348 31.047 69.348 69.348"/>
@@ -72,6 +77,7 @@ window.double_up_icon = (size) ->
     width: size
     height: size
     viewBox: "0 0 66 66"
+    'aria-label': 'chevron up'
     dangerouslySetInnerHTML: __html: """
       <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
           <g transform="translate(-869.000000, -2725.000000)">
@@ -92,6 +98,7 @@ window.plusIcon = (outline_color, size) ->
     height: size
     fill: outline_color or "var(--bg_light)"
     viewBox: "50 50 600 450" 
+    'aria-label': 'plus icon'
 
     dangerouslySetInnerHTML: __html: """
        <g>
@@ -110,6 +117,7 @@ window.checkmark = (size, color) ->
     xmlns: "http://www.w3.org/2000/svg" 
     viewBox: "0 0 700 700" 
     fill: color
+    'aria-label': 'checkmark icon'
 
     PATH 
       # strokeLinecap: "round" 
@@ -126,6 +134,7 @@ window.ChevronRight = (size) ->
     xmlns: "http://www.w3.org/2000/svg" 
     viewBox: "0 0 24 24" 
     stroke: "currentColor"
+    'aria-label': 'chevron right'
 
     PATH 
       strokeLinecap: "round" 
@@ -143,6 +152,7 @@ window.ChevronLeft = (size) ->
     xmlns: "http://www.w3.org/2000/svg" 
     viewBox: "0 0 24 24" 
     stroke: "currentColor"
+    'aria-label': 'chevron left'
 
     PATH 
       strokeLinecap: "round" 
@@ -198,6 +208,7 @@ window.GearIcon = (opts) ->
     x: "0px" 
     y: "0px" 
     viewBox: "0 0 100 100"  
+    'aria-label': 'gear icon'
     dangerouslySetInnerHTML: __html: '<path d="M95.784,59.057c1.867,0,3.604-1.514,3.858-3.364c0,0,0.357-2.6,0.357-5.692c0-3.092-0.357-5.692-0.357-5.692  c-0.255-1.851-1.991-3.364-3.858-3.364h-9.648c-1.868,0-3.808-1.191-4.31-2.646s-1.193-6.123,0.128-7.443l6.82-6.82  c1.32-1.321,1.422-3.575,0.226-5.01L80.976,11c-1.435-1.197-3.688-1.095-5.01,0.226l-6.82,6.82c-1.32,1.321-3.521,1.853-4.888,1.183  c-1.368-0.67-5.201-3.496-5.201-5.364V4.217c0-1.868-1.514-3.604-3.364-3.859c0,0-2.6-0.358-5.692-0.358s-5.692,0.358-5.692,0.358  c-1.851,0.254-3.365,1.991-3.365,3.859v9.648c0,1.868-1.19,3.807-2.646,4.31c-1.456,0.502-6.123,1.193-7.444-0.128l-6.82-6.82  C22.713,9.906,20.459,9.804,19.025,11L11,19.025c-1.197,1.435-1.095,3.689,0.226,5.01l6.819,6.82  c1.321,1.321,1.854,3.521,1.183,4.888s-3.496,5.201-5.364,5.201H4.217c-1.868,0-3.604,1.514-3.859,3.364c0,0-0.358,2.6-0.358,5.692  c0,3.093,0.358,5.692,0.358,5.692c0.254,1.851,1.991,3.364,3.859,3.364h9.648c1.868,0,3.807,1.19,4.309,2.646  c0.502,1.455,1.193,6.122-0.128,7.443l-6.819,6.819c-1.321,1.321-1.423,3.575-0.226,5.01L19.025,89  c1.435,1.196,3.688,1.095,5.009-0.226l6.82-6.82c1.321-1.32,3.521-1.853,4.889-1.183c1.368,0.67,5.201,3.496,5.201,5.364v9.648  c0,1.867,1.514,3.604,3.365,3.858c0,0,2.599,0.357,5.692,0.357s5.692-0.357,5.692-0.357c1.851-0.255,3.364-1.991,3.364-3.858v-9.648  c0-1.868,1.19-3.808,2.646-4.31s6.123-1.192,7.444,0.128l6.819,6.82c1.321,1.32,3.575,1.422,5.01,0.226L89,80.976  c1.196-1.435,1.095-3.688-0.227-5.01l-6.819-6.819c-1.321-1.321-1.854-3.521-1.183-4.889c0.67-1.368,3.496-5.201,5.364-5.201H95.784  z M50,68.302c-10.108,0-18.302-8.193-18.302-18.302c0-10.107,8.194-18.302,18.302-18.302c10.108,0,18.302,8.194,18.302,18.302  C68.302,60.108,60.108,68.302,50,68.302z"></path>'
 
 
@@ -212,6 +223,7 @@ window.drag_icon = (height, color) ->
     fill: color
     width: width
     height: height 
+    'aria-label': 'drag handle'
 
     dangerouslySetInnerHTML: __html: """
       <g>
@@ -232,6 +244,7 @@ window.edit_icon = (width, height, color) ->
     fill: 'none'
     width: width
     height: height 
+    'aria-label': 'edit'
 
     dangerouslySetInnerHTML: __html: """
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -244,6 +257,7 @@ window.trash_icon = (width, height, color) ->
     fill: 'none'
     width: width
     height: height 
+    'aria-label': 'delete'
 
     dangerouslySetInnerHTML: __html: """
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -262,6 +276,7 @@ window.filter_icon = (height) ->
     width: 33 / 27 * height
     height: height
     viewBox: "0 0 33 27" 
+    'aria-label': 'filter icon'
     dangerouslySetInnerHTML: __html: """
       <g id="final-push,-filters,-weights,-group-by" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
           <g id="Artboard-Copy-47" transform="translate(-373.000000, -868.000000)">
@@ -290,6 +305,7 @@ window.group_by_icon = (height) ->
     width: 34/19 * height  
     height: height
     viewBox: "0 0 34 19" 
+    'aria-label': 'group by icon'
 
     dangerouslySetInnerHTML: __html: """
       <g id="final-push,-filters,-weights,-group-by" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -318,6 +334,7 @@ window.weigh_icon = (height) ->
     width: height * 34/18 
     height: height
     viewBox: "0 0 34 18" 
+    'aria-label': 'weigh icon'
 
     dangerouslySetInnerHTML: __html: """
       <g id="final-push,-filters,-weights,-group-by" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -341,6 +358,7 @@ window.date_icon = (activated) ->
     width: 13
     height: 12 
     viewBox: "0 0 96 86"
+    'aria-label': 'date icon'
     dangerouslySetInnerHTML: __html: """
 
     <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -368,6 +386,7 @@ window.google_icon = (size) ->
     width: "#{size}px" 
     height: "#{size}px" 
     viewBox: "0 0 39 39" 
+    'aria-label': 'Google sign in'
 
     dangerouslySetInnerHTML: __html: """
       <g id="auth" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -388,6 +407,7 @@ window.import_icon = (size, color) ->
     width: "#{size}px" 
     height: "#{size}px" 
     viewBox: "0 0 550 550" 
+    'aria-label': 'import icon'
 
     dangerouslySetInnerHTML: __html: """
      <g>
@@ -405,6 +425,7 @@ window.magnifying_glass_icon = (width, height, color) ->
     fill: 'none'
     width: width
     height: height 
+    'aria-label': 'search icon'
 
     dangerouslySetInnerHTML: __html: """
       <circle 

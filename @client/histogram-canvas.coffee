@@ -1,5 +1,6 @@
 require './browser_hacks'
 require './histogram_layout'
+require './accessibility'
 
 require './histogram_lab'  # for testing only
 
@@ -250,44 +251,15 @@ window.Histogram = ReactiveComponent
     histogram_props = 
       id: @id
       key: 'histogram'
-      tabIndex: if !@props.backgrounded then 0
-
       className: 'histogram'
       role: 'region'
+
       'aria-hidden': @props.backgrounded
-      'aria-labelledby': if !@props.backgrounded then "histo-label-#{proposal.id}"
-      'aria-describedby': if !@props.backgrounded then "histo-description-#{proposal.id}"
 
       style:
         width: @props.width
         height: histo_height
 
-
-      onKeyDown: (e) =>
-        if e.which == 32 # SPACE toggles navigation
-          @local.navigating_inside = !@local.navigating_inside 
-          save @local 
-          e.preventDefault() # prevent scroll jumping
-          if @local.navigating_inside
-            ReactDOM.findDOMNode(@).querySelector('.avatar')?.focus()
-          else 
-            ReactDOM.findDOMNode(@).focus()
-        else if e.which == 13 && !@local.navigating_inside # ENTER 
-          @local.navigating_inside = true 
-          ReactDOM.findDOMNode(@).querySelector('.avatar')?.focus()
-          save @local 
-        else if e.which == 27 && @local.navigating_inside
-          @local.navigating_inside = false
-          ReactDOM.findDOMNode(@).focus() 
-          save @local 
-      onBlur: (e) => 
-        setTimeout => 
-          # if the focus isn't still on this histogram, 
-          # then we should reset its navigation
-
-          if @local.navigating_inside && !$$.closest(document.activeElement, "##{@id}")
-            @local.navigating_inside = false; save @local
-        , 0
 
     score = 0
     for o in opinions 
@@ -344,6 +316,8 @@ window.Histogram = ReactiveComponent
           opinions are given on a spectrum from {negative_pole} to {positive_pole}. In this histogram, 
           {num_opinions, plural, one {one person's opinion of} other {# people's opinion, with an average of}} {avg_score} 
              on a spectrum from {negative_pole} to {positive_pole}. 
+          To navigate individual user avatars, press Enter or Space to enter navigation mode, then use Tab and Shift+Tab 
+          to move between participants. Press Space or Enter to view a participant's profile, or Escape to exit navigation mode.
           """         
 
 
@@ -422,6 +396,7 @@ window.Histogram = ReactiveComponent
       key: 'histoavatars'
 
       HistoAvatars
+        ref: 'histoavatars'
         proposal_id: proposal.id
         histo_key: @props.histo_key or @props.proposal.key or @props.proposal   
         weights: @weights
@@ -433,7 +408,6 @@ window.Histogram = ReactiveComponent
         width: @props.width
         backgrounded: @props.backgrounded
         opinions: @opinions 
-        navigating_inside: @local.navigating_inside
         layout_params: @props.layout_params
         onClick: onClick
         resolution: @props.resolution
@@ -677,12 +651,6 @@ window.Histogram = ReactiveComponent
 
 
 
-
-
-
-
-
-
 window.styles += """
   .histo_avatar.avatar {
     cursor: pointer;
@@ -781,6 +749,7 @@ HistoAvatars = ReactiveComponent
       'data-receive-viewport-visibility-updates': 1.5
       'data-visibility-name': 'histogram'
       'data-component': @local.key      
+
       style: 
         transform: "translateZ(0)"
         height: @props.height
@@ -797,12 +766,47 @@ HistoAvatars = ReactiveComponent
 
       CANVAS
         ref: 'canvas'
+
+        role: 'figure'
+        tabIndex: if !@props.backgrounded then 0
+
+        'aria-labelledby': if !@props.backgrounded then "histo-label-#{@props.proposal_id}"
+        'aria-describedby': if !@props.backgrounded then "histo-description-#{@props.proposal_id}"
+
         onClick: @handleClick
         onMouseMove: @handleMouseMove
         onMouseOut: @handleMouseOut
-        role: "img" 
-        'aria-labelledby': if !@props.backgrounded then "histo-label-#{@props.proposal_id}"
-        'aria-describedby': if !@props.backgrounded then "histo-description-#{@props.proposal_id}"
+
+        onKeyDown: (e) =>
+          if e.which == 32 # SPACE toggles navigation
+            @local.navigating_inside = !@local.navigating_inside 
+            save @local 
+            e.preventDefault() # prevent scroll jumping
+            if @local.navigating_inside
+              @enterHistogramNavigation()
+            else 
+              @exitHistogramNavigation()
+          else if e.which == 13 && !@local.navigating_inside # ENTER 
+            @local.navigating_inside = true 
+            @enterHistogramNavigation()
+            save @local 
+          else if e.which == 27 && @local.navigating_inside # ESCAPE
+            @local.navigating_inside = false
+            @exitHistogramNavigation()
+            save @local
+          else if @local.navigating_inside
+            # Handle tab navigation within histogram
+            @handleHistogramNavigation(e) 
+        onBlur: (e) => 
+          setTimeout => 
+            # if the focus isn't still on this histogram, 
+            # then we should reset its navigation
+
+            if @local.navigating_inside && !$$.closest(document.activeElement, "##{@id}")
+              @exitHistogramNavigation()
+              @local.navigating_inside = false; save @local
+          , 0
+
 
 
   componentDidMount: ->   
@@ -1203,8 +1207,6 @@ HistoAvatars = ReactiveComponent
     else 
       cursor = 'auto'
 
-
-
     if @refs.canvas.style.cursor != cursor
       @refs.canvas.style.cursor = cursor
 
@@ -1212,29 +1214,34 @@ HistoAvatars = ReactiveComponent
     if bus_fetch('popover').element_in_focus != id
 
       if user && !backgrounded
-
-        histocache = @getAvatarPositions()
-        pos = histocache?.positions?[user]
-
-        coords = 
-          top:  pos[1] / @resolution + @canvas_bounding_rect.top  + window.pageYOffset - document.documentElement.clientTop + @cut_off_buffer
-          left: pos[0] / @resolution + @canvas_bounding_rect.left + window.pageXOffset - document.documentElement.clientLeft + pos[2] + @cut_off_buffer
-          height: 2 * pos[2] / @resolution
-          width: 2 * pos[2] / @resolution
-
-        opinionId = @user_to_opinion_map[user]
-        opinion = bus_fetch( opinionId )
-        opts = 
-          id: id
-          user: user
-          opinion: opinionId
-          coords: coords
-
+        @setAvatarPopoverToUser(user)
       else 
-        opts = null
+        update_avatar_popover_from_canvas_histo()
 
-      update_avatar_popover_from_canvas_histo opts
 
+  setAvatarPopoverToUser: (user) ->
+    histocache = @getAvatarPositions()
+    pos = histocache?.positions?[user]
+
+    canvas = @refs.canvas
+    canvas_bounding_rect = canvas.getBoundingClientRect()
+
+    id = "#{@props.histo_key or @props.proposal.key or @props.proposal}-#{user}"
+
+    coords = 
+      top:  pos[1] / @resolution + canvas_bounding_rect.top  + window.pageYOffset - document.documentElement.clientTop + @cut_off_buffer
+      left: pos[0] / @resolution + canvas_bounding_rect.left + window.pageXOffset - document.documentElement.clientLeft + pos[2] + @cut_off_buffer
+      height: 2 * pos[2] / @resolution
+      width: 2 * pos[2] / @resolution
+
+    opinionId = @user_to_opinion_map[user]
+    opinion = bus_fetch( opinionId )
+    opts = 
+      id: id
+      user: user
+      opinion: opinionId
+      coords: coords
+    update_avatar_popover_from_canvas_histo opts
 
   handleMouseOut: (e) -> 
     @refs.canvas.style.cursor = 'auto'
@@ -1250,6 +1257,83 @@ HistoAvatars = ReactiveComponent
 
     @props.onClick?(e, user)
 
+
+
+
+  # Keyboard navigation methods for accessibility
+  enterHistogramNavigation: ->
+    @local.current_avatar_index = 0
+    save @local
+    @navigateToCurrentAvatar()
+    announceToScreenReader("Entering histogram navigation. Use tab and shift-tab to navigate between user avatars.")
+
+  exitHistogramNavigation: ->
+    @local.current_avatar_index = null
+    save @local
+    update_avatar_popover_from_canvas_histo()  # Clear any popover
+    announceToScreenReader("Exited histogram navigation.")
+
+
+  handleHistogramNavigation: (e) ->
+    return unless @local.navigating_inside
+    
+    histocache = @getAvatarPositions()
+    return unless histocache?.ordered_users?.length
+    
+    if e.which == 9  # TAB key
+      e.preventDefault()
+      
+      current_index = @local.current_avatar_index ? 0
+      
+      if e.shiftKey  # Shift+Tab - go backwards
+        new_index = if current_index <= 0 then histocache.ordered_users.length - 1 else current_index - 1
+      else  # Tab - go forwards
+        new_index = if current_index >= histocache.ordered_users.length - 1 then 0 else current_index + 1
+      
+      @local.current_avatar_index = new_index
+      save @local
+      @navigateToCurrentAvatar()
+    
+    else if e.which == 32 || e.which == 13  # SPACE or ENTER - activate current avatar
+      e.preventDefault()
+      @activateCurrentAvatar()
+
+  navigateToCurrentAvatar: ->
+    histocache = @getAvatarPositions()
+    return unless histocache?.ordered_users?.length && @local.current_avatar_index?
+    current_avatar = histocache.ordered_users[@local.current_avatar_index]
+    return unless current_avatar
+    # Check if user is backgrounded (not interactive)
+    backgrounded = (@sprites?[current_avatar]?.target_opacity or @sprites?[current_avatar]?.opacity) < 1
+    return if backgrounded
+    # Get position data for popover
+    pos = histocache.positions[current_avatar]
+    return unless pos
+    # Calculate coordinates for popover using HistoAvatars methods
+    @updateHitRegion()
+
+
+    @setAvatarPopoverToUser(current_avatar)
+    
+    # Announce to screen reader
+    user_obj = bus_fetch(current_avatar)
+    position_text = "#{@local.current_avatar_index + 1} of #{histocache.ordered_users.length}"
+    announceToScreenReader("Focused on #{user_obj.name or 'user'}, #{position_text}")
+
+  activateCurrentAvatar: ->
+    histocache = @getAvatarPositions()
+    return unless histocache?.ordered_users?.length && @local.current_avatar_index?
+    
+    current_avatar = histocache.ordered_users[@local.current_avatar_index]
+    return unless current_avatar
+    
+    # Get the HistoAvatars component to access its onClick functionality
+    histo_avatars = @refs.histoavatars
+    return unless histo_avatars
+    
+    # Trigger click handler for current user
+    @props.onClick?(null, current_avatar) if @props.onClick
+    announceToScreenReader("Activated user profile")
 
 
 

@@ -438,21 +438,6 @@ window.getCanvasAvatar = (user, anonymous=false) ->
 
   cached_avatars[key] or cached_avatars.default
 
-
-colors_used = {}
-window.createHitRegionAvatar = (user) -> 
-  
-  while !color? || color of colors_used
-    r = Math.round(Math.random() * 255)
-    g = Math.round(Math.random() * 255)
-    b = Math.round(Math.random() * 255)
-    color = "rgb(#{r},#{g},#{b})"
-  colors_used[color] = true
-
-  user.hit_region_color = color
-  createUserIcon user.hit_region_color
-
-
 group_colored_icons = {}
 window.getGroupIcon = (key, color) ->
   if key not of group_colored_icons
@@ -461,7 +446,7 @@ window.getGroupIcon = (key, color) ->
 
 # Note: this is actually kinda expensive on large forums, in memory and cpu
 icon_cache = {}
-createUserIcon = (fill) ->
+window.createUserIcon = (fill) ->
   if fill of icon_cache
     return icon_cache[fill]
 

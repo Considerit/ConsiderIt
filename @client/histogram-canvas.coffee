@@ -697,6 +697,7 @@ $$.add_delegated_listener document.body, 'keydown', '.avatar[data-opinion]', (e)
 
 hit_region_avatars = {}
 hit_region_color_to_user_map = {}
+hit_region_user_to_color_map = {}
 
 window.last_histogram_position = {}
 
@@ -1109,9 +1110,16 @@ HistoAvatars = ReactiveComponent
     for key in histocache?.ordered_users or []
       sprite = @sprites[key]
       if key not of hit_region_avatars
-        user = bus_fetch(key)
-        hit_region_avatars[key] = createHitRegionAvatar user
-        hit_region_color_to_user_map[user.hit_region_color] = key
+
+        while !color? || color of hit_region_color_to_user_map
+          r = Math.round(Math.random() * 255)
+          g = Math.round(Math.random() * 255)
+          b = Math.round(Math.random() * 255)
+          color = "rgb(#{r},#{g},#{b})"
+
+        hit_region_user_to_color_map[key] = color
+        hit_region_color_to_user_map[color] = key
+        hit_region_avatars[key] = createUserIcon color
 
       @hit_ctx.drawImage hit_region_avatars[key], sprite.x * DEVICE_PIXEL_RATIO, sprite.y * DEVICE_PIXEL_RATIO, sprite.width * DEVICE_PIXEL_RATIO, sprite.height * DEVICE_PIXEL_RATIO
 

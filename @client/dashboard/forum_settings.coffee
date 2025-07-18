@@ -819,7 +819,6 @@ window.ForumSettingsDash = ReactiveComponent
                     defaultValue: subdomain.customizations.dialogue_state_explanation
                     
                     onChange: (ev) =>
-                      console.log("HIHIHIH", ev.target.value)
                       subdomain.customizations ||= {}
                       subdomain.customizations.dialogue_state_explanation = ev.target.value
                       save subdomain

@@ -102,11 +102,11 @@ window.Homepage = ReactiveComponent
     messages = []
     phase = customization('contribution_phase')
     if phase == 'frozen'
-      messages.push {style: {backgroundColor: '#2e98c0', color: 'white'}, img: 'snowflake.png', label: translator("engage.frozen_message", "The forum host has frozen this forum so no changes can be made.")}
+      messages.push {style: {backgroundColor: '#2e98c0', color: 'white'}, img: 'snowflake.png', label: translator("engage.frozen_message", "The forum host has frozen this forum so no changes can be made."), extra: if customization('dialogue_state_explanation') then customization('dialogue_state_explanation')}
     else if phase == 'ideas-only'
-      messages.push {style: {backgroundColor: '#fcde04', color: 'black'}, img: 'lightning.png', label: translator("engage.ideas_only_message", "The forum host has set this forum to be ideas only. No opinions for now.")}
+      messages.push {style: {backgroundColor: '#fcde04', color: 'black'}, img: 'lightning.png', label: translator("engage.ideas_only_message", "The forum host has set this forum to be ideas only. No opinions for now."), extra: if customization('dialogue_state_explanation') then customization('dialogue_state_explanation')}
     else if phase == 'opinions-only'
-      messages.push {style: {backgroundColor: '#c1ccd0', color: 'black'}, img: 'magnifying_glass.png', label: translator("engage.opinions_only_message", "The forum host has set this forum to be opinions only. No new ideas for now.")}
+      messages.push {style: {backgroundColor: '#c1ccd0', color: 'black'}, img: 'magnifying_glass.png', label: translator("engage.opinions_only_message", "The forum host has set this forum to be opinions only. No new ideas for now."), extra: if customization('dialogue_state_explanation') then customization('dialogue_state_explanation')}
 
     if customization('anonymize_everything')
       if customization('anonymize_permanently')
@@ -205,8 +205,16 @@ window.Homepage = ReactiveComponent
 
                         src: "#{bus_fetch('/application').asset_host}/images/#{message.img}"
 
-                  SPAN null,
+                  DIV null,
                     message.label
+
+                    if message.extra
+                      BLOCKQUOTE
+                        style:
+                          marginTop: 10
+                          fontSize: 'larger'
+                        className: "message-extra"
+                        "#{message.extra}"
 
               if preamble = get_page_preamble()
                 DIV

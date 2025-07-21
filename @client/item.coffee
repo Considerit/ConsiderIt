@@ -506,11 +506,6 @@ ProposalItemWrapper = ReactiveComponent
             onClick: => 
               toggle_expand
                 proposal: bus_fetch @props.proposal
-            onKeyPress: (e) => 
-              if e.which == 32 || e.which == 13
-                toggle_expand
-                  proposal: bus_fetch @props.proposal
-
 
             double_up_icon(40)
 
@@ -523,10 +518,6 @@ ProposalItemWrapper = ReactiveComponent
             onClick: => 
               toggle_expand
                 proposal: bus_fetch @props.proposal
-            onKeyPress: (e) => 
-              if e.which == 32 || e.which == 13
-                toggle_expand
-                  proposal: bus_fetch @props.proposal
 
             iconX(22, "var(--text_light)")
 
@@ -889,6 +880,9 @@ window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
         loadPage proposal_url(proposal), (if loc.query_params?.selected then {selected: loc.query_params.selected} else {}), 'toggle_expand'
 
         update_proposal_mode proposal, mode
+
+        document.querySelector("[data-name='#{slugify(proposal.name)}'] .opinion-heading")?.focus()
+        console.log document.querySelector("[data-name='#{slugify(proposal.name)}'] .opinion-heading")
 
       save expanded_state
 

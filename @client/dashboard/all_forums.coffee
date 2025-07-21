@@ -118,10 +118,6 @@ window.AllYourForums = ReactiveComponent
                   'aria-label': "Import Configuration from #{forum.name} to this forum"
                   'data-tooltip': "Import Configuration from #{forum.name} to this forum"
 
-                  onKeyPress: (e) =>
-                    if e.which == 32 || e.which == 13
-                      e.currentTarget.click()
-
                   onClick: => 
                     if confirm("Are you sure you want to import this configuration? It will overwrite the configuration of this forum.")
 
@@ -147,9 +143,6 @@ window.AllYourForums = ReactiveComponent
                   'aria-label': 'Delete forum'
                   'data-tooltip': 'Delete forum'
 
-                  onKeyPress: (e) =>
-                    if e.which == 32 || e.which == 13
-                      e.currentTarget.click()
 
                   onClick: => 
                     if confirm("Are you sure you want to delete this entire forum? You cannot undo it.")

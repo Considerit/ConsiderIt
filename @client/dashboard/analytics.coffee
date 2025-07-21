@@ -421,11 +421,7 @@ GraphSection =
                     else 
                       analytics_state.segment_by = segment
                     save analytics_state
-                  onKeyPress: (e) -> 
-                    if e.which == 13 || e.which == 32 # ENTER or SPACE
-                      e.target.click()
-                      e.stopPropagation()
-                      e.preventDefault()              
+
                   # style: 
                   #   backgroundColor: if active then "var(--focus_color)"
                   #   color: if analytics_state.segment_by == segment then "var(--text_light)"

@@ -711,13 +711,6 @@ window.DecisionBoard = ReactiveComponent
                   e.stopPropagation() 
                   update_proposal_mode(proposal, 'crafting', 'give_opinion_button') 
 
-              onKeyPress: (e) => 
-                if e.which == 32 || e.which == 13
-                  if mode != 'results'
-                    e.stopPropagation() 
-                    update_proposal_mode(proposal, 'crafting', 'give_opinion_button') 
-
-
               opinion_prompt
 
 

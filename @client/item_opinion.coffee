@@ -375,59 +375,57 @@ ParticipationStatus = ReactiveComponent
   render: -> 
     can_opine = canUserOpine @props.proposal
 
-    return SPAN null if can_opine > 0 || can_opine == Permission.NOT_LOGGED_IN # || can_opine == Permission.DISABLED
+    return SPAN null if can_opine > 0 || can_opine == Permission.NOT_LOGGED_IN
 
     DIV 
       style: 
         textAlign: 'center'
 
-      DIV
-        style: 
-          backgroundColor: "var(--attention_orange)"
-          color: "var(--text_light)"
-          margin: '0px auto 8px auto'
-          display: 'inline-block'
-          padding: '4px 6px'
-          fontWeight: 700
+      if can_opine == Permission.DISABLED || can_opine == Permission.INSUFFICIENT_PRIVILEGES
 
-        if can_opine == Permission.DISABLED
-          TRANSLATE
-            id: 'engage.proposal_closed'
-            'Closed to new contributions.'
+        DIV
+          style: 
+            backgroundColor: "var(--attention_orange)"
+            color: "var(--text_light)"
+            margin: '0px auto 8px auto'
+            display: 'inline-block'
+            padding: '4px 6px'
+            fontWeight: 700
 
-        else if can_opine == Permission.INSUFFICIENT_PRIVILEGES
-          TRANSLATE
-            id: 'engage.permissions.read_only'
-            "This proposal is read-only. The forum hosts specify who can participate."
+          if can_opine == Permission.DISABLED
+            TRANSLATE
+              id: 'engage.proposal_closed'
+              'Closed to new contributions.'
 
-        else if can_opine == Permission.UNVERIFIED_EMAIL
-          A
-            style:
-              cursor: 'pointer'
+          else if can_opine == Permission.INSUFFICIENT_PRIVILEGES
+            TRANSLATE
+              id: 'engage.permissions.read_only'
+              "This proposal is read-only. The forum hosts specify who can participate."
 
-            onTouchEnd: (e) => 
-              e.stopPropagation()
+      else if can_opine == Permission.UNVERIFIED_EMAIL
+        BUTTON
+          className: 'btn'
+          style:
+            cursor: 'pointer'
+            backgroundColor: "var(--attention_orange)"
 
-            onClick: (e) =>
-              e.stopPropagation()
+          onTouchEnd: (e) => 
+            e.stopPropagation()
 
-              reset_key 'auth', 
-                form: 'verify email'
-                goal: 'To participate, please demonstrate you control this email.'
-                
-              current_user.trying_to = 'send_verification_token'
-              save current_user
+          onClick: (e) =>
+            e.stopPropagation()
+            current_user = bus_fetch('/current_user')
 
-            onKeyPress: (e) => 
-              if e.which == 32 || e.which == 13
-                reset_key 'auth', 
-                  form: 'verify email'
-                  goal: 'To participate, please demonstrate you control this email.'
-                  
-                current_user.trying_to = 'send_verification_token'
-                save current_user
+            reset_key 'auth', 
+              form: 'verify email'
+              goal: 'To participate, please demonstrate you control this email.'
+              
+            current_user.trying_to = 'send_verification_token'
+            save current_user
 
-            translator 'engage.permissions.verify_account_to_participate', "Verify your account to participate"
+            show_flash('Sent verification token via email')
+
+          translator 'engage.permissions.verify_account_to_participate', "Verify your account to participate"
 
 
 

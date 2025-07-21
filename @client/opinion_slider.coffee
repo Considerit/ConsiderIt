@@ -218,11 +218,6 @@ window.OpinionSlider = ReactiveComponent
           proposal: proposal 
           prefer_personal_view: true                   
         
-      onKeyPress: (e) => 
-        if e.which == 32 || e.which == 13
-          toggle_expand
-            proposal: proposal
-            prefer_personal_view: true  
 
       opinion_prompt
 

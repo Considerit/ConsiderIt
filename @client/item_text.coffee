@@ -240,6 +240,7 @@ window.ItemText = ReactiveComponent
             DIV 
               ref: 'proposal_title'
               role: "button"
+              "aria-label": "Expand this proposal"
               "aria-expanded": @is_expanded
               "aria-controls": "opinion-block-#{proposal.key}"
               tabIndex: 0
@@ -553,12 +554,6 @@ window.ItemText = ReactiveComponent
                 proposal: proposal 
                 prefer_personal_view: false                   
               
-            onKeyPress: (e) => 
-              if e.which == 32 || e.which == 13
-                toggle_expand
-                  proposal: proposal
-                  prefer_personal_view: false                   
-
             TRANSLATE
               id: "engage.proposal_score_summary"
               num_opinions: overall_cnt 
@@ -585,11 +580,6 @@ window.ItemText = ReactiveComponent
                 toggle_expand
                   proposal: proposal
                 
-              onKeyPress: (e) => 
-                if e.which == 32 || e.which == 13
-                  toggle_expand
-                    proposal: proposal
-
               point_count
 
 
@@ -614,9 +604,6 @@ window.ItemText = ReactiveComponent
                     className: 'monospaced naked_button'
                     style: {  padding:0  }
                     onClick: toggleExpandPreferPersonal
-                    onKeyPress: (e) =>
-                      if e.which == 32 or e.which == 13
-                        toggleExpandPreferPersonal()
 
                     if you_have_opinion
                       translator('engage.your_opinion_section_label', 'Your opinion')
@@ -633,9 +620,6 @@ window.ItemText = ReactiveComponent
                       onClick: toggleExpandPreferPersonal
                       style:
                         marginLeft: 3
-                      onKeyPress: (e) =>
-                        if e.which == 32 || e.which == 13
-                          toggleExpandPreferPersonal()
 
                       edit_icon YOUR_OPINION_BUTTON_SIZE, YOUR_OPINION_BUTTON_SIZE, YOUR_OPINION_BUTTON_COLOR
 

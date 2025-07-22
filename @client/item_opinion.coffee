@@ -151,6 +151,8 @@ window.OpinionBlock = ReactiveComponent
 
     DIV 
       className: 'OpinionBlock'
+      role: if @is_expanded then 'region'
+      'aria-labelledby': "opinion-heading-#{slugify(proposal.name)}"
 
       FLIPPED 
         flipId: "participation-status-#{proposal.key}"
@@ -173,11 +175,9 @@ window.OpinionBlock = ReactiveComponent
             (customization('opinion_callout')?[proposal.cluster] or customization('opinion_callout'))()
           else 
             H1
+              id: "opinion-heading-#{slugify(proposal.name)}"
               className: 'opinion-heading'
               style: _.defaults {}, customization('list_title_style') # ,
-                #display: if embedded_demo() then 'none'    
-
-                
 
               if mode == 'crafting' || (just_you && current_user.logged_in)
                 TRANSLATE
@@ -207,14 +207,14 @@ window.OpinionBlock = ReactiveComponent
               className: 'opinion-views-container'
 
               OpinionViews
-                ui_key: "opinion-views-#{proposal.key}"
+                ui_key: "opinion-views-#{proposal.id}"
                 disable_switching: mode == 'crafting'
                 style: 
                   margin: '8px auto 20px auto'
                   position: 'relative'
 
               OpinionViewInteractionWrapper
-                ui_key: "opinion-views-#{proposal.key}"              
+                ui_key: "opinion-views-#{proposal.id}"              
                 more_views_positioning: 'centered'
                 width: HOMEPAGE_WIDTH()
 

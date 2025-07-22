@@ -434,7 +434,7 @@ styles += """
   }
 
 
-  #tabs > ul > li > h4 {
+  #tabs > ul > li > h2 {
     cursor: pointer;
     position: relative;
     padding: 10px 20px 4px 20px;
@@ -442,16 +442,16 @@ styles += """
     font-weight: 600;        
     color: var(--text_light);
   }
-  #tabs > ul > li.selected > h4 {
+  #tabs > ul > li.selected > h2 {
     opacity: 1;
     color: var(--text_dark);
   }
-  #tabs > ul > li:hover > h4,
-  #tabs > ul > li:focus-within > h4 {
+  #tabs > ul > li:hover > h2,
+  #tabs > ul > li:focus-within > h2 {
     opacity: 1;
   }
 
-  #tabs > ul > li > h4 > input {
+  #tabs > ul > li > h2 > input {
     background-color: transparent;
     border: 1px solid var(--brd_light_gray);
     letter-spacing: inherit;
@@ -466,10 +466,10 @@ styles += """
   #tabs > ul > li[draggable="false"].demo.add_new {
     background-color: transparent;
   }
-  #tabs > ul > li[draggable="false"].demo.add_new > h4 {
+  #tabs > ul > li[draggable="false"].demo.add_new > h2 {
     color: var(--text_dark);
   }  
-  .dark #tabs > ul > li[draggable="false"].demo.add_new > h4 {
+  .dark #tabs > ul > li[draggable="false"].demo.add_new > h2 {
     color: var(--text_light);
   }
 
@@ -554,7 +554,7 @@ window.Tab = ReactiveComponent
             cursor: 'move'
           drag_icon 15, "var(--text_neutral)"
 
-      H4 
+      H2 
         className: if current then 'main_background'
         style: tab_style
 

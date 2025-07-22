@@ -318,7 +318,7 @@ window.avatar = (user, props) ->
   if attrs.alt 
     alt = attrs.alt.replace('<user>', name) 
   else 
-    alt = name 
+    alt = "Image of #{name}" 
 
   classes = "avatar#{if attrs.className then ' ' + attrs.className else ''}"
   if anonymous 

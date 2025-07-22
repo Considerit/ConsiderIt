@@ -84,259 +84,261 @@ window.Point = ReactiveComponent
 
     LI
       key: "point-#{point.id}"
-      'data-id': @props.point
       className: "point #{@props.rendered_as} #{if point.is_pro then 'pro' else 'con'} #{if customization('disable_comments') && !expand_to_see_details then 'commenting-disabled' else ''} #{if is_selected then 'is-selected' else ''} #{if @local.has_focus then 'is-focused' else ''}"
-      onClick: @selectPoint
-      onBlur: (e) => @local.has_focus = false; save(@local)
-      onFocus: (e) => @local.has_focus = true; save(@local)
 
-      # onTouchEnd: @selectPoint
-      onKeyDown: (e) =>
-        if (is_selected && e.which == 27) || e.which == 13 || e.which == 32
-          @selectPoint(e)
-          e.preventDefault()
+      DIV
+        role: 'button'
+        tabIndex: 0
+        onBlur: (e) => @local.has_focus = false; save(@local)
+        onFocus: (e) => @local.has_focus = true; save(@local) 
+        onClick: @selectPoint      
+        onKeyDown: (e) =>
+          if (is_selected && e.which == 27) || e.which == 13 || e.which == 32
+            @selectPoint(e)
+            e.preventDefault()
 
-      draggable: @props.enable_dragging
-      "data-point": point.key
-
-
-      if @props.rendered_as == 'decision_board_point'
-        DIV 
-          style: 
-            position: 'absolute'
-            left: 0
-            top: -2
-
-          if point.is_pro then '•' else '•'
-
-      DIV 
-        ref: 'point_content'
-        className:'point_content'
+        'aria-expanded': is_selected
+        'aria-owns': 'open_point'
+        'data-id': @props.point
+        draggable: @props.enable_dragging
+        "data-point": point.key
 
 
-        if @props.rendered_as != 'decision_board_point' && !PHONE_SIZE()
+        if @props.rendered_as == 'decision_board_point'
           DIV 
-            className: 'community_point_mouth'
-            'role': 'presentation'
-            key: 'community_point_mouth'
+            style: 
+              position: 'absolute'
+              left: 0
+              top: -2
 
-            PointBubblemouth 
-              apex_xfrac: 0
+            if point.is_pro then '•' else '•'
 
         DIV 
-          style: 
-            wordWrap: 'break-word'
-            fontSize: POINT_FONT_SIZE()
+          ref: 'point_content'
+          className:'point_content'
+
+
+          if @props.rendered_as != 'decision_board_point' && !PHONE_SIZE()
+            DIV 
+              className: 'community_point_mouth'
+              'aria-hidden': 'true'
+              key: 'community_point_mouth'
+
+              PointBubblemouth 
+                apex_xfrac: 0
 
           DIV 
-            className: 'point_nutshell'
-
-            splitParagraphs point.nutshell, append
-
-
-
-          DIV 
-            id: "point-aria-interaction-#{point.id}"
-            className: 'hidden'
-
-            translator
-              id: "engage.point_explanation"
-              author: if point.hide_name then anonymous_label() else bus_fetch(point.user).name
-              num_inclusions: point.includers.length
-              comment_count: point.comment_count
-              """By {author}. 
-                 { num_inclusions, plural, =0 {} one {Important to one person.} other {Important to # people.} } 
-                 {comment_count, plural, =0 {} one {Has received one comment.} other {Has received # comments.} }
-                 Press ENTER or SPACE for details or discussion."""
-
-          DIV 
-            'aria-hidden': true
-            className: "point_details" + \
-                       if is_selected
-                         ''
-                       else 
-                         '_tease'
-
             style: 
               wordWrap: 'break-word'
-              marginTop: '0.5em'
               fontSize: POINT_FONT_SIZE()
-              
 
             DIV 
+              className: 'point_nutshell'
+
+              splitParagraphs point.nutshell, append
+
+            DIV 
+              id: "point-aria-interaction-#{point.id}"
+              className: 'hidden'
+
+              translator
+                id: "engage.point_explanation"
+                author: if point.hide_name then anonymous_label() else bus_fetch(point.user).name
+                num_inclusions: point.includers.length
+                comment_count: point.comment_count
+                """By {author}. 
+                   { num_inclusions, plural, =0 {} one {Important to one person.} other {Important to # people.} } 
+                   {comment_count, plural, =0 {} one {Has received one comment.} other {Has received # comments.} }
+                   Press ENTER or SPACE for details or discussion."""
+
+            DIV 
+              'aria-hidden': true
+              className: "point_details" + \
+                         if is_selected
+                           ''
+                         else 
+                           '_tease'
+
               style: 
-                fontSize: 12
-                color: "var(--text_light_gray)"
+                wordWrap: 'break-word'
+                marginTop: '0.5em'
+                fontSize: POINT_FONT_SIZE()
+                
 
-              if !PHONE_SIZE() && !screencasting() && !embedded_demo() && bus_fetch('/subdomain').name != 'galacticfederation'
-                [
-                  prettyDate(point.created_at)
-                  SPAN key: 'padding', style: paddingLeft: 8
-                ]
+              DIV 
+                style: 
+                  fontSize: 12
+                  color: "var(--text_light_gray)"
 
-              if !customization('disable_comments')
-                SPAN 
-                  key: 2 
-                  style: {whiteSpace: 'nowrap'}
+                if !PHONE_SIZE() && !screencasting() && !embedded_demo() && bus_fetch('/subdomain').name != 'galacticfederation'
+                  [
+                    prettyDate(point.created_at)
+                    SPAN key: 'padding', style: paddingLeft: 8
+                  ]
 
-                  A 
-                    className: 'select_point'
+                if !customization('disable_comments')
+                  SPAN 
+                    key: 2 
+                    style: {whiteSpace: 'nowrap'}
 
-                    translator
-                      id: 'engage.link_to_comments'
-                      comment_count: point.comment_count 
-                      "{comment_count, plural, one {# comment} other {# comments}}"
+                    A 
+                      className: 'select_point'
 
-              if PHONE_SIZE()
-                SPAN 
-                  key: 3
-                  style: 
-                    float: 'right'
+                      translator
+                        id: 'engage.link_to_comments'
+                        comment_count: point.comment_count 
+                        "{comment_count, plural, one {# comment} other {# comments}}"
 
-                  "+#{point.includers.length}"
+                if PHONE_SIZE()
+                  SPAN 
+                    key: 3
+                    style: 
+                      float: 'right'
 
-                  
+                    "+#{point.includers.length}"
+
+                    
 
 
 
-        if current_user.user == point.user
-          DIV null,
-            if permit('update point', point) > 0 && 
-                (@props.rendered_as == 'decision_board_point' || TABLET_SIZE())
-              BUTTON
-                className: "like_link"
-                style:
-                  fontSize: if browser.is_mobile then 24 else 14
+          if current_user.user == point.user
+            DIV null,
+              if permit('update point', point) > 0 && 
+                  (@props.rendered_as == 'decision_board_point' || TABLET_SIZE())
+                BUTTON
+                  className: "like_link"
+                  style:
+                    fontSize: if browser.is_mobile then 24 else 14
+                    color: "var(--focus_color)"
+                    padding: '3px 12px 3px 0'
+
+                  onTouchEnd: (e) -> e.stopPropagation()
+                  onClick: ((e) =>
+                    e.stopPropagation()
+                    points = bus_fetch(@props.your_points_key)
+                    points.editing_points.push(@props.point)
+                    save(points))
+                  translator 'engage.edit_button', 'edit'
+
+              if permit('delete point', point) > 0 && 
+                  (@props.rendered_as == 'decision_board_point' || TABLET_SIZE())
+                BUTTON
+                  'data-action': 'delete-point'
+                  className: "like_link"
+                  style:
+                    fontSize: if browser.is_mobile then 24 else 14
+                    color: "var(--focus_color)"
+                    padding: '3px 12px 3px 0'
+                  onTouchEnd: (e) -> e.stopPropagation()       
+                  onClick: (e) =>
+                    e.stopPropagation()
+                    if confirm('Delete this point forever?')
+                      destroy @props.point
+                  translator 'engage.delete_button', 'delete'
+
+        if @props.rendered_as != 'decision_board_point' && !PHONE_SIZE() && @props.in_viewport
+          DIV 
+            'aria-hidden': true
+            className:'includers'
+            onMouseEnter: @highlightIncluders
+            onMouseLeave: @unHighlightIncluders
+              
+            renderIncluders(draw_all_includers)
+
+
+
+        if TABLET_SIZE() || (!TABLET_SIZE() && @props.enable_dragging)
+          your_opinion = proposal.your_opinion
+          if your_opinion.key 
+            bus_fetch your_opinion
+
+
+          can_opine = canUserOpine proposal          
+
+          included = @included()
+          includePoint = (e) => 
+
+
+            e.stopPropagation()
+            e.preventDefault()
+
+            return unless e.type != 'click' || \
+                          (!browser.is_android_browser && e.type == 'click')
+            if !included
+              @include()
+            else 
+
+              validate_first = point.user == bus_fetch('/current_user').user && point.includers.length < 2
+              if !validate_first || confirm('Are you sure you want to mark your point as unimportant? It will be gone forever.')
+                @remove()
+
+          if !TABLET_SIZE() && @props.enable_dragging
+            right = (included && point.is_pro) || (!included && !point.is_pro)
+
+            BUTTON
+              className: "focused_include_button #{if @local.focused_include then 'has-focus' else ''}"
+              'aria-label': if included 
+                              translator 'engage.uninclude_explanation', 'Mark this point as unimportant and move to next point' 
+                            else 
+                              translator 'engage.include_explanation', 'Mark this point as important and move to next point'
+              style:
+                display: if get_selected_point() then 'none'
+
+              onFocus: (e) => 
+                @local.focused_include = true; save @local
+              onBlur: (e) => @local.focused_include = false; save @local
+              onTouchEnd: includePoint
+              onClick: includePoint
+              onKeyDown: (e) => 
+                if e.which == 13 || e.which == 32
+                  includePoint(e)
+                  valence = if point.is_pro then 'pros' else 'cons'
+
+                  next = $$.closest(e.target, '.point').nextElementSibling.querySelector('.point_content')
+                  next.focus()
+                  e.preventDefault()
+
+              I 
+                style: 
+                  fontSize: if included then 25 else 40
                   color: "var(--focus_color)"
-                  padding: '3px 12px 3px 0'
+                className: "fa fa-long-arrow-#{if !right then 'left' else 'right'}"
 
-                onTouchEnd: (e) -> e.stopPropagation()
-                onClick: ((e) =>
-                  e.stopPropagation()
-                  points = bus_fetch(@props.your_points_key)
-                  points.editing_points.push(@props.point)
-                  save(points))
-                translator 'engage.edit_button', 'edit'
-
-            if permit('delete point', point) > 0 && 
-                (@props.rendered_as == 'decision_board_point' || TABLET_SIZE())
-              BUTTON
-                'data-action': 'delete-point'
-                className: "like_link"
-                style:
-                  fontSize: if browser.is_mobile then 24 else 14
-                  color: "var(--focus_color)"
-                  padding: '3px 12px 3px 0'
-                onTouchEnd: (e) -> e.stopPropagation()       
-                onClick: (e) =>
-                  e.stopPropagation()
-                  if confirm('Delete this point forever?')
-                    destroy @props.point
-                translator 'engage.delete_button', 'delete'
-
-      if @props.rendered_as != 'decision_board_point' && !PHONE_SIZE() && @props.in_viewport
-        DIV 
-          'aria-hidden': true
-          className:'includers'
-          onMouseEnter: @highlightIncluders
-          onMouseLeave: @unHighlightIncluders
+          else if can_opine >= 0
             
-          renderIncluders(draw_all_includers)
-
-
-
-      if TABLET_SIZE() || (!TABLET_SIZE() && @props.enable_dragging)
-        your_opinion = proposal.your_opinion
-        if your_opinion.key 
-          bus_fetch your_opinion
-
-
-        can_opine = canUserOpine proposal          
-
-        included = @included()
-        includePoint = (e) => 
-
-
-          e.stopPropagation()
-          e.preventDefault()
-
-          return unless e.type != 'click' || \
-                        (!browser.is_android_browser && e.type == 'click')
-          if !included
-            @include()
-          else 
-
-            validate_first = point.user == bus_fetch('/current_user').user && point.includers.length < 2
-            if !validate_first || confirm('Are you sure you want to mark your point as unimportant? It will be gone forever.')
-              @remove()
-
-        if !TABLET_SIZE() && @props.enable_dragging
-          right = (included && point.is_pro) || (!included && !point.is_pro)
-
-          BUTTON
-            className: "focused_include_button #{if @local.focused_include then 'has-focus' else ''}"
-            'aria-label': if included 
-                            translator 'engage.uninclude_explanation', 'Mark this point as unimportant and move to next point' 
-                          else 
-                            translator 'engage.include_explanation', 'Mark this point as important and move to next point'
-            style:
-              display: if get_selected_point() then 'none'
-
-            onFocus: (e) => 
-              @local.focused_include = true; save @local
-            onBlur: (e) => @local.focused_include = false; save @local
-            onTouchEnd: includePoint
-            onClick: includePoint
-            onKeyDown: (e) => 
-              if e.which == 13 || e.which == 32
-                includePoint(e)
-                valence = if point.is_pro then 'pros' else 'cons'
-
-                next = $$.closest(e.target, '.point').nextElementSibling.querySelector('.point_content')
-                next.focus()
-                e.preventDefault()
-
-            I 
+            BUTTON 
+              className: "selector_button #{if included then 'active' else ''}"
               style: 
-                fontSize: if included then 25 else 40
-                color: "var(--focus_color)"
-              className: "fa fa-long-arrow-#{if !right then 'left' else 'right'}"
+                position: 'relative'
+                top: -13
+                padding: '8px 5px'
+                borderRadius: '0 0 16px 16px'
+                zIndex: 0
+                width: '100%'
 
-        else if can_opine >= 0
-          
-          BUTTON 
-            className: "selector_button #{if included then 'active' else ''}"
-            style: 
-              position: 'relative'
-              top: -13
-              padding: '8px 5px'
-              borderRadius: '0 0 16px 16px'
-              zIndex: 0
-              width: '100%'
+              onMouseEnter: => 
+                @local.hover_important = true
+                save @local
+              onMouseLeave: => 
+                @local.hover_important = false
+                save @local
 
-            onMouseEnter: => 
-              @local.hover_important = true
-              save @local
-            onMouseLeave: => 
-              @local.hover_important = false
-              save @local
+              onTouchEnd: includePoint
+              onClick: includePoint
 
-            onTouchEnd: includePoint
-            onClick: includePoint
+              onKeyDown: (e) => 
+                if e.which == 13 || e.which == 32
+                  includePoint(e)
+                  e.preventDefault()
+                  e.stopPropagation()
 
-            onKeyDown: (e) => 
-              if e.which == 13 || e.which == 32
-                includePoint(e)
-                e.preventDefault()
-                e.stopPropagation()
+              I
+                className: 'fa fa-thumbs-o-up'
+                style: 
+                  display: 'inline-block'
+                  marginRight: 10
 
-            I
-              className: 'fa fa-thumbs-o-up'
-              style: 
-                display: 'inline-block'
-                marginRight: 10
-
-            translator("engage.include_button", "Important") + "#{if included then '' else '?'}" 
+              translator("engage.include_button", "Important") + "#{if included then '' else '?'}" 
 
 
       if is_selected
@@ -489,6 +491,8 @@ window.Point = ReactiveComponent
     your_opinion.point_inclusions.push @props.point
     save(your_opinion)
 
+    announceToScreenReader("The point was incorporated into your opinion")
+
     window.writeToLog
       what: 'included point'
       details: 
@@ -506,6 +510,7 @@ window.Point = ReactiveComponent
     if idx > -1
       your_opinion.point_inclusions.splice(idx, 1)
       save(your_opinion)
+      announceToScreenReader("The point was removed from your opinion")
 
 
   selectPoint: (e) ->
@@ -526,10 +531,11 @@ window.Point = ReactiveComponent
       delete loc.query_params.selected
       what = 'deselected a point'
 
-      document.activeElement.blur()
+      # document.activeElement.blur()
     else
       what = 'selected a point'
       loc.query_params.selected = @props.point
+      announceToScreenReader("You've opened the discussion about this point.")
 
     save loc
 
@@ -626,7 +632,7 @@ styles += """
 
 
 
-  .point_content[draggable="false"] {
+  [draggable="false"] .point_content {
     cursor: pointer !important; }
 
   #{css.grab_cursor('.point_content[draggable="true"]')}
@@ -648,7 +654,7 @@ styles += """
     
 
 
-  .commenting-disabled .point_content[draggable="false"] {
+  .commenting-disabled [draggable="false"] .point_content{
     cursor: auto; }
 
 

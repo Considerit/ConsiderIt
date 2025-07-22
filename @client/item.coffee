@@ -474,6 +474,8 @@ ProposalItemWrapper = ReactiveComponent
 
           if @props.is_expanded
             DIV 
+              role: 'presentation'
+              'aria-hidden': true
               className: "custom-shape-divider-top-1664224812"
               dangerouslySetInnerHTML: __html: """
                 <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
@@ -876,6 +878,8 @@ window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
 
         update_proposal_mode proposal, null
         loadPage "/", (if loc.query_params?.tab then {tab: loc.query_params.tab} else {}), 'toggle_expand'
+      
+        announceToScreenReader("The proposal has been collapsed")
       else 
         loadPage proposal_url(proposal), (if loc.query_params?.selected then {selected: loc.query_params.selected} else {}), 'toggle_expand'
 
@@ -883,6 +887,7 @@ window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
 
         document.querySelector("[data-name='#{slugify(proposal.name)}'] .opinion-heading")?.focus()
         console.log document.querySelector("[data-name='#{slugify(proposal.name)}'] .opinion-heading")
+        announceToScreenReader("The proposal has been expanded")
 
       save expanded_state
 

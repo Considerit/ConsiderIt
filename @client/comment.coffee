@@ -202,20 +202,9 @@ window.Discussion = ReactiveComponent
           stroke: 'var(--focus_color)', 
           stroke_width: 11
 
-      BUTTON
-        'aria-label': 'close point' 
-        onClick: close_point
-
-        className: 'icon'
-        style: 
-          position: 'absolute'
-          right: 8
-          top: 8
-
-        iconX(26, "var(--focus_color)")
 
       if point.text?.length > 0 
-        SECTION 
+        DIV 
           style: 
             marginBottom: 24
             marginTop: 10
@@ -236,7 +225,7 @@ window.Discussion = ReactiveComponent
           
 
       if !customization('disable_comments')
-        SECTION null,
+        DIV null,
           HEADING
             style:
               textAlign: 'left'
@@ -260,6 +249,18 @@ window.Discussion = ReactiveComponent
             fresh: true
             point: arest.key_id(@props.comments)
             proposal: proposal.key
+
+      BUTTON
+        'aria-label': 'close point' 
+        onClick: close_point
+
+        className: 'icon'
+        style: 
+          position: 'absolute'
+          right: 8
+          top: 8
+
+        iconX(26, "var(--focus_color)")
 
   # HACK! Save the height of the open point, which will be added 
   # to the min height of the reasons region to accommodate the

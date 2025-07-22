@@ -474,6 +474,7 @@ window.slider_handle ||= {}
 slider_handle.face = (props) -> 
 
   SVG
+    'aria-hidden': true
     height: props.handle_height
     width: props.handle_width
     viewBox: "-2 -1 104 104"
@@ -561,6 +562,7 @@ slider_handle.face = (props) ->
 
 slider_handle.triangley = (props) ->
   svg_props = 
+    'aria-hidden': true
     height: props.handle_height
     width: props.handle_width
     viewBox: "0 0 21 18"
@@ -644,6 +646,7 @@ slider_handle.triangley = (props) ->
 slider_handle.flat = (props) -> 
   return \
     DIV 
+      'aria-hidden': true
       style: 
         borderRadius: '50%'
         position: 'absolute'
@@ -656,6 +659,7 @@ slider_handle.flat = (props) ->
 
 
   svg_props = 
+    'aria-hidden': true
     height: props.handle_height
     width: props.handle_width
     viewBox: "-2 -1 104 104"

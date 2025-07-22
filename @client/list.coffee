@@ -1133,7 +1133,7 @@ window.ListActions = (props) ->
         className: 'opinion-view-container'
 
         OpinionViews
-          ui_key: "opinion-views-#{list_key}"
+          ui_key: "opinion-views-#{slugify(list_key)}"
           style: 
             marginBottom: 20
 
@@ -1143,7 +1143,7 @@ window.ListActions = (props) ->
 
     DIV null,
       OpinionViewInteractionWrapper
-        ui_key: "opinion-views-#{list_key}"
+        ui_key: "opinion-views-#{slugify(list_key)}"
         more_views_positioning: if TABLET_SIZE() then 'centered' else 'right'      
         width: ITEM_OPINION_WIDTH() + AVATAR_SIZE_AND_GUTTER() + ITEM_TEXT_WIDTH()
 

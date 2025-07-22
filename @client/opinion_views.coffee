@@ -297,6 +297,7 @@ default_weights = ->
       icon: (color) -> 
         color ?= "currentColor"
         SVG
+          'aria-hidden': true
           width: 14
           height: 14
           viewBox: "0 0 23 23"
@@ -337,6 +338,7 @@ default_weights = ->
       icon: (color) -> 
         color ?= "currentColor" 
         SVG
+          'aria-hidden': true
           width: 14
           height: 14
           viewBox: "0 0 23 23"
@@ -364,6 +366,7 @@ default_weights = ->
       icon: (color) -> 
         color ?= "currentColor"
         SVG
+          'aria-hidden': true
           width: 14
           height: 14
           viewBox: "0 0 23 23"
@@ -815,7 +818,7 @@ OpinionViews = ReactiveComponent
               className: 'custom_view_triangle'
               style: 
                 left: "calc(50% - 15px)"
-                bottom: -27
+                bottom: -26
               dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="var(--bg_light)" stroke="var(--brd_mid_gray)"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
 
       }
@@ -873,10 +876,10 @@ OpinionViews = ReactiveComponent
       style: (@props.style or {})
       className: 'filter_opinions_to'
       role: 'region'
-      'aria-labelledby': 'opinion-views-heading'
+      'aria-labelledby': "opinion-views-heading-#{@props.ui_key}"
 
       DIV
-        id: 'opinion-views-heading'
+        id: "opinion-views-heading-#{@props.ui_key}"
         className: 'sr-only'
         translator('opinion_views.heading', 'Opinion filtering and viewing options')
 
@@ -890,7 +893,7 @@ OpinionViews = ReactiveComponent
             # display: 'flex'
             position: 'relative'
 
-          ToggleButtons view_buttons, opinion_views_ui
+          ToggleButtons view_buttons, opinion_views_ui, @props.ui_key
 
           SPAN 
             style: 
@@ -928,7 +931,7 @@ OpinionViews = ReactiveComponent
         className: 'like_link'
         onClick: toggle_expanded
         'aria-expanded': !local_state.minimized
-        'aria-controls': 'opinion-view-config'
+        'aria-controls': "opinion-view-config-#{@props.ui_key}"
         'aria-label': if local_state.minimized then 'Expand opinion view configuration' else 'Collapse opinion view configuration'
         style: 
           fontSize: 12
@@ -1078,7 +1081,7 @@ window.OpinionViewInteractionWrapper = ReactiveComponent
       className: "opinion_view_interaction_wrapper #{if opinion_views_ui.active == 'custom' && (opinion_views_ui.last_interacted_with == local_state.key || local_state.minimized) then 'showing_custom' else ''}"
       id: "view-content-#{opinion_views_ui.active}"
       role: 'tabpanel'
-      'aria-labelledby': "tab-#{opinion_views_ui.active}"
+      'aria-labelledby': "tab-#{opinion_views_ui.active}-#{@props.ui_key}"
 
       if opinion_views_ui.active == 'custom'
         width = @props.width
@@ -1090,7 +1093,7 @@ window.OpinionViewInteractionWrapper = ReactiveComponent
           if local_state.minimized || opinion_views_ui.last_interacted_with != local_state.key
 
             DIV 
-              id: 'opinion-view-config'
+              id: "opinion-view-config-#{@props.ui_key}"
               'aria-label': 'Opinion view configuration summary'
               style:
                 marginTop: 0
@@ -1107,7 +1110,7 @@ window.OpinionViewInteractionWrapper = ReactiveComponent
                 justifyContent: if @props.more_views_positioning == 'left' then 'flex-start' else if @props.more_views_positioning == 'centered' then 'center' else 'flex-end'
 
               DIV 
-                id: 'opinion-view-config'
+                id: "opinion-view-config-#{@props.ui_key}"
                 'aria-label': 'Opinion view configuration options'
                 style: 
                   border: "1px solid var(--brd_mid_gray)"
@@ -1207,6 +1210,7 @@ InteractiveOpinionViews = ReactiveComponent
 
               OPTION 
                 value: null
+                'aria-label': 'no attribute'
                 ""
               for attribute,idx in attributes 
                 continue if !attribute.options
@@ -1788,7 +1792,7 @@ styles += """
     text-align: center;
     white-space: nowrap;
   }
-  .toggle_buttons li {
+  .toggle_buttons button {
     display: inline-block;
     position: relative;
   }
@@ -1804,21 +1808,21 @@ styles += """
     border-color: var(--focus_color);
     padding: 4px 16px;
   }  
-  .toggle_buttons li:not(:last-child) button {
+  .toggle_buttons button:not(:last-child) {
     border-right: none;
   }
-  .toggle_buttons li:first-child button {
+  .toggle_buttons button:first-child {
     border-radius: 8px 0 0 8px;
   }
-  .toggle_buttons li:last-child button {
+  .toggle_buttons button:last-child {
     border-radius: 0px 8px 8px 0px;
   }
 
-  .toggle_buttons li, .toggle_buttons li button {
+  .toggle_buttons {
     margin: 0;
   }
 
-  [data-widget="DropMenu"].bluedrop button.dropMenu-anchor, .toggle_buttons .active button {
+  [data-widget="DropMenu"].bluedrop button.dropMenu-anchor, .toggle_buttons button.active {
     background-color: var(--focus_color);
     color: var(--text_light);
   }
@@ -1835,10 +1839,11 @@ styles += """
   .grays .toggle_buttons .active button {
     background-color: var(--bg_dark_gray);
     color: var(--text_light);
+    border-color: var(--bg_dark_gray);
   }
 """
 
-window.ToggleButtons = (items, view_state, style) ->
+window.ToggleButtons = (items, view_state, id) ->
   toggle_state = bus_fetch view_state 
   toggle_state.active ?= items[0]?.key or items[0]?.label
 
@@ -1851,34 +1856,37 @@ window.ToggleButtons = (items, view_state, style) ->
     # Announce view change
     announceToScreenReader("#{item.label} view selected")
 
-  UL 
+  DIV 
     key: 'toggle buttons'
     className: 'toggle_buttons'
-    style: style or {}
     role: 'tablist'
-
+    
     for item in items
       do (item) =>
         key = item.key or item.label
-        LI 
+          
+        BUTTON
+          id: if id then "tab-#{key}-#{id}"
           ref: key
           key: key
-          className: "toggle_button #{if view_state.active == key then 'active'}"
+          className: "toggle_button #{if view_state.active == key then 'active' else ''}"
           'data-view-state': key
-          role: 'presentation'
-          
-          BUTTON
-            disabled: item.disabled 
-            onClick: (e) -> toggled(e, item)
-            role: 'tab'
-            'aria-selected': view_state.active == key
-            'aria-controls': "view-content-#{key}"
-            id: "tab-#{key}"
+          role: 'tab'
+          'aria-selected': view_state.active == key
 
-            item.label
+          disabled: item.disabled 
+          onClick: (e) -> toggled(e, item)
+          
+          item.label
 
           if view_state.active == key && item.draw_when_active && !item.disabled
-            item.draw_when_active()
+            DIV
+              'aria-hidden': true
+              style:
+                pointerEvents: 'none'
+
+              item.draw_when_active()
+
 
 window.OpinionViews = OpinionViews
 

@@ -646,22 +646,22 @@ window.DecisionBoard = ReactiveComponent
         key: 'body' 
         className:'decision_board_body'
         style: decision_board_style
-        onClick: => 
-          if mode == 'results' 
+        role: if mode == 'results' then 'button'
+        tabIndex: if mode == 'results' then 0
+        onClick: if mode == 'results' then => 
+          can_opine = canUserOpine proposal                                  
 
-            can_opine = canUserOpine proposal                                  
-
-            if can_opine > 0
-              update_proposal_mode(proposal, 'crafting', 'give_opinion_button')
-            else
-              # trigger authentication
-              reset_key 'auth',
-                form: 'create account'
-                goal: 'To participate, please introduce yourself.'
-                after: =>
-                  can_opine = canUserOpine proposal
-                  if can_opine > 0 
-                    update_proposal_mode(proposal, 'crafting', 'give_opinion_button')
+          if can_opine > 0
+            update_proposal_mode(proposal, 'crafting', 'give_opinion_button')
+          else
+            # trigger authentication
+            reset_key 'auth',
+              form: 'create account'
+              goal: 'To participate, please introduce yourself.'
+              after: =>
+                can_opine = canUserOpine proposal
+                if can_opine > 0 
+                  update_proposal_mode(proposal, 'crafting', 'give_opinion_button')
 
 
 
@@ -704,13 +704,8 @@ window.DecisionBoard = ReactiveComponent
 
           # only shown during results, but needs to be present always for animation
           if opinion_prompt
-            BUTTON
+            DIV
               className: 'give_opinion_button btn'
-              onClick: (e) => 
-                if mode != 'results'
-                  e.stopPropagation() 
-                  update_proposal_mode(proposal, 'crafting', 'give_opinion_button') 
-
               opinion_prompt
 
 
@@ -1139,6 +1134,7 @@ window.PointsList = ReactiveComponent
       key: 'community_points'
       className: "point_list points_by_community #{@props.valence}_by_community"
       "aria-hidden": @props.style?.visibility == 'hidden'
+      "aria-labelledby": @local.key.replace(/\//g,'-')
 
       style: _.defaults (@props.style or {}),
         minHeight: (if points_for_proposal(proposal).length > 4 && mode == 'crafting' then window.innerHeight else 100)
@@ -1172,6 +1168,7 @@ window.PointsList = ReactiveComponent
       
     SECTION 
       className: "point_list points_on_decision_board #{@props.valence}_on_decision_board"
+      "aria-labelledby": @local.key.replace(/\//g,'-')
       style: _.defaults (@props.style or {}),
         display: 'inline-block'
         verticalAlign: 'top'        

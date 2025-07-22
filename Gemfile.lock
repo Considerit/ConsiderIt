@@ -1,9 +1,11 @@
 GIT
   remote: https://github.com/collectiveidea/delayed_job
-  revision: ea4879dd3c2f3f5aa7f616a6f0fd58f2bbc2a481
+  revision: d0288d82769910dde037e2c6cf8ca414b8a2d2b5
   specs:
     delayed_job (4.1.13)
       activesupport (>= 3.0, < 9.0)
+      benchmark
+      logger
 
 GIT
   remote: https://github.com/collectiveidea/delayed_job_active_record
@@ -93,21 +95,21 @@ GEM
       device_detector
       safely_block (>= 0.2.1)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1115.0)
+    aws-partitions (1.1132.0)
     aws-record (2.14.0)
       aws-sdk-dynamodb (~> 1, >= 1.85.0)
-    aws-sdk-core (3.225.2)
+    aws-sdk-core (3.227.0)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
       aws-sigv4 (~> 1.9)
       base64
       jmespath (~> 1, >= 1.6.1)
       logger
-    aws-sdk-dynamodb (1.145.0)
-      aws-sdk-core (~> 3, >= 3.225.0)
+    aws-sdk-dynamodb (1.147.0)
+      aws-sdk-core (~> 3, >= 3.227.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-kms (1.104.0)
-      aws-sdk-core (~> 3, >= 3.225.0)
+    aws-sdk-kms (1.107.0)
+      aws-sdk-core (~> 3, >= 3.227.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-rails (3.13.0)
       aws-record (~> 2)
@@ -117,18 +119,18 @@ GEM
       aws-sessionstore-dynamodb (~> 2)
       concurrent-ruby (>= 1.3.1)
       railties (>= 5.2.0)
-    aws-sdk-s3 (1.189.1)
-      aws-sdk-core (~> 3, >= 3.225.0)
+    aws-sdk-s3 (1.194.0)
+      aws-sdk-core (~> 3, >= 3.227.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.5)
-    aws-sdk-ses (1.85.0)
-      aws-sdk-core (~> 3, >= 3.225.0)
+    aws-sdk-ses (1.86.0)
+      aws-sdk-core (~> 3, >= 3.227.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-sesv2 (1.77.0)
-      aws-sdk-core (~> 3, >= 3.225.0)
+    aws-sdk-sesv2 (1.80.0)
+      aws-sdk-core (~> 3, >= 3.227.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-sqs (1.96.0)
-      aws-sdk-core (~> 3, >= 3.225.0)
+    aws-sdk-sqs (1.97.0)
+      aws-sdk-core (~> 3, >= 3.227.0)
       aws-sigv4 (~> 1.5)
     aws-sessionstore-dynamodb (2.2.0)
       aws-sdk-dynamodb (~> 1, >= 1.85.0)
@@ -138,6 +140,7 @@ GEM
       aws-eventstream (~> 1, >= 1.0.2)
     base64 (0.3.0)
     bcrypt (3.1.20)
+    benchmark (0.4.1)
     bigdecimal (3.2.2)
     bootsnap (1.18.6)
       msgpack (~> 1.2)
@@ -164,17 +167,17 @@ GEM
     exception_notification (4.6.0)
       actionmailer (>= 5.2, < 9)
       activesupport (>= 5.2, < 9)
-    excon (1.2.7)
+    excon (1.2.8)
       logger
-    faraday (2.13.1)
+    faraday (2.13.2)
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
-    faraday-multipart (1.1.0)
+    faraday-multipart (1.1.1)
       multipart-post (~> 2.0)
-    faraday-net_http (3.4.0)
+    faraday-net_http (3.4.1)
       net-http (>= 0.5.0)
-    faraday-retry (2.3.1)
+    faraday-retry (2.3.2)
       faraday (~> 2.0)
     ffi (1.17.2-arm64-darwin)
     ffi (1.17.2-x86_64-darwin)
@@ -222,11 +225,11 @@ GEM
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     jmespath (1.6.2)
-    json (2.12.2)
-    json-schema (5.1.1)
+    json (2.13.0)
+    json-schema (5.2.1)
       addressable (~> 2.8)
       bigdecimal (~> 3.1)
-    jwt (2.10.1)
+    jwt (2.10.2)
       base64
     kt-paperclip (7.2.2)
       activemodel (>= 4.2.0)
@@ -246,7 +249,7 @@ GEM
       net-imap
       net-pop
       net-smtp
-    mailgun-ruby (1.3.6)
+    mailgun-ruby (1.3.7)
       faraday (~> 2.1)
       faraday-multipart (~> 1.1.0)
       mime-types
@@ -257,11 +260,11 @@ GEM
     mime-types (3.7.0)
       logger
       mime-types-data (~> 3.2025, >= 3.2025.0507)
-    mime-types-data (3.2025.0603)
+    mime-types-data (3.2025.0715)
     mini_mime (1.1.5)
     minitest (5.25.5)
     msgpack (1.8.0)
-    multi_json (1.15.0)
+    multi_json (1.17.0)
     multi_xml (0.7.2)
       bigdecimal (~> 3.1)
     multipart-post (2.4.1)
@@ -269,7 +272,7 @@ GEM
     mysql2 (0.5.6)
     net-http (0.6.0)
       uri
-    net-imap (0.5.8)
+    net-imap (0.5.9)
       date
       net-protocol
     net-pop (0.1.2)
@@ -279,9 +282,9 @@ GEM
     net-smtp (0.5.1)
       net-protocol
     nio4r (2.7.4)
-    nokogiri (1.18.8-arm64-darwin)
+    nokogiri (1.18.9-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.18.8-x86_64-darwin)
+    nokogiri (1.18.9-x86_64-darwin)
       racc (~> 1.4)
     oauth2 (2.0.12)
       faraday (>= 0.17.3, < 4.0)
@@ -314,7 +317,7 @@ GEM
       actionpack (>= 4.2)
       omniauth (~> 2.0)
     os (1.1.4)
-    ostruct (0.6.1)
+    ostruct (0.6.3)
     prerender_rails (1.11.0)
       activesupport
       rack (~> 2.2.2)
@@ -402,14 +405,15 @@ GEM
       sprockets (>= 3.0.0)
     stripe (12.5.0)
     temple (0.10.3)
-    terrapin (1.1.0)
+    terrapin (1.1.1)
       climate_control
-    thin (1.8.2)
+    thin (2.0.1)
       daemons (~> 1.0, >= 1.0.9)
       eventmachine (~> 1.0, >= 1.0.4)
-      rack (>= 1, < 3)
-    thor (1.3.2)
-    tilt (2.6.0)
+      logger
+      rack (>= 1, < 4)
+    thor (1.4.0)
+    tilt (2.6.1)
     timeout (0.4.3)
     trailblazer-option (0.1.2)
     twitter_cldr (6.14.0)

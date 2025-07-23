@@ -283,6 +283,7 @@ window.Histogram = ReactiveComponent
         onMouseMove: @onMouseMove
         onMouseLeave: @onMouseLeave
         onMouseDown: @onMouseDown
+        onKeyDown: @onKeyDown
         tabIndex: 0
     else
       wrapper_props = {}
@@ -321,6 +322,8 @@ window.Histogram = ReactiveComponent
              on a spectrum from {negative_pole} to {positive_pole}. 
           To navigate individual user avatars, press Enter or Space to enter navigation mode, then use Tab and Shift+Tab 
           to move between participants. Press escape to exit navigation mode.
+          To select opinion regions, use the left and right arrow keys to move the selection region along the spectrum. 
+          Press escape to clear the selection.
           """         
 
 
@@ -658,6 +661,71 @@ window.Histogram = ReactiveComponent
     # opinion_views = bus_fetch 'opinion_views'
     # if opinion_views.active_views.region_selected
     #   clear_histogram_managed_opinion_views opinion_views
+
+  onKeyDown: (ev) ->
+    return if @props.backgrounded || !@enable_range_selection
+    
+    opinion_views = bus_fetch 'opinion_views'
+    
+    # Only handle arrow keys
+    if ev.which in [37, 39] # Left arrow (37) and Right arrow (39)
+      ev.preventDefault()
+      ev.stopPropagation()
+      
+      # Initialize keyboard navigation state if not set
+      if !@local.keyboard_opinion_value?
+        @local.keyboard_opinion_value = 0  # Start at center
+        
+      # Determine step size for arrow key movement
+      # Smaller steps for more precise navigation
+      step_size = REGION_SELECTION_WIDTH / 4
+      
+      if ev.which == 37  # Left arrow - move toward oppose
+        new_value = @local.keyboard_opinion_value - step_size
+      else if ev.which == 39  # Right arrow - move toward support  
+        new_value = @local.keyboard_opinion_value + step_size
+        
+      # Constrain to histogram bounds while accounting for selection width
+      new_value = Math.max(-1 + REGION_SELECTION_WIDTH, new_value)
+      new_value = Math.min(1 - REGION_SELECTION_WIDTH, new_value)
+      
+      @local.keyboard_opinion_value = new_value
+      @local.mouse_opinion_value = new_value  # Reuse existing selection logic
+      
+      # Handle region selection similar to mouse behavior
+      if opinion_views.active_views.single_opinion_selected
+        clear_histogram_managed_opinion_views opinion_views
+        
+      some_region_selected = !!opinion_views.active_views.region_selected
+      
+      if !some_region_selected
+        # Start new region selection
+        clear_histogram_managed_opinion_views opinion_views, 'single_opinion_selected'
+        
+        @users_in_region = @getUsersInRegion()
+        opinion_views.active_views.region_selected =
+          created_by: @props.histo_key 
+          opinion_value: @local.keyboard_opinion_value
+          get_salience: (u, opinion, proposal) => 
+            if @users_in_region[u.key || u] 
+              1
+            else
+              .1
+      else
+        # Update existing region selection
+        opinion_views.active_views.region_selected.opinion_value = @local.keyboard_opinion_value
+        @users_in_region = @getUsersInRegion()
+        
+      save opinion_views
+      save @local
+      
+    else if ev.which == 27  # Escape key - clear selection
+      ev.preventDefault()
+      clear_histogram_managed_opinion_views opinion_views
+      @local.keyboard_opinion_value = null
+      @local.mouse_opinion_value = null
+      save opinion_views  
+      save @local
 
 
 

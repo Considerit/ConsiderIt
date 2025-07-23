@@ -403,17 +403,14 @@ Placer = (opts, bodies) ->
         save running_state        
 
     else 
-
       idx = 0
       run_next = ->
-
         place_body opinions[idx], idx
 
         positions = {}
         for body in laid_out
           r = body.radius
-
-          positions[body[0]] = \
+          positions[body.user] = \
             [Math.round((body.x - r) * 10) / 10, Math.round((body.y - r) * 10) / 10, r]
 
 

@@ -330,6 +330,7 @@ window.avatar = (user, props) ->
     key: user.key
     className: classes
     'data-user': user.key
+    "aria-haspopup": 'dialog'
     'data-popover': if !props.hide_popover && !anonymous && !screencasting() then alt 
     'alt': alt     
     'data-tooltip': if anonymous then alt

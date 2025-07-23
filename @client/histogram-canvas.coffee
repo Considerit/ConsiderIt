@@ -123,8 +123,8 @@ require './shared'
 # REGION_SELECTION_WIDTH controls the size of the selection region when 
 # hovering over the histogram. It defines the opinion bounds within which 
 # opinions are selected. Opinions = [-1, 1]. REGION_SELECTION_WIDTH is 
-# on this scale. 
-window.REGION_SELECTION_WIDTH = .25
+# on this scales. 
+window.REGION_SELECTION_WIDTH = .2
 
 # Controls the size of the vertical space at the top of 
 # the histogram that gives some space for users to hover over 
@@ -278,11 +278,14 @@ window.Histogram = ReactiveComponent
 
 
     if @enable_range_selection || enable_individual_selection
-      _.extend histogram_props,
+      wrapper_props =
         onClick: @onClick
         onMouseMove: @onMouseMove
         onMouseLeave: @onMouseLeave
         onMouseDown: @onMouseDown
+        tabIndex: 0
+    else
+      wrapper_props = {}
 
     if @props.flip 
       flip_id = "histogram-#{proposal.key}"
@@ -317,20 +320,24 @@ window.Histogram = ReactiveComponent
           {num_opinions, plural, one {one person's opinion of} other {# people's opinion, with an average of}} {avg_score} 
              on a spectrum from {negative_pole} to {positive_pole}. 
           To navigate individual user avatars, press Enter or Space to enter navigation mode, then use Tab and Shift+Tab 
-          to move between participants. Press Space or Enter to view a participant's profile, or Escape to exit navigation mode.
+          to move between participants. Press escape to exit navigation mode.
           """         
 
 
 
-      # A little padding at the top to give some space for selecting
-      # opinion regions with lots of people stacked high      
-      DIV key: 'vert-padding', style: {height: @local.region_selected_vertical_padding}
+      DIV wrapper_props,
 
-      # Draw the opinion selection area + region resizing border
-      if draw_selection_area
-        @drawSelectionArea()
+        # A little padding at the top to give some space for selecting
+        # opinion regions with lots of people stacked high      
+        DIV key: 'vert-padding', style: {height: @local.region_selected_vertical_padding}
 
-      @drawAvatars {histo_height, enable_individual_selection, onClick: histogram_props.onClick}
+        # Draw the opinion selection area + region resizing border
+        if draw_selection_area
+          @drawSelectionArea()
+
+        @drawAvatars {histo_height, enable_individual_selection, onClick: histogram_props.onClick}
+
+        # TODO: add hidden data table for accessibility
 
 
       if @props.draw_base || @props.draw_base_labels
@@ -476,7 +483,10 @@ window.Histogram = ReactiveComponent
     selection_left = Math.max 0, left
 
 
-    return DIV {key: 'selection_label'} if (!is_histogram_controlling_region_selection(@props.histo_key) && get_originating_histogram()) || bus_fetch('popover').element_in_focus
+    if (!is_histogram_controlling_region_selection(@props.histo_key) && get_originating_histogram()) || bus_fetch('popover').element_in_focus
+      return DIV key: 'selection_label'
+
+
     DIV 
       key: 'selection_label'
       'aria-hidden': true

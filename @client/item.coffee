@@ -885,8 +885,7 @@ window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
 
         update_proposal_mode proposal, mode
 
-        document.querySelector("[data-name='#{slugify(proposal.name)}'] .opinion-heading")?.focus()
-        console.log document.querySelector("[data-name='#{slugify(proposal.name)}'] .opinion-heading")
+        # document.querySelector("[data-name='#{slugify(proposal.name)}'] .opinion-heading")?.focus()
         announceToScreenReader("The proposal has been expanded")
 
       save expanded_state

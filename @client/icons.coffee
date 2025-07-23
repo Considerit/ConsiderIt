@@ -178,6 +178,7 @@ window.HelpIcon = (help_text, style) ->
       height: style.height or 17
 
     SVG 
+      'aria-hidden': true
       width: style.width or 17
       height: style.height or 17
       viewBox: "0 0 17 17.0000094" 

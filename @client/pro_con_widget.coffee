@@ -340,6 +340,8 @@ window.Reasons = ReactiveComponent
       #reasons
       SECTION 
         className: "reasons_region"
+        role: 'region'
+        'aria-labelledby': "reasons-heading-#{proposal.id}"
         style : 
           minHeight: if show_all_points then minheight     
           padding: "#{if draw_handle && !TABLET_SIZE() then '24px' else '0'} 0 0 0"
@@ -349,7 +351,7 @@ window.Reasons = ReactiveComponent
 
         H2
           className: 'hidden'
-
+          id: "reasons-heading-#{proposal.id}"
           translator
             id: "engage.reasons_section_explanation"
             'Why people think what they do about the proposal'

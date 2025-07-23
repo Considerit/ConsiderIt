@@ -170,6 +170,7 @@ window.AggregatedHistogram =  ReactiveComponent
 
                 DIV 
                   key: group
+                  "aria-haspopup": 'dialog'
                   "data-popover": proposal.key
                   "data-group": group
                   "data-attribute": opinion_views.active_views.group_by.name

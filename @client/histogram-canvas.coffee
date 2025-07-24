@@ -1,11 +1,10 @@
 require './browser_hacks'
 require './histogram_layout'
+require './shared'
+
 require './accessibility'
 
 require './histogram_lab'  # for testing only
-
-
-# md5 = require './vendor/md5' 
 
 require './murmurhash.js'
 
@@ -30,7 +29,7 @@ require './murmurhash.js'
 #     Whether individual users can be selected on the histogram
 #   enable_range_selection (default = false)
 #     Whether ranges can be selected on the histogram
-#   selection_state (default = @props.histo_key)
+#   selection_state (default = @histo_key)
 #     The state key at which selection state will be updated
 #   draw_base (default = false)
 #     Whether to draw a base with +/- labels. If a slider is attached,
@@ -118,7 +117,6 @@ require './murmurhash.js'
 #   - need to provide instructions, probably in tooltip or aria-describedby.
 
 
-require './shared'
 
 # REGION_SELECTION_WIDTH controls the size of the selection region when 
 # hovering over the histogram. It defines the opinion bounds within which 
@@ -230,10 +228,12 @@ window.Histogram = ReactiveComponent
     @opinions = opinions = get_opinions_for_proposal opinions, proposal, weights
     @opinions.sort (a,b) -> a.stance - b.stance
 
+    @histo_key = @props.histo_key or @props.proposal.key or @props.proposal      
+
     @props.draw_base_labels ?= true
 
 
-    enable_individual_selection = @props.enable_individual_selection && @opinions.length > 0
+    @enable_individual_selection = @props.enable_individual_selection && @opinions.length > 0
     @enable_range_selection = @props.enable_range_selection && opinions.length > 1
 
     # whether to show the shaded opinion selection region in the histogram
@@ -244,9 +244,11 @@ window.Histogram = ReactiveComponent
                               (@local.mouse_opinion_value && 
                                 !@local.hovering_over_avatar))
 
-    histo_height = @props.height + REGION_SELECTION_VERTICAL_PADDING
+    @histo_height = @props.height #+ REGION_SELECTION_VERTICAL_PADDING
     
     @id = "histo-#{@local.key.replace(/\//g, '__')}"
+
+    @click_bubbles = @enable_range_selection || @enable_individual_selection
 
     histogram_props = 
       id: @id
@@ -258,7 +260,16 @@ window.Histogram = ReactiveComponent
 
       style:
         width: @props.width
-        height: histo_height
+        #height: @histo_height
+
+    if @click_bubbles
+      _.extend histogram_props,  
+        onClick: @onClick
+        onMouseMove: @onMouseMove
+        onMouseLeave: @onMouseLeave
+        onMouseDown: @onMouseDown
+        onKeyDown: @onKeyDown
+        tabIndex: 0
 
 
     score = 0
@@ -277,16 +288,6 @@ window.Histogram = ReactiveComponent
       exp = translator "sliders.feedback-short.neutral", "Neutral"
 
 
-    if @enable_range_selection || enable_individual_selection
-      wrapper_props =
-        onClick: @onClick
-        onMouseMove: @onMouseMove
-        onMouseLeave: @onMouseLeave
-        onMouseDown: @onMouseDown
-        onKeyDown: @onKeyDown
-        tabIndex: 0
-    else
-      wrapper_props = {}
 
     if @props.flip 
       flip_id = "histogram-#{proposal.key}"
@@ -328,19 +329,22 @@ window.Histogram = ReactiveComponent
 
 
 
-      DIV wrapper_props,
+      # A little padding at the top to give some space for selecting
+      # opinion regions with lots of people stacked high      
+      DIV key: 'vert-padding', style: {height: @local.region_selected_vertical_padding}
 
-        # A little padding at the top to give some space for selecting
-        # opinion regions with lots of people stacked high      
-        DIV key: 'vert-padding', style: {height: @local.region_selected_vertical_padding}
+      # Draw the opinion selection area + region resizing border
+      if draw_selection_area
+        @drawSelectionArea()
 
-        # Draw the opinion selection area + region resizing border
-        if draw_selection_area
-          @drawSelectionArea()
 
-        @drawAvatars {histo_height, enable_individual_selection, onClick: histogram_props.onClick}
+      DIV 
+        className: 'histoavatars-container'
+        key: 'histoavatars'
+        @drawAvatarCanvas()
 
-        # TODO: add hidden data table for accessibility
+
+      # TODO: add hidden data table for accessibility
 
 
       if @props.draw_base || @props.draw_base_labels
@@ -395,33 +399,6 @@ window.Histogram = ReactiveComponent
         histo
     else 
       histo
-
-  drawAvatars: ({histo_height, enable_individual_selection, onClick}) -> 
-    proposal = bus_fetch @props.proposal
-
-    return SPAN null if !proposal.key
-
-    DIV 
-      className: 'histoavatars-container'
-      key: 'histoavatars'
-
-      HistoAvatars
-        ref: 'histoavatars'
-        proposal_id: proposal.id
-        histo_key: @props.histo_key or @props.proposal.key or @props.proposal   
-        weights: @weights
-        salience: @salience
-        groups: @groups
-        enable_individual_selection: enable_individual_selection
-        enable_range_selection: @enable_range_selection
-        height: @props.height 
-        width: @props.width
-        backgrounded: @props.backgrounded
-        opinions: @opinions 
-        layout_params: @props.layout_params
-        onClick: onClick
-        resolution: @props.resolution
-
 
 
   drawHistogramLabels: (subdomain, proposal) -> 
@@ -486,7 +463,7 @@ window.Histogram = ReactiveComponent
     selection_left = Math.max 0, left
 
 
-    if (!is_histogram_controlling_region_selection(@props.histo_key) && get_originating_histogram()) || bus_fetch('popover').element_in_focus
+    if (!is_histogram_controlling_region_selection(@histo_key) && get_originating_histogram()) || bus_fetch('popover').element_in_focus
       return DIV key: 'selection_label'
 
 
@@ -494,7 +471,7 @@ window.Histogram = ReactiveComponent
       key: 'selection_label'
       'aria-hidden': true
       style:
-        height: @props.height + REGION_SELECTION_VERTICAL_PADDING + 2
+        height: @props.height + 2 + REGION_SELECTION_VERTICAL_PADDING
         position: 'absolute'
         width: selection_width
         backgroundColor: "var(--bg_lightest_gray)"
@@ -543,7 +520,7 @@ window.Histogram = ReactiveComponent
         if @weights[user_key] == 0 || @salience[user_key] < 1
           clear_histogram_managed_opinion_views opinion_views
         else 
-          select_single_opinion user_opinion, @props.histo_key
+          select_single_opinion user_opinion, @histo_key
 
       else
         if opinion_views.active_views.single_opinion_selected
@@ -557,7 +534,7 @@ window.Histogram = ReactiveComponent
 
 
         is_deselection = \
-          (is_histogram_controlling_region_selection(@props.histo_key)) || ( \
+          (is_histogram_controlling_region_selection(@histo_key)) || ( \
           some_region_selected && inRange(@local.mouse_opinion_value, min, max))
 
         # page resizes because of changing pros/cons shown unless we fix the height of the reasons region 
@@ -577,7 +554,7 @@ window.Histogram = ReactiveComponent
 
           @users_in_region = @getUsersInRegion()
           opinion_views.active_views.region_selected =
-            created_by: @props.histo_key 
+            created_by: @histo_key 
             opinion_value: @local.mouse_opinion_value
             get_salience: (u, opinion, proposal) => 
               if @users_in_region[u.key || u] 
@@ -612,7 +589,7 @@ window.Histogram = ReactiveComponent
 
     return if bus_fetch(namespaced_key('slider', @props.proposal)).is_moving  || \
               @props.backgrounded || !@enable_range_selection || \
-              (!is_histogram_controlling_region_selection(@props.histo_key) && get_originating_histogram())
+              (!is_histogram_controlling_region_selection(@histo_key) && get_originating_histogram())
 
     ev.stopPropagation()
 
@@ -704,7 +681,7 @@ window.Histogram = ReactiveComponent
         
         @users_in_region = @getUsersInRegion()
         opinion_views.active_views.region_selected =
-          created_by: @props.histo_key 
+          created_by: @histo_key 
           opinion_value: @local.keyboard_opinion_value
           get_salience: (u, opinion, proposal) => 
             if @users_in_region[u.key || u] 
@@ -728,66 +705,17 @@ window.Histogram = ReactiveComponent
       save @local
 
 
-
-window.styles += """
-  .histo_avatar.avatar {
-    cursor: pointer;
-    position: absolute;
-    /* top: 0;
-    left: 0; */
-    transform-origin: 0 0;
-  }
-  img.histo_avatar.avatar {
-    z-index: 1;
-  }
-
-  .HistoAvatars .sk-wave {
-    margin: 0;
-  }
-
-  .AggregatedHistogram .sk-wave {
-    margin: 0;
-  }  
-
-
-  @keyframes histo-loading-appear {
-    0%   {opacity: 0;}
-    100% {opacity: 1;}
-  }
-
-  .histo-loading {
-    opacity: 0;
-    animation-name: histo-loading-appear;
-    animation-duration: 100ms; /* Adjust duration as needed */
-    animation-delay: 1s;    /* Adjust delay as needed */
-    animation-fill-mode: forwards;
-  }
-
-"""
+  #################################################
+  ########### Histogram canvas stuff ##############
 
 
 
-$$.add_delegated_listener document.body, 'keydown', '.avatar[data-opinion]', (e) ->
-  if e.which == 13 || e.which == 32 # ENTER or SPACE 
-    user_opinion = bus_fetch e.target.getAttribute 'data-opinion'
-    select_single_opinion user_opinion, 'keydown'
-
-
-hit_region_avatars = {}
-hit_region_color_to_user_map = {}
-hit_region_user_to_color_map = {}
-
-window.last_histogram_position = {}
-
-
-SKIP_FRAMES = 1
-
-# Draw the avatars in the histogram. Placement is determined by the layout algorithm.
-HistoAvatars = ReactiveComponent 
-  displayName: 'HistoAvatars'
-
-  render: ->     
+  drawAvatarCanvas: ->        
     histocache_key = @histocache_key()
+
+    proposal = bus_fetch @props.proposal
+
+    return SPAN null if !proposal.key
 
     if !@local.avatar_sizes?[histocache_key]
       @local.avatar_sizes ?= {}
@@ -798,12 +726,12 @@ HistoAvatars = ReactiveComponent
 
         while radius <= 1
           @resolution += .5
-          radius = calculateAvatarRadius @props.width * @resolution, @props.height * @resolution, @props.opinions, @props.weights, 
+          radius = calculateAvatarRadius @props.width * @resolution, @histo_height * @resolution, @opinions, @weights, 
                             fill_ratio: @getFillRatio()
 
       else 
-        @resolution = @props.resolution or (if @props.opinions.length > 1000 then 1.5 else 1)
-        radius = calculateAvatarRadius @props.width * @resolution, @props.height * @resolution, @props.opinions, @props.weights, 
+        @resolution = @props.resolution or (if @opinions.length > 1000 then 1.5 else 1)
+        radius = calculateAvatarRadius @props.width * @resolution, @histo_height * @resolution, @opinions, @weights, 
                           fill_ratio: @getFillRatio()
 
       @local.avatar_sizes[histocache_key] = 2 * radius
@@ -813,17 +741,14 @@ HistoAvatars = ReactiveComponent
     @last_key = histocache_key
 
     # give the canvas extra space at the top so that overflow avatars on the top aren't cut off
-    @cut_off_buffer = Math.round @props.height / 2 #@avatar_size / 2
-    @adjusted_height = Math.round @props.height +     @cut_off_buffer 
+    @cut_off_buffer = Math.round @histo_height / 2 #@avatar_size / 2
+    @adjusted_height = Math.round @histo_height +     @cut_off_buffer 
     @adjusted_width  = Math.round @props.width  + 2 * @cut_off_buffer
-
-    proposal = bus_fetch @props.histo_key
-
 
     DIV 
       className: 'HistoAvatars'
       id: histocache_key
-      key: @props.histo_key or @local.key
+      key: @histo_key or @local.key
       ref: 'histo'
       'data-receive-viewport-visibility-updates': 1.5
       'data-visibility-name': 'histogram'
@@ -831,7 +756,7 @@ HistoAvatars = ReactiveComponent
 
       style: 
         transform: "translateZ(0)"
-        height: @props.height
+        height: @histo_height
         width: @props.width
         position: 'relative'
         cursor: if !@props.backgrounded && 
@@ -840,7 +765,7 @@ HistoAvatars = ReactiveComponent
       if !@ready_to_draw()
         DIV 
           className: "histo-loading"
-          style: {position: 'absolute', top: @props.height / 2 - 20, left: @props.width / 2 - 25}
+          style: {position: 'absolute', top: @histo_height / 2 - 20, left: @props.width / 2 - 25}
           LOADING_INDICATOR
 
       CANVAS
@@ -849,8 +774,8 @@ HistoAvatars = ReactiveComponent
         role: 'figure'
         tabIndex: if !@props.backgrounded then 0
 
-        'aria-labelledby': if !@props.backgrounded then "histo-label-#{@props.proposal_id}"
-        'aria-describedby': if !@props.backgrounded then "histo-description-#{@props.proposal_id}"
+        'aria-labelledby': if !@props.backgrounded then "histo-label-#{proposal.id}"
+        'aria-describedby': if !@props.backgrounded then "histo-description-#{proposal.id}"
 
         onClick: @handleClick
         onMouseMove: @handleMouseMove
@@ -904,7 +829,7 @@ HistoAvatars = ReactiveComponent
   getAvatarPositions: -> 
     histocache = @local.histocache?[@last_key]
     
-    last_histogram_position[@props.histo_key] = histocache
+    last_histogram_position[@histo_key] = histocache
 
     if !!histocache && !histocache.ordered_users?
       users = Object.keys(histocache.positions or {})
@@ -1024,7 +949,7 @@ HistoAvatars = ReactiveComponent
     
     opinion_views = bus_fetch 'opinion_views'
 
-    groups = get_user_groups_from_views @props.groups 
+    groups = get_user_groups_from_views @groups 
     has_groups = !!groups
     if has_groups
       colors = get_color_for_groups groups 
@@ -1040,7 +965,7 @@ HistoAvatars = ReactiveComponent
 
     @user_to_opinion_map ?= {}
 
-    for opinion, idx in @props.opinions
+    for opinion, idx in @opinions
     
 
       user = bus_fetch opinion.user
@@ -1056,7 +981,7 @@ HistoAvatars = ReactiveComponent
       r = Math.round(pos[2]) / @resolution
       width = height = r * 2
 
-      opacity = if @props.backgrounded then 0.1 else (@props.salience[user.key] or 1)
+      opacity = if @props.backgrounded then 0.1 else (@salience[user.key] or 1)
 
 
       if user.key not of @sprites
@@ -1066,13 +991,13 @@ HistoAvatars = ReactiveComponent
       sprite = @sprites[user.key]      
       sprite.img = getCanvasAvatar(user, o.hide_name || arest.key_id(user.key) < 0 || anonymize_permanently)
 
-      if has_groups && @props.groups[user.key]?
-        if @props.groups[user.key].length == 1
-          group = @props.groups[user.key][0]
+      if has_groups && @groups[user.key]?
+        if @groups[user.key].length == 1
+          group = @groups[user.key][0]
           sprite.img = getGroupIcon(group, colors[group])
         else 
-          rainbow_group = @props.groups[user.key].join('-')
-          sprite.img = getCompositeGroupIcon(rainbow_group, @props.groups[user.key], colors)
+          rainbow_group = @groups[user.key].join('-')
+          sprite.img = getCompositeGroupIcon(rainbow_group, @groups[user.key], colors)
 
       if (sprite.x != x && sprite.target_x != x) || (sprite.y != y && sprite.target_y != y) || \
          (sprite.width != r * 2 && sprite.target_size != r * 2) || \
@@ -1279,7 +1204,7 @@ HistoAvatars = ReactiveComponent
 
   handleMouseMove: (e) ->
     # don't show popover if the slider is being moved or we've already selected a user
-    return if bus_fetch(namespaced_key('slider', @props.histo_key)).is_moving || bus_fetch('opinion_views').active_views.single_opinion_selected
+    return if bus_fetch(namespaced_key('slider', @histo_key)).is_moving || bus_fetch('opinion_views').active_views.single_opinion_selected
 
 
     user = @userAtPosition(e)
@@ -1293,7 +1218,7 @@ HistoAvatars = ReactiveComponent
         cursor = 'auto'
       else 
         cursor = 'pointer'
-        id = "#{@props.histo_key}-#{user}"
+        id = "#{@histo_key}-#{user}"
 
       e.stopPropagation()
       e.preventDefault()
@@ -1320,7 +1245,7 @@ HistoAvatars = ReactiveComponent
     canvas = @refs.canvas
     canvas_bounding_rect = canvas.getBoundingClientRect()
 
-    id = "#{@props.histo_key or @props.proposal.key or @props.proposal}-#{user}"
+    id = "#{@histo_key or @props.proposal.key or @props.proposal}-#{user}"
 
     coords = 
       top:  pos[1] / @resolution + canvas_bounding_rect.top  + window.pageYOffset - document.documentElement.clientTop + @cut_off_buffer
@@ -1349,7 +1274,8 @@ HistoAvatars = ReactiveComponent
 
     update_avatar_popover_from_canvas_histo()
 
-    @props.onClick?(e, user)
+    if @click_bubbles
+      @onClick?(e, user)
 
 
 
@@ -1420,20 +1346,16 @@ HistoAvatars = ReactiveComponent
     
     current_avatar = histocache.ordered_users[@local.current_avatar_index]
     return unless current_avatar
-    
-    # Get the HistoAvatars component to access its onClick functionality
-    histo_avatars = @refs.histoavatars
-    return unless histo_avatars
-    
+        
     # Trigger click handler for current user
-    @props.onClick?(null, current_avatar) if @props.onClick
+    @onClick?(null, current_avatar) if @click_bubbles
     announceToScreenReader("Activated user profile")
 
 
 
 
   histocache_key: -> # based on variables that could alter the layout
-    key = """#{JSON.stringify( (bus_fetch(o.key).stance + (if arest.cache[o.key].hide_name then 'hide' else '') for o in @props.opinions) )} #{JSON.stringify(@props.weights)} #{JSON.stringify(@props.groups)} #{JSON.stringify(@props.salience)} (#{@props.width}, #{@props.height})"""
+    key = """#{JSON.stringify( (bus_fetch(o.key).stance + (if arest.cache[o.key].hide_name then 'hide' else '') for o in @opinions) )} #{JSON.stringify(@weights)} #{JSON.stringify(@groups)} #{JSON.stringify(@salience)} (#{@props.width}, #{@histo_height})"""
     murmurhash key, 0
       
 
@@ -1449,7 +1371,7 @@ HistoAvatars = ReactiveComponent
     multi_weighed = false
     previous = null  
 
-    for k,v of @props.weights 
+    for k,v of @weights 
       if previous != null && v != previous 
         multi_weighed = true 
         break 
@@ -1470,7 +1392,7 @@ HistoAvatars = ReactiveComponent
     if @local.in_viewport && histocache_key not of (@local.histocache or {}) && @current_request != histocache_key
       @current_request = histocache_key
 
-      opinions = ([o.user, o.stance, @props.weights[o.user]] for o in @props.opinions when !@props.salience? || @props.salience[o.user] == 1)
+      opinions = ([o.user, o.stance, @weights[o.user]] for o in @opinions when !@salience? || @salience[o.user] == 1)
 
       if @isMultiWeighedHistogram()
         layout_params = _.defaults {}, (@props.layout_params or {}), 
@@ -1492,20 +1414,82 @@ HistoAvatars = ReactiveComponent
           topple_towers: .05
           density_modified_jostle: 1
 
-      has_groups = Object.keys(@props.groups).length > 0
+      has_groups = Object.keys(@groups).length > 0
 
       delegate_layout_task
         task: 'layoutAvatars'
         histo: @local.key
-        histo_key: @props.histo_key
+        histo_key: @histo_key
         k: histocache_key
         r: (@avatar_size / 2)
         w: (@props.width or 400) * @resolution
-        h: (@props.height or 70) * @resolution
+        h: (@histo_height or 70) * @resolution
         o: opinions
-        groups: if has_groups then @props.groups
-        all_groups: if has_groups then get_user_groups_from_views(@props.groups)
+        groups: if has_groups then @groups
+        all_groups: if has_groups then get_user_groups_from_views(@groups)
         layout_params: layout_params
+
+
+
+
+
+window.styles += """
+  .histo_avatar.avatar {
+    cursor: pointer;
+    position: absolute;
+    /* top: 0;
+    left: 0; */
+    transform-origin: 0 0;
+  }
+  img.histo_avatar.avatar {
+    z-index: 1;
+  }
+
+  .HistoAvatars .sk-wave {
+    margin: 0;
+  }
+
+  .AggregatedHistogram .sk-wave {
+    margin: 0;
+  }  
+
+
+  @keyframes histo-loading-appear {
+    0%   {opacity: 0;}
+    100% {opacity: 1;}
+  }
+
+  .histo-loading {
+    opacity: 0;
+    animation-name: histo-loading-appear;
+    animation-duration: 100ms; /* Adjust duration as needed */
+    animation-delay: 1s;    /* Adjust delay as needed */
+    animation-fill-mode: forwards;
+  }
+
+"""
+
+
+
+$$.add_delegated_listener document.body, 'keydown', '.avatar[data-opinion]', (e) ->
+  if e.which == 13 || e.which == 32 # ENTER or SPACE 
+    user_opinion = bus_fetch e.target.getAttribute 'data-opinion'
+    select_single_opinion user_opinion, 'keydown'
+
+hit_region_avatars = {}
+hit_region_color_to_user_map = {}
+hit_region_user_to_color_map = {}
+
+window.last_histogram_position = {}
+
+SKIP_FRAMES = 1
+
+# Draw the avatars in the histogram. Placement is determined by the layout algorithm.
+HistoAvatars = ReactiveComponent 
+  displayName: 'HistoAvatars'
+
+  render: ->     
+
 
 
 

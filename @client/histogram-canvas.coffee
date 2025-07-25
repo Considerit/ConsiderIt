@@ -248,7 +248,6 @@ window.Histogram = ReactiveComponent
     
     @id = "histo-#{@local.key.replace(/\//g, '__')}"
 
-    @click_bubbles = @enable_range_selection || @enable_individual_selection
 
     histogram_props = 
       id: @id
@@ -262,13 +261,17 @@ window.Histogram = ReactiveComponent
         width: @props.width
         #height: @histo_height
 
+    @click_bubbles = @enable_range_selection || @enable_individual_selection
+
+    if @enable_range_selection
+      _.extend histogram_props,  
+        onMouseMove: @onMouseMove
+        onMouseLeave: @onMouseLeave
+        onKeyDown: @onKeyDown
+
     if @click_bubbles
       _.extend histogram_props,  
         onClick: @onClick
-        onMouseMove: @onMouseMove
-        onMouseLeave: @onMouseLeave
-        onMouseDown: @onMouseDown
-        onKeyDown: @onKeyDown
         tabIndex: 0
 
 
@@ -501,69 +504,66 @@ window.Histogram = ReactiveComponent
 
     ev.stopPropagation()
 
+    return if @props.backgrounded
+
     opinion_views = bus_fetch 'opinion_views'
 
-    if @props.backgrounded
-      if @props.on_click_when_backgrounded
-        @props.on_click_when_backgrounded()
+    if ev.type == 'touchstart'
+      @local.mouse_opinion_value = @getOpinionValueAtFocus(ev)
+
+    is_clicking_user = !!user
+
+    if is_clicking_user
+      user_key = user
+      user_opinion = _.findWhere @opinions, {user: user_key}
+
+      if @weights[user_key] == 0 || @salience[user_key] < 1
+        clear_histogram_managed_opinion_views opinion_views
+      else 
+        select_single_opinion user_opinion, @histo_key
 
     else
-      if ev.type == 'touchstart'
-        @local.mouse_opinion_value = @getOpinionValueAtFocus(ev)
+      if opinion_views.active_views.single_opinion_selected
+        clear_histogram_managed_opinion_views opinion_views
+        return
 
-      is_clicking_user = !!user
+      some_region_selected = !!opinion_views.active_views.region_selected
 
-      if is_clicking_user
-        user_key = user
-        user_opinion = _.findWhere @opinions, {user: user_key}
-
-        if @weights[user_key] == 0 || @salience[user_key] < 1
-          clear_histogram_managed_opinion_views opinion_views
-        else 
-          select_single_opinion user_opinion, @histo_key
-
-      else
-        if opinion_views.active_views.single_opinion_selected
-          clear_histogram_managed_opinion_views opinion_views
-          return
-
-        some_region_selected = !!opinion_views.active_views.region_selected
-
-        max = @local.mouse_opinion_value + REGION_SELECTION_WIDTH
-        min = @local.mouse_opinion_value - REGION_SELECTION_WIDTH
+      max = @local.mouse_opinion_value + REGION_SELECTION_WIDTH
+      min = @local.mouse_opinion_value - REGION_SELECTION_WIDTH
 
 
-        is_deselection = \
-          (is_histogram_controlling_region_selection(@histo_key)) || ( \
-          some_region_selected && inRange(@local.mouse_opinion_value, min, max))
+      is_deselection = \
+        (is_histogram_controlling_region_selection(@histo_key)) || ( \
+        some_region_selected && inRange(@local.mouse_opinion_value, min, max))
 
-        # page resizes because of changing pros/cons shown unless we fix the height of the reasons region 
-        reasons_region_el = ReactDOM.findDOMNode(@).closest('.OpinionBlock').querySelector('.reasons_region')
+      # page resizes because of changing pros/cons shown unless we fix the height of the reasons region 
+      reasons_region_el = ReactDOM.findDOMNode(@).closest('.OpinionBlock').querySelector('.reasons_region')
 
-        if is_deselection
-          clear_histogram_managed_opinion_views opinion_views
-          if ev.type == 'touchstart'
-            @local.mouse_opinion_value = null
+      if is_deselection
+        clear_histogram_managed_opinion_views opinion_views
+        if ev.type == 'touchstart'
+          @local.mouse_opinion_value = null
 
-          if reasons_region_el
-            reasons_region_el.style.minHeight = null
-        else if @enable_range_selection
-          if reasons_region_el
-            reasons_region_el.style.minHeight = "#{$$.height(reasons_region_el)}px"
-          clear_histogram_managed_opinion_views opinion_views, 'single_opinion_selected'
+        if reasons_region_el
+          reasons_region_el.style.minHeight = null
+      else if @enable_range_selection
+        if reasons_region_el
+          reasons_region_el.style.minHeight = "#{$$.height(reasons_region_el)}px"
+        clear_histogram_managed_opinion_views opinion_views, 'single_opinion_selected'
 
-          @users_in_region = @getUsersInRegion()
-          opinion_views.active_views.region_selected =
-            created_by: @histo_key 
-            opinion_value: @local.mouse_opinion_value
-            get_salience: (u, opinion, proposal) => 
-              if @users_in_region[u.key || u] 
-                1
-              else
-                .1
+        @users_in_region = @getUsersInRegion()
+        opinion_views.active_views.region_selected =
+          created_by: @histo_key 
+          opinion_value: @local.mouse_opinion_value
+          get_salience: (u, opinion, proposal) => 
+            if @users_in_region[u.key || u] 
+              1
+            else
+              .1
 
-      save opinion_views
-      save @local
+    save opinion_views
+    save @local
 
   getUsersInRegion: ->
     min = @local.mouse_opinion_value - REGION_SELECTION_WIDTH
@@ -620,17 +620,9 @@ window.Histogram = ReactiveComponent
 
     save @local
 
-  onMouseDown: (ev) -> 
-    return if bus_fetch(namespaced_key('slider', @props.proposal)).is_moving
-    ev.stopPropagation()
-    return false 
-      # The return false prevents text selections
-      # of other parts of the page when dragging
-      # the selection region around.
-
 
   onMouseLeave: (ev) ->     
-    return if bus_fetch(namespaced_key('slider', @props.proposal)).is_moving
+    return if bus_fetch(namespaced_key('slider', @props.proposal)).is_moving || !@enable_range_selection
 
     @local.mouse_opinion_value = null    
     save @local
@@ -705,17 +697,17 @@ window.Histogram = ReactiveComponent
       save @local
 
 
+
+
   #################################################
   ########### Histogram canvas stuff ##############
 
-
-
   drawAvatarCanvas: ->        
-    histocache_key = @histocache_key()
 
     proposal = bus_fetch @props.proposal
-
     return SPAN null if !proposal.key
+
+    histocache_key = @histocache_key()
 
     if !@local.avatar_sizes?[histocache_key]
       @local.avatar_sizes ?= {}
@@ -777,9 +769,9 @@ window.Histogram = ReactiveComponent
         'aria-labelledby': if !@props.backgrounded then "histo-label-#{proposal.id}"
         'aria-describedby': if !@props.backgrounded then "histo-description-#{proposal.id}"
 
-        onClick: @handleClick
-        onMouseMove: @handleMouseMove
-        onMouseOut: @handleMouseOut
+        onClick: @handleClickForAvatarPopover
+        onMouseMove: @handleMouseMoveForAvatarPopover
+        onMouseOut: @handleMouseOutForAvatarPopover
 
         onKeyDown: (e) =>
           if e.which == 32 # SPACE toggles navigation
@@ -1202,7 +1194,7 @@ window.Histogram = ReactiveComponent
     user
 
 
-  handleMouseMove: (e) ->
+  handleMouseMoveForAvatarPopover: (e) ->
     # don't show popover if the slider is being moved or we've already selected a user
     return if bus_fetch(namespaced_key('slider', @histo_key)).is_moving || bus_fetch('opinion_views').active_views.single_opinion_selected
 
@@ -1262,11 +1254,11 @@ window.Histogram = ReactiveComponent
       coords: coords
     update_avatar_popover_from_canvas_histo opts
 
-  handleMouseOut: (e) -> 
+  handleMouseOutForAvatarPopover: (e) -> 
     @refs.canvas.style.cursor = 'auto'
     update_avatar_popover_from_canvas_histo()
 
-  handleClick: (e) ->
+  handleClickForAvatarPopover: (e) ->
     user = @userAtPosition(e)
     if user 
       if (@sprites[user].target_opacity or @sprites[user].opacity) < 1

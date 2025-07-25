@@ -1221,6 +1221,56 @@ window.Histogram = ReactiveComponent
 
         @renderScene()
 
+  drawOpinionLines: ->
+    return if !@ctx || !@opinions || @props.backgrounded
+
+    # Use histogram dimensions, not canvas dimensions
+    # The slider sits at the bottom of the HistoAvatars container
+    slider_y = @histo_height + @cut_off_buffer - 5
+    
+    @ctx.save()
+    @ctx.strokeStyle = 'rgba(50, 50, 50, 0.7)'
+    @ctx.lineWidth = 2 * DEVICE_PIXEL_RATIO
+    @ctx.setLineDash([4 * DEVICE_PIXEL_RATIO, 4 * DEVICE_PIXEL_RATIO])
+
+    histocache = @getAvatarPositions()
+    return if !histocache?.positions
+
+    for opinion in @opinions
+      user = bus_fetch opinion.user
+      pos = histocache.positions[user.key]
+      continue if !pos
+      
+      sprite = @sprites[user.key]
+      continue if !sprite || (sprite.target_opacity or sprite.opacity) < 0.5
+      
+      # Calculate exact x position for this opinion's stance on the slider
+      # Use @props.width (the histogram width) and account for cut_off_buffer
+      exact_x = ((opinion.stance + 1) / 2) * @props.width + @cut_off_buffer
+      
+      # Avatar center position
+      avatar_center_x = (sprite.x + sprite.width / 2) * DEVICE_PIXEL_RATIO
+      avatar_center_y = (sprite.y + sprite.height / 2) * DEVICE_PIXEL_RATIO
+      
+      # Exact stance position on slider
+      exact_x_scaled = exact_x * DEVICE_PIXEL_RATIO
+      slider_y_scaled = slider_y * DEVICE_PIXEL_RATIO
+      
+      # Only draw line if there's a meaningful difference
+      if Math.abs(avatar_center_x - exact_x_scaled) > 5 * DEVICE_PIXEL_RATIO
+        @ctx.beginPath()
+        @ctx.moveTo(avatar_center_x, avatar_center_y)
+        @ctx.lineTo(exact_x_scaled, slider_y_scaled)
+        @ctx.stroke()
+        
+        # Draw a small dot at the exact position
+        @ctx.fillStyle = 'rgba(50, 50, 50, 0.8)'
+        @ctx.beginPath()
+        @ctx.arc(exact_x_scaled, slider_y_scaled, 3 * DEVICE_PIXEL_RATIO, 0, 2 * Math.PI)
+        @ctx.fill()
+
+    @ctx.restore()
+
   
 
   renderScene: -> 
@@ -1237,6 +1287,7 @@ window.Histogram = ReactiveComponent
     # @ctx.fill()
 
     @ctx.drawImage @buffer, 0, 0
+    @drawOpinionLines()
     @dirty_canvas = false
     @buffered_frame_ready = false
 
@@ -1397,8 +1448,10 @@ window.Histogram = ReactiveComponent
     # this happens is with the server rounding opinion data differently than 
     # the javascript does when moving one's slider)
     histocache_key = @last_key
+
     
     if @local.in_viewport && histocache_key not of (@local.histocache or {}) && @current_request != histocache_key
+      
       @current_request = histocache_key
 
       opinions = ([o.user, o.stance, @weights[o.user]] for o in @opinions when !@salience? || @salience[o.user] == 1)

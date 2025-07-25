@@ -249,30 +249,7 @@ window.Histogram = ReactiveComponent
     @id = "histo-#{@local.key.replace(/\//g, '__')}"
 
 
-    histogram_props = 
-      id: @id
-      key: 'histogram'
-      className: 'histogram'
-      role: 'region'
-      inert: if @props.backgrounded then 'true'
-      'aria-hidden': @props.backgrounded
 
-      style:
-        width: @props.width
-        #height: @histo_height
-
-    @click_bubbles = @enable_range_selection || @enable_individual_selection
-
-    if @enable_range_selection
-      _.extend histogram_props,  
-        onMouseMove: @onMouseMove
-        onMouseLeave: @onMouseLeave
-        onKeyDown: @onKeyDown
-
-    if @click_bubbles
-      _.extend histogram_props,  
-        onClick: @onClick
-        tabIndex: 0
 
 
     score = 0
@@ -295,6 +272,18 @@ window.Histogram = ReactiveComponent
     if @props.flip 
       flip_id = "histogram-#{proposal.key}"
 
+
+    histogram_props = 
+      id: @id
+      key: 'histogram'
+      className: 'histogram'
+      role: 'region'
+      inert: if @props.backgrounded then 'true'
+      'aria-hidden': @props.backgrounded
+
+      style:
+        width: @props.width
+        #height: @histo_height
 
     histo = DIV histogram_props, 
       DIV 
@@ -325,10 +314,10 @@ window.Histogram = ReactiveComponent
           {num_opinions, plural, one {one person's opinion of} other {# people's opinion, with an average of}} {avg_score} 
              on a spectrum from {negative_pole} to {positive_pole}. 
           To navigate individual user avatars, press Enter or Space to enter navigation mode, then use Tab and Shift+Tab 
-          to move between participants. Press escape to exit navigation mode.
+          to move between participants.
           To select opinion regions, use the left and right arrow keys to move the selection region along the spectrum. 
-          Press escape to clear the selection.
-          """         
+          Press escape to exit navigation mode and clear the region selection.
+          """
 
 
 
@@ -502,9 +491,19 @@ window.Histogram = ReactiveComponent
 
   onClick: (ev, user) -> 
 
-    ev.stopPropagation()
-
     return if @props.backgrounded
+
+    if !user
+      user = @userAtPosition(ev)
+      if user 
+        if (@sprites[user].target_opacity or @sprites[user].opacity) < 1
+          user = null
+
+      update_avatar_popover_from_canvas_histo()
+
+    return unless @enable_range_selection || @enable_individual_selection
+      
+    ev.stopPropagation()
 
     opinion_views = bus_fetch 'opinion_views'
 
@@ -586,6 +585,53 @@ window.Histogram = ReactiveComponent
     translatePixelXToStance m_x - h_x, h_w
 
   onMouseMove: (ev) ->     
+    #####################
+    # For handling avatar popovers
+
+
+    # don't show popover if the slider is being moved or we've already selected a user
+    skip_popovers = bus_fetch(namespaced_key('slider', @histo_key)).is_moving || bus_fetch('opinion_views').active_views.single_opinion_selected
+    if !skip_popovers
+
+      user = @userAtPosition(ev)
+      id = null
+
+      allow_region_selection_changes = true
+
+      if user 
+        backgrounded = (@sprites[user].target_opacity or @sprites[user].opacity) < 1
+
+        if backgrounded
+          cursor = 'auto'
+        else 
+          cursor = 'pointer'
+          id = "#{@histo_key}-#{user}"
+
+        ev.stopPropagation()
+        ev.preventDefault()
+        allow_region_selection_changes = false
+
+      else 
+        cursor = 'auto'
+
+      if @refs.canvas.style.cursor != cursor
+        @refs.canvas.style.cursor = cursor
+
+
+      if bus_fetch('popover').element_in_focus != id
+
+        if user && !backgrounded
+          @setAvatarPopoverToUser(user)
+        else 
+          update_avatar_popover_from_canvas_histo()
+
+      return if !allow_region_selection_changes
+
+
+
+
+    ##################
+    # For handling region selection
 
     return if bus_fetch(namespaced_key('slider', @props.proposal)).is_moving  || \
               @props.backgrounded || !@enable_range_selection || \
@@ -621,7 +667,16 @@ window.Histogram = ReactiveComponent
     save @local
 
 
-  onMouseLeave: (ev) ->     
+  onMouseLeave: (ev) ->    
+
+    #####################
+    # For handling avatar popovers
+    @refs.canvas.style.cursor = 'auto'
+    update_avatar_popover_from_canvas_histo()
+
+
+    ##################
+    # For handling region selection
     return if bus_fetch(namespaced_key('slider', @props.proposal)).is_moving || !@enable_range_selection
 
     @local.mouse_opinion_value = null    
@@ -632,7 +687,35 @@ window.Histogram = ReactiveComponent
     #   clear_histogram_managed_opinion_views opinion_views
 
   onKeyDown: (ev) ->
-    return if @props.backgrounded || !@enable_range_selection
+    return if @props.backgrounded
+
+    ######################################
+    # Handling individual avatar tabbing
+    if ev.which == 32 # SPACE toggles navigation
+      @local.navigating_inside = !@local.navigating_inside 
+      save @local 
+      ev.preventDefault() # prevent scroll jumping
+      if @local.navigating_inside
+        @enterHistogramNavigation()
+      else 
+        @exitHistogramNavigation()
+    else if ev.which == 13 && !@local.navigating_inside # ENTER 
+      @local.navigating_inside = true 
+      @enterHistogramNavigation()
+      save @local 
+    else if ev.which == 27 && @local.navigating_inside # ESCAPE
+      @local.navigating_inside = false
+      @exitHistogramNavigation()
+      save @local
+    else if @local.navigating_inside
+      # Handle tab navigation within histogram
+      @handleHistogramNavigation(ev) 
+
+    return if !@enable_range_selection
+
+
+    #####################################
+    # Handling region selection
     
     opinion_views = bus_fetch 'opinion_views'
     
@@ -762,37 +845,19 @@ window.Histogram = ReactiveComponent
 
       CANVAS
         ref: 'canvas'
+        role: 'application'
 
-        role: 'figure'
         tabIndex: if !@props.backgrounded then 0
 
         'aria-labelledby': if !@props.backgrounded then "histo-label-#{proposal.id}"
         'aria-describedby': if !@props.backgrounded then "histo-description-#{proposal.id}"
 
-        onClick: @handleClickForAvatarPopover
-        onMouseMove: @handleMouseMoveForAvatarPopover
-        onMouseOut: @handleMouseOutForAvatarPopover
+        onKeyDown: @onKeyDown
 
-        onKeyDown: (e) =>
-          if e.which == 32 # SPACE toggles navigation
-            @local.navigating_inside = !@local.navigating_inside 
-            save @local 
-            e.preventDefault() # prevent scroll jumping
-            if @local.navigating_inside
-              @enterHistogramNavigation()
-            else 
-              @exitHistogramNavigation()
-          else if e.which == 13 && !@local.navigating_inside # ENTER 
-            @local.navigating_inside = true 
-            @enterHistogramNavigation()
-            save @local 
-          else if e.which == 27 && @local.navigating_inside # ESCAPE
-            @local.navigating_inside = false
-            @exitHistogramNavigation()
-            save @local
-          else if @local.navigating_inside
-            # Handle tab navigation within histogram
-            @handleHistogramNavigation(e) 
+        onClick: @onClick
+        onMouseMove: @onMouseMove
+        onMouseLeave: @onMouseLeave
+
         onBlur: (e) => 
           setTimeout => 
             # if the focus isn't still on this histogram, 
@@ -801,7 +866,8 @@ window.Histogram = ReactiveComponent
             if @local.navigating_inside && !$$.closest(document.activeElement, "##{@id}")
               @exitHistogramNavigation()
               @local.navigating_inside = false; save @local
-          , 0
+          , 0        
+
 
 
 
@@ -1194,40 +1260,6 @@ window.Histogram = ReactiveComponent
     user
 
 
-  handleMouseMoveForAvatarPopover: (e) ->
-    # don't show popover if the slider is being moved or we've already selected a user
-    return if bus_fetch(namespaced_key('slider', @histo_key)).is_moving || bus_fetch('opinion_views').active_views.single_opinion_selected
-
-
-    user = @userAtPosition(e)
-    id = null
-
-    if user 
-      backgrounded = (@sprites[user].target_opacity or @sprites[user].opacity) < 1
-
-
-      if backgrounded
-        cursor = 'auto'
-      else 
-        cursor = 'pointer'
-        id = "#{@histo_key}-#{user}"
-
-      e.stopPropagation()
-      e.preventDefault()
-
-    else 
-      cursor = 'auto'
-
-    if @refs.canvas.style.cursor != cursor
-      @refs.canvas.style.cursor = cursor
-
-
-    if bus_fetch('popover').element_in_focus != id
-
-      if user && !backgrounded
-        @setAvatarPopoverToUser(user)
-      else 
-        update_avatar_popover_from_canvas_histo()
 
 
   setAvatarPopoverToUser: (user) ->
@@ -1253,21 +1285,6 @@ window.Histogram = ReactiveComponent
       opinion: opinionId
       coords: coords
     update_avatar_popover_from_canvas_histo opts
-
-  handleMouseOutForAvatarPopover: (e) -> 
-    @refs.canvas.style.cursor = 'auto'
-    update_avatar_popover_from_canvas_histo()
-
-  handleClickForAvatarPopover: (e) ->
-    user = @userAtPosition(e)
-    if user 
-      if (@sprites[user].target_opacity or @sprites[user].opacity) < 1
-        user = null
-
-    update_avatar_popover_from_canvas_histo()
-
-    if @click_bubbles
-      @onClick?(e, user)
 
 
 
@@ -1340,7 +1357,7 @@ window.Histogram = ReactiveComponent
     return unless current_avatar
         
     # Trigger click handler for current user
-    @onClick?(null, current_avatar) if @click_bubbles
+    @onClick?(null, current_avatar) if @enable_range_selection || @enable_individual_selection
     announceToScreenReader("Activated user profile")
 
 

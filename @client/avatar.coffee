@@ -597,12 +597,13 @@ window.LoadAvatars = ReactiveComponent
     loading = bus_fetch('avatar_loading')
     SPAN null
 
-  load: -> 
+  load: (timeout_len) -> 
     users = bus_fetch '/users'
     current_user = bus_fetch '/current_user'  # subscribe for changes to login status & avatar
     return if !users.users || bus_fetch('location').url.match('/dashboard')
 
     loading = bus_fetch('avatar_loading')
+
     app = arest.cache['/application'] or bus_fetch('/application')
 
     avatars_to_load = {}
@@ -659,7 +660,9 @@ window.LoadAvatars = ReactiveComponent
 
           pic.src = img
       else 
-        setTimeout @load, 10   
+        setTimeout => 
+          @load(timeout_len * 2)
+        , timeout_len
 
-  componentDidMount: -> @load()
-  componentDidUpdate: -> @load()
+  componentDidMount: -> @load(10)
+  componentDidUpdate: -> @load(10)

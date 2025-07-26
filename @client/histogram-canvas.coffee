@@ -585,12 +585,15 @@ window.Histogram = ReactiveComponent
     translatePixelXToStance m_x - h_x, h_w
 
   onMouseMove: (ev) ->     
+
+    return if bus_fetch(namespaced_key('slider', @props.proposal)).is_moving || @props.backgrounded 
+
+
     #####################
     # For handling avatar popovers
 
-
     # don't show popover if the slider is being moved or we've already selected a user
-    skip_popovers = bus_fetch(namespaced_key('slider', @histo_key)).is_moving || bus_fetch('opinion_views').active_views.single_opinion_selected
+    skip_popovers = bus_fetch('opinion_views').active_views.single_opinion_selected
     if !skip_popovers
 
       user = @userAtPosition(ev)
@@ -633,8 +636,7 @@ window.Histogram = ReactiveComponent
     ##################
     # For handling region selection
 
-    return if bus_fetch(namespaced_key('slider', @props.proposal)).is_moving  || \
-              @props.backgrounded || !@enable_range_selection || \
+    return if !@enable_range_selection || \
               (!is_histogram_controlling_region_selection(@histo_key) && get_originating_histogram())
 
     ev.stopPropagation()
@@ -669,6 +671,8 @@ window.Histogram = ReactiveComponent
 
   onMouseLeave: (ev) ->    
 
+    return if bus_fetch(namespaced_key('slider', @props.proposal)).is_moving
+    
     #####################
     # For handling avatar popovers
     @refs.canvas.style.cursor = 'auto'
@@ -677,7 +681,7 @@ window.Histogram = ReactiveComponent
 
     ##################
     # For handling region selection
-    return if bus_fetch(namespaced_key('slider', @props.proposal)).is_moving || !@enable_range_selection
+    return if !@enable_range_selection
 
     @local.mouse_opinion_value = null    
     save @local
@@ -819,6 +823,8 @@ window.Histogram = ReactiveComponent
     @cut_off_buffer = Math.round @histo_height / 2 #@avatar_size / 2
     @adjusted_height = Math.round @histo_height +     @cut_off_buffer 
     @adjusted_width  = Math.round @props.width  + 2 * @cut_off_buffer
+
+
 
     DIV 
       className: 'HistoAvatars'
@@ -984,6 +990,13 @@ window.Histogram = ReactiveComponent
     users = bus_fetch '/users'
 
     histocache = @getAvatarPositions()
+
+    @last_positions ?= {} # stores last placed location for each user, to facilitate stablizing of y-positions
+                          # across calls to layout algorithm
+    if histocache.positions
+      _.extend @last_positions, histocache.positions
+
+
 
     canvas = @refs.canvas
     @updates_needed ||= {}
@@ -1287,7 +1300,7 @@ window.Histogram = ReactiveComponent
     # @ctx.fill()
 
     @ctx.drawImage @buffer, 0, 0
-    @drawOpinionLines()
+    # @drawOpinionLines()
     @dirty_canvas = false
     @buffered_frame_ready = false
 
@@ -1449,7 +1462,7 @@ window.Histogram = ReactiveComponent
     # the javascript does when moving one's slider)
     histocache_key = @last_key
 
-    
+
     if @local.in_viewport && histocache_key not of (@local.histocache or {}) && @current_request != histocache_key
       
       @current_request = histocache_key
@@ -1490,6 +1503,8 @@ window.Histogram = ReactiveComponent
         groups: if has_groups then @groups
         all_groups: if has_groups then get_user_groups_from_views(@groups)
         layout_params: layout_params
+        last_positions: @last_positions
+        current_user: bus_fetch('/current_user').user
 
 
 
@@ -1546,17 +1561,10 @@ window.last_histogram_position = {}
 
 SKIP_FRAMES = 1
 
-# Draw the avatars in the histogram. Placement is determined by the layout algorithm.
-HistoAvatars = ReactiveComponent 
-  displayName: 'HistoAvatars'
-
-  render: ->     
-
 
 
 
   
-
 
 
 num_layout_workers = 1
@@ -1573,6 +1581,7 @@ get_histo_positions = (e) ->
     local.histocache[histocache_key] = 
       hash: histocache_key
       positions: positions
+
     save local
 
 window.delegate_layout_task = (opts) -> 

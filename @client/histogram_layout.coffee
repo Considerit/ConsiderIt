@@ -1,6 +1,7 @@
 histo_queue = []
 histo_running = null 
 
+
 if window? 
   top_level = window 
 else 
@@ -41,13 +42,13 @@ positionAvatarsWithJustLayout = (opts) ->
     t0 = performance.now()
 
   placer = Placer opts  
-  nodes = placer.pixelated_layout()
+  nodes = placer.pixelated_layout(opts.last_positions)
 
   while !nodes && opts.r > 0 # continuously reduce the avatar radius until we can place all of them
     console.error("At least one avatar couldn't be placed with base radius #{opts.r}. Trying again with base radius=#{opts.r - 1}")
     opts.r -= 1
     placer = Placer opts  
-    nodes = placer.pixelated_layout()
+    nodes = placer.pixelated_layout(opts.last_positions)
 
   
   # sort so we can optimize by knowing that bodies are ordered by x_target
@@ -61,7 +62,7 @@ positionAvatarsWithJustLayout = (opts) ->
     b.x = tmpx 
     b.y = tmpy
     true 
-  , nodes
+  , nodes, opts.current_user
 
   if opts.groups
     placer.sweep_all_for_group_swaps (a,b) ->
@@ -247,7 +248,7 @@ Placer = (opts, bodies) ->
     return body.opinion_density_at_target
 
 
-  pixelated_layout = ->
+  pixelated_layout = (last_positions) ->
     laid_out = []
     return laid_out if opinions.length == 0 
 
@@ -260,6 +261,10 @@ Placer = (opts, bodies) ->
       radius = o.radius
       adjusted_stance = (o[1] + 1) / 2
       o.x_target = adjusted_stance * (width - 2 * radius) + radius
+      if last_positions && o[0] of last_positions
+        o.last = 
+          x: last_positions[o[0]][0]
+          y: last_positions[o[0]][1]
 
     # order strategically, placing bigger bodies first, then ordered from the poles inward
 
@@ -358,6 +363,7 @@ Placer = (opts, bodies) ->
               x: x
               y: y
               x_target: x_target
+              last: o.last
               user: o[0] # user 
             
             laid_out.push b
@@ -391,6 +397,7 @@ Placer = (opts, bodies) ->
       running_state = bus_fetch opts.histo_key
 
     if !layout_params.show_histogram_layout
+
       for o,idx in opinions 
 
         success = place_body o,idx
@@ -626,12 +633,15 @@ Placer = (opts, bodies) ->
 
 
   # Compares each body to each other body to determine if the pairs should be swapped, and if so, swaps them
-  sweep_all_for_position_swaps = (attempt_swap, nodes) ->
+  sweep_all_for_position_swaps = (attempt_swap, nodes, current_user_key) ->
 
     # for node, idx in nodes 
     #   if idx > 0 
     #     console.assert node.x_target >= nodes[idx - 1].x_target
 
+
+
+    # First, find swaps where the swap will reduce squared distance from x-target
     num = nodes.length 
     num_swaps = 1
     while num_swaps > 0
@@ -647,13 +657,74 @@ Placer = (opts, bodies) ->
             continue 
           body2 = nodes[j]
 
-          if body.radius == body2.radius && ((body.x > body2.x && body.x_target < body2.x_target) || (body.x < body2.x && body.x_target > body2.x_target)) 
-            result = attempt_swap(body, body2)
-            if result 
-              num_swaps += 1
-              # break 
+          if body2.x_target - body.x_target > body.radius * 8
+            break
+
+          if body.radius == body2.radius
+
+            swap_for_better_x_target = ((body.x > body2.x && body.x_target < body2.x_target) || 
+                                        (body.x < body2.x && body.x_target > body2.x_target))
+
+            if swap_for_better_x_target
+              result = attempt_swap(body, body2)
+              if result 
+                num_swaps += 1
           j += 1
         i += 1
+
+    
+    # Second, find swaps where the swap will reduce distance from a prior placement & current x-target (for stable sort)
+
+    if nodes[0]?.last
+      num = nodes.length 
+      num_swaps = 1
+      while num_swaps > 0
+
+        num_swaps = 0 
+        i = 0 
+        while i < num
+          body = nodes[i] 
+
+          if !body.last
+            i += 1
+            continue
+
+          j = i + 1 
+          while j < num 
+            if j == i || !nodes[j].last
+              j += 1
+              continue 
+            body2 = nodes[j]
+
+            if body2.x_target - body.x_target > body.radius * 8 && body.user != current_user_key
+              break
+
+            if body.radius == body2.radius
+
+              d_now1 = Math.pow(body.x - body.x_target, 2) + Math.pow(body.x - body.last.x, 2) + Math.pow(body.y - body.last.y, 2)
+              d_now2 = Math.pow(body2.x - body2.x_target, 2) + Math.pow(body2.x - body2.last.x, 2) + Math.pow(body2.y - body2.last.y, 2)
+              d_swa1 = Math.pow(body2.x - body.x_target, 2) + Math.pow(body2.x - body.last.x, 2) + Math.pow(body2.y - body.last.y, 2)
+              d_swa2 = Math.pow(body.x - body2.x_target, 2) + Math.pow(body.x - body2.last.x, 2) + Math.pow(body.y - body2.last.y, 2)
+
+              swap_for_more_stable_y = d_now1 + d_now2 > d_swa1 + d_swa2
+
+              if body.user == current_user_key || body2.user == current_user_key
+                current_user = if body.user == current_user_key then body else body2
+                other_user = if body.user == current_user_key then body2 else body
+                
+                # improve current user's position in histogram & disregard stability
+                swap_for_more_stable_y = Math.abs(current_user.x - current_user.x_target) > Math.abs(current_user.x_target - other_user.x)
+                                         
+              if swap_for_more_stable_y
+
+                result = attempt_swap(body, body2)
+                if result 
+                  num_swaps += 1
+                  # break 
+            j += 1
+          i += 1
+
+
 
 
   # try to put bodies with the same group in sedimentary layers so it is easier to see patterns in groups

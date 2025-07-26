@@ -63,6 +63,9 @@ function murmurhash3_32_gc(key, seed) {
   return h1 >>> 0;
 }
 
-
-window.murmurhash = murmurhash3_32_gc
+try {
+  window.murmurhash = murmurhash3_32_gc
+} catch (err) {
+  DedicatedWorkerGlobalScope.murmurhash = murmurhash3_32_gc
+}
 

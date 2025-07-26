@@ -41,6 +41,8 @@ generate_announcement_id = ->
 clean_expired_announcements = ->
   announcements = bus_fetch('screen_reader_announcements')
   announcements.queue ?= []
+
+  return if announcements.queue.length == 0
   
   now = Date.now()
   announcements.queue = announcements.queue.filter (announcement) ->

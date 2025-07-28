@@ -109,7 +109,7 @@ ProposalDescription = ReactiveComponent
               textAlign: 'center'
               color: "var(--text_light_gray)"
               fontSize: 12
-            onMouseDown: => 
+            onMouseUp: => 
               if window.parentIFrame
                 @local.description_collapsed = false
                 save(@local)

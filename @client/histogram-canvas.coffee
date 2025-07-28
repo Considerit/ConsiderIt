@@ -507,7 +507,7 @@ window.Histogram = ReactiveComponent
 
     opinion_views = bus_fetch 'opinion_views'
 
-    if ev.type == 'touchstart'
+    if ev.type == 'touchend'
       @local.mouse_opinion_value = @getOpinionValueAtFocus(ev)
 
     is_clicking_user = !!user
@@ -541,7 +541,7 @@ window.Histogram = ReactiveComponent
 
       if is_deselection
         clear_histogram_managed_opinion_views opinion_views
-        if ev.type == 'touchstart'
+        if ev.type == 'touchend'
           @local.mouse_opinion_value = null
 
         if reasons_region_el

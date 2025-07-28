@@ -466,7 +466,7 @@ window.ItemText = ReactiveComponent
         BUTTON
           className: 'like_link expand_full_text'
 
-          onMouseDown: => 
+          onMouseUp: => 
             @local.description_fully_expanded = true
             save(@local)
 

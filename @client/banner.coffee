@@ -133,11 +133,12 @@ styles += """
   line-height: 1.4;
 }
 .CustomizeTitle > .banner_title::placeholder {
-  color: var(--text_neutral);
+  color: inherit; 
 }
 
-.dark .CustomizeTitle > .banner_title::placeholder, .with-image .CustomizeTitle > .banner_title::placeholder {
-  color: var(--text_neutral);
+.dark .CustomizeTitle > .banner_title::placeholder, 
+.with-image .CustomizeTitle > .banner_title::placeholder {
+  color: inherit; 
 }
 """
 
@@ -216,7 +217,9 @@ styles += """
     min-height: 48px;
   }
   .wrapper.with-image .CustomizeDescription .ql-editor.ql-blank::before {
-    color: rgba(255,255,255, 0.40);
+    /* color: rgba(255,255,255, 0.40); */
+    color: inherit;
+    color: var(--banner_block_text_color);
   } 
 
 
@@ -573,7 +576,7 @@ CustomizeLogo = ReactiveComponent
             translator 'banner.logo_label', 'Logo (optional)'
           else 
             BUTTON 
-              'aria-label': "Upload logo"
+              'aria-label': "Change logo"
               className: 'like_link configuration_area'
               style: 
                 color: 'inherit'
@@ -586,8 +589,9 @@ CustomizeLogo = ReactiveComponent
 
       if edit_forum.editing
         DIV 
+          className: if !has_logo then 'configuration_area'
           style: 
-            backgroundColor: if has_masthead && !has_logo then (if !is_light then "rgba(0,0,0, 0.25)" else "rgba(255,255,255, 0.25)")
+            #backgroundColor: if has_masthead && !has_logo then (if !is_light then "rgba(0,0,0, 0.25)" else "rgba(255,255,255, 0.25)")
             position: 'absolute'
             left: 0
             top: 0

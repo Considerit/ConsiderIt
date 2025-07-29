@@ -394,7 +394,7 @@ html .ql-container{
   content: attr(data-placeholder);
   pointer-events: none;
   position: absolute;
-  color: #00000066;
+  color: #000000aa;
   font-weight: 500;
   width: 100%;
   height: 100%;
@@ -406,7 +406,7 @@ html .ql-container{
 .dark .ql-editor.ql-blank::before, 
 [data-theme="high-contrast-dark"] .ql-editor.ql-blank::before, 
 [data-theme="dark"] .ql-editor.ql-blank::before{
-  color: #ffffff66;
+  color: #ffffffaa;
 }
 
 

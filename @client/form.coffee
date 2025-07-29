@@ -427,7 +427,7 @@ html .ql-container{
 .ql-editor {
   box-sizing: border-box;
   cursor: text;
-  line-height: 1.42;
+  line-height: 1.4;
   height: 100%;
   outline: none;
   overflow-y: auto;

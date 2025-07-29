@@ -883,7 +883,8 @@ time, mark, audio, video {
   font-size: 100%;
   font: inherit;
   vertical-align: baseline;
-  line-height: 1.4; }
+  line-height: 1.4; 
+}
 
 
 #content .fa {
@@ -1003,7 +1004,7 @@ button.icon, input[type='submit'].icon {
   border: 0;
   font-weight: 700;
   padding: .325rem 1.5rem .4rem;
-  line-height: 1.5;
+  /* line-height: 1.5; */
   text-align: center;
   text-decoration: none;
   vertical-align: middle;

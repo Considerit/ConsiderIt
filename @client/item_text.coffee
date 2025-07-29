@@ -88,9 +88,9 @@ styles += """
     max-height: 9999px;
   }
 
-  .proposal-description.wysiwyg_text p {
+  /*.proposal-description.wysiwyg_text p {
     line-height: 1.5;
-  }
+  }*/
 
   .is_expanded .proposal-description.wysiwyg_text p {
     /* max-width: var(--ITEM_TEXT_WIDTH); */

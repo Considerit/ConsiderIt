@@ -113,7 +113,6 @@ window.EditComment = ReactiveComponent
           min_height: 80
           style:
             width: '100%'
-            lineHeight: 1.4
             fontSize: 16 
             border: if permitted < 0 then 'dashed 1px'
 

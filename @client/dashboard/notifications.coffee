@@ -55,32 +55,39 @@ window.Notifications = ReactiveComponent
             border: if @local.via_unsubscribe_link then "1px solid var(--selected_color)"
             display: 'flex'
             alignItems: "center"
+            flexDirection: 'column'
+            gap: 12
 
 
-          INPUT 
-            id: 'enable_email'
-            type: 'checkbox'
-            name: 'enable_email'
-            role: 'switch'
-            defaultChecked: !!prefs['send_emails']
-            "aria-label": translator "email_notifications.send_digests", 'Send me email summaries of relevant forum activity'
-            onChange: (e) => 
+          DIV 
+            style:
+              display: 'flex'
+              alignItems: "center"
 
-              if current_user.subscriptions['send_emails']
-                current_user.subscriptions['send_emails'] = false
-              else
-                current_user.subscriptions['send_emails'] = settings['default_subscription']
-              save current_user
-              e.stopPropagation()
+            INPUT 
+              id: 'enable_email'
+              type: 'checkbox'
+              name: 'enable_email'
+              role: 'switch'
+              defaultChecked: !!prefs['send_emails']
+              "aria-label": translator "email_notifications.send_digests", 'Send me email summaries of relevant forum activity'
+              onChange: (e) => 
+
+                if current_user.subscriptions['send_emails']
+                  current_user.subscriptions['send_emails'] = false
+                else
+                  current_user.subscriptions['send_emails'] = settings['default_subscription']
+                save current_user
+                e.stopPropagation()
 
 
-          LABEL 
-            className: 'indented'
-            htmlFor: 'enable_email'
-            style: 
-              fontSize: 18
-            B null,
-              TRANSLATE "email_notifications.send_digests", 'Send me email summaries of relevant forum activity'
+            LABEL 
+              className: 'indented'
+              htmlFor: 'enable_email'
+              style: 
+                fontSize: 18
+              B null,
+                TRANSLATE "email_notifications.send_digests", 'Send me email summaries of relevant forum activity'
 
           if @local.via_unsubscribe_link && !!prefs['send_emails']
             SPAN 

@@ -71,6 +71,16 @@ document.body.addEventListener "mouseleave", hide_tooltip, true
 $$.add_delegated_listener document.body, 'focusin', '[data-tooltip]', show_tooltip
 $$.add_delegated_listener document.body, 'focusout', '[data-tooltip]', hide_tooltip
 
+handle_escape_key = (e) ->
+  if e.key == 'Escape' || e.keyCode == 27
+    tooltip = bus_fetch('tooltip')
+    if tooltip.coords
+      clear_tooltip()
+      e.preventDefault()
+      e.stopPropagation()
+
+document.addEventListener "keydown", handle_escape_key
+
 
 window.Tooltip = ReactiveComponent
   displayName: 'Tooltip'

@@ -179,6 +179,16 @@ $$.add_delegated_listener document.body, 'focusout', '[data-popover]', hide_popo
 
 $$.add_delegated_listener document.body, 'click', '[data-popover]', toggle_popover
 
+handle_escape_key = (e) ->
+  if e.key == 'Escape' || e.keyCode == 27
+    popover = bus_fetch('popover')
+    if popover.coords
+      clear_popover(true)
+      e.preventDefault()
+      e.stopPropagation()
+
+document.addEventListener "keydown", handle_escape_key
+
 
 window.get_tooltip_or_popover_position = ({popover, tooltip, arrow_size})->
   popover ?= tooltip

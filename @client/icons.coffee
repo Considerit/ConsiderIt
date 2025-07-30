@@ -160,6 +160,42 @@ window.ChevronLeft = (size) ->
       d: "M15 19l-7-7 7-7"
       fill: 'none'
 
+window.up_arrow_icon = (size, color) ->
+  size ?= 24
+  color ?= "currentColor"
+  SVG 
+    width: size 
+    height: size
+    xmlns: "http://www.w3.org/2000/svg" 
+    viewBox: "0 0 24 24" 
+    stroke: color
+    'aria-label': 'up arrow'
+
+    PATH 
+      strokeLinecap: "round" 
+      strokeLinejoin: "round" 
+      strokeWidth: "2" 
+      d: "M7 14l5-5 5 5"
+      fill: 'none'
+
+window.down_arrow_icon = (size, color) ->
+  size ?= 24
+  color ?= "currentColor"
+  SVG 
+    width: size 
+    height: size
+    xmlns: "http://www.w3.org/2000/svg" 
+    viewBox: "0 0 24 24" 
+    stroke: color
+    'aria-label': 'down arrow'
+
+    PATH 
+      strokeLinecap: "round" 
+      strokeLinejoin: "round" 
+      strokeWidth: "2" 
+      d: "M17 10l-5 5-5-5"
+      fill: 'none'
+
 
 
 window.HelpIcon = (help_text, style) ->

@@ -11,7 +11,7 @@ styles += """
 
   .INTAKE_QUESTIONS .intake-question.open {
     display: flex;
-    align-items: start;
+    align-items: center;
     position: relative;
   }
 
@@ -200,9 +200,7 @@ window.IntakeQuestions = ReactiveComponent
 
               LI 
                 key: q.view_name or q.self_report.question
-                "data-idx": idx
                 className: "intake-question open"
-                draggable: true
 
                 SPAN
                   className: 'name'
@@ -219,13 +217,39 @@ window.IntakeQuestions = ReactiveComponent
 
                   edit_icon 23, 23, "var(--text_neutral)"
 
-                BUTTON 
-                  className: "icon"
-                  'aria-label': "reorder question"
-                  style: 
-                    cursor: 'move'
+                DIV
+                  style:
+                    display: 'flex'
+                    flexDirection: 'column'
+                    gap: 1
 
-                  drag_icon 23, "var(--text_neutral)"
+                  BUTTON 
+                    className: "icon"
+                    'aria-label': "move question up"
+                    'data-tooltip': "Move question up"
+                    disabled: idx == 0
+                    onClick: do (currentIdx = idx) => => 
+                      if currentIdx > 0
+                        move_question currentIdx, currentIdx - 1
+                    style: 
+                      opacity: if idx == 0 then 0.3 else 1
+                      padding: 2
+
+                    up_arrow_icon 20, "var(--text_neutral)"
+
+                  BUTTON 
+                    className: "icon"
+                    'aria-label': "move question down"
+                    'data-tooltip': "Move question down"
+                    disabled: idx == questions.length - 1
+                    onClick: do (currentIdx = idx) => => 
+                      if currentIdx < questions.length - 1
+                        move_question currentIdx, currentIdx + 1
+                    style: 
+                      opacity: if idx == questions.length - 1 then 0.3 else 1
+                      padding: 2
+
+                    down_arrow_icon 20, "var(--text_neutral)"
 
                 BUTTON 
                   'aria-label': "delete question"
@@ -292,32 +316,7 @@ window.IntakeQuestions = ReactiveComponent
           EditIntakeQuestion()
 
 
-  componentDidMount: ->
-    @makeQuestionsDraggable()
-
-  componentDidUpdate: -> 
-    @makeQuestionsDraggable()
-
-  makeQuestionsDraggable: ->
-
-    @onDragOver ?= (e) =>
-      e.preventDefault()
-      @draggedOver = e.currentTarget.getAttribute('data-idx')
-
-    @onDragStart ?= (e) =>
-      @dragging = e.currentTarget.getAttribute('data-idx')
-
-    @onDrop ?= (e) =>
-      move_question @dragging, @draggedOver
-
-    for question in ReactDOM.findDOMNode(@).querySelectorAll('.intake-question.open')
-      question.removeEventListener('dragstart', @onDragStart) 
-      question.removeEventListener('dragover', @onDragOver)
-      question.removeEventListener('drop', @onDrop) 
-
-      question.addEventListener('dragstart', @onDragStart) 
-      question.addEventListener('dragover', @onDragOver)
-      question.addEventListener('drop', @onDrop) 
+ 
 
 
 

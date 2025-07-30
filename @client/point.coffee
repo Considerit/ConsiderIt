@@ -247,98 +247,98 @@ window.Point = ReactiveComponent
 
 
 
-        if TABLET_SIZE() || (!TABLET_SIZE() && @props.enable_dragging)
-          your_opinion = proposal.your_opinion
-          if your_opinion.key 
-            bus_fetch your_opinion
+      if TABLET_SIZE() || (!TABLET_SIZE() && @props.enable_dragging)
+        your_opinion = proposal.your_opinion
+        if your_opinion.key 
+          bus_fetch your_opinion
 
 
-          can_opine = canUserOpine proposal          
+        can_opine = canUserOpine proposal          
 
-          included = @included()
-          includePoint = (e) => 
+        included = @included()
+        includePoint = (e) => 
 
 
-            e.stopPropagation()
-            e.preventDefault()
+          e.stopPropagation()
+          e.preventDefault()
 
-            return unless e.type != 'click' || \
-                          (!browser.is_android_browser && e.type == 'click')
-            if !included
-              @include()
-            else 
+          return unless e.type != 'click' || \
+                        (!browser.is_android_browser && e.type == 'click')
+          if !included
+            @include()
+          else 
 
-              validate_first = point.user == bus_fetch('/current_user').user && point.includers.length < 2
-              if !validate_first || confirm('Are you sure you want to mark your point as unimportant? It will be gone forever.')
-                @remove()
+            validate_first = point.user == bus_fetch('/current_user').user && point.includers.length < 2
+            if !validate_first || confirm('Are you sure you want to mark your point as unimportant? It will be gone forever.')
+              @remove()
 
-          if !TABLET_SIZE() && @props.enable_dragging
-            right = (included && point.is_pro) || (!included && !point.is_pro)
+        if !TABLET_SIZE() && @props.enable_dragging
+          right = (included && point.is_pro) || (!included && !point.is_pro)
 
-            BUTTON
-              className: "focused_include_button #{if @local.focused_include then 'has-focus' else ''}"
-              'aria-label': if included 
-                              translator 'engage.uninclude_explanation', 'Mark this point as unimportant and move to next point' 
-                            else 
-                              translator 'engage.include_explanation', 'Mark this point as important and move to next point'
-              style:
-                display: if get_selected_point() then 'none'
+          BUTTON
+            className: "focused_include_button #{if @local.focused_include then 'has-focus' else ''}"
+            'aria-label': if included 
+                            translator 'engage.uninclude_explanation', 'Mark this point as unimportant and move to next point' 
+                          else 
+                            translator 'engage.include_explanation', 'Mark this point as important and move to next point'
+            style:
+              display: if get_selected_point() then 'none'
 
-              onFocus: (e) => 
-                @local.focused_include = true; save @local
-              onBlur: (e) => @local.focused_include = false; save @local
-              onTouchEnd: includePoint
-              onClick: includePoint
-              onKeyDown: (e) => 
-                if e.which == 13 || e.which == 32
-                  includePoint(e)
-                  valence = if point.is_pro then 'pros' else 'cons'
+            onFocus: (e) => 
+              @local.focused_include = true; save @local
+            onBlur: (e) => @local.focused_include = false; save @local
+            onTouchEnd: includePoint
+            onClick: includePoint
+            onKeyDown: (e) => 
+              if e.which == 13 || e.which == 32
+                includePoint(e)
+                valence = if point.is_pro then 'pros' else 'cons'
 
-                  next = $$.closest(e.target, '.point').nextElementSibling.querySelector('.point_content')
-                  next.focus()
-                  e.preventDefault()
+                next = $$.closest(e.target, '.point').nextElementSibling.querySelector('.point_content')
+                next.focus()
+                e.preventDefault()
 
-              I 
-                style: 
-                  fontSize: if included then 25 else 40
-                  color: "var(--focus_color)"
-                className: "fa fa-long-arrow-#{if !right then 'left' else 'right'}"
-
-          else if can_opine >= 0
-            
-            BUTTON 
-              className: "selector_button #{if included then 'active' else ''}"
+            I 
               style: 
-                position: 'relative'
-                top: -13
-                padding: '8px 5px'
-                borderRadius: '0 0 16px 16px'
-                zIndex: 0
-                width: '100%'
+                fontSize: if included then 25 else 40
+                color: "var(--focus_color)"
+              className: "fa fa-long-arrow-#{if !right then 'left' else 'right'}"
 
-              onMouseEnter: => 
-                @local.hover_important = true
-                save @local
-              onMouseLeave: => 
-                @local.hover_important = false
-                save @local
+        else if can_opine >= 0
+          
+          BUTTON 
+            className: "selector_button #{if included then 'active' else ''}"
+            style: 
+              position: 'relative'
+              top: -13
+              padding: '8px 5px'
+              borderRadius: '0 0 16px 16px'
+              zIndex: 0
+              width: '100%'
 
-              onTouchEnd: includePoint
-              onClick: includePoint
+            onMouseEnter: => 
+              @local.hover_important = true
+              save @local
+            onMouseLeave: => 
+              @local.hover_important = false
+              save @local
 
-              onKeyDown: (e) => 
-                if e.which == 13 || e.which == 32
-                  includePoint(e)
-                  e.preventDefault()
-                  e.stopPropagation()
+            onTouchEnd: includePoint
+            onClick: includePoint
 
-              I
-                className: 'fa fa-thumbs-o-up'
-                style: 
-                  display: 'inline-block'
-                  marginRight: 10
+            onKeyDown: (e) => 
+              if e.which == 13 || e.which == 32
+                includePoint(e)
+                e.preventDefault()
+                e.stopPropagation()
 
-              translator("engage.include_button", "Important") + "#{if included then '' else '?'}" 
+            I
+              className: 'fa fa-thumbs-o-up'
+              style: 
+                display: 'inline-block'
+                marginRight: 10
+
+            translator("engage.include_button", "Important") + "#{if included then '' else '?'}" 
 
 
       if is_selected

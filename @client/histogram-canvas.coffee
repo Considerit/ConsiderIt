@@ -197,6 +197,23 @@ styles += """
     padding-top: #{REGION_SELECTION_VERTICAL_PADDING}px;
     // content-visibility: auto; /* enables browsers to not draw expensive histograms in many situations */
   }
+
+  .pole_label {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text_gray);
+    bottom: -19px;    
+    position: absolute;
+  }
+
+  .negative_pole {
+    left: 0;
+  }
+  .positive_pole {
+    right: 0;
+  }
+
+
 """
 
 window.Histogram = ReactiveComponent
@@ -277,7 +294,7 @@ window.Histogram = ReactiveComponent
       id: @id
       key: 'histogram'
       className: 'histogram'
-      role: 'region'
+      # role: 'region'
       inert: if @props.backgrounded then 'true'
       'aria-hidden': @props.backgrounded
 
@@ -396,28 +413,21 @@ window.Histogram = ReactiveComponent
   drawHistogramLabels: (subdomain, proposal) -> 
 
     subdomain ?= bus_fetch '/subdomain'
-    label_style = @props.label_style or {
-      fontSize: 12
-      fontWeight: 400
-      color: "var(--text_gray)"
-      bottom: -19
-    }
+    label_style = @props.label_style or {}
 
     negative =  SPAN
+                  className: 'pole_label negative_pole'
                   key: 'oppose'
-                  style: _.extend {}, label_style,
-                    position: 'absolute'
-                    left: 0
+                  style: label_style
 
                   get_slider_label("slider_pole_labels.oppose", @props.proposal, subdomain)
 
     positive = 
 
       SPAN
+        className: 'pole_label positive_pole'
         key: 'support'
-        style: _.extend {}, label_style,
-          position: 'absolute'
-          right: 0
+        style: label_style
 
         get_slider_label("slider_pole_labels.support", @props.proposal, subdomain)
 

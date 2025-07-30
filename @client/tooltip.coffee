@@ -26,6 +26,7 @@ window.clear_tooltip = ->
   tooltip.coords = tooltip.tip = tooltip.top = tooltip.positioned = null
   tooltip.offsetY = tooltip.offsetX = null 
   tooltip.rendered_size = false 
+  tooltip.has_focus = false
   save tooltip
 
 toggle_tooltip = (e) ->
@@ -43,12 +44,13 @@ show_tooltip = (e) ->
   return if !tooltip_el? || tooltip_el.style.opacity == 0
 
   tooltip = bus_fetch 'tooltip'
+  tooltip.element_in_focus = true
   name = tooltip_el.getAttribute('data-tooltip')
   if tooltip.tip != name 
     tooltip.tip = name
 
     setTimeout ->
-      if tooltip.tip == name 
+      if tooltip.tip == name && tooltip.element_in_focus
         tooltip.coords = calc_coords_for_tooltip_or_popover(tooltip_el)
         save tooltip
     , TOOLTIP_DELAY
@@ -59,7 +61,13 @@ show_tooltip = (e) ->
 tooltip = bus_fetch 'tooltip'
 hide_tooltip = (e) ->
   if e.target.getAttribute('data-tooltip')
-    clear_tooltip()
+    tooltip = bus_fetch('tooltip')
+    tooltip.element_in_focus = false
+    if tooltip.coords && !tooltip.has_focus
+      setTimeout ->
+        if !tooltip.has_focus && !tooltip.element_in_focus
+          clear_tooltip()
+      , 200
     e.preventDefault()
     e.stopPropagation()
 
@@ -104,7 +112,7 @@ window.Tooltip = ReactiveComponent
       fontSize: 14
       padding: '4px 8px'
       borderRadius: 8
-      pointerEvents: 'none'
+      pointerEvents: 'auto'
       zIndex: 999999999999
       color: "var(--text_light)"
       backgroundColor: "var(--bg_dark)"
@@ -116,7 +124,18 @@ window.Tooltip = ReactiveComponent
       id: 'tooltip'
       role: "tooltip"
       style: style
-
+      onMouseEnter: ->
+        tooltip = bus_fetch('tooltip')
+        tooltip.has_focus = true
+        save tooltip
+      onMouseLeave: ->
+        tooltip = bus_fetch('tooltip')
+        tooltip.has_focus = false
+        setTimeout ->
+          if !tooltip.has_focus && !tooltip.element_in_focus
+            clear_tooltip()
+        , 200
+        save tooltip
 
       DIV 
         dangerouslySetInnerHTML: {__html: tip}

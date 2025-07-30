@@ -173,7 +173,7 @@ window.ForumSettingsDash = ReactiveComponent
         DIV 
           className: 'FORUM_SETTINGS_section input_group'
 
-          H4 null, 
+          H2 null, 
 
             'Forum Plan Type'
 
@@ -256,7 +256,7 @@ window.ForumSettingsDash = ReactiveComponent
     DIV 
       className: 'FORUM_SETTINGS_section input_group'
 
-      H4 null, 
+      H2 null, 
 
         'Other Settings'
 
@@ -493,7 +493,7 @@ window.ForumSettingsDash = ReactiveComponent
     DIV 
       className: 'FORUM_SETTINGS_section input_group'
 
-      H4 null, 
+      H2 null, 
 
         'Identity and Content Visibility'
 
@@ -704,7 +704,7 @@ window.ForumSettingsDash = ReactiveComponent
     DIV 
       className: 'FORUM_SETTINGS_section input_group'
 
-      H4 null, 
+      H2 null, 
 
         'Dialogue State'
 
@@ -772,7 +772,7 @@ window.ForumSettingsDash = ReactiveComponent
     DIV 
       className: 'FORUM_SETTINGS_section input_group'
 
-      H4 null, 
+      H2 null, 
 
         'Your Content Moderation Policy'
 

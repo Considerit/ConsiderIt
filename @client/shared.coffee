@@ -113,7 +113,8 @@ window.back_to_homepage_button = (style, text) ->
   hash = loc.url.split('/')[1].replace('-', '_')
 
   NAV 
-    role: 'navigation'
+    'aria-label': translator 'engage.back_to_homepage', 'Homepage'
+
     A
       className: 'back_to_homepage'
       title: 'back to homepage'

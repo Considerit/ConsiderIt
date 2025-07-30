@@ -171,6 +171,8 @@ get_dash_title = (url) ->
 
     else 
       null
+
+
   title
 
 
@@ -187,10 +189,17 @@ window.Dashboard = ReactiveComponent
     loc = bus_fetch 'location'
 
     title = get_dash_title loc.url
-        
+
 
     if title == null 
       return DIV null, "No Dashboard at #{loc.url}"
+
+    doc = bus_fetch('document')
+    if doc.title != title
+      doc.title = title
+      save doc
+
+
 
     Widget = get_dash_widget(loc.url)
 
@@ -232,6 +241,7 @@ window.Dashboard = ReactiveComponent
 
       NAV
         id: "DASHBOARD-menu"
+        'aria-label': "Dashboard navigation menu"
 
         draw_menu_separator 'settings'
 

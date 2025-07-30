@@ -264,7 +264,7 @@ window.Notifications = ReactiveComponent
         style: 
           marginTop: 20
 
-        H4
+        H2
           style: 
             fontSize: 18
             marginBottom: 32

@@ -181,13 +181,8 @@
 
         
     %body
-      .hidden 
-        %a{ :href => 'accessibility_support', :style => 'position:absolute;left:-10000px;' }   
-          #{Translations::Translation.get("accessibility.link_to_support_page", "Accessibility support for considerit")}
           
       #content.content{ subdomain: current_subdomain.name }
-
-
 
       - if @js_dependencies
         %script{:src => @js_dependencies, :type => 'text/javascript'}

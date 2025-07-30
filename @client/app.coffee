@@ -69,37 +69,23 @@ AccessibilitySupport = ReactiveComponent
 
   render: -> 
     DIV   
-      style: 
-        width: HOMEPAGE_WIDTH()
-        margin: 'auto'
+      role: 'note'
+      className: 'hidden'
 
-      H1
-        style: 
-          fontSize: 32
-          fontWeight: 600
-          marginTop: 30
-          marginBottom: 10
+      TRANSLATE
+        id: 'accessibility.heading'
+        'Accessibility Support'
 
+      TRANSLATE 
+        id: "accessibility.feedback_or_help"
+        link: 
+          component: A 
+          args: 
+            href: "mailto:accessibility@consider.it?subject=Accessibility support"
+            style: 
+              textDecoration: 'underline'
 
-        TRANSLATE
-          id: 'accessibility.heading'
-          'Accessibility Support'
-
-      P 
-        style: 
-          paddingBottom: 18
-          fontSize: 24
-
-        TRANSLATE 
-          id: "accessibility.feedback_or_help"
-          link: 
-            component: A 
-            args: 
-              href: "mailto:accessibility@consider.it?subject=Accessibility support"
-              style: 
-                textDecoration: 'underline'
-
-          "If you are having difficulty using Considerit, please contact us at <link>accessibility@consider.it</link>. We will personally help you."
+        "If you are having difficulty using Considerit, please contact us at <link>accessibility@consider.it</link>. We will personally help you."
 
 
 
@@ -246,7 +232,7 @@ Page = ReactiveComponent
           flexGrow: 1
           width: '100%'
 
-
+        AccessibilitySupport()
 
         if !access_granted
           AccessDenied()
@@ -260,9 +246,7 @@ Page = ReactiveComponent
             when '/'
               Homepage key: 'homepage'
             when '/about'
-              About()
-            when '/accessibility_support'
-              AccessibilitySupport()
+              About()              
             when '/histogram_test'
               HistogramTester()
 

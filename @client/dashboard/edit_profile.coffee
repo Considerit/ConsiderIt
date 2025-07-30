@@ -60,11 +60,14 @@ window.EditProfile = ReactiveComponent
             name: 'email'
             label: i18n.email_label
             on_submit: on_submit
+            autoComplete: 'email'
+
           @RenderInput 
             type: 'password'
             name: 'password'
             label: i18n.new_password_label
             on_submit: on_submit  
+            autoComplete: 'new-password'
 
           if @local.updates.password != current_user.password || @local.updates.email != current_user.email
             @RenderInput   
@@ -72,13 +75,15 @@ window.EditProfile = ReactiveComponent
               name: 'old_password'
               label: i18n.old_password_label
               on_submit: on_submit  
-              
+              autoComplete: 'current-password'
         ]
 
       @RenderInput
         name: 'name' 
         label: i18n.name_label
         on_submit: on_submit
+        autoComplete: 'name'
+
 
       DIV 
         className: 'AUTH_field_wrapper'

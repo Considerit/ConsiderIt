@@ -34,11 +34,13 @@ window.ResetPassword = ReactiveComponent
           label: i18n.code_label
           name: 'verification_code'
           on_submit: on_submit  
+
         @RenderInput 
           label: translator('auth.reset_password.new_pass', 'New password')
           type: 'password'
           name: 'password'
           on_submit: on_submit
+          autoComplete: 'new-password'
 
         @ShowErrors()
 

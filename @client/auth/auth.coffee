@@ -499,7 +499,7 @@ window.AuthForm =
           className: 'AUTH_text_input'
           defaultValue: @local.updates[name]
           'aria-label': opts.label
-          autoComplete: 'off'
+          autoComplete: opts.autoComplete or 'off'
           disabled: opts.disabled
 
           onChange: (event) =>

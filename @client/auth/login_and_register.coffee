@@ -86,11 +86,13 @@ window.Login = ReactiveComponent
               type: 'email'
               label: i18n.email_label
               on_submit: on_submit
+              autoComplete: 'email'
 
             @RenderInput
               name: 'password' 
               type: 'password'
               label: i18n.password_label
+              autoComplete: 'current-password'
               on_submit: on_submit
 
             @resetPasswordLink()
@@ -178,6 +180,7 @@ window.CreateAccount = ReactiveComponent
           name: 'name'
           label: i18n.name_label
           on_submit: on_submit
+          autoComplete: 'name'
 
         @RenderInput
           name: 'email'
@@ -185,12 +188,14 @@ window.CreateAccount = ReactiveComponent
           label: i18n.email_label
           disabled: if @props.by_invitation then true
           on_submit: on_submit
+          autoComplete: 'email'
 
         @RenderInput
           name: 'password' 
           type: 'password'
           label: i18n.password_label
           on_submit: on_submit
+          autoComplete: 'new-password'
 
 
         if avatar_field

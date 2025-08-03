@@ -254,6 +254,7 @@ window.GearIcon = (opts) ->
 
 window.drag_icon = (height, color) ->
   width = height * 14 / 20
+  color ?= 'currentColor'
   SVG 
     viewBox: "0 0 14 20" 
     stroke: 'none'

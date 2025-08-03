@@ -140,7 +140,7 @@ window.EditPage = ReactiveComponent
 
     DIV null, 
       I null, 
-        "This page displays all proposal lists shown on other pages throughout this forum."
+        "This page displays all prompts shown across other pages throughout this forum."
       @renderSortOrder()
 
       @renderPreamble()
@@ -361,9 +361,9 @@ window.EditPage = ReactiveComponent
 
 
     page_types = [
-      {id: PAGE_TYPES.DEFAULT, label: "Standard page",    description: "Displays the proposal lists configured above."}
+      {id: PAGE_TYPES.DEFAULT, label: "Standard page",    description: "Displays the prompts configured above."}
       {id: PAGE_TYPES.ABOUT,   label: 'Background page',  description: "Give supplementary background information about the engagement."}
-      {id: PAGE_TYPES.ALL,     label: '"Show all" page', description: "Aggregate and show all proposal lists from other pages."}
+      {id: PAGE_TYPES.ALL,     label: '"Show all" page', description: "Aggregate and show all prompts from other pages."}
     ]
 
     DIV 
@@ -455,7 +455,7 @@ window.EditPage = ReactiveComponent
     
 
     groups_sorts = 
-      newest:       {value: 'newest_item', label: 'By most recent activity', explanation: 'The proposal lists with the most recent activity are shown first.'}
+      newest:       {value: 'newest_item', label: 'By most recent activity', explanation: 'The prompts with the most recent activity are shown first.'}
       randomized:   {value: 'randomized', label: 'Randomized', explanation: 'Proposal lists are show in a random order on page load.'}
       fixed:        {value: 'fixed', label: 'Fixed order', explanation: 'Proposal lists will be ordered as specified above.'}
       fixed_by_tab: {value: 'by_tab', label: 'Fixed order', explanation: 'Proposal lists ordered as they are in the other pages.'}
@@ -478,7 +478,7 @@ window.EditPage = ReactiveComponent
           fontSize: 17
           fontWeight: 700
 
-        "Order of the proposal lists#{if @local.type != PAGE_TYPES.ALL then " defined above" else ''}"
+        "Order of the prompts#{if @local.type != PAGE_TYPES.ALL then " defined above" else ''}"
 
 
       SELECT

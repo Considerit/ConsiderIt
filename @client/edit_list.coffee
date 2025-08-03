@@ -482,7 +482,7 @@ window.EditNewList = ReactiveComponent
         DIV 
           className: 'LIST-field-edit-label'
 
-          translator 'engage.edit_list_item_name', 'What do you call a response to this focus?'
+          translator 'engage.edit_list_item_name', 'What do you call a response to this prompt?'
 
         INPUT 
           ref: 'list_item_name'
@@ -845,7 +845,7 @@ window.EditNewList = ReactiveComponent
                 translator 
                   id: 'engage.list-config-show_first_n_proposals'
                   DEFAULT: SHOW_FIRST_N_PROPOSALS
-                  'Show all proposals in this focus, without forcing people to click "show all". The default is to show the first {DEFAULT}.'
+                  'Show all proposals to this prompt, without forcing people to click "show all". The default is to show the first {DEFAULT}.'
 
 
   componentDidMount: -> 

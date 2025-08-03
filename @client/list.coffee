@@ -720,12 +720,12 @@ window.NewList = ReactiveComponent
 
             SPAN null, 
 
-              translator "engage.create_new_focus", "Create a New Focus"
+              translator "engage.create_new_focus", "Create a New Prompt"
             
           DIV 
             className: 'LIST-description'
 
-            translator "engage.focus_description", "Focus your community on evaluating specific proposals. Or pose an open-ended question to focus your community on generating ideas."
+            translator "engage.focus_description", "Prompt your community to evaluate specific proposals. Or pose an open-ended question to focus your community on generating ideas."
 
 
 

@@ -256,7 +256,6 @@ window.generateColorVariableDefs = ->
     --text_dark: #000000;
     --text_gray: #000000;
     --text_light_gray: #000000;
-    --text_neutral: #000000;
     --text_gray_on_dark: #ffffff;
     --text_light: #ffffff;
 
@@ -303,7 +302,6 @@ window.generateColorVariableDefs = ->
     --text_dark: #ffffff;
     --text_gray: #ffffff;
     --text_light_gray: #ffffff;
-    --text_neutral: #ffffff;
     --text_gray_on_dark: #000000;
     --text_light: #000000;
 

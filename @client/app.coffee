@@ -64,11 +64,11 @@ styles += """
 bus_fetch 'root'
 
 
-AccessibilitySupport = ReactiveComponent 
+window.AccessibilitySupport = ReactiveComponent 
   displayName: 'AccessibilitySupport'
 
   render: -> 
-    DIV   
+    DIV
       role: 'note'
       className: 'hidden'
 
@@ -232,7 +232,7 @@ Page = ReactiveComponent
           flexGrow: 1
           width: '100%'
 
-        AccessibilitySupport()
+        
 
         if !access_granted
           AccessDenied()

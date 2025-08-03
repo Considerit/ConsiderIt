@@ -639,6 +639,9 @@ CustomizeTextBlock = ReactiveComponent
         position: 'absolute'
         right: 5
         bottom: 0
+        display: 'flex'
+        flexDirection: 'column'
+        gap: 8
 
       INPUT 
         id: 'text_background_css'
@@ -775,6 +778,7 @@ CustomizeBackground = ReactiveComponent
                     'change'
 
                   SPAN 
+                    'aria-hidden': true
                     style: 
                       padding: '0px 4px'
                     '•'
@@ -820,6 +824,7 @@ CustomizeBackground = ReactiveComponent
                   type: 'dropdown'
                   name: 'background_color'
                   value: is_light
+                  'aria-label': "If background is predominantly light or dark"
 
                   onChange: (e) =>
                     @local.background_css = if e.target.value == 'true' then "#ffffff" else "#000000"

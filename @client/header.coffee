@@ -36,6 +36,10 @@ window.Header = ReactiveComponent
         zIndex: if bus_fetch('edit_forum').editing then 1 # necessary b/c of payment modal
       className: "#{if !light_bg then 'dark' else 'light'} #{if has_image_background then 'image_background' else ''}"
 
+
+
+      AccessibilitySupport()
+      
       if current_user.is_admin
         HostHeader()
 

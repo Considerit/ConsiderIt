@@ -160,7 +160,7 @@ window.EditPage = ReactiveComponent
     if is_a_tab
       @ordered_lists = get_tab(@props.page_name)?.lists
       if !@ordered_lists
-        console.error "No lists for tab. Returning"
+        console.error "No prompts for tab. Returning"
         return DIV null
     else
       subdomain.customizations.lists ?= get_all_lists()
@@ -173,11 +173,11 @@ window.EditPage = ReactiveComponent
 
     drag_capabilities = ""
     if @ordered_lists.length > 1 && current_list_sort_method == 'fixed'
-      drag_capabilities += "Drag lists to reorder them. "
+      drag_capabilities += "Drag prompts to reorder them. "
 
     drag_enabled = get_tabs()?.length > 1
     if drag_enabled 
-      drag_capabilities += "Lists can be dragged to a different tab to move them."
+      drag_capabilities += "Prompts can be dragged to a different tab to move them."
 
 
 
@@ -415,7 +415,7 @@ window.EditPage = ReactiveComponent
 
                 else 
 
-                  if @ordered_lists.length == 0 || confirm "Are you sure you want to convert this page? You may want to move the existing lists to a different page first. You can do that by dragging them to a different tab above."
+                  if @ordered_lists.length == 0 || confirm "Are you sure you want to convert this page? You may want to move the existing prompts to a different page first. You can do that by dragging them to a different tab above."
                     @ordered_lists.splice(0,@ordered_lists.length) 
                     if option.id == PAGE_TYPES.ALL 
                       @ordered_lists.push '*'
@@ -456,9 +456,9 @@ window.EditPage = ReactiveComponent
 
     groups_sorts = 
       newest:       {value: 'newest_item', label: 'By most recent activity', explanation: 'The prompts with the most recent activity are shown first.'}
-      randomized:   {value: 'randomized', label: 'Randomized', explanation: 'Proposal lists are show in a random order on page load.'}
-      fixed:        {value: 'fixed', label: 'Fixed order', explanation: 'Proposal lists will be ordered as specified above.'}
-      fixed_by_tab: {value: 'by_tab', label: 'Fixed order', explanation: 'Proposal lists ordered as they are in the other pages.'}
+      randomized:   {value: 'randomized', label: 'Randomized', explanation: 'Prompts are show in a random order on page load.'}
+      fixed:        {value: 'fixed', label: 'Fixed order', explanation: 'Prompts will be ordered as specified above.'}
+      fixed_by_tab: {value: 'by_tab', label: 'Fixed order', explanation: 'Prompts ordered as they are in the other pages.'}
 
     if @local.type == PAGE_TYPES.DEFAULT      
       list_orderings = [groups_sorts.fixed, groups_sorts.newest, groups_sorts.randomized]
@@ -704,7 +704,7 @@ window.EditPage = ReactiveComponent
           target_lists.push list_key 
         save subdomain
       else 
-        console.error "Could not move list #{list_key} from #{source} to #{target}"
+        console.error "Could not move prompt #{list_key} from #{source} to #{target}"
     
     @sortable = new Draggable.Sortable @refs['draggable-list-wrapper'],
       draggable: '.not-editing'

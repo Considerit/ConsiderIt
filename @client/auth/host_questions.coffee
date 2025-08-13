@@ -394,7 +394,7 @@ window.ShowHostQuestions = ReactiveComponent
                     if question.open_text_option == option
                       idx = options_checked.indexOf(option)
                       INPUT 
-                        'aria-label': "Open-ended response to the question \"#{question.question}\""
+                        'aria-label': translator({id: "settings.questions.open_ended_response", question: question.question}, "Open-ended response to the question \"{question}\"")
                         ref: "open_value-#{question.tag}"
                         disabled: !is_checked 
                         defaultValue: current_user.tags[question.tag]?.split(CHECKLIST_SEPARATOR)[idx]?.split(OTHER_SEPARATOR)[1] or ""

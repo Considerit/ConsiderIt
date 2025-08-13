@@ -241,7 +241,7 @@ window.Dashboard = ReactiveComponent
 
       NAV
         id: "DASHBOARD-menu"
-        'aria-label': "Dashboard navigation menu"
+        'aria-label': translator "dashboard.navigation_label", "Dashboard navigation menu"
 
         draw_menu_separator 'settings'
 

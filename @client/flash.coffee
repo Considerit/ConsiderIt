@@ -110,7 +110,7 @@ window.Flash = ReactiveComponent
 
           BUTTON 
 
-            'aria-label': "Close flash message"
+            'aria-label': translator 'aria.close_flast', "Close flash message"
             className: 'icon'
             onClick: clear_flash
             iconX 16, "var(--text_light)"

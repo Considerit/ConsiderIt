@@ -932,7 +932,7 @@ OpinionViews = ReactiveComponent
         onClick: toggle_expanded
         'aria-expanded': !local_state.minimized
         'aria-controls': "opinion-view-config-#{@props.ui_key}"
-        'aria-label': if local_state.minimized then 'Expand opinion view configuration' else 'Collapse opinion view configuration'
+        'aria-label': if local_state.minimized then translator('opinion_views.expand_view_config', 'Expand opinion view configuration') else translator('opinion_views.collapse_view_config', 'Collapse opinion view configuration')
         style: 
           fontSize: 12
           color: "var(--text_light_gray)"
@@ -1094,7 +1094,7 @@ window.OpinionViewInteractionWrapper = ReactiveComponent
 
             DIV 
               id: "opinion-view-config-#{@props.ui_key}"
-              'aria-label': 'Opinion view configuration summary'
+              'aria-label': translator('opinion_views.view_config_summary', 'Opinion view configuration summary')
               style:
                 marginTop: 0
                 # width: if width then width
@@ -1111,7 +1111,7 @@ window.OpinionViewInteractionWrapper = ReactiveComponent
 
               DIV 
                 id: "opinion-view-config-#{@props.ui_key}"
-                'aria-label': 'Opinion view configuration options'
+                'aria-label': translator('opinion_views.view_config_options', 'Opinion view configuration options')
                 style: 
                   border: "1px solid var(--brd_mid_gray)"
                   borderRadius: 8
@@ -1173,7 +1173,7 @@ InteractiveOpinionViews = ReactiveComponent
 
             SELECT 
               name: 'color_code_field'
-              'aria-label': 'Select attribute to color code by'
+              'aria-label': translator('opinion_views.color_code_attribute', 'Select attribute to color code by')
               style: 
                 maxWidth: '75%'
                 marginLeft: 12
@@ -1210,7 +1210,7 @@ InteractiveOpinionViews = ReactiveComponent
 
               OPTION 
                 value: null
-                'aria-label': 'no attribute'
+                'aria-label': translator('opinion_views.no_attribute', 'no attribute')
                 ""
               for attribute,idx in attributes 
                 continue if !attribute.options
@@ -1286,7 +1286,7 @@ InteractiveOpinionViews = ReactiveComponent
                     title: if shortened then attribute.name
                     className: "selector_button opinion_view_button #{if opinion_views_ui.activated_attributes[attribute.key] then 'active' else ''}"
                     'aria-pressed': opinion_views_ui.activated_attributes[attribute.key]
-                    'aria-label': if opinion_views_ui.activated_attributes[attribute.key] then "Remove #{attr_name} filter" else "Add #{attr_name} filter"
+                    'aria-label': if opinion_views_ui.activated_attributes[attribute.key] then translator({id: 'opinion_views.remove_filter', attr_name: attr_name}, "Remove {attr_name} filter") else translator({id: 'opinion_views.add_filter', attr_name: attr_name}, "Add {attr_name} filter")
                     onClick: -> 
                       toggle_attribute_visibility(attribute)
                       # Announce filter change
@@ -1401,7 +1401,7 @@ InteractiveOpinionViews = ReactiveComponent
               onClick: -> 
                 toggle_attribute_visibility(attribute)
                 announceToScreenReader("#{attribute.name} filter removed")
-              "aria-label": "Remove #{attribute.name} filter"
+              "aria-label": translator({id: 'opinion_views.remove_filter', attr_name: attribute.name}, "Remove {attr_name} filter")
 
               iconX 14, "var(--text_dark)"
 
@@ -1437,7 +1437,7 @@ InteractiveOpinionViews = ReactiveComponent
                   className: "selector_button opinion_view_button #{if activated_weights[weight.key] then 'active' else ''}"
                   "data-tooltip": weight.label
                   'aria-pressed': !!activated_weights[weight.key]
-                  'aria-label': if activated_weights[weight.key] then "Remove #{weight.name} weighting" else "Add #{weight.name} weighting"
+                  'aria-label': if activated_weights[weight.key] then translator({id: 'opinion_views.remove_weight', weight_name: weight.name}, "Remove {weight_name} weighting") else translator({id: 'opinion_views.add_weight', weight_name: weight.name}, "Add {weight_name} weighting")
                   onClick: (e) ->
                     toggle_weight weight
                     # Announce weight change

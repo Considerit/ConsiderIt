@@ -879,14 +879,14 @@ window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
         update_proposal_mode proposal, null
         loadPage "/", (if loc.query_params?.tab then {tab: loc.query_params.tab} else {}), 'toggle_expand'
       
-        announceToScreenReader("The proposal has been collapsed")
+        announceToScreenReader(translator('engage.proposal_collapse_announce', "The proposal has been collapsed"))
       else 
         loadPage proposal_url(proposal), (if loc.query_params?.selected then {selected: loc.query_params.selected} else {}), 'toggle_expand'
 
         update_proposal_mode proposal, mode
 
         # document.querySelector("[data-name='#{slugify(proposal.name)}'] .opinion-heading")?.focus()
-        announceToScreenReader("The proposal has been expanded")
+        announceToScreenReader(translator('engage.proposal_expand_announce', "The proposal has been expanded"))
 
       save expanded_state
 

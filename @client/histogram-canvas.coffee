@@ -1368,13 +1368,13 @@ window.Histogram = ReactiveComponent
     @local.current_avatar_index = 0
     save @local
     @navigateToCurrentAvatar()
-    announceToScreenReader("Entering histogram navigation. Use tab and shift-tab to navigate between user avatars.")
+    announceToScreenReader(translator('engage.histogram.announce_nav', "Entering histogram navigation. Use tab and shift-tab to navigate between user avatars."))
 
   exitHistogramNavigation: ->
     @local.current_avatar_index = null
     save @local
     update_avatar_popover_from_canvas_histo()  # Clear any popover
-    announceToScreenReader("Exited histogram navigation.")
+    announceToScreenReader(translator('engage.histogram.announce_leave_nav', "Exited histogram navigation."))
 
 
   handleHistogramNavigation: (e) ->
@@ -1421,7 +1421,7 @@ window.Histogram = ReactiveComponent
     # Announce to screen reader
     user_obj = bus_fetch(current_avatar)
     position_text = "#{@local.current_avatar_index + 1} of #{histocache.ordered_users.length}"
-    announceToScreenReader("Focused on #{user_obj.name or 'user'}, #{position_text}")
+    announceToScreenReader(translator( {id: 'engage.histogram.announce_user_focus', user_name: user_obj.name or 'user', position_text: position_text},  "Focused on {user_name}, {position_text}"))
 
   activateCurrentAvatar: ->
     histocache = @getAvatarPositions()
@@ -1432,7 +1432,7 @@ window.Histogram = ReactiveComponent
         
     # Trigger click handler for current user
     @onClick?(null, current_avatar) if @enable_range_selection || @enable_individual_selection
-    announceToScreenReader("Activated user profile")
+    announceToScreenReader(translator('engage.histogram.activated_user', "Activated user profile"))
 
 
 

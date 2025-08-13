@@ -491,7 +491,7 @@ window.Point = ReactiveComponent
     your_opinion.point_inclusions.push @props.point
     save(your_opinion)
 
-    announceToScreenReader("The point was incorporated into your opinion")
+    announceToScreenReader(translator('engage.point_included_announce', "The point was incorporated into your opinion"))
 
     window.writeToLog
       what: 'included point'
@@ -510,7 +510,7 @@ window.Point = ReactiveComponent
     if idx > -1
       your_opinion.point_inclusions.splice(idx, 1)
       save(your_opinion)
-      announceToScreenReader("The point was removed from your opinion")
+      announceToScreenReader(translator('engage.point_removed_announce', "The point was removed from your opinion"))
 
 
   selectPoint: (e) ->
@@ -535,7 +535,7 @@ window.Point = ReactiveComponent
     else
       what = 'selected a point'
       loc.query_params.selected = @props.point
-      announceToScreenReader("You've opened the discussion about this point.")
+      announceToScreenReader(translator('engage.point_opened_announce', "You've opened the discussion about this point."))
 
     save loc
 

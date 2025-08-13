@@ -251,7 +251,7 @@ window.Discussion = ReactiveComponent
             proposal: proposal.key
 
       BUTTON
-        'aria-label': 'close point' 
+        'aria-label': translator 'engage.close_point', 'Close Point' 
         onClick: close_point
 
         className: 'icon'

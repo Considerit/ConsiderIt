@@ -115,8 +115,9 @@ window.AllYourForums = ReactiveComponent
                   className: 'icon'
                   style:
                     padding: '4px'
-                  'aria-label': "Import Configuration from #{forum.name} to this forum"
-                  'data-tooltip': "Import Configuration from #{forum.name} to this forum"
+                    
+                  'aria-label': translator({id: "settings.import_configuration", forum_name: forum.name}, "Import Configuration from {forum_name} to this forum")
+                  'data-tooltip': translator({id: "settings.import_configuration", forum_name: forum.name}, "Import Configuration from {forum_name} to this forum")
 
                   onClick: => 
                     if confirm("Are you sure you want to import this configuration? It will overwrite the configuration of this forum.")

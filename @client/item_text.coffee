@@ -239,7 +239,7 @@ window.ItemText = ReactiveComponent
 
             DIV 
               ref: 'proposal_title'
-              role: "button"
+              role: "button"              
               "aria-label": if @is_expanded then translator('engage.close_proposal', "Collapse this proposal") else translator('engage.expand_proposal', "Expand this proposal")
               "aria-expanded": @is_expanded
               "aria-controls": "opinion-block-#{proposal.key}"

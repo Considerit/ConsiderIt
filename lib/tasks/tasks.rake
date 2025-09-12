@@ -24,7 +24,7 @@ task :clear_old_users => :environment do
 end
 
 task :clear_old_sessions => :environment do 
-  ActiveRecord::Base.connection.execute("DELETE FROM sessions WHERE where updated_at < now() - interval 1 YEAR")
+  ActiveRecord::Base.connection.execute("DELETE FROM sessions WHERE updated_at < now() - interval 1 YEAR")
 end
 
 

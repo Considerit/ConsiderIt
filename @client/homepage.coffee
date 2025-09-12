@@ -158,7 +158,6 @@ window.Homepage = ReactiveComponent
         id: 'homepagetab'
         role: if get_tabs() then "tabpanel"
 
-
         if bus_fetch('edit_forum').editing
           for page in get_tabs() or [{name: null}]
             EditPage

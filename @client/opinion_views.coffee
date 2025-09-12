@@ -895,12 +895,13 @@ OpinionViews = ReactiveComponent
 
           ToggleButtons view_buttons, opinion_views_ui, @props.ui_key
 
-          SPAN 
-            style: 
-              position: 'absolute'
-              left: '100%'
-              top: 0
-            @MinimizeExpandButton()
+          if user_has_set_a_view() && opinion_views_ui.active == 'custom'
+            SPAN 
+              style: 
+                position: 'absolute'
+                left: '100%'
+                top: 0
+              @MinimizeExpandButton()
 
 
 
@@ -1076,6 +1077,7 @@ window.OpinionViewInteractionWrapper = ReactiveComponent
     opinion_views_ui = bus_fetch 'opinion_views_ui'
     local_state = bus_fetch @props.ui_key or @local
 
+    return SPAN null if opinion_views_ui.active != 'custom'
 
     DIV 
       className: "opinion_view_interaction_wrapper #{if opinion_views_ui.active == 'custom' && (opinion_views_ui.last_interacted_with == local_state.key || local_state.minimized) then 'showing_custom' else ''}"

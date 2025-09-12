@@ -809,6 +809,7 @@ EditableTitle = ReactiveComponent
 
       H1 
         className: 'LIST-title'
+        tabIndex: -1 # tab navigation will automatically set focus to the first list title
         style: # ugly...we only want to show the expand/collapse icon
           fontSize: if title.replace(/^\s+|\s+$/g, '').length == 0 then 0
 

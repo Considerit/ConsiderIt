@@ -351,6 +351,7 @@ window.HomepageTabs = ReactiveComponent
       UL 
         ref: 'tablist'
         role: 'tablist'
+        'aria-label': translator('homepage_tab.tab_label', "All the pages of this forum.")
         style: _.defaults {}, @props.list_style,
           width: @props.width
 
@@ -506,8 +507,11 @@ window.Tab = ReactiveComponent
 
       document.activeElement.blur()
       setTimeout =>
-        @refs.edit_tab_name.focus()
-      , 10
+        if edit_forum.editing
+          @refs.edit_tab_name.focus()
+        else
+          document.querySelector('#homepagetab .LIST-title').focus()
+      , if edit_forum.editing then 100 else 1000
 
     LI 
       className: "tab #{if current then 'selected' else ''} #{if tab.demo then 'demo' else 'not-demo'} #{if tab.add_new then 'add_new' else 'tab-added'}"

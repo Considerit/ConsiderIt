@@ -23,7 +23,9 @@ task :clear_old_users => :environment do
   ActiveRecord::Base.connection.execute("DELETE FROM users WHERE registered=false AND complete_profile=0 AND created_at < DATE_SUB(NOW(), INTERVAL 2 MONTH)")
 end
 
-
+task :clear_old_sessions => :environment do 
+  ActiveRecord::Base.connection.execute("DELETE FROM sessions WHERE where updated_at < now() - interval 1 YEAR")
+end
 
 
 task :subscription_changes_from_default => :environment do 

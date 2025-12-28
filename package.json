@@ -6,6 +6,7 @@
     "yamljs": "^0.2.1",
     "webpack": "1.11.0",
     "chunk-manifest-webpack-plugin": "0.0.1",
-    "compression-webpack-plugin": "0.2.0"
+    "compression-webpack-plugin": "0.2.0",
+    "html-to-image": "1.11.11"
   }
 }

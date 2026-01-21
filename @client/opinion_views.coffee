@@ -86,6 +86,10 @@ window.get_opinions_for_proposal = (opinions, proposal, weights) ->
   (o for o in opinions when weights[o.user] > 0)
 
 
+
+CLUSTERS_CACHE_KEY = 'clusters'
+userIdToClusterId = null
+
 # Attributes are data about participants that can serve as additional filters. 
 # We take them from legacy opinion views, and from 
 # qualifying user_tags
@@ -157,8 +161,52 @@ window.get_participant_attributes = ->
             input_type: tag.self_report?.input
             continuous_value: tag.continuous_value
 
+    # Cluster results will be available in cache, but only on later calls to get_participant_attributes()
+    userIdToClusterId = fetch( CLUSTERS_CACHE_KEY )?.userIdToClusterId
+    if userIdToClusterId
+      attributes.push
+        key: 'clusters'
+        name: 'User Clusters'
+        pass: (user, value) -> userIdToClusterId[ user ] ?  'None'
+        options: Array.from(  new Set( Object.values(userIdToClusterId).concat('None') )  )
+        continuous_value: false
+    else
+      # Start clustering in a worker thread
+      initiateClustering()
+
   attributes
 
+
+clusterWorker = null
+
+initiateClustering = ( ) ->
+  # Only allow one cluster worker at a time
+  if clusterWorker
+    return
+
+  # Collect all user x proposal opinions
+  proposals = fetch('/proposals').proposals
+  userXProposalToOpinion = { }
+  for proposal, proposalIndex in proposals
+    for opinion, opinionIndex in proposal.opinions
+      userXProposalToOpinion[ opinion.user ] ?= { }
+      userXProposalToOpinion[ opinion.user ][ proposal.key ] = opinion.stance
+  parameters = { task:'cluster', userXProposalToOpinion:userXProposalToOpinion }
+  console.debug( 'initiateClustering() number of users =', Object.keys(userXProposalToOpinion).length )
+
+  # Start clustering on worker thread
+  clusterWorker = new Worker( '/build/web_worker.js' )
+  clusterWorker.postMessage( parameters )
+  clusterWorker.onmessage = ( result ) ->
+    clusterWorker = null
+    if (not result) or (not result.data)
+      return
+    console.debug( 'initiateClustering() clusterWorker.onmessage() number of users =', Object.keys(result.data.userIdToClusterId).length )
+    # Update user attributes and custom filtering display
+    # Do not save to server -- not implemented, and dont want to use that much server storage per user
+    clustersRecord = fetch( CLUSTERS_CACHE_KEY ) ?  { key:CLUSTERS_CACHE_KEY }
+    clustersRecord.userIdToClusterId = result.data.userIdToClusterId
+    save( clustersRecord )
 
 
 

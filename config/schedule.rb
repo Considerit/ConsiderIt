@@ -27,7 +27,3 @@ end
 every 60.minutes do 
   rake 'send_email_notifications'
 end
-
-every 45.minutes do 
-  rake 'animate_avatars'
-end

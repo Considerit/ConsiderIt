@@ -31,7 +31,7 @@ gem 'kt-paperclip'
 #############
 # BACKGROUND PROCESSING / EMAIL
 gem 'whenever' # https://github.com/javan/whenever
-gem 'delayed_job', :git => 'https://github.com/collectiveidea/delayed_job' 
+gem 'delayed_job', :git => 'https://github.com/collectiveidea/delayed_job', :tag => 'v4.1.13'   # fixed version bc of https://github.com/collectiveidea/delayed_job/issues/1246
 gem 'delayed_job_active_record', :git => 'https://github.com/collectiveidea/delayed_job_active_record'
 gem "daemons" # for the daemonize method used in bin/delayed_job
 gem 'rubyzip'
@@ -48,7 +48,7 @@ gem 'excon'
 #############
 # Generative AI
 # gem "ruby-openai"
-gem 'ruby_llm'
+# gem 'ruby_llm'
 gem 'json-schema'
 
 

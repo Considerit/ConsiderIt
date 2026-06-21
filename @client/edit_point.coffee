@@ -61,6 +61,9 @@ window.EditPoint = ReactiveComponent
             position: 'absolute'
             right: 0
             top: -21   
+          onInput: (event) =>
+            if event and event.target
+              setStateNewPointInput(extractWords(event.target.value))
 
         INPUT 
           id:'is_pro'
@@ -254,6 +257,8 @@ window.EditPoint = ReactiveComponent
       your_points.editing_points = _.without your_points.editing_points, @props.point
 
     save your_points
+    clearStateNewPointInput()
+
 
   savePoint : (ev) ->
 

@@ -733,6 +733,8 @@ window.ForumSettingsDash = ReactiveComponent
               onChange: do (option) -> (ev) -> 
                 subdomain.customizations ||= {}
                 subdomain.customizations.contribution_phase = option.value
+                if subdomain.customizations.dialogue_state_explanation
+                  delete subdomain.customizations.dialogue_state_explanation
                 save subdomain
 
 
@@ -757,6 +759,26 @@ window.ForumSettingsDash = ReactiveComponent
               DIV 
                 className: 'explanation field_explanation'
                 option.explanation
+
+                if option.value != 0 && current_value == option.value                
+
+                  TEXTAREA
+                    name: 'dialogue_state_explanation'
+                    placeholder: "Optional explanation to be displayed to forum visitors"
+                    'aria-label': "Optional explanation to be displayed to forum visitors"
+                    defaultValue: subdomain.customizations.dialogue_state_explanation
+                    
+                    onChange: (ev) =>
+                      subdomain.customizations ||= {}
+                      subdomain.customizations.dialogue_state_explanation = ev.target.value
+                      save subdomain
+
+                    style: 
+                      marginTop: 6
+                      fontSize: 14
+                      width: '100%'
+
+
 
 
 
@@ -830,3 +852,6 @@ window.ForumSettingsDash = ReactiveComponent
               DIV 
                 className: 'explanation field_explanation'
                 option.explanation
+
+
+

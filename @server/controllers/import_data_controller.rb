@@ -506,7 +506,7 @@ class ImportDataController < ApplicationController
     ]
 
     zip_path = "#{EXPORT_PATH}#{subdomain.name}.zip"
-    Zip::File.open(zip_path, Zip::File::CREATE) do |z|
+    Zip::File.open(zip_path, create: true) do |z|
 
       exports.each do |ex|
         write_csv(ex[:fname], ex[:rows])

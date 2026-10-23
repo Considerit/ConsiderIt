@@ -180,7 +180,9 @@ class Point < ApplicationRecord
   end
         
   def self.update_scores
-    Point.published.each {|pnt| pnt.recache }
+    Point.published
+         .where("updated_at >= ?", 2.years.ago)
+         .find_each { |pnt| pnt.recache }
   end
 
   def title(max_len = 180)

@@ -346,19 +346,34 @@ window.WysiwygEditor = ReactiveComponent
   componentDidMount : -> 
     return if !@supports_Quill
 
-    getHTML = => 
-      ReactDOM.findDOMNode(@).querySelector(".ql-editor").innerHTML
+    # Quill 2's internal markup (e.g. bullet lists as <ol><li data-list="bullet">)
+    # doesn't render correctly outside the editor, so save its semantic HTML.
+    # Quill 2.0.3's getSemanticHTML converts every space to &nbsp;, which would
+    # prevent line wrapping, so convert those back.
+    getHTML = =>
+      return "" if @editor.getLength() <= 1 # just the trailing newline
+      @editor.getSemanticHTML().replace(/&nbsp;/g, ' ')
 
     # Attach the Quill wysiwyg editor
     @editor = new Quill @refs.editor,
       modules: 
         toolbar: 
           container: @refs.toolbar
+        keyboard:
+          # Turn off Quill's default Tab bindings (which insert tabs or indent) so 
+          # that Tab and Shift+Tab move focus in and out of the editor like any other 
+          # form field. Without this the editor is a keyboard trap (WCAG 2.1.2). 
+          bindings:
+            'tab': false
+            'remove tab': false
+            'indent': true
+            'outdent': true
+            'table tab': false
+            'indent code-block': false
+            'outdent code-block': false
       styles: true #if/when we want to define all styles, set to false
       placeholder: @props.placeholder
 
-    keyboard = @editor.getModule('keyboard')
-    delete keyboard.bindings[9]    # 9 is the key code for tab; restore tabbing for accessibility
 
     @editor.on 'text-change', (delta, old_contents, source) =>
       my_data = bus_fetch @props.editor_key

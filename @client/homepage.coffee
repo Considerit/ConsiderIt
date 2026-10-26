@@ -100,7 +100,7 @@ window.Homepage = ReactiveComponent
     messages = []
     phase = customization('contribution_phase')
     if phase == 'frozen'
-      messages.push {style: {backgroundColor: '#2e98c0', color: 'white'}, img: 'snowflake.png', label: translator("engage.frozen_message", "The forum host has frozen this forum so no changes can be made."), extra: if customization('dialogue_state_explanation') then customization('dialogue_state_explanation')}
+      messages.push {style: {backgroundColor: '#1f7a9c', color: 'white'}, img: 'snowflake.png', label: translator("engage.frozen_message", "The forum host has frozen this forum so no changes can be made."), extra: if customization('dialogue_state_explanation') then customization('dialogue_state_explanation')}
     else if phase == 'ideas-only'
       messages.push {style: {backgroundColor: '#fcde04', color: 'black'}, img: 'lightning.png', label: translator("engage.ideas_only_message", "The forum host has set this forum to be ideas only. No opinions for now."), extra: if customization('dialogue_state_explanation') then customization('dialogue_state_explanation')}
     else if phase == 'opinions-only'

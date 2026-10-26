@@ -1,23 +1,23 @@
 # Consider.it Accessibility
 
-Considerit functionality meets WCAG 2.2 Level AA accessibility requirements. The few exceptions are documented below. We have tried to go beyond accessibility standards by user testing with blind folks to identify usability issues. We have also augmented Considerit with a fallback for visually-impaired users who have trouble using the system to contact us to ask for help. We help each of these folks individually to understand the proposals being discussed and input their opinions.
+Consider.it's core participation functionality (browsing proposals, reading and writing pro/con points, and stating an opinion) meets WCAG 2.2 Level AA. Consider.it as a whole partially conforms to WCAG 2.2 Level AA, because a few advanced features have known violations. They are listed below with the criterion each one fails. We have tried to go beyond accessibility standards by user testing with blind folks to identify usability issues. We have also augmented Considerit with a fallback for visually-impaired users who have trouble using the system to contact us to ask for help. We help each of these folks individually to understand the proposals being discussed and input their opinions.
 
 ## Outstanding accessibility issues
-* It is not possible to use the keyboard to inspect which pro and con points that a particular participant thinks are important (violates Guideline 2.1.1).
-* It is not possible to use the keyboard to get a list of the specific users who think a particular point is important (violates Guideline 2.1.1). 
-* The ability to color code participants by attribute value in the histogram only uses color to distinguish participants (violates Guideline 1.4.1).
-* Proposals, points, and opinions in histograms automatically updates once every few minutes and that update cannot be stopped (violates Guideline 2.2.2).
+* It is not possible to use the keyboard to inspect which pro and con points that a particular participant thinks are important (Guideline 2.1.1).
+* It is not possible to use the keyboard to get a list of the specific users who think a particular point is important (Guideline 2.1.1). 
+* The ability to color code participants by attribute value in the histogram only uses color to distinguish participants (Guideline 1.4.1).
+* Proposals, points, and opinions in histograms automatically updates once every few minutes and that update cannot be stopped (Guideline 2.2.2).
 
-None of these are core features of Consider.it. 
+None of these are core participation features of Consider.it. 
 
 For forum hosts, the following exceptions exist:
-* A drag interface is used for re-ordering prompts and moving them between tabs, and there is no keyboard alternative (violates Guideline 2.5.7).
+* A drag interface is used for re-ordering prompts and moving them between tabs, and there is no keyboard alternative (Guideline 2.5.7).
 
-# WCAG 2.0 Conformance Declaration
+# WCAG 2.2 Conformance Declaration
 
-This WCAG Conformance statement is modeled after the Voluntary Product Accessibility Statement ([VPAT](https://www.itic.org/policy/accessibility/)) for Section 508, but using the Web Content Accessibility Guidelines ([WCAG](https://www.w3.org/TR/WCAG20/)) as conformance criteria instead. The format below is more useful than the existing VPAT format because Section 508 is out-of-date and its eventual Refresh will incorporate WCAG by reference. The format and some language borrowed from Accessibility leader [tenon.io](https://tenon.io).
+This WCAG Conformance statement is modeled after the Voluntary Product Accessibility Statement ([VPAT](https://www.itic.org/policy/accessibility/)) for Section 508, but using the Web Content Accessibility Guidelines ([WCAG](https://www.w3.org/TR/WCAG22/)) as conformance criteria instead. The format below is more useful than the existing VPAT format because Section 508 is out-of-date and its eventual Refresh will incorporate WCAG by reference. The format and some language borrowed from Accessibility leader [tenon.io](https://tenon.io).
 
-Updated: September 2025
+Updated: October 2026
 Name of Product: Consider.it  
 Contact: Travis Kriplean, travis@consider.it
 

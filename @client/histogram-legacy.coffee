@@ -330,7 +330,7 @@
 #       DIV 
 #         key: 'accessibility-histo-label'
 #         id: "##{proposal.id}-histo-label"
-#         className: 'hidden'
+#         className: 'screen-reader-only'
         
 #         translator 
 #           id: "engage.histogram.explanation"
@@ -340,7 +340,7 @@
 #       DIV 
 #         key: 'accessibility-histo-description'
 #         id: "##{proposal.id}-histo-description"
-#         className: 'hidden'
+#         className: 'screen-reader-only'
 
 #         translator 
 #           id: "engage.histogram.explanation_extended"

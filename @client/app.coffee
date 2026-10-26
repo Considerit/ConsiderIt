@@ -70,7 +70,7 @@ window.AccessibilitySupport = ReactiveComponent
   render: -> 
     DIV
       role: 'note'
-      className: 'hidden'
+      className: 'screen-reader-only-focusable'
 
       TRANSLATE
         id: 'accessibility.heading'

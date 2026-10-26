@@ -293,7 +293,7 @@ window.Slidergram = ReactiveComponent
 
 
       H2
-        className: 'hidden'
+        className: 'screen-reader-only'
 
         translator
           id: "engage.opinion_spectrum_explanation"

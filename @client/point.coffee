@@ -89,6 +89,7 @@ window.Point = ReactiveComponent
       DIV
         role: 'button'
         tabIndex: 0
+        'aria-describedby': "point-aria-interaction-#{point.id}"
         onBlur: (e) => @local.has_focus = false; save(@local)
         onFocus: (e) => @local.has_focus = true; save(@local) 
         onClick: @selectPoint      
@@ -139,7 +140,7 @@ window.Point = ReactiveComponent
 
             DIV 
               id: "point-aria-interaction-#{point.id}"
-              className: 'hidden'
+              hidden: true # read as the description of the point's button, not as part of its name
 
               translator
                 id: "engage.point_explanation"

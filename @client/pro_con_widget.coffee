@@ -350,7 +350,7 @@ window.Reasons = ReactiveComponent
           overflowX: if !show_all_points then 'auto' 
 
         H2
-          className: 'hidden'
+          className: 'screen-reader-only'
           id: "reasons-heading-#{proposal.id}"
           translator
             id: "engage.reasons_section_explanation"
@@ -628,7 +628,7 @@ window.DecisionBoard = ReactiveComponent
 
 
       H3 
-        className: 'hidden'
+        className: 'screen-reader-only'
         style: 
           display: if !TABLET_SIZE() && mode == 'results' then 'none'
 
@@ -1151,7 +1151,7 @@ window.PointsList = ReactiveComponent
           if @props.style?.visibility != 'hidden'
             A
               key: 'skip to'
-              className: 'hidden'
+              className: 'screen-reader-only-focusable'
               href: "##{@props.valence}_on_decision_board-#{proposal.id}"
               'data-nojax': true
               onClick: (e) => 
@@ -1160,7 +1160,7 @@ window.PointsList = ReactiveComponent
                 document.querySelector("[name='#{@props.valence}_on_decision_board-#{proposal.id}']").focus()
 
               "Skip to Your points."
-          A key: 'anchor', name: "#{@props.valence}_by_community-#{proposal.id}"
+          A key: 'anchor', name: "#{@props.valence}_by_community-#{proposal.id}", tabIndex: -1
         ]
 
       children
@@ -1178,7 +1178,7 @@ window.PointsList = ReactiveComponent
         position: 'relative'
         zIndex: if @columnStandsOut() then 6 else 1        
         float: if @props.valence == 'pros' then 'right' else 'left'    
-      A name: "#{@props.valence}_on_decision_board-#{proposal.id}"
+      A name: "#{@props.valence}_on_decision_board-#{proposal.id}", tabIndex: -1
       children
 
   drawAddNewPoint: -> 
@@ -1232,7 +1232,7 @@ window.PointsList = ReactiveComponent
             noun = capitalize noun   
 
             A
-              className: 'hidden'
+              className: 'screen-reader-only-focusable'
               href: "##{@props.valence}_by_community-#{proposal.id}"
               'data-nojax': true
               onClick: (e) => 

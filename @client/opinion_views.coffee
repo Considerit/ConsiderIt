@@ -548,7 +548,7 @@ DateFilters = ->
 
     DIV
       id: 'date-filter-label'
-      className: 'sr-only'
+      className: 'screen-reader-only'
       translator('opinion_views.date_filter_label', 'Date filter options')
 
     ToggleButtons date_options, date_toggle_state
@@ -580,7 +580,7 @@ DateFilters = ->
               e.preventDefault()
           DIV
             id: 'date-from-help'
-            className: 'sr-only'
+            className: 'screen-reader-only'
             translator('opinion_views.date_from_help', 'Select the earliest date for filtering opinions')
 
         SPAN 
@@ -608,7 +608,7 @@ DateFilters = ->
               e.preventDefault()
           DIV
             id: 'date-to-help'
-            className: 'sr-only'
+            className: 'screen-reader-only'
             translator('opinion_views.date_to_help', 'Select the latest date for filtering opinions')
 
 
@@ -880,7 +880,7 @@ OpinionViews = ReactiveComponent
 
       DIV
         id: "opinion-views-heading-#{@props.ui_key}"
-        className: 'sr-only'
+        className: 'screen-reader-only'
         translator('opinion_views.heading', 'Opinion filtering and viewing options')
 
       DIV 
@@ -1395,7 +1395,7 @@ InteractiveOpinionViews = ReactiveComponent
                           
                           DIV
                             id: "#{id}-description"
-                            className: 'sr-only'
+                            className: 'screen-reader-only'
                             "#{if is_grouped then 'Color coding option' else 'Filter option'} for #{attribute.name}"
 
             BUTTON

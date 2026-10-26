@@ -306,7 +306,7 @@ window.Histogram = ReactiveComponent
       DIV 
         key: 'accessibility-histo-label'
         id: "histo-label-#{proposal.id}"
-        className: 'hidden'
+        hidden: true # only read via the canvas's aria-labelledby / aria-describedby
         
         translator 
           id: "engage.histogram.explanation"
@@ -316,7 +316,7 @@ window.Histogram = ReactiveComponent
       DIV 
         key: 'accessibility-histo-description'
         id: "histo-description-#{proposal.id}"
-        className: 'hidden'
+        hidden: true # only read via the canvas's aria-labelledby / aria-describedby
 
         translator 
           id: "engage.histogram.explanation_extended"

@@ -4,32 +4,31 @@ require './shared'
 # Provides a reactive component for making announcements to screen readers
 
 styles += """
-  .sr-only {
+  /* .screen-reader-only: visually hidden, but still read by screen readers.
+     .screen-reader-only-focusable: same, but shown while it (or something inside
+     it) has keyboard focus, e.g. skip links. */
+  .screen-reader-only,
+  .screen-reader-only-focusable:not(:focus):not(:focus-within) {
     position: absolute;
     width: 1px;
     height: 1px;
     padding: 0;
     margin: -1px;
     overflow: hidden;
-    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
     white-space: nowrap;
     border: 0;
   }
-  
-  #sr-announcements-polite,
-  #sr-announcements-assertive {
-    position: absolute;
-    left: -10000px;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-  }
-  
-  /* Ensure screen reader announcements don't interfere with layout */
-  .screen-reader-announcements * {
-    position: static !important;
-    width: auto !important;
-    height: auto !important;
+
+  .screen-reader-only-focusable:focus,
+  .screen-reader-only-focusable:focus-within {
+    position: relative;
+    z-index: 10;
+    display: inline-block;
+    padding: 6px 10px;
+    background-color: var(--bg_light);
+    color: var(--text_dark);
+    outline: 2px solid var(--focus_color);
   }
 """
 
@@ -120,30 +119,31 @@ window.ScreenReaderAnnouncement = ReactiveComponent
     DIV
       className: 'screen-reader-announcements'
       
+      # The live regions are always rendered: screen readers often miss
+      # announcements in a region that is inserted along with its content.
+
       # Polite announcements region
-      if polite_announcements.length > 0
-        DIV
-          id: 'sr-announcements-polite'
-          className: 'sr-only'
-          'aria-live': 'polite'
-          'aria-atomic': 'true'
-          role: 'status'
-          
-          for announcement in polite_announcements
-            SPAN
-              key: announcement.id
-              dangerouslySetInnerHTML: {__html: announcement.message}
+      DIV
+        id: 'sr-announcements-polite'
+        className: 'screen-reader-only'
+        'aria-live': 'polite'
+        'aria-atomic': 'true'
+        role: 'status'
+        
+        for announcement in polite_announcements
+          SPAN
+            key: announcement.id
+            dangerouslySetInnerHTML: {__html: announcement.message}
       
-      # Assertive announcements region  
-      if assertive_announcements.length > 0
-        DIV
-          id: 'sr-announcements-assertive'
-          className: 'sr-only'
-          'aria-live': 'assertive'
-          'aria-atomic': 'true'
-          role: 'alert'
-          
-          for announcement in assertive_announcements
-            SPAN
-              key: announcement.id
-              dangerouslySetInnerHTML: {__html: announcement.message}
+      # Assertive announcements region
+      DIV
+        id: 'sr-announcements-assertive'
+        className: 'screen-reader-only'
+        'aria-live': 'assertive'
+        'aria-atomic': 'true'
+        role: 'alert'
+        
+        for announcement in assertive_announcements
+          SPAN
+            key: announcement.id
+            dangerouslySetInnerHTML: {__html: announcement.message}

@@ -1096,24 +1096,6 @@ input[type="checkbox"].bigger, input[type="radio"].bigger {
   font-size: 24px;
 }
 
-.hidden {
-  position:absolute;
-  left:-10000px;
-  top:auto;
-  width:1px;
-  height:1px;
-  overflow:hidden;}
-
-a.skip:active, 
-a.skip:focus, 
-a.skip:hover {
-    position: fixed;
-    left: 0; 
-    top: 0;
-    width: auto; 
-    height: auto; 
-    overflow: visible; 
-}
 
 
 .content {

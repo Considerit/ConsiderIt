@@ -294,7 +294,6 @@ window.DefaultFooter = ReactiveComponent
               DIV
                 className: 'google-translate-candidate-container'
 
-            console.log("YOYOYOYO")
             HighContrastToggle()
 
 

@@ -26,11 +26,46 @@ module ConsiderIt
   class Application < Rails::Application
 
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 6.1
+    config.load_defaults 7.0
 
     config.action_dispatch.cookies_same_site_protection = nil # SAML IdPs POST cross-site to /saml/acs, and acs reads session[:sso_idp]. With an explicit Lax cookie the browser won't send the session on that POST, so SAML login can break.
 
     config.active_record.has_many_inversing = false
+
+    config.active_support.cache_format_version = 7.0
+
+    Rails.application.config.action_dispatch.cookies_serializer = :hybrid
+
+    # See https://guides.rubyonrails.org/configuring.html#config-active-support-disable-to-s-conversion for more information.
+    config.active_support.disable_to_s_conversion = true
+
+    # See upgrading guide for more information on how to build a rotator.
+    # https://guides.rubyonrails.org/v7.0/upgrading_ruby_on_rails.html
+    Rails.application.config.active_support.key_generator_hash_digest_class = OpenSSL::Digest::SHA256
+
+    # Rotator so signed/encrypted cookies written with the old SHA1 key generator are still read
+    # (from the Rails 7.0 upgrade guide). Remove once old cookies have expired.
+    Rails.application.config.after_initialize do
+      Rails.application.config.action_dispatch.cookies_rotations.tap do |cookies|
+        authenticated_encrypted_cookie_salt = Rails.application.config.action_dispatch.authenticated_encrypted_cookie_salt
+        signed_cookie_salt = Rails.application.config.action_dispatch.signed_cookie_salt
+
+        secret_key_base = Rails.application.secret_key_base
+
+        key_generator = ActiveSupport::KeyGenerator.new(
+          secret_key_base, iterations: 1000, hash_digest_class: OpenSSL::Digest::SHA1
+        )
+        key_len = ActiveSupport::MessageEncryptor.key_len
+
+        old_encrypted_secret = key_generator.generate_key(authenticated_encrypted_cookie_salt, key_len)
+        old_signed_secret = key_generator.generate_key(signed_cookie_salt)
+
+        cookies.rotate :encrypted, old_encrypted_secret
+        cookies.rotate :signed, old_signed_secret
+      end
+    end
+
+
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers

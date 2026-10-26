@@ -262,7 +262,7 @@ window.Homepage = ReactiveComponent
                   tab_style: 
                     backgroundColor: 'transparent'
                     margin: 4
-                    padding: "8px 20px"
+                    paddingBottom: 4
                     color: "var(--text_gray)"
 
 

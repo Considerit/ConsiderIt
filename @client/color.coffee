@@ -5,7 +5,7 @@
 window.focus_color = '#456ae4'
 window.logo_red = "#B03A44"
 window.considerit_red = "#df6264"
-window.selected_color = '#DA4570' #pinkish red
+window.selected_color = '#BF345B' #pinkish red; darkened from #DA4570 to reach 4.5:1 against white
 window.upgrade_color = '#518eff'
 window.attention_orange = "#fb7e26"
 window.failure_color = "#F94747"
@@ -278,20 +278,14 @@ window.generateColorVariableDefs = ->
     --brd_lightest_gray: #eeeeee;
     --brd_light: #ffffff;
 
-    /* Enhanced visibility colors for high contrast */
+    /* Enhanced visibility colors for high contrast. Each passes 4.5:1
+       against white, both as text and as a background for white text. */
     --focus_color: #0000ff;
+    --focus_color_rgb: 0, 0, 255;
     --selected_color: #880000;
-    --success_color: #008000;
-    --failure_color: #ff0000;
-    --caution_color: #ff8000;
-
-
-    --focus_color: #{focus_color};
-    --selected_color: #97002c;
-    --failure_color: #97002c;
     --success_color: #437C2D;
+    --failure_color: #97002c;
     --caution_color: #8A6700;
-
   }
 
   /* High Contrast Dark Theme */
@@ -328,19 +322,16 @@ window.generateColorVariableDefs = ->
     --brd_lightest_gray: #111111;
     --brd_light: #000000;
 
-    /* Enhanced visibility colors for high contrast dark */
-    --focus_color: #00ffff;
-    --selected_color: #ff00ff;
-    --success_color: #00ff00;
-    --failure_color: #ff00ff;
-    --caution_color: #ffff00;
-
-    --focus_color: #{focus_color};
-    --selected_color: #97002c;
-    --failure_color: #97002c;
-    --success_color: #437C2D;
-    --caution_color: #8A6700;
-
+    /* Enhanced visibility colors for high contrast dark. Some components hardcode
+       white text on these colors while others use --text_light (black here), so
+       each is tuned to a luminance of ~0.18, which passes 4.5:1 against both
+       black and white. */
+    --focus_color: #3f6bef;
+    --focus_color_rgb: 63, 107, 239;
+    --selected_color: #d81f9a;
+    --success_color: #228722;
+    --failure_color: #e4195d;
+    --caution_color: #9d6c08;
   }
 
   /* User-agent style integration */
@@ -427,9 +418,9 @@ window.initializeTheme = ->
   
   # Check for system preference if no saved theme
   if !saved_theme && window.matchMedia
-    if window.matchMedia('(prefers-color-scheme: dark)').matches
-      saved_theme = 'dark'
-    else if window.matchMedia('(prefers-contrast: high)').matches
+    # if window.matchMedia('(prefers-color-scheme: dark)').matches
+    #   saved_theme = 'dark'
+    if window.matchMedia('(prefers-contrast: high)').matches
       saved_theme = 'high-contrast'
   
   theme = saved_theme || 'light'
@@ -441,10 +432,10 @@ document.addEventListener 'DOMContentLoaded', ->
 
 # Listen for system theme changes
 if window.matchMedia
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener 'change', (e) ->
-    # Only auto-switch if user hasn't manually set a theme
-    if !localStorage.getItem('considerit-theme')
-      setTheme(if e.matches then 'dark' else 'light')
+  # window.matchMedia('(prefers-color-scheme: dark)').addEventListener 'change', (e) ->
+  #   # Only auto-switch if user hasn't manually set a theme
+  #   if !localStorage.getItem('considerit-theme')
+  #     setTheme(if e.matches then 'dark' else 'light')
   
   window.matchMedia('(prefers-contrast: high)').addEventListener 'change', (e) ->
     # Only auto-switch if user hasn't manually set a theme

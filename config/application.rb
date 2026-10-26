@@ -1,15 +1,17 @@
 require_relative 'boot'
+
 require "rails"
 # Pick the frameworks you want:
 require "active_model/railtie"
+require "active_job/railtie"
 require "active_record/railtie"
+# require "active_storage/engine"
 require "action_controller/railtie"
 require "action_mailer/railtie"
 # require "action_mailbox/engine"
 # require "action_text/engine"
 require "action_view/railtie"
 #require "action_cable/engine"
-# require "sprockets/railtie"
 #require "rails/test_unit/railtie"
 
 
@@ -24,9 +26,12 @@ module ConsiderIt
   class Application < Rails::Application
 
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 5.0
-    config.autoloader = :zeitwerk
-    
+    config.load_defaults 6.1
+
+    config.action_dispatch.cookies_same_site_protection = nil # SAML IdPs POST cross-site to /saml/acs, and acs reads session[:sso_idp]. With an explicit Lax cookie the browser won't send the session on that POST, so SAML login can break.
+
+    config.active_record.has_many_inversing = false
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded after loading
@@ -35,6 +40,9 @@ module ConsiderIt
     # Configure the default encoding used in templates for Ruby 1.9.
     config.encoding = "utf-8"
     
+    # Don't generate system test files.
+    config.generators.system_tests = nil
+
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
 
@@ -75,4 +83,6 @@ module ConsiderIt
       :url => "/system/:attachment/:id/:style/:filename"   
     })    
   end
+
+
 end

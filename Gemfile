@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 #############
 # CORE
-gem 'rails', '~> 6.1'
+gem 'rails', '~> 7.0.0'
 gem 'activerecord-session_store'  # Because CookieStore has race conditions w/ concurrent ajax requests
 gem 'csv'
 gem 'json', '~> 2.19' # Rails < 8 passes quirks_mode, which json 3 rejects; remove when upgraded to Rails 8

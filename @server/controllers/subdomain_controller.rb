@@ -183,7 +183,7 @@ class SubdomainController < ApplicationController
         if !Rails.env.production?
           redirect_to URI.parse("/?u=#{current_user.email}&t=#{token}&domain=#{new_subdomain.name}").to_s
         else
-          redirect_to URI.parse("#{request.protocol}#{new_subdomain.url}?u=#{current_user.email}&t=#{token}").to_s
+          redirect_to URI.parse("#{request.protocol}#{new_subdomain.url}?u=#{current_user.email}&t=#{token}").to_s, allow_other_host: true
         end
       end
     end
@@ -424,7 +424,7 @@ class SubdomainController < ApplicationController
       return render :json => [:error => "That subdomain is not available"]
     end
     if request.url.index(old_name)
-      redirect_to request.url.sub old_name, name
+      redirect_to request.url.sub(old_name, name), allow_other_host: true
     end
   end
 

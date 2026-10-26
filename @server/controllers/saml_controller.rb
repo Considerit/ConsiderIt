@@ -28,9 +28,9 @@ class SamlController < ApplicationController
       # link for ADSF for DTU. Some versions of ADFS allow SSO initiated login and some do not. 
       # Self generating the link for IdP initiated login here to sidestep issue
       dtu_adsf = "https://sts.ait.dtu.dk/adfs/ls/idpinitiatedsignon.aspx?loginToRp=https://saml-auth.#{APP_CONFIG[:domain]}/saml/dtu"
-      redirect_to(dtu_adsf)
+      redirect_to(dtu_adsf, allow_other_host: true)
     else
-      redirect_to(req.create(settings))
+      redirect_to(req.create(settings), allow_other_host: true)
     end
   end
 
@@ -125,7 +125,7 @@ class SamlController < ApplicationController
       token = user.auth_token Subdomain.find_by_name(session[:redirect_subdomain])
       uri = URI(session[:redirect_back_to])
       uri.query = {:u => user.email, :t => token}.to_query + '&' + uri.query.to_s
-      redirect_to uri.to_s
+      redirect_to uri.to_s, allow_other_host: true
     else
       log("Response Invalid from IdP. Errors: #{response.errors}")
       raise "Response Invalid from IdP. Errors: #{response.errors}. "

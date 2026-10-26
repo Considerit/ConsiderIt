@@ -70,7 +70,7 @@ class ApplicationController < ActionController::Base
     else 
       redirect = CGI::escape("#{request.protocol}#{request.host_with_port}#{request.fullpath}")
     end 
-    redirect_to "#{request.protocol}saml-auth.#{APP_CONFIG[:domain]}/saml/sso/#{sso_domain}/#{current_subdomain.name}?redirect=#{redirect}"
+    redirect_to "#{request.protocol}saml-auth.#{APP_CONFIG[:domain]}/saml/sso/#{sso_domain}/#{current_subdomain.name}?redirect=#{redirect}", allow_other_host: true
   end
 
 protected
@@ -141,7 +141,7 @@ protected
           session[:default_subdomain] = candidate_subdomain.name
           redirect_to "#{request.protocol}#{request.host_with_port}/create_forum?forum=#{subdomain_sought}"
         else 
-          redirect_to "#{request.protocol}#{regional_id ? "#{regional_id}." : ""  }#{request.domain(1)}/create_forum?forum=#{subdomain_sought}"
+          redirect_to "#{request.protocol}#{regional_id ? "#{regional_id}." : ""  }#{request.domain(1)}/create_forum?forum=#{subdomain_sought}", allow_other_host: true
         end
         
       else

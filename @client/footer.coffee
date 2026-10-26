@@ -1,5 +1,6 @@
 require './shared'
 require './customizations'
+require './high_contrast_toggle'
 
 window.Footer = ReactiveComponent
   displayName: 'Footer'
@@ -58,6 +59,14 @@ styles += """
     padding: 12px 20px;
   }
 
+  .Footer .footer-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px 32px;
+  }
+
   @media #{NOT_PHONE_MEDIA} {
     .footer_wrapper {
       padding: 65px 0 15px 0;
@@ -89,6 +98,9 @@ styles += """
     .Footer .more-info {
       flex-direction: column;
     }
+    .Footer .footer-tools {
+      flex-direction: column;
+    }
     .bug_reports {
       display: none;
     }
@@ -110,6 +122,13 @@ window.DefaultFooter = ReactiveComponent
       '|'
 
     footer_bonus = customization('footer_bonus')
+
+    # GoogleTranslate positions itself over the first candidate container on the page,
+    # so skip ours when the header provides one; otherwise it leaves an empty gap.
+    translate_style = customization('google_translate_style')
+    header_hosts_translator = translate_style && !translate_style.prominent && is_a_dialogue_page()
+    show_translate_container = !customization('disable_google_translate') &&
+                               (!translate_style || (bus_fetch('location').url != '/' && !header_hosts_translator))
 
     DIV 
       className: "Footer"
@@ -267,9 +286,16 @@ window.DefaultFooter = ReactiveComponent
               " "
               get_region_name()
 
-          if !customization('google_translate_style') || bus_fetch('location').url != '/'
-            DIV 
-              className: 'google-translate-candidate-container'
+          DIV
+            className: 'footer-tools'
+            key: 'footer-tools'
+
+            if show_translate_container
+              DIV
+                className: 'google-translate-candidate-container'
+
+            console.log("YOYOYOYO")
+            HighContrastToggle()
 
 
 

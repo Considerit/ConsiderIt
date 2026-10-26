@@ -104,21 +104,36 @@ window.CharacterCountTextInput = ReactiveComponent
       if prop_to_strip of props
         delete props[prop_to_strip]
 
-    DIV 
-      style: 
-        position: 'relative' 
+    characters_left = @props.maxLength - @local.count
+    counter_text = translator
+      id: "engage.character_counter"
+      characters_left: characters_left
+      "{characters_left, plural, one {# character} other {# characters}} left"
 
-      SPAN 
+    # The textarea's description includes the count, read when it gets focus
+    counter_id = "character-count-#{@local.key.replace(/\//g, '-')}"
+    props['aria-describedby'] = _.compact([props['aria-describedby'], counter_id]).join(' ')
+
+    DIV
+      style:
+        position: 'relative'
+
+      SPAN
         'aria-hidden': true
         style: count_style
-        @props.maxLength - @local.count
+        characters_left
 
-      SPAN 
-        className: 'hidden'
-        translator 
-          id: "engage.character_counter"
-          characters_left: @props.maxLength - @local.count
-          "{characters_left, plural, one {# character} other {# characters}} left"
+      SPAN
+        id: counter_id
+        hidden: true
+        counter_text
+
+      # Announce the count while typing, but only when nearing the limit
+      SPAN
+        className: 'screen-reader-only'
+        'aria-live': 'polite'
+        if characters_left <= 20
+          counter_text
 
       TEXTAREA props
 

@@ -26,13 +26,16 @@ module ConsiderIt
   class Application < Rails::Application
 
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.0
+    config.load_defaults 7.1
 
     config.action_dispatch.cookies_same_site_protection = nil # SAML IdPs POST cross-site to /saml/acs, and acs reads session[:sso_idp]. With an explicit Lax cookie the browser won't send the session on that POST, so SAML login can break.
 
     config.active_record.has_many_inversing = false
 
-    config.active_support.cache_format_version = 7.0
+    config.active_support.cache_format_version = 7.1
+
+    config.add_autoload_paths_to_load_path = false
+
 
     Rails.application.config.action_dispatch.cookies_serializer = :hybrid
 
@@ -104,9 +107,9 @@ module ConsiderIt
     config.paths["app/mailers"] << "@email/mailers"
     config.paths["app/helpers"] << "@email/email_templates/helpers"
 
-    config.action_mailer.preview_path = "#{Rails.root}/@email/mailers/previews"
+    config.action_mailer.preview_paths << "#{Rails.root}/@email/mailers/previews"
 
-    config.eager_load_paths << config.action_mailer.preview_path
+    config.eager_load_paths += config.action_mailer.preview_paths
 
     ########################################
 

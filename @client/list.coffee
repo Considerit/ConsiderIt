@@ -3,7 +3,7 @@ require './edit_list'
 require './item'
 
 
-window.PROPOSAL_AUTHOR_AVATAR_SIZE = 40
+PROPOSAL_AUTHOR_AVATAR_SIZE = 40
 PROPOSAL_AVATAR_GUTTER = 18
 PROPOSAL_AUTHOR_AVATAR_SIZE_SMALL = 20
 PROPOSAL_AVATAR_GUTTER_SMALL = 12
@@ -110,11 +110,11 @@ responsive_style_registry.unshift (responsive_vars) ->
 
 window.styles += """
   .List, .NewList, .draggable-wrapper {
-    background-color: white;
+    background-color: var(--bg_item);
     border: none;
     border-radius: 16px;
-    box-shadow: -1px 1px 2px rgb(0 0 0 / 15%);
-    border-top: 1px solid #f3f3f3;
+    box-shadow: -1px 1px 2px var(--shadow_dark_20);
+    border-top: 1px solid var(--brd_lightest_gray);
   }
 
 
@@ -129,21 +129,6 @@ window.styles += """
     box-shadow: none;
   }
 
-  # .embedded-demo .List {
-  #   padding: 0;
-  # }
-
-
-  .LIST_item_connector {
-    display: none;
-    /* position: absolute;
-    height: calc(100% - var(--PROPOSAL_AUTHOR_AVATAR_SIZE) - 28px);
-    width: 1px;
-    background-color: #ccc;
-    left: calc(50% - var(--HOMEPAGE_WIDTH) / 2 + var(--PROPOSAL_AUTHOR_AVATAR_SIZE)/2);
-    top: 28px;  /* half the line height of the list header */
-    z-index: 0; */ 
-  }
 """
 
 window.list_link = (list_key) ->
@@ -197,10 +182,6 @@ window.List = ReactiveComponent
 
       A name: list_link(list_key)
 
-      DIV
-        ref: 'LIST_item_connector'
-        className: 'LIST_item_connector'
-
       ListHeader 
         list: list
         combines_these_lists: @props.combines_these_lists 
@@ -224,9 +205,11 @@ window.List = ReactiveComponent
           expansion_key: @props.expansion_key
 
 
+
       if customization('footer', list_key) && !is_collapsed
         customization('footer', list_key)()
 
+      CollapseList list_key          
 
 
 styles += """
@@ -238,8 +221,8 @@ styles += """
     z-index: 10;    
   }
 
-  .show-all-proposals button {
-    background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 60%, rgba(255,255,255,0) 100%);
+  button.show-all-proposals_button {
+    background: linear-gradient(0deg, var(--bg_light_opaque) 0%, var(--bg_light_opaque) 60%, var(--bg_item_transparent) 100%);
     width: 100%;
     cursor: pointer;
     padding: 32px 0 22px 0;
@@ -247,7 +230,7 @@ styles += """
     text-align: center;
     border: none;
     font-size: 22px;
-    color: #446ae3;
+    color: var(--focus_color);
     padding-top: 96px;
     margin-top: 12px;
     margin-bottom: 8px;
@@ -289,6 +272,7 @@ ListItems = ReactiveComponent
           listStyle: 'none'
 
         BUTTON
+          className: "show-all-proposals_button"
           onClick: => 
             list_state = bus_fetch list_key
             list_state.show_all_proposals = true
@@ -304,7 +288,7 @@ ListItems = ReactiveComponent
             className: 'monospaced'
             style: 
               paddingLeft: "var(--PROPOSAL_AUTHOR_AVATAR_GUTTER)"
-              color: '#444'
+              color: "var(--text_gray)"
               fontWeight: 400
             "+#{proposals.length - @props.show_first_num_items}"
 
@@ -533,7 +517,7 @@ styles += """
     }
 
     .ListHeader-wrapper, button.NewList {
-      background-color: #eee;
+      background-color: var(--bg_lightest_gray);
     }
 
   }
@@ -601,7 +585,6 @@ window.ListHeader = ReactiveComponent
       DIV 
         className: 'ListHeader-wrapper'
 
-        CollapseList list_key          
 
         # DIV 
         #   className: 'avatar-spacing'
@@ -639,7 +622,7 @@ window.ListHeader = ReactiveComponent
 
 styles += """
   .NewList, .EditingNewList {
-    border: 3px dashed #{focus_color()}aa;
+    border: 3px dashed var(--focus_color_slightly_transluscent);
     transition: border 500ms;    
     box-shadow: none;
   }
@@ -655,7 +638,7 @@ styles += """
 
   .NewList:hover, .EditingNewList:hover,
   .NewList:focus-within, .EditingNewList:focus-within {
-    border-color: #{focus_blue};
+    border-color: var(--focus_color);
   }
 
   @media #{NOT_LAPTOP_MEDIA} {
@@ -676,16 +659,16 @@ styles += """
 
   .NewList .LIST-title span {
     position: relative;
-    color: #{focus_blue};
+    color: var(--focus_color);
     border-bottom-width: 2px;
-    border-bottom-color: #{focus_blue}aa;
+    border-bottom-color: var(--focus_color_slightly_transluscent);
     border-bottom-style: solid;
     transition: border-bottom 500ms;
   }
 
   .NewList:hover .LIST-title span,
   .NewList:focus-within .LIST-title span {
-    border-bottom-color: #{focus_blue};
+    border-bottom-color: var(--focus_color);
   }
 
   .NewList .LIST-description {
@@ -737,12 +720,12 @@ window.NewList = ReactiveComponent
 
             SPAN null, 
 
-              translator "engage.create_new_focus", "Create a New Focus"
+              translator "engage.create_new_focus", "Create a New Prompt"
             
           DIV 
             className: 'LIST-description'
 
-            translator "engage.focus_description", "Focus your community on evaluating specific proposals. Or pose an open-ended question to focus your community on generating ideas."
+            translator "engage.focus_description", "Prompt your community to evaluate specific proposals. Or pose an open-ended question to focus your community on generating ideas."
 
 
 
@@ -788,7 +771,6 @@ styles += """
   .LIST-title-wrapper {
     position: relative;
     text-align: center;
-    outline: none;
   }
 
   @media #{TABLET_MEDIA} {
@@ -827,6 +809,7 @@ EditableTitle = ReactiveComponent
 
       H1 
         className: 'LIST-title'
+        tabIndex: -1 # tab navigation will automatically set focus to the first list title
         style: # ugly...we only want to show the expand/collapse icon
           fontSize: if title.replace(/^\s+|\s+$/g, '').length == 0 then 0
 
@@ -843,12 +826,9 @@ COLLAPSE_ICON_SIZE = 40
 styles += """
 
   .CollapseList {
-    border: none;
-    background-color: transparent;
     padding: 0; 
     margin: 0; 
     line-height: 0;
-    cursor: pointer;
   }
 
   .embedded-demo .CollapseList {
@@ -967,7 +947,7 @@ CollapseList = (list_key) ->
 
 
   BUTTON 
-    className: "CollapseList #{if is_collapsed then 'collapsed' else 'expanded'}"
+    className: "icon CollapseList #{if is_collapsed then 'collapsed' else 'expanded'}"
     'aria-label': translator('accessibility-expand-or-collapse-list', 'Expand or collapse list.')
     'aria-pressed': !is_collapsed
     # 'data-tooltip': translator('accessibility-expand-or-collapse-list', 'Expand or collapse list.')
@@ -976,8 +956,6 @@ CollapseList = (list_key) ->
       toggle_list(e.target)
       document.activeElement.blur()
       e.stopPropagation()
-
-    'aria-hidden': true
 
     if !TABLET_SIZE()
       double_up_icon(COLLAPSE_ICON_SIZE)
@@ -993,7 +971,7 @@ styles += """
   .LIST-description {
     font-size: 16px;
     font-weight: 400;
-    color: black;
+    color: var(--text_dark);
     margin-top: 14px;
     margin-bottom: 18px;
     padding: 0px var(--AVATAR_SIZE_AND_GUTTER);
@@ -1094,7 +1072,8 @@ styles += """
 
   .opinion-view-container {
     flex-shrink: 0;  
-    width: var(--ITEM_OPINION_WIDTH);  
+    width: var(--ITEM_OPINION_WIDTH); 
+    margin-right: var(--LIST_PADDING_RIGHT);
   }
 
   @media #{NOT_LAPTOP_MEDIA} {
@@ -1155,17 +1134,17 @@ window.ListActions = (props) ->
         className: 'opinion-view-container'
 
         OpinionViews
-          ui_key: "opinion-views-#{list_key}"
+          ui_key: "opinion-views-#{slugify(list_key)}"
           style: 
             marginBottom: 20
 
 
-      DIV 
-        className: "proposal-score-spacing"
+      # DIV 
+      #   className: "proposal-score-spacing"
 
     DIV null,
       OpinionViewInteractionWrapper
-        ui_key: "opinion-views-#{list_key}"
+        ui_key: "opinion-views-#{slugify(list_key)}"
         more_views_positioning: if TABLET_SIZE() then 'centered' else 'right'      
         width: ITEM_OPINION_WIDTH() + AVATAR_SIZE_AND_GUTTER() + ITEM_TEXT_WIDTH()
 
@@ -1210,7 +1189,7 @@ window.get_all_lists_not_configured_for_a_page = ->
 
     for lst in lists
       if lst not of all_configured_lists
-        unconfigured_lists[k] = 1
+        unconfigured_lists[lst] = 1
 
     Object.keys(unconfigured_lists)
 

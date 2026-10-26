@@ -4,8 +4,7 @@ require './third_party'
 
 window.styles += """
   button.toggle_auth {
-    color: #{selected_color};
-    font-weight: 700;
+    color: var(--selected_color);
   }
 """
 
@@ -31,7 +30,6 @@ toggle_modes = ->
 
       SPAN 
         style: 
-          # color: 'white'
           fontWeight: 300
           fontSize: 16
 
@@ -71,7 +69,7 @@ window.Login = ReactiveComponent
     @Draw 
       task: translator "auth.login.heading", 'Login to Participate'
       goal: if auth.goal then translator "auth.login_goal.#{auth.goal.toLowerCase()}", auth.goal
-      disallow_cancel: disallow_cancel()
+      disallow_cancel: disallow_cancel() || @props.disallow_cancel
       render_below_title: toggle_modes
       on_submit: on_submit
       submit_button: translator "auth.log_in", 'Log in'
@@ -88,11 +86,13 @@ window.Login = ReactiveComponent
               type: 'email'
               label: i18n.email_label
               on_submit: on_submit
+              autoComplete: 'email'
 
             @RenderInput
               name: 'password' 
               type: 'password'
               label: i18n.password_label
+              autoComplete: 'current-password'
               on_submit: on_submit
 
             @resetPasswordLink()
@@ -105,7 +105,7 @@ window.Login = ReactiveComponent
                 DIV 
                   style:
                     fontSize: 13
-                    color: auth_text_gray
+                    color: "var(--text_gray)"
                     padding: '16px 0'
                   dangerouslySetInnerHTML: {__html: customization('login_footer')}
 
@@ -133,17 +133,12 @@ window.Login = ReactiveComponent
         width: '100%'
 
       BUTTON
+        className: 'like_link'
         style: 
-          textDecoration: 'underline'
-          color: '#333'
-          backgroundColor: 'transparent'
-          border: 'none'
           fontSize: 12
-          padding: 0
           position: 'relative'
           top: -8
-          fontWeight: 700
-
+          
         onClick: reset
 
         translator('auth.forgot_password.link', 'Help! I forgot my password') 
@@ -185,6 +180,7 @@ window.CreateAccount = ReactiveComponent
           name: 'name'
           label: i18n.name_label
           on_submit: on_submit
+          autoComplete: 'name'
 
         @RenderInput
           name: 'email'
@@ -192,12 +188,14 @@ window.CreateAccount = ReactiveComponent
           label: i18n.email_label
           disabled: if @props.by_invitation then true
           on_submit: on_submit
+          autoComplete: 'email'
 
         @RenderInput
           name: 'password' 
           type: 'password'
           label: i18n.password_label
           on_submit: on_submit
+          autoComplete: 'new-password'
 
 
         if avatar_field
@@ -213,7 +211,6 @@ window.CreateAccount = ReactiveComponent
               SPAN 
                 style: 
                   fontSize: 12
-                  color: "#666"
                   textTransform: 'lowercase'
                   marginLeft: 4
                   display: 'inline-block'
@@ -228,7 +225,7 @@ window.CreateAccount = ReactiveComponent
               translator 'auth.create-by-invitation.heading', 'Complete registration'
             else 
               translator 'auth.create.heading', 'Create your account'
-      disallow_cancel: disallow_cancel()
+      disallow_cancel: disallow_cancel() || @props.disallow_cancel
       goal: if auth.goal then translator "auth.login_goal.#{auth.goal.toLowerCase()}", auth.goal
       on_submit: on_submit
       render_below_title: if !@props.by_invitation then toggle_modes
@@ -250,7 +247,7 @@ window.CreateAccount = ReactiveComponent
           DIV 
             style:
               fontSize: 13
-              color: auth_text_gray
+              color: "var(--text_gray)"
               padding: '16px 0'
             dangerouslySetInnerHTML: {__html: customization('auth_footer')}
 
@@ -260,7 +257,7 @@ window.CreateAccount = ReactiveComponent
             DIV 
               style:
                 fontSize: 13
-                color: auth_text_gray
+                color: "var(--text_gray)"
                 padding: '16px 0'
               dangerouslySetInnerHTML: {__html: customization('login_footer')}
 
@@ -273,11 +270,11 @@ window.CreateAccount = ReactiveComponent
       as_html: true
       privacy_link: 
         component: "a"
-        args: "href='/docs/legal/privacy_policy' style='font-weight: 700; color: #{selected_color};' target='_blank'"
+        args: "href='/docs/legal/privacy_policy' style='font-weight: 700; color: var(--selected_color);' target='_blank'"
 
       terms_link:
         component: "a" 
-        args: "href='/docs/legal/terms_of_service' style='font-weight: 700; color: #{selected_color};' target='_blank'"
+        args: "href='/docs/legal/terms_of_service' style='font-weight: 700; color: var(--selected_color);' target='_blank'"
       br: 
         component: 'br'
       "By signing up, you agree to the Consider.it <privacy_link>Privacy Policy</privacy_link> and <terms_link>Terms of Service</terms_link>. <br>We will never sell your data to advertisers or other third-parties."
@@ -289,7 +286,7 @@ window.CreateAccount = ReactiveComponent
       style: 
         marginTop: 12
         fontSize: 13
-        color: '#444'
+        color: "var(--text_gray)"
         textAlign: 'center'
 
       dangerouslySetInnerHTML: __html: terms

@@ -96,7 +96,7 @@ window.Slider = ReactiveComponent
       handle_height: 6
       base_height: 6
       base_endpoint: 'square'
-      base_color: 'rgb(200, 200, 200)'
+      base_color: "var(--slidergram_base_color)"
       polarized: false
       draw_helpers: false
       respond_to_click: true
@@ -160,15 +160,15 @@ window.Slider = ReactiveComponent
       key: 'slider_base'
       className: 'slider_base'
       style : slider_base_style
-      onClick: @handleMouseClick
+      onClick: if props.respond_to_click then @handleMouseClick
 
 
       if props.show_val_highlighter
         DIV 
           style: 
             height: props.base_height + 4
-            backgroundColor: "rgb(81, 142, 255)"
-            boxShadow: "0 0 #{1.5 * (props.base_height + 4)}px rgb(255 255 255), 0 0 3px rgba(0,0,0,.2) inset"
+            backgroundColor: "var(--upgrade_color)"
+            boxShadow: "0 0 #{1.5 * (props.base_height + 4)}px var(--shadow_light), 0 0 3px var(--shadow_dark_25) inset"
             position: 'relative'
             top: -2
             width: "#{Math.abs(100 * slider.value * (if props.polarized then .5 else 1))}%"
@@ -188,7 +188,7 @@ window.Slider = ReactiveComponent
               top: 0
               width: 1
               height: (props.ticks.height or 5) * (if Math.abs(tick_position - slider_base_style.width / 2) < 3 then 2 else 1)
-              backgroundColor: "#aaa" 
+              backgroundColor: "var(--bg_light_gray)" 
 
       # Draw the endpoints on either side of the base
       for endpoint, idx in endpoints
@@ -217,15 +217,13 @@ window.Slider = ReactiveComponent
         d =  props.width / (props.regions.length)
 
         sty = 
-          color: '#BDBDBD'
+          color: "var(--text_light_gray)"
           fontSize: 14
 
         for region, idx in props.regions
           w = sizeWhenRendered region.abbrev, sty
           DIV 
             style: _.extend {}, sty,
-              color: '#BDBDBD'
-              fontSize: 14
               position: 'absolute'
               left: (idx + .5) * d - w.width / 2
               top: 4
@@ -297,7 +295,7 @@ window.Slider = ReactiveComponent
         position: 'relative'
         marginLeft: -handle_width / 2
         zIndex: 10
-        outline: 'none'
+        # outline: 'none'
         left: if props.polarized
                 props.width * (slider.value + 1) / 2
               else 
@@ -319,7 +317,7 @@ window.Slider = ReactiveComponent
                 left: if !support then -21
                 position: 'absolute'
                 top: 7.5
-                color: 'white'
+                color: "var(--text_light)"
                 pointerEvents: 'none'
 
               if support then ChevronRight(15) else ChevronLeft(15)
@@ -332,7 +330,7 @@ window.Slider = ReactiveComponent
                 left: if !support then -19
                 position: 'absolute'
                 top: 7.5
-                color: 'white'
+                color: "var(--text_light)"
                 pointerEvents: 'none'
 
               if support then ChevronRight(15) else ChevronLeft(15)
@@ -345,7 +343,7 @@ window.Slider = ReactiveComponent
                 left: if !support then -20
                 position: 'absolute'
                 top: 7.5
-                color: focus_color()
+                color: "var(--focus_color)"
                 pointerEvents: 'none'
 
               if support then ChevronRight(15) else ChevronLeft(15)
@@ -476,6 +474,7 @@ window.slider_handle ||= {}
 slider_handle.face = (props) -> 
 
   SVG
+    'aria-hidden': true
     height: props.handle_height
     width: props.handle_width
     viewBox: "-2 -1 104 104"
@@ -483,7 +482,7 @@ slider_handle.face = (props) ->
       pointerEvents: 'none'
       position: 'absolute'
       top: 0
-      filter: if props.has_focus then "drop-shadow(0 0 1px rgba(0,0,0,.5))"
+      filter: if props.has_focus then "drop-shadow(0 0 1px var(--shadow_dark_50))"
 
     DEFS null,
       svg.innerbevel
@@ -526,7 +525,7 @@ slider_handle.face = (props) ->
               width: bw
               height: bh
               transform: "rotate(#{ direction * (5 + 30 * Math.abs(.5 - props.value))} #{x + (if is_left then bw else 0)} #{y + bh})"
-              fill: 'white'
+              fill: "var(--bg_light)"
 
           # eyes
           for is_left in [true, false]
@@ -538,7 +537,7 @@ slider_handle.face = (props) ->
               cx: 50 + direction * ( 13 + 6 * (1 - props.value))
               cy: 39
               r: 3 #+ 1.6 * (1 - props.value)
-              fill: 'white'
+              fill: "var(--bg_light)"
 
           # mouth
           do =>
@@ -552,8 +551,8 @@ slider_handle.face = (props) ->
             [qx1, qy1] = [50, my + .5 * frowniness + 2 * frowniness * (2 * props.value - 1)]
 
             PATH
-              stroke: 'white'
-              fill: focus_color()
+              stroke: "var(--bg_light)"
+              fill: "var(--focus_color)"
               strokeWidth: 3 
               d: """
                 M #{x1} #{y1}
@@ -563,6 +562,7 @@ slider_handle.face = (props) ->
 
 slider_handle.triangley = (props) ->
   svg_props = 
+    'aria-hidden': true
     height: props.handle_height
     width: props.handle_width
     viewBox: "0 0 21 18"
@@ -571,7 +571,7 @@ slider_handle.triangley = (props) ->
       position: 'absolute'
       top: 0
       zIndex: 10
-      filter: if props.has_focus then "drop-shadow(0 0 3px rgba(0,0,0,.5))"
+      filter: if props.has_focus then "drop-shadow(0 0 3px var(--shadow_dark_50))"
 
   id = "triangley_filter-#{(Math.random() * 1000000).toFixed(0)}"
   SVG svg_props,
@@ -634,18 +634,19 @@ slider_handle.triangley = (props) ->
     G 
       stroke: "none" 
       strokeWidth: "0" 
-      fill: focus_color() 
+      fill: "var(--focus_color)" 
       fillRule: "evenodd"
 
       PATH 
         d: "M1,6 L20,6 L20,16 L1,16 L1,6 Z M10.5,0 L20,6 L1,6 L10.5,0 Z"
-        fill: focus_color()
+        fill: "var(--focus_color)"
         filter: "url(##{id})" 
 
 
 slider_handle.flat = (props) -> 
   return \
     DIV 
+      'aria-hidden': true
       style: 
         borderRadius: '50%'
         position: 'absolute'
@@ -653,11 +654,12 @@ slider_handle.flat = (props) ->
         zIndex: 10
         height: props.handle_height
         width: props.handle_width        
-        backgroundColor: focus_color()
-        boxShadow: 'inset 0 -1px 2px rgba(0,0,0,.3)'
+        backgroundColor: "var(--focus_color)"
+        boxShadow: "inset 0 -1px 2px var(--shadow_dark_25)"
 
 
   svg_props = 
+    'aria-hidden': true
     height: props.handle_height
     width: props.handle_width
     viewBox: "-2 -1 104 104"
@@ -666,7 +668,7 @@ slider_handle.flat = (props) ->
       # position: 'absolute'
       # top: 0
       zIndex: 10
-      filter: if props.has_focus then "drop-shadow(0 0 3px rgba(0,0,0,.5))"
+      filter: if props.has_focus then "drop-shadow(0 0 3px var(--shadow_dark_50))"
 
   SVG svg_props,
 

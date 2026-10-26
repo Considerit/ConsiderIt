@@ -18,7 +18,7 @@ styles += """
 }
 
 .AllYourForums .forum.odd {
-  background-color: #fcfcfc;
+  background-color: var(--bg_container);
 }
 
 
@@ -37,12 +37,14 @@ styles += """
   display: block;
   font-size: 18px;
   text-decoration: none;
+  padding: 4px 0px;
 }
 
 .AllYourForums .forum_link {
-  color: #888;
+  color: var(--text_light_gray);
   font-weight: 400;
   font-size: 15px;
+  padding: 4px 0px;
 }
 
 .AllYourForums .host-row {
@@ -74,6 +76,7 @@ window.AllYourForums = ReactiveComponent
 
               if forum.logo 
                 IMG 
+                  alt: 'Logo for this forum'
                   src: forum.logo
                   style: 
                     maxWidth: 120
@@ -81,7 +84,7 @@ window.AllYourForums = ReactiveComponent
               else 
                 DIV 
                   style: 
-                    border: '1px dashed #ccc'
+                    border: "1px dashed var(--brd_light_gray)"
                     borderRadius: 8
                     width: 120
                     height: 70
@@ -109,16 +112,12 @@ window.AllYourForums = ReactiveComponent
 
 
                 BUTTON 
+                  className: 'icon'
                   style:
-                    backgroundColor: 'transparent'
-                    border: 'none'
-                    cursor: 'pointer'
                     padding: '4px'
-                  'data-tooltip': "Import Configuration from #{forum.name} to this forum"
-
-                  onKeyPress: (e) =>
-                    if e.which == 32 || e.which == 13
-                      e.currentTarget.click()
+                    
+                  'aria-label': translator({id: "settings.import_configuration", forum_name: forum.name}, "Import Configuration from {forum_name} to this forum")
+                  'data-tooltip': translator({id: "settings.import_configuration", forum_name: forum.name}, "Import Configuration from {forum_name} to this forum")
 
                   onClick: => 
                     if confirm("Are you sure you want to import this configuration? It will overwrite the configuration of this forum.")
@@ -135,20 +134,16 @@ window.AllYourForums = ReactiveComponent
                       xhr.open 'PUT', '/import_configuration_from_subdomain', true
                       xhr.send frm
 
-                  import_icon 18, '#444'
+                  import_icon 18, "var(--text_gray)"
 
 
                 BUTTON 
+                  className: 'icon'                
                   style:
-                    backgroundColor: 'transparent'
-                    border: 'none'
-                    cursor: 'pointer'
                     padding: '4px'
+                  'aria-label': 'Delete forum'
                   'data-tooltip': 'Delete forum'
 
-                  onKeyPress: (e) =>
-                    if e.which == 32 || e.which == 13
-                      e.currentTarget.click()
 
                   onClick: => 
                     if confirm("Are you sure you want to delete this entire forum? You cannot undo it.")
@@ -165,7 +160,7 @@ window.AllYourForums = ReactiveComponent
                       xhr.open 'DELETE', '/destroy_forum', true
                       xhr.send frm
 
-                  trash_icon 18, 18, '#888'
+                  trash_icon 18, 18, "var(--text_neutral)"
 
 
 

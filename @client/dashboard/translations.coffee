@@ -66,6 +66,7 @@ window.TRANSLATE = (args, native_text) ->
     translations = bus_fetch "/translations/#{target_lang}"
 
     props = _.extend({lang_used, target_lang, message, native_text}, args)
+
     props.translation_key = props.key
     IN_SITU_TRANSLATOR props, translation
 
@@ -82,7 +83,7 @@ IN_SITU_TRANSLATOR = ReactiveComponent
 
     SPAN 
       style: 
-        backgroundColor: if translated then "rgba(166, 195, 151, .5)" else "rgba(251,124,124,.5)"
+        backgroundColor: if translated then "color-mix(in srgb, var(--success_color) 53%, transparent)" else "color-mix(in srgb, var(--failure_color) 53%, transparent)"
         position: 'relative'
       onMouseOver: =>
         if !@local.show_translator
@@ -114,8 +115,8 @@ IN_SITU_TRANSLATOR = ReactiveComponent
             fontSize: 14
             width: 300
             padding: '4px 8px'
-            backgroundColor: 'white'
-            border: "1px solid #ccc"
+            backgroundColor: "var(--bg_light)"
+            border: "1px solid var(--brd_light_gray)"
 
           onClick: (e) => 
             e.stopPropagation()
@@ -134,30 +135,30 @@ IN_SITU_TRANSLATOR = ReactiveComponent
             LABEL null, 
               "#{available_languages[target_lang]} translation:"
 
-            editable_translation id, target_lang, subdomain_id, updated_translations, proposed_translations.proposals[id], message_style
+            editable_translation id, target_lang, subdomain_id, updated_translations, proposed_translations.proposals[id], @props.native_text, message_style
 
-
-          BUTTON 
-            className: "btn"
+          DIV 
             style: 
-              fontSize: 14
-            onClick: => 
-              promote_temporary_translations(updated_translations.key)
-              @local.show_translator = false 
-              save @local 
+              display: 'flex'
+              gap: 8
+              alignItems: "center"
+              
+            BUTTON 
+              className: "btn"
+              onClick: => 
+                promote_temporary_translations(updated_translations.key)
+                @local.show_translator = false 
+                save @local 
 
-            "Save" 
+              "Save" 
 
-          BUTTON 
-            style: 
-              backgroundColor: 'none'
-              border: 'none'
-              color: '#888'
+            BUTTON 
+              className: 'like_link'
 
-            onClick: => 
-              @local.show_translator = false 
-              save @local 
-            "Cancel" 
+              onClick: => 
+                @local.show_translator = false 
+                save @local 
+              "Cancel" 
 
               
 
@@ -345,15 +346,15 @@ styles += """
 }
 
 .translation_filters button {
-  background-color: #eaeaea;
+  background-color: var(--bg_lighter_gray);
   border: none;
   border-radius: 8px;
   margin: 0 8px;
 }
 
 .translation_filters button.active {
-  background-color: #{focus_blue};
-  color: white;
+  background-color: var(--focus_color);
+  color: var(--text_light);
 }
 
 """
@@ -392,24 +393,27 @@ TranslationsDash = ReactiveComponent
         style: 
           marginTop: 24
 
-        "Which language do you wish to translate for?"
+        LABEL null,
+
+          "Which language do you wish to translate for?"
 
 
-        SELECT 
-          value: local.translating_lang or subdomain.lang or 'en'
-          style: 
-            fontSize: 20
-            marginLeft: 14
-            display: 'inline-block'
-          onChange: (ev) => 
-            local.translating_lang = ev.target.value
-            save local
+          SELECT 
+            name: "tranlation_target_lang"
+            defaultValue: local.translating_lang or subdomain.lang or 'en'
+            style: 
+              fontSize: 20
+              marginLeft: 14
+              display: 'inline-block'
+            onChange: (ev) => 
+              local.translating_lang = ev.target.value
+              save local
 
-          for [k,v] in all_langs
-            OPTION 
-              key: "#{k}-#{v}"
-              value: k
-              "#{v} (#{k})"
+            for [k,v] in all_langs
+              OPTION 
+                key: "#{k}-#{v}"
+                value: k
+                "#{v} (#{k})"
 
         DIV 
           style: 
@@ -450,7 +454,11 @@ TranslationsDash = ReactiveComponent
 
           "Add a new language"
 
-          DIV null,
+
+          DIV 
+            style:
+              display: 'flex'
+              alignItems: 'center'  
 
             INPUT 
               style: 
@@ -458,16 +466,20 @@ TranslationsDash = ReactiveComponent
               type: 'text'
               ref: 'newlang_abbrev'
               placeholder: 'Abbreviation'
+              "aria-label": 'Abbreviation'
 
             INPUT               
               type: 'text'
               ref: 'newlang_label'
               placeholder: 'Full Name'
+              "aria-label": 'Full Name'
+
               style: 
                 margin: '0 8px'
                 fontSize: 18
 
             BUTTON
+              className: 'btn'
               onClick: => 
                 abbrev = @refs.newlang_abbrev.value
                 label = @refs.newlang_label.value
@@ -528,7 +540,7 @@ TranslationsDash = ReactiveComponent
               left: 0
               width: WINDOW_WIDTH()
               zIndex: 999
-              backgroundColor: 'rgba(220,220,220,.8)'
+              backgroundColor: "var(--bg_lighter_gray)"
               textAlign: 'center'
               padding: '8px'
 
@@ -539,13 +551,6 @@ TranslationsDash = ReactiveComponent
                 promote_temporary_translations("local_translations/#{local.translating_lang}/#{subdomain.name}")
               
               "Save Changes"
-
-            if bus_fetch('translations_interface').saved_successfully
-              DIV
-                style: 
-                  color: 'green'
-                  marginTop: 10
-                "Successfully saved"
 
 
 
@@ -682,6 +687,7 @@ TranslationsForLang = ReactiveComponent
         DIV null,
 
           BUTTON
+            className: "btn"
             onClick: =>  
               proposals = []
               for id, props of proposed_translations.proposals
@@ -777,7 +783,7 @@ TranslationsForLang = ReactiveComponent
             rows.push TR 
               key: 'header'
               style: 
-                backgroundColor: '#dfdfdf'
+                backgroundColor: "var(--bg_lighter_gray)"
 
 
               for col in cols
@@ -795,23 +801,23 @@ TranslationsForLang = ReactiveComponent
                 if !@props.forum_specific
                   percentile = percentiles[name]
                   if percentile >= 75 
-                    use_color = 'red' 
+                    use_color = "var(--failure_color)"
                     use_label = 'high use'
                   else if percentile >= 25 
-                    use_color = 'orange'
+                    use_color = "var(--caution_color"
                     use_label = 'medium use'                  
                   else if percentile >= 0 
-                    use_color = 'green'
+                    use_color = "var(--success_color)"
                     use_label = 'low use'                  
                   else 
-                    use_color = 'blue'
+                    use_color = "var(--bg_dark)"
                     use_label = 'rarely used'
 
 
                 rows.push TR 
-                  key: "row-id-#{name}"
+                  key: "row-id-#{name}-#{idx}"
                   style: 
-                    backgroundColor: if idx % 2 == 1 then '#f8f8f8'
+                    backgroundColor: if idx % 2 == 1 then "var(--bg_container)"
 
                   TD 
                     style: 
@@ -827,9 +833,11 @@ TranslationsForLang = ReactiveComponent
                       if !@props.forum_specific
                         SPAN 
                           style: 
-                            color: use_color
+                            backgroundColor: use_color
                             fontSize: 12
-                            paddingLeft: 12
+                            marginLeft: 12
+                            color: "var(--text_light)"
+                            padding: '0 2px'
                           use_label
 
 
@@ -844,24 +852,25 @@ TranslationsForLang = ReactiveComponent
                       style: 
                         position: 'relative'
 
-                      editable_translation name, lang, subdomain_id, updated_translations, proposed_translations.proposals[name]
+                      editable_translation name, lang, subdomain_id, updated_translations, proposed_translations.proposals[name], native_messages[name]
+                      
                       if current_user.is_super_admin
                         do (name) =>
                           BUTTON 
+                            className: 'icon'
                             style: 
-                              fontSize: 14
-                              backgroundColor: 'transparent'
-                              border: 'none'
-                              color: '#ccc'
                               position: 'absolute'
                               right: -25
                               padding: '4px'
                               top: 'calc(50% - 14px)'
+
+                            'aria-label': 'delete'
+
                             onClick: => 
                               deleteTranslationString name
                               delete native_messages[name]
                               delete updated_translations[name]
-                            "x"
+                            iconX 14, "var(--text_gray)"
 
 
                     if current_user.is_super_admin && proposed_translations.proposals[name]?.proposals.length > 0
@@ -881,7 +890,7 @@ TranslationsForLang = ReactiveComponent
 
                               DIV 
                                 style: 
-                                  color: if proposal.accepted then 'darkgreen'
+                                  color: if proposal.accepted then "var(--selected_color)"
                                 proposal.translation 
 
 
@@ -891,8 +900,7 @@ TranslationsForLang = ReactiveComponent
                                 DIV null,
 
                                   BUTTON
-                                    style: 
-                                      borderRadius: 8
+                                    className: 'btn'
                                     onClick: => 
                                       proposal.accepted = true
                                       updateTranslations [proposal]
@@ -900,14 +908,9 @@ TranslationsForLang = ReactiveComponent
                                     "Ok"
 
                                   BUTTON
+                                    className: "like_link"
                                     style: 
-                                      backgroundColor: 'transparent'
-                                      display: 'inline-block'
                                       marginLeft: 20
-                                      border: 'none'
-                                      color: '#999'
-                                      textDecoration: 'underline'
-                                      fontSize: 14
 
                                     onClick: => 
                                       rejectProposals(name, [proposal])
@@ -924,7 +927,7 @@ draw_translation_metadata = (proposal) ->
   SPAN 
     style: 
       fontSize: 14
-      color: "#aaa"
+      color: "var(--text_light_gray)"
       paddingRight: 4
     "#{proposal.origin_server} - #{proposer.name or proposer.user or proposal.user_id} #{prettyDate(proposal.created_at)}"
 
@@ -989,7 +992,7 @@ deleteTranslationString = (string_id) ->
 
 
 
-editable_translation = (id, lang_code, subdomain_id, updated_translations, proposed_translations, style) -> 
+editable_translation = (id, lang_code, subdomain_id, updated_translations, proposed_translations, native_text, style) -> 
   current_user = bus_fetch '/current_user'
 
 
@@ -1032,11 +1035,12 @@ editable_translation = (id, lang_code, subdomain_id, updated_translations, propo
 
     AutoGrowTextArea
       defaultValue: updated_translations[id]?.translation or val
+      "aria-label": native_text
       style: _.defaults (style or {}),
         verticalAlign: 'top'
         fontSize: 'inherit'
         width: '100%'
-        borderColor: '#ddd'
+        borderColor: "var(--brd_light_gray)"
       onChange: (e) -> 
         trans = e.target.value
         if !updated_translations[id]
@@ -1067,13 +1071,8 @@ promote_temporary_translations = (key) ->
         delete updated_translations[k]
     save updated_translations
 
-    trans_UI = bus_fetch('translations_interface')
-    trans_UI.saved_successfully = true 
-    save trans_UI 
-    _.delay ->
-      trans_UI.saved_successfully = false
-      save trans_UI
-    , 4000
+    show_flash("Successfully saved")
+
 
 
 

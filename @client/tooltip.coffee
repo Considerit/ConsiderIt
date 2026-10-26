@@ -8,14 +8,14 @@ styles += """
   height: 0; 
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;  
-  border-top: 10px solid black;
+  border-top: 10px solid var(--brd_dark);
 }
 #tooltip .upward_arrow {
   width: 0; 
   height: 0; 
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;  
-  border-bottom: 10px solid black;
+  border-bottom: 10px solid var(--brd_dark);
 }
 
 """
@@ -26,6 +26,7 @@ window.clear_tooltip = ->
   tooltip.coords = tooltip.tip = tooltip.top = tooltip.positioned = null
   tooltip.offsetY = tooltip.offsetX = null 
   tooltip.rendered_size = false 
+  tooltip.has_focus = false
   save tooltip
 
 toggle_tooltip = (e) ->
@@ -43,12 +44,13 @@ show_tooltip = (e) ->
   return if !tooltip_el? || tooltip_el.style.opacity == 0
 
   tooltip = bus_fetch 'tooltip'
+  tooltip.element_in_focus = true
   name = tooltip_el.getAttribute('data-tooltip')
   if tooltip.tip != name 
     tooltip.tip = name
 
     setTimeout ->
-      if tooltip.tip == name 
+      if tooltip.tip == name && tooltip.element_in_focus
         tooltip.coords = calc_coords_for_tooltip_or_popover(tooltip_el)
         save tooltip
     , TOOLTIP_DELAY
@@ -59,7 +61,13 @@ show_tooltip = (e) ->
 tooltip = bus_fetch 'tooltip'
 hide_tooltip = (e) ->
   if e.target.getAttribute('data-tooltip')
-    clear_tooltip()
+    tooltip = bus_fetch('tooltip')
+    tooltip.element_in_focus = false
+    if tooltip.coords && !tooltip.has_focus
+      setTimeout ->
+        if !tooltip.has_focus && !tooltip.element_in_focus
+          clear_tooltip()
+      , 200
     e.preventDefault()
     e.stopPropagation()
 
@@ -70,6 +78,16 @@ document.body.addEventListener "mouseleave", hide_tooltip, true
 
 $$.add_delegated_listener document.body, 'focusin', '[data-tooltip]', show_tooltip
 $$.add_delegated_listener document.body, 'focusout', '[data-tooltip]', hide_tooltip
+
+handle_escape_key = (e) ->
+  if e.key == 'Escape' || e.keyCode == 27
+    tooltip = bus_fetch('tooltip')
+    if tooltip.coords
+      clear_tooltip()
+      e.preventDefault()
+      e.stopPropagation()
+
+document.addEventListener "keydown", handle_escape_key
 
 
 window.Tooltip = ReactiveComponent
@@ -94,19 +112,30 @@ window.Tooltip = ReactiveComponent
       fontSize: 14
       padding: '4px 8px'
       borderRadius: 8
-      pointerEvents: 'none'
+      pointerEvents: 'auto'
       zIndex: 999999999999
-      color: 'white'
-      backgroundColor: 'black'
+      color: "var(--text_light)"
+      backgroundColor: "var(--bg_dark)"
       position: 'absolute'      
-      boxShadow: '0 1px 1px rgba(0,0,0,.2)'
+      boxShadow: '0 1px 1px var(--shadow_dark_20)'
       maxWidth: 350
 
     DIV
       id: 'tooltip'
       role: "tooltip"
       style: style
-
+      onMouseEnter: ->
+        tooltip = bus_fetch('tooltip')
+        tooltip.has_focus = true
+        save tooltip
+      onMouseLeave: ->
+        tooltip = bus_fetch('tooltip')
+        tooltip.has_focus = false
+        setTimeout ->
+          if !tooltip.has_focus && !tooltip.element_in_focus
+            clear_tooltip()
+        , 200
+        save tooltip
 
       DIV 
         dangerouslySetInnerHTML: {__html: tip}
@@ -127,8 +156,8 @@ window.Tooltip = ReactiveComponent
           display: if tooltip.hide_triangle then 'none' 
 
         POLYGON
-          stroke: "black" 
-          fill: 'black'
+          stroke: "var(--brd_dark)"
+          fill: "var(--bg_dark)"
           points: "530.874,0.5 265.87,459.5 0.866,0.5"
 
 

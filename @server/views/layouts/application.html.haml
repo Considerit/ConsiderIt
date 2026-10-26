@@ -1,11 +1,11 @@
 
-- cache ['application_layout', @app, @page, @is_search_bot, current_user.super_admin, current_user.is_admin?, current_subdomain.name, current_subdomain.lang] do 
+- cache ['application_layout', @app, @page, @is_search_bot, current_user.super_admin, current_user.is_admin?, current_subdomain.name, current_subdomain.lang || "en"] do 
 
   !!! 5
 
 
 
-  %html{ lang: current_subdomain.lang}
+  %html{ lang: current_subdomain.lang.presence || 'en'}
 
     %head{ profile: "http://gmpg.org/xfn/1", prefix: "og: http://ogp.me/ns#"}
         
@@ -181,13 +181,8 @@
 
         
     %body
-      .hidden 
-        %a{ :href => 'accessibility_support', :style => 'position:absolute;left:-10000px;' }   
-          #{Translations::Translation.get("accessibility.link_to_support_page", "Accessibility support for considerit")}
           
       #content.content{ subdomain: current_subdomain.name }
-
-
 
       - if @js_dependencies
         %script{:src => @js_dependencies, :type => 'text/javascript'}
@@ -197,7 +192,7 @@
 
 
       - if current_subdomain.name != APP_CONFIG[:product_page]
-        %script{:async => "true", :src => "#{@vendor}/vendor/quill-1.0.js", :type => 'text/javascript'}
+        %script{:async => "true", :src => "#{@vendor}/vendor/quill-2.0.js", :type => 'text/javascript'}
         %script{:async => "true", :src => "#{@vendor}/vendor/colorbrewer.js", :type => 'text/javascript'}
         %script{:async => "true", :src => "#{@vendor}/vendor/cassowary.js", :type => 'text/javascript'}
         %script{:src => "#{@vendor}/vendor/draggable-1.0.0-beta.12.min.js", :type => 'text/javascript'}

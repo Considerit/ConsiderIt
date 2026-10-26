@@ -17,7 +17,7 @@ window.Header = ReactiveComponent
     # auth = bus_fetch('auth')
     # return SPAN null if auth.form && auth.form not in ['edit profile']
 
-    return SPAN null if !subdomain.name # || embedded_demo()
+    return SPAN {key: -1} if !subdomain.name # || embedded_demo()
 
 
     
@@ -28,12 +28,18 @@ window.Header = ReactiveComponent
 
     header_bonus = customization('header_bonus') # currently used for things like inserting google font
 
+    has_image_background = has_banner_image_background() 
+
     HEADER 
       style: 
         position: 'relative'
         zIndex: if bus_fetch('edit_forum').editing then 1 # necessary b/c of payment modal
-      className: if !light_bg then 'dark'
+      className: "#{if !light_bg then 'dark' else 'light'} #{if has_image_background then 'image_background' else ''}"
 
+
+
+      AccessibilitySupport()
+      
       if current_user.is_admin
         HostHeader()
 
@@ -41,8 +47,6 @@ window.Header = ReactiveComponent
       # DIV 
       #   id: 'upgrade-message'
       #   style: 
-      #     backgroundColor: 'black'
-      #     color: 'white'
       #     padding: 10
       #     fontSize: 24
       #     textAlign: 'center'
@@ -86,7 +90,7 @@ window.Header = ReactiveComponent
           (customization('HomepageHeader') or customization('SiteHeader') or PhotoBanner).apply(@)
         else
           ShortHeader
-            background: 'white'
+            background: "var(--bg_light)"
             text: ''
             logo_src: false
 
@@ -97,7 +101,7 @@ window.Header = ReactiveComponent
               position: 'absolute'
               right: 4
               bottom: 4
-              color: if light_bg then 'black' else 'white'
+              color: if light_bg then "var(--text_dark)" else "var(--text_light)"
               fontSize: 14
             target: '_blank'
             dangerouslySetInnerHTML: __html: subdomain.customizations?.banner?.masthead_copyright_notice
@@ -105,12 +109,11 @@ window.Header = ReactiveComponent
 
         DIV 
           style: 
-            backgroundColor: '#eee'
-            color: '#f00'
-            padding: '5px 20px'
-            display: if root.server_error then 'block' else 'none'
+            display: if root.server_error then 'block' else 'none'            
 
-          translator "engage.server_error", 'Warning: there was a server error!'
+          ErrorBlock([translator("engage.server_error", 'Warning: there was a server error!')])
+
+          
 
 
 window.HostHeader = ReactiveComponent

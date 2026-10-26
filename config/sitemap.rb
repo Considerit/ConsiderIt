@@ -38,7 +38,7 @@ Subdomain.find_each do |subdomain|
 
       begin
         add prop.slug, {:priority => 0.2, :changefreq => 'monthly'}
-        #add proposal_path(prop.slug), {:priority => 0.7, :changefreq => 'weekly'}
+        # add proposal_path(prop.slug), {:priority => 0.7, :changefreq => 'weekly'}
       rescue
         pp "#{prop.slug} failed"
       end

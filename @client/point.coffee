@@ -12,7 +12,7 @@ window.Point = ReactiveComponent
   render : ->
     point = bus_fetch @props.point
 
-    return SPAN null if !point.proposal
+    return SPAN {key: -1} if !point.proposal
 
     proposal = bus_fetch point.proposal
 
@@ -31,7 +31,7 @@ window.Point = ReactiveComponent
         else 
           includers = [point.user]
 
-        s = #includers_style
+        s =
           rows: 8
           dx: 2
           dy: 5
@@ -67,36 +67,7 @@ window.Point = ReactiveComponent
               set_bg_color: true
               anonymous: anonymous
     
-
-
-    point_content_style = {}
-
-    if is_selected
-      _.extend point_content_style,
-        borderColor: focus_color()
-        backgroundColor: 'white'
-
-    else if @local.has_focus
-      _.extend point_content_style,
-        borderColor: '#999'
-        backgroundColor: 'white'
-
     expand_to_see_details = !!point.text
-
-
-
-
-    includers_style = 
-      position: 'absolute'
-      height: 25
-      width: 25
-      top: 0
-    left_or_right = if point.is_pro && @props.rendered_as != 'decision_board_point'
-                      'right' 
-                    else 
-                      'left'
-    ioffset = -50
-    includers_style[left_or_right] = ioffset
 
     draw_all_includers = @props.rendered_as == 'community_point' || TABLET_SIZE()
 
@@ -105,7 +76,7 @@ window.Point = ReactiveComponent
         key: 1
         style:
           fontSize: 10
-          color: '#888'
+          color: "var(--text_light_gray)"
         " (#{translator({id: "engage.read_more"}, "read more")})"
 
     else 
@@ -113,185 +84,167 @@ window.Point = ReactiveComponent
 
     LI
       key: "point-#{point.id}"
-      'data-id': @props.point
-      className: "point #{@props.rendered_as} #{if point.is_pro then 'pro' else 'con'} #{if customization('disable_comments') && !expand_to_see_details then 'commenting-disabled' else ''} #{if is_selected then 'is-selected' else ''}"
-      onClick: @selectPoint
-      # onTouchEnd: @selectPoint
-      onKeyDown: (e) =>
-        if (is_selected && e.which == 27) || e.which == 13 || e.which == 32
-          @selectPoint(e)
-          e.preventDefault()
+      className: "point #{@props.rendered_as} #{if point.is_pro then 'pro' else 'con'} #{if customization('disable_comments') && !expand_to_see_details then 'commenting-disabled' else ''} #{if is_selected then 'is-selected' else ''} #{if @local.has_focus then 'is-focused' else ''}"
 
-      if @props.rendered_as == 'decision_board_point'
-        DIV 
-          style: 
-            position: 'absolute'
-            left: 0
-            top: -2
-
-          if point.is_pro then '•' else '•'
-
-      DIV 
-        ref: 'point_content'
-        className:'point_content'
-        style : point_content_style
+      DIV
+        role: 'button'
         tabIndex: 0
+        'aria-describedby': "point-aria-interaction-#{point.id}"
         onBlur: (e) => @local.has_focus = false; save(@local)
-        onFocus: (e) => @local.has_focus = true; save(@local)
+        onFocus: (e) => @local.has_focus = true; save(@local) 
+        onClick: @selectPoint      
+        onKeyDown: (e) =>
+          if (is_selected && e.which == 27) || e.which == 13 || e.which == 32
+            @selectPoint(e)
+            e.preventDefault()
+
+        'aria-expanded': is_selected
+        'aria-owns': 'open_point'
+        'data-id': @props.point
         draggable: @props.enable_dragging
         "data-point": point.key
 
 
-        if @props.rendered_as != 'decision_board_point' && !PHONE_SIZE()
-
-          side = if point.is_pro then 'right' else 'left'
-          mouth_style = 
-            top: 8
-            position: 'absolute'
-
-          mouth_style[side] = -POINT_MOUTH_WIDTH + \
-            if is_selected || @local.has_focus then 3 else 1
-          
-          if !point.is_pro
-            mouth_style['transform'] = 'rotate(270deg) scaleX(-1)'
-          else 
-            mouth_style['transform'] = 'rotate(90deg)'
-
+        if @props.rendered_as == 'decision_board_point'
           DIV 
-            'role': 'presentation'
-            key: 'community_point_mouth'
-            style: mouth_style
+            style: 
+              position: 'absolute'
+              left: 0
+              top: -2
 
-            PointBubblemouth 
-              apex_xfrac: 0
-              width: POINT_MOUTH_WIDTH
-              height: POINT_MOUTH_WIDTH
-              fill: considerit_gray
-              stroke: if is_selected then focus_color() else if @local.has_focus then '#888' else 'transparent'
-              stroke_width: if is_selected || @local.has_focus then 20 else 0
+            if point.is_pro then '•' else '•'
 
         DIV 
-          style: 
-            wordWrap: 'break-word'
-            fontSize: POINT_FONT_SIZE()
+          ref: 'point_content'
+          className:'point_content'
+
+
+          if @props.rendered_as != 'decision_board_point' && !PHONE_SIZE()
+            DIV 
+              className: 'community_point_mouth'
+              'aria-hidden': 'true'
+              key: 'community_point_mouth'
+
+              PointBubblemouth 
+                apex_xfrac: 0
 
           DIV 
-            className: 'point_nutshell'
-
-            splitParagraphs point.nutshell, append
-
-
-
-          DIV 
-            id: "point-aria-interaction-#{point.id}"
-            className: 'hidden'
-
-            translator
-              id: "engage.point_explanation"
-              author: if point.hide_name then anonymous_label() else bus_fetch(point.user).name
-              num_inclusions: point.includers.length
-              comment_count: point.comment_count
-              """By {author}. 
-                 { num_inclusions, plural, =0 {} one {Important to one person.} other {Important to # people.} } 
-                 {comment_count, plural, =0 {} one {Has received one comment.} other {Has received # comments.} }
-                 Press ENTER or SPACE for details or discussion."""
-
-          DIV 
-            'aria-hidden': true
-            className: "point_details" + \
-                       if is_selected
-                         ''
-                       else 
-                         '_tease'
-
             style: 
               wordWrap: 'break-word'
-              marginTop: '0.5em'
               fontSize: POINT_FONT_SIZE()
-              
 
             DIV 
+              className: 'point_nutshell'
+
+              splitParagraphs point.nutshell, append
+
+            DIV 
+              id: "point-aria-interaction-#{point.id}"
+              hidden: true # read as the description of the point's button, not as part of its name
+
+              translator
+                id: "engage.point_explanation"
+                author: if point.hide_name then anonymous_label() else bus_fetch(point.user).name
+                num_inclusions: point.includers.length
+                comment_count: point.comment_count
+                """By {author}. 
+                   { num_inclusions, plural, =0 {} one {Important to one person.} other {Important to # people.} } 
+                   {comment_count, plural, =0 {} one {Has received one comment.} other {Has received # comments.} }
+                   Press ENTER or SPACE for details or discussion."""
+
+            DIV 
+              'aria-hidden': true
+              className: "point_details" + \
+                         if is_selected
+                           ''
+                         else 
+                           '_tease'
+
               style: 
-                fontSize: 12
-                color: '#666'
+                wordWrap: 'break-word'
+                marginTop: '0.5em'
+                fontSize: POINT_FONT_SIZE()
+                
 
-              if !PHONE_SIZE() && !screencasting() && !embedded_demo() && bus_fetch('/subdomain').name != 'galacticfederation'
-                [
-                  prettyDate(point.created_at)
-                  SPAN key: 'padding', style: paddingLeft: 8
-                ]
+              DIV 
+                style: 
+                  fontSize: 12
+                  color: "var(--text_light_gray)"
 
-              if !customization('disable_comments')
-                SPAN 
-                  key: 2 
-                  style: {whiteSpace: 'nowrap'}
+                if !PHONE_SIZE() && !screencasting() && !embedded_demo() && bus_fetch('/subdomain').name != 'galacticfederation'
+                  [
+                    prettyDate(point.created_at)
+                    SPAN key: 'padding', style: paddingLeft: 8
+                  ]
 
-                  A 
-                    className: 'select_point'
+                if !customization('disable_comments')
+                  SPAN 
+                    key: 2 
+                    style: {whiteSpace: 'nowrap'}
 
-                    translator
-                      id: 'engage.link_to_comments'
-                      comment_count: point.comment_count 
-                      "{comment_count, plural, one {# comment} other {# comments}}"
+                    A 
+                      className: 'select_point'
 
-              if PHONE_SIZE()
-                SPAN 
-                  key: 3
-                  style: 
-                    float: 'right'
+                      translator
+                        id: 'engage.link_to_comments'
+                        comment_count: point.comment_count 
+                        "{comment_count, plural, one {# comment} other {# comments}}"
 
-                  "+#{point.includers.length}"
+                if PHONE_SIZE()
+                  SPAN 
+                    key: 3
+                    style: 
+                      float: 'right'
 
-                  
+                    "+#{point.includers.length}"
+
+                    
 
 
 
-        if current_user.user == point.user
-          DIV null,
-            if permit('update point', point) > 0 && 
-                (@props.rendered_as == 'decision_board_point' || TABLET_SIZE())
-              BUTTON
-                style:
-                  fontSize: if browser.is_mobile then 24 else 14
-                  color: focus_color()
-                  padding: '3px 12px 3px 0'
-                  backgroundColor: 'transparent'
-                  border: 'none'
+          if current_user.user == point.user
+            DIV null,
+              if permit('update point', point) > 0 && 
+                  (@props.rendered_as == 'decision_board_point' || TABLET_SIZE())
+                BUTTON
+                  className: "like_link"
+                  style:
+                    fontSize: if browser.is_mobile then 24 else 14
+                    color: "var(--focus_color)"
+                    padding: '3px 12px 3px 0'
 
-                onTouchEnd: (e) -> e.stopPropagation()
-                onClick: ((e) =>
-                  e.stopPropagation()
-                  points = bus_fetch(@props.your_points_key)
-                  points.editing_points.push(@props.point)
-                  save(points))
-                translator 'engage.edit_button', 'edit'
+                  onTouchEnd: (e) -> e.stopPropagation()
+                  onClick: ((e) =>
+                    e.stopPropagation()
+                    points = bus_fetch(@props.your_points_key)
+                    points.editing_points.push(@props.point)
+                    save(points))
+                  translator 'engage.edit_button', 'edit'
 
-            if permit('delete point', point) > 0 && 
-                (@props.rendered_as == 'decision_board_point' || TABLET_SIZE())
-              BUTTON
-                'data-action': 'delete-point'
-                style:
-                  fontSize: if browser.is_mobile then 24 else 14
-                  color: focus_color()
-                  padding: '3px 8px'
-                  backgroundColor: 'transparent'
-                  border: 'none'
-                onTouchEnd: (e) -> e.stopPropagation()       
-                onClick: (e) =>
-                  e.stopPropagation()
-                  if confirm('Delete this point forever?')
-                    destroy @props.point
-                translator 'engage.delete_button', 'delete'
+              if permit('delete point', point) > 0 && 
+                  (@props.rendered_as == 'decision_board_point' || TABLET_SIZE())
+                BUTTON
+                  'data-action': 'delete-point'
+                  className: "like_link"
+                  style:
+                    fontSize: if browser.is_mobile then 24 else 14
+                    color: "var(--focus_color)"
+                    padding: '3px 12px 3px 0'
+                  onTouchEnd: (e) -> e.stopPropagation()       
+                  onClick: (e) =>
+                    e.stopPropagation()
+                    if confirm('Delete this point forever?')
+                      destroy @props.point
+                  translator 'engage.delete_button', 'delete'
 
-      if @props.rendered_as != 'decision_board_point' && !PHONE_SIZE() && @props.in_viewport
-        DIV 
-          'aria-hidden': true
-          className:'includers'
-          onMouseEnter: @highlightIncluders
-          onMouseLeave: @unHighlightIncluders
-          style: includers_style
-            
-          renderIncluders(draw_all_includers)
+        if @props.rendered_as != 'decision_board_point' && !PHONE_SIZE() && @props.in_viewport
+          DIV 
+            'aria-hidden': true
+            className:'includers'
+            onMouseEnter: @highlightIncluders
+            onMouseLeave: @unHighlightIncluders
+              
+            renderIncluders(draw_all_includers)
 
 
 
@@ -322,26 +275,16 @@ window.Point = ReactiveComponent
 
         if !TABLET_SIZE() && @props.enable_dragging
           right = (included && point.is_pro) || (!included && !point.is_pro)
-          if right 
-            sty = 
-              right: if !@local.focused_include then 20 else if included then -20 else -40
-          else 
-            sty = 
-              left: if !@local.focused_include then 20 else if included then -20 else -40
 
           BUTTON
+            className: "focused_include_button #{if @local.focused_include then 'has-focus' else ''}"
             'aria-label': if included 
                             translator 'engage.uninclude_explanation', 'Mark this point as unimportant and move to next point' 
                           else 
                             translator 'engage.include_explanation', 'Mark this point as important and move to next point'
-            style: _.extend sty, 
-              position: 'absolute'
-              top: 20
-              opacity: if !@local.focused_include then 0
-              padding: 0
-              backgroundColor: 'transparent'
-              border: 'none'              
+            style:
               display: if get_selected_point() then 'none'
+
             onFocus: (e) => 
               @local.focused_include = true; save @local
             onBlur: (e) => @local.focused_include = false; save @local
@@ -359,25 +302,19 @@ window.Point = ReactiveComponent
             I 
               style: 
                 fontSize: if included then 25 else 40
-                color: focus_color()
+                color: "var(--focus_color)"
               className: "fa fa-long-arrow-#{if !right then 'left' else 'right'}"
 
-        else
+        else if can_opine >= 0
+          
           BUTTON 
+            className: "selector_button #{if included then 'active' else ''}"
             style: 
-              border: "1px solid #{ if included || @local.hover_important then focus_color() else '#414141'}"
-              borderTopColor: if included then focus_color() else 'transparent'
-              color: if included then 'white' else if @local.hover_important then focus_color() else "#414141"
               position: 'relative'
               top: -13
               padding: '8px 5px'
-              textAlign: 'center'
               borderRadius: '0 0 16px 16px'
-              cursor: 'pointer'
-              backgroundColor: if included then focus_color() else 'white'
-              fontSize: 16  
               zIndex: 0
-              display: if can_opine < 0 then 'none'
               width: '100%'
 
             onMouseEnter: => 
@@ -411,6 +348,9 @@ window.Point = ReactiveComponent
           comments: "/comments/#{point.id}"
           point: point.key
           rendered_as: @props.rendered_as
+          onClose: =>
+            @local.has_focus = false
+            save @local
 
   componentDidMount : ->    
     @ensureDiscussionIsInViewPort()
@@ -441,9 +381,6 @@ window.Point = ReactiveComponent
 
       @draggable.on 'drag:start', (evt) =>
         point_width = evt.source.getBoundingClientRect().width
-
-        # if @props.rendered_as != 'decision_board_point'
-        #   point_root.closest(".ProposalItem").classList.add 'community-point-is-being-dragged'
 
       @draggable.on 'mirror:created', (evt) =>        
         evt.mirror.style.width = "#{point_width}px"
@@ -555,6 +492,8 @@ window.Point = ReactiveComponent
     your_opinion.point_inclusions.push @props.point
     save(your_opinion)
 
+    announceToScreenReader(translator('engage.point_included_announce', "The point was incorporated into your opinion"))
+
     window.writeToLog
       what: 'included point'
       details: 
@@ -572,6 +511,7 @@ window.Point = ReactiveComponent
     if idx > -1
       your_opinion.point_inclusions.splice(idx, 1)
       save(your_opinion)
+      announceToScreenReader(translator('engage.point_removed_announce', "The point was removed from your opinion"))
 
 
   selectPoint: (e) ->
@@ -592,10 +532,11 @@ window.Point = ReactiveComponent
       delete loc.query_params.selected
       what = 'deselected a point'
 
-      document.activeElement.blur()
+      # document.activeElement.blur()
     else
       what = 'selected a point'
       loc.query_params.selected = @props.point
+      announceToScreenReader(translator('engage.point_opened_announce', "You've opened the discussion about this point."))
 
     save loc
 
@@ -667,6 +608,7 @@ styles += """
   .point {
     position: relative;
     list-style: none outside none;
+    outline: none;
   }
 
   .point.decision_board_point {
@@ -684,14 +626,14 @@ styles += """
 
   @media #{NOT_PHONE_MEDIA} {
     .point.community_point {
-      filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 1px 1px);
+      filter: drop-shadow(var(--shadow_dark_25) 0px 1px 1px);
     }
 
   }
 
 
 
-  .point_content[draggable="false"] {
+  [draggable="false"] .point_content {
     cursor: pointer !important; }
 
   #{css.grab_cursor('.point_content[draggable="true"]')}
@@ -713,7 +655,7 @@ styles += """
     
 
 
-  .commenting-disabled .point_content[draggable="false"] {
+  .commenting-disabled [draggable="false"] .point_content{
     cursor: auto; }
 
 
@@ -729,7 +671,13 @@ styles += """
     top: -3px;
     position: relative;
     z-index: 1;
-    outline: none;
+    outline-width: 3px;
+  }
+
+  .is-selected .point_content,
+  .is-focused .point_content {
+    border-color: var(--focus_color);
+    background-color: var(--bg_light);
   }
 
   .decision_board_point .point_content {
@@ -742,8 +690,7 @@ styles += """
     padding: 8px;
     border-radius: 16px;
     top: -11px;
-    background-color: #{considerit_gray};
-    /* box-shadow: #b5b5b5 0 1px 1px 0px; */
+    background-color: var(--bg_speech_bubble);
     min-height: 34px; 
   }
 
@@ -785,12 +732,90 @@ styles += """
     height: 22px; }
 
   .community_point.con .point_includer_avatar {
-    box-shadow: -1px 2px 0 0 #eeeeee; }
+    box-shadow: -1px 2px 0 0 var(--bg_item); }   /* coin effect. should be ~ background color of an expanded item */
 
   .community_point.pro .point_includer_avatar {
-    box-shadow: 1px 2px 0 0 #eeeeee; }
+    box-shadow: 1px 2px 0 0 var(--bg_item); }    /* coin effect. should be ~ background color of an expanded item */
 
   .decision_board_point.pro .point_includer_avatar {
     left: -10px; }
 
+
+  .community_point_mouth {
+    --point_mouth_offset: 1px;    
+    top: 8px;
+    position: absolute;
+  }
+
+  .pro .community_point_mouth {
+    right: calc(-1 * var(--point_mouth_width) + var(--point_mouth_offset));
+    transform: rotate(90deg);
+  }
+
+  .con .community_point_mouth {
+    left: calc(-1 * var(--point_mouth_width) + var(--point_mouth_offset));
+    transform: rotate(270deg) scaleX(-1);
+  }
+
+  .point.is-selected .community_point_mouth,
+  .point.is-focused .community_point_mouth {
+    --point_mouth_offset: 3px;
+  }
+
+  .point.is-selected.community_point .pointbubblemouth path, 
+  .point.is-focused.community_point .pointbubblemouth path {
+    stroke-width: 20px;
+  }
+
+  .point.community_point .pointbubblemouth path {
+    stroke-width: 0px;
+  }
+
+  .point .includers {
+    position: absolute;
+    height: 25px;
+    width: 25px;
+    top: 0px;
+  }
+  .point.pro .includers {
+    right: -50px;
+  }
+  .point.con .includers {
+    left: -50px;
+  }
+
+  .focused_include_button {
+    position: absolute;
+    top: 20px;
+    opacity: 0;
+    z-index: 999;
+    border: none;
+    background-color: transparent;
+    padding: 0;
+
+    --include_offset: 20px;
+
+  }
+
+  .focused_include_button.has-focus {
+    --include_offset: -18px;
+    opacity: 1;
+  }
+
+  .decision_board_point .focused_include_button.has-focus {
+    --include_offset: -20px;
+    opacity: 1;
+  }
+
+  .pro.decision_board_point .focused_include_button,
+  .con.community_point .focused_include_button
+  {
+    right: var(--include_offset);
+  }
+
+  .con.decision_board_point .focused_include_button,
+  .pro.community_point .focused_include_button
+  {
+    left: var(--include_offset);
+  }
 """

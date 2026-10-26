@@ -4,7 +4,6 @@ require './translations'
 
 window.styles += """
   #EDITPROFILE label.AUTH_field_label {
-    color: #8F8F8F;
     text-transform: uppercase;
     margin-bottom: 2px;
     margin-top: 8px;
@@ -24,6 +23,7 @@ window.styles += """
       padding: 0 18px;
     }    
   }
+
 """
 
 
@@ -37,14 +37,17 @@ window.EditProfile = ReactiveComponent
 
     is_SSO = bus_fetch('/subdomain').SSO_domain  
 
+
     if @local.saved_successfully && is_SSO
       loadPage '/'
+
 
     on_submit = (ev) =>
       @Submit ev, 
         action: 'edit profile'
         has_host_questions: true
         has_avatar_upload: true
+        onSuccess: -> show_flash(i18n.successful_update)
 
     DIV 
       id: 'EDITPROFILE'
@@ -57,11 +60,14 @@ window.EditProfile = ReactiveComponent
             name: 'email'
             label: i18n.email_label
             on_submit: on_submit
+            autoComplete: 'email'
+
           @RenderInput 
             type: 'password'
             name: 'password'
             label: i18n.new_password_label
             on_submit: on_submit  
+            autoComplete: 'new-password'
 
           if @local.updates.password != current_user.password || @local.updates.email != current_user.email
             @RenderInput   
@@ -69,13 +75,15 @@ window.EditProfile = ReactiveComponent
               name: 'old_password'
               label: i18n.old_password_label
               on_submit: on_submit  
-              
+              autoComplete: 'current-password'
         ]
 
       @RenderInput
         name: 'name' 
         label: i18n.name_label
         on_submit: on_submit
+        autoComplete: 'name'
+
 
       DIV 
         className: 'AUTH_field_wrapper'
@@ -91,7 +99,7 @@ window.EditProfile = ReactiveComponent
       if forum_has_host_questions()
         DIV 
           style: 
-            backgroundColor: considerit_gray
+            backgroundColor: "var(--bg_speech_bubble)"
             marginBottom: 24
             marginTop: 52
 
@@ -108,17 +116,13 @@ window.EditProfile = ReactiveComponent
             disable_unchecking_required_booleans: true
 
       BUTTON 
-        className: "btn #{if @local.submitting then 'disabled' else ''}"
+        className: "btn"
+        disabled: @local.submitting
         onClick: on_submit
 
         translator 'shared.save_changes_button', 'Save changes'
 
-      if @local.saved_successfully
-        DIV 
-          style: 
-            backgroundColor: 'white'
-            color: '#888'
-          i18n.successful_update
+
 
       @ShowErrors()
 
@@ -129,20 +133,13 @@ window.EditProfile = ReactiveComponent
 
         FORM 
           id: 'delete_account_form'
-          
+          className: "dangerzone"
 
           INPUT
             type: 'submit' 
+            className: 'danger_button btn'
             value: translator 'auth.delete_account', 'Delete your account'
             # className: 'like_link'
-            style: 
-              color: '#b74e4e'
-              fontWeight: 600
-              padding: '10px 18px'
-              borderRadius: 8
-              border: 'none'
-              backgroundColor: '#efefef'
-              boxShadow: '0 1px 2px rgba(0,0,0,.2)'
 
             onClick: (ev) =>
               ev.preventDefault()
@@ -170,21 +167,15 @@ window.EditProfile = ReactiveComponent
 
         FORM 
           id: 'delete_data_form'
-          
+          className: "dangerzone"
+          style:
+            marginTop: '16px'
 
           INPUT
             type: 'submit' 
+            className: 'danger_button btn'            
             value: translator 'auth.delete_data', 'Delete your data on this forum'
             # className: 'like_link'
-            style: 
-              marginTop: 18
-              color: '#b74e4e'
-              fontWeight: 600
-              padding: '10px 18px'
-              borderRadius: 8
-              border: 'none'
-              backgroundColor: '#efefef'
-              boxShadow: '0 1px 2px rgba(0,0,0,.2)'
 
             onClick: (ev) =>
               ev.preventDefault()

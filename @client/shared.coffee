@@ -66,6 +66,35 @@ window.ajax_submit_files_in_form = (opts) ->
 
 
 
+window.ErrorBlock = (errors, opts={}) ->
+  DIV
+    key: 'errorblock'
+    role: 'alert'
+    style: _.defaults opts.style or {}, 
+      fontSize: 18
+      color: "var(--text_light)"
+      backgroundColor: "var(--failure_color)"
+      padding: 20
+      marginTop: 10
+
+    if opts.heading
+      H1 style: {fontSize: 18, marginBottom: 12}, opts.heading
+
+
+    for error, idx in errors
+      UL 
+        key: 'error list'
+        style:
+          listStyle: "none" 
+
+        LI 
+          key: idx
+          I
+            className: 'fa fa-exclamation-circle'
+            style: {paddingRight: 9, }
+
+          SPAN null, error
+
 
     
 window.pad = (num, len) -> 
@@ -84,7 +113,8 @@ window.back_to_homepage_button = (style, text) ->
   hash = loc.url.split('/')[1].replace('-', '_')
 
   NAV 
-    role: 'navigation'
+    'aria-label': translator 'engage.back_to_homepage', 'Homepage'
+
     A
       className: 'back_to_homepage'
       title: 'back to homepage'
@@ -94,7 +124,7 @@ window.back_to_homepage_button = (style, text) ->
       style: _.defaults {}, style,
         fontSize: 43
         visibility: if is_a_dialogue_page() || !customization('has_homepage') then 'hidden' else 'visible'
-        color: 'black'
+        color: "var(--text_dark)"
         display: 'flex'
         alignItems: 'center'
 
@@ -180,7 +210,13 @@ do ->
 
 
 window.POINT_MOUTH_WIDTH = 17
+styles += """
 
+  :root, :before, :after {
+    --point_mouth_width: 17px;
+  }
+
+"""
 
 # HEARTBEAT
 # Any component that renders a HEARTBEAT will get rerendered on an interval.
@@ -413,7 +449,7 @@ styles += """
   text-align: center;
   font-size: 10px; }
   .sk-wave .sk-rect {
-    background-color: rgba(223, 98, 100, .5);
+    background-color: var(--considerit_red);
     height: 100%;
     width: 6px;
     display: inline-block;
@@ -491,7 +527,7 @@ window.reset_key = (obj_or_key, updates) ->
 
 
 safe_string = (user_content) -> 
-  user_content = user_content.replace(/(<li>|<br\s?\/?>|<p>)/g, '\n') #add newlines
+  user_content = user_content.replace(/(<li>|<br\s?\/?>|<p>)/g, '\n') # add newlines
   user_content = user_content.replace(/(<([^>]+)>)/ig, "") #strips all tags
 
   # autolink. We'll insert a delimiter ('(*-&)') to use for splitting later.
@@ -653,10 +689,6 @@ window.location_origin = ->
 ##############################
 ## Styles
 ############
-
-
-
-window.focus_color = -> focus_blue
 
 ## CSS functions
 
@@ -852,7 +884,8 @@ time, mark, audio, video {
   font-size: 100%;
   font: inherit;
   vertical-align: baseline;
-  line-height: 1.4; }
+  line-height: 1.4; 
+}
 
 
 #content .fa {
@@ -870,7 +903,7 @@ hr {
   display: block;
   height: 1px;
   border: 0;
-  border-top: 1px solid #cccccc;
+  border-top: 1px solid var(--brd_light_gray);
   margin: 0;
   padding: 0; }
 
@@ -930,9 +963,11 @@ a {
   cursor: pointer;
   text-align: center; 
   font-size: inherit;
+  white-space: nowrap;
 } .button:focus, button:focus, input[type='submit']:focus {
 } .button:active:focus, button:active:focus, input[type='submit']:active:focus{
 }
+
 
 button.like_link, input[type='submit'].like_link {
   background: none;
@@ -941,12 +976,36 @@ button.like_link, input[type='submit'].like_link {
   padding: 0px;
 }
 
+button.like_link_with_bottom_border, input[type='submit'].like_link_with_bottom_border {
+  background: none;
+  padding: 0px;
+  border-width: 0 0 1px 0;
+  border-color: var(--brd_mid_gray);
+  transition: border-color 1s;
+}
+button.like_link_with_bottom_border:hover, input[type='submit'].like_link_with_bottom_border:hover,
+button.like_link_with_bottom_border:focus-within, input[type='submit'].like_link_with_bottom_border:focus-within {
+  border-color: var(--focus_color);
+}
+
+
+button.icon, button.naked_button, input[type='submit'].naked_button, input[type='submit'].icon {
+  background: none;
+  border: none;
+  text-decoration: none;
+}
+
+button.icon, input[type='submit'].icon {
+  line-height: 0;
+}
+
+
 .btn {
-  color: white;
+  color: var(--text_light);
   border: 0;
   font-weight: 700;
   padding: .325rem 1.5rem .4rem;
-  line-height: 1.5;
+  /* line-height: 1.5; */
   text-align: center;
   text-decoration: none;
   vertical-align: middle;
@@ -956,14 +1015,41 @@ button.like_link, input[type='submit'].like_link {
   -webkit-user-select: none;
   -ms-user-select: none;
 
-  border-radius: .25rem;
+  border-radius: .5rem;
   transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
   margin: 0;
-  background-color: #{focus_blue}; 
+  background-color: var(--focus_color); 
 } .btn[disabled="true"], .btn[disabled] {
-  cursor: default;
+  cursor: not-allowed;
   opacity: .5;
 }
+
+button.selector_button, input[type='submit'].selector_button {
+  border: 1px solid var(--brd_light_gray);
+  border-bottom-color: var(--brd_mid_gray);
+  background-color: var(--bg_lightest_gray);
+  border-radius: 8px;    
+  color: var(--text_dark);
+  font-weight: 400;  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button.selector_button.active, input[type='submit'].selector_button.active {
+  background-color: var(--focus_color);
+  color: var(--text_light);
+  border-color: var(--focus_color);
+}
+
+
+button.danger_button, input[type='submit'].danger_button {
+  background-color: var(--failure_color);
+  padding: 8px 24px;
+}
+
+
+
 
 
 table {
@@ -990,11 +1076,11 @@ blockquote {
 window.styles += """
 
 body {
-  color: black;
+  color: var(--text_dark);
 }
 
 h1, h2, h3, h4, h5, h6 {
-  /* color: black */; 
+  /* color: var(--text_dark) */; 
 }
 
 html[lang='cs'] body, html[lang='cs'] input, html[lang='cs'] button, html[lang='cs'] textarea {
@@ -1010,34 +1096,16 @@ input[type="checkbox"].bigger, input[type="radio"].bigger {
   font-size: 24px;
 }
 
-.hidden {
-  position:absolute;
-  left:-10000px;
-  top:auto;
-  width:1px;
-  height:1px;
-  overflow:hidden;}
-
-a.skip:active, 
-a.skip:focus, 
-a.skip:hover {
-    position: fixed;
-    left: 0; 
-    top: 0;
-    width: auto; 
-    height: auto; 
-    overflow: visible; 
-}
 
 
 .content {
   position: relative;
   font-size: 16px;
-  color: black;
+  color: var(--text_dark);
   min-height: 100%; 
   font-weight: 400;
 
-  background-color: #ffffff;
+  background-color: var(--bg_light);
 
 }
 
@@ -1050,37 +1118,8 @@ a.skip:hover {
   filter: FlipH;
   -ms-filter: 'FlipH'; }
 
-.primary_button, .primary_cancel_button {
-  border-radius: 16px;
-  text-align: center;
-  padding: 3px;
-  cursor: pointer; }
 
-.primary_button {
-  color: white;
-  font-size: 29px;
-  margin-top: 14px;
-  border: none;
-  padding: 8px 36px; }
-
-button.disabled {
-  background-color: #eeeeee;
-  color: #cccccc;
-  box-shadow: none;
-  border: none;
-  cursor: wait; }
-
-.primary_cancel_button {
-  color: #888888;
-  margin-top: 0.5em; }
-
-.cancel_opinion_button {
-  float: right;
-  background: transparent;
-  border: none;
-  margin-top: 0.5em; }
-
-button.primary_button, input[type='submit'] {
+input[type='submit'] {
   display: inline-block; }
 
 select.unstyled:not([multiple]){
@@ -1092,6 +1131,27 @@ select.unstyled:not([multiple]){
     padding: .5em;
     padding-right:1.5em;
     border-radius: 16px;
+}
+
+input[type="text"]:focus, textarea:focus {
+  outline: 1px solid var(--focus_color)
+}
+
+
+
+/* 
+ * Utility class to hide content visually while keeping it screen reader-accessible.
+ * Source: https://www.scottohara.me/blog/2017/04/14/inclusively-hidden.html 
+ */
+
+.visually-hidden:not(:focus):not(:active) {
+  clip: rect(0 0 0 0); 
+  clip-path: inset(100%); 
+  height: 1px; 
+  overflow: hidden; 
+  position: absolute; 
+  white-space: nowrap; 
+  width: 1px; 
 }
 
 """

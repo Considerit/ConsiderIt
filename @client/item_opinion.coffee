@@ -23,12 +23,7 @@ styles += """
     justify-content: center;
   }
 
-  .is_expanded .OpinionBlock .proposal-score-spacing {
-    width: 0;
-  }
-
   @media #{NOT_LAPTOP_MEDIA} {
-    .is_expanded .fast-thought .proposal-score-spacing, 
     .is_expanded .fast-thought .proposal-left-spacing, 
     .is_expanded .fast-thought .proposal-left-spacing, 
     .is_expanded .fast-thought .proposal-avatar-wrapper, 
@@ -42,10 +37,15 @@ styles += """
     display: flex;
   }
 
+  .is_collapsed .OpinionBlock .slidergram_wrapper {
+    margin-right: var(--LIST_PADDING_RIGHT);
+  }
+
   .is_expanded .OpinionBlock .slidergram_wrapper {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    margin-right: 0;
   }
 
 
@@ -151,6 +151,8 @@ window.OpinionBlock = ReactiveComponent
 
     DIV 
       className: 'OpinionBlock'
+      role: if @is_expanded then 'region'
+      'aria-labelledby': "opinion-heading-#{slugify(proposal.name)}"
 
       FLIPPED 
         flipId: "participation-status-#{proposal.key}"
@@ -173,11 +175,9 @@ window.OpinionBlock = ReactiveComponent
             (customization('opinion_callout')?[proposal.cluster] or customization('opinion_callout'))()
           else 
             H1
+              id: "opinion-heading-#{slugify(proposal.name)}"
               className: 'opinion-heading'
               style: _.defaults {}, customization('list_title_style') # ,
-                #display: if embedded_demo() then 'none'    
-
-                
 
               if mode == 'crafting' || (just_you && current_user.logged_in)
                 TRANSLATE
@@ -207,23 +207,19 @@ window.OpinionBlock = ReactiveComponent
               className: 'opinion-views-container'
 
               OpinionViews
-                ui_key: "opinion-views-#{proposal.key}"
+                ui_key: "opinion-views-#{proposal.id}"
                 disable_switching: mode == 'crafting'
                 style: 
                   margin: '8px auto 20px auto'
                   position: 'relative'
 
               OpinionViewInteractionWrapper
-                ui_key: "opinion-views-#{proposal.key}"              
+                ui_key: "opinion-views-#{proposal.id}"              
                 more_views_positioning: 'centered'
                 width: HOMEPAGE_WIDTH()
 
           Slidergram @props
 
-
-        # always create the spacing, as the spacing also acts as the right padding
-        DIV 
-          className: 'proposal-score-spacing'
 
       
       if @is_expanded
@@ -297,7 +293,7 @@ window.Slidergram = ReactiveComponent
 
 
       H2
-        className: 'hidden'
+        className: 'screen-reader-only'
 
         translator
           id: "engage.opinion_spectrum_explanation"
@@ -340,7 +336,6 @@ window.Slidergram = ReactiveComponent
         width: width
         your_opinion: your_opinion
         focused: @is_expanded && mode == 'crafting'
-        backgrounded: false
         draw_handle: !opinion_focus_elsewhere && (can_opine == Permission.NOT_LOGGED_IN || can_opine > 0)
         permitted: permitted_to_opine
 
@@ -380,59 +375,57 @@ ParticipationStatus = ReactiveComponent
   render: -> 
     can_opine = canUserOpine @props.proposal
 
-    return SPAN null if can_opine > 0 || can_opine == Permission.NOT_LOGGED_IN # || can_opine == Permission.DISABLED
+    return SPAN null if can_opine > 0 || can_opine == Permission.NOT_LOGGED_IN
 
     DIV 
       style: 
         textAlign: 'center'
 
-      DIV
-        style: 
-          backgroundColor: attention_orange
-          color: 'white'
-          margin: '0px auto 8px auto'
-          display: 'inline-block'
-          padding: '4px 6px'
-          fontWeight: 700
+      if can_opine == Permission.DISABLED || can_opine == Permission.INSUFFICIENT_PRIVILEGES
 
-        if can_opine == Permission.DISABLED
-          TRANSLATE
-            id: 'engage.proposal_closed'
-            'Closed to new contributions.'
+        DIV
+          style: 
+            backgroundColor: "var(--attention_orange)"
+            color: "var(--text_light)"
+            margin: '0px auto 8px auto'
+            display: 'inline-block'
+            padding: '4px 6px'
+            fontWeight: 700
 
-        else if can_opine == Permission.INSUFFICIENT_PRIVILEGES
-          TRANSLATE
-            id: 'engage.permissions.read_only'
-            "This proposal is read-only. The forum hosts specify who can participate."
+          if can_opine == Permission.DISABLED
+            TRANSLATE
+              id: 'engage.proposal_closed'
+              'Closed to new contributions.'
 
-        else if can_opine == Permission.UNVERIFIED_EMAIL
-          A
-            style:
-              cursor: 'pointer'
+          else if can_opine == Permission.INSUFFICIENT_PRIVILEGES
+            TRANSLATE
+              id: 'engage.permissions.read_only'
+              "This proposal is read-only. The forum hosts specify who can participate."
 
-            onTouchEnd: (e) => 
-              e.stopPropagation()
+      else if can_opine == Permission.UNVERIFIED_EMAIL
+        BUTTON
+          className: 'btn'
+          style:
+            cursor: 'pointer'
+            backgroundColor: "var(--attention_orange)"
 
-            onClick: (e) =>
-              e.stopPropagation()
+          onTouchEnd: (e) => 
+            e.stopPropagation()
 
-              reset_key 'auth', 
-                form: 'verify email'
-                goal: 'To participate, please demonstrate you control this email.'
-                
-              current_user.trying_to = 'send_verification_token'
-              save current_user
+          onClick: (e) =>
+            e.stopPropagation()
+            current_user = bus_fetch('/current_user')
 
-            onKeyPress: (e) => 
-              if e.which == 32 || e.which == 13
-                reset_key 'auth', 
-                  form: 'verify email'
-                  goal: 'To participate, please demonstrate you control this email.'
-                  
-                current_user.trying_to = 'send_verification_token'
-                save current_user
+            reset_key 'auth', 
+              form: 'verify email'
+              goal: 'To participate, please demonstrate you control this email.'
+              
+            current_user.trying_to = 'send_verification_token'
+            save current_user
 
-            translator 'engage.permissions.verify_account_to_participate', "Verify your account to participate"
+            show_flash('Sent verification token via email')
+
+          translator 'engage.permissions.verify_account_to_participate', "Verify your account to participate"
 
 
 

@@ -37,6 +37,17 @@
 
   document.body.appendChild style
 
+  style = document.createElement('style')
+  style.type = 'text/css'
+  if style.styleSheet
+    style.styleSheet.cssText = window.color_variable_defs
+  else
+    style.appendChild document.createTextNode(window.color_variable_defs)
+
+  document.head.appendChild style
+
+
+
   container = document.getElementById('content')
 
   root = ReactDOM.createRoot(container)

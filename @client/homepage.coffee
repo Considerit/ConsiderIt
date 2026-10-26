@@ -23,7 +23,7 @@ styles += """
 
   @media #{LAPTOP_MEDIA} {
     .main_background {
-      background-color: #{main_background_color};
+      background-color: var(--bg_container);
     }
     #homepagetab {
       width: calc(var(--HOMEPAGE_WIDTH) + var(--LIST_PADDING_RIGHT) + var(--LIST_PADDING_LEFT));
@@ -39,7 +39,7 @@ styles += """
 
   @media #{NOT_LAPTOP_MEDIA} {
     .main_background {
-      background-color: white;
+      background-color: var(--bg_light);
     }
   }
 
@@ -75,10 +75,8 @@ styles += """
       width: var(--ITEM_TEXT_WIDTH);
     }
   }
-
-
-
 """
+
 window.Homepage = ReactiveComponent
   displayName: 'Homepage'
   render: ->
@@ -102,7 +100,7 @@ window.Homepage = ReactiveComponent
     messages = []
     phase = customization('contribution_phase')
     if phase == 'frozen'
-      messages.push {style: {backgroundColor: '#2e98c0', color: 'white'}, img: 'snowflake.png', label: translator("engage.frozen_message", "The forum host has frozen this forum so no changes can be made."), extra: if customization('dialogue_state_explanation') then customization('dialogue_state_explanation')}
+      messages.push {style: {backgroundColor: '#1f7a9c', color: 'white'}, img: 'snowflake.png', label: translator("engage.frozen_message", "The forum host has frozen this forum so no changes can be made."), extra: if customization('dialogue_state_explanation') then customization('dialogue_state_explanation')}
     else if phase == 'ideas-only'
       messages.push {style: {backgroundColor: '#fcde04', color: 'black'}, img: 'lightning.png', label: translator("engage.ideas_only_message", "The forum host has set this forum to be ideas only. No opinions for now."), extra: if customization('dialogue_state_explanation') then customization('dialogue_state_explanation')}
     else if phase == 'opinions-only'
@@ -133,7 +131,7 @@ window.Homepage = ReactiveComponent
           """
 
 
-        messages.push {style: {backgroundColor: '#d1d08d', color: 'black'}, img: 'venetian-mask.png', label: strong_privacy}
+        messages.push {style: {}, img: 'venetian-mask.png', label: strong_privacy}
       else 
         weak_privacy = TRANSLATE
           id: "engage.anonymize_message"
@@ -147,10 +145,10 @@ window.Homepage = ReactiveComponent
           The forum host has concealed the identities of others. No one except the hosts can currently see who 
           is saying what <italic>at this time</italic>. To ensure your identity is never revealed, anonymize your opinion on each proposal using 
           the <mask> </mask> button."""
-        messages.push {style: {backgroundColor: '#b88dd1', color: 'black'}, img: 'venetian-mask.png', label: weak_privacy}
+        messages.push {style: {}, img: 'venetian-mask.png', label: weak_privacy}
 
     if customization('hide_opinions')
-      messages.push {style: {backgroundColor: '#faa199', color: 'black'}, img: 'hiding.png', label: translator("engage.hide_opinions_message", "The forum host has hidden the opinions of other participants for the time being.")}
+      messages.push {style: {}, img: 'hiding.png', label: translator("engage.hide_opinions_message", "The forum host has hidden the opinions of other participants for the time being.")}
 
     DIV 
       key: "homepage_#{subdomain.name}"      
@@ -159,7 +157,6 @@ window.Homepage = ReactiveComponent
       DIV
         id: 'homepagetab'
         role: if get_tabs() then "tabpanel"
-
 
         if bus_fetch('edit_forum').editing
           for page in get_tabs() or [{name: null}]
@@ -183,7 +180,8 @@ window.Homepage = ReactiveComponent
                 DIV 
                   key: message
                   style: _.defaults {}, (message.style or {}),
-                    backgroundColor: "rgb(184 226 187)"
+                    backgroundColor: "var(--bg_lightest_gray)"
+                    border: "1px solid var(--brd_light_gray)"
                     borderRadius: 12
                     padding: '4px 24px'
                     maxWidth: 700
@@ -192,18 +190,23 @@ window.Homepage = ReactiveComponent
                     display: 'flex'
                     alignItems: 'center'
                     minHeight: 44
+                    color: "var(--text_dark)"
                     # textAlign: 'center'
 
-                  if message.img 
+                  if message.img || message.icon
                     DIV 
                       style:
                         minWidth: 40
                         paddingRight: 36
-                      IMG 
-                        style: 
-                          maxWidth: 34
 
-                        src: "#{bus_fetch('/application').asset_host}/images/#{message.img}"
+                      if message.icon
+                        message.icon(34, 34, "var(--text_dark)")
+                      else
+                        IMG 
+                          'aria-hidden': true
+                          style: 
+                            maxWidth: 34
+                          src: "#{bus_fetch('/application').asset_host}/images/#{message.img}"
 
                   DIV null,
                     message.label
@@ -248,20 +251,19 @@ window.Homepage = ReactiveComponent
                 DIV 
                   style: 
                     textAlign: 'center'
-                    color: selected_color
-                    fontWeight: 600
+                    fontWeight: 400
                   translator 'tabs.footer_label', "Explore more on these other pages:"
                   
                 HomepageTabs
                   go_to_hash: 'active_tab'
                   active_style: 
-                    backgroundColor: '#666'
-                    color: 'white'
+                    backgroundColor: "var(--bg_dark_gray)"
+                    color: "var(--text_light)"
                   tab_style: 
                     backgroundColor: 'transparent'
                     margin: 4
-                    padding: "8px 20px"
-                    color: '#555'
+                    paddingBottom: 4
+                    color: "var(--text_gray)"
 
 
   typeset : -> 
@@ -345,7 +347,6 @@ window.ProposalsLoading = ReactiveComponent
         padding: '60px 0px'
         textAlign: 'center'
         fontStyle: 'italic'
-        #color: logo_red
         fontSize: 24
 
       DIV 
@@ -358,11 +359,11 @@ window.ProposalsLoading = ReactiveComponent
         
         drawLogo 
           height: 50
-          main_text_color: logo_red
-          o_text_color: logo_red
+          main_text_color: "var(--logo_red)"
+          o_text_color: "var(--logo_red)"
           clip: false
           draw_line: true 
-          line_color: logo_red
+          line_color: "var(--logo_red)"
           i_dot_x: if negative then 284 - @cnt % 284 else @cnt % 284
           transition: false
 

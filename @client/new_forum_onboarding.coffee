@@ -2,13 +2,13 @@
 
 styles += """
   #NewForumOnBoarding {
-    background: #FFFFFF;
-    box-shadow: 0 4px 6px 0 rgba(0,0,0,0.13);
+    background: var(--bg_light);
+    box-shadow: 0 4px 6px 0 00000026;
     border-radius: 0 0 8px 8px;   
     max-width: 780px;
     margin: 48px auto 60px auto;
     padding: 24px 64px;
-    border-top: 14px solid #{selected_color};
+    border-top: 14px solid var(--selected_color);
     position: relative;
   }
 
@@ -19,7 +19,7 @@ styles += """
   }
 
   #NewForumOnBoarding h1 {
-    color: #{selected_color};
+    color: var(--selected_color);
     font-weight: 700;
     font-size: 26px;
 
@@ -27,7 +27,7 @@ styles += """
 
   #NewForumOnBoarding .header_subtitle {
     font-size: 18px;
-    color: #5D5C5C;
+    color: var(--text_gray);
   }
 
   #NewForumOnBoarding ul {
@@ -51,13 +51,13 @@ styles += """
   } 
 
   #NewForumOnBoarding .onboard_item.complete .checkbox {
-    border-color: #69BD8D;
-    background-color: #69BD8D;
+    border-color: var(--success_color);
+    background-color: var(--success_color);
   }
 
   #NewForumOnBoarding .onboard_item.complete .checkbox:after {
     content: "✓";
-    color: white;
+    color: var(--text_light);
     font-size: 18px;
     position: relative;
     top: -2px;
@@ -67,7 +67,7 @@ styles += """
   
 
   #NewForumOnBoarding .onboard_item.incomplete .checkbox {
-    border-color: #C5C5C5;
+    border-color: var(--brd_mid_gray);
   }
 
   #NewForumOnBoarding .onboard_item .label {
@@ -77,22 +77,8 @@ styles += """
 
   #NewForumOnBoarding .close_checklist {
     position: absolute;
-    right: 20px;
+    right: 12px;
     top: 10px;
-    color: #{selected_color};
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 20px;
-  }
-
-  #NewForumOnBoarding button.done_onboarding {
-    margin-top: 0px;
-    color: white;
-    background-color: #{selected_color};
-    border: none;
-    padding: 8px 24px;
-    font-weight: 700;
-    border-radius: 8px;
   }
 
 
@@ -139,9 +125,10 @@ window.NewForumOnBoarding = ReactiveComponent
     DIV 
       id: 'NewForumOnBoarding'
       BUTTON 
-        className: 'close_checklist like_link'
+        'aria-label': "Close new forum onboarding checklist"
+        className: 'close_checklist icon'
         onClick: complete_onboarding
-        'x'
+        iconX 20, "var(--selected_color)"
 
       DIV 
         className: 'header_wrapper'
@@ -166,8 +153,10 @@ window.NewForumOnBoarding = ReactiveComponent
         DIV null, 
           ConfettiCelebration()
           BUTTON 
-            className: 'done_onboarding'
+            className: 'btn'
             onClick: complete_onboarding
+            style: 
+              backgroundColor: "var(--selected_color)";
             "done"
 
       else 
@@ -180,7 +169,7 @@ window.NewForumOnBoarding = ReactiveComponent
       DIV 
         style:
           fontSize: 18
-          color: '#5D5C5C'
+          color: "var(--text_gray)"
           marginTop: 36
 
         'Learn more about the '
@@ -215,7 +204,7 @@ styles += """
     position: absolute;
     width: 10px;
     height: 30px;
-    background: #ffd300;
+    background: var(--attention_orange);
     top: 0;
     opacity: 0;
 }
@@ -311,7 +300,7 @@ styles += """
     animation-duration: 818ms;
 }
 .confetti-piece:nth-child(odd) {
-    background: #7431e8;
+    background: var(--focus_color);
 }
 .confetti-piece:nth-child(even) {
     z-index: 1;
@@ -328,7 +317,7 @@ styles += """
     animation-delay: 1000ms;
 }
 .confetti-piece:nth-child(4n-7) {
-  background: red;
+  background: var(--failure_color);
 }
 @keyframes makeItRain {
     from {opacity: 0;}

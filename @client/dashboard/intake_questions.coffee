@@ -2,8 +2,8 @@
 
 styles += """
   .INTAKE_QUESTIONS .intake-question {
-    background-color: #F1F1F1;
-    border: 1px solid #DDDDDD;
+    background-color: var(--bg_lightest_gray);
+    border: 1px solid var(--brd_light_gray);
     padding: 18px 10px 18px 38px;
     border-radius: 8px;
     margin: 8px 0;
@@ -11,7 +11,7 @@ styles += """
 
   .INTAKE_QUESTIONS .intake-question.open {
     display: flex;
-    align-items: start;
+    align-items: center;
     position: relative;
   }
 
@@ -21,8 +21,6 @@ styles += """
     flex-grow: 0;
     display: inline-block;
     margin-left: 24px;
-    background-color: transparent;
-    border: none;
   }
 
   .INTAKE_QUESTIONS .intake-question.open svg {
@@ -35,12 +33,6 @@ styles += """
     padding-right: 60px;
     flex-grow: 1;
   }
-
-  .INTAKE_QUESTIONS button.new_question {
-    padding: "8px 8px";
-    margin-top: 12px;
-  }
-
 
 
 
@@ -91,15 +83,16 @@ window.AnonymizationCheckForSigninQuestions = ->
 
     if questions.length > 0
       message = 
-        style: {backgroundColor: '#d1d08d', color: 'black'}
         img: 'venetian-mask.png' 
         label: "You have permanently set participation to anonymous. The answers to any sign-in questions you ask will not be available to you. If the questions you are asking are not personally revealing for participants, please contact help@consider.it to whitelist your questions."
       return DIV 
         key: message
-        style: _.defaults {}, (message.style or {}),
-          backgroundColor: "rgb(184 226 187)"
+        style: 
+          border: "1px solid var(--brd_mid_gray)"
+          backgroundColor: "var(--bg_lightest_gray)"
+          color: "var(--text_dark)"
           borderRadius: 12
-          padding: '4px 24px'
+          padding: '12px 24px'
           maxWidth: 700
           margin: "0 auto 16px auto"
           fontSize: 14
@@ -112,7 +105,7 @@ window.AnonymizationCheckForSigninQuestions = ->
           DIV 
             style:
               minWidth: 40
-              paddingRight: 24
+              marginRight: 18
             IMG 
               style: 
                 maxWidth: 34
@@ -186,6 +179,10 @@ window.IntakeQuestions = ReactiveComponent
           marginTop: 36
           pointerEvents: if permit('configure paid feature') < 0 then 'none'
           opacity: if permit('configure paid feature') < 0 then .4
+          display: 'flex'
+          flexDirection: "column"
+          gap: 3
+
 
         H2 
           style: 
@@ -203,9 +200,7 @@ window.IntakeQuestions = ReactiveComponent
 
               LI 
                 key: q.view_name or q.self_report.question
-                "data-idx": idx
                 className: "intake-question open"
-                draggable: true
 
                 SPAN
                   className: 'name'
@@ -214,36 +209,68 @@ window.IntakeQuestions = ReactiveComponent
 
 
                 BUTTON 
-                  style: 
-                    cursor: 'pointer'
+                  className: "icon"
+                  'aria-label': "edit question"
                   onClick: => 
                     intake_q_state.editing = q
                     save intake_q_state
 
-                  edit_icon 23, 23, '#888'
+                  edit_icon 23, 23, "var(--text_neutral)"
+
+                DIV
+                  style:
+                    display: 'flex'
+                    flexDirection: 'column'
+                    gap: 1
+
+                  BUTTON 
+                    className: "icon"
+                    'aria-label': "move question up"
+                    'data-tooltip': "Move question up"
+                    disabled: idx == 0
+                    onClick: do (currentIdx = idx) => => 
+                      if currentIdx > 0
+                        move_question currentIdx, currentIdx - 1
+                    style: 
+                      opacity: if idx == 0 then 0.3 else 1
+                      padding: 2
+
+                    up_arrow_icon 20, "var(--text_neutral)"
+
+                  BUTTON 
+                    className: "icon"
+                    'aria-label': "move question down"
+                    'data-tooltip': "Move question down"
+                    disabled: idx == questions.length - 1
+                    onClick: do (currentIdx = idx) => => 
+                      if currentIdx < questions.length - 1
+                        move_question currentIdx, currentIdx + 1
+                    style: 
+                      opacity: if idx == questions.length - 1 then 0.3 else 1
+                      padding: 2
+
+                    down_arrow_icon 20, "var(--text_neutral)"
 
                 BUTTON 
-                  style: 
-                    cursor: 'move'
-
-                  drag_icon 23, '#888'
-
-                BUTTON 
+                  'aria-label': "delete question"
+                  className: "icon"                
                   style:
                     position: 'absolute'
                     right: -36
-                    cursor: 'pointer'
+
                   onClick: -> delete_question(q)
-                  trash_icon 23, 23, '#888'
+                  trash_icon 23, 23, "var(--text_neutral)"
 
 
         BUTTON 
-          className: 'new_question btn'
+          className: 'btn'
+          style: 
+            alignSelf: 'flex-start'
           onClick: -> 
             intake_q_state.new_question = true 
             save intake_q_state
 
-          "+ question"
+          "Add question"
 
 
       DIV 
@@ -289,32 +316,7 @@ window.IntakeQuestions = ReactiveComponent
           EditIntakeQuestion()
 
 
-  componentDidMount: ->
-    @makeQuestionsDraggable()
-
-  componentDidUpdate: -> 
-    @makeQuestionsDraggable()
-
-  makeQuestionsDraggable: ->
-
-    @onDragOver ?= (e) =>
-      e.preventDefault()
-      @draggedOver = e.currentTarget.getAttribute('data-idx')
-
-    @onDragStart ?= (e) =>
-      @dragging = e.currentTarget.getAttribute('data-idx')
-
-    @onDrop ?= (e) =>
-      move_question @dragging, @draggedOver
-
-    for question in ReactDOM.findDOMNode(@).querySelectorAll('.intake-question.open')
-      question.removeEventListener('dragstart', @onDragStart) 
-      question.removeEventListener('dragover', @onDragOver)
-      question.removeEventListener('drop', @onDrop) 
-
-      question.addEventListener('dragstart', @onDragStart) 
-      question.addEventListener('dragover', @onDragOver)
-      question.addEventListener('drop', @onDrop) 
+ 
 
 
 
@@ -334,7 +336,6 @@ styles += """
     font-weight: 500;
     text-transform: uppercase;
     margin-bottom: 4px;
-    // color: #666;
   }
 
   [data-widget="EditIntakeQuestion"] .field label .required {
@@ -346,7 +347,7 @@ styles += """
     padding: 6px 8px;
     width: 100%;
     font-size: 16px;
-    border: 1px solid #d1d1d1;
+    border: 1px solid var(--brd_light_gray);
   }
 
 """
@@ -517,7 +518,7 @@ window.EditIntakeQuestion = ReactiveComponent
           DIV 
             style: 
               fontSize: 12
-              color: '#373737'
+              color: "var(--text_gray)"
             'It is best practice to enable a “Prefer not to answer” option for nonessential questions.'
             BR null
             'To enable an open-ended response option, include a response named “Other”'
@@ -611,8 +612,6 @@ window.EditIntakeQuestion = ReactiveComponent
           disabled: !validated
           style: 
             marginRight: 12
-            backgroundColor: if !validated then '#aaa'
-            cursor: if !validated then 'not-allowed'
 
           'Save'
 

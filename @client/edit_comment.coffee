@@ -36,7 +36,7 @@ window.EditComment = ReactiveComponent
           width: 50
           height: 50
           backgroundColor: if permitted < 0 then 'transparent'
-          border:          if permitted < 0 then '1px dashed grey'
+          border:          if permitted < 0 then "1px dashed var(--brd_dark_gray)"
 
         key: current_user.user
         hide_popover: true
@@ -83,13 +83,10 @@ window.EditComment = ReactiveComponent
           if permitted == Permission.NOT_LOGGED_IN
             DIV null,
               BUTTON 
+                className: "like_link"
                 style: 
-                  textDecoration: 'underline'
-                  color: focus_color()
+                  color: "var(--focus_color)"
                   fontSize: if browser.is_mobile then 18
-                  backgroundColor: 'transparent'
-                  padding: 0
-                  border: 'none'
                 translator 'engage.permissions.login_to_participate', 'Create an account to participate'
 
 
@@ -116,29 +113,15 @@ window.EditComment = ReactiveComponent
           min_height: 80
           style:
             width: '100%'
-            lineHeight: 1.4
             fontSize: 16 
             border: if permitted < 0 then 'dashed 1px'
 
       if @local.errors?.length > 0
         
-        DIV
-          role: 'alert'
-          style:
-            fontSize: 18
-            color: 'darkred'
-            backgroundColor: '#ffD8D8'
-            padding: 10
-            marginTop: 10
+        ErrorBlock @local.errors, 
+          style: 
             marginBottom: 10
             marginLeft: 60 
-          for error in @local.errors
-            DIV null, 
-              I
-                className: 'fa fa-exclamation-circle'
-                style: {paddingRight: 9}
-
-              SPAN null, error
 
       if permitted > 0
 
@@ -146,7 +129,6 @@ window.EditComment = ReactiveComponent
           className: "btn"
           style: 
             marginLeft: 60
-            padding: '8px 16px'
             # fontSize: if browser.is_mobile then 24
           'data-action': 'save-comment'
           
@@ -178,5 +160,8 @@ window.EditComment = ReactiveComponent
                 @local.new_comment = null
                 save @local
 
-          translator "engage.save_comment_button", 'Post comment'
+          if @props.fresh 
+            translator "engage.save_comment_button", 'Post comment'
+          else
+            translator 'Update'
 

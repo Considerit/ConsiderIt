@@ -7,22 +7,6 @@ require './shared'
 require './dock'
 
 
-old_BUTTON = BUTTON
-window.BUTTON = React.createFactory createReactClass
-  displayName: 'modified_BUTTON'
-  render: -> 
-    new_props = {}
-    for k,v of @props
-      new_props[k] = v
-
-    if new_props.onClick && !new_props.onKeyDown && !new_props.onKeyPress
-      new_props.onKeyPress = (e) -> 
-        if e.which == 13 || e.which == 32 # ENTER or SPACE
-          e.target.click()
-          e.stopPropagation()
-          e.preventDefault()
-    old_BUTTON new_props
-
 
 # moving cursor to end of input
 window.moveCursorToEnd = (el) ->
@@ -38,6 +22,10 @@ window.moveCursorToEnd = (el) ->
 window.styles += """
   .AutoGrowTextArea {
     padding: 4px 8px;
+  }
+
+  .AutoGrowTextArea:focus {
+    outline: 1px solid var(--focus_color);
   }
 """
 
@@ -80,9 +68,12 @@ window.AutoGrowTextArea = ReactiveComponent
     props = _.extend {}, @props,
       className: className
       onChange: @onChange
-      rows: 1
       style: _.extend {}, (@props.style or {}), {height: @local.height}
       ref: 'input'
+
+    props = _.defaults {}, props,
+      rows: 1
+      'aria-label': props.placeholder
     
     for prop_to_strip in ['parents', 'min_height', 'focus_on_mount', 'onHeightChange']
       if prop_to_strip of props
@@ -113,21 +104,36 @@ window.CharacterCountTextInput = ReactiveComponent
       if prop_to_strip of props
         delete props[prop_to_strip]
 
-    DIV 
-      style: 
-        position: 'relative' 
+    characters_left = @props.maxLength - @local.count
+    counter_text = translator
+      id: "engage.character_counter"
+      characters_left: characters_left
+      "{characters_left, plural, one {# character} other {# characters}} left"
 
-      SPAN 
+    # The textarea's description includes the count, read when it gets focus
+    counter_id = "character-count-#{@local.key.replace(/\//g, '-')}"
+    props['aria-describedby'] = _.compact([props['aria-describedby'], counter_id]).join(' ')
+
+    DIV
+      style:
+        position: 'relative'
+
+      SPAN
         'aria-hidden': true
         style: count_style
-        @props.maxLength - @local.count
+        characters_left
 
-      SPAN 
-        className: 'hidden'
-        translator 
-          id: "engage.character_counter"
-          characters_left: @props.maxLength - @local.count
-          "{characters_left, plural, one {# character} other {# characters}} left"
+      SPAN
+        id: counter_id
+        hidden: true
+        counter_text
+
+      # Announce the count while typing, but only when nearing the limit
+      SPAN
+        className: 'screen-reader-only'
+        'aria-live': 'polite'
+        if characters_left <= 20
+          counter_text
 
       TEXTAREA props
 
@@ -141,7 +147,7 @@ window.CharacterCountTextInput = ReactiveComponent
 styles += """
 
 .wysiwyg_text.focused {
-  outline: 2px solid #{focus_color()};
+  outline: 2px solid var(--focus_color);
 }
 
 """
@@ -263,9 +269,11 @@ window.WysiwygEditor = ReactiveComponent
               style: _.defaults {}, @props.toolbar_style, 
                 position: 'absolute'
                 width: if !toolbar_horizontal then 30
-                left: if !toolbar_horizontal then -32
+                left: if !toolbar_horizontal then -34
                 top: if toolbar_horizontal then -25 else 0
-                display: 'block'
+                display: 'flex'
+                flexDirection: if toolbar_horizontal then "row" else "column"
+                gap: 3
                 # visibility: if wysiwyg_editor.showing != @props.editor_key then 'hidden'
 
               onFocus: (e) => 
@@ -304,17 +312,7 @@ window.WysiwygEditor = ReactiveComponent
                     tabIndex: if @local.focused_toolbar_item == idx then 0 else -1
                     className: button.className
                     'aria-label': button.title
-                    style: _.defaults {}, @props.button_style, 
-                      fontSize: 14
-                      width: 28
-                      textAlign: 'center'
-                      cursor: 'pointer'
-                      padding: 2
-                      border: '1px solid #aaa'
-                      borderRadius: 3
-                      backgroundColor: 'white'
-                      display: if toolbar_horizontal then 'inline-block' else 'block'
-                      marginBottom: 4
+                    style: @props.button_style or {}
                     title: button.title
                     value: button.value 
                     onClick: button.onClick
@@ -348,19 +346,34 @@ window.WysiwygEditor = ReactiveComponent
   componentDidMount : -> 
     return if !@supports_Quill
 
-    getHTML = => 
-      ReactDOM.findDOMNode(@).querySelector(".ql-editor").innerHTML
+    # Quill 2's internal markup (e.g. bullet lists as <ol><li data-list="bullet">)
+    # doesn't render correctly outside the editor, so save its semantic HTML.
+    # Quill 2.0.3's getSemanticHTML converts every space to &nbsp;, which would
+    # prevent line wrapping, so convert those back.
+    getHTML = =>
+      return "" if @editor.getLength() <= 1 # just the trailing newline
+      @editor.getSemanticHTML().replace(/&nbsp;/g, ' ')
 
     # Attach the Quill wysiwyg editor
     @editor = new Quill @refs.editor,
       modules: 
         toolbar: 
           container: @refs.toolbar
+        keyboard:
+          # Turn off Quill's default Tab bindings (which insert tabs or indent) so 
+          # that Tab and Shift+Tab move focus in and out of the editor like any other 
+          # form field. Without this the editor is a keyboard trap (WCAG 2.1.2). 
+          bindings:
+            'tab': false
+            'remove tab': false
+            'indent': true
+            'outdent': true
+            'table tab': false
+            'indent code-block': false
+            'outdent code-block': false
       styles: true #if/when we want to define all styles, set to false
       placeholder: @props.placeholder
 
-    keyboard = @editor.getModule('keyboard')
-    delete keyboard.bindings[9]    # 9 is the key code for tab; restore tabbing for accessibility
 
     @editor.on 'text-change', (delta, old_contents, source) =>
       my_data = bus_fetch @props.editor_key
@@ -404,7 +417,6 @@ html .ql-container{
 }
 .ql-editor {
   min-height: 120px;
-  outline: none;
 }
 
 
@@ -412,7 +424,7 @@ html .ql-container{
   content: attr(data-placeholder);
   pointer-events: none;
   position: absolute;
-  color: rgba(0,0,0,.4);
+  color: #000000aa;
   font-weight: 500;
   width: 100%;
   height: 100%;
@@ -421,8 +433,10 @@ html .ql-container{
   box-sizing: border-box;
 }
 
-.dark .ql-editor.ql-blank::before{
-  color: rgba(255,255,255,.4);
+.dark .ql-editor.ql-blank::before, 
+[data-theme="high-contrast-dark"] .ql-editor.ql-blank::before, 
+[data-theme="dark"] .ql-editor.ql-blank::before{
+  color: #ffffffaa;
 }
 
 
@@ -443,7 +457,7 @@ html .ql-container{
 .ql-editor {
   box-sizing: border-box;
   cursor: text;
-  line-height: 1.42;
+  line-height: 1.4;
   height: 100%;
   outline: none;
   overflow-y: auto;
@@ -486,7 +500,7 @@ html .ql-container{
 }
 .ql-editor ul[data-checked=true] > li::before,
 .ql-editor ul[data-checked=false] > li::before {
-  color: #777;
+  color: var(--text_light_gray);
   cursor: pointer;
   pointer-events: all;
 }
@@ -511,6 +525,10 @@ html .ql-container{
 .ql-editor ol li:before {
   content: counter(list-num, decimal) '. ';
 }
+.ql-editor ol li[data-list="bullet"]:before {
+  content: counter(list-num, disc) '. ';
+}
+
 .ql-editor ol li.ql-indent-1 {
   counter-increment: list-1;
 }
@@ -802,6 +820,9 @@ styles += """
   list-style: outside; padding-bottom: 8px;}
 .wysiwyg_text ol li {
   list-style-type: decimal; }  
+.wysiwyg_text ol li[data-list="bullet"] {
+  list-style-type: disc; }  
+
 .wysiwyg_text ul, .description_field ul,
 .wysiwyg_text ol, .description_field ol {
   padding-left: 20px;

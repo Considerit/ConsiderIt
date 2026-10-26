@@ -193,7 +193,7 @@ styles += """
   }
 
   .DecisionBoard .points_heading_label {
-    color: #{focus_color()};
+    color: var(--focus_color);
     font-weight: 700;
   }
 
@@ -340,6 +340,8 @@ window.Reasons = ReactiveComponent
       #reasons
       SECTION 
         className: "reasons_region"
+        role: 'region'
+        'aria-labelledby': "reasons-heading-#{proposal.id}"
         style : 
           minHeight: if show_all_points then minheight     
           padding: "#{if draw_handle && !TABLET_SIZE() then '24px' else '0'} 0 0 0"
@@ -348,8 +350,8 @@ window.Reasons = ReactiveComponent
           overflowX: if !show_all_points then 'auto' 
 
         H2
-          className: 'hidden'
-
+          className: 'screen-reader-only'
+          id: "reasons-heading-#{proposal.id}"
           translator
             id: "engage.reasons_section_explanation"
             'Why people think what they do about the proposal'
@@ -440,13 +442,12 @@ window.Reasons = ReactiveComponent
         BUTTON 
           id: "show_all_reasons"
           style: 
-            backgroundColor: "#eee"
+            backgroundColor: "var(--bg_lightest_gray)"
             padding: '12px 0'
             fontSize: 24
             textAlign: 'center'
             textDecoration: 'underline'
             border: 'none'
-            #border: '1px solid rgba(0,0,0,.5)'                
             cursor: 'pointer'
             display: 'block'
             width: "var(--BODY_WIDTH)"
@@ -460,7 +461,7 @@ window.Reasons = ReactiveComponent
 
           TRANSLATE
             id: "engage.show_all_thoughts"
-            "Show All Reasons"
+            "Show All Considerations"
 
 
 
@@ -471,7 +472,6 @@ styles += """
 
   .save_opinion_button {
     display: none;
-    background-color: #{focus_color()};
     width: 100%;
     margin-top: 14px;
     border-radius: 16px;
@@ -483,12 +483,6 @@ styles += """
   }    
 
   .summary .give_opinion_button {
-    background-color: #{focus_color()};
-    display: block;
-    color: white;
-    padding: .25em 18px;
-    margin: 0;
-    font-size: 16px;
     width: 100%;
     border-radius: 16px;
     box-shadow: none;
@@ -507,16 +501,11 @@ styles += """
   }
 
   .below_save {  text-align:center;  }
-  .below_save .btn {
-    margin: 10px;
-    border: solid 1px #ddd;
-    border-radius: 15px;
-    font-weight: lighter;
-    font-size: 0.9em;
-    background-color: #eee;
-    color: black;
+  .below_save .selector_button {
+    padding: .325rem 1.5rem .4rem
   }
-  .below_save .btn svg {  margin-left:20px;  }
+
+  .below_save button svg {  margin-left:20px;  }
 
 
   .decision_board_body {
@@ -527,12 +516,12 @@ styles += """
 
   .crafting .decision_board_body {
     transform: translate(0, 10px);
-    background-color: white;
+    background-color: var(--bg_light);
   }
 
   .results .decision_board_body {
     border-style: solid;
-    background-color: #{focus_color()};
+    background-color: var(--focus_color);
     cursor: pointer;
     min-height: 32px;
   }
@@ -600,7 +589,7 @@ window.DecisionBoard = ReactiveComponent
     mode = getProposalMode(proposal)
 
     decision_board_style =
-      borderColor: focus_color()
+      borderColor: "var(--focus_color)"
       transition: if @last_proposal_mode != mode || @transitioning  
                     "transform #{CRAFTING_TRANSITION_SPEED}ms, " + \
                     "width #{CRAFTING_TRANSITION_SPEED}ms, " + \
@@ -639,7 +628,7 @@ window.DecisionBoard = ReactiveComponent
 
 
       H3 
-        className: 'hidden'
+        className: 'screen-reader-only'
         style: 
           display: if !TABLET_SIZE() && mode == 'results' then 'none'
 
@@ -659,22 +648,22 @@ window.DecisionBoard = ReactiveComponent
         key: 'body' 
         className:'decision_board_body'
         style: decision_board_style
-        onClick: => 
-          if mode == 'results' 
+        role: if mode == 'results' then 'button'
+        tabIndex: if mode == 'results' then 0
+        onClick: if mode == 'results' then => 
+          can_opine = canUserOpine proposal                                  
 
-            can_opine = canUserOpine proposal                                  
-
-            if can_opine > 0
-              update_proposal_mode(proposal, 'crafting', 'give_opinion_button')
-            else
-              # trigger authentication
-              reset_key 'auth',
-                form: 'create account'
-                goal: 'To participate, please introduce yourself.'
-                after: =>
-                  can_opine = canUserOpine proposal
-                  if can_opine > 0 
-                    update_proposal_mode(proposal, 'crafting', 'give_opinion_button')
+          if can_opine > 0
+            update_proposal_mode(proposal, 'crafting', 'give_opinion_button')
+          else
+            # trigger authentication
+            reset_key 'auth',
+              form: 'create account'
+              goal: 'To participate, please introduce yourself.'
+              after: =>
+                can_opine = canUserOpine proposal
+                if can_opine > 0 
+                  update_proposal_mode(proposal, 'crafting', 'give_opinion_button')
 
 
 
@@ -717,20 +706,8 @@ window.DecisionBoard = ReactiveComponent
 
           # only shown during results, but needs to be present always for animation
           if opinion_prompt
-            BUTTON
+            DIV
               className: 'give_opinion_button btn'
-              onClick: (e) => 
-                if mode != 'results'
-                  e.stopPropagation() 
-                  update_proposal_mode(proposal, 'crafting', 'give_opinion_button') 
-
-              onKeyPress: (e) => 
-                if e.which == 32 || e.which == 13
-                  if mode != 'results'
-                    e.stopPropagation() 
-                    update_proposal_mode(proposal, 'crafting', 'give_opinion_button') 
-
-
               opinion_prompt
 
 
@@ -747,19 +724,6 @@ window.DecisionBoard = ReactiveComponent
           'aria-label': translator 'engage.update_opinion_button', 'Show everyone\'s opinion'
 
           translator 'engage.update_opinion_button', 'Show everyone\'s opinion'
-
-        
-        if !your_opinion.key || (your_opinion.key && permit('update opinion', proposal, your_opinion) < 0)
-
-          DIV 
-            className: 'below_save'
-            style: 
-              display: 'none'
-                      
-            BUTTON 
-              className:'cancel_opinion_button primary_cancel_button'
-              onClick: => update_proposal_mode(proposal, 'results', 'cancel_button')
-
               
 
         if your_opinion.key && permit('update opinion', proposal, your_opinion) > 0 && mode == 'crafting'
@@ -783,44 +747,50 @@ window.DecisionBoard = ReactiveComponent
             DIV 
               style: 
                 textAlign: 'center'
-                color: '#383838'
+                color: "var(--text_gray)"
                 margin: "16px 0 4px 0"
                 fontSize: 14
                 fontWeight: 300
 
-              
-
               translator 'engage.below_save_opinion_buttons', 'Your opinion and comments about this proposal:'
                       
             
-            DIV null,
-              BUTTON
-                key: 'anonymize opinion button'
-                className: 'btn'
-                style:  {  backgroundColor: (if your_opinion.hide_name then focus_blue else null), display: if customization('anonymize_permanently') then 'none'  }
-                "data-tooltip": anonymize_button_tooltip
-                "aria-label": anonymize_button_tooltip
-                onClick: -> toggle_anonymize_opinion(your_opinion)
+            DIV 
+              style:
+                display: 'flex'
+                justifyContent: 'center'
+                gap: 18
 
-                SPAN
-                  key: 'anonymize opinion label'
-                  style: 
-                    textTransform: 'capitalize'
-                    color: if your_opinion.hide_name then 'white'
-                    fontWeight: if your_opinion.hide_name then 600
-                  anonymize_button_text
 
-                if not TABLET_SIZE()
+              if !customization('anonymize_permanently')
+                BUTTON
+                  key: 'anonymize opinion button'
+                  className: "selector_button #{if your_opinion.hide_name then 'active' else ''}"
+                  "data-tooltip": anonymize_button_tooltip
+                  "aria-label": anonymize_button_tooltip
+
+
+                  onClick: -> toggle_anonymize_opinion(your_opinion)
+
                   SPAN
-                    key: 'anonymize opinion icon'
-                    style: {  height:'22px', display:'inline-block', verticalAlign:'bottom'  }
-                    iconAnonymousMask YOUR_OPINION_BUTTON_SIZE, if your_opinion.hide_name then '#FFFFFF' else '#888888'
+                    key: 'anonymize opinion label'
+                    style: 
+                      textTransform: 'capitalize'
+                      color: if your_opinion.hide_name then "var(--text_light)"
+                      fontWeight: if your_opinion.hide_name then 600
+                    anonymize_button_text
+
+                  if not TABLET_SIZE()
+                    iconAnonymousMask YOUR_OPINION_BUTTON_SIZE, if your_opinion.hide_name then "var(--text_light)" else "var(--text_neutral)"
 
               BUTTON
                 key: 'remove opinion button'
-                className: 'btn'
+                className: "selector_button"
                 "data-tooltip": your_opinion_i18n.remove_opinion_button()
                 "aria-label": your_opinion_i18n.remove_opinion_button()
+                style: 
+                  display: "flex"
+                  alignItems: "center"
 
                 onClick: -> remove_opinion(your_opinion)
 
@@ -831,10 +801,7 @@ window.DecisionBoard = ReactiveComponent
                   translator('engage.delete_button', 'delete')
 
                 if not TABLET_SIZE()
-                  SPAN
-                    key: 'remove opinion icon'
-                    style: {  height:'20px', display:'inline-block', verticalAlign:'bottom'  }
-                    iconX YOUR_OPINION_BUTTON_SIZE, '#444444'
+                  iconX YOUR_OPINION_BUTTON_SIZE, "var(--text_gray)"
 
 
 
@@ -1060,7 +1027,7 @@ window.PointsList = ReactiveComponent
     
     HEADING = if @props.rendered_as == 'community_point' then H3 else H4 
 
-    wrapper [
+    wrapper proposal, [
 
 
       HEADING 
@@ -1108,7 +1075,7 @@ window.PointsList = ReactiveComponent
             style: 
               fontStyle: 'italic'
               textAlign: 'center'
-              color: '#777'
+              color: "var(--text_light_gray)"
               display: if WINDOW_WIDTH() < 430 then 'none'
 
             if none_given
@@ -1143,8 +1110,7 @@ window.PointsList = ReactiveComponent
     contains_selection || is_editing
 
 
-  drawCommunityPoints: (children) -> 
-    proposal = bus_fetch @props.proposal 
+  drawCommunityPoints: (proposal, children) -> 
 
     mode = getProposalMode(proposal)
 
@@ -1169,33 +1135,42 @@ window.PointsList = ReactiveComponent
     SECTION
       key: 'community_points'
       className: "point_list points_by_community #{@props.valence}_by_community"
+      "aria-hidden": @props.style?.visibility == 'hidden'
+      "aria-labelledby": @local.key.replace(/\//g,'-')
+
       style: _.defaults (@props.style or {}),
         minHeight: (if points_for_proposal(proposal).length > 4 && mode == 'crafting' then window.innerHeight else 100)
         zIndex: if @columnStandsOut() then 6 else 1
         transition: "transform #{CRAFTING_TRANSITION_SPEED}ms, width #{CRAFTING_TRANSITION_SPEED}ms"
         transform: "translate(#{x_pos}, 0)"
+
       if mode == 'crafting' && !TABLET_SIZE()
 
-        [A
-          key: 'skip to'
-          className: 'hidden'
-          href: "##{@props.valence}_on_decision_board"
-          'data-nojax': true
-          onClick: (e) => 
-            e.stopPropagation()
-            document.activeElement?.blur()
-            document.querySelector("[name='#{@props.valence}_on_decision_board']").focus()
+        [
 
-          "Skip to Your points."
-        A key: 'anchor', name: "#{@props.valence}_by_community"]
+          if @props.style?.visibility != 'hidden'
+            A
+              key: 'skip to'
+              className: 'screen-reader-only-focusable'
+              href: "##{@props.valence}_on_decision_board-#{proposal.id}"
+              'data-nojax': true
+              onClick: (e) => 
+                e.stopPropagation()
+                document.activeElement?.blur()
+                document.querySelector("[name='#{@props.valence}_on_decision_board-#{proposal.id}']").focus()
+
+              "Skip to Your points."
+          A key: 'anchor', name: "#{@props.valence}_by_community-#{proposal.id}", tabIndex: -1
+        ]
 
       children
 
 
-  drawYourPoints: (children) -> 
+  drawYourPoints: (proposal, children) -> 
       
     SECTION 
       className: "point_list points_on_decision_board #{@props.valence}_on_decision_board"
+      "aria-labelledby": @local.key.replace(/\//g,'-')
       style: _.defaults (@props.style or {}),
         display: 'inline-block'
         verticalAlign: 'top'        
@@ -1203,7 +1178,7 @@ window.PointsList = ReactiveComponent
         position: 'relative'
         zIndex: if @columnStandsOut() then 6 else 1        
         float: if @props.valence == 'pros' then 'right' else 'left'    
-      A name: "#{@props.valence}_on_decision_board"
+      A name: "#{@props.valence}_on_decision_board-#{proposal.id}", tabIndex: -1
       children
 
   drawAddNewPoint: -> 
@@ -1257,13 +1232,13 @@ window.PointsList = ReactiveComponent
             noun = capitalize noun   
 
             A
-              className: 'hidden'
-              href: "##{@props.valence}_by_community"
+              className: 'screen-reader-only-focusable'
+              href: "##{@props.valence}_by_community-#{proposal.id}"
               'data-nojax': true
               onClick: (e) => 
                 e.stopPropagation()
                 document.activeElement?.blur()
-                document.querySelector("[name='#{@props.valence}_by_community']").focus()
+                document.querySelector("[name='#{@props.valence}_by_community-#{proposal.id}']").focus()
 
               "Skip to #{noun} points by others to vote on important ones."
  
@@ -1300,7 +1275,6 @@ window.PointsList = ReactiveComponent
         is_left: @props.valence == 'cons'
         style: {}
         text_style:
-          #color: focus_color()
           textDecoration: 'underline'
 
 
@@ -1335,18 +1309,18 @@ window.PointsList = ReactiveComponent
               left: -25px;
               top: 5px;
               font-weight: #{if browser.high_density_display then 300 else 400};
-              color: black;
+              color: var(--text_dark);
             }
           """
 
 
       BUTTON 
         className: "write_#{@props.valence} btn"
+        disabled: bus_fetch(shared_local_key(proposal)).has_focus == 'edit point'
+
         style: 
           marginLeft: 8
-          backgroundColor: focus_color()
           position: 'relative'
-          opacity: if bus_fetch(shared_local_key(proposal)).has_focus == 'edit point' then .1
 
 
         TRANSLATE 
@@ -1443,7 +1417,7 @@ window.PointsList = ReactiveComponent
               key: 'rect'
               width: '100%'
               height: '100%'
-              fill: 'white'
+              fill: "var(--bg_light)"
 
             do => 
               if is_left
@@ -1463,7 +1437,7 @@ window.PointsList = ReactiveComponent
                   y1: y1
                   x2: x2 
                   y2: y2 
-                  stroke: focus_color()
+                  stroke: "var(--focus_color)"
                   strokeWidth: 1
                   strokeOpacity: .2
 
@@ -1475,7 +1449,7 @@ window.PointsList = ReactiveComponent
           rx: 16
           ry: 16
           fill: "url(#drop-stripes-#{is_left}-#{s_w}-#{s_h})"
-          stroke: focus_color()
+          stroke: "var(--focus_color)"
           strokeWidth: stroke_width
           strokeDasharray: '4, 3'
 
@@ -1495,8 +1469,8 @@ window.PointsList = ReactiveComponent
         apex_xfrac: 0
         width: POINT_MOUTH_WIDTH
         height: POINT_MOUTH_WIDTH
-        fill: '#F9FBFD'  #TODO: somehow make this focus_color() color mixed with white @ .2 opacity
-        stroke: focus_color()
+        fill:  "var(--bg_light)"  #TODO: somehow make this focus_color color mixed with white @ .2 opacity
+        stroke: "var(--focus_color)"
         stroke_width: 6
         dash_array: '24, 18'
         style: mouth_style
@@ -1555,7 +1529,7 @@ GroupSelectionRegion = ReactiveComponent
     DIV 
       style: 
         width: wrapper_width
-        border: if !PHONE_SIZE() then "3px solid #{if get_selected_point() then '#eee' else focus_color() }"
+        border: if !PHONE_SIZE() then "3px solid #{if get_selected_point() then "var(--brd_lightest_gray)" else 'var(--focus_color)' }"
         height: '100%'
         position: 'absolute'
         borderRadius: 32
@@ -1566,14 +1540,14 @@ GroupSelectionRegion = ReactiveComponent
       if !PHONE_SIZE()
         DIV 
           style: cssTriangle 'top', \
-                             (if get_selected_point() then '#eee' else focus_color()), \
+                             (if get_selected_point() then "var(--brd_lightest_gray)" else "var(--focus_color)"), \
                              w, h,               
                                 position: 'relative'
                                 top: -26
                                 left: left - w / 2
 
           DIV
-            style: cssTriangle 'top', 'white', w - 1, h - 1,
+            style: cssTriangle 'top', "var(--brd_light)", w - 1, h - 1,
               position: 'relative'
               left: -(w - 2) / 2
               top: 6
@@ -1596,7 +1570,7 @@ GroupSelectionRegion = ReactiveComponent
           style: _.extend name_style,
             position: 'absolute'
             top: -(avatar_height + 172)
-            color: focus_color()
+            color: "var(--focus_color)"
             left: "min(#{wrapper_width - name_width}px, max(0px, calc(#{left}px - #{name_width / 2}px)))" #Math.min(wrapper_width - name_width - 10, Math.max(0, left - name_width / 2))
           title 
   

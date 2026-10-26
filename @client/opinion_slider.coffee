@@ -20,12 +20,8 @@ styles += """
   .add_reasons_callout {
     --ADD_REASONS_CALLOUT_BUTTON_WIDTH: 130px;
 
-    background-color: #{focus_color()};
-    color: white;
-    font-weight: 600;
     font-size: 10px;
     border-radius: 8px;
-    border: none;
     padding: 4px 12px;
     position: absolute;
     opacity: 0;
@@ -35,23 +31,36 @@ styles += """
     top: 32px;
   }
 
+  .is_collapsed.ProposalItem:hover .add_reasons_callout, 
+  .is_collapsed.ProposalItem:focus-within .add_reasons_callout,
   .ProposalItem:hover .add_reasons_callout, 
   .ProposalItem:focus-within .add_reasons_callout,
   .one-col .ProposalItem .add_reasons_callout {
     opacity: 1;
+    display: block;
+  }
+
+  .ProposalItem:hover .add_reasons_callout, 
+  .ProposalItem:focus-within .add_reasons_callout,
+  .one-col .ProposalItem .add_reasons_callout {
+    opacity: 1;
+    display: auto;
   }
 
   .collapsing.ProposalItem:hover .add_reasons_callout,
-  .collapsing.ProposalItem:focus-within .add_reasons_callout {
+  .collapsing.ProposalItem:focus-within .add_reasons_callout,
+  .is_collapsed.ProposalItem .add_reasons_callout,
+  .is_collapsed.ProposalItem .add_reasons_callout {
     opacity: 0;
     display: none;
   }  
+
 
   .add_reasons_callout.slide_prompt {
     --ADD_REASONS_CALLOUT_BUTTON_WIDTH: 160px;
 
     background-color: transparent;
-    color: #{focus_color()};
+    color: var(--focus_color);
   }
 
 """
@@ -99,7 +108,6 @@ window.OpinionSlider = ReactiveComponent
       className: 'OpinionSlider'
       style: 
         width: @props.width
-        filter: if @props.backgrounded then 'grayscale(100%)'
 
 
       Slider
@@ -110,9 +118,9 @@ window.OpinionSlider = ReactiveComponent
         base_height: @props.base_height or 2
 
         base_color: if mode == 'crafting' #slider.docked
-                      'rgb(175, 215, 255)' 
+                      "var(--upgrade_color)"
                     else 
-                      'rgb(153, 153, 153)'
+                      "var(--slidergram_base_color)"
 
 
         # base_endpoint: if slider.docked then 'square' else 'sharp'
@@ -125,7 +133,7 @@ window.OpinionSlider = ReactiveComponent
         handle_width: @props.handle_width
 
         handle_props: 
-          color: if @props.backgrounded then '#ccc' else focus_color()
+          color: "var(--focus_color)"
           detail: @props.focused
 
         handle_style: 
@@ -201,7 +209,7 @@ window.OpinionSlider = ReactiveComponent
     return SPAN null if !opinion_prompt
 
     BUTTON
-      className: "add_reasons_callout #{if slide_prompt then 'slide_prompt' else ''}"
+      className: "btn add_reasons_callout #{if slide_prompt then 'slide_prompt' else ''}"
       style:
         left: "calc( #{(slider.value + 1) / 2} * var(--ITEM_OPINION_WIDTH) - var(--ADD_REASONS_CALLOUT_BUTTON_WIDTH) / 2)"
 
@@ -210,11 +218,6 @@ window.OpinionSlider = ReactiveComponent
           proposal: proposal 
           prefer_personal_view: true                   
         
-      onKeyPress: (e) => 
-        if e.which == 32 || e.which == 13
-          toggle_expand
-            proposal: proposal
-            prefer_personal_view: true  
 
       opinion_prompt
 
@@ -258,9 +261,8 @@ window.OpinionSlider = ReactiveComponent
       pointerEvents: 'none' 
       fontSize: if TABLET_SIZE() then "22px" else "30px"
       fontWeight: if !TABLET_SIZE() then 700
-      color: if @props.backgrounded then '#eee' else focus_color()
+      color: "var(--focus_color)"
       textAlign: 'center'
-      #visibility: if @props.backgrounded then 'hidden'
 
     # Keep feedback centered over handle, but keep within the bounds of 
     # the slider region when the slider is in an extreme position. 
@@ -428,15 +430,16 @@ window.SliderBubblemouth = ReactiveComponent
     mode = getProposalMode(proposal)
     if mode == 'crafting'
       transform = "translate(0, -4px) scale(1,.7)"
-      fill = 'white'
+      fill = "var(--bg_light)"
 
     else 
       transform = "translate(0, -22px) scale(.6,.6) "
-      fill = focus_color()
+      fill = "var(--focus_color)"
 
 
     DIV 
       key: 'slider_bubblemouth'
+      "aria-hidden": true
       style: 
         left: left
         top: top
@@ -452,7 +455,7 @@ window.SliderBubblemouth = ReactiveComponent
         width: w
         height: h
         fill: fill
-        stroke: focus_color()
+        stroke: "var(--focus_color)"
         stroke_width: if mode == 'crafting' then stroke_width else 0
 
 

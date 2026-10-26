@@ -8,14 +8,9 @@ window.stop_editing_forum = ->
 
 styles += """
   [data-widget="EditForum"] button {
-    border: none;
-    background-color: #{selected_color}; 
-    color: white; 
-    font-weight: 700;
+    background-color: var(--selected_color); 
     padding: 10px 22px; 
     border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0,0,0,.4);
   }
 
 """
@@ -53,7 +48,7 @@ window.EditForum = ReactiveComponent
           marginLeft: if !TABLET_SIZE() then -152
 
         BUTTON 
-
+          className: "btn"
           onClick: enter_edit
 
           if PHONE_SIZE()
@@ -62,29 +57,17 @@ window.EditForum = ReactiveComponent
             translator 'forum.edit_button', 'Edit Banner & Forum Structure'
 
     else 
-
       DIV null,
         BUTTON 
-          style: 
-            boxShadow: '0 1px 2px rgba(0,0,0,.5)'
+          className: "btn"
           onClick: stop_editing_forum
 
           translator 'shared.done_editing', 'Done Editing Forum'
 
-
         if subdomain.errors?.length > 0
-          DIV 
+          ErrorBlock subdomain.errors, 
             style: 
-              borderRadius: 8
-              margin: 20
-              padding: 20
-              backgroundColor: '#FFE2E2'
+              marginBottom: 10
+              marginLeft: 20 
 
-            H1 style: {fontSize: 18}, 'Ooops!'
-
-            for error in subdomain.errors
-              DIV 
-                style: 
-                  marginTop: 10
-                error
 

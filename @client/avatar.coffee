@@ -146,13 +146,9 @@ window.AvatarPopover = ReactiveComponent
                   DIV 
                     key: 'attribute name'
                     style: 
-                      # letterSpacing: -1
                       fontSize: 14
                       fontStyle: 'italic'
-                      # display: 'inline-block'
-                      # paddingRight: 8 
-                      # textTransform: 'uppercase'   
-                      # color: '#555'              
+
                     attribute.name 
 
                   for val in user_val
@@ -162,7 +158,7 @@ window.AvatarPopover = ReactiveComponent
                       style: 
                         fontSize: 14
                         backgroundColor: if is_grouped then get_color_for_group(val or unreported)
-                        color: if is_grouped then 'white'
+                        color: if is_grouped then "var(--text_light)"
                         display: 'inline-block'
                         marginRight: 8
                         padding: if is_grouped then '2px 8px'
@@ -199,7 +195,7 @@ window.AvatarPopover = ReactiveComponent
                 className: 'like_link'
                 style: 
                   paddingLeft: 8 
-                  # color: focus_color()
+
                 onClick: toggle_reasons
                 if @local.show_reasons                 
                   translator 'avatar_popover.hide_reasons', 'Hide reasons'
@@ -220,14 +216,14 @@ window.AvatarPopover = ReactiveComponent
                     maxWidth: 450
                     borderRadius: 16
                     padding: '0.5em 16px'
-                    backgroundColor: '#f6f7f9'
-                    boxShadow: '#b5b5b5 0 1px 1px 0px'
+                    backgroundColor: "var(--bg_speech_bubble)"
+                    boxShadow: "var(--shadow_dark_25) 0 1px 1px 0px"
                     margin: '0px 16px 12px 16px'
 
                   SPAN 
                     style: 
                       textTransform: 'uppercase'
-                      color: '#555'
+                      color: "var(--text_gray)"
                       paddingRight: 8
                     if point.is_pro 
                       get_point_label 'pro'
@@ -283,7 +279,7 @@ window.avatar = (user, props) ->
       user = arest.cache[user]
     else 
       bus_fetch user
-      return SPAN null
+      return SPAN {key: Math.random()}
 
   style = {}
   if attrs.style
@@ -311,7 +307,7 @@ window.avatar = (user, props) ->
     # In most cases the white will allow for a transparent look. It 
     # isn't set to transparent because a transparent icon in many cases
     # will reveal content behind it that is undesirable to show.  
-    style.backgroundColor = 'white'
+    style.backgroundColor = "var(--bg_item)"
 
   else if attrs.set_bg_color && !attrs.custom_bg_color 
     user.bg_color ?= hsv2rgb(Math.random() / 5 + .6, Math.random() / 8 + .025, Math.random() / 4 + .4)
@@ -322,7 +318,7 @@ window.avatar = (user, props) ->
   if attrs.alt 
     alt = attrs.alt.replace('<user>', name) 
   else 
-    alt = name 
+    alt = "Image of #{name}" 
 
   classes = "avatar#{if attrs.className then ' ' + attrs.className else ''}"
   if anonymous 
@@ -334,7 +330,9 @@ window.avatar = (user, props) ->
     key: user.key
     className: classes
     'data-user': user.key
+    "aria-haspopup": 'dialog'
     'data-popover': if !props.hide_popover && !anonymous && !screencasting() then alt 
+    'alt': alt     
     'data-tooltip': if anonymous then alt
     'data-anon': anonymous  
     tabIndex: if props.focusable then 0 else -1
@@ -382,7 +380,7 @@ styles += """
   padding: 0;
   border-radius: 50%;
   background-size: cover;
-  background-color: #{default_avatar_in_histogram_color}; 
+  background-color: var(--bg_light_gray); 
   transition: width 750ms, height 750ms, transform 750ms, background-color 750ms, opacity 50ms;
   user-select: none; 
   -moz-user-select: none; 
@@ -398,7 +396,7 @@ img.avatar:after {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #f7954c; 
+  background-color: var(--attention_orange); 
   border-radius: 50%;
   content: "";
 }
@@ -410,7 +408,7 @@ img.avatar:after {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: black;
+  color: var(--text_dark);
   font-size: 24px;
   font-weight: bold;
 }
@@ -441,21 +439,6 @@ window.getCanvasAvatar = (user, anonymous=false) ->
 
   cached_avatars[key] or cached_avatars.default
 
-
-colors_used = {}
-window.createHitRegionAvatar = (user) -> 
-  
-  while !color? || color of colors_used
-    r = Math.round(Math.random() * 255)
-    g = Math.round(Math.random() * 255)
-    b = Math.round(Math.random() * 255)
-    color = "rgb(#{r},#{g},#{b})"
-  colors_used[color] = true
-
-  user.hit_region_color = color
-  createUserIcon user.hit_region_color
-
-
 group_colored_icons = {}
 window.getGroupIcon = (key, color) ->
   if key not of group_colored_icons
@@ -464,7 +447,7 @@ window.getGroupIcon = (key, color) ->
 
 # Note: this is actually kinda expensive on large forums, in memory and cpu
 icon_cache = {}
-createUserIcon = (fill) ->
+window.createUserIcon = (fill) ->
   if fill of icon_cache
     return icon_cache[fill]
 
@@ -591,8 +574,8 @@ question_mark_icon = () ->
   # svgPath2 = "M13.2271 16.9535C13.2271 17.6313 12.6777 18.1807 11.9999 18.1807C11.3221 18.1807 10.7726 17.6313 10.7726 16.9535C10.7726 16.2757 11.3221 15.7262 11.9999 15.7262C12.6777 15.7262 13.2271 16.2757 13.2271 16.9535Z"
 
   # Draw the question_mark icon onto the question_mark canvas
-  qm_ctx.fillStyle = 'black'
-  qm_ctx.strokeStyle = 'white'
+  qm_ctx.fillStyle = "var(--bg_dark)"
+  qm_ctx.strokeStyle = "var(--text_light)"
   qm_ctx.lineWidth = 1
 
   path1 = new Path2D(svgPath1)
@@ -614,12 +597,13 @@ window.LoadAvatars = ReactiveComponent
     loading = bus_fetch('avatar_loading')
     SPAN null
 
-  load: -> 
+  load: (timeout_len) -> 
     users = bus_fetch '/users'
     current_user = bus_fetch '/current_user'  # subscribe for changes to login status & avatar
     return if !users.users || bus_fetch('location').url.match('/dashboard')
 
     loading = bus_fetch('avatar_loading')
+
     app = arest.cache['/application'] or bus_fetch('/application')
 
     avatars_to_load = {}
@@ -676,7 +660,9 @@ window.LoadAvatars = ReactiveComponent
 
           pic.src = img
       else 
-        setTimeout @load, 10   
+        setTimeout => 
+          @load(timeout_len * 2)
+        , timeout_len
 
-  componentDidMount: -> @load()
-  componentDidUpdate: -> @load()
+  componentDidMount: -> @load(10)
+  componentDidUpdate: -> @load(10)

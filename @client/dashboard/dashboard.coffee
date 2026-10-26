@@ -21,28 +21,28 @@ window.styles += """
   #DASHBOARD-flex-container {
     display: flex;
     flex-wrap: nowrap;
-    border-top: 1px solid #EEEEEE;
+    border-top: 1px solid var(--brd_lightest_gray);
   }
   #DASHBOARD-menu {
     /* width: 265px; */
     flex-grow: 0;
-    background: rgb(246,246,246);
-    background: linear-gradient(180deg, rgba(246,246,246,1) 88%, rgba(255,255,255,1) 100%);
+    background: var(--bg_container);
+    background: linear-gradient(180deg, var(--bg_container) 88%, var(--bg_light) 100%);
     padding-bottom: 70px;
-    border: 1px solid #ddd;
+    /* border: 1px solid var(--brd_light_gray); */
   }
 
   #DASHBOARD-menu a {
     text-decoration: none;
-    color: black;
+    color: var(--text_dark);
     padding: 8px 24px;
     display: block;
     font-weight: 400;
     white-space: nowrap;
     font-size: 14px;  
   } #DASHBOARD-menu a.active {
-     background-color: #{selected_color};
-     color: white;
+     background-color: var(--focus_color);
+     color: var(--text_light);
   } 
   
 
@@ -71,14 +71,14 @@ window.styles += """
   #DASHBOARD-title {
     font-weight: 700;
     font-size: 36px;
-    color: #{selected_color};
+    color: var(--focus_color);
     margin-bottom: 36px;
   }
 
   #DASHBOARD-main .explanation {
     font-size: 14px;
     margin: 8px 0;
-    color: #444;
+    color: var(--text_gray);
   }
 
   #DASHBOARD-main .explanation p {
@@ -91,9 +91,12 @@ window.styles += """
     cursor: pointer;
   }
 
-  #DASHBOARD-main .btn {
-    background-color: #{selected_color};
+  [data-widget="Dashboard"], [data-widget="Dashboard"]:before, [data-widget="Dashboard"]:after {
+    --focus_color: var(--selected_color);
   }
+
+
+
 
   @media #{NOT_LAPTOP_MEDIA} {
     #DASHBOARD-main {
@@ -168,6 +171,8 @@ get_dash_title = (url) ->
 
     else 
       null
+
+
   title
 
 
@@ -184,10 +189,17 @@ window.Dashboard = ReactiveComponent
     loc = bus_fetch 'location'
 
     title = get_dash_title loc.url
-        
+
 
     if title == null 
       return DIV null, "No Dashboard at #{loc.url}"
+
+    doc = bus_fetch('document')
+    if doc.title != title
+      doc.title = title
+      save doc
+
+
 
     Widget = get_dash_widget(loc.url)
 
@@ -199,10 +211,10 @@ window.Dashboard = ReactiveComponent
         href: opts.href
         # style: 
         #   paddingLeft: 44
-        if opts.icon && false
-          SPAN
-            className: 'icon'
-            dangerouslySetInnerHTML: __html: dashboard_icons[opts.icon]( if active then 'white' else 'black')
+        # if opts.icon && false
+        #   SPAN
+        #     className: 'icon'
+        #     dangerouslySetInnerHTML: __html: dashboard_icons[opts.icon]( if active then 'white' else 'black')
 
         SPAN 
           className: 'label'
@@ -212,7 +224,7 @@ window.Dashboard = ReactiveComponent
           UpgradeForumButton
             tag: SPAN
             style: 
-              backgroundColor: '#666'
+              backgroundColor: "var(--bg_dark_gray)"
 
 
     draw_menu_separator = (title) -> 
@@ -222,12 +234,14 @@ window.Dashboard = ReactiveComponent
 
     DIV 
       id: "DASHBOARD-flex-container"
+      "aria-label": "Admin dashboard navigation"
       "data-name": loc.url
       style: 
         width: DASHBOARD_WIDTH()
 
-      DIV
+      NAV
         id: "DASHBOARD-menu"
+        'aria-label': translator "dashboard.navigation_label", "Dashboard navigation menu"
 
         draw_menu_separator 'settings'
 
@@ -320,10 +334,10 @@ if !browser.is_mobile
       -webkit-appearance: button;
       -moz-appearance: button;
       appearance: button;
-      border: 4px solid #ccc;
-      border-top-color: #bbb;
-      border-left-color: #bbb;
-      background: #fff;
+      border: 4px solid var(--brd_light_gray);
+      border-top-color: var(--brd_mid_gray);
+      border-left-color: var(--brd_mid_gray);
+      background: var(--bg_light);
       width: 20px;
       height: 20px;
       border-radius: 50%;
@@ -332,7 +346,7 @@ if !browser.is_mobile
       margin-top: 0;
     }
     .radio_group input[type='radio']:checked{
-      border: 10px solid #{focus_blue};
+      border: 10px solid var(--focus_color);
     }
 
     .radio_group {
@@ -343,62 +357,68 @@ if !browser.is_mobile
 
 window.styles += """
 
-  /* From https://www.w3schools.com/howto/howto_css_switch.asp */
-  /* The switch - the box around the slider */
-
-  .toggle_switch {
+  /* Modified from https://alvaromontoro.com/blog/68017/creating-a-css-only-toggle-switch */
+  input:where([type="checkbox"][role="switch"]) {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
     position: relative;
-    display: inline-block;
+    font-size: inherit;
     width: 52px;
     height: 26px;
+    box-sizing: content-box;
+    border-radius: 1em;
+    color: inherit;
+    background-color: var(--bg_lighter_gray);  /* widget bg */
+    box-shadow: 0 1px 2px var(--shadow_dark_50);    
   }
 
-  /* Hide default HTML checkbox */
-  .toggle_switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-
-  /* The slider */
-  .toggle_switch .toggle_switch_circle {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    -webkit-transition: .4s;
-    transition: .4s;
-    border-radius: 34px;
-    box-shadow: 0 1px 2px rgb(0 0 0 / 40%);
-
-  }
-
-  .toggle_switch .toggle_switch_circle:before {
-    position: absolute;
+  input:where([type="checkbox"][role="switch"])::before {
     content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(2px, -50%);
+    box-sizing: border-box;
     height: 18px;
     width: 18px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
+    margin: 0 0.15em;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--bg_light);
+    box-shadow: 0 1px 2px var(--shadow_dark_20)
     -webkit-transition: .4s;
     transition: .4s;
-    border-radius: 50%;
-    box-shadow: 0 1px 2px rgb(0 0 0 / 20%)
   }
 
-  input:checked + .toggle_switch_circle {
-    background-color: #{selected_color};
+
+  input:where([type="checkbox"][role="switch"]):checked {
+    background-color: var(--focus_color);
   }
 
-  # input:focus + .toggle_switch_circle {
-  #   box-shadow: 0 0 1px #{selected_color};
-  # }
-
-  input:checked + .toggle_switch_circle:before {
-    transform: translateX(26px);
+  input:where([type="checkbox"][role="switch"]):checked::before {
+    transform: translate(28px, -50%);
   }
+
+
+
+
+
+
+  input:where([type="checkbox"][role="switch"]).small {
+    width: 36px;
+    height: 16px;
+  }
+
+  input:where([type="checkbox"][role="switch"]).small::before {
+    transform: translate(1px, -50%);
+    height: 12px;
+    width: 12px;
+    margin: 0 0.15em;
+  }
+
+  input:where([type="checkbox"][role="switch"]).small:checked::before {
+    transform: translate(18px, -50%);
+  }
+
 """

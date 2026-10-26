@@ -11,32 +11,26 @@ styles += """
     font-size: 15px;
   }
   #flash {
-    color: white;
-    background-color: rgba(0, 0, 0, 0.88);
+    color: var(--text_light);
+    background-color: var(--bg_dark);
     border-radius: 3px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     cursor: default;
     max-width: 400px;
     display: flex;
     font-weight: 600;
+    align-items: center;
   }
 
   #flash.error {
-    background-color: rgba(216, 62, 62, 0.9);
+    background-color: var(--failure_color);
   }
 
   #flash .flash-message {
     padding: 8px 18px;
-    border-right: 1px solid rgba(255,255,255,.5);
-  }
-
-  #flash .flash-close {
+    border-right: 1px solid transparent;
   }
 
   #flash .flash-close button {
-    background-color: transparent;
-    color: white;
-    border: none;
     padding: 8px 18px;
   }
 
@@ -103,7 +97,7 @@ window.Flash = ReactiveComponent
       DIV
         id: 'flash'
         className: if is_error then 'error'
-        'aria-live': "off"
+        'aria-live': "polite"
         role: 'status'
         tabIndex: -1
 
@@ -115,10 +109,8 @@ window.Flash = ReactiveComponent
           className: 'flash-close'
 
           BUTTON 
+
+            'aria-label': translator 'aria.close_flast', "Close flash message"
+            className: 'icon'
             onClick: clear_flash
-            'x'
-
-
-
-
-
+            iconX 16, "var(--text_light)"

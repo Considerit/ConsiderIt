@@ -62,10 +62,9 @@ window.EditList = ReactiveComponent
 
           anchor_tooltip: translator "engage.list-config-icon-tooltip", "Configure list settings" 
           render_anchor: ->
-
             ThreeDotsIcon              
               size: 26
-              fill: '#888'
+              fill: "var(--text_neutral)"
 
           render_option: (option, is_active) ->
             SPAN 
@@ -152,10 +151,7 @@ styles += """
   }
 
   .LIST-fat-header-field {
-    background-color: white;
-    border: 1px solid #eaeaea;
     border-radius: 8px;
-    outline-color: #ccc;
     line-height: 1.4;
     padding: 8px 12px;
   }
@@ -165,7 +161,7 @@ styles += """
     font-weight: 400;
     margin-top: 36px;
     margin-bottom: 4px;
-    color: #{focus_color()};
+    color: var(--focus_color);
     font-size: 18px;
   }
 
@@ -183,9 +179,10 @@ styles += """
   }
 
   .LIST-option-block .permissions_explanation {
-    color: #A0A0A0;
+    color: var(--text_gray);
     font-weight: 400;
     margin-left: 24px;
+    font-size: 12px;
   }
 
   @media #{PHONE_MEDIA} {
@@ -198,17 +195,20 @@ styles += """
     padding-top: 2px;
     position: absolute;
     border: none;
-    outline: none;
-    color: #444;
+    color: var(--text_gray);
     font-size: 12px;
   }
 
   #edit_description .ql-editor {
     min-height: 48px;
     padding: 12px 12px;
-    border: 1px solid #eaeaea;
-    background-color: white;
     text-align: inherit;
+  }
+
+  .LIST-fat-header-field, #edit_description .ql-editor {
+    border: 1px solid var(--brd_light_gray);
+    background-color: var(--bg_light);
+
   }
 
   #edit_description .ql-editor.ql-blank::before {
@@ -230,10 +230,6 @@ styles += """
     height: 18px;
     margin-right: 12px;
     flex-shrink: 0;
-  }
-
-  #edit_description .wysiwyg_text.focused {
-    outline: none;
   }
 
 
@@ -377,7 +373,7 @@ window.EditNewList = ReactiveComponent
             DIV 
               className: 'text-wrapper'
 
-              H1 
+              DIV 
                 className: 'LIST-title'
 
 
@@ -441,12 +437,10 @@ window.EditNewList = ReactiveComponent
             BUTTON 
               className: 'btn'
               style: 
-                backgroundColor: focus_color()
                 fontSize: 24
                 maxWidth: 465
                 width: '100%'
                 marginTop: 36
-                borderRadius: 16
               disabled: (edit_list.list_title or "").length == 0
               onClick: submit
 
@@ -458,7 +452,7 @@ window.EditNewList = ReactiveComponent
             BUTTON
               className: 'like_link'
               style: 
-                color: '#777'
+                color: "var(--text_light_gray)"
                 marginTop: 14
                 
 
@@ -488,7 +482,7 @@ window.EditNewList = ReactiveComponent
         DIV 
           className: 'LIST-field-edit-label'
 
-          translator 'engage.edit_list_item_name', 'What do you call a response to this focus?'
+          translator 'engage.edit_list_item_name', 'What do you call a response to this prompt?'
 
         INPUT 
           ref: 'list_item_name'
@@ -498,7 +492,7 @@ window.EditNewList = ReactiveComponent
           style: 
             padding: '4px 6px'
             fontSize: 'inherit'
-            border: '1px solid #ccc'
+            border: "1px solid var(--brd_light_gray)"
           onChange: (e) =>
             edit_list.list_item_name = e.target.value
             save edit_list
@@ -616,7 +610,7 @@ window.EditNewList = ReactiveComponent
             flexGrow: 2
             width: '100%'
             borderTop: '1px solid'
-            borderColor: '#999'
+            borderColor: "var(--brd_mid_gray)"
             maxWidth: 500
           
           INPUT 
@@ -628,6 +622,7 @@ window.EditNewList = ReactiveComponent
 
             ref: 'oppose_slider'
             defaultValue: customization('slider_pole_labels', list_key, subdomain).oppose 
+            "aria-label": translator 'engage.slider_config.negative-pole-placeholder', 'Negative pole'
             placeholder: translator 'engage.slider_config.negative-pole-placeholder', 'Negative pole'
             onChange: (e) ->
               edit_list.slider_pole_labels ?= {}
@@ -648,6 +643,7 @@ window.EditNewList = ReactiveComponent
               edit_list.slider_pole_labels.support = e.target.value 
               save edit_list
             placeholder: translator 'engage.slider_config.positive-pole-placeholder', 'Positive pole'
+            "aria-label": translator 'engage.slider_config.positive-pole-placeholder', 'Positive pole'
 
 
         DropMenu
@@ -661,7 +657,7 @@ window.EditNewList = ReactiveComponent
             top: -13
 
           anchor_style: 
-            color: 'inherit' #focus_color() #'inherit'
+            color: 'inherit' 
             height: '100%'
             padding: '0px 4px'
             position: 'relative'
@@ -671,14 +667,14 @@ window.EditNewList = ReactiveComponent
 
           menu_style: 
             width: 420
-            backgroundColor: '#fff'
-            border: "1px solid #aaa"
+            backgroundColor: "var(--bg_light)"
+            border: "1px solid var(--brd_mid_gray)"
             right: -99999
             left: 'auto'
             top: 24
             fontWeight: 400
             overflow: 'hidden'
-            boxShadow: '0 1px 2px rgba(0,0,0,.3)'
+            boxShadow: "0 1px 2px var(--shadow_dark_25)"
             textAlign: 'left'
 
           menu_when_open_style: 
@@ -687,12 +683,12 @@ window.EditNewList = ReactiveComponent
           option_style: 
             padding: '8px 18px 12px 18px'
             display: 'block'
-            color: 'black'
+            color: "var(--text_dark)"
             fontWeight: 400
 
           active_option_style: 
-            color: 'black'
-            backgroundColor: '#efefef'
+            color: "var(--text_dark)"
+            backgroundColor: "var(--bg_lightest_gray)"
 
 
           selection_made_callback: (option) => 
@@ -719,13 +715,13 @@ window.EditNewList = ReactiveComponent
             SPAN null, 
               LABEL 
                 style: 
-                  color: focus_color()
+                  color: "var(--focus_color)"
                   fontSize: 14
                   marginRight: 12
                   cursor: 'pointer'
                 translator 'engage.list-config-spectrum-select', 'presets'
 
-              SPAN style: _.extend cssTriangle 'bottom', focus_color(), 13, 8,
+              SPAN style: _.extend cssTriangle 'bottom', "var(--focus_color)", 13, 8,
                 display: 'inline-block'
 
           render_option: (option, is_active) ->
@@ -733,7 +729,7 @@ window.EditNewList = ReactiveComponent
               return  DIV 
                         style: 
                           fontSize: 16
-                          borderBottom: '1px dashed #ccc'
+                          borderBottom: "1px dashed var(--brd_light_gray)"
                           textAlign: 'center'
                           padding: '12px 0'
 
@@ -756,7 +752,7 @@ window.EditNewList = ReactiveComponent
                 dangerouslySetInnerHTML: __html: "&#10231;"
                 style: 
                   fontSize: 32
-                  color: '#888'
+                  color: "var(--text_light_gray)"
 
               SPAN 
                 style:
@@ -765,34 +761,6 @@ window.EditNewList = ReactiveComponent
                   textAlign: 'left'
                   paddingLeft: 10                        
                 "#{option.support}" 
-
-
-            # DIV 
-            #   style: 
-            #     margin: "12px 24px"
-            #     position: 'relative'
-            #     fontSize: 12
-
-            #   SPAN 
-            #     style: 
-            #       display: 'inline-block'
-            #       width: '100%'
-            #       borderBottom: '1px solid'
-            #       borderColor: '#666'
-
-            #   BR null
-            #   SPAN
-            #     style: 
-            #       position: 'relative'
-            #       left: 0
-
-            #     option.oppose 
-
-            #   SPAN
-            #     style: 
-            #       position: 'absolute'
-            #       right: 0
-            #     option.support
 
 
 
@@ -812,8 +780,7 @@ window.EditNewList = ReactiveComponent
         BUTTON 
           className: 'like_link'
           style: 
-            textDecoration: 'underline'
-            color: focus_color()
+            color: "var(--focus_color)"
             marginBottom: 24
             marginTop: 8
             display: if screencasting() then 'none'
@@ -878,7 +845,7 @@ window.EditNewList = ReactiveComponent
                 translator 
                   id: 'engage.list-config-show_first_n_proposals'
                   DEFAULT: SHOW_FIRST_N_PROPOSALS
-                  'Show all proposals in this focus, without forcing people to click "show all". The default is to show the first {DEFAULT}.'
+                  'Show all proposals to this prompt, without forcing people to click "show all". The default is to show the first {DEFAULT}.'
 
 
   componentDidMount: -> 

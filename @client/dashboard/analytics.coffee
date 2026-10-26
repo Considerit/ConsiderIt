@@ -74,23 +74,28 @@ window.DataAnalytics = ReactiveComponent
                 if !@local[attr]?
                   @local[attr] = default_value
 
+
                 LABEL 
                   key: label
-                  className: 'toggle'
-                  LABEL 
-                    className: 'toggle_switch'
+                  style:
+                    display: 'flex'
+                    alignItems: 'center'
+                    gap: 3
 
-                    INPUT 
-                      type: 'checkbox'
-                      defaultChecked: default_value
-                      onChange: (ev) => 
-                        @local[attr] = !@local[attr]
-                        save @local
 
-                    SPAN 
-                      className: 'toggle_switch_circle'
+                  INPUT 
+                    name: "toggle #{label}"
+                    className: 'small'
+                    type: 'checkbox'
+                    role: 'switch'
+                    defaultChecked: default_value
+                    onChange: (ev) => 
+                      @local[attr] = !@local[attr]
+                      save @local
 
-                  SPAN null,
+                  SPAN 
+                    style: 
+                      fontSize: 13
                     label
 
 
@@ -130,10 +135,6 @@ styles += """
     border-right: none;
   }
 
-  .AnalyticsTabs li button {
-    background-color: transparent;
-    border: none;
-  }
 
   .AnalyticsTabs.free-forum li button {
     cursor: default;
@@ -194,6 +195,7 @@ AnalyticsTabs = ReactiveComponent
                   opacity: if !is_premium_forum && name != 'VisitAnalytics' then 0.7
 
                 BUTTON
+                  className: 'naked_button'
                   onClick: if is_premium_forum then => 
                     analytics_state.expanded = name
                     save analytics_state
@@ -206,7 +208,7 @@ AnalyticsTabs = ReactiveComponent
                       style: 
                         fontSize: 16
                         textTransform: 'uppercase'
-                        color: if active then focus_color() else '#999'
+                        color: if active then "var(--focus_color)" else "var(--text_neutral)"
                         textDecoration: if active then 'underline'
                       args.heading
 
@@ -325,12 +327,7 @@ styles += """
   .segments-container li button {
     display: inline-block;
     font-size: 14px;
-    border-radius: 8px;
     padding: 4px 12px;
-    font-weight: 400;
-    background-color: #eaeaea;
-    color: #333;
-    border: 1px solid #dadada;
   }
 
   .segment_grid {
@@ -369,20 +366,6 @@ styles += """
   .toggle > span {
     font-size: 11px;
     margin-left: 8px;           
-  }
-
-  .toggle .toggle_switch {
-    width: 36px;
-    height: 16px;
-  }
-  .toggle .toggle_switch .toggle_switch_circle:before {
-    height: 12px; 
-    width: 12px;
-    bottom: 2px;
-  }
-
-  .toggle input:checked + .toggle_switch_circle:before {
-    transform: translateX(18px);
   }
 
   .analytics_section .notice {
@@ -425,25 +408,23 @@ GraphSection =
 
           for segment in segment_by
             do (segment) =>
+              active = analytics_state.segment_by == segment
+
               LI 
                 key: segment
 
                 BUTTON 
-
+                  className: "selector_button #{if active then 'active' else ""}"
                   onClick: (e) =>
                     if analytics_state.segment_by == segment
                       analytics_state.segment_by = null 
                     else 
                       analytics_state.segment_by = segment
                     save analytics_state
-                  onKeyPress: (e) -> 
-                    if e.which == 13 || e.which == 32 # ENTER or SPACE
-                      e.target.click()
-                      e.stopPropagation()
-                      e.preventDefault()              
-                  style: 
-                    backgroundColor: if analytics_state.segment_by == segment then focus_blue else '#eaeaea'
-                    color: if analytics_state.segment_by == segment then 'white' else '#444'
+
+                  # style: 
+                  #   backgroundColor: if active then "var(--focus_color)"
+                  #   color: if analytics_state.segment_by == segment then "var(--text_light)"
 
                   labels?[segment] or segment
 
@@ -794,7 +775,7 @@ styles += """
   border: none;
   border-radius: 4px;
   pointer-events: none;
-  color: white;
+  color: var(--text_light);
 }
 
 

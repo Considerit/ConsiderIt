@@ -2,9 +2,6 @@ window.styles += """
   #NOTIFICATIONS {
     font-size: 18px;
   }
-  #NOTIFICATIONS .toggle_switch {
-    top: -1px;
-  }
 
 """
 
@@ -31,20 +28,11 @@ window.Notifications = ReactiveComponent
       @local.via_unsubscribe_post = true 
 
 
+    @local.via_unsubscribe_link = true
+    
     DIV 
       id: 'NOTIFICATIONS'
 
-
-      if @local.watched_proposals && !current_user.subscriptions['send_emails']
-        DIV 
-          style: 
-            border: "1px solid #{logo_red}" 
-            color: logo_red
-            padding: '4px 8px'
-
-          TRANSLATE
-            id: "email_notifications.watched_proposals_ack"
-            "You are unsubscribed from summary emails from this forum"
       
       if customization('email_notifications_disabled')
         DIV 
@@ -62,18 +50,27 @@ window.Notifications = ReactiveComponent
 
         DIV 
           style:
-            backgroundColor: if @local.via_unsubscribe_link then '#f7f7f7'
+            backgroundColor: if @local.via_unsubscribe_link then "var(--bg_container)"
             padding: if @local.via_unsubscribe_link then '12px 18px'
-            border: if @local.via_unsubscribe_link then '1px solid #DA4570'
+            border: if @local.via_unsubscribe_link then "1px solid var(--selected_color)"
+            display: 'flex'
+            alignItems: "center"
+            flexDirection: 'column'
+            gap: 12
 
-          LABEL 
-            className: 'toggle_switch'
+
+          DIV 
+            style:
+              display: 'flex'
+              alignItems: "center"
 
             INPUT 
               id: 'enable_email'
               type: 'checkbox'
               name: 'enable_email'
+              role: 'switch'
               defaultChecked: !!prefs['send_emails']
+              "aria-label": translator "email_notifications.send_digests", 'Send me email summaries of relevant forum activity'
               onChange: (e) => 
 
                 if current_user.subscriptions['send_emails']
@@ -82,30 +79,27 @@ window.Notifications = ReactiveComponent
                   current_user.subscriptions['send_emails'] = settings['default_subscription']
                 save current_user
                 e.stopPropagation()
-            
+
+
+            LABEL 
+              className: 'indented'
+              htmlFor: 'enable_email'
+              style: 
+                fontSize: 18
+              B null,
+                TRANSLATE "email_notifications.send_digests", 'Send me email summaries of relevant forum activity'
+
+          if @local.via_unsubscribe_link && !!prefs['send_emails']
             SPAN 
-              className: 'toggle_switch_circle'
-
-
-          LABEL 
-            className: 'indented'
-            htmlFor: 'enable_email'
-            style: 
-              fontSize: 18
-            B null,
-              TRANSLATE "email_notifications.send_digests", 'Send me email summaries of relevant forum activity'
-
-            if @local.via_unsubscribe_link && !!prefs['send_emails']
-              SPAN 
-                style:
-                  backgroundColor: "#DA4570"
-                  color: 'white'
-                  textTransform: 'uppercase'
-                  fontSize: '80%'
-                  fontWeight: 'bold'
-                  marginLeft: 20
-                  padding: '2px 8px'
-                translator('email_notifications.unsubscribe_helper', 'turn off to unsubscribe')
+              style:
+                backgroundColor: "var(--selected_color)"
+                color: "var(--text_light)"
+                textTransform: 'uppercase'
+                fontSize: '80%'
+                fontWeight: 'bold'
+                marginLeft: 20
+                padding: '2px 8px'
+              translator('email_notifications.unsubscribe_helper', 'turn off to unsubscribe')
 
         if @local.via_unsubscribe_post && !prefs['send_emails']
           DIV 
@@ -114,9 +108,9 @@ window.Notifications = ReactiveComponent
 
             SPAN
               style:
-                backgroundColor: "#DA4570"
+                backgroundColor: "var(--selected_color)"
                 padding: '12px 18px'
-                color: 'white'
+                color: "var(--text_light)"
 
               TRANSLATE
                 id: "email_notifications.watched_proposals_ack"
@@ -270,7 +264,7 @@ window.Notifications = ReactiveComponent
         style: 
           marginTop: 20
 
-        H4
+        H2
           style: 
             fontSize: 18
             marginBottom: 32

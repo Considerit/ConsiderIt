@@ -14,7 +14,7 @@ styles += """
   [data-widget="EditPage"] .field_explanation {
     font-size: 14px;
     margin-top: 6px;
-    color: #444;
+    color: var(--text_gray);
   }
 
   [data-widget="EditPage"] .radio_group label {
@@ -52,9 +52,7 @@ styles += """
 
 
   [data-widget="EditPage"] .draggable-wrapper::after, [data-widget="EditPage"] .draggable-wrapper::before {
-    // border: 2px dotted #888;
     border-radius: 16px;
-    // padding-bottom: 60px;
     height: 0px;
     display: block;
     content: "";
@@ -64,26 +62,20 @@ styles += """
 
   [data-widget="EditPage"] .draggable-wrapper.draggedOver.from_above::after, [data-widget="EditPage"] .draggable-wrapper.draggedOver.from_below::before {
     height: 60px;
-    outline: 1px dotted #888;
+    outline: 1px dotted var(--brd_dark_gray);
 
   }
 
 
-  [data-widget="EditPage"] .wildcard .draggable-list {
-    background-color: #E3EDE0;
-    border: 1px solid #CEDACA;
+  [data-widget="EditPage"] .wildcard.draggable-wrapper {
   }
 
   [data-widget="EditPage"] .draggable-list button {
     flex-shrink: 0;
     flex-grow: 0;
     display: inline-block;
-    background-color: transparent;
-    border: none;
   }
   [data-widget="EditPage"] .draggable-list .LIST-title {
-    /* font-size: 16px; 
-    font-weight: 500; */
     padding-left: 24px;
     flex-grow: 1;
   }
@@ -91,18 +83,10 @@ styles += """
   [data-widget="EditPage"] H2.list_header {
     font-size: 22px;
   }
-  [data-widget="EditPage"] button.add_new_list {
-    border: none;
-    background-color: transparent;
-    margin-top: 12px;
-    padding: 8px 16px;
-    font-size: 24px;
-    margin-left: 26px;
-  }
 
   [data-widget="EditPage"] button.convert_page {
     padding: 8px 16px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--brd_light_gray);
     border-radius: 8px;
     margin-top: 12px;
   }
@@ -118,7 +102,7 @@ styles += """
 
   .not-editing.draggable-mirror {
     z-index: 99999;
-    background-color: rgba(255,255,255,.7) !important;
+    background-color: var(--bg_light_trans_80) !important;
   }
 
 
@@ -156,7 +140,7 @@ window.EditPage = ReactiveComponent
 
     DIV null, 
       I null, 
-        "This page displays all proposal lists shown on other pages throughout this forum."
+        "This page displays all prompts shown across other pages throughout this forum."
       @renderSortOrder()
 
       @renderPreamble()
@@ -176,7 +160,7 @@ window.EditPage = ReactiveComponent
     if is_a_tab
       @ordered_lists = get_tab(@props.page_name)?.lists
       if !@ordered_lists
-        console.error "No lists for tab. Returning"
+        console.error "No prompts for tab. Returning"
         return DIV null
     else
       subdomain.customizations.lists ?= get_all_lists()
@@ -189,11 +173,11 @@ window.EditPage = ReactiveComponent
 
     drag_capabilities = ""
     if @ordered_lists.length > 1 && current_list_sort_method == 'fixed'
-      drag_capabilities += "Drag lists to reorder them. "
+      drag_capabilities += "Drag prompts to reorder them. "
 
     drag_enabled = get_tabs()?.length > 1
     if drag_enabled 
-      drag_capabilities += "Lists can be dragged to a different tab to move them."
+      drag_capabilities += "Prompts can be dragged to a different tab to move them."
 
 
 
@@ -206,37 +190,6 @@ window.EditPage = ReactiveComponent
         style: 
           marginTop: 36
           marginBottom: 24
-
-
-        # H2
-        #   className: "list_header"
-
-        #   # 'Questions and Categories'
-        #   'Calls for ideas or feedback'
-
-        #   # DIV 
-        #   #   style:
-        #   #     fontSize: 14
-        #   #     fontWeight: 400
-        #   #   'A Topic collects proposals under a category like "Recommendations" or in response to an open-ended question like "What are your ideas?"'
-
-
-        # if @ordered_lists.length == 0
-        #   DIV 
-        #     style: 
-        #       textAlign: 'center'
-        #       padding: '36px 24px'
-        #       border: '1px dotted #eee'
-        #       backgroundColor: '#f1f1f1'
-
-        #     "None defined yet."
-
-        # else if @ordered_lists.length > 0 
-        #   DIV 
-        #     style: 
-        #       fontSize: 14
-
-        #     drag_capabilities
 
         UL 
           ref: 'draggable-list-wrapper'
@@ -275,13 +228,15 @@ window.EditPage = ReactiveComponent
 
                     if drag_capabilities.length > 0 
                       BUTTON 
+                        className: "icon"
                         "data-tooltip": drag_capabilities
+                        "aria-label": drag_capabilities
                         style: 
                           cursor: 'move'
                           position: 'relative'
                           left: 7
 
-                        drag_icon 15, '#888'
+                        drag_icon 15, "var(--text_neutral)"
                     else 
                       DIV 
                         style: 
@@ -307,56 +262,43 @@ window.EditPage = ReactiveComponent
                           save edit_forum
                                     
                         BUTTON 
-                          className: 'disaggregate like_link'
+                          className: 'like_link'
                           onClick: disaggregate_wildcard
 
                           'disaggregate'
 
                     if !wildcard 
                       BUTTON 
-                        style: 
-                          cursor: 'pointer'
+                        className: "icon"
                         "data-tooltip": "Edit"
+                        "aria-label": 'Edit'
                         onClick: (e) =>
                           e.preventDefault()
                           e.stopPropagation()
                           @local.edit_list = lst
                           save @local
 
-                        edit_icon 18, 18, '#888'
+                        edit_icon 23, 23, "var(--text_neutral)"
 
 
                     if !wildcard 
                       BUTTON 
+                        className: "icon"
+                        "aria-label": 'Delete'
                         style:
                           position: 'absolute'
                           right: -36
-                          cursor: 'pointer'
                         "data-tooltip": "Delete"
                         onClick: (e) =>
                           @ordered_lists.splice( @ordered_lists.indexOf(lst), 1  )
                           delete_list(lst)
 
-                        trash_icon 23, 23, '#888'
+                        trash_icon 23, 23, "var(--text_neutral)"
 
 
         if !@local.edit_list
           NewList
             wrapper_clss: 'draggable-list'
-
-          # BUTTON
-          #   className: "add_new_list"
-          #   "data-tooltip": list_i18n().explanation
-
-          #   onClick: =>
-          #     @local.add_new_list = true 
-          #     save @local
-          #   "+ "  
-          #   SPAN 
-          #     style: 
-          #       textDecoration: 'underline'
-          #     list_i18n().button
-
 
       
 
@@ -370,9 +312,8 @@ window.EditPage = ReactiveComponent
           BUTTON 
             className: 'like_link'
             style: 
-              textDecoration: 'underline'
               fontWeight: 700
-              color: '#666'
+              color: "var(--text_light_gray)"
             onClick: (e) => 
               @local.show_all_options = true 
               save @local
@@ -382,7 +323,7 @@ window.EditPage = ReactiveComponent
             style: 
               marginLeft: 0
               marginTop: 42
-              border: "1px solid #ccc"
+              border: "1px solid var(--brd_light_gray)"
               padding: "0px 48px 48px 48px"
               borderRadius: 8
 
@@ -395,7 +336,7 @@ window.EditPage = ReactiveComponent
                 padding: "4px 8px"
                 position: 'relative'
                 top: -12
-                color: '#333'
+                color: "var(--text_gray)"
 
               "Advanced settings for this page"
 
@@ -420,9 +361,9 @@ window.EditPage = ReactiveComponent
 
 
     page_types = [
-      {id: PAGE_TYPES.DEFAULT, label: "Standard page",    description: "Displays the proposal lists configured above."}
+      {id: PAGE_TYPES.DEFAULT, label: "Standard page",    description: "Displays the prompts configured above."}
       {id: PAGE_TYPES.ABOUT,   label: 'Background page',  description: "Give supplementary background information about the engagement."}
-      {id: PAGE_TYPES.ALL,     label: '"Show all" page', description: "Aggregate and show all proposal lists from other pages."}
+      {id: PAGE_TYPES.ALL,     label: '"Show all" page', description: "Aggregate and show all prompts from other pages."}
     ]
 
     DIV 
@@ -469,18 +410,19 @@ window.EditPage = ReactiveComponent
                       @ordered_lists.splice 0, @ordered_lists.length
                       for l in get_all_lists_not_configured_for_a_page()
                         @ordered_lists.push l
+                  save @local
 
 
                 else 
 
-                  if @ordered_lists.length == 0 || confirm "Are you sure you want to convert this page? You may want to move the existing lists to a different page first. You can do that by dragging them to a different tab above."
+                  if @ordered_lists.length == 0 || confirm "Are you sure you want to convert this page? You may want to move the existing prompts to a different page first. You can do that by dragging them to a different tab above."
                     @ordered_lists.splice(0,@ordered_lists.length) 
                     if option.id == PAGE_TYPES.ALL 
                       @ordered_lists.push '*'
                     @local.type = option.id
-
-                save @local
-
+                    save @local
+                  else 
+                    document.getElementById("page_type#{@local.type}").checked = true
 
 
               INPUT 
@@ -513,10 +455,10 @@ window.EditPage = ReactiveComponent
     
 
     groups_sorts = 
-      newest:       {value: 'newest_item', label: 'By most recent activity', explanation: 'The proposal lists with the most recent activity are shown first.'}
-      randomized:   {value: 'randomized', label: 'Randomized', explanation: 'Proposal lists are show in a random order on page load.'}
-      fixed:        {value: 'fixed', label: 'Fixed order', explanation: 'Proposal lists will be ordered as specified above.'}
-      fixed_by_tab: {value: 'by_tab', label: 'Fixed order', explanation: 'Proposal lists ordered as they are in the other pages.'}
+      newest:       {value: 'newest_item', label: 'By most recent activity', explanation: 'The prompts with the most recent activity are shown first.'}
+      randomized:   {value: 'randomized', label: 'Randomized', explanation: 'Prompts are show in a random order on page load.'}
+      fixed:        {value: 'fixed', label: 'Fixed order', explanation: 'Prompts will be ordered as specified above.'}
+      fixed_by_tab: {value: 'by_tab', label: 'Fixed order', explanation: 'Prompts ordered as they are in the other pages.'}
 
     if @local.type == PAGE_TYPES.DEFAULT      
       list_orderings = [groups_sorts.fixed, groups_sorts.newest, groups_sorts.randomized]
@@ -536,7 +478,7 @@ window.EditPage = ReactiveComponent
           fontSize: 17
           fontWeight: 700
 
-        "Order of the proposal lists#{if @local.type != PAGE_TYPES.ALL then " defined above" else ''}"
+        "Order of the prompts#{if @local.type != PAGE_TYPES.ALL then " defined above" else ''}"
 
 
       SELECT
@@ -606,10 +548,10 @@ window.EditPage = ReactiveComponent
           borderRadius: 8
           minHeight: 42
           width: '100%'     
-          border: '1px solid #ccc'  
+          border: "1px solid var(--brd_light_gray)"  
           marginTop: 4   
           padding: '8px 12px'
-          backgroundColor: 'white'
+          backgroundColor: "var(--bg_light)"
         style: 
           fontSize: 16
 
@@ -762,7 +704,7 @@ window.EditPage = ReactiveComponent
           target_lists.push list_key 
         save subdomain
       else 
-        console.error "Could not move list #{list_key} from #{source} to #{target}"
+        console.error "Could not move prompt #{list_key} from #{source} to #{target}"
     
     @sortable = new Draggable.Sortable @refs['draggable-list-wrapper'],
       draggable: '.not-editing'

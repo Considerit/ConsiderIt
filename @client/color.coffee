@@ -2,26 +2,503 @@
 # Colors
 
 
-window.focus_blue = '#456ae4' #2478CC' #'#2196F3' # '#2478CC'
+window.focus_color = '#456ae4'
 window.logo_red = "#B03A44"
 window.considerit_red = "#df6264"
-window.default_avatar_in_histogram_color = '#999'
-window.considerit_gray = '#f6f7f9'
-# window.selected_color = "#e316ae" # magenta
-window.selected_color = '#DA4570' #pinkish red
-window.upgrade_color = '#16a1e3'
+window.selected_color = '#BF345B' #pinkish red; darkened from #DA4570 to reach 4.5:1 against white
+window.upgrade_color = '#518eff'
 window.attention_orange = "#fb7e26"
-window.main_background_color = '#f6f7f9'
+window.failure_color = "#F94747"
+window.success_color = "#81c765"
+window.caution_color = "#ffc92a"
+
+window.slidergram_base_color = "#777777"
+
+text_dark = '#000000'
+text_gray = '#333333'    
+text_light_gray = '#666666'
+text_neutral = '#888888'
+text_gray_on_dark = '#cccccc'
+text_light = '#ffffff'
+
+
+bg_dark = '#000000'
+bg_dark_gray = '#444444'
+bg_neutral_gray = "#888888"
+bg_light_gray = '#aaaaaa'
+bg_lighter_gray = '#cccccc'
+bg_lightest_gray = '#eeeeee'
+bg_light = '#ffffff'
+
+
+bg_container = '#f7f7f7'
+bg_item = '#ffffff'
+bg_item_separator = '#f3f4f5'
+bg_speech_bubble = '#f7f7f7'
+
+brd_dark = '#000000'
+brd_dark_gray = '#444444'
+brd_neutral_gray = '#888888'
+brd_mid_gray = '#aaaaaa' 
+brd_light_gray = '#cccccc' 
+brd_lightest_gray = '#eeeeee'
+brd_light = '#ffffff'
+
+
+# Color inversion utility functions
+
+window.hexToRgba = (hex) ->
+  # Handle 6-digit hex (#RRGGBB)
+  result6 = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  if result6
+    return {
+      r: parseInt(result6[1], 16)
+      g: parseInt(result6[2], 16)
+      b: parseInt(result6[3], 16)
+      a: 255
+    }
+  
+  # Handle 8-digit hex with alpha (#RRGGBBAA)
+  result8 = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  if result8
+    return {
+      r: parseInt(result8[1], 16)
+      g: parseInt(result8[2], 16)
+      b: parseInt(result8[3], 16)
+      a: parseInt(result8[4], 16)
+    }
+  
+  # Handle 3-digit hex (#RGB)
+  result3 = /^#?([a-f\d])([a-f\d])([a-f\d])$/i.exec(hex)
+  if result3
+    return {
+      r: parseInt(result3[1] + result3[1], 16)
+      g: parseInt(result3[2] + result3[2], 16)
+      b: parseInt(result3[3] + result3[3], 16)
+      a: 255
+    }
+  
+  # Handle 4-digit hex with alpha (#RGBA)
+  result4 = /^#?([a-f\d])([a-f\d])([a-f\d])([a-f\d])$/i.exec(hex)
+  if result4
+    return {
+      r: parseInt(result4[1] + result4[1], 16)
+      g: parseInt(result4[2] + result4[2], 16)
+      b: parseInt(result4[3] + result4[3], 16)
+      a: parseInt(result4[4] + result4[4], 16)
+    }
+  
+  null
+
+rgbaToHex = (r, g, b, a) ->
+  # Convert to hex with proper padding
+  rHex = Math.round(r).toString(16).padStart(2, '0')
+  gHex = Math.round(g).toString(16).padStart(2, '0')
+  bHex = Math.round(b).toString(16).padStart(2, '0')
+  
+  if a? && a < 255
+    aHex = Math.round(a).toString(16).padStart(2, '0')
+    "##{rHex}#{gHex}#{bHex}#{aHex}"
+  else
+    "##{rHex}#{gHex}#{bHex}"
+
+# Backward compatibility
+hexToRgb = (hex) ->
+  rgba = hexToRgba(hex)
+  return null unless rgba
+  { r: rgba.r, g: rgba.g, b: rgba.b }
+
+invertColor = (hex) ->
+  rgba = hexToRgba(hex)
+  return hex unless rgba
+  # Invert RGB, preserve alpha
+  rgbaToHex(255 - rgba.r, 255 - rgba.g, 255 - rgba.b, rgba.a)
+
+colorTransparency = (hex, opacity) -> 
+  rgba = hexToRgba(hex)
+  return "rgba(#{rgba.r}, #{rgba.g}, #{rgba.b}, #{opacity})"
+
+window.desaturateHexColor = (hexval, amount = 1) ->
+
+  hex = get_css_variable_value(hexval)
+  return hexval unless hex?
+
+  rgba = hexToRgba(hex)
+  return hex unless rgba?
+
+  hsl = rgb2hsl(rgba)
+  hsl.s *= 1 - Math.max(0, Math.min(1, amount))  # Clamp amount to [0,1]
+
+  # Convert HSL back to RGB
+  [r, g, b] = hsv2rgb(hsl.h, hsl.s, hsl.l, true)  # Using HSL as HSV is close enough for desaturation here
+
+  rgbaToHex(Math.round(r * 255), Math.round(g * 255), Math.round(b * 255), rgba.a)
 
 
 # Ugly! Need to have responsive colors or responsive styles. 
 if location.href.indexOf('aeroparticipa') > -1
-  window.focus_blue = "#073682"
-  window.selected_color = focus_blue
+  window.focus_color = "#073682"
+  window.selected_color = focus_color
 
+
+
+window.generateColorVariableDefs = ->
+  """
+    :root, :before, :after {
+      /* Core colors (theme-independent) */
+      --focus_color: #{focus_color};
+      --focus_color_rgb: #{hexToRgb(focus_color).r}, #{hexToRgb(focus_color).g}, #{hexToRgb(focus_color).b};
+      --focus_color_slightly_transluscent: rgba(var(--focus_color_rgb), 0.68);
+      --focus_color_mostly_transluscent: rgba(var(--focus_color_rgb), 0.13);
+      --logo_red: #{logo_red};
+      --considerit_red: #{considerit_red};
+      --selected_color: #{selected_color};
+      --upgrade_color: #{upgrade_color};
+      --attention_orange: #{attention_orange};
+      --failure_color: #{failure_color};
+      --success_color: #{success_color};
+      --caution_color: #{caution_color};
+      --slidergram_base_color: #{slidergram_base_color};
+
+      /* Default Light Theme */
+      --text_dark: #{text_dark};
+      --text_gray: #{text_gray};
+      --text_light_gray: #{text_light_gray};
+      --text_neutral: #{text_neutral};
+      --text_gray_on_dark: #{text_gray_on_dark};
+      --text_light: #{text_light};
+
+      --bg_dark: #{bg_dark};
+      --bg_dark_rgb: #{hexToRgb(bg_dark).r}, #{hexToRgb(bg_dark).g}, #{hexToRgb(bg_dark).b};
+      --bg_dark_gray: #{bg_dark_gray};
+      --bg_neutral_gray: #{bg_neutral_gray};
+      --bg_light_gray: #{bg_light_gray};
+      --bg_lighter_gray: #{bg_lighter_gray};
+      --bg_lightest_gray: #{bg_lightest_gray};
+      --bg_light: #{bg_light};
+      --bg_light_rgb: #{hexToRgb(bg_light).r}, #{hexToRgb(bg_light).g}, #{hexToRgb(bg_light).b};
+      --bg_container: #{bg_container};
+      --bg_item: #{bg_item};
+      --bg_item_rgb: #{hexToRgb(bg_item).r}, #{hexToRgb(bg_item).g}, #{hexToRgb(bg_item).b};
+      --bg_item_separator: #{bg_item_separator};
+      --bg_speech_bubble: #{bg_speech_bubble};
+
+      --brd_dark: #{brd_dark};
+      --brd_dark_gray: #{brd_dark_gray};
+      --brd_neutral_gray: #{brd_neutral_gray};
+      --brd_mid_gray: #{brd_mid_gray};
+      --brd_light_gray: #{brd_light_gray};
+      --brd_lightest_gray: #{brd_lightest_gray};
+      --brd_light: #{brd_light};
+
+      /* Background transparency variants */
+      --bg_item_transparent: rgba(var(--bg_item_rgb), 0.0);
+      --bg_dark_trans_25: rgba(var(--bg_dark_rgb), 0.25);
+      --bg_dark_trans_40: rgba(var(--bg_dark_rgb), 0.40);
+      --bg_dark_trans_60: rgba(var(--bg_dark_rgb), 0.60);
+      --bg_dark_trans_80: rgba(var(--bg_dark_rgb), 0.80);
+      --bg_light_transparent: rgba(var(--bg_light_rgb), 0.0);
+      --bg_light_trans_25: rgba(var(--bg_light_rgb), 0.25);
+      --bg_light_trans_40: rgba(var(--bg_light_rgb), 0.40);
+      --bg_light_trans_60: rgba(var(--bg_light_rgb), 0.60);
+      --bg_light_trans_80: rgba(var(--bg_light_rgb), 0.80);
+      --bg_light_opaque: rgba(var(--bg_light_rgb), 1.0);
+
+      /* Shadow colors */
+      --shadow_dark_15: rgba(var(--bg_dark_rgb), 0.15);
+      --shadow_dark_20: rgba(var(--bg_dark_rgb), 0.20);
+      --shadow_dark_25: rgba(var(--bg_dark_rgb), 0.25);
+      --shadow_dark_50: rgba(var(--bg_dark_rgb), 0.50);
+      --shadow_light: rgba(var(--bg_light_rgb), 0.40);
+    }
+
+  /* Dark Theme - Programmatically Generated Inversions */
+  [data-theme="dark"],
+  [data-theme="dark"] :before,
+  [data-theme="dark"] :after {
+    /* Inverted text colors for dark theme */
+    --text_dark: #{invertColor(text_dark)};
+    --text_gray: #{invertColor(text_gray)};
+    --text_light_gray: #{invertColor(text_light_gray)};
+    --text_neutral: #{invertColor(text_neutral)};
+    --text_gray_on_dark: #{invertColor(text_gray_on_dark)};
+    --text_light: #{invertColor(text_light)};
+
+    /* Dark backgrounds */
+    --bg_dark: #{invertColor(bg_dark)};
+    --bg_dark_gray: #{invertColor(bg_dark_gray)};
+    --bg_neutral_gray: #{invertColor(bg_neutral_gray)};
+    --bg_light_gray: #{invertColor(bg_light_gray)};
+    --bg_lighter_gray: #{invertColor(bg_lighter_gray)};
+    --bg_lightest_gray: #{invertColor(bg_lightest_gray)};
+    --bg_light: #{invertColor(bg_light)};
+    --bg_container: #444444;    
+    --bg_item: #171717;
+    --bg_item_separator: #{invertColor(bg_item_separator)};
+    --bg_speech_bubble: #{invertColor(bg_speech_bubble)};
+    --bg_light_opaque: #171717ff;
+
+    /* Dark borders */
+    --brd_dark: #{invertColor(brd_dark)};
+    --brd_dark_gray: #{invertColor(brd_dark_gray)};
+    --brd_neutral_gray: #{invertColor(brd_neutral_gray)};
+    --brd_mid_gray: #{invertColor(brd_mid_gray)};
+    --brd_light_gray: #{invertColor(brd_light_gray)};
+    --brd_lightest_gray: #{invertColor(brd_lightest_gray)};
+    --brd_light: #{invertColor(brd_light)};
+  }
+
+  /* High Contrast Light Theme */
+  [data-theme="high-contrast"],
+  [data-theme="high-contrast"] :before,
+  [data-theme="high-contrast"] :after {
+    /* High contrast text - pure black and white */
+    --text_dark: #000000;
+    --text_gray: #000000;
+    --text_light_gray: #000000;
+    --text_gray_on_dark: #ffffff;
+    --text_light: #ffffff;
+
+    /* High contrast backgrounds - pure black and white */
+    --bg_dark: #000000;
+    --bg_dark_gray: #000000;
+    --bg_neutral_gray: #666666;
+    --bg_light_gray: #999999;
+    --bg_lighter_gray: #cccccc;
+    --bg_lightest_gray: #eeeeee;
+    --bg_light: #ffffff;
+
+
+    /* High contrast borders */
+    --brd_dark: #000000;
+    --brd_dark_gray: #000000;
+    --brd_neutral_gray: #666666;
+    --brd_mid_gray: #999999;
+    --brd_light_gray: #cccccc;
+    --brd_lightest_gray: #eeeeee;
+    --brd_light: #ffffff;
+
+    /* Enhanced visibility colors for high contrast. Each passes 4.5:1
+       against white, both as text and as a background for white text. */
+    --focus_color: #0000ff;
+    --focus_color_rgb: 0, 0, 255;
+    --selected_color: #880000;
+    --success_color: #437C2D;
+    --failure_color: #97002c;
+    --caution_color: #8A6700;
+  }
+
+  /* High Contrast Dark Theme */
+  [data-theme="high-contrast-dark"],
+  [data-theme="high-contrast-dark"] :before,
+  [data-theme="high-contrast-dark"] :after {
+    /* High contrast dark text - pure white and black */
+    --text_dark: #ffffff;
+    --text_gray: #ffffff;
+    --text_light_gray: #ffffff;
+    --text_gray_on_dark: #000000;
+    --text_light: #000000;
+
+    /* High contrast dark backgrounds - pure white and black inverted */
+    --bg_dark: #ffffff;
+    --bg_dark_gray: #ffffff;
+    --bg_neutral_gray: #999999;
+    --bg_light_gray: #666666;
+    --bg_lighter_gray: #333333;
+    --bg_lightest_gray: #111111;
+    --bg_light: #000000;
+    --bg_container: #444444;    
+    --bg_item: #171717;
+    --bg_item_separator: #0f0f0f;
+    --bg_speech_bubble: #{invertColor(bg_speech_bubble)};
+    --bg_light_opaque: #171717ff;
+
+    /* High contrast dark borders */
+    --brd_dark: #ffffff;
+    --brd_dark_gray: #ffffff;
+    --brd_neutral_gray: #999999;
+    --brd_mid_gray: #666666;
+    --brd_light_gray: #333333;
+    --brd_lightest_gray: #111111;
+    --brd_light: #000000;
+
+    /* Enhanced visibility colors for high contrast dark. Some components hardcode
+       white text on these colors while others use --text_light (black here), so
+       each is tuned to a luminance of ~0.18, which passes 4.5:1 against both
+       black and white. */
+    --focus_color: #3f6bef;
+    --focus_color_rgb: 63, 107, 239;
+    --selected_color: #d81f9a;
+    --success_color: #228722;
+    --failure_color: #e4195d;
+    --caution_color: #9d6c08;
+  }
+
+  /* User-agent style integration */
+  [data-theme="dark"],
+  [data-theme="dark"] :before,
+  [data-theme="dark"] :after {
+    color-scheme: dark;
+  }
+
+  [data-theme="high-contrast"],
+  [data-theme="high-contrast"] :before,
+  [data-theme="high-contrast"] :after {
+    color-scheme: light;
+  }
+
+  [data-theme="high-contrast-dark"],
+  [data-theme="high-contrast-dark"] :before,
+  [data-theme="high-contrast-dark"] :after {
+    color-scheme: dark;
+  }
+
+
+  [data-theme="dark"],
+  [data-theme="dark"] :before,
+  [data-theme="dark"] :after,
+  [data-theme="high-contrast-dark"],
+  [data-theme="high-contrast-dark"] :before,
+  [data-theme="high-contrast-dark"] :after {
+    button.btn, 
+    input[type='submit'].btn, 
+    button.selector_button.active,
+    input[type='submit'].selector_button.active, 
+    [data-widget="DropMenu"].bluedrop button.dropMenu-anchor, 
+    .toggle_buttons .active button,
+
+    #DASHBOARD-menu a.active {
+      color: var(--text_dark);
+    }
+
+  }
+
+
+
+  """
+
+# Function to regenerate themes when colors change
+window.updateThemeColors = ->
+  window.color_variable_defs = generateColorVariableDefs()
+  # Update the actual CSS in the document if it exists
+  existing_style = document.getElementById('color-variables-style')
+  if existing_style
+    existing_style.textContent = window.color_variable_defs
+
+# Generate the CSS once at startup
+window.color_variable_defs = generateColorVariableDefs()
+
+# Theme management functions
+
+# localStorage throws when storage is blocked (e.g. in a cross-site iframe
+# with third-party storage disabled), so treat it as best-effort.
+get_saved_theme = ->
+  try
+    localStorage.getItem('considerit-theme')
+  catch
+    null
+
+save_theme = (theme) ->
+  try
+    localStorage.setItem('considerit-theme', theme)
+  catch
+    null
+
+window.getCurrentTheme = ->
+  document.documentElement.getAttribute('data-theme') || 'light'
+
+window.setTheme = (theme) ->
+  valid_themes = ['light', 'dark', 'high-contrast', 'high-contrast-dark']
+  if theme in valid_themes
+    document.documentElement.setAttribute('data-theme', theme)
+    save_theme(theme)
+    # Trigger a custom event for any components that need to respond to theme changes
+    window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: theme } }))
+  else
+    console.warn("Invalid theme: #{theme}. Valid themes are: #{valid_themes.join(', ')}")
+
+window.toggleTheme = ->
+  current = getCurrentTheme()
+  next_theme = switch current
+    when 'light' then 'dark'
+    when 'dark' then 'high-contrast'
+    when 'high-contrast' then 'high-contrast-dark'
+    when 'high-contrast-dark' then 'light'
+    else 'light'
+  setTheme(next_theme)
+
+window.initializeTheme = ->
+  # Check for saved theme preference or default to 'light'
+  saved_theme = get_saved_theme()
+  
+  # Check for system preference if no saved theme
+  if !saved_theme && window.matchMedia
+    # if window.matchMedia('(prefers-color-scheme: dark)').matches
+    #   saved_theme = 'dark'
+    if window.matchMedia('(prefers-contrast: high)').matches
+      saved_theme = 'high-contrast'
+  
+  theme = saved_theme || 'light'
+  setTheme(theme)
+
+# Initialize theme when the script loads
+document.addEventListener 'DOMContentLoaded', ->
+  initializeTheme()
+
+# Listen for system theme changes
+if window.matchMedia
+  # window.matchMedia('(prefers-color-scheme: dark)').addEventListener 'change', (e) ->
+  #   # Only auto-switch if user hasn't manually set a theme
+  #   if !localStorage.getItem('considerit-theme')
+  #     setTheme(if e.matches then 'dark' else 'light')
+  
+  window.matchMedia('(prefers-contrast: high)').addEventListener 'change', (e) ->
+    # Only auto-switch if user hasn't manually set a theme
+    if !get_saved_theme()
+      setTheme(if e.matches then 'high-contrast' else 'light')
+
+
+get_css_variable_value = (str) ->
+  # Handle CSS variables like 'var(--focus_color)'
+  if str?.match(/^var\(/i)
+    # Extract variable name from var(--variable-name)
+    var_match = str.match(/^var\(\s*(--[^)]+)\s*\)/i)
+    if var_match
+      var_name = var_match[1].trim()
+      # Remove leading -- to get the JavaScript variable name
+      js_var_name = var_name.replace(/^--/, '')
+      # Try to get the computed CSS variable value first
+      try
+        computed_value = getComputedStyle(document.documentElement).getPropertyValue(var_name).trim()
+        if computed_value
+          return computed_value
+        else
+          # Fallback to JavaScript variable lookup
+          if window[js_var_name]?
+            return window[js_var_name]
+          else
+            console.error "CSS variable #{var_name} not found in computed styles or window as #{js_var_name}"
+            return null
+      catch error
+        # Fallback to JavaScript variable lookup if getComputedStyle fails
+        if window[js_var_name]?
+          return window[js_var_name]
+        else
+          console.error "CSS variable #{var_name} not found on window as #{js_var_name}"
+          return null
+  else
+    return str
 
 
 window.parseCssRgb = (css_color_str) ->
+  css_color_str = get_css_variable_value(css_color_str)
+  if !css_color_str
+    return {
+      r: 0
+      g: 0
+      b: 0
+    }
+
   test = document.createElement('div')
   test.style.color = css_color_str
   css_color_str = test.style.color
@@ -94,12 +571,6 @@ window.hsv2rgb = (h,s,v, as_array) ->
     "rgb(#{Math.round(r*256)}, #{Math.round(g*256)}, #{Math.round(b*256)})"
 
 
-
-
-window.addOpacity = (color, opacity) -> 
-  c = parseCssRgb color
-  "rgba(#{c.r},#{c.g},#{c.b},#{opacity}"
-
 # fixed saturation & brightness; random hue
 # adapted from http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
 golden_ratio_conjugate = 0.618033988749895
@@ -144,7 +615,7 @@ window.getColors = (num, continuous) ->
 
 
 window.is_light_background = (color) ->
-  color ||= bus_fetch('edit_banner').background_css or customization('banner')?.background_css or DEFAULT_BACKGROUND_COLOR
+  color ||= bus_fetch('edit_banner').background_css or customization('banner')?.background_css or "var(--focus_color)"
   if color of named_colors
     color = named_colors[color]
 
@@ -172,6 +643,12 @@ window.is_image_mostly_light = (image_data, width, height) ->
         light_pixels += 1
 
   light_pixels >= hsp_sample_size * hsp_sample_size / 2
+
+
+
+
+
+
 
 window.named_colors =
   'aliceblue': '#f0f8ff'
@@ -220,7 +697,7 @@ window.named_colors =
   'floralwhite': '#fffaf0'
   'forestgreen': '#228b22'
   'fuchsia': '#ff00ff'
-  'gainsboro': '#dcdcdc'
+  'gainsboro': '#DDDDDD'
   'ghostwhite': '#f8f8ff'
   'gold': '#ffd700'
   'goldenrod': '#daa520'
@@ -229,7 +706,7 @@ window.named_colors =
   'greenyellow': '#adff2f'
   'honeydew': '#f0fff0'
   'hotpink': '#ff69b4'
-  'indianred ': '#cd5c5c'
+  'indianred': '#cd5c5c'
   'indigo': '#4b0082'
   'ivory': '#fffff0'
   'khaki': '#f0e68c'
@@ -315,4 +792,3 @@ window.named_colors =
   'whitesmoke': '#f5f5f5'
   'yellow': '#ffff00'
   'yellowgreen': '#9acd32'
-

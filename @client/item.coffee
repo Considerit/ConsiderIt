@@ -6,7 +6,7 @@ window.STAGE2_DELAY = ANIMATION_SPEED_ITEM_EXPANSION * 1.5
 window.STAGE3_DELAY = ANIMATION_SPEED_ITEM_EXPANSION * .5
 
 # window.PROPOSAL_ITEM_SPRING = # 4000 / 800 is decent
-#   stiffness: 4000  #600
+#   stiffness: 4000  # 600
 #   damping: 800
 
 window.PROPOSAL_ITEM_SPRING = { stiffness: 130, damping: 17 } # 'gentle'
@@ -40,7 +40,7 @@ styles += """
     min-height: 84px;
     list-style: none;    
     padding: 0px;
-    margin: 0px 0px 32px 0px;
+    margin: 0px 0px 28px 0px;
 
     top: 0;
 
@@ -96,19 +96,6 @@ styles += """
   .list_order_event .is_collapsed.ProposalItem {
     content-visibility: visible;
   }
-
-
-  /* partially implemented experimental lightbox */
-  /* .is_expanded.ProposalItem:before {
-    content: "";
-    background-color: rgba(0,0,0,.15);
-    position: absolute;
-    height: 999999px;
-    width: 999999px;
-    top: -9999px;
-    left: -9999px;
-    z-index: 2;
-  } */
 """
 
 
@@ -296,9 +283,6 @@ styles += """
     position: absolute;
     left: calc(50% - 26px);
     bottom: -26px;
-    cursor: pointer;
-    background-color: transparent;
-    border: none;
     opacity: 0;        
   }
 
@@ -314,12 +298,10 @@ styles += """
 
   /* The x on the top right that will collapse the proposal */
 
-  .top_closer {
+  button.top_closer {
     position: absolute;
     top: 3px;
-    cursor: pointer;
-    background-color: #e5e7ed;
-    border: none;
+    background-color: var(--focus_color);
     opacity: 0;     
     padding: 7px 13px 95px 96px;   
     border-radius: 23%;
@@ -354,9 +336,9 @@ styles += """
     top: 0px;
     height: 100%;
 
-    box-shadow: 0px 0px 0px rgba(0,0,0,.25);    
+    box-shadow: 0px 0px 0px var(--shadow_dark_25);    
 
-    background-color: white;
+    background-color: var(--bg_item);
     border-radius: 128px;
 
   }
@@ -395,13 +377,13 @@ styles += """
 
   .is_expanded .opinion-block-wrapper::after {
     opacity: 1;
-    box-shadow: 0px 0px 3px rgba(0,0,0,.25);    
+    box-shadow: 0px 0px 3px var(--shadow_dark_25);    
     transition: opacity #{.5 * ANIMATION_SPEED_ITEM_EXPANSION}s, box-shadow #{.5 * ANIMATION_SPEED_ITEM_EXPANSION}s;
 
   }
 
   .is_expanded:not(.flipping) .opinion-block-wrapper::after {
-    background-image: linear-gradient(180deg, #f3f4f5 75px, #FFFFFF 150px, #FFFFFF 90%, #f3f4f5 96%);
+    background-image: linear-gradient(180deg, var(--bg_item_separator) 75px, var(--bg_item) 150px, var(--bg_item) 90%, var(--bg_item_separator) 96%);
   }
 
 
@@ -421,14 +403,14 @@ styles += """
     width: calc(100% + 1.3px);
     height: 39px;
     transform: scaleY(-1);
-    filter: drop-shadow(0px 1px 1px rgb(0 0 0 / 0.1));    
+    filter: drop-shadow(0px 1px 1px var(--shadow_dark_15));  /* fiddly */  
   }
 
   .is_expanded:not(.expanding) .custom-shape-divider-top-1664224812 svg {
-    filter: drop-shadow(0px 0px 1px rgb(0 0 0 / 0.25));
+    filter: drop-shadow(0px 0px 1px var(--shadow_dark_25)); /* fiddly */
   }
   .custom-shape-divider-top-1664224812 .shape-fill {
-      fill: #f3f4f5;
+      fill: var(--bg_item_separator);
   }
 
 
@@ -487,10 +469,13 @@ ProposalItemWrapper = ReactiveComponent
         # delayUntil: proposal.key
 
         DIV 
+          id: "opinion-block-#{proposal.key}"
           className: 'prep_for_flip opinion-block-wrapper'
 
           if @props.is_expanded
             DIV 
+              role: 'presentation'
+              'aria-hidden': true
               className: "custom-shape-divider-top-1664224812"
               dangerouslySetInnerHTML: __html: """
                 <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
@@ -516,30 +501,27 @@ ProposalItemWrapper = ReactiveComponent
 
 
           BUTTON 
-            className: 'bottom_closer'
+            className: 'icon bottom_closer'
+            "aria-label": translator('engage.collapse_proposal', 'Collapse proposal')
+            "inert": if !@props.is_expanded then "true"
+            "aria-hidden": if !@props.is_expanded then "true"
             onClick: => 
               toggle_expand
                 proposal: bus_fetch @props.proposal
-            onKeyPress: (e) => 
-              if e.which == 32 || e.which == 13
-                toggle_expand
-                  proposal: bus_fetch @props.proposal
-
 
             double_up_icon(40)
 
 
           BUTTON 
-            className: 'top_closer'
+            className: 'icon top_closer'
+            "aria-label": translator('engage.collapse_proposal', 'Collapse proposal')
+            "inert": if !@props.is_expanded then "true"
+            "aria-hidden": if !@props.is_expanded then "true"            
             onClick: => 
               toggle_expand
                 proposal: bus_fetch @props.proposal
-            onKeyPress: (e) => 
-              if e.which == 32 || e.which == 13
-                toggle_expand
-                  proposal: bus_fetch @props.proposal
 
-            iconX(22, '#888888')
+            iconX(22, "var(--text_light)")
 
 
 
@@ -591,26 +573,6 @@ styles += """
 
   .using_bullets .proposal-avatar-spacing {
     width: var(--PROPOSAL_BULLET_GUTTER);
-  }
-
-
-  .proposal-score-spacing {
-    width: var(--LIST_PADDING_RIGHT);
-    height: 2px;
-    flex-grow: 0;
-    flex-shrink: 0;        
-  }
-
-  @media #{TABLET_MEDIA} {
-    .proposal-score-spacing {
-      width: 20px;
-    }
-  }
-
-  @media #{PHONE_MEDIA} {
-    .proposal-score-spacing {
-      width: 8px;
-    }
   }
 
 
@@ -720,6 +682,7 @@ ProposalBlock = ReactiveComponent
 
         if proposal.pic 
           IMG
+            alt: "Icon associated with this proposal"
             className: 'proposal_pic'
             src: proposal.pic 
 
@@ -733,8 +696,8 @@ ProposalBlock = ReactiveComponent
             anonymous: anonymous
 
             style:
-              height: PROPOSAL_AUTHOR_AVATAR_SIZE
-              width: PROPOSAL_AUTHOR_AVATAR_SIZE
+              height: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
+              width: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
 
         else # no author specified
           SPAN 
@@ -743,14 +706,14 @@ ProposalBlock = ReactiveComponent
               height: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
               width: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
               display: 'inline-block'
-              border: "2px dashed #ddd"
+              border: "2px dashed var(--brd_light_gray)"
       else
         @props.icon?() or SVG 
           className: 'proposal_bullet'
           key: 'bullet'
           width: 8
           viewBox: '0 0 200 200' 
-          CIRCLE cx: 100, cy: 100, r: 80, fill: '#000000'
+          CIRCLE cx: 100, cy: 100, r: 80, fill: "var(--bg_dark)"
 
 
   draw_edit_and_delete: ->
@@ -765,11 +728,12 @@ ProposalBlock = ReactiveComponent
 
 
       BUTTON 
-        className: 'like_link'   
+        className: 'icon'   
         "aria-label": TRANSLATE 'engage.edit_button', 'edit'
         "data-tooltip": TRANSLATE 'engage.edit_button', 'edit'
         style: 
           marginRight: 4
+          padding: 0
 
         onClick: (e) => 
           proposal_editing = bus_fetch('proposal_editing')
@@ -784,11 +748,11 @@ ProposalBlock = ReactiveComponent
           e.stopPropagation()
           e.preventDefault()
           
-        edit_icon 18, 18, '#444'
+        edit_icon 18, 18, "var(--text_gray)"
 
       if permit('delete proposal', proposal, subdomain) > 0
         BUTTON
-          className: 'like_link'
+          className: 'icon'
 
           "data-tooltip": TRANSLATE 'engage.delete_button', 'delete'
           "aria-label": TRANSLATE 'engage.delete_button', 'delete'
@@ -797,9 +761,11 @@ ProposalBlock = ReactiveComponent
             if confirm('Delete this proposal forever?')
               destroy(proposal.key)
               loadPage('/')
+          style:
+            padding: 0
 
 
-          trash_icon 18, 18, '#444'
+          trash_icon 18, 18, "var(--text_gray)"
 
 
 
@@ -912,10 +878,15 @@ window.toggle_expand = ({proposal, ensure_open, prefer_personal_view}) ->
 
         update_proposal_mode proposal, null
         loadPage "/", (if loc.query_params?.tab then {tab: loc.query_params.tab} else {}), 'toggle_expand'
+      
+        announceToScreenReader(translator('engage.proposal_collapse_announce', "The proposal has been collapsed"))
       else 
         loadPage proposal_url(proposal), (if loc.query_params?.selected then {selected: loc.query_params.selected} else {}), 'toggle_expand'
 
         update_proposal_mode proposal, mode
+
+        # document.querySelector("[data-name='#{slugify(proposal.name)}'] .opinion-heading")?.focus()
+        announceToScreenReader(translator('engage.proposal_expand_announce', "The proposal has been expanded"))
 
       save expanded_state
 

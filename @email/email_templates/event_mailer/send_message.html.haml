@@ -5,7 +5,7 @@
   #{Translations::Translation.get({id: "email.message_from", sender: @message['sender_mask']}, "{sender} says:")}
 
 %p
-  %i{style: 'padding-left: 20px; display: block; border-left: 1px solid #eaeaea'}
+  %i{style: 'padding-left: 20px; display: block; border-left: 1px solid #ddd'}
     = simple_format(@message['body'])
 
 %p

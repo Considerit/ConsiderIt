@@ -1,15 +1,4 @@
   
-styles += """
-  .dangerzone button {
-    background-color: #c31d1d;
-    padding: 8px 24px;
-    color: white;
-    font-weight: 600;
-    border: none;
-    border-radius: 8px;    
-  }
-
-"""
 
 
 window.DataDash = ReactiveComponent
@@ -56,6 +45,8 @@ window.DataDash = ReactiveComponent
     if user_tags
       query = "?#{(v.key for v in user_tags).join('=1&')}" 
 
+
+    
     DIV null,
       if !paid
         UpgradeForumButton
@@ -87,7 +78,7 @@ window.DataDash = ReactiveComponent
 
           DIV 
             style: 
-              backgroundColor: '#f2f2f2'
+              backgroundColor: "var(--bg_lightest_gray)"
               padding: "8px 12px"
               marginTop: 24
 
@@ -187,7 +178,7 @@ window.DataDash = ReactiveComponent
                   id: "#{table}-file"
                   name: "#{table.toLowerCase()}-file"
                   type:'file'
-                  style: {backgroundColor: selected_color, color: 'white', fontWeight: 700, borderRadius: 8, padding: 6}
+                  style: {backgroundColor: "var(--selected_color)", color: "var(--text_light)", fontWeight: 700, borderRadius: 8, padding: 6}
             
 
           if current_user.is_super_admin
@@ -247,14 +238,17 @@ window.DataDash = ReactiveComponent
           [ @drawArgdownImport(), @drawArgdownExport() ]
 
 
+
         if @local.errors && @local.errors.length > 0
-          DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: '#FFE2E2'}, 
-            H1 style: {fontSize: 18}, 'Ooops! There are errors in the uploaded files:'
-            for error in @local.errors
-              DIV style: {marginTop: 10}, error
+
+            ErrorBlock @local.errors, 
+              heading: 'Ooops! There are errors in the uploaded files:'
+              style: 
+                marginTop: 20
+                marginLeft: 20 
 
         if @local.successes
-          DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: '#E2FFE2'}, 
+          DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: "var(--success_color)"}, 
             H1 style: {fontSize: 18}, 'Success! Here\'s what happened:'
             
             for table, successes of @local.successes
@@ -281,6 +275,7 @@ window.DataDash = ReactiveComponent
             style: 
               marginBottom: 24
             BUTTON 
+              className: "danger_button btn"
               onClick: => 
                 if confirm("Are you sure you want to delete all proposals, opinions, and comments on this forum?")
                   
@@ -302,6 +297,7 @@ window.DataDash = ReactiveComponent
             style: 
               marginBottom: 24
             BUTTON 
+              className: "danger_button btn"
               onClick: => 
                 if confirm("Are you sure you want to entirely delete this forum? In addition to removing all content, the forum and all its configuration will be removed.")
                   
@@ -329,7 +325,7 @@ window.DataDash = ReactiveComponent
       action: '/dashboard/data_import_argdown'
       style: 
         marginTop: 72
-        borderTop: '1px dotted #ddd'
+        borderTop: "1px dotted var(--brd_light_gray)"
 
       H2
         style: 
@@ -338,7 +334,7 @@ window.DataDash = ReactiveComponent
         'Argdown-like Import'
         SUP
           style: 
-            color: '#999'
+            color: "var(--text_gray)"
             fontSize: 12
             fontWeight: 400
             paddingLeft: 4
@@ -412,7 +408,7 @@ window.DataDash = ReactiveComponent
 
         SUP
           style: 
-            color: '#999'
+            color: "var(--text_gray)"
             fontSize: 12
             fontWeight: 400
             paddingLeft: 4

@@ -1,6 +1,7 @@
 require './shared'
 require './customizations'
-
+require './murmurhash'
+require './accessibility'
 
 
 save 
@@ -208,7 +209,9 @@ window.get_color_for_group = (val) ->
 
 
 window.missing_attribute_info_label = -> 
-  i18n().unreported 
+  i18n().unreported
+
+ 
 
 i18n = ->
   unreported: translator('opinion_views.unreported', 'Unreported')
@@ -292,8 +295,9 @@ default_weights = ->
         point_inclusions = Math.log(1 + Math.min(8,opinion.point_inclusions?.length or 0))
         .1 + point_inclusions
       icon: (color) -> 
-        color ?= 'black'
+        color ?= "currentColor"
         SVG
+          'aria-hidden': true
           width: 14
           height: 14
           viewBox: "0 0 23 23"
@@ -301,11 +305,11 @@ default_weights = ->
             <g id="Group-8" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                 <polygon id="Rectangle" stroke="#{color}" points="0 0 23 0 23 17.8367347 11.5 17.8367347 6.41522296 23 6.41522296 17.8367347 0 17.8367347"></polygon>
                 <ellipse id="Oval" fill="#{color}" cx="4.66666683" cy="8.43750016" rx="1.5333335" ry="1.43750016"></ellipse>
-                <line stroke="#{color}" x1="8.37575758" y1="8.5" x2="17.7575758" y2="8.5" id="Line-5" stroke="#979797" stroke-linecap="square"></line>
+                <line stroke="#{color}" x1="8.37777778" y1="8.5" x2="17.7777778" y2="8.5" id="Line-5" stroke-linecap="square"></line>
                 <ellipse id="Oval" fill="#{color}" cx="4.66666683" cy="3.43750016" rx="1.5333335" ry="1.43750016"></ellipse>
-                <line stroke="#{color}" x1="8.37575758" y1="3.5" x2="17.7575758" y2="3.5" id="Line-5" stroke="#979797" stroke-linecap="square"></line>
+                <line stroke="#{color}" x1="8.37777778" y1="3.5" x2="17.7777778" y2="3.5" id="Line-5" stroke-linecap="square"></line>
                 <ellipse id="Oval" fill="#{color}" cx="4.66666683" cy="13.4375002" rx="1.5333335" ry="1.43750016"></ellipse>
-                <line stroke="#{color}" x1="8.37575758" y1="13.5" x2="17.7575758" y2="13.5" id="Line-5" stroke="#979797" stroke-linecap="square"></line>
+                <line stroke="#{color}" x1="8.37777778" y1="13.5" x2="17.7777778" y2="13.5" id="Line-5" stroke-linecap="square"></line>
             </g>
           """    
     }, {
@@ -332,8 +336,9 @@ default_weights = ->
         else 
           .1
       icon: (color) -> 
-        color ?= 'black'
+        color ?= "currentColor" 
         SVG
+          'aria-hidden': true
           width: 14
           height: 14
           viewBox: "0 0 23 23"
@@ -359,8 +364,9 @@ default_weights = ->
         u = u.key or u 
         .1 + (influencer_scores[u] or 0)
       icon: (color) -> 
-        color ?= 'black'
+        color ?= "currentColor"
         SVG
+          'aria-hidden': true
           width: 14
           height: 14
           viewBox: "0 0 23 23"
@@ -537,6 +543,13 @@ DateFilters = ->
   date_options = default_date_options()
   DIV 
     className: 'grays' # for toggle buttons
+    role: 'group'
+    'aria-labelledby': 'date-filter-label'
+
+    DIV
+      id: 'date-filter-label'
+      className: 'screen-reader-only'
+      translator('opinion_views.date_filter_label', 'Date filter options')
 
     ToggleButtons date_options, date_toggle_state
 
@@ -549,25 +562,34 @@ DateFilters = ->
           style: 
             position: 'relative'
 
-          LABEL null,
+          LABEL 
+            htmlFor: 'start'
             translator 'opinion_views.date_from', 'From:'
           INPUT 
             type: 'date'
             id: 'start'
             name: 'opinion-start'
+            'aria-describedby': 'date-from-help'
             defaultValue: if date_toggle_state.start then to_date_str date_toggle_state.start
             onChange: (e) ->
               date_toggle_state.start = new Date(e.target.value).getTime()
               save date_toggle_state
-              date_option_changed date_options[3]            
+              date_option_changed date_options[3]
+              # Announce change to screen readers
+              announceToScreenReader(translator('opinion_views.date_from_updated', 'Start date updated'))
               e.preventDefault()
+          DIV
+            id: 'date-from-help'
+            className: 'screen-reader-only'
+            translator('opinion_views.date_from_help', 'Select the earliest date for filtering opinions')
 
         SPAN 
           style: 
             position: 'relative'
             paddingLeft: 8
 
-          LABEL null,
+          LABEL 
+            htmlFor: 'end'
             translator 'opinion_views.date_to', 'To:'
 
             
@@ -575,12 +597,19 @@ DateFilters = ->
             type: 'date'
             id: 'end'
             name: 'opinion-end'
+            'aria-describedby': 'date-to-help'
             defaultValue: if date_toggle_state.end then to_date_str date_toggle_state.end
             onChange: (e) ->
               date_toggle_state.end = new Date(e.target.value).getTime()
               save date_toggle_state
               date_option_changed date_options[3]
+              # Announce change to screen readers
+              announceToScreenReader(translator('opinion_views.date_to_updated', 'End date updated'))
               e.preventDefault()
+          DIV
+            id: 'date-to-help'
+            className: 'screen-reader-only'
+            translator('opinion_views.date_to_help', 'Select the latest date for filtering opinions')
 
 
 
@@ -783,14 +812,14 @@ OpinionViews = ReactiveComponent
                   height: 0 
                   borderLeft: '12px solid transparent'
                   borderRight: '12px solid transparent'                    
-                  borderTop: "7px solid #{focus_blue}"
+                  borderTop: "7px solid var(--focus_color)"
           else 
             DIV 
               className: 'custom_view_triangle'
               style: 
                 left: "calc(50% - 15px)"
-                bottom: -29
-              dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="#FFFFFF" stroke="rgb(182,182,182)"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
+                bottom: -26
+              dangerouslySetInnerHTML: __html: """<svg width="25px" height="13px" viewBox="0 0 25 13"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Artboard" transform="translate(-1086.000000, -586.000000)" fill="var(--bg_light)" stroke="var(--brd_mid_gray)"><polyline id="Path" points="1087 599 1098.5 586 1110 599"></polyline></g></g></svg>"""
 
       }
     ]
@@ -846,29 +875,33 @@ OpinionViews = ReactiveComponent
     DIV 
       style: (@props.style or {})
       className: 'filter_opinions_to'
+      role: 'region'
+      'aria-labelledby': "opinion-views-heading-#{@props.ui_key}"
+
+      DIV
+        id: "opinion-views-heading-#{@props.ui_key}"
+        className: 'screen-reader-only'
+        translator('opinion_views.heading', 'Opinion filtering and viewing options')
 
       DIV 
         style: 
           marginTop: 0
           lineHeight: 1
           
-
-        if customization('verification-by-pic') 
-          VerificationProcessExplanation()
-
         SPAN 
           style: 
             # display: 'flex'
             position: 'relative'
 
-          ToggleButtons view_buttons, opinion_views_ui
+          ToggleButtons view_buttons, opinion_views_ui, @props.ui_key
 
-          SPAN 
-            style: 
-              position: 'absolute'
-              left: '100%'
-              top: 0
-            @MinimizeExpandButton()
+          if user_has_set_a_view() && opinion_views_ui.active == 'custom'
+            SPAN 
+              style: 
+                position: 'absolute'
+                left: '100%'
+                top: 0
+              @MinimizeExpandButton()
 
 
 
@@ -885,13 +918,25 @@ OpinionViews = ReactiveComponent
       local_state.minimized = !local_state.minimized
       save local_state
 
+      # Announce state change
+      state = if local_state.minimized then 'collapsed' else 'expanded'
+      announceToScreenReader("Opinion view configuration #{state}")
+      
+      # Focus management - focus the button after state change
+      setTimeout ->
+        e.target.focus()
+      , 100
+
     DIV null,
       BUTTON 
         className: 'like_link'
         onClick: toggle_expanded
+        'aria-expanded': !local_state.minimized
+        'aria-controls': "opinion-view-config-#{@props.ui_key}"
+        'aria-label': if local_state.minimized then translator('opinion_views.expand_view_config', 'Expand opinion view configuration') else translator('opinion_views.collapse_view_config', 'Collapse opinion view configuration')
         style: 
           fontSize: 12
-          color: "#868686"
+          color: "var(--text_light_gray)"
           whiteSpace: 'nowrap'
           marginLeft: 4
 
@@ -1032,9 +1077,13 @@ window.OpinionViewInteractionWrapper = ReactiveComponent
     opinion_views_ui = bus_fetch 'opinion_views_ui'
     local_state = bus_fetch @props.ui_key or @local
 
+    return SPAN null if opinion_views_ui.active != 'custom'
 
     DIV 
       className: "opinion_view_interaction_wrapper #{if opinion_views_ui.active == 'custom' && (opinion_views_ui.last_interacted_with == local_state.key || local_state.minimized) then 'showing_custom' else ''}"
+      id: "view-content-#{opinion_views_ui.active}"
+      role: 'tabpanel'
+      'aria-labelledby': "tab-#{opinion_views_ui.active}-#{@props.ui_key}"
 
       if opinion_views_ui.active == 'custom'
         width = @props.width
@@ -1046,6 +1095,8 @@ window.OpinionViewInteractionWrapper = ReactiveComponent
           if local_state.minimized || opinion_views_ui.last_interacted_with != local_state.key
 
             DIV 
+              id: "opinion-view-config-#{@props.ui_key}"
+              'aria-label': translator('opinion_views.view_config_summary', 'Opinion view configuration summary')
               style:
                 marginTop: 0
                 # width: if width then width
@@ -1061,8 +1112,10 @@ window.OpinionViewInteractionWrapper = ReactiveComponent
                 justifyContent: if @props.more_views_positioning == 'left' then 'flex-start' else if @props.more_views_positioning == 'centered' then 'center' else 'flex-end'
 
               DIV 
+                id: "opinion-view-config-#{@props.ui_key}"
+                'aria-label': translator('opinion_views.view_config_options', 'Opinion view configuration options')
                 style: 
-                  border: '1px solid #B6B6B6'
+                  border: "1px solid var(--brd_mid_gray)"
                   borderRadius: 8
                   width: 'fit-content'
                   maxWidth: if width then width
@@ -1110,59 +1163,64 @@ InteractiveOpinionViews = ReactiveComponent
             cur_val = idx
         DIV 
           className: 'opinion_view_row color_code'
-          style: 
-            borderTop: '1px dotted #DEDDDD' 
 
           group_by_icon()
 
           LABEL 
             className: 'opinion_view_name'
+
+
             translator 'opinion_views.view_type_group', 'Color code by'
             ':'
 
-          SELECT 
-            style: 
-              maxWidth: '75%'
-              marginRight: 12
-              borderColor: '#bbb'
-              backgroundColor: '#f9f9f9'
-              borderRadius: 2
+            SELECT 
+              name: 'color_code_field'
+              'aria-label': translator('opinion_views.color_code_attribute', 'Select attribute to color code by')
+              style: 
+                maxWidth: '75%'
+                marginLeft: 12
+                borderColor: "var(--brd_mid_gray)"
+                backgroundColor: "var(--bg_lightest_gray)"
+                borderRadius: 2
 
-            onChange: (ev) -> 
-              if ev.target.value != null
-                attribute = attributes[ev.target.value]
-                opinion_views_ui.group_by = attribute?.key
-              else 
-                opinion_views_ui.group_by = null
+              onChange: (ev) -> 
+                if ev.target.value != null
+                  attribute = attributes[ev.target.value]
+                  opinion_views_ui.group_by = attribute?.key
+                else 
+                  opinion_views_ui.group_by = null
 
-              if opinion_views_ui.group_by && (!opinion_views_ui.activated_attributes[opinion_views_ui.group_by] ||  \
-                                  (o for o,val of opinion_views_ui.visible_attribute_values[opinion_views_ui.group_by] when val).length == 0)
-                            # if no attribute value is selected, which mean all are enabled, select them all
-                opinion_views_ui.activated_attributes[opinion_views_ui.group_by] = true 
-                for option in attribute.options 
-                  opinion_views_ui.visible_attribute_values[attribute.key][option] = true
-              save opinion_views_ui
+                if opinion_views_ui.group_by && (!opinion_views_ui.activated_attributes[opinion_views_ui.group_by] ||  \
+                                    (o for o,val of opinion_views_ui.visible_attribute_values[opinion_views_ui.group_by] when val).length == 0)
+                              # if no attribute value is selected, which mean all are enabled, select them all
+                  opinion_views_ui.activated_attributes[opinion_views_ui.group_by] = true 
+                  for option in attribute.options 
+                    opinion_views_ui.visible_attribute_values[attribute.key][option] = true
+                save opinion_views_ui
 
-              if opinion_views_ui.group_by
-                set_group_by_attribute attribute 
+                if opinion_views_ui.group_by
+                  set_group_by_attribute attribute
+                  announceToScreenReader("Color coding set to #{attribute.name}")
 
-              else 
-                delete opinion_views.active_views.group_by
-                save opinion_views
+                else 
+                  delete opinion_views.active_views.group_by
+                  save opinion_views
+                  announceToScreenReader('Color coding removed')
 
 
-            value: cur_val
+              value: cur_val
 
-            OPTION 
-              value: null
-              ""
-            for attribute,idx in attributes 
-              continue if !attribute.options
-              do (attribute) =>
-                OPTION 
-                  key: idx
-                  value: idx 
-                  attribute.name or attribute.question
+              OPTION 
+                value: null
+                'aria-label': translator('opinion_views.no_attribute', 'no attribute')
+                ""
+              for attribute,idx in attributes 
+                continue if !attribute.options
+                do (attribute) =>
+                  OPTION 
+                    key: idx
+                    value: idx 
+                    attribute.name or attribute.question
 
           if cur_val > -1
             LABEL 
@@ -1172,20 +1230,13 @@ InteractiveOpinionViews = ReactiveComponent
                                  The position on the histogram is the average score for all the people with 
                                  that value, and the size of the circle is the number of people with that value."""
 
-              SPAN
-                className: 'toggle_switch'
-
-                INPUT 
-                  type: 'checkbox'
-                  checked: opinion_views_ui.aggregate_into_groups
-                  onChange: (e) -> 
-                    opinion_views_ui.aggregate_into_groups = !opinion_views_ui.aggregate_into_groups        
-                    save opinion_views_ui
-
-                SPAN 
-                  className: 'toggle_switch_circle'
-                  style: 
-                    backgroundColor: if opinion_views_ui.aggregate_into_groups then focus_color()
+              INPUT 
+                type: 'checkbox'
+                checked: opinion_views_ui.aggregate_into_groups
+                role: 'switch'
+                onChange: (e) -> 
+                  opinion_views_ui.aggregate_into_groups = !opinion_views_ui.aggregate_into_groups        
+                  save opinion_views_ui
             
               SPAN 
                 style: 
@@ -1201,11 +1252,14 @@ InteractiveOpinionViews = ReactiveComponent
       if attributes.length > 0 
         DIV 
           className: 'opinion_view_row'
+          role: 'group'
+          'aria-labelledby': 'filter-attributes-label'
 
           filter_icon()
 
 
           LABEL 
+            id: 'filter-attributes-label'
             className: 'opinion_view_name'
             translator 'opinion_views.view_type_filter', 'Narrow by'
             ':'
@@ -1214,6 +1268,9 @@ InteractiveOpinionViews = ReactiveComponent
           UL 
             style: 
               listStyle: 'none'
+              display: "inline-flex"
+              flexDirection: "row"
+              gap: 8
 
             for attribute, cnt in attributes
               do (attribute) ->
@@ -1222,16 +1279,21 @@ InteractiveOpinionViews = ReactiveComponent
                 if attr_name.length > 40
                   attr_name = "#{attr_name.substring(0,37)}..."
                   shortened = true
+
                 LI 
                   key: attr_name
-                  style: 
-                    display: 'inline-block'
 
                   BUTTON
                     "data-attribute": attr_name
                     title: if shortened then attribute.name
-                    className: "filter opinion_view_button #{if opinion_views_ui.activated_attributes[attribute.key] then 'active' else ''}"
-                    onClick: -> toggle_attribute_visibility(attribute)
+                    className: "selector_button opinion_view_button #{if opinion_views_ui.activated_attributes[attribute.key] then 'active' else ''}"
+                    'aria-pressed': opinion_views_ui.activated_attributes[attribute.key]
+                    'aria-label': if opinion_views_ui.activated_attributes[attribute.key] then translator({id: 'opinion_views.remove_filter', attr_name: attr_name}, "Remove {attr_name} filter") else translator({id: 'opinion_views.add_filter', attr_name: attr_name}, "Add {attr_name} filter")
+                    onClick: -> 
+                      toggle_attribute_visibility(attribute)
+                      # Announce filter change
+                      status = if opinion_views_ui.activated_attributes[attribute.key] then 'removed' else 'added'
+                      announceToScreenReader("#{attr_name} filter #{status}")
 
                     if attribute.icon 
                       SPAN 
@@ -1285,62 +1347,76 @@ InteractiveOpinionViews = ReactiveComponent
                       shortened = true
 
                     do (val) => 
+                      id = "attr-val-#{murmurhash("#{val}:#{attribute.name}")}"
                       LI 
+                        id: id
                         key: "#{val}:#{attribute.name}"
                         "data-attribute": attribute.name
                         "data-value": val
                         style: 
                           display: 'inline-block'
 
+                        if is_grouped
+                          STYLE
+                            dangerouslySetInnerHTML: __html: """
+                              ##{id} input:where([type="checkbox"][role="switch"]):checked {
+                                background-color: #{group_colors[val]};
+                              }
+                            """
+
                         LABEL 
                           className: "attribute_value_selector"
                           title: if shortened then val 
 
-                          SPAN
-                            className: if is_grouped then 'toggle_switch' else ''
+                          INPUT 
+                            name: id
+                            type: if true_false then 'radio' else 'checkbox'
+                            value: val
+                            checked: checked
+                            role: if is_grouped then 'switch'
+                            'aria-describedby': "#{id}-description"
+                            onChange: (e) ->
+                              # create a view on the fly for this attribute
+                              if true_false
+                                opinion_views_ui.visible_attribute_values[attribute.key][true] = false
+                                opinion_views_ui.visible_attribute_values[attribute.key][false] = false
+                                opinion_views_ui.visible_attribute_values[attribute.key]["either"] = false
 
-                            INPUT 
-                              type: if true_false then 'radio' else 'checkbox'
-                              value: val
-                              checked: checked
-                              onChange: (e) ->
-                                # create a view on the fly for this attribute
-                                if true_false
-                                  opinion_views_ui.visible_attribute_values[attribute.key][true] = false
-                                  opinion_views_ui.visible_attribute_values[attribute.key][false] = false
-                                  opinion_views_ui.visible_attribute_values[attribute.key]["either"] = false
-
-                                opinion_views_ui.visible_attribute_values[attribute.key][val] = e.target.checked
-                                save opinion_views_ui
-                                construct_view_for_attribute(attribute)
-
-                            if is_grouped
-                              SPAN 
-                                className: 'toggle_switch_circle'
-                                style: 
-                                  backgroundColor: if checked then group_colors[val]
+                              opinion_views_ui.visible_attribute_values[attribute.key][val] = e.target.checked
+                              save opinion_views_ui
+                              construct_view_for_attribute(attribute)
+                              # Announce selection change
+                              action = if e.target.checked then 'selected' else 'deselected'
+                              announceToScreenReader("#{val_name} #{action} for #{attribute.name}")
 
                           SPAN 
                             className: 'attribute_value_value'
                             dangerouslySetInnerHTML: __html: val_name
+                          
+                          DIV
+                            id: "#{id}-description"
+                            className: 'screen-reader-only'
+                            "#{if is_grouped then 'Color coding option' else 'Filter option'} for #{attribute.name}"
 
             BUTTON
-              className: 'attribute_close'
-              onClick: -> toggle_attribute_visibility(attribute)
+              className: 'icon'
+              onClick: -> 
+                toggle_attribute_visibility(attribute)
+                announceToScreenReader("#{attribute.name} filter removed")
+              "aria-label": translator({id: 'opinion_views.remove_filter', attr_name: attribute.name}, "Remove {attr_name} filter")
 
-              'x'
-
-
+              iconX 14, "var(--text_dark)"
 
 
       DIV 
         className: 'opinion_view_row'
-        style: 
-          borderTop: '1px dotted #DEDDDD' 
+        role: 'group'
+        'aria-labelledby': 'weight-options-label'
 
         weigh_icon()
 
         LABEL 
+          id: 'weight-options-label'
           className: 'opinion_view_name'
 
           translator 'opinion_views.view_type_weigh', 'Weigh by'
@@ -1349,26 +1425,30 @@ InteractiveOpinionViews = ReactiveComponent
         UL 
           style: 
             listStyle: 'none'
+            display: "inline-flex"
+            flexDirection: "row"
+            gap: 8
 
           for weight in get_weights()
             do (weight) ->
               LI 
                 key: weight.key
-                style: 
-                  marginRight: 8
-                  marginBottom: 1
-                  display: 'inline-block'
                 'data-key': weight.key
 
                 BUTTON 
-                  className: "weight opinion_view_button #{if activated_weights[weight.key] then 'active' else ''}"
+                  className: "selector_button opinion_view_button #{if activated_weights[weight.key] then 'active' else ''}"
                   "data-tooltip": weight.label
+                  'aria-pressed': !!activated_weights[weight.key]
+                  'aria-label': if activated_weights[weight.key] then translator({id: 'opinion_views.remove_weight', weight_name: weight.name}, "Remove {weight_name} weighting") else translator({id: 'opinion_views.add_weight', weight_name: weight.name}, "Add {weight_name} weighting")
                   onClick: (e) ->
                     toggle_weight weight
+                    # Announce weight change
+                    status = if activated_weights[weight.key] then 'removed' else 'added'
+                    announceToScreenReader("#{weight.name} weighting #{status}")
                     e.stopPropagation()
-                    
+
                   if weight.icon
-                    weight.icon if activated_weights[weight.key] then 'white'
+                    weight.icon()
 
                   SPAN 
                     style: 
@@ -1552,173 +1632,22 @@ NonInteractiveOpinionViews = ReactiveComponent
                   dangerouslySetInnerHTML: __html: mini.filters
 
               BUTTON 
-                className: "minimized_view_close" 
+                className: "icon" 
+                style: 
+                  marginLeft: 22
+                'aria-label': "Remove #{mini.name} #{if mini.label then mini.label.toLowerCase() else 'filter'}"
                 onClick: =>
                   local_state = bus_fetch @props.ui_key or @local
 
                   mini.toggle()
                   if !user_has_set_a_view()
                     reset_to_all(local_state)
+                    announceToScreenReader('All filters removed, showing all opinions')
+                  else
+                    announceToScreenReader("#{mini.name} filter removed")
 
-                'x'
+                iconX 13, "var(--focus_color)"
 
-
-VerificationProcessExplanation = ReactiveComponent
-  displayName: 'VerificationProcessExplanation'
-  render: -> 
-    users = bus_fetch '/users'
-    callout = "about verification"
-    DIV 
-      style: 
-        position: 'absolute'
-        right: -sizeWhenRendered(callout, {fontSize: 12}).width
-        top: -14
-
-      SPAN 
-        style: 
-          color: "#aaa"
-          fontSize: 14
-
-        SPAN 
-          style: 
-            textDecoration: 'underline'
-            cursor: 'pointer'
-            color: if @local.describe_process then logo_red
-          onClick: => 
-            @local.describe_process = !@local.describe_process
-            save @local
-          callout
-
-      if @local.describe_process
-        para = 
-          marginBottom: 20
-
-        DIV 
-          style: 
-            textAlign: 'left'
-            position: 'absolute'
-            right: 0
-            top: 40
-            width: 650
-            zIndex: 999
-            padding: "20px 40px"
-            backgroundColor: '#eee'
-            #boxShadow: '0 1px 2px rgba(0,0,0,.3)'
-            fontSize: 18
-
-          SPAN 
-            style: cssTriangle 'top', '#eee', 16, 8,
-              position: 'absolute'
-              right: 50
-              top: -8
-
-
-          DIV style: para,
-
-            """Filters help us understand the opinions of the stakeholder groups. \
-               Filters are conjunctive: only users that pass all active filters are shown.
-               These are the filters:"""
-
-          DIV style: para,
-            SPAN 
-              style:
-                fontWeight: 700
-              'Users'
-            """. Verified users have emailed us a verification image to validate their account.  
-               We have also verified a few other people via other media channels, like Reddit. """
-            SPAN style: fontStyle: 'italic', 
-              "Verification results shown below."
-
-          DIV style: para,
-            SPAN 
-              style:
-                fontWeight: 700
-              'Miners'
-
-            ". Miners are "
-            OL 
-              style: 
-                marginLeft: 20 
-              LI null,
-                'Users who control a mining pool with > 1% amount of hashrate'
-              LI null,
-                'Users who control > 1% amount of hashrate'
-            'We verify hashrate by consulting '
-            A 
-              href: 'https://blockchain.info/pools'
-              target: '_blank'
-              style: 
-                textDecoration: 'underline'
-
-              'https://blockchain.info/pools'
-            '.'
-
-          DIV style: para,
-            SPAN 
-              style:
-                fontWeight: 700
-              'Developers'
-
-            """. Bitcoin developers self-report by editing their user profile. If we recognize 
-               someone as a committer or maintainer of Core or XT, we assign it. 
-               We aren’t satisfied by our criteria for developer. We hope to work with 
-               the community to define a more robust standard for 'reputable technical voice'.""" 
-
-          DIV style: para,
-            SPAN 
-              style:
-                fontWeight: 700
-              'Businesses'
-
-            """. Bitcoin businesses self-report by editing their user profile. Business accounts
-               are either users who operate the business or an account that will represent that 
-               businesses' official position.""" 
-
-          DIV style: para,
-            "These filters aren’t perfect. If you think there is a problem, email us at "
-            A
-              href: "mailto:admin@consider.it"
-              style: 
-                textDecoration: 'underline'
-              'admin@consider.it'
-
-            ". We will try to make a more trustless process in the future."
-
-          DIV 
-            style: {}
-
-            DIV 
-              style: 
-                fontWeight: 600
-                fontSize: 26
-
-              'Verification status'
-
-            for user in users.users 
-              user = bus_fetch user 
-              if user.tags.verified && user.tags.verified.toLowerCase() not in ['no', 'false']
-                DIV 
-                  style:
-                    marginTop: 20
-
-                  DIV 
-                    style: 
-                      fontWeight: 600
-
-                    user.name
-
-
-                  if user.tags.verified?.indexOf('http') == 0
-                    IMG 
-                      src: user.tags.verified
-                      style: 
-                        width: 400
-                  else 
-                    DIV 
-                      style: 
-                        fontStyle: 'italic'
-
-                      user.tags.verified
 
 
 
@@ -1726,40 +1655,14 @@ VerificationProcessExplanation = ReactiveComponent
 styles += """
 
   button.opinion_view_button {
-    border: 1px solid #E0E0E0;
-    border-bottom-color: #aaa;
-    background-color: #F0F0F0;
-    // box-shadow: inset 0 -1px 1px 0 rgba(0,0,0,0.62);
-    border-radius: 8px;    
     font-size: 12px;
-    color: #000000;
-    font-weight: 400;
-  }
-  button.opinion_view_button.filter {
     padding: 4px 12px;
-    margin: 0 8px 8px 0;
-
   }
-  button.opinion_view_button.weight {
-    width: 100%;
-    display: flex;
-    padding: 4px 4px 4px 12px;
-    text-align: left;
-    align-items: center;
-    margin-right: 12px;
-
-  }
-
-  button.opinion_view_button.active {
-    background-color: #{focus_blue};
-    color: white;
-    border-color: #{focus_blue};
-  }
-
 
   .opinion_view_row {
     padding: 16px 0px;
     display: flex;
+    align-items: center;
   } 
   svg.opinion_view_class {
     display: block; 
@@ -1790,7 +1693,7 @@ styles += """
   .attribute_group {
     margin-left: 50px;
     width: 100%;
-    background-color: #F3F3F3;  
+    background-color: var(--bg_lightest_gray);  
     display: flex;  
     align-items: center;      
   }
@@ -1802,23 +1705,11 @@ styles += """
     width: 100px;
     padding-right: 16px; 
   }
-  .attribute_close, .minimized_view_close {
-    font-size: 13px;
-    color: #000000;
-    background-color: transparent;
-    border: none;
-  }
   .custom_view_triangle {
     position: absolute;
     z-index: 1;
   }
 
-  .minimized_view_close {
-    margin-top: 1px;
-    margin-left: 22px;
-    color: #{focus_color()};
-
-  }
   .minimized_view_list {
     list-style: none;
     margin: auto;
@@ -1833,14 +1724,15 @@ styles += """
   }
 
   .minimized_view {
-    color: #{focus_blue};
-    /* border: 1px solid #2478cc; */
-    background-color: #e9edfb;
+    color: var(--focus_color);
+    background-color: var(--focus_color_mostly_transluscent);
     width: fit-content;
     position: relative;
-    display: inline-block;
-    padding: 6px 12px;
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 6px 6px 12px;
     border-radius: 8px;
+    border: 1px solid currentColor;
     min-width: 200px;
   }
   .minimized_view_name {
@@ -1881,7 +1773,7 @@ styles += """
   }
   .opinion-date-filter label {
     padding: 0 8px 0 18px;
-    color: #666;
+    color: var(--text_light_gray);
     font-size: 12px;
   }
   
@@ -1902,7 +1794,7 @@ styles += """
     text-align: center;
     white-space: nowrap;
   }
-  .toggle_buttons li {
+  .toggle_buttons button {
     display: inline-block;
     position: relative;
   }
@@ -1910,31 +1802,31 @@ styles += """
     border-radius: 8px;
   }
   [data-widget="DropMenu"].bluedrop button.dropMenu-anchor, .toggle_buttons button {
-    background-color: white;
-    color: #{focus_blue};
+    background-color: var(--bg_light);
+    color: var(--focus_color);
     font-weight: 600;
     font-size: 12px;
     border: 1px solid;
-    border-color: #{focus_blue};
+    border-color: var(--focus_color);
     padding: 4px 16px;
   }  
-  .toggle_buttons li:not(:last-child) button {
+  .toggle_buttons button:not(:last-child) {
     border-right: none;
   }
-  .toggle_buttons li:first-child button {
+  .toggle_buttons button:first-child {
     border-radius: 8px 0 0 8px;
   }
-  .toggle_buttons li:last-child button {
+  .toggle_buttons button:last-child {
     border-radius: 0px 8px 8px 0px;
   }
 
-  .toggle_buttons li, .toggle_buttons li button {
+  .toggle_buttons {
     margin: 0;
   }
 
-  [data-widget="DropMenu"].bluedrop button.dropMenu-anchor, .toggle_buttons .active button {
-    background-color: #{focus_blue};
-    color: white;
+  [data-widget="DropMenu"].bluedrop button.dropMenu-anchor, .toggle_buttons button.active {
+    background-color: var(--focus_color);
+    color: var(--text_light);
   }
 
   .toggle_buttons button[disabled] {
@@ -1943,16 +1835,17 @@ styles += """
   }
 
   .grays .toggle_buttons button {
-    color: #444;
-    border-color: #444;
+    color: var(--text_gray);
+    border-color: currentColor;
   }
   .grays .toggle_buttons .active button {
-    background-color: #444;
-    color: white;
+    background-color: var(--bg_dark_gray);
+    color: var(--text_light);
+    border-color: var(--bg_dark_gray);
   }
 """
 
-window.ToggleButtons = (items, view_state, style) ->
+window.ToggleButtons = (items, view_state, id) ->
   toggle_state = bus_fetch view_state 
   toggle_state.active ?= items[0]?.key or items[0]?.label
 
@@ -1962,29 +1855,40 @@ window.ToggleButtons = (items, view_state, style) ->
     save view_state
 
     item.callback?(item, prev)
+    # Announce view change
+    announceToScreenReader("#{item.label} view selected")
 
-  UL 
+  DIV 
     key: 'toggle buttons'
     className: 'toggle_buttons'
-    style: style or {}
-
+    role: 'tablist'
+    
     for item in items
       do (item) =>
         key = item.key or item.label
-        LI 
+          
+        BUTTON
+          id: if id then "tab-#{key}-#{id}"
           ref: key
           key: key
-          className: if view_state.active == key then 'active'
+          className: "toggle_button #{if view_state.active == key then 'active' else ''}"
           'data-view-state': key
-          
-          BUTTON
-            disabled: item.disabled 
-            onClick: (e) -> toggled(e, item) 
+          role: 'tab'
+          'aria-selected': view_state.active == key
 
-            item.label
+          disabled: item.disabled 
+          onClick: (e) -> toggled(e, item)
+          
+          item.label
 
           if view_state.active == key && item.draw_when_active && !item.disabled
-            item.draw_when_active()
+            DIV
+              'aria-hidden': true
+              style:
+                pointerEvents: 'none'
+
+              item.draw_when_active()
+
 
 window.OpinionViews = OpinionViews
 

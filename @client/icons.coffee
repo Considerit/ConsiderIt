@@ -1,13 +1,14 @@
 
 window.iconX = (size, color) ->
   size ?= 30
-  color ?= 'black'
+  color ?= "var(--text_dark)"
   SVG
     width: size
     height: size
     viewBox: "-50 -50 200 200"
     stroke: color
     fill: 'none'
+    'aria-label': 'x icon'
 
     dangerouslySetInnerHTML: __html: """
        <g>
@@ -17,13 +18,14 @@ window.iconX = (size, color) ->
 
 
 window.iconAnonymousMask = (height, color) ->
-  color ?= 'black'
+  color ?= "var(--text_dark)"
   width = 1.4 * height
   SVG
     width: width
     height: height
-    viewBox: "-350 0 700 200"
+    viewBox: "-350 0 700 300"
     stroke: color
+    'aria-label': 'anonymous mask icon'
     dangerouslySetInnerHTML: __html: """
 
     <g style="">
@@ -34,12 +36,14 @@ window.iconAnonymousMask = (height, color) ->
     """
 
 window.closedIcon = ({size, fill}) ->
-  fill ?= 'black'
+  fill ?= "var(--text_dark)"
   SVG 
     width: size
     height: size
     viewBox: "0 0 700 700"
+    'aria-label': 'closed icon, circle with line through it'
     dangerouslySetInnerHTML: __html: """
+
 
     <g style="">
       <path fill="#{fill}" d="M 564.996 591.909 C 558.141 591.909 551.293 589.222 546.053 583.981 L 116.152 154.08 C 105.672 143.6 105.672 126.54 116.152 116.06 C 126.632 105.58 143.692 105.58 154.172 116.06 L 584.073 545.961 C 594.553 556.443 594.553 573.501 584.073 583.981 C 578.697 589.222 571.85 591.909 564.996 591.909 Z" style=""></path>
@@ -49,11 +53,12 @@ window.closedIcon = ({size, fill}) ->
 
 
 window.ThreeDotsIcon = ({size, fill}) ->
-  fill ?= 'black'
+  fill ?= "var(--text_dark)"
   SVG 
     width: size
     height: size
     viewBox: "0 0 700 700"
+    'aria-label': '3 vertical dots icon'
     dangerouslySetInnerHTML: __html: """
        <g>
         <path fill="#{fill}" d="m419.35 280c0 38.301-31.047 69.348-69.348 69.348s-69.348-31.047-69.348-69.348 31.047-69.348 69.348-69.348 69.348 31.047 69.348 69.348"/>
@@ -64,16 +69,21 @@ window.ThreeDotsIcon = ({size, fill}) ->
 
 
 window.double_up_icon = (size) -> 
+  circle_stroke = "var(--brd_light_gray)"
+  circle_fill = "var(--bg_lightest_gray)"
+  arrow_color = "var(--text_neutral)"
+
   SVG 
     width: size
     height: size
     viewBox: "0 0 66 66"
+    'aria-label': 'chevron up'
     dangerouslySetInnerHTML: __html: """
       <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
           <g transform="translate(-869.000000, -2725.000000)">
               <g transform="translate(870.000000, 2726.000000)">
-                  <circle stroke="#D1D1D1" fill="#F0F0F0" cx="32" cy="32" r="32"></circle>
-                  <path d="M45.7016044,27.11626 C46.2524214,27.6626885 46.5621531,28.4064037 46.5621531,29.1816368 C46.5621531,29.957456 46.252409,30.7011836 45.7016044,31.2470136 C45.1556622,31.7978306 44.4119595,32.1075624 43.6362276,32.1075624 C42.8608947,32.1075624 42.1171795,31.7978182 41.5708508,31.2470136 L32,21.6469887 L22.4291492,31.2470136 C21.6913187,31.9853304 20.6154925,32.2731566 19.6073652,32.003346 C18.5997366,31.7330492 17.8122852,30.9455479 17.5419884,29.9379692 C17.2721778,28.9298544 17.5600078,27.8540157 18.2983208,27.1161852 L29.9345484,15.4799576 C30.4809768,14.9291406 31.2241933,14.6194089 31.9999252,14.6194089 C32.7756571,14.6194089 33.5189733,14.9291531 34.065302,15.4799576 L45.7016044,27.11626 Z M34.0653768,28.9346232 C33.5189484,28.3838062 32.7757319,28.0740745 32,28.0740745 C31.2242681,28.0740745 30.4809519,28.3838187 29.9346232,28.9346232 L18.2983956,40.5708508 C17.5600789,41.3086813 17.2722527,42.3845075 17.5420632,43.3926348 C17.81236,44.4002634 18.5998613,45.1877148 19.60744,45.4580116 C20.6155548,45.7278222 21.6913935,45.4399922 22.429224,44.7016792 L32.0000748,35.1016543 L41.5709256,44.7016792 C42.1173541,45.2524962 42.8610692,45.562228 43.6363024,45.562228 C44.4121216,45.562228 45.1558492,45.2524838 45.7016792,44.7016792 C46.2524962,44.155737 46.562228,43.4120343 46.562228,42.6363024 C46.562228,41.8609695 46.2524838,41.1172543 45.7016792,40.5709256 L34.0653768,28.9346232 Z" fill="#9D9D9D"></path>
+                  <circle stroke="#{circle_stroke}" fill="#{circle_fill}" cx="32" cy="32" r="32"></circle>
+                  <path d="M45.7016044,27.11626 C46.2524214,27.6626885 46.5621531,28.4064037 46.5621531,29.1816368 C46.5621531,29.957456 46.252409,30.7011836 45.7016044,31.2470136 C45.1556622,31.7978306 44.4119595,32.1075624 43.6362276,32.1075624 C42.8608947,32.1075624 42.1171795,31.7978182 41.5708508,31.2470136 L32,21.6469887 L22.4291492,31.2470136 C21.6913187,31.9853304 20.6154925,32.2731566 19.6073652,32.003346 C18.5997366,31.7330492 17.8122852,30.9455479 17.5419884,29.9379692 C17.2721778,28.9298544 17.5600078,27.8540157 18.2983208,27.1161852 L29.9345484,15.4799576 C30.4809768,14.9291406 31.2241933,14.6194089 31.9999252,14.6194089 C32.7756571,14.6194089 33.5189733,14.9291531 34.065302,15.4799576 L45.7016044,27.11626 Z M34.0653768,28.9346232 C33.5189484,28.3838062 32.7757319,28.0740745 32,28.0740745 C31.2242681,28.0740745 30.4809519,28.3838187 29.9346232,28.9346232 L18.2983956,40.5708508 C17.5600789,41.3086813 17.2722527,42.3845075 17.5420632,43.3926348 C17.81236,44.4002634 18.5998613,45.1877148 19.60744,45.4580116 C20.6155548,45.7278222 21.6913935,45.4399922 22.429224,44.7016792 L32.0000748,35.1016543 L41.5709256,44.7016792 C42.1173541,45.2524962 42.8610692,45.562228 43.6363024,45.562228 C44.4121216,45.562228 45.1558492,45.2524838 45.7016792,44.7016792 C46.2524962,44.155737 46.562228,43.4120343 46.562228,42.6363024 C46.562228,41.8609695 46.2524838,41.1172543 45.7016792,40.5709256 L34.0653768,28.9346232 Z" fill="#{arrow_color}"></path>
               </g>
           </g>
       </g>
@@ -86,8 +96,9 @@ window.plusIcon = (outline_color, size) ->
   SVG
     width: size 
     height: size
-    fill: outline_color or 'white'
+    fill: outline_color or "var(--bg_light)"
     viewBox: "50 50 600 450" 
+    'aria-label': 'plus icon'
 
     dangerouslySetInnerHTML: __html: """
        <g>
@@ -106,6 +117,7 @@ window.checkmark = (size, color) ->
     xmlns: "http://www.w3.org/2000/svg" 
     viewBox: "0 0 700 700" 
     fill: color
+    'aria-label': 'checkmark icon'
 
     PATH 
       # strokeLinecap: "round" 
@@ -122,6 +134,7 @@ window.ChevronRight = (size) ->
     xmlns: "http://www.w3.org/2000/svg" 
     viewBox: "0 0 24 24" 
     stroke: "currentColor"
+    'aria-label': 'chevron right'
 
     PATH 
       strokeLinecap: "round" 
@@ -139,6 +152,7 @@ window.ChevronLeft = (size) ->
     xmlns: "http://www.w3.org/2000/svg" 
     viewBox: "0 0 24 24" 
     stroke: "currentColor"
+    'aria-label': 'chevron left'
 
     PATH 
       strokeLinecap: "round" 
@@ -146,23 +160,61 @@ window.ChevronLeft = (size) ->
       d: "M15 19l-7-7 7-7"
       fill: 'none'
 
+window.up_arrow_icon = (size, color) ->
+  size ?= 24
+  color ?= "currentColor"
+  SVG 
+    width: size 
+    height: size
+    xmlns: "http://www.w3.org/2000/svg" 
+    viewBox: "0 0 24 24" 
+    stroke: color
+    'aria-label': 'up arrow'
+
+    PATH 
+      strokeLinecap: "round" 
+      strokeLinejoin: "round" 
+      strokeWidth: "2" 
+      d: "M7 14l5-5 5 5"
+      fill: 'none'
+
+window.down_arrow_icon = (size, color) ->
+  size ?= 24
+  color ?= "currentColor"
+  SVG 
+    width: size 
+    height: size
+    xmlns: "http://www.w3.org/2000/svg" 
+    viewBox: "0 0 24 24" 
+    stroke: color
+    'aria-label': 'down arrow'
+
+    PATH 
+      strokeLinecap: "round" 
+      strokeLinejoin: "round" 
+      strokeWidth: "2" 
+      d: "M17 10l-5 5-5-5"
+      fill: 'none'
+
 
 
 window.HelpIcon = (help_text, style) ->
   style ?= {}
 
+  color = style.color or "var(--text_light_gray)" 
+
   BUTTON 
     "data-tooltip": help_text
-
+    "aria-label": help_text
+    className: 'icon'
     style: _.defaults style or {}, 
-      backgroundColor: 'transparent'
-      border: 'none'
       padding: 0
       display: 'inline-block'
       width: style.width or 17
       height: style.height or 17
 
     SVG 
+      'aria-hidden': true
       width: style.width or 17
       height: style.height or 17
       viewBox: "0 0 17 17.0000094" 
@@ -176,7 +228,7 @@ window.HelpIcon = (help_text, style) ->
         fillRule: "evenodd"
         G 
           transform: "translate(0.000000, 0.000000)" 
-          fill: style.color or "#666" 
+          fill: color
           fillRule: "nonzero"
           PATH 
             d: "M8.5,2.833339 C7.71759653,2.833339 7.08333333,3.4676022 7.08333333,4.25000567 C7.08333333,5.03240913 7.71759653,5.66667233 8.5,5.66667233 C9.28240347,5.66667233 9.91666667,5.03240913 9.91666667,4.25000567 C9.91666667,3.4676022 9.28240347,2.833339 8.5,2.833339 Z M6.61111111,6.61111678 L7.55555556,7.55556122 L7.55555556,13.2222279 L6.61111111,13.2222279 L6.61111111,14.1666723 L10.3888889,14.1666723 L10.3888889,13.2222279 L9.44444444,13.2222279 L9.44444444,6.61111678 L7.55555556,6.61111678 L6.61111111,6.61111678 Z"
@@ -189,10 +241,11 @@ window.GearIcon = (opts) ->
   SVG 
     height: opts.size or '100px' 
     width: opts.size or '100px'  
-    fill: opts.fill or "#888" 
+    fill: opts.fill or "var(--bg_neutral_gray)" 
     x: "0px" 
     y: "0px" 
     viewBox: "0 0 100 100"  
+    'aria-label': 'gear icon'
     dangerouslySetInnerHTML: __html: '<path d="M95.784,59.057c1.867,0,3.604-1.514,3.858-3.364c0,0,0.357-2.6,0.357-5.692c0-3.092-0.357-5.692-0.357-5.692  c-0.255-1.851-1.991-3.364-3.858-3.364h-9.648c-1.868,0-3.808-1.191-4.31-2.646s-1.193-6.123,0.128-7.443l6.82-6.82  c1.32-1.321,1.422-3.575,0.226-5.01L80.976,11c-1.435-1.197-3.688-1.095-5.01,0.226l-6.82,6.82c-1.32,1.321-3.521,1.853-4.888,1.183  c-1.368-0.67-5.201-3.496-5.201-5.364V4.217c0-1.868-1.514-3.604-3.364-3.859c0,0-2.6-0.358-5.692-0.358s-5.692,0.358-5.692,0.358  c-1.851,0.254-3.365,1.991-3.365,3.859v9.648c0,1.868-1.19,3.807-2.646,4.31c-1.456,0.502-6.123,1.193-7.444-0.128l-6.82-6.82  C22.713,9.906,20.459,9.804,19.025,11L11,19.025c-1.197,1.435-1.095,3.689,0.226,5.01l6.819,6.82  c1.321,1.321,1.854,3.521,1.183,4.888s-3.496,5.201-5.364,5.201H4.217c-1.868,0-3.604,1.514-3.859,3.364c0,0-0.358,2.6-0.358,5.692  c0,3.093,0.358,5.692,0.358,5.692c0.254,1.851,1.991,3.364,3.859,3.364h9.648c1.868,0,3.807,1.19,4.309,2.646  c0.502,1.455,1.193,6.122-0.128,7.443l-6.819,6.819c-1.321,1.321-1.423,3.575-0.226,5.01L19.025,89  c1.435,1.196,3.688,1.095,5.009-0.226l6.82-6.82c1.321-1.32,3.521-1.853,4.889-1.183c1.368,0.67,5.201,3.496,5.201,5.364v9.648  c0,1.867,1.514,3.604,3.365,3.858c0,0,2.599,0.357,5.692,0.357s5.692-0.357,5.692-0.357c1.851-0.255,3.364-1.991,3.364-3.858v-9.648  c0-1.868,1.19-3.808,2.646-4.31s6.123-1.192,7.444,0.128l6.819,6.82c1.321,1.32,3.575,1.422,5.01,0.226L89,80.976  c1.196-1.435,1.095-3.688-0.227-5.01l-6.819-6.819c-1.321-1.321-1.854-3.521-1.183-4.889c0.67-1.368,3.496-5.201,5.364-5.201H95.784  z M50,68.302c-10.108,0-18.302-8.193-18.302-18.302c0-10.107,8.194-18.302,18.302-18.302c10.108,0,18.302,8.194,18.302,18.302  C68.302,60.108,60.108,68.302,50,68.302z"></path>'
 
 
@@ -201,12 +254,14 @@ window.GearIcon = (opts) ->
 
 window.drag_icon = (height, color) ->
   width = height * 14 / 20
+  color ?= 'currentColor'
   SVG 
     viewBox: "0 0 14 20" 
     stroke: 'none'
     fill: color
     width: width
     height: height 
+    'aria-label': 'drag handle'
 
     dangerouslySetInnerHTML: __html: """
       <g>
@@ -227,6 +282,7 @@ window.edit_icon = (width, height, color) ->
     fill: 'none'
     width: width
     height: height 
+    'aria-label': 'edit'
 
     dangerouslySetInnerHTML: __html: """
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -239,6 +295,7 @@ window.trash_icon = (width, height, color) ->
     fill: 'none'
     width: width
     height: height 
+    'aria-label': 'delete'
 
     dangerouslySetInnerHTML: __html: """
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -248,21 +305,26 @@ window.trash_icon = (width, height, color) ->
 
 window.filter_icon = (height) -> 
   height ?= 27
+  circle_fill = "var(--bg_light_gray)"
+  active_circle_fill = "var(--bg_dark_gray)"
+  line_stroke = "var(--slidergram_base_color)"
+
   SVG 
     className: 'opinion_view_class' 
     width: 33 / 27 * height
     height: height
     viewBox: "0 0 33 27" 
+    'aria-label': 'filter icon'
     dangerouslySetInnerHTML: __html: """
       <g id="final-push,-filters,-weights,-group-by" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
           <g id="Artboard-Copy-47" transform="translate(-373.000000, -868.000000)">
               <g id="Group-22" transform="translate(333.000000, 843.000000)">
                   <g id="filter2" transform="translate(40.000000, 25.000000)">
-                      <circle id="Oval" fill-opacity="0.491815314" fill="#B0B0B0" cx="4.5" cy="4.5" r="4.5"></circle>
-                      <circle id="Oval" fill-opacity="0.491815314" fill="#B0B0B0" cx="15.5" cy="4.5" r="4.5"></circle>
-                      <circle id="Oval" fill="#5F5E5E" cx="15.5" cy="22.5" r="4.5"></circle>
-                      <circle id="Oval" fill-opacity="0.491815314" fill="#B0B0B0" cx="25.5" cy="4.5" r="4.5"></circle>
-                      <line x1="2.1744186" y1="13" x2="31.8255814" y2="13" id="Line" stroke="#757575" stroke-linecap="square" stroke-dasharray="0,2"></line>
+                      <circle id="Oval" fill-opacity="0.491815314" fill="#{circle_fill}" cx="4.5" cy="4.5" r="4.5"></circle>
+                      <circle id="Oval" fill-opacity="0.491815314" fill="#{circle_fill}" cx="15.5" cy="4.5" r="4.5"></circle>
+                      <circle id="Oval" fill="#{active_circle_fill}" cx="15.5" cy="22.5" r="4.5"></circle>
+                      <circle id="Oval" fill-opacity="0.491815314" fill="#{circle_fill}" cx="25.5" cy="4.5" r="4.5"></circle>
+                      <line x1="2.1744186" y1="13" x2="31.8255814" y2="13" id="Line" stroke="#{line_stroke}" stroke-linecap="square" stroke-dasharray="0,2"></line>
                   </g>
               </g>
           </g>
@@ -271,22 +333,28 @@ window.filter_icon = (height) ->
     
 window.group_by_icon = (height) ->
   height ?= 19
+  orange_fill = "var(--attention_orange)"
+  blue_fill = "var(--focus_color)"
+  purple_fill = "var(--selected_color)"
+  line_stroke = "var(--brd_mid_gray)"
+
   SVG
     className: 'opinion_view_class' 
     width: 34/19 * height  
     height: height
     viewBox: "0 0 34 19" 
+    'aria-label': 'group by icon'
 
     dangerouslySetInnerHTML: __html: """
       <g id="final-push,-filters,-weights,-group-by" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
           <g id="Artboard-Copy-47" transform="translate(-371.000000, -937.000000)">
               <g id="Group-22" transform="translate(333.000000, 843.000000)">
                   <g id="weigh" transform="translate(39.000000, 94.000000)">
-                      <circle id="Oval" fill="#F09552" cx="6.45454545" cy="13.1818182" r="5"></circle>
-                      <circle id="Oval" fill="#F09552" cx="16.2727273" cy="13" r="5"></circle>
-                      <circle id="Oval" fill="#5E91E9" cx="10.8181818" cy="5" r="5"></circle>
-                      <circle id="Oval" fill="#BC62C4" cx="27.8181818" cy="13" r="5"></circle>
-                      <line x1="0.228571429" y1="18.4545455" x2="31.7714286" y2="18.4545455" id="Line" stroke="#A7A7A7" stroke-linecap="square"></line>
+                      <circle id="Oval" fill="#{orange_fill}" cx="6.45454545" cy="13.1818182" r="5"></circle>
+                      <circle id="Oval" fill="#{orange_fill}" cx="16.2727273" cy="13" r="5"></circle>
+                      <circle id="Oval" fill="#{blue_fill}" cx="10.8181818" cy="5" r="5"></circle>
+                      <circle id="Oval" fill="#{purple_fill}" cx="27.8181818" cy="13" r="5"></circle>
+                      <line x1="0.228571429" y1="18.4545455" x2="31.7714286" y2="18.4545455" id="Line" stroke="#{line_stroke}" stroke-linecap="square"></line>
                   </g>
               </g>
           </g>
@@ -296,21 +364,25 @@ window.group_by_icon = (height) ->
 
 window.weigh_icon = (height) ->
   height ?= 18
+  circle_fill = "var(--bg_neutral_gray)"
+  line_stroke = "var(--slidergram_base_color)"
+
   SVG
     className: 'opinion_view_class' 
     width: height * 34/18 
     height: height
     viewBox: "0 0 34 18" 
+    'aria-label': 'weigh icon'
 
     dangerouslySetInnerHTML: __html: """
       <g id="final-push,-filters,-weights,-group-by" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
           <g id="Artboard-Copy-47" transform="translate(-372.000000, -759.000000)">
               <g id="Group-22" transform="translate(333.000000, 602.000000)">
                   <g id="weigh" transform="translate(40.000000, 157.000000)">
-                      <circle id="Oval" fill="#9C9C9C" cx="4.36363636" cy="13.0909091" r="2.90909091"></circle>
-                      <circle id="Oval" fill="#9C9C9C" cx="27.6363636" cy="13.0909091" r="4.36363636"></circle>
-                      <circle id="Oval" fill="#9C9C9C" cx="13.8181818" cy="8" r="8"></circle>
-                      <line x1="0.228571429" y1="17.4545455" x2="31.7714286" y2="17.4545455" id="Line" stroke="#A7A7A7" stroke-linecap="square"></line>
+                      <circle id="Oval" fill="#{circle_fill}" cx="4.36363636" cy="13.0909091" r="2.90909091"></circle>
+                      <circle id="Oval" fill="#{circle_fill}" cx="27.6363636" cy="13.0909091" r="4.36363636"></circle>
+                      <circle id="Oval" fill="#{circle_fill}" cx="13.8181818" cy="8" r="8"></circle>
+                      <line x1="0.228571429" y1="17.4545455" x2="31.7714286" y2="17.4545455" id="Line" stroke="#{line_stroke}" stroke-linecap="square"></line>
                   </g>
               </g>
           </g>
@@ -318,14 +390,17 @@ window.weigh_icon = (height) ->
     """
 
 window.date_icon = (activated) ->
+  fill_color = if activated then "var(--text_light)" else "var(--text_dark)"
+
   SVG 
     width: 13
     height: 12 
     viewBox: "0 0 96 86"
+    'aria-label': 'date icon'
     dangerouslySetInnerHTML: __html: """
 
     <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g transform="translate(-234.000000, -823.000000)" fill="#{if activated then '#ffffff' else '#000000'}" fill-rule="nonzero">
+        <g transform="translate(-234.000000, -823.000000)" fill="#{fill_color}" fill-rule="nonzero">
             <g transform="translate(234.500000, 823.000000)">
                 <path d="M84.3,5.7 L73.1,5.7 L73.1,2.9 C73.1,1.3 71.8,-1.77635684e-15 70.2,-1.77635684e-15 C68.6,-1.77635684e-15 67.3,1.3 67.3,2.9 L67.3,5.7 L50.4,5.7 L50.4,2.9 C50.4,1.3 49.1,-1.77635684e-15 47.5,-1.77635684e-15 C45.9,-1.77635684e-15 44.6,1.3 44.6,2.9 L44.6,5.7 L27.7,5.7 L27.7,2.9 C27.7,1.3 26.4,-1.77635684e-15 24.8,-1.77635684e-15 C23.2,-1.77635684e-15 21.9,1.3 21.9,2.9 L21.9,5.7 L10.7,5.7 C4.8,5.7 0,10.5 0,16.4 L0,75.2 C0,81.1 4.8,85.9 10.7,85.9 L84.4,85.9 C90.3,85.9 95.1,81.1 95.1,75.2 L95.1,16.4 C95,10.5 90.2,5.7 84.3,5.7 Z M89.2,75.1 C89.2,77.8 87,79.9 84.4,79.9 L10.7,79.9 C8,79.9 5.9,77.7 5.9,75.1 L5.9,16.4 C5.9,13.7 8.1,11.6 10.7,11.6 L21.9,11.6 L21.9,14.4 C21.9,16 23.2,17.3 24.8,17.3 C26.4,17.3 27.7,16 27.7,14.4 L27.7,11.6 L44.6,11.6 L44.6,14.4 C44.6,16 45.9,17.3 47.5,17.3 C49.1,17.3 50.4,16 50.4,14.4 L50.4,11.6 L67.3,11.6 L67.3,14.4 C67.3,16 68.6,17.3 70.2,17.3 C71.8,17.3 73.1,16 73.1,14.4 L73.1,11.6 L84.3,11.6 C87,11.6 89.1,13.8 89.1,16.4 L89.1,75.1 L89.2,75.1 Z" id="Shape"></path>
                 <path d="M29.9,27.9 L21.4,27.9 C19.8,27.9 18.6,29.2 18.6,30.7 C18.6,32.3 19.9,33.5 21.4,33.5 L29.9,33.5 C31.5,33.5 32.7,32.2 32.7,30.7 C32.8,29.2 31.5,27.9 29.9,27.9 Z" id="Path"></path>
@@ -349,6 +424,7 @@ window.google_icon = (size) ->
     width: "#{size}px" 
     height: "#{size}px" 
     viewBox: "0 0 39 39" 
+    'aria-label': 'Google sign in'
 
     dangerouslySetInnerHTML: __html: """
       <g id="auth" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -369,12 +445,44 @@ window.import_icon = (size, color) ->
     width: "#{size}px" 
     height: "#{size}px" 
     viewBox: "0 0 550 550" 
+    'aria-label': 'import icon'
 
     dangerouslySetInnerHTML: __html: """
      <g>
       <path fill="#{color}" d="m534.8 71.68-210.56 210.56v-81.199c0-6-3.1992-11.547-8.3984-14.547-5.1992-3.0039-11.602-3.0039-16.801 0-5.1953 3-8.3984 8.5469-8.3984 14.547v121.52c0.070313 1.1367 0.25781 2.2617 0.55859 3.3633v3.3594l1.1211 1.6797v1.1211-0.003906c1.1953 1.7656 2.7148 3.2852 4.4805 4.4805h1.1211l1.6797 1.1211h129.36c6 0 11.547-3.2031 14.547-8.3984 3.0039-5.1992 3.0039-11.602 0-16.801-3-5.1992-8.5469-8.4023-14.547-8.4023h-81.199l210.56-208.88c3.2617-4.3477 4.2188-10.008 2.5625-15.191-1.6523-5.1797-5.7109-9.2383-10.891-10.891-5.1836-1.6562-10.844-0.69922-15.191 2.5625z"/>
       <path fill="#{color}" d="m209.44 493.36h242.48c19.305 0 37.824-7.668 51.477-21.32 13.652-13.656 21.32-32.172 21.32-51.48v-146.72c0-6-3.1992-11.547-8.3984-14.551-5.1992-3-11.602-3-16.801 0-5.1992 3.0039-8.3984 8.5508-8.3984 14.551v146.72c0 10.398-4.1328 20.367-11.484 27.719-7.3477 7.3516-17.32 11.484-27.715 11.484h-242.48c-10.398 0-20.367-4.1328-27.719-11.484-7.3516-7.3516-11.484-17.32-11.484-27.719v-242.48c0-10.395 4.1328-20.367 11.484-27.715 7.3516-7.3516 17.32-11.484 27.719-11.484h146.72c6 0 11.547-3.1992 14.551-8.3984 3-5.1992 3-11.602 0-16.801-3.0039-5.1992-8.5508-8.3984-14.551-8.3984h-146.72c-19.309 0-37.824 7.668-51.48 21.32-13.652 13.652-21.32 32.172-21.32 51.477v242.48c0 19.309 7.668 37.824 21.32 51.48 13.656 13.652 32.172 21.32 51.48 21.32z"/>
      </g>
+    """
+
+
+
+window.magnifying_glass_icon = (width, height, color) ->
+  SVG 
+    viewBox: "0 0 24 24" 
+    stroke: color
+    fill: 'none'
+    width: width
+    height: height 
+    'aria-label': 'search icon'
+
+    dangerouslySetInnerHTML: __html: """
+      <circle 
+        cx="11" 
+        cy="11" 
+        r="7" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" 
+        stroke-width="2" 
+      />
+      <line 
+        x1="16.5" 
+        y1="16.5" 
+        x2="21" 
+        y2="21" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" 
+        stroke-width="2" 
+      />
     """
 
 

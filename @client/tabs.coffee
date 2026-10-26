@@ -267,8 +267,6 @@ window.HomepageTabs = ReactiveComponent
 
     return DIV null if !edit_forum.editing && !tabs
 
-    #return DIV style:{paddingBottom:36} if edit_forum.editing && !bus_fetch('/current_user').is_super_admin && permit('configure paid feature') < 0
-
     is_light = is_light_background()
 
 
@@ -293,23 +291,29 @@ window.HomepageTabs = ReactiveComponent
 
 
       if edit_forum.editing 
+
         DIV 
           style:
-            display: 'flex'
-            justifyContent: 'center'
+            textAlign: 'center'
 
-          
-          LABEL 
-            className: 'toggle_switch'
-            style: 
-              pointerEvents: if !paid then 'none'
-              opacity: if !paid then .4
-
+          DIV 
+            className: 'configuration_area'
+            style:
+              display: 'inline-flex'
+              justifyContent: 'center'
+              alignItems: 'center'
+            
             INPUT 
               id: 'enable_tabs'
               type: 'checkbox'
               name: 'enable_tabs'
+              role: 'switch'
+              "aria-hidden": !paid            
               checked: !!get_tabs()
+              style: 
+                pointerEvents: if !paid then 'none'
+                opacity: if !paid then .4
+
               onChange: (ev) -> 
                 if ev.target.checked
                   loc = bus_fetch 'location'
@@ -325,27 +329,20 @@ window.HomepageTabs = ReactiveComponent
                     for tab in get_tabs()?.slice() or []
                       delete_tab(tab.name, true)
 
-                
-            
-            SPAN 
-              className: 'toggle_switch_circle'
+            LABEL 
+              className: 'toggle_switch_label'
 
+              htmlFor: if paid then 'enable_tabs'
+              B null,
+                'Enable Tabs.'
+              
+              DIV null,
 
-          LABEL 
-            className: 'toggle_switch_label'
-            style:
-              backgroundColor: if is_light then 'rgba(255,255,255,.4)' else 'rgba(0,0,0,.4)'
-            htmlFor: if paid then 'enable_tabs'
-            B null,
-              'Enable Tabs.'
-            
-            DIV null,
+                "Tabs help organize your forum into different pages."
 
-              "Tabs help organize your forum into different pages."
-
-          if !paid
-            UpgradeForumButton
-              text: 'upgrade'
+            if !paid
+              UpgradeForumButton
+                text: 'upgrade'
 
 
       A 
@@ -354,6 +351,7 @@ window.HomepageTabs = ReactiveComponent
       UL 
         ref: 'tablist'
         role: 'tablist'
+        'aria-label': translator('homepage_tab.tab_label', "All the pages of this forum.")
         style: _.defaults {}, @props.list_style,
           width: @props.width
 
@@ -374,60 +372,24 @@ window.HomepageTabs = ReactiveComponent
             go_to_hash: @props.go_to_hash
 
 
-  isDraggable: ->
-    edit_forum = bus_fetch 'edit_forum'
-    edit_forum.editing
-
-  componentDidMount : ->    
-    @initializeDragging()
-
-  componentDidUpdate : -> 
-    @initializeDragging()
-
-  initializeDragging: ->
-    if !@isDraggable() && @drag_initialized
-      @drag_initialized = false
-      @draggable.destroy()
-
-    else if @isDraggable() && !@drag_initialized
-      @drag_initialized = true
-
-      tab_root = @refs.tablist
-
-      @draggable = new Draggable.Sortable tab_root,
-        draggable: '.tab.tab-added.not-demo'
-        distance: 1 # don't start drag unless moved a bit, otherwise click event gets swallowed up
-
-      @draggable.on 'sortable:stop', ({data}) => 
-        from = data.oldIndex
-        to = data.newIndex
-
-        subdomain = bus_fetch '/subdomain'
-
-        tabs = subdomain.customizations.homepage_tabs
-        tabs.splice(to, 0, tabs.splice(from, 1)[0])
-
-        save subdomain
-
 
 styles += """
   #tabs > ul > li {
     display: inline-block;
     position: relative;
-    outline: none;
   }  
 
   .dragging-list #tabs > ul > li[data-accepts-lists="true"] {
-    outline: 4px solid black;
+    outline: 4px solid var(--brd_dark);
   }
 
   .dragging-list .dark #tabs > ul > li[data-accepts-lists="true"] {
-    outline: 4px solid white;
+    outline: 4px solid var(--brd_light);
   }
 
   .dragging-list #tabs > ul > li.draggedOver-by_list[data-accepts-lists="true"],
   .dragging-list .dark #tabs > ul > li.draggedOver-by_list[data-accepts-lists="true"] {
-    outline: 4px solid red;
+    outline: 4px solid var(--attention_orange);
   }
 
   #tabs > ul > li[draggable="false"].demo:not(.add_new):not(.selected) {
@@ -436,43 +398,54 @@ styles += """
   }
 
 
-  #tabs > ul > li > h4 {
+  #tabs > ul > li > h2 {
     cursor: pointer;
     position: relative;
-    padding: 10px 20px 4px 20px;
     font-size: 16px;
+    padding: 0;
     font-weight: 600;        
-    color: white;
+    color: var(--text_light);
   }
-  #tabs > ul > li.selected > h4 {
+  #tabs > ul > li.selected > h2 {
     opacity: 1;
-    color: black;
+    color: var(--text_dark);
   }
-  #tabs > ul > li:hover > h4,
-  #tabs > ul > li:focus-within > h4 {
+  #tabs > ul > li:hover > h2,
+  #tabs > ul > li:focus-within > h2 {
     opacity: 1;
   }
 
-  #tabs > ul > li > h4 > input {
+  #tabs > ul > li > h2 > span, #tabs > ul > li > h2 > input {
+    border: 1px solid transparent;
+    padding: 10px 20px 4px 20px;
+    display: inline-block;    
+    line-height: inherit;
+  }
+
+  #tabs > ul > li > h2 > input {
     background-color: transparent;
-    border: 1px solid #ccc;
     letter-spacing: inherit;
     font-size: inherit;
     font-weight: inherit;
     color: inherit;
     font-style: inherit;
+    min-width: 10px; 
+    border-color: var(--brd_light_gray);
+  }
+
+
+  #tabs > ul > li > h2 > input.new_tab {
     min-width: 50px;
-    padding: 2px 4px;
   }
 
   #tabs > ul > li[draggable="false"].demo.add_new {
     background-color: transparent;
   }
-  #tabs > ul > li[draggable="false"].demo.add_new > h4 {
-    color: black;
+  #tabs > ul > li[draggable="false"].demo.add_new > h2 {
+    color: var(--text_dark);
   }  
-  .dark #tabs > ul > li[draggable="false"].demo.add_new > h4 {
-    color: white;
+  .dark #tabs > ul > li[draggable="false"].demo.add_new > h2 {
+    color: var(--text_light);
   }
 
   .tab.draggable-source--is-dragging {
@@ -501,13 +474,44 @@ window.Tab = ReactiveComponent
     tab_style = _.extend {display: 'inline-block'}, @props.tab_style
     tab_wrapper_style = _.extend {}, @props.tab_wrapper_style
 
-
     if current
       _.extend tab_style, @props.active_style
       _.extend tab_wrapper_style, @props.active_tab_wrapper_style
 
     
     accepts_lists = @props.tab.type not in [PAGE_TYPES.ABOUT, PAGE_TYPES.ALL] && !tab.demo && !tab.add_new
+
+    select_tab = =>
+      return if tab.demo && !tab.add_new
+
+      loc = bus_fetch 'location'
+
+      if tab.add_new
+        tab_name = new_tab_name = prompt("What is the name of the tab?")
+        if tab_name
+          create_new_tab new_tab_name
+      else 
+        tab_name = tab.name
+        if @props.go_to_hash
+          el = document.querySelector("[name='#{@props.go_to_hash}']")
+          if el
+            $$.ensureInView el, 
+              position: 'top'
+              scroll: true
+
+
+      loc.query_params.tab = tab_name
+      save loc  
+      if loc.url != '/'
+        loadPage '/', loc.query_params
+
+      document.activeElement.blur()
+      setTimeout =>
+        if edit_forum.editing
+          @refs.edit_tab_name.focus()
+        else
+          document.querySelector('#homepagetab .LIST-title').focus()
+      , if edit_forum.editing then 100 else 1000
 
     LI 
       className: "tab #{if current then 'selected' else ''} #{if tab.demo then 'demo' else 'not-demo'} #{if tab.add_new then 'add_new' else 'tab-added'}"
@@ -521,42 +525,33 @@ window.Tab = ReactiveComponent
       'data-accepts-lists': accepts_lists
       'data-page-name': tab_name
 
-      onClick: =>
-        return if tab.demo && !tab.add_new
+      onClick: select_tab
+      onKeyUp: (e) =>
+        if e.which == 13 
+          e.stopPropagation()
+          e.preventDefault()          
+          e.target.click()
 
-        loc = bus_fetch 'location'
-
-        if tab.add_new
-          tab_name = new_tab_name = prompt("What is the name of the tab?")
-          if tab_name
-            create_new_tab new_tab_name
-        else 
-          tab_name = tab.name
-          if @props.go_to_hash
-            el = document.querySelector("[name='#{@props.go_to_hash}']")
-            if el
-              $$.ensureInView el, 
-                position: 'top'
-                scroll: true
-
-
-        loc.query_params.tab = tab_name
-        save loc  
-        if loc.url != '/'
-          loadPage '/', loc.query_params
-
-        document.activeElement.blur()
-
-
-      if edit_forum.editing  && !tab.add_new && !tab.demo && get_tabs().length > 1
+      if edit_forum.editing && current && !tab.add_new && !tab.demo && get_tabs().length > 1 && @props.idx > 0
         BUTTON 
+          className: 'icon'
+          'aria-label': 'Move tab towards start'
+          'data-tooltip': 'Move tab towards start'
           style: 
-            cursor: 'move'
-            backgroundColor: 'transparent'
-            border: 'none'                    
-          drag_icon 15, '#888'
+            # cursor: 'move'
+            padding: "4px 6px 4px 8px"
+            color: tab_style.color or if current then "var(--text_dark)" else  "var(--text_light)"
+          onClick: =>
+            from_idx = @props.idx
+            to_idx = @props.idx - 1
 
-      H4 
+            tabs = subdomain.customizations.homepage_tabs
+            tabs.splice(to_idx, 0, tabs.splice(from_idx, 1)[0])
+            save subdomain
+
+          ChevronLeft 16
+
+      H2 
         className: if current then 'main_background'
         style: tab_style
 
@@ -574,16 +569,22 @@ window.Tab = ReactiveComponent
 
         else if edit_forum.editing && tab_name == get_current_tab_name()
           INPUT
-            className: "tab_name_input"
+            ref: 'edit_tab_name'
+            className: "tab_name_input #{if tab.add_new then "new_tab" else ""}"
             type: 'text'
             defaultValue: tab_name
+            'aria-label': "Name of the tab"
             style: 
               fontSize: 'inherit'
               color: 'inherit'
               fontWeight: 'inherit'
               fontDecoration: 'inherit'
               fontStyle: 'inherit'
-            
+              width: if !tab.add_new then "#{tab_name.length + 1}ch"
+              boxSizing: 'content-box'
+
+            onInput: if !tab.add_new then (e) =>
+              e.target.style.width =  "#{e.target.value.length + 1}ch"
 
             onKeyDown: (e) => 
               e.stopPropagation()
@@ -594,7 +595,7 @@ window.Tab = ReactiveComponent
 
             # onChange: (e) =>
             onBlur: (e) =>
-              if e.target.value != ""
+              if e.target.value != "" && tab.name != e.target.value
                 if subdomain.customizations.homepage_default_tab == tab.name
                   subdomain.customizations.homepage_default_tab = e.target.value
 
@@ -610,24 +611,48 @@ window.Tab = ReactiveComponent
 
 
         else 
-          if !subdomain.name
-            '...'
-          else 
-            translator
-              id: "homepage_tab.name.#{tab_name}"
-              local: tab_name != 'Show all'
-              tab_name
+          SPAN null,
+            if !subdomain.name
+              '...'
+            else 
+              translator
+                id: "homepage_tab.name.#{tab_name}"
+                local: tab_name != 'Show all'
+                tab_name
       
       if edit_forum.editing && tab_name == get_current_tab_name() && !tab.demo
         BUTTON 
+          className: 'icon'
+          'aria-label': 'Delete this tab'
+          'data-tooltip': 'Delete this tab'
           style:
             display: 'inline-block'
-            backgroundColor: 'transparent'
-            border: 'none'
-            cursor: 'pointer'
+            padding: "4px 6px"
           onClick: ->
             delete_tab tab.name
-          trash_icon 15, 15, '#888'
+          trash_icon 16, 16, "var(--text_neutral)"
+
+
+      if edit_forum.editing && current && !tab.add_new && !tab.demo && get_tabs().length > 1 && @props.idx < get_tabs().length - 1 
+        BUTTON 
+          className: 'icon'
+          'aria-label': 'Move tab towards end'
+          'data-tooltip': 'Move tab towards end'
+          style: 
+            # cursor: 'move'
+            padding: "4px 6px 4px 8px"
+            color: tab_style.color or if current then "var(--text_dark)" else  "var(--text_light)"
+
+          onClick: =>
+            from_idx = @props.idx
+            to_idx = @props.idx + 1
+
+            tabs = subdomain.customizations.homepage_tabs
+            tabs.splice(to_idx, 0, tabs.splice(from_idx, 1)[0])
+            save subdomain
+
+          ChevronRight 16
+
 
       if featured 
         @props.featured_insertion?()

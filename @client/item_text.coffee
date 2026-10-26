@@ -5,7 +5,7 @@ EXPANDED_MAX_HEIGHT = 500
 styles += """
 
   :root {
-    --proposal_title_underline_color: #000000;
+    --proposal_title_underline_color: var(--text_dark);
   }
 
   .ItemText .proposal-title {
@@ -37,11 +37,11 @@ styles += """
   .proposal-title-text-inline {
     border-bottom-width: 2px;
     border-style: solid;
-    border-color: #{focus_blue + "ad"}; /* with some transparency */
+    border-color: var(--focus_color_slightly_transluscent);
     transition: border-color 1s;
     font-size: 20px;
     font-weight: 700;
-    color: #111;    
+    color: var(--text_dark);    
   }
 
   @media #{PHONE_MEDIA} {
@@ -52,7 +52,7 @@ styles += """
 
   .proposal-title-text-inline:hover,
   .proposal-title-text-inline:focus-within {
-    border-color: #000;
+    border-color: var(--brd_dark);
   }
 
 
@@ -68,11 +68,11 @@ styles += """
 
     // padding: 8px 0px;
 
-    color: #555;
+    color: var(--text_gray);
   }
 
   .is_collapsed .proposal-description {
-    color: #888;
+    color: var(--text_light_gray);
   }
 
   .is_collapsed .proposal-description.hidden-by-customization {
@@ -88,16 +88,16 @@ styles += """
     max-height: 9999px;
   }
 
-  .proposal-description.wysiwyg_text p {
+  /*.proposal-description.wysiwyg_text p {
     line-height: 1.5;
-  }
+  }*/
 
   .is_expanded .proposal-description.wysiwyg_text p {
     /* max-width: var(--ITEM_TEXT_WIDTH); */
   }
 
   [data-widget="ListItems"]:not(.expansion_event) .is_collapsed .transparency_fade {
-    background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%); /* linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 34%, rgba(255,255,255,0) 100%); */
+    background: linear-gradient(0deg, var(--bg_light_opaque) 0%, var(--bg_light_transparent) 100%); 
     bottom: 0px;
     height: 22px;
     position: absolute;
@@ -109,18 +109,14 @@ styles += """
     transition: opacity #{ANIMATION_SPEED_ITEM_EXPANSION}s ease;
   }
 
-  [data-widget="ListItems"].flipping .expand_full_text {
+  [data-widget="ListItems"].flipping button.expand_full_text {
     opacity: 0;
   }
-  .expand_full_text {
-    text-decoration: underline;
-    cursor: pointer;
+  button.expand_full_text {
     padding: 24px 0px 10px 0px;
     font-weight: 600;
     text-align: left;
-    border: none;
     width: 100%;
-    background-color: transparent;
   }
 
 
@@ -243,6 +239,11 @@ window.ItemText = ReactiveComponent
 
             DIV 
               ref: 'proposal_title'
+              role: "button"              
+              "aria-label": "#{if @is_expanded then translator('engage.close_proposal', "Press Enter to collapse this proposal") else translator('engage.expand_proposal', "Press enter to expand this proposal")}. #{proposal.name}"
+              "aria-expanded": @is_expanded
+              "aria-controls": "opinion-block-#{proposal.key}"
+              tabIndex: 0
               className: "prep_for_flip proposal-title"
               "data-proposal": proposal.key
               onClick: @toggle_expand
@@ -270,7 +271,7 @@ window.ItemText = ReactiveComponent
                       className: 'proposal-title-text'
                       "data-list-title": if @props.show_list_title then list_title
                       style: if !@props.show_list_title then {} else
-                        "--list-color": @props.list_title_color or 'black'
+                        "--list-color": @props.list_title_color or "var(--text_dark)"
 
                       SPAN 
                         className: 'proposal-title-text-inline'
@@ -437,9 +438,13 @@ window.ItemText = ReactiveComponent
 
     DIV null,
       DIV 
-        className: "proposal-description wysiwyg_text proposal_item_animation #{if @local.description_fully_expanded then 'fully_expanded' else ''} #{if customization('hide_collapsed_proposal_description') then 'hidden-by-customization' else ''}"
+        className: """proposal-description wysiwyg_text proposal_item_animation 
+                      #{if @local.description_fully_expanded then 'fully_expanded' else ''} 
+                      #{if customization('hide_collapsed_proposal_description') then 'hidden-by-customization' else ''}"""
         ref: 'proposal_description'
-        onClick: if @exceeds_collapsed_description_height && !@is_expanded then @toggle_expand
+        # onClick: if @exceeds_collapsed_description_height && !@is_expanded then @toggle_expand
+        # role: if @exceeds_collapsed_description_height && !@is_expanded then 'button' 
+        inert: if !!(!@props.is_expanded && @exceeds_collapsed_description_height) then "true"
 
         DIV 
           style:
@@ -459,9 +464,9 @@ window.ItemText = ReactiveComponent
 
       if @super_long_description && @props.is_expanded && !@local.description_fully_expanded && !embedded_demo()
         BUTTON
-          className: 'expand_full_text'
+          className: 'like_link expand_full_text'
 
-          onMouseDown: => 
+          onMouseUp: => 
             @local.description_fully_expanded = true
             save(@local)
 
@@ -494,7 +499,7 @@ window.ItemText = ReactiveComponent
         prefer_personal_view: true
 
     YOUR_OPINION_BUTTON_SIZE = 18
-    YOUR_OPINION_BUTTON_COLOR = '#444'
+    YOUR_OPINION_BUTTON_COLOR = "var(--text_gray)"
 
     DIV
       className: 'proposal-metadata'   
@@ -524,7 +529,7 @@ window.ItemText = ReactiveComponent
           if show_timestamp
             SPAN 
               key: 'date'
-              className: 'separated monospaced metadata-piece'
+              className: 'monospaced metadata-piece'
               style: 
                 borderBottom: 'none'
               
@@ -534,7 +539,7 @@ window.ItemText = ReactiveComponent
           if show_author_name_in_meta_data
             SPAN 
               key: 'author name'
-              className: 'separated monospaced metadata-piece'
+              className: 'monospaced metadata-piece'
               style: 
                 borderBottom: 'none'
 
@@ -546,18 +551,12 @@ window.ItemText = ReactiveComponent
 
           BUTTON 
             key: 'opinion-count'
-            className: 'opinion-count metadata-piece separated like_link monospaced'
+            className: 'metadata-piece like_link_with_bottom_border monospaced'
             onClick: => 
               toggle_expand
                 proposal: proposal 
                 prefer_personal_view: false                   
               
-            onKeyPress: (e) => 
-              if e.which == 32 || e.which == 13
-                toggle_expand
-                  proposal: proposal
-                  prefer_personal_view: false                   
-
             TRANSLATE
               id: "engage.proposal_score_summary"
               num_opinions: overall_cnt 
@@ -579,16 +578,11 @@ window.ItemText = ReactiveComponent
 
             BUTTON
               key: 'proposal-link'
-              className: 'pros_cons_count metadata-piece separated like_link monospaced'
+              className: 'metadata-piece like_link_with_bottom_border monospaced'
               onClick: => 
                 toggle_expand
                   proposal: proposal
                 
-              onKeyPress: (e) => 
-                if e.which == 32 || e.which == 13
-                  toggle_expand
-                    proposal: proposal
-
               point_count
 
 
@@ -596,20 +590,23 @@ window.ItemText = ReactiveComponent
           if (you_have_opinion && permit('update opinion', proposal, proposal.your_opinion) > 0) || permit('publish opinion', proposal) > 0
             SPAN
               key: 'yourOpinion'
-              className: 'separated monospaced metadata-piece'
-              style:  {  border:'solid 1px #dddddd', borderRadius:'8px', padding:'3px 10px', backgroundColor:'#f8f8f8'  }
+              className: 'monospaced metadata-piece'
+              style:  
+                borderRadius:'8px'
+                padding:'2px 6px 2px 10px'
+                backgroundColor: "var(--bg_lightest_gray)"
+                display: 'inline-flex'
+                alignItems: 'center'
+                gap: 2
 
               # Edit
               if opinion_prompt
                 [
                   BUTTON
                     key: 'edit-opinion-text'
-                    className: 'monospaced'
-                    style: {  border:'none', backgroundColor:'rgba(0,0,0,0)', padding:0  }
+                    className: 'monospaced naked_button'
+                    style: {  padding:0  }
                     onClick: toggleExpandPreferPersonal
-                    onKeyPress: (e) =>
-                      if e.which == 32 or e.which == 13
-                        toggleExpandPreferPersonal()
 
                     if you_have_opinion
                       translator('engage.your_opinion_section_label', 'Your opinion')
@@ -622,14 +619,13 @@ window.ItemText = ReactiveComponent
                       id: "edit-opinion-#{proposal.key}"
                       "aria-label": translator('engage.edit_opinion_button', 'Edit your opinion')
                       "data-tooltip": translator('engage.edit_opinion_button', 'Edit your opinion')
-                      className: 'metadata-piece'
-                      style: {  border:'none', verticalAlign:'bottom', marginBottom:'-3px', marginLeft:'10px'  }
+                      className: 'icon'
                       onClick: toggleExpandPreferPersonal
-                      onKeyPress: (e) =>
-                        if e.which == 32 || e.which == 13
-                          toggleExpandPreferPersonal()
+                      style:
+                        marginLeft: 3
 
                       edit_icon YOUR_OPINION_BUTTON_SIZE, YOUR_OPINION_BUTTON_SIZE, YOUR_OPINION_BUTTON_COLOR
+
                  ]
 
               if (your_opinion = proposal.your_opinion) && your_opinion.key && permit('update opinion', proposal, your_opinion) > 0
@@ -642,20 +638,19 @@ window.ItemText = ReactiveComponent
                     "aria-checked": Boolean( your_opinion.hide_name )
                     "aria-label": your_opinion_i18n.anonymize_opinion_button()
                     "data-tooltip": your_opinion_i18n.anonymize_opinion_button()
-                    className: 'metadata-piece'
-                    style: {  border:'none', verticalAlign:'bottom', marginBottom:'-1px', marginLeft:'15px', display: if customization('anonymize_permanently') then 'none'  }
+                    className: 'icon'
                     onClick: -> toggle_anonymize_opinion(your_opinion)
 
                     iconAnonymousMask YOUR_OPINION_BUTTON_SIZE, \
-                      if your_opinion.hide_name then focus_blue else '#888888'
+                      if your_opinion.hide_name then "var(--focus_color)" else "var(--text_neutral)"
+
 
                   # Remove
                   BUTTON
                     key: 'remove_opinion'
                     "aria-label": your_opinion_i18n.remove_opinion_button()
                     "data-tooltip": your_opinion_i18n.remove_opinion_button()
-                    className: 'metadata-piece'
-                    style: {  border:'none', verticalAlign:'bottom', marginBottom:'-3px', marginLeft:'15px'  }
+                    className: 'icon'
                     onClick: -> remove_opinion(your_opinion)
 
                     iconX YOUR_OPINION_BUTTON_SIZE, YOUR_OPINION_BUTTON_COLOR
@@ -670,10 +665,10 @@ window.ItemText = ReactiveComponent
             position: 'relative'
             top: 2;
           "data-tooltip": translator 'engage.proposal_closed', 'Closed to new contributions.'
-          
+          "aria-label": translator 'engage.proposal_closed', 'Closed to new contributions.'
           closedIcon 
             size: 12
-            fill: 'rgb(158, 35, 35)'
+            fill: "var(--failure_color)"
 
       else if read_only
         SPAN 
@@ -681,10 +676,11 @@ window.ItemText = ReactiveComponent
             position: 'relative'
             top: 2;
           "data-tooltip": translator "engage.proposal_read_only.short", 'read-only'
+          "aria-label": translator "engage.proposal_read_only.short", 'read-only'
 
           closedIcon 
             size: 12
-            fill: 'rgb(158, 78, 35)'
+            fill: "var(--failure_color)"
 
 
 
@@ -747,62 +743,22 @@ window.getOpinionPrompt = ({proposal, prefer_drag_prompt}) ->
 styles += """
   .ItemText .proposal-metadata  {
     margin-top: 8px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    flex-wrap: wrap;
   }
-
-
-  .ItemText .proposal-metadata .separated {
-    padding-right: 0px;
-    margin-right: 14px;
-    font-weight: 400;
-  }
-
-  .ItemText .proposal-metadata .separated.give-your-opinion {
-    text-decoration: none;
-    background-color: #f7f7f7;
-    border-radius: 8px;
-    padding: 4px 10px;
-    border: 1px solid #eee;
-    box-shadow: 0 1px 1px rgba(160,160,160,.8);
-    white-space: nowrap;
-  }
-
 
   .proposal-metadata .metadata-piece {
     font-size: 12px;
-    color: #666;
-
-    padding: 0;
-    border-width: 0 0 1px 0;
-    background: transparent;
-    border-style: solid;
-    border-color: #aaa;
+    color: var(--text_light_gray);
     white-space: nowrap;
-    transition: border-color 1s;
-    cursor: pointer;
-    text-decoration: none;
+    padding: 6px 0px 2px 0px;
   } 
-  .proposal-metadata .metadata-piece:hover,
-  .proposal-metadata .metadata-piece:focus-within {
-    border-color: #444;
+
+  .proposal-metadata .metadata-piece.like_link_with_bottom_border {
+    padding: 6px 0px 2px 0px;
   }
-
-  /* 
-  .proposal-metadata .small-give-your-opinion {
-    color: white;
-    background-color: #{focus_color()};
-    font-weight: 600;
-    cursor: pointer;
-    font-family: #{customization('font')};
-    border-radius: 8px;
-    padding: 4px 12px;
-    font-size: 10px;
-  } */
-
-  .is_expanded .proposal-metadata .small-give-your-opinion {
-    display: none;
-  }
-
-
 """
 
 

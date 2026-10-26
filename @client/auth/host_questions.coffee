@@ -26,7 +26,7 @@ window.HostQuestions = ReactiveComponent
         DIV 
           style:
             fontSize: 13
-            color: auth_text_gray
+            color: "var(--text_gray)"
             padding: '16px 0'
             textAlign: 'center'
           "By proceeding, you consent to the collection of the above data on behalf of the Forum Host. You can edit your responses later in your User Profile." 
@@ -94,7 +94,7 @@ window.HostQuestions = ReactiveComponent
           DIV 
             style:
               fontSize: 13
-              color: auth_text_gray
+              color: "var(--text_gray)"
               padding: '16px 0'
             dangerouslySetInnerHTML: {__html: customization('auth_footer')}
 
@@ -151,7 +151,7 @@ styles += """
 
   .question_metadata {
     font-size: 14px;
-    color: #333;
+    color: var(--text_gray);
   }
   .question_metadata .optionality {
     font-style: italic;
@@ -178,22 +178,23 @@ window.ShowHostQuestions = ReactiveComponent
           padding: "6px 0px"
           listStyle: 'none'
 
-        for [label, render, question] in host_questions
-          field_id = render?.props?.id or render?[0]?.props?.id
+        for [label, render, question, form_to_label] in host_questions
+
           LI 
             key: label
             className: 'question'
 
-            LABEL
-              className: 'question-prompt'
-              htmlFor: field_id
-                
-                
+            if form_to_label
+              LABEL
+                className: 'question-prompt'
+                htmlFor: form_to_label
+                  
+                  
 
-              SPAN
-                style: 
-                  paddingRight: if !question.required then 8 
-                dangerouslySetInnerHTML: __html: label 
+                SPAN
+                  style: 
+                    paddingRight: if !question.required then 8 
+                  dangerouslySetInnerHTML: __html: label 
 
 
             render
@@ -208,7 +209,7 @@ window.ShowHostQuestions = ReactiveComponent
                   if !question.required
                     SPAN 
                       style: 
-                        color: selected_color
+                        color: "var(--selected_color)"
 
                       translator('auth.optional_field', 'Optional') 
                   else 
@@ -253,21 +254,25 @@ window.ShowHostQuestions = ReactiveComponent
     inputs = []
     for question in questions
       do (question) =>
-        label = "#{question.question}"      
+        label = "#{question.question}"  
+
+        form_to_label = null    
 
         switch question.input
 
           when 'text'
+            form_to_label = slugify("#{question.tag}inputBox")
+
             input = INPUT
               key: label
               style: _.defaults question.input_style or {}, 
                 marginBottom: 6
                 width: 300
-                border: "1px solid #a1a1a1"
+                border: "1px solid var(--brd_mid_gray)"
                 padding: '5px 10px'
                 fontSize: 18            
               key: "#{question.tag}_inputBox"
-              id: slugify("#{question.tag}inputBox")
+              id: form_to_label
               type: 'text'
               value: local.tags[question.tag]
 
@@ -279,6 +284,9 @@ window.ShowHostQuestions = ReactiveComponent
                 # submit on enter
                 if event.which == 13
                   @submitAuth(event)
+
+
+            
 
           when 'boolean'
             input = 
@@ -324,7 +332,11 @@ window.ShowHostQuestions = ReactiveComponent
             label = ''
 
           when 'checklist'
+
+            form_to_label = slugify(label)
+
             input = DIV 
+              id: form_to_label
               key: label
               style: 
                 margin: "10px 18px"
@@ -382,6 +394,7 @@ window.ShowHostQuestions = ReactiveComponent
                     if question.open_text_option == option
                       idx = options_checked.indexOf(option)
                       INPUT 
+                        'aria-label': translator({id: "settings.questions.open_ended_response", question: question.question}, "Open-ended response to the question \"{question}\"")
                         ref: "open_value-#{question.tag}"
                         disabled: !is_checked 
                         defaultValue: current_user.tags[question.tag]?.split(CHECKLIST_SEPARATOR)[idx]?.split(OTHER_SEPARATOR)[1] or ""
@@ -398,11 +411,13 @@ window.ShowHostQuestions = ReactiveComponent
                         
 
           when 'dropdown'
+            form_to_label = slugify("#{question.tag}inputBox")
+
             input = DIV
               key: "#{question.tag}-wrapper"
 
               SELECT
-                id: slugify("#{question.tag}inputBox")
+                id: form_to_label
                 key: "#{question.tag}_inputBox"            
                 style: _.defaults question.input_style or {},
                   fontSize: 18
@@ -439,6 +454,7 @@ window.ShowHostQuestions = ReactiveComponent
 
               if question.open_text_option && question.open_text_option == local.tags[question.tag]?.split(OTHER_SEPARATOR)[0]
                 INPUT 
+                  id: slugify("open_value-#{question.tag}")
                   ref: "open_value-#{question.tag}"
                   defaultValue: current_user.tags[question.tag]?.split(OTHER_SEPARATOR)[1] or ""
                   style: 
@@ -458,13 +474,12 @@ window.ShowHostQuestions = ReactiveComponent
         # if !question.required && question.input not in ['boolean', 'checklist']
         #   op = DIV 
         #         style: 
-        #           color: '#888'
         #           fontSize: 12
         #         translator('optional', 'optional')
 
         #   label = [op, label] 
 
-        inputs.push [label, input, question]
+        inputs.push [label, input, question, form_to_label]
     inputs
 
 

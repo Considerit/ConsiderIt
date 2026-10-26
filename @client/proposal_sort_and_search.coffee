@@ -421,112 +421,6 @@ set_default_sort = ->
 
 
 
-# currently unused
-ProposalSort = ReactiveComponent
-  displayName: 'ProposalSort'
-
-  render : -> 
-
-    subdomain = bus_fetch '/subdomain'
-
-    return SPAN null if !subdomain.name
-
-
-    SPAN 
-      style: _.defaults (@props.style or {})
-
-      # ApplyFilters()
-
-
-      DIV
-        style: 
-          display: 'inline-block'
-          #verticalAlign: 'top'
-          #paddingTop: 4 #16
-          paddingRight: 12
-
-        SortProposalsMenu() 
-
-      # DIV
-      #   style: 
-      #     display: 'inline-block'
-      #     verticalAlign: 'top'
-      #     paddingTop: 8
-
-      #   FORM 
-      #     style: 
-      #       position: 'relative'
-
-      #     onSubmit: (e) => 
-      #       n = @refs.new_filter
-      #       filters.for_proposals ||= []
-      #       filters.for_proposals.push n.value
-      #       save filters
-      #       n.value = null
-
-      #       e.stopPropagation(); e.preventDefault()
-
-      #     SVG
-      #       width: 20
-      #       height: 20
-      #       style: 
-      #         pointerEvents: 'none'
-      #         position: 'absolute'
-      #         right: 5
-      #         top: 9
-      #         zIndex: 1
-      #       fill: '#888'
-
-      #       viewBox: "0 0 100 125"
-      #       G null,
-      #         PATH
-      #           d: "M69.054,59.058l27.471,23.811c2.494,2.162,2.766,5.971,0.604,8.465l-0.981,1.132c-2.162,2.494-5.971,2.766-8.465,0.604   L60.418,69.438"
-      #         PATH 
-      #           d: "M2.358,41.458c0-19.744,16.005-35.749,35.751-35.749c19.744,0,35.749,16.005,35.749,35.749  c0,19.746-16.005,35.751-35.749,35.751C18.363,77.208,2.358,61.203,2.358,41.458z M38.563,67.583  c14.428,0,26.124-11.696,26.124-26.126c0-14.428-11.696-26.124-26.124-26.124c-14.43,0-26.126,11.696-26.126,26.124  C12.438,55.887,24.134,67.583,38.563,67.583z"
-
-      #     INPUT
-      #       ref: 'new_filter' 
-      #       type: 'text'
-      #       'aria-label': 'search proposals'
-
-      #       style:
-      #         fontSize: 14
-      #         padding: '2px 8px'
-      #         width: 150
-      #         border: '1px solid #aaa'
-
-      #   DIV 
-      #     style:
-      #       paddingTop: 5
-
-      #     for filter in (filters.for_proposals or [])
-      #       do (filter) => 
-      #         BUTTON 
-      #           style: 
-      #             backgroundColor: '#eee'
-      #             color: '#666'
-      #             padding: '4px 8px'
-      #             borderRadius: 16
-      #             fontSize: 16
-      #             cursor: 'pointer'
-      #             boxShadow: '0 1px 1px rgba(0,0,0,.2)'
-      #             marginRight: 10
-      #             border: 'none'
-
-      #           onClick: -> 
-      #             idx = filters.for_proposals.indexOf(filter)
-      #             filters.for_proposals.splice idx, 1
-      #             save filters
-
-      #           filter
-      #           SPAN 
-      #             style: 
-      #               color: '#aaa'
-      #               fontSize: 10
-      #               paddingLeft: 10
-      #             'x'
-
-
 
 opined_on = (proposal) -> 
   proposal.your_opinion?.published != false 
@@ -593,7 +487,7 @@ FilterProposalsMenu = ReactiveComponent
 
               current_filter
 
-              SPAN style: _.extend cssTriangle 'bottom', 'white', 8, 5,
+              SPAN style: _.extend cssTriangle 'bottom', "currentColor", 8, 5,
                 display: 'inline-block'
                 marginLeft: 4   
                 marginBottom: 2
@@ -617,7 +511,7 @@ FilterProposalsMenu = ReactiveComponent
                 style: 
                   float: 'right'
                 HelpIcon translator("engage.filter.#{option.name}.description", option.description),
-                  color: 'black' #if is_active then 'white'
+                  color: "var(--text_dark)" #if is_active then text_light
                 
           ]
 
@@ -662,7 +556,7 @@ SortProposalsMenu = ReactiveComponent
 
               current_sort
 
-              SPAN style: _.extend cssTriangle 'bottom', 'white', 8, 5,
+              SPAN style: _.extend cssTriangle 'bottom', "currentColor", 8, 5,
                 display: 'inline-block'
                 marginLeft: 4   
                 marginBottom: 2
@@ -691,7 +585,7 @@ SortProposalsMenu = ReactiveComponent
             # DIV 
             #   style: 
             #     fontSize: 12
-            #     color: if is_active then 'white' else '#444'
+            #     color: if is_active then text_light else 'inherit'
 
             #   translator "engage.sort_order.#{option.name}.description", option.description 
           ]
@@ -717,28 +611,24 @@ ManualProposalResort = ReactiveComponent
 
       SPAN 
         style: 
-          color: '#888'
+          color: "var(--text_light_gray)"
           fontSize: 10
           position: 'absolute'
           top: -16
-          left: 9
+          left: -6
           width: 175
         translator "engage.sort_order.out-of-order", "Proposals are out of order"
 
 
 
       BUTTON 
+        className: 'btn'
         style: 
-          color: 'white'
-          fontWeight: 800
-          backgroundColor: selected_color
-          textAlign: 'center'
+          backgroundColor: "var(--selected_color)"
           fontSize: 12
           padding: '3px 16px'
-          border: 'none'
           borderRadius: 8
           display: 'flex'
-          alignItems: 'center'
 
         # 'data-tooltip': if !browser.is_mobile then translator "engage.sort_order.out-of-order-tooltip", "A re-sort may be needed because someone else added or updated their opinion, or you selected an opinion view that filtered or weighed opinions differently."
 
@@ -753,7 +643,7 @@ ManualProposalResort = ReactiveComponent
           viewBox: "0 0 17 20" 
           dangerouslySetInnerHTML: __html: """
                 <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                    <g transform="translate(-318.000000, -564.000000)" fill="#FFFFFF" fill-rule="nonzero">
+                    <g transform="translate(-318.000000, -564.000000)" fill="currentColor" fill-rule="nonzero">
                         <g transform="translate(318.000000, 564.000000)">
                             <g transform="translate(0.000000, 0.000000)">
                                 <path d="M8.25687555,19.6225181 C8.33853565,19.7047747 8.47091122,19.7047747 8.55257132,19.6225181 L11.3646601,16.7891261 C11.4244669,16.7288791 11.4423691,16.6382674 11.4100203,16.5595369 C11.3776715,16.4808064 11.301441,16.4294337 11.2168695,16.4294337 L5.59257699,16.4294337 C5.5079845,16.4294337 5.4317111,16.4807419 5.39933258,16.559483 C5.36695405,16.6382241 5.38484894,16.7288641 5.44467062,16.7891261 L8.25687555,19.6225181 Z" id="Path"></path>
@@ -776,7 +666,6 @@ ManualProposalResort = ReactiveComponent
 
 
 
-window.ProposalSort = ProposalSort
 window.SortProposalsMenu = SortProposalsMenu
 window.FilterProposalsMenu = FilterProposalsMenu
 window.ManualProposalResort = ManualProposalResort

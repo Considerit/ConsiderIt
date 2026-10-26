@@ -5,23 +5,9 @@ styles += """
 
   }
 
-  [data-widget="EditProposal"] input:checked + .toggle_switch_circle {
-    background-color: #{focus_blue};
-  }
-
-  [data-widget="EditProposal"] label:not(.toggle_switch):not(.toggle_label){
-    font-size: 20px;
-    font-weight: 600;
-    padding-right: 24px;
-    display: inline-block;
-    color: #{focus_blue};
-    margin-bottom: 3px;
-    text-transform: capitalize;
-  }
-
   [data-widget="EditProposal"] .toggle_label {
     padding-left: 18px;
-    color: #{focus_blue};
+    color: var(--focus_color);
     font-weight: 600;
     font-size: 18px;
   }
@@ -65,25 +51,15 @@ window.EditProposal = ReactiveComponent
       width: '100%'
       padding: 12
       marginBottom: 8
-      border: '1px solid #ccc'
+      border: "1px solid var(--brd_light_gray)"
 
     input_style = _.extend {}, description_field_style, 
       display: 'block'
 
 
-    operation_style = 
-      color: '#aaa'
-      textDecoration: 'underline'
-      fontSize: 14
-      cursor: 'pointer'
-      display: 'block'    
-      backgroundColor: 'transparent'
-      padding: 0
-      border: 'none'  
-
     explanation_style = 
       fontSize: 16
-      color: '#333'
+      color: "var(--text_gray)"
       marginBottom: 6
 
 
@@ -95,8 +71,6 @@ window.EditProposal = ReactiveComponent
 
 
     available_lists = lists_current_user_can_add_to get_all_lists()
-
-
 
     local = @local
 
@@ -133,8 +107,12 @@ window.EditProposal = ReactiveComponent
               minHeight: 20
             html: if @props.fresh then null else proposal.description
 
+
         DIV
           className: 'block'
+          style: 
+            display: 'flex'
+            gap: 8
 
           LABEL 
             htmlFor:'category'
@@ -213,17 +191,13 @@ window.EditProposal = ReactiveComponent
             display: if !current_user.is_admin then 'none' else 'flex'
             alignItems: 'center'
 
-          LABEL 
-            className: 'toggle_switch'
 
-            INPUT 
-              id: 'open_for_discussion'
-              name: 'open_for_discussion'
-              type: 'checkbox'
-              defaultChecked: if @props.fresh then true else proposal.active
-
-            SPAN 
-              className: 'toggle_switch_circle'
+          INPUT 
+            id: 'open_for_discussion'
+            name: 'open_for_discussion'
+            type: 'checkbox'
+            role: 'switch'
+            defaultChecked: if @props.fresh then true else proposal.active
 
           LABEL 
             className: 'toggle_label'
@@ -280,22 +254,10 @@ window.EditProposal = ReactiveComponent
             #       @submit_pic = true
 
         if @local.errors?.length > 0
-          
-          DIV
-            role: 'alert'
-            style:
-              fontSize: 18
-              color: 'darkred'
-              backgroundColor: '#ffD8D8'
-              padding: 10
-              marginTop: 10
-            for error in @local.errors
-              DIV null, 
-                I
-                  className: 'fa fa-exclamation-circle'
-                  style: {paddingRight: 9}
-
-                SPAN null, error
+          ErrorBlock @local.errors, 
+            style: 
+              marginBottom: 10
+              marginLeft: 20 
 
 
         DIV null,
@@ -314,7 +276,7 @@ window.EditProposal = ReactiveComponent
             className: 'like_link'
             style: 
               fontSize: 20
-              color: '#777'
+              color: "var(--text_light_gray)"
               position: 'relative'
               top: 20
               marginLeft: 12
@@ -324,8 +286,8 @@ window.EditProposal = ReactiveComponent
             translator 'shared.cancel_button', 'cancel'
 
         if @local.file_errors
-          DIV style: {color: 'red'}, 'Error uploading files!'
-
+            ErrorBlock @local.file_errors, 
+              heading: 'Ooops! There are errors in the uploaded files:'
 
   saveProposal : -> 
     current_user = bus_fetch '/current_user'

@@ -53,15 +53,13 @@ window.Comment = ReactiveComponent
         if current_user.user == comment.user
           if permit('update comment', comment) > 0
             comment_action_style = 
-              color: '#444'
-              textDecoration: 'underline'
-              cursor: 'pointer',
+              color: "var(--text_gray)"
               padding: '0 10px 0 0'
-              backgroundColor: 'transparent'
-              border: 'none'
+
             DIV style: { marginLeft: 60}, 
               BUTTON
                 'data-action' : 'delete-comment'
+                className: 'like_link'
                 style: comment_action_style
                 onClick: do (key = comment.key) => (e) =>
                   e.stopPropagation()
@@ -71,6 +69,7 @@ window.Comment = ReactiveComponent
                 translator('engage.delete_button', 'delete')
 
               BUTTON
+                className: 'like_link'
                 style: comment_action_style
                 onClick: do (key = comment.key) => (e) =>
                   e.stopPropagation()
@@ -87,7 +86,7 @@ styles += """
 
 .comment_entry_name {
   font-weight: 600;
-  color: #666666; 
+  color: var(--text_light_gray); 
   margin-bottom: 4px;
 }
 
@@ -128,14 +127,13 @@ window.Discussion = ReactiveComponent
 
     discussion_style =
       width: "var(--BODY_WIDTH)"
-      border: "3px solid #{focus_color()}"
+      border: "3px solid var(--focus_color)"
       position: 'absolute'
       zIndex: 100
       padding: '20px 40px'
       borderRadius: 16
-      backgroundColor: 'white'
-      outline: 'none' #'1px dotted #ccc'
-      boxShadow: if @local.has_focus then "0 0 7px #{focus_color()}"
+      backgroundColor: "var(--bg_item)"
+      boxShadow: if @local.has_focus then "0 0 7px var(--focus_color)"
 
     # Reconfigure discussion board position
     side = if is_pro then 'right' else 'left'
@@ -172,10 +170,11 @@ window.Discussion = ReactiveComponent
         mouth_style.left = 100
 
 
-    close_point = (e) ->
+    close_point = (e) =>
       loc = bus_fetch('location')
       delete loc.query_params.selected
       save loc
+      @props.onClose?()
       e.preventDefault()
       e.stopPropagation()
 
@@ -199,27 +198,13 @@ window.Discussion = ReactiveComponent
           apex_xfrac: 1.1
           width: 36
           height: 28
-          fill: 'white', 
-          stroke: focus_color(), 
+          fill: "var(--bg_light)", 
+          stroke: 'var(--focus_color)', 
           stroke_width: 11
 
-      BUTTON
-        'aria-label': 'close point' 
-        onClick: close_point
-
-
-        style: 
-          position: 'absolute'
-          right: 8
-          top: 8
-          fontSize: 24
-          color: '#aaa'
-          backgroundColor: 'transparent'
-          border: 'none'
-        'x'
 
       if point.text?.length > 0 
-        SECTION 
+        DIV 
           style: 
             marginBottom: 24
             marginTop: 10
@@ -228,7 +213,7 @@ window.Discussion = ReactiveComponent
             style:
               textAlign: 'left'
               fontSize: 24
-              color: focus_color()
+              color: 'var(--focus_color)'
               fontWeight: 600
               marginBottom: 10
             #t('Author’s Explanation')
@@ -240,12 +225,12 @@ window.Discussion = ReactiveComponent
           
 
       if !customization('disable_comments')
-        SECTION null,
+        DIV null,
           HEADING
             style:
               textAlign: 'left'
               fontSize: 24
-              color: focus_color()
+              color: "var(--focus_color)"
               marginBottom: 25
               marginTop: 10
               fontWeight: 600
@@ -264,6 +249,18 @@ window.Discussion = ReactiveComponent
             fresh: true
             point: arest.key_id(@props.comments)
             proposal: proposal.key
+
+      BUTTON
+        'aria-label': translator 'engage.close_point', 'Close Point' 
+        onClick: close_point
+
+        className: 'icon'
+        style: 
+          position: 'absolute'
+          right: 8
+          top: 8
+
+        iconX(26, "var(--focus_color)")
 
   # HACK! Save the height of the open point, which will be added 
   # to the min height of the reasons region to accommodate the

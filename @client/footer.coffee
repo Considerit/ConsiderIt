@@ -1,5 +1,6 @@
 require './shared'
 require './customizations'
+require './high_contrast_toggle'
 
 window.Footer = ReactiveComponent
   displayName: 'Footer'
@@ -18,10 +19,10 @@ window.Footer = ReactiveComponent
 styles += """
   .footer_wrapper {
     padding: 65px 0 15px 0;
-    background-color: #4f4f4f; /* #{selected_color}; */
+    background-color: var(--bg_dark_gray);
     position: relative;
     z-index: 3;
-    color: white;
+    color: var(--text_light);
   }
 
   .Footer .primary_info {
@@ -58,6 +59,14 @@ styles += """
     padding: 12px 20px;
   }
 
+  .Footer .footer-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px 32px;
+  }
+
   @media #{NOT_PHONE_MEDIA} {
     .footer_wrapper {
       padding: 65px 0 15px 0;
@@ -89,26 +98,15 @@ styles += """
     .Footer .more-info {
       flex-direction: column;
     }
+    .Footer .footer-tools {
+      flex-direction: column;
+    }
     .bug_reports {
       display: none;
     }
   }
 
 """
-
-
-big_button = -> 
-  backgroundColor: logo_red
-  # boxShadow: "0 4px 0 0 black"
-  boxShadow: "0 1px 2px 0 rgb(0 0 0 / 50%)"
-  fontWeight: 700
-  color: 'white'
-  padding: '6px 60px'
-  display: 'inline-block'
-  fontSize: 24
-  border: 'none'
-  borderRadius: 12
-  borderBottom: "1px solid black"
 
 
 window.DefaultFooter = ReactiveComponent
@@ -119,11 +117,18 @@ window.DefaultFooter = ReactiveComponent
     separator = SPAN 
       style: 
         padding: '0 6px'
-        color: '#ccc'
+        color: "var(--text_gray_on_dark)"
       #dangerouslySetInnerHTML: { __html: "&bull;"}
       '|'
 
     footer_bonus = customization('footer_bonus')
+
+    # GoogleTranslate positions itself over the first candidate container on the page,
+    # so skip ours when the header provides one; otherwise it leaves an empty gap.
+    translate_style = customization('google_translate_style')
+    header_hosts_translator = translate_style && !translate_style.prominent && is_a_dialogue_page()
+    show_translate_container = !customization('disable_google_translate') &&
+                               (!translate_style || (bus_fetch('location').url != '/' && !header_hosts_translator))
 
     DIV 
       className: "Footer"
@@ -164,10 +169,10 @@ window.DefaultFooter = ReactiveComponent
             }
 
             .custom-shape-divider-top-1651729272 .shape-fill {
-                fill: #{if bus_fetch('location').url.indexOf('/dashboard') > -1 || TABLET_SIZE() then 'white' else main_background_color};
+                fill: #{if bus_fetch('location').url.indexOf('/dashboard') > -1 || TABLET_SIZE() then 'var(--bg_light)' else "var(--bg_container)"};
             }
             </style>
-            <div class="custom-shape-divider-top-1651729272">
+            <div inert="true" class="custom-shape-divider-top-1651729272">
                 <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
                     <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
                 </svg>
@@ -186,7 +191,7 @@ window.DefaultFooter = ReactiveComponent
 
             TechnologyByConsiderit
               size: if PHONE_SIZE() then 18 else 26
-              color: 'white'
+              color: "var(--text_light)"
 
 
             BR null
@@ -202,6 +207,7 @@ window.DefaultFooter = ReactiveComponent
 
                 "Consider.it is Open Source"
                 IMG 
+                  alt: "Github logo"
                   width: 18
                   height: 18
                   src: asset('product_page/github_logo_white.png')
@@ -280,9 +286,15 @@ window.DefaultFooter = ReactiveComponent
               " "
               get_region_name()
 
-          if !customization('google_translate_style') || bus_fetch('location').url != '/'
-            DIV 
-              className: 'google-translate-candidate-container'
+          DIV
+            className: 'footer-tools'
+            key: 'footer-tools'
+
+            if show_translate_container
+              DIV
+                className: 'google-translate-candidate-container'
+
+            HighContrastToggle()
 
 
 
@@ -336,9 +348,9 @@ window.CompletionWidget = ReactiveComponent
 
     [complete, num_proposals_done, total_proposals, messages] = user_has_met_completion_criteria()
     if complete 
-      txt = completion_config.when_complete 
+      txt = completion_config?.when_complete or "You've finished!"
     else 
-      txt = completion_config.when_incomplete
+      txt = completion_config?.when_incomplete or "Not done."
 
     if typeof(txt) == 'function'
       txt = txt()
@@ -347,8 +359,8 @@ window.CompletionWidget = ReactiveComponent
 
     DIV 
       style:
-        backgroundColor: if complete then "#a41995" else "black",
-        color: 'white',
+        backgroundColor: if complete then "var(--selected_color)" else "var(--bg_dark)"
+        color: "var(--text_light)"
         padding: "12px 0 8px 0"
         position: 'fixed'
         bottom: 0
@@ -387,7 +399,7 @@ window.CompletionWidget = ReactiveComponent
 
 user_has_met_completion_criteria = ->
   completion_config = customization('completion_widget')
-  completion_criteria = completion_config.completion_criteria
+  completion_criteria = completion_config?.completion_criteria
   completion_criteria ?= {}
   _.defaults completion_criteria,
       "reasons_on_all": false,

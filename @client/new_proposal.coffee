@@ -5,7 +5,7 @@ styles += """
     border: none;
     padding: 0; 
     border-radius: 8px;
-    color: white;
+    color: var(--text_light);
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -26,8 +26,9 @@ styles += """
   }
 
   .feedback-for-hosts {
+    margin-top: 2px;
     font-size: 12px;
-    color: #888;
+    color: var(--text_light_gray);
     font-weight: 400;
   }
 
@@ -84,7 +85,7 @@ window.NewProposal = ReactiveComponent
         
         DIV className: 'proposal-left-spacing'
                   
-        plusIcon(focus_color(), AVATAR_SIZE())
+        plusIcon("var(--focus_color)", AVATAR_SIZE())
 
         DIV className: 'proposal-avatar-spacing'
 
@@ -96,7 +97,7 @@ window.NewProposal = ReactiveComponent
             className: 'proposal-title-text-inline'
             style: 
               # marginLeft: 23
-              color: focus_color() 
+              color: "var(--focus_color)" 
 
             if permitted
               list_i18n().new_response_label(list_key)
@@ -150,11 +151,11 @@ window.NewProposal = ReactiveComponent
               img_size: 'large'
               anonymous: @local.hide_name
               style:
-                height: PROPOSAL_AUTHOR_AVATAR_SIZE
-                width: PROPOSAL_AUTHOR_AVATAR_SIZE
+                height: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
+                width: "var(--PROPOSAL_AUTHOR_AVATAR_SIZE)"
                 marginRight: "var(--PROPOSAL_AUTHOR_AVATAR_GUTTER)"
                 borderRadius: 0
-                backgroundColor: '#ddd'
+                backgroundColor: "var(--bg_lighter_gray)"
                 flexGrow: 0
                 flexShrink: 0
 
@@ -171,7 +172,7 @@ window.NewProposal = ReactiveComponent
                 flexGrow: 0
                 flexShrink: 0
 
-              CIRCLE cx: 100, cy: 100, r: 80, fill: '#000000'
+              CIRCLE cx: 100, cy: 100, r: 80, fill: "var(--bg_dark)"
 
           DIV 
             style: 
@@ -208,13 +209,10 @@ window.NewProposal = ReactiveComponent
               style: 
                 fontSize: 20
                 width: w
-                border: "1px solid #ccc"
-                outline: 'none'
+                border: "1px solid var(--brd_light_gray)"
                 padding: '6px 8px'
                 fontWeight: 600
-                #textDecoration: 'underline'
-                #borderBottom: "1px solid #444"  
-                color: '#000'
+                color: "var(--text_dark)"
                 minHeight: 75        
                 resize: 'vertical'    
 
@@ -242,7 +240,7 @@ window.NewProposal = ReactiveComponent
               'aria-label': translator("engage.edit_proposal.description.placeholder", 'Add details here')  
               container_style: 
                 padding: '6px 8px'
-                border: '1px solid #ccc'
+                border: "1px solid var(--brd_light_gray)"
 
               style: 
                 fontSize: 16
@@ -268,7 +266,7 @@ window.NewProposal = ReactiveComponent
                 'aria-label': proposal_fields[additional_field]
                 container_style: 
                   padding: '6px 8px'
-                  border: '1px solid #ccc'
+                  border: "1px solid var(--brd_light_gray)"
 
                 style: 
                   fontSize: 16
@@ -327,24 +325,10 @@ window.NewProposal = ReactiveComponent
 
 
           if @local.errors?.length > 0
-            
-            DIV
-              role: 'alert'
-              style:
-                fontSize: 18
-                color: 'darkred'
-                backgroundColor: '#ffD8D8'
-                padding: 10
-                marginTop: 10
-              for error in @local.errors
-                DIV null, 
-                  I
-                    className: 'fa fa-exclamation-circle'
-                    style: {paddingRight: 9}
-
-                  SPAN null, error
-
-
+            ErrorBlock @local.errors, 
+              style: 
+                marginBottom: 10
+                marginLeft: 60 
 
           DIV 
             style: 
@@ -353,8 +337,6 @@ window.NewProposal = ReactiveComponent
             BUTTON 
               className: 'btn'
               disabled: @local.submitting
-              style: 
-                backgroundColor: focus_color()
 
               onClick: => 
                 name = document.getElementById("#{list_name}-name").value
@@ -418,7 +400,7 @@ window.NewProposal = ReactiveComponent
             BUTTON 
               className: 'like_link'
               style: 
-                color: '#777'
+                color: "var(--text_light_gray)"
                 position: 'relative'
                 top: 2
                 marginLeft: 12
@@ -446,10 +428,10 @@ window.NewProposal = ReactiveComponent
         position: if mobile then 'relative' else 'absolute'
         right: -guidelines_w - 20
         width: guidelines_w
-        color: focus_color()
+        color: "var(--focus_color)"
         zIndex: 1
         marginBottom: if mobile then 20
-        backgroundColor: if mobile then 'rgba(255,255,255,.85)'
+        backgroundColor: if mobile then "var(--bg_light_trans_80)"
         fontSize: 14
 
 
@@ -464,9 +446,9 @@ window.NewProposal = ReactiveComponent
             left: -20
 
           PATH
-            stroke: focus_color() #'#ccc'
+            stroke: "var(--focus_color)"
             strokeWidth: 1
-            fill: "#FFF"
+            fill: "var(--bg_light)"
 
             d: """
                 M#{guidelines_w},33

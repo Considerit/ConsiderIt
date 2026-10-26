@@ -32,7 +32,6 @@ styles += """
   margin-right: 10px; 
   font-size: 22px;
   padding: 0;
-  box-shadow: 0px 1px 2px rgba(0,0,0,.4);  
   border-radius: 8px;         
 }
 .moderation label {
@@ -49,7 +48,6 @@ styles += """
 }
 
 .moderation.btn {
-  /* padding: 8px 18px; */
 }
 
 .moderate-item-wrapper {
@@ -85,6 +83,26 @@ styles += """
   }
 
 }
+
+
+.moderate-item-bubble-wrapper .context {
+  opacity: .5;
+}
+
+
+
+[data-theme="high-contrast"],
+[data-theme="high-contrast"] :before,
+[data-theme="high-contrast"] :after,
+[data-theme="high-contrast-dark"],
+[data-theme="high-contrast-dark"] :before,
+[data-theme="high-contrast-dark"] :after {
+  .moderate-item-bubble-wrapper .context {
+    opacity: .75;
+  }
+}
+
+
 """
 
 
@@ -186,6 +204,8 @@ window.ModerationDash = ReactiveComponent
 
 
         SELECT 
+          'aria-label': 'Moderation policy options'
+          name: 'moderation_policy_options'
           style: 
             fontSize: 20
             maxWidth: '80vw'
@@ -220,8 +240,9 @@ window.ModerationDash = ReactiveComponent
           " for an explanation of these moderation policies."
 
 
-      UL 
+      DIV 
         className: 'moderation_tabs'
+        role: 'tablist'
         style: 
           listStyle: 'none'
           marginTop: 48
@@ -231,36 +252,39 @@ window.ModerationDash = ReactiveComponent
 
           do (model) => 
             active = @local.model == model
-            LI 
-              key: model
+
+            BUTTON 
+              key: model                
+              role: 'tab'
+              tabIndex: if active then 0 else -1
+              'aria-controls': 'moderation-content-wrapper'
+              'aria-selected': active
+
+              "data-model": model 
               style: 
+                backgroundColor: if active then "var(--bg_light)" else "var(--bg_lighter_gray)"
+                color: "var(--text_dark)"
                 display: 'inline-block'
+                fontSize: 18
+                marginLeft: 12
+                marginRight: 12
+                marginBottom: if active then -1
+                border: "1px solid var(--brd_mid_gray)"
+                borderBottom: 'none'
+                borderRadius: '4px 4px 0 0px'
+                padding: "6px 14px #{if active then 3 else 2}px 14px"
 
-              BUTTON 
-                "data-model": model 
-                style: 
-                  backgroundColor: if active then 'white' else '#f0f0f0'
-                  color: 'black'
-                  fontSize: 18
-                  marginLeft: 12
-                  marginRight: 12
-                  marginBottom: if active then -1
-                  border: '1px solid #bbb'
-                  borderBottom: 'none'
-                  borderRadius: '4px 4px 0 0px'
-                  padding: "6px 14px #{if active then 3 else 2}px 14px"
+              onClick: => select_class(model)
 
-                onClick: => select_class(model)
+              "#{if model == 'Proposal' then 'Review ' else ''}#{model}s"
 
-                "#{if model == 'Proposal' then 'Review ' else ''}#{model}s"
-
-                if model != 'Ban'
-                  SPAN 
-                    style: 
-                      fontSize: 12
-                      verticalAlign: 'top'
-                      paddingLeft: 8
-                    "[#{all_items[model].pending?.items?.length or 0}]"
+              if model != 'Ban'
+                SPAN 
+                  style: 
+                    fontSize: 12
+                    verticalAlign: 'top'
+                    paddingLeft: 8
+                  "[#{all_items[model].pending?.items?.length or 0}]"
 
 
 
@@ -268,7 +292,7 @@ window.ModerationDash = ReactiveComponent
       if @local.model == 'Ban'
         DIV 
           style: 
-            borderTop: '1px solid #bbb'
+            borderTop: "1px solid var(--brd_mid_gray)"
 
           BanHammer {all_items}
 
@@ -276,7 +300,7 @@ window.ModerationDash = ReactiveComponent
       else 
         DIV 
           style: 
-            borderTop: '1px solid #bbb'
+            borderTop: "1px solid var(--brd_mid_gray)"
 
 
           UL 
@@ -298,7 +322,7 @@ window.ModerationDash = ReactiveComponent
                     style: 
                       fontSize: 14
                       fontWeight: if active then 700
-                      color: if active then 'black' else '#666'
+                      color: if active then "var(--text_dark)" else "var(--text_light_gray)"
 
                     onClick: => 
                       @local.show_category = definition.name 
@@ -310,11 +334,12 @@ window.ModerationDash = ReactiveComponent
                     style: 
                       fontSize: 10
                       paddingLeft: 4
-                      color: '#666'
+                      color: "var(--text_light_gray)"
                     "[#{definition.items?.length or 0}]"
 
 
           UL 
+            id: "moderation-content-wrapper"
             className: 'moderation-content-wrapper'        
 
             style: 
@@ -412,8 +437,6 @@ ModerateItem = ReactiveComponent
 
               DIV 
                 class_name: 'context'
-                style: 
-                  opacity: .5
                 BUBBLE_WRAP 
                   key: point.key
                   title: point.nutshell 
@@ -435,8 +458,6 @@ ModerateItem = ReactiveComponent
 
               DIV 
                 class_name: 'context'
-                style: 
-                  opacity: .5
                 BUBBLE_WRAP 
                   key: proposal.key
                   title: proposal.name 
@@ -449,8 +470,6 @@ ModerateItem = ReactiveComponent
               list_key = get_list_for_proposal(proposal)
               DIV 
                 class_name: 'context'
-                style: 
-                  opacity: .5
 
 
                 BUBBLE_WRAP 
@@ -493,6 +512,7 @@ ModerateItem = ReactiveComponent
                 style: 
                   textDecoration: 'underline'
                   padding: '0 8px'
+                  fontWeight: "normal"
                 target: '_blank'
                 href: href
                 'data-nojax': true
@@ -502,11 +522,9 @@ ModerateItem = ReactiveComponent
 
               if author && arest.key_id(author.key) >= 0 && !@local.messaging
                 BUTTON
+                  className: 'like_link'
                   style: 
                     marginLeft: 8
-                    textDecoration: 'underline'
-                    backgroundColor: 'transparent'
-                    border: 'none'
                   onClick: => 
                     @local.messaging =
                       moderatable: moderatable
@@ -566,6 +584,9 @@ ModerateItem = ReactiveComponent
               marginLeft: if TABLET_SIZE() then 36 else 63
                     
             SELECT
+              'aria-label': 'Change proposal category'
+              name: 'change_category'
+           
               style: 
                 fontSize: 18
                 maxWidth: '60vw'
@@ -593,7 +614,7 @@ ModerateItem = ReactiveComponent
           SPAN 
             className: 'moderation btn'
             style: 
-              backgroundColor: '#81c765'
+              backgroundColor: "var(--success_color)"
 
 
             LABEL 
@@ -611,7 +632,7 @@ ModerateItem = ReactiveComponent
           SPAN 
             className: 'moderation btn'
             style: 
-              backgroundColor: '#ffc92a'
+              backgroundColor: "var(--caution_color)"
 
             LABEL 
               htmlFor: "quar-#{@props.item}"
@@ -627,7 +648,7 @@ ModerateItem = ReactiveComponent
           SPAN 
             className: 'moderation btn'
             style: 
-              backgroundColor: '#f94747'
+              backgroundColor: "var(--failure_color)"
 
             LABEL 
               htmlFor: "fail-#{@props.item}"
@@ -649,7 +670,7 @@ ModerateItem = ReactiveComponent
               SPAN 
                 className: 'moderation btn'
                 style: 
-                  backgroundColor: '#f94747'
+                  backgroundColor: "var(--failure_color)"
                   minWidth: 150
                   display: 'inline-block'
 
@@ -702,18 +723,18 @@ styles += """
 }
 
 .grid-table-header {
-  background-color: #aaa;
+  background-color: var(--bg_light_gray);
   padding: 1rem;
   font-weight: bold;
 }
 
 .row {
-  background-color: #eee;
+  background-color: var(--bg_lightest_gray);
   padding: 1rem;
 }
 
 .row.alt {
-  background-color: #ddd;
+  background-color: var(--bg_lighter_gray);
 }
 
 
@@ -887,9 +908,9 @@ DirectMessage = ReactiveComponent
       _.defaults wrapper_style, 
         margin: '18px 0'
         padding: '15px 20px'
-        backgroundColor: 'white'
-        backgroundColor: considerit_gray
-        boxShadow: "0 2px 4px rgba(0,0,0,.4)"
+        backgroundColor: "var(--bg_light)"
+        backgroundColor: "var(--bg_speech_bubble)"
+        boxShadow: "0 2px 4px var(--shadow_dark_50)"
 
     DIV 
       style: wrapper_style
@@ -931,10 +952,9 @@ DirectMessage = ReactiveComponent
         'Send'
         
       BUTTON 
+        className: "like_link"
         style: 
           marginLeft: 8
-          backgroundColor: 'transparent'
-          border: 'none'
         onClick: => 
           @props.callback?()
         @props.cancel_button_label or 'cancel'

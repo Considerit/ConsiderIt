@@ -70,3 +70,6 @@ package-lock.json
 *_scrap.*
 
 .python-version
+/color_analysis_output
+CLAUDE.md
+.claude/settings.local.json

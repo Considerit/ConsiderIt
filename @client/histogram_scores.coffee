@@ -128,14 +128,14 @@ window.AggregatedHistogram =  ReactiveComponent
       width: legend_color_size
       height: legend_color_size
       display: 'inline-block'
-      boxShadow: "0 1px 2px 0 rgba(103,103,103,0.50), inset 0 -1px 2px 0 rgba(0,0,0,0.16)"
+      boxShadow: "inset 0 -1px 2px 0 var(--shadow_dark_25)"
     separator_inserted = false 
 
 
     label_style = 
       fontSize: 12
       fontWeight: 400
-      color: '#555'
+      color: "var(--text_gray)"
       bottom: -13
 
     FLIPPED 
@@ -170,6 +170,7 @@ window.AggregatedHistogram =  ReactiveComponent
 
                 DIV 
                   key: group
+                  "aria-haspopup": 'dialog'
                   "data-popover": proposal.key
                   "data-group": group
                   "data-attribute": opinion_views.active_views.group_by.name

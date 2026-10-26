@@ -37,7 +37,6 @@ window.AuthCallout = ReactiveComponent
         style: 
           padding: 12
           textAlign: 'center'
-          # backgroundColor: '#f1f1f1'
         
         DIV 
           style: 
@@ -48,8 +47,9 @@ window.AuthCallout = ReactiveComponent
           if '*' not in subdomain.roles.participant
             DIV 
               style: 
-                fontSize: 12
-                marginTop: 4
+                fontSize: 14
+                marginTop: 8
+                fontWeight: 'normal'
               translator 'engage.permissions.only_some_participate', 'Only some accounts are authorized to participate.'
         
         if @props.children 
@@ -97,13 +97,13 @@ window.AUTH_CALLOUT_BUTTONS = (button_style) ->
       BUTTON1: 
         component: BUTTON 
         args: 
+          className: "btn create_account"          
           key: 'create_button'
           'data-action': 'create'
           onClick: (e) =>
             reset_key 'auth',
               form: 'create account'
           style: button_style
-          className: "btn create_account"
       "<BUTTON1>Create an Account</BUTTON1> to share your thoughts"
 
 # AuthTransition doesn't actually render anything.  It just handles state
@@ -270,7 +270,7 @@ window.logout = ->
     location.reload()
 
 
-window.auth_text_gray = '#444'    # the gray color for solid text
+
 
 
 # default styles for auth forms
@@ -292,7 +292,7 @@ window.styles += """
   #AUTH_goal {
     font-size: 16px;
     text-align: center;
-    color: white;
+    color: var(--text_light);
     margin-bottom: 8px;
     font-style: italic;
   }
@@ -306,37 +306,10 @@ window.styles += """
   .AUTH_body_wrapper {
     padding: 3.5em 105px 4em 90px;
     font-size: 16px;
-    box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 0 100px rgb(255 255 255 / 40%);
-    background-color: white;
+    box-shadow: 0 2px 4px var(--shadow_dark_50), 0 0 100px var(--shadow_light);
+    background-color: var(--bg_light);
     position: relative;
     border-radius: 16px;
-  }
-
-  .AUTH_cancel {
-    background-color: transparent;
-    border: none;
-    opacity: .7;
-  }
-
-  .AUTH_cancel.floating {
-    color: white;
-    position: absolute;
-    cursor: pointer;
-    right: -46px;
-    top: 16px;
-    padding: 10px;
-    font-size: 24px;
-  }
-  .AUTH_cancel.embedded {
-    margin: 8px auto 0px auto;
-    padding: 8px 0 8px 8px;
-    font-size: 18px;
-  }
-
-  @media #{PHONE_MEDIA} {
-    .AUTH_cancel.floating {
-      display: none;
-    }
   }
 
   .AUTH_submit_button {
@@ -346,7 +319,7 @@ window.styles += """
     margin-top: 20px;
     border-radius: 16px;
     padding: .8rem 1.5rem .8rem;
-    background-color: #{selected_color};
+    background-color: var(--selected_color);
   }
 
   .AUTH_field_wrapper {
@@ -354,7 +327,7 @@ window.styles += """
   }
 
   .AUTH_field_label {
-    color: #444;
+    color: var(--text_gray);
     font-size: 12px;
     display: block;
     text-transform: uppercase;
@@ -363,11 +336,11 @@ window.styles += """
   .AUTH_text_input {
     margin-bottom: 6px;
     width: 100%;
-    border: 1px solid #ccc;
+    border: 1px solid var(--brd_light_gray);
     padding: 10px 14px;
     font-size: 20px;
     display: inline-block;
-    background-color: #f2f2f2;
+    background-color: var(--bg_lightest_gray);
   }
 
 
@@ -425,17 +398,6 @@ window.AuthForm =
           style:
             maxWidth: AUTH_WIDTH()
 
-          if !options.disallow_cancel && !@props.disallow_cancel
-
-            BUTTON
-              className: 'AUTH_cancel floating'
-              title: translator 'shared.cancel_button', 'cancel'
-              onClick: cancel_modal
-
-              DIV 
-                dangerouslySetInnerHTML: __html: '<svg x="0px" y="0px" fill="white" viewBox="0 0 64 80" enable-background="new 0 0 64 64" xml:space="preserve"><g><path d="M17.586,46.414C17.977,46.805,18.488,47,19,47s1.023-0.195,1.414-0.586L32,34.828l11.586,11.586   C43.977,46.805,44.488,47,45,47s1.023-0.195,1.414-0.586c0.781-0.781,0.781-2.047,0-2.828L34.828,32l11.586-11.586   c0.781-0.781,0.781-2.047,0-2.828c-0.781-0.781-2.047-0.781-2.828,0L32,29.172L20.414,17.586c-0.781-0.781-2.047-0.781-2.828,0   c-0.781,0.781-0.781,2.047,0,2.828L29.172,32L17.586,43.586C16.805,44.367,16.805,45.633,17.586,46.414z"/><path d="M32,64c8.547,0,16.583-3.329,22.626-9.373C60.671,48.583,64,40.547,64,32s-3.329-16.583-9.374-22.626   C48.583,3.329,40.547,0,32,0S15.417,3.329,9.374,9.373C3.329,15.417,0,23.453,0,32s3.329,16.583,9.374,22.626   C15.417,60.671,23.453,64,32,64z M12.202,12.202C17.49,6.913,24.521,4,32,4s14.51,2.913,19.798,8.202C57.087,17.49,60,24.521,60,32   s-2.913,14.51-8.202,19.798C46.51,57.087,39.479,60,32,60s-14.51-2.913-19.798-8.202C6.913,46.51,4,39.479,4,32   S6.913,17.49,12.202,12.202z"/></g></svg>'
-                style: 
-                  width: 30
 
           if options.goal
             DIV
@@ -445,6 +407,22 @@ window.AuthForm =
 
           DIV
             className: "AUTH_body_wrapper"
+
+
+            if !options.disallow_cancel && !@props.disallow_cancel && !PHONE_SIZE()
+
+              BUTTON
+                className: 'icon'
+                title: translator 'shared.cancel_button', 'cancel'
+                onClick: cancel_modal
+                style:
+                  right: 0
+                  top: 0
+                  padding: "10px"
+                  position: 'absolute'
+                  zIndex: 9999
+                
+                iconX 30, "var(--text_dark)"
 
             # The auth form's header
             DIV
@@ -461,7 +439,8 @@ window.AuthForm =
             children 
 
             BUTTON
-              className: "btn AUTH_submit_button #{if @local.submitting then 'disabled'}"
+              className: "btn AUTH_submit_button"
+              disabled: @local.submitting
               onClick: options.on_submit
               
               options.submit_button or @i18n().submit_button 
@@ -473,7 +452,9 @@ window.AuthForm =
 
                 BUTTON
                   ref: 'cancel_dialog'
-                  className: 'AUTH_cancel embedded'
+                  className: 'like_link'
+                  style:
+                    marginTop: 8
                   title: translator 'shared.cancel_button', 'cancel'
 
                   onClick: cancel_modal
@@ -518,7 +499,7 @@ window.AuthForm =
           className: 'AUTH_text_input'
           defaultValue: @local.updates[name]
           'aria-label': opts.label
-          autoComplete: 'off'
+          autoComplete: opts.autoComplete or 'off'
           disabled: opts.disabled
 
           onChange: (event) =>
@@ -567,23 +548,10 @@ window.AuthForm =
   ShowErrors: (errors) ->  
     current_user = bus_fetch '/current_user'
     errors = (current_user.errors or []).concat(@local.errors or [])
+
     return SPAN null if !errors || errors.length == 0
 
-    DIV
-      role: 'alert'
-      style:
-        fontSize: 18
-        color: 'darkred'
-        backgroundColor: '#ffD8D8'
-        padding: 10
-        marginTop: 10
-      for error in errors
-        DIV null, 
-          I
-            className: 'fa fa-exclamation-circle'
-            style: {paddingRight: 9}
-
-          SPAN null, error
+    ErrorBlock(errors)
 
 
   i18n: ->

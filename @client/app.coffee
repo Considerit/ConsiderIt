@@ -17,7 +17,6 @@ require './edit_list'
 require './edit_page'
 require './customizations'
 require './form'
-# require './histogram'
 require './histogram-canvas'
 require './proposal_sort_and_search'
 require './opinion_views'
@@ -30,6 +29,7 @@ require './opinion_slider'
 require './tooltip'
 require './popover'
 require './flash'
+require './accessibility'
 require './development'
 require './su'
 require './edit_point'
@@ -64,42 +64,28 @@ styles += """
 bus_fetch 'root'
 
 
-AccessibilitySupport = ReactiveComponent 
+window.AccessibilitySupport = ReactiveComponent 
   displayName: 'AccessibilitySupport'
 
   render: -> 
-    DIV   
-      style: 
-        width: HOMEPAGE_WIDTH()
-        margin: 'auto'
+    DIV
+      role: 'note'
+      className: 'screen-reader-only-focusable'
 
-      H1
-        style: 
-          fontSize: 32
-          fontWeight: 600
-          marginTop: 30
-          marginBottom: 10
+      TRANSLATE
+        id: 'accessibility.heading'
+        'Accessibility Support'
 
+      TRANSLATE 
+        id: "accessibility.feedback_or_help"
+        link: 
+          component: A 
+          args: 
+            href: "mailto:accessibility@consider.it?subject=Accessibility support"
+            style: 
+              textDecoration: 'underline'
 
-        TRANSLATE
-          id: 'accessibility.heading'
-          'Accessibility Support'
-
-      P 
-        style: 
-          paddingBottom: 18
-          fontSize: 24
-
-        TRANSLATE 
-          id: "accessibility.feedback_or_help"
-          link: 
-            component: A 
-            args: 
-              href: "mailto:accessibility@consider.it?subject=Accessibility support"
-              style: 
-                textDecoration: 'underline'
-
-          "If you are having difficulty using Considerit, please contact us at <link>accessibility@consider.it</link>. We will personally help you."
+        "If you are having difficulty using Considerit, please contact us at <link>accessibility@consider.it</link>. We will personally help you."
 
 
 
@@ -246,7 +232,7 @@ Page = ReactiveComponent
           flexGrow: 1
           width: '100%'
 
-
+        
 
         if !access_granted
           AccessDenied()
@@ -260,9 +246,7 @@ Page = ReactiveComponent
             when '/'
               Homepage key: 'homepage'
             when '/about'
-              About()
-            when '/accessibility_support'
-              AccessibilitySupport()
+              About()              
             when '/histogram_test'
               HistogramTester()
 
@@ -278,7 +262,7 @@ Page = ReactiveComponent
 
                   DIV 
                     style: 
-                      color: '#555'
+                      color: "var(--text_gray)"
                       fontSize: 16
                     "Check if the url is correct. The author may also have deleted it. Good luck!"
 
@@ -391,6 +375,7 @@ Root = ReactiveComponent
       Tooltip()
       Popover()
       Flash()
+      ScreenReaderAnnouncement()
       CompletionWidget()
 
 

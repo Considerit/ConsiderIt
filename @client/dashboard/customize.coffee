@@ -61,7 +61,7 @@ window.CustomizationsDash = ReactiveComponent
           .customizations .CodeMirror {
             height: 500px;
             font-size: 14px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--brd_light_gray);
           }
 
         """}
@@ -92,30 +92,14 @@ window.CustomizationsDash = ReactiveComponent
               className: 'btn'
               onClick: => @submit()
               style: 
-                backgroundColor: focus_color()
                 marginTop: 18
 
               'Save'
 
-          if @local.save_complete
-            DIV style: {color: 'green'}, 'Saved.'
-
           if @local.errors
             if @local.errors && @local.errors.length > 0
-              DIV 
-                style: 
-                  borderRadius: 8
-                  margin: 20
-                  padding: 20
-                  backgroundColor: '#FFE2E2'
+              ErrorBlock(@local.errors)
 
-                H1 style: {fontSize: 18}, 'Ooops!'
-
-                for error in @local.errors
-                  DIV 
-                    style: 
-                      marginTop: 10
-                    error
 
         DIV 
           style: 
@@ -207,11 +191,9 @@ window.CustomizationsDash = ReactiveComponent
                       if k of @local.property_changes
                         @submit_change(k, @local.property_changes[k], true)
                     style: 
-                      backgroundColor: focus_color()
-                      opacity: if k not of @local.property_changes then .5
-                      cursor: if k not of @local.property_changes then 'default'
                       marginTop: 18
-                    disabled: if k not of @local.property_changes then true
+                      
+                    disabled: k not of @local.property_changes
                     'Save'
 
 
@@ -224,7 +206,7 @@ window.CustomizationsDash = ReactiveComponent
             marginBottom: 5
             cursor: 'pointer'
             fontWeight: 600
-            color: '#666'
+            color: "var(--text_light_gray)"
             textDecoration: 'underline'
             
           onClick: => @local.show_shared = !@local.show_shared; save @local
@@ -245,7 +227,7 @@ window.CustomizationsDash = ReactiveComponent
             marginBottom: 5
             cursor: 'pointer'
             fontWeight: 600
-            color: '#666'
+            color: "var(--text_light_gray)"
             textDecoration: 'underline'
 
           onClick: => @local.show_doc = !@local.show_doc; save @local
@@ -263,7 +245,7 @@ window.CustomizationsDash = ReactiveComponent
               style: 
                 display: 'block'
                 textDecoration: 'underline'
-                color: focus_color()
+                color: "var(--focus_color)"
                 marginBottom: 5
               "Load documentation in own tab"
             "."
@@ -297,15 +279,12 @@ window.CustomizationsDash = ReactiveComponent
   _save_changes : ->
     subdomain = bus_fetch '/subdomain'
 
-    @local.save_complete = false
-    save @local
-
     save subdomain, => 
       if subdomain.errors
         @local.errors = subdomain.errors
-
-      @local.save_complete = true
-      save @local
+        save @local
+      else
+        show_flash("Successfully saved")
 
 
 JSONEditorTextArea = ReactiveComponent

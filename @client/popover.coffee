@@ -179,6 +179,16 @@ $$.add_delegated_listener document.body, 'focusout', '[data-popover]', hide_popo
 
 $$.add_delegated_listener document.body, 'click', '[data-popover]', toggle_popover
 
+handle_escape_key = (e) ->
+  if e.key == 'Escape' || e.keyCode == 27
+    popover = bus_fetch('popover')
+    if popover.coords
+      clear_popover(true)
+      e.preventDefault()
+      e.stopPropagation()
+
+document.addEventListener "keydown", handle_escape_key
+
 
 window.get_tooltip_or_popover_position = ({popover, tooltip, arrow_size})->
   popover ?= tooltip
@@ -263,10 +273,10 @@ window.Popover = ReactiveComponent
       padding: '4px 8px'
       borderRadius: 8
       zIndex: 9999
-      color: 'black'
-      backgroundColor: 'white'
+      color: "var(--text_dark)"
+      backgroundColor: "var(--bg_light)"
       position: 'absolute'      
-      boxShadow: '0 1px 9px rgba(0,0,0,.5)'
+      boxShadow: "0 1px 9px var(--shadow_dark_50)"
       maxWidth: '80vw'
 
 
@@ -309,7 +319,7 @@ window.Popover = ReactiveComponent
 
         POLYGON
           stroke: "none" 
-          fill: 'white'
+          fill: "var(--bg_light)"
           points: "530.874,0.5 265.87,459.5 0.866,0.5"
 
         G null,
@@ -320,7 +330,7 @@ window.Popover = ReactiveComponent
               y1: 0.5
               x2: 265.87
               y2: 459.5
-              stroke: "black" 
+              stroke: "var(--brd_dark)"
               strokeWidth: 35
               strokeOpacity: .25
 

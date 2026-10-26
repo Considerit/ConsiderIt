@@ -103,7 +103,7 @@ window.A = React.createFactory createReactClass
   displayName: 'modified_A'
   render : -> 
 
-    props = _.extend {}, @props
+    props = _.extend {key: if @props.href then slugify(@props.href)}, @props
     if props.treat_as_external_link?
       delete props.treat_as_external_link
       

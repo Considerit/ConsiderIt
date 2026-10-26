@@ -85,7 +85,7 @@ The author columns are:
 The basic columns are:
  * *created*: The date this proposal was first created.
  * *name*: The short headline of this proposal.
- * *category*: The focus to which this proposal responds (like an open-ended question or a list header). 
+ * *category*: The prompt to which this proposal responds (like an open-ended question or a list header). 
  * *description*: The extended proposal description, if any was given.
 
 The statistical columns are:

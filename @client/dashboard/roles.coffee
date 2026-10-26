@@ -272,7 +272,7 @@ AddRolesAndInvite = ReactiveComponent
       style: 
         position: 'relative'
         padding: if @local.expanded then '18px 24px'
-        border: if @local.expanded then '1px solid #ccc' else '1px solid transparent'
+        border: if @local.expanded then "1px solid var(--brd_light_gray)" else '1px solid transparent'
 
 
       if !@local.expanded 
@@ -295,10 +295,8 @@ AddRolesAndInvite = ReactiveComponent
             BUTTON 
               className: 'like_link'
               style: 
-                color: '#666'
                 marginLeft: 20
                 fontSize: 14
-                textDecoration: 'none'
 
               onClick: (e) => 
                 @local.expanded = true 
@@ -413,10 +411,6 @@ ResendInvitations = ReactiveComponent
         BUTTON
           className: 'btn'
           disabled: @local.added.length == 0
-          style: 
-            backgroundColor: focus_color()
-            cursor: if @local.added.length == 0 then 'default'
-            opacity: if @local.added.length == 0 then 0.5
 
           onClick: (e) => 
 
@@ -441,7 +435,7 @@ ResendInvitations = ReactiveComponent
         BUTTON 
           className: 'like_link'
           style: 
-            color: '#333'
+            color: "var(--text_gray)"
             marginLeft: 24
             position: 'relative'
             top: 2
@@ -498,7 +492,11 @@ ModalAddRolesAndInvite = ReactiveComponent
 
         @props.add_button
 
-      SPAN null, 
+      DIV 
+        style: 
+          display: "flex"
+          alignItems: "center"
+
         DropMenu
           options: filtered_users
           open_menu_on: 'activation'
@@ -548,24 +546,23 @@ ModalAddRolesAndInvite = ReactiveComponent
           wrapper_style: 
             display: 'inline-block'
           menu_style: 
-            backgroundColor: '#ddd'
-            border: '1px solid #ddd'
+            backgroundColor: "var(--bg_light_gray)"
 
           option_style: 
-            padding: '4px 12px'
+            padding: '8px 8px 4px 8px'
             fontSize: 18
             cursor: 'pointer'
             display: 'block'
 
           active_option_style:
-            backgroundColor: '#eee'
+            backgroundColor: "var(--bg_dark)"
+            color: "var(--text_light)"
 
         if @local.filtered && @local.filtered.length > 0 
           BUTTON 
+            className: "btn"
             onClick: => 
               processNewFolks()
-            style: 
-              display: 'inline-block'
             'add'
 
 
@@ -630,10 +627,7 @@ ModalAddRolesAndInvite = ReactiveComponent
         BUTTON
           className: 'btn'
           disabled: @local.added.length == 0
-          style: 
-            backgroundColor: focus_color()
-            cursor: if @local.added.length == 0 then 'default'
-            opacity: if @local.added.length == 0 then 0.5
+
 
           onClick: (e) => 
 
@@ -661,7 +655,7 @@ ModalAddRolesAndInvite = ReactiveComponent
         BUTTON 
           className: 'like_link'
           style: 
-            color: '#333'
+            color: "var(--text_gray)"
             marginLeft: 24
             position: 'relative'
             top: 2
@@ -682,6 +676,8 @@ UsersWithRole = ReactiveComponent
       style: 
         marginLeft: -4
         marginBottom: 12
+        display: 'flex'
+        alignItems: 'center'
 
       if target.roles[role.name]
         for user_key in target.roles[role.name]
@@ -701,20 +697,27 @@ UserWithRole = (user_key, on_remove_from_role) ->
   DIV 
     key: user_key
     style:
-      display: 'inline-block'
+      display: 'inline-flex'
+      alignItems: 'center'
       padding: '6px 4px 6px 12px'
       fontSize: 13
-      backgroundColor: '#ddd' #'rgb(217, 227, 244)'
-      color: 'black'
+      backgroundColor: "var(--bg_speech_bubble)"
+      boxShadow: "var(--shadow_dark_25) 0 1px 1px 0px"
+      color: "var(--text_dark)"
       borderRadius: 8
       margin: 4
+      border: "1px solid var(--brd_light_gray)"
 
     DIV
       style: 
         display: 'inline-block'
+
       if user_key && user_key[0] == '/'
         user = bus_fetch user_key
-        SPAN null,
+        SPAN 
+          style: 
+            display: 'flex'
+
           if user.avatar_file_name
             Avatar 
               key: user_key
@@ -733,7 +736,7 @@ UserWithRole = (user_key, on_remove_from_role) ->
                 user.name 
             DIV 
               style: 
-                color: if user.name then '#888'
+                color: if user.name then "var(--text_light_gray)"
               user.email
 
       else
@@ -741,14 +744,12 @@ UserWithRole = (user_key, on_remove_from_role) ->
 
     BUTTON # remove user from role
       'aria-label': "Remove #{user?.name or user_key} from role"
+      className: 'icon'
       style: 
-        cursor: 'pointer'
         marginLeft: 8
-        border: 'none'
-        backgroundColor: 'transparent'
-        verticalAlign: 'top'
+
       onClick: -> on_remove_from_role(user_key) if on_remove_from_role
-      'x'
+      iconX 13, "var(--text_dark)"
 
 
 ## Export...

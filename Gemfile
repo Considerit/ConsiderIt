@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 #############
 # CORE
-gem 'rails', '~> 7.1.0'
+gem 'rails', '~> 7.2.0'
 gem 'activerecord-session_store'  # Because CookieStore has race conditions w/ concurrent ajax requests
 gem 'csv'
 gem 'json', '~> 2.19' # Rails < 8 passes quirks_mode, which json 3 rejects; remove when upgraded to Rails 8
@@ -32,7 +32,7 @@ gem 'kt-paperclip'
 #############
 # BACKGROUND PROCESSING / EMAIL
 gem 'whenever' # https://github.com/javan/whenever
-gem 'delayed_job', '~> 4.1.13'
+gem 'delayed_job', '~> 4.2'
 gem 'delayed_job_active_record', '~> 4.1.11'
 
 gem "daemons" # for the daemonize method used in bin/delayed_job
@@ -59,7 +59,7 @@ gem 'oj'
 gem 'bootsnap', require: false
 
 # for visitation metrics (and other analytics data)
-gem "ahoy_matey", '~>4.2.1'
+gem "ahoy_matey", '~>5.2'
 
 
 require 'yaml'

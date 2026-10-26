@@ -26,7 +26,7 @@ module ConsiderIt
   class Application < Rails::Application
 
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.1
+    config.load_defaults 7.2
 
     config.action_dispatch.cookies_same_site_protection = nil # SAML IdPs POST cross-site to /saml/acs, and acs reads session[:sso_idp]. With an explicit Lax cookie the browser won't send the session on that POST, so SAML login can break.
 

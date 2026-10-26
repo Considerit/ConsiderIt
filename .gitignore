@@ -18,7 +18,6 @@ restart.txt
 
 config/database.yml
 config/local_environment.yml
-config/application.rb
 
 db/schema.rb
 

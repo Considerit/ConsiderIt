@@ -1,14 +1,16 @@
-source 'http://rubygems.org'
+source 'https://rubygems.org'
 
 #############
 # CORE
 gem 'rails', '~> 6.1'
 gem 'activerecord-session_store'  # Because CookieStore has race conditions w/ concurrent ajax requests
+gem 'csv'
+gem 'json', '~> 2.19' # Rails < 8 passes quirks_mode, which json 3 rejects; remove when upgraded to Rails 8
 
 # #############
 # # AUTHENTICATION
 gem "bcrypt"
-gem 'ruby-saml', '~> 1.11'
+gem 'ruby-saml'
 gem 'omniauth-oauth2'
 gem 'omniauth-facebook'
 gem 'omniauth-google-oauth2'
@@ -19,9 +21,6 @@ gem 'omniauth-rails_csrf_protection'
 # DATABASE & DATABASE MIDDLEWARE
 gem "mysql2" 
 gem 'acts_as_tenant'
-gem 'activerecord-import' # bulk imports for performance
-                          # Used for Opinion.import. Remove after eliminating the 
-                          # need to create an unpublished opinion per proposal per user 
 
 #############
 # VIEWS / FORMS / CLIENT
@@ -31,8 +30,9 @@ gem 'kt-paperclip'
 #############
 # BACKGROUND PROCESSING / EMAIL
 gem 'whenever' # https://github.com/javan/whenever
-gem 'delayed_job', :git => 'https://github.com/collectiveidea/delayed_job', :tag => 'v4.1.13'   # fixed version bc of https://github.com/collectiveidea/delayed_job/issues/1246
-gem 'delayed_job_active_record', :git => 'https://github.com/collectiveidea/delayed_job_active_record'
+gem 'delayed_job', '~> 4.1.13'
+gem 'delayed_job_active_record', '~> 4.1.11'
+
 gem "daemons" # for the daemonize method used in bin/delayed_job
 gem 'rubyzip'
 
@@ -45,12 +45,6 @@ gem 'rubyzip'
 # API calls
 gem 'excon'
 
-#############
-# Generative AI
-# gem "ruby-openai"
-# gem 'ruby_llm'
-gem 'json-schema'
-
 
 #############
 # i18n
@@ -58,15 +52,11 @@ gem 'message_format'
 
 ############
 # PURE PERFORMANCE
-# Rails JSON encoding is super slow, oj makes it faster
+# Rails JSON encoding is slow, oj makes it faster
 gem 'oj'
-gem 'oj_mimic_json' # we need this for Rails 4.1.x
 gem 'bootsnap', require: false
 
-# # for importing from google sheets
-gem 'google-api-client'
-
-# # for visitation metrics (and other analytics data)
+# for visitation metrics (and other analytics data)
 gem "ahoy_matey", '~>4.2.1'
 
 
@@ -82,7 +72,7 @@ if local_config["default"]["product_page"]
   gem 'mailgun-ruby'
 
   # for markdown parsing
-  gem 'commonmarker',  "~>1.0.0.pre7"
+  gem 'commonmarker'
 end 
 
 # # Bundle gems for the local environment. Make sure to
@@ -94,8 +84,6 @@ group :development, :test do
   # gem 'mailcatcher'
   gem 'listen'
   # gem 'rack-mini-profiler'
-
-  gem 'css_parser' # for aeroparticpa
 end
 
 group :production do

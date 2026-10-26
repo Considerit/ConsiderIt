@@ -1,7 +1,10 @@
 require 'csv'
 require 'json'
 
-require Rails.root.join("lib/services/google_sheet")
+
+# google_sheet service needs to be updated if we ever need to run this again.
+
+# require Rails.root.join("lib/services/google_sheet")
 
 
 

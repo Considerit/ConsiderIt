@@ -389,6 +389,21 @@ window.updateThemeColors = ->
 window.color_variable_defs = generateColorVariableDefs()
 
 # Theme management functions
+
+# localStorage throws when storage is blocked (e.g. in a cross-site iframe
+# with third-party storage disabled), so treat it as best-effort.
+get_saved_theme = ->
+  try
+    localStorage.getItem('considerit-theme')
+  catch
+    null
+
+save_theme = (theme) ->
+  try
+    localStorage.setItem('considerit-theme', theme)
+  catch
+    null
+
 window.getCurrentTheme = ->
   document.documentElement.getAttribute('data-theme') || 'light'
 
@@ -396,7 +411,7 @@ window.setTheme = (theme) ->
   valid_themes = ['light', 'dark', 'high-contrast', 'high-contrast-dark']
   if theme in valid_themes
     document.documentElement.setAttribute('data-theme', theme)
-    localStorage.setItem('considerit-theme', theme)
+    save_theme(theme)
     # Trigger a custom event for any components that need to respond to theme changes
     window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: theme } }))
   else
@@ -414,7 +429,7 @@ window.toggleTheme = ->
 
 window.initializeTheme = ->
   # Check for saved theme preference or default to 'light'
-  saved_theme = localStorage.getItem('considerit-theme')
+  saved_theme = get_saved_theme()
   
   # Check for system preference if no saved theme
   if !saved_theme && window.matchMedia
@@ -439,7 +454,7 @@ if window.matchMedia
   
   window.matchMedia('(prefers-contrast: high)').addEventListener 'change', (e) ->
     # Only auto-switch if user hasn't manually set a theme
-    if !localStorage.getItem('considerit-theme')
+    if !get_saved_theme()
       setTheme(if e.matches then 'high-contrast' else 'light')
 
 

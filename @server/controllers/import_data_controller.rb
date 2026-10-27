@@ -242,6 +242,10 @@ class ImportDataController < ApplicationController
               end
             end
 
+            if attrs['description']
+              attrs['description'] = plain_text_to_html(attrs['description'])
+            end
+
             attrs.update({
               'slug' => slug,
               'user_id' => user.id,
@@ -493,6 +497,13 @@ class ImportDataController < ApplicationController
   end
 
 
+
+  # Descriptions are rendered as HTML, so line breaks in a plain text description would be lost.
+  # Turn text separated by blank lines into paragraphs, and other line breaks into <br>.
+  def plain_text_to_html(text)
+    return text if !text.match?(/\R/) || text.match?(/<[a-z\/!][^>]*>/i)
+    text.strip.split(/\R\s*\R/).map { |para| "<p>#{para.strip.gsub(/\R/, '<br>')}</p>" }.join
+  end
 
   # Imported proposals can land in lists that the forum hasn't defined yet. Define those
   # lists, and splice them into the homepage's list configuration if it has one, so that

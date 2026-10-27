@@ -92,6 +92,10 @@ GEM
       version_gem (~> 1.1, >= 1.1.17)
     auth-sanitizer (0.2.5)
       version_gem (~> 1.1, >= 1.1.16)
+    aws-actionmailer-ses (1.2.0)
+      actionmailer (>= 7.1.0)
+      aws-sdk-ses (~> 1, >= 1.50.0)
+      aws-sdk-sesv2 (~> 1, >= 1.34.0)
     aws-eventstream (1.4.1)
     aws-partitions (1.1299.0)
     aws-sdk-core (3.261.0)
@@ -114,6 +118,9 @@ GEM
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.5)
     aws-sdk-ses (1.107.0)
+      aws-sdk-core (~> 3, >= 3.260.0)
+      aws-sigv4 (~> 1.5)
+    aws-sdk-sesv2 (1.115.0)
       aws-sdk-core (~> 3, >= 3.260.0)
       aws-sigv4 (~> 1.5)
     aws-sigv4 (1.12.1)
@@ -407,6 +414,7 @@ DEPENDENCIES
   activerecord-session_store
   acts_as_tenant
   ahoy_matey (~> 5.2)
+  aws-actionmailer-ses (~> 1.2)
   aws-sdk-rails
   aws-sdk-s3
   aws-sdk-ses

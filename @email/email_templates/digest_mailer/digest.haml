@@ -67,9 +67,10 @@
           more_than_5_proposals_count: num - 3}, 
           "View {more_than_5_proposals_count} more new proposals"
         )
+        view_more_link = full_link('', {:sort_by => 'newest', :utm_source => 'digest'})
       
 
-      %a{:href => full_link('', {:sort_by => 'newest', :utm_source => 'digest'}), :style=>"text-align:center; color:black;padding-top:20px;display:block;"}
+      %a{:href => view_more_link, :style=>"text-align:center; color:black;padding-top:20px;display:block;"}
         #{view_more}
 
         

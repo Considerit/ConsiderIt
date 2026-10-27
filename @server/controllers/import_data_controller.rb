@@ -163,6 +163,8 @@ class ImportDataController < ApplicationController
 
           # Grab all of the easily extracted attributes
           attrs = row.to_hash.select{|k,v| config[:directly_extractable].include? k}
+          # A blank created_at would wipe the timestamp of a record that is being updated
+          attrs.delete('created_at') if attrs['created_at'].blank?
 
           # The rest has to be handled on a table by table basis
           case table
@@ -246,8 +248,10 @@ class ImportDataController < ApplicationController
               attrs['description'] = plain_text_to_html(attrs['description'])
             end
 
+            # Without a slug from the file, keep the existing one rather than regenerating it
+            attrs['slug'] = slug if slug
+
             attrs.update({
-              'slug' => slug,
               'user_id' => user.id,
               'name' => title,
               'published' => true

@@ -86,10 +86,13 @@ group :development, :test do
   # gem 'rack-mini-profiler'
 end
 
+
+
 group :production do
   # gem 'backup' #https://github.com/meskyanichi/backup
   gem 'exception_notification'
   gem 'aws-sdk-rails'
+  gem 'aws-actionmailer-ses', '~> 1.2' # provides the :ses delivery method (moved out of aws-sdk-rails 5)
   gem 'aws-sdk-ses'
   gem 'aws-sdk-s3'
   gem 'dalli' # memcaching: https://github.com/mperham/dalli/

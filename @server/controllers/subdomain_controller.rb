@@ -413,8 +413,6 @@ class SubdomainController < ApplicationController
   end
 
   def rename_forum
-    old_name = current_subdomain.name
-
     name = params[:name]
     name = name.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
 
@@ -423,8 +421,15 @@ class SubdomainController < ApplicationController
     rescue
       return render :json => [:error => "That subdomain is not available"]
     end
-    if request.url.index(old_name)
-      redirect_to request.url.sub(old_name, name), allow_other_host: true
+
+    # Send the user to the renamed forum's home page, logged in. The session cookie
+    # belongs to the old hostname, so log them in with a token, as forum creation does.
+    token = current_user.auth_token(current_subdomain)
+    email = CGI.escape(current_user.email)
+    if Rails.env.production?
+      redirect_to "#{request.protocol}#{current_subdomain.url}?u=#{email}&t=#{token}", allow_other_host: true
+    else
+      redirect_to "/?u=#{email}&t=#{token}&domain=#{current_subdomain.name}"
     end
   end
 

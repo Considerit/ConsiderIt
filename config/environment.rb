@@ -63,7 +63,7 @@ def _sanitize_array(arr, old)
 end
 
 def _sanitize_str(str, old)
-  adjusted_str = {:v=>str}.to_s["{:v=>\"".length...-"\"}".length] # matching encodings...ugly, I know
+  adjusted_str = str.inspect[1...-1]
 
   if old && old.index(adjusted_str) != nil # no change, or previously checked as safe elsewhere
     return str 

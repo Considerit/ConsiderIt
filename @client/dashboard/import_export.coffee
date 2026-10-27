@@ -17,6 +17,9 @@ window.DataDash = ReactiveComponent
 
       # clear out statebus 
       arest.clear_matching_objects((key) -> key.match( /\/page\// ))
+      # the import may have defined new lists and added them to the homepage
+      arest.serverFetch '/subdomain'
+      arest.serverFetch '/lists'
       @local.errors = null
       @local.successes = data[0]
       save @local

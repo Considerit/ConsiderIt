@@ -19,6 +19,7 @@ class ImportDataController < ApplicationController
 
     points = {}
     proposals = []
+    imported_lists = []
 
     configuration = {
       'users' => {
@@ -162,6 +163,8 @@ class ImportDataController < ApplicationController
 
           # Grab all of the easily extracted attributes
           attrs = row.to_hash.select{|k,v| config[:directly_extractable].include? k}
+          # A blank created_at would wipe the timestamp of a record that is being updated
+          attrs.delete('created_at') if attrs['created_at'].blank?
 
           # The rest has to be handled on a table by table basis
           case table
@@ -241,8 +244,14 @@ class ImportDataController < ApplicationController
               end
             end
 
+            if attrs['description']
+              attrs['description'] = plain_text_to_html(attrs['description'])
+            end
+
+            # Without a slug from the file, keep the existing one rather than regenerating it
+            attrs['slug'] = slug if slug
+
             attrs.update({
-              'slug' => slug,
               'user_id' => user.id,
               'name' => title,
               'published' => true
@@ -267,6 +276,7 @@ class ImportDataController < ApplicationController
             end
 
             proposals.push proposal
+            imported_lists.push "list/#{proposal.get_cluster.strip}" if proposal.persisted?
 
 
 
@@ -394,6 +404,10 @@ class ImportDataController < ApplicationController
         raise ActiveRecord::Rollback
       end
 
+      if imported_lists.length > 0
+        modified['lists'] = add_lists_to_homepage(imported_lists.uniq)
+      end
+
       if params[:generate_inclusions] && proposals.length > 0
         ['users', 'opinions'].each do |t|
           if !modified.include? t
@@ -487,6 +501,65 @@ class ImportDataController < ApplicationController
   end
 
 
+
+  # Descriptions are rendered as HTML, so line breaks in a plain text description would be lost.
+  # Turn text separated by blank lines into paragraphs, and other line breaks into <br>.
+  def plain_text_to_html(text)
+    return text if !text.match?(/\R/) || text.match?(/<[a-z\/!][^>]*>/i)
+    text.strip.split(/\R\s*\R/).map { |para| "<p>#{para.strip.gsub(/\R/, '<br>')}</p>" }.join
+  end
+
+  # Imported proposals can land in lists that the forum hasn't defined yet. Define those
+  # lists, and splice them into the homepage's list configuration if it has one, so that
+  # the proposals don't end up only reachable from the moderation queue.
+  def add_lists_to_homepage(list_keys)
+    subdomain = current_subdomain
+    customizations = subdomain.customizations ||= {}
+    changes = []
+
+    list_title = lambda { |list_key| customizations.dig(list_key, 'list_title') || list_key.split('/', 2)[1] }
+
+    list_keys.each do |list_key|
+      next if customizations.has_key?(list_key)
+      customizations[list_key] = {
+        'list_title' => list_key.split('/', 2)[1],
+        'created_by' => "/user/#{current_user.id}"
+      }
+      changes.push "Created list #{list_title.call(list_key)}"
+    end
+
+    tabs = (customizations['homepage_tabs'] || []).select { |tab| tab['name'] }
+
+    if tabs.length > 0
+      # About and "Show all" pages don't hold lists of their own
+      list_tabs = tabs.select { |tab| !['about', 'all'].include?(tab['type']) }
+      has_wildcard = list_tabs.any? { |tab| ((tab['lists'] || []) & ['*', '*-']).length > 0 }
+
+      if list_tabs.length > 0 && !has_wildcard
+        placed = tabs.map { |tab| tab['lists'] || [] }.flatten
+        target = list_tabs.find { |tab| tab['name'] == customizations['homepage_default_tab'] } || list_tabs[0]
+
+        list_keys.each do |list_key|
+          next if placed.include?(list_key)
+          (target['lists'] ||= []).push list_key
+          changes.push "Added list #{list_title.call(list_key)} to the #{target['name']} tab"
+        end
+      end
+
+    elsif customizations['lists'] && !customizations['lists'].include?('*')
+      list_keys.each do |list_key|
+        next if customizations['lists'].include?(list_key)
+        customizations['lists'].push list_key
+        changes.push "Added list #{list_title.call(list_key)} to the homepage"
+      end
+    end
+
+    if changes.length > 0
+      subdomain.save
+    end
+
+    changes
+  end
 
   def export
     subdomain = current_subdomain

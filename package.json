@@ -4,7 +4,7 @@
     "coffee-script": "^1.12.7",
     "@auth0/s3": "1.0.0",
     "yamljs": "^0.2.1",
-    "webpack": "1.11.0",
+    "webpack": "5.94.0",
     "chunk-manifest-webpack-plugin": "0.0.1",
     "compression-webpack-plugin": "0.2.0"
   }
